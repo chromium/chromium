@@ -141,7 +141,7 @@ public class ProxyChangeListenerTest {
                                                 !filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
                                 ArgumentMatchers.isNull(),
                                 ArgumentMatchers.isNull(),
-                                ArgumentMatchers.eq(ContextUtils.RECEIVER_NOT_EXPORTED));
+                                ArgumentMatchers.eq(Context.RECEIVER_NOT_EXPORTED));
             } else {
                 Mockito.verify(mAppContext)
                         .registerReceiver(

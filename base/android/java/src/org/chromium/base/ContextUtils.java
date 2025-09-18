@@ -30,16 +30,6 @@ public class ContextUtils {
     private static final String TAG = "ContextUtils";
     private static @Nullable Context sApplicationContext;
 
-    /**
-     * Flag for {@link Context#registerReceiver}: The receiver can receive broadcasts from other
-     * Apps. Has the same behavior as marking a statically registered receiver with "exported=true".
-     *
-     * <p>TODO(mthiesse): Move to ApiHelperForT when we build against T SDK.
-     */
-    public static final int RECEIVER_EXPORTED = 0x2;
-
-    public static final int RECEIVER_NOT_EXPORTED = 0x4;
-
     /** Initialization-on-demand holder. This exists for thread-safe lazy initialization. */
     private static class Holder {
         // Not final for tests.
@@ -237,14 +227,19 @@ public class ContextUtils {
     /**
      * Register a broadcast receiver that may accept broadcasts from any UID.
      *
-     * You should (only) use exported receivers when:
-     * <p><ul>
-     * <li>You need to receive unprotected broadcasts from other applications.
-     * <li>Using unprotected sticky broadcasts - either from this application or another.
-     * </ul><p>
-     * Broadcasts received by exported receivers are untrustworthy and must be treated with caution.
+     * <p>You should (only) use exported receivers when:
+     *
      * <p>
-     * You can unregister receivers using the normal {@link Context#unregisterReceiver} method.
+     *
+     * <ul>
+     *   <li>You need to receive unprotected broadcasts from other applications.
+     *   <li>Using unprotected sticky broadcasts - either from this application or another.
+     * </ul>
+     *
+     * <p>Broadcasts received by exported receivers are untrustworthy and must be treated with
+     * caution.
+     *
+     * <p>You can unregister receivers using the normal {@link Context#unregisterReceiver} method.
      */
     public static @Nullable Intent registerExportedBroadcastReceiver(
             Context context,
@@ -252,7 +247,12 @@ public class ContextUtils {
             IntentFilter filter,
             @Nullable String permission) {
         return registerBroadcastReceiver(
-                context, receiver, filter, permission, /* scheduler= */ null, RECEIVER_EXPORTED);
+                context,
+                receiver,
+                filter,
+                permission,
+                /* scheduler= */ null,
+                Context.RECEIVER_EXPORTED);
     }
 
     /**
@@ -295,7 +295,7 @@ public class ContextUtils {
                 filter,
                 /* permission= */ null,
                 /* scheduler= */ null,
-                RECEIVER_NOT_EXPORTED);
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     public static @Nullable Intent registerNonExportedBroadcastReceiver(
@@ -309,7 +309,7 @@ public class ContextUtils {
                 filter,
                 /* permission= */ null,
                 scheduler,
-                RECEIVER_NOT_EXPORTED);
+                Context.RECEIVER_NOT_EXPORTED);
     }
 
     private static @Nullable Intent registerBroadcastReceiver(
