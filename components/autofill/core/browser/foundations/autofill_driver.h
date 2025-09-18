@@ -333,6 +333,10 @@ class AutofillDriver {
       base::OnceCallback<void(const std::string& amount)>
           response_callback) = 0;
 
+  virtual void DispatchEmailVerifiedEvent(
+      FieldGlobalId field_id,
+      const std::string& presentation_token) = 0;
+
  private:
   friend class AutofillDriverTestApi;
 

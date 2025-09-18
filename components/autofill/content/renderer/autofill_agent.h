@@ -203,6 +203,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void DispatchEmailVerifiedEvent(
+      FieldRendererId field_id,
+      const std::string& presentation_token) override;
 
   // Called after updating the last interacted element in FormTracker because of
   // `reason`. It is always the case that `form` or `element` are non-null. If

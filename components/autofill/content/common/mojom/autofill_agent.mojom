@@ -103,6 +103,11 @@ interface AutofillAgent {
   // merchant website.
   GetPotentialLastFourCombinationsForStandaloneCvc()
       => (array<string> potential_matches);
+
+  // Asks the renderer to dispatch a custom DOM event on a specific field.
+  // The event will be of type VerifiedEvent.
+  DispatchEmailVerifiedEvent(
+      FieldRendererId field_id, string presentation_token);
 };
 
 // There is one instance of this interface per render frame in the render

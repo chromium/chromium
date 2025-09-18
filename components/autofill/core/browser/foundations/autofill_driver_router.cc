@@ -650,6 +650,15 @@ void AutofillDriverRouter::RendererShouldTriggerSuggestions(
   }
 }
 
+void AutofillDriverRouter::DispatchEmailVerifiedEvent(
+    RoutedCallback<FieldRendererId, const std::string&> callback,
+    const FieldGlobalId& field_id,
+    const std::string& presentation_token) {
+  if (auto* target = DriverOfFrame(field_id.frame_token)) {
+    callback(*target, field_id.renderer_id, presentation_token);
+  }
+}
+
 void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
     RoutedCallback<FieldRendererId, mojom::AutofillSuggestionAvailability>
         callback,

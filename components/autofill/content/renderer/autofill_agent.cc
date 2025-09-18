@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/json/string_escape.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_range.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1620,6 +1622,15 @@ void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
   } else {
     form_util::TraverseDomForFourDigitCombinations(
         document, std::move(potential_matches));
+  }
+}
+
+void AutofillAgent::DispatchEmailVerifiedEvent(
+    FieldRendererId field_id,
+    const std::string& presentation_token) {
+  if (WebFormControlElement element =
+          form_util::GetFormControlByRendererId(field_id)) {
+    element.DispatchEmailVerifiedEvent(WebString::FromUTF8(presentation_token));
   }
 }
 

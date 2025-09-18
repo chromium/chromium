@@ -253,6 +253,9 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   void TriggerFormExtractionInDriverFrame(
       AutofillDriverRouterAndFormForestPassKey pass_key) override;
+  void DispatchEmailVerifiedEvent(
+      FieldGlobalId field_id,
+      const std::string& presentation_token) override;
 
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:

@@ -201,6 +201,10 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
                uint32_t number_of_ancestor_levels_to_search,
                base::OnceCallback<void(const std::string&)>),
               (override));
+  MOCK_METHOD(void,
+              DispatchEmailVerifiedEvent,
+              (FieldRendererId, const std::string&),
+              (override));
 
  private:
   void CallDone() {
