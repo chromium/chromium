@@ -177,6 +177,12 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
         case CompositorFrameReporter::StageType::
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererCompositorFinishedToSubmitCompositorFrame";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitUpdateDisplayTree:
+          return "RendererCompositorFinishedToSubmitUpdateDisplayTree";
+        case CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          return "RendererCompositorFinishedToPresentationCompositorFrame";
         default:
           NOTREACHED() << "Invalid CC stage after compositor thread: "
                        << static_cast<int>(compositor_stage);
@@ -200,6 +206,12 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
         case CompositorFrameReporter::StageType::
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererMainFinishedToSubmitCompositorFrame";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitUpdateDisplayTree:
+          return "RendererMainFinishedToSubmitUpdateDisplayTree";
+        case CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          return "RendererMainFinishedToPresentationCompositorFrame";
         default:
           NOTREACHED() << "Invalid CC stage after main thread: "
                        << static_cast<int>(compositor_stage);
