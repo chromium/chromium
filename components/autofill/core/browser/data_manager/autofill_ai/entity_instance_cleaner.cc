@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
@@ -24,10 +25,10 @@ namespace {
 
 // Determines whether cleanups should be deferred because the latest data wasn't
 // synced down yet.
-bool ShouldWaitForSync(syncer::SyncService* sync_service) {
+bool ShouldWaitForSync(const syncer::SyncService* sync_service) {
   // No need to wait if the user is not syncing payments data.
-  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                           syncer::UserSelectableType::kPayments)) {
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPayments)) {
     return false;
   }
 
@@ -61,6 +62,9 @@ EntityInstanceCleaner::EntityInstanceCleaner(
 EntityInstanceCleaner::~EntityInstanceCleaner() = default;
 
 void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiDedupeEntities)) {
+    return;
+  }
   if (!are_cleanups_pending_ || ShouldWaitForSync(sync_service_)) {
     return;
   }
@@ -119,6 +123,10 @@ void EntityInstanceCleaner::MaybeCleanupLocalEntityInstancesData() {
 
 void EntityInstanceCleaner::OnStateChanged(syncer::SyncService* sync_service) {
   MaybeCleanupLocalEntityInstancesData();
+}
+
+void EntityInstanceCleaner::OnSyncShutdown(syncer::SyncService* sync_service) {
+  sync_observer_.Reset();
 }
 
 }  // namespace autofill

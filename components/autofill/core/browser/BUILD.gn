@@ -1085,7 +1085,6 @@ static_library("test_support") {
     "data_manager/addresses/test_address_data_manager.h",
     "data_manager/autofill_ai/entity_data_manager_test_utils.cc",
     "data_manager/autofill_ai/entity_data_manager_test_utils.h",
-    "data_manager/autofill_ai/entity_instance_cleaner_test_api.h",
     "data_manager/payments/payments_data_manager_test_api.cc",
     "data_manager/payments/payments_data_manager_test_api.h",
     "data_manager/payments/payments_data_manager_test_utils.cc",

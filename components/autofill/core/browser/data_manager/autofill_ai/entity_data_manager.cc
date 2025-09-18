@@ -9,11 +9,13 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
@@ -32,12 +34,14 @@ bool WalletPublicPassesEnabled() {
 }  // namespace
 
 EntityDataManager::EntityDataManager(
-    const PrefService* pref_service,
+    PrefService* pref_service,
     const signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
     strike_database::StrikeDatabaseBase* strike_database)
-    : webdata_service_(std::move(webdata_service)) {
+    : webdata_service_(std::move(webdata_service)),
+      entity_instance_cleaner_(this, sync_service, pref_service) {
   CHECK(webdata_service_);
   if (WalletPublicPassesEnabled()) {
     webdata_service_observation_.Observe(webdata_service_.get());

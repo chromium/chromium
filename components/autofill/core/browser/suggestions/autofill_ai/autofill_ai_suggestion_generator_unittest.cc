@@ -112,6 +112,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     autofill_client_.set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client_.GetPrefs(), autofill_client_.GetIdentityManager(),
+            autofill_client_.GetSyncService(),
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));

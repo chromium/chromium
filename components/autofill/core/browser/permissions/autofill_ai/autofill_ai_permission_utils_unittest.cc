@@ -81,7 +81,8 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
     // Pref and identity state.
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         client().GetPrefs(), client().GetIdentityManager(),
-        webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+        client().GetSyncService(), webdata_helper_.autofill_webdata_service(),
+        /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
     client().SetUpPrefsAndIdentityForAutofillAi();
   }

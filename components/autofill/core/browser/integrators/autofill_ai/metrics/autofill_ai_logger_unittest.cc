@@ -88,6 +88,7 @@ class BaseAutofillAiTest : public testing::Test {
         std::make_unique<EntityDataManager>(
             autofill_client().GetPrefs(),
             autofill_client().GetIdentityManager(),
+            autofill_client().GetSyncService(),
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));

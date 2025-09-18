@@ -24,7 +24,9 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,12 +68,15 @@ class EntityDataManagerTest : public testing::Test {
 
   TestAutofillClient& client() { return client_; }
 
+  syncer::TestSyncService& sync_service() { return sync_service_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AutofillWebDataServiceTestHelper helper_{std::make_unique<EntityTable>()};
   TestAutofillClient client_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Tests that the constructor of EntityDataManager queries the database.
@@ -85,8 +90,9 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
       dl, base::DoNothing());
   helper().WaitUntilIdle();
 
-  EntityDataManager entity_data_manager(/*pref_service=*/nullptr,
+  EntityDataManager entity_data_manager(client().GetPrefs(),
                                         /*identity_manager=*/nullptr,
+                                        &sync_service(),
                                         helper().autofill_webdata_service(),
                                         /*history_service=*/nullptr,
                                         /*strike_database=*/nullptr);
@@ -103,8 +109,9 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
   ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
   base::HistogramTester histogram_tester;
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
-      client().GetPrefs(), client().GetIdentityManager(),
-      helper().autofill_webdata_service(), /*history_service=*/nullptr,
+      client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
+      helper().autofill_webdata_service(),
+      /*history_service=*/nullptr,
       /*strike_database=*/nullptr));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Status.Startup"),
@@ -114,7 +121,7 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
   ASSERT_TRUE(GetAutofillAiOptInStatus(client()));
 
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
-      client().GetPrefs(), client().GetIdentityManager(),
+      client().GetPrefs(), client().GetIdentityManager(), &sync_service(),
       helper().autofill_webdata_service(),
       /*history_service=*/nullptr,
       /*strike_database=*/nullptr));
@@ -126,6 +133,14 @@ TEST_F(EntityDataManagerTest, OptInMetric) {
 // Test fixture that starts with an empty database.
 class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
  public:
+  EntityDataManagerTest_InitiallyEmpty()
+      : entity_data_manager_(client().GetPrefs(),
+                             /*identity_manager=*/nullptr,
+                             &sync_service(),
+                             helper().autofill_webdata_service(),
+                             /*history_service=*/nullptr,
+                             /*strike_database=*/nullptr) {}
+
   EntityDataManager& entity_data_manager() { return entity_data_manager_; }
 
   base::span<const autofill::EntityInstance> GetEntityInstances() {
@@ -140,11 +155,7 @@ class EntityDataManagerTest_InitiallyEmpty : public EntityDataManagerTest {
   }
 
  private:
-  EntityDataManager entity_data_manager_{/*pref_service=*/nullptr,
-                                         /*identity_manager=*/nullptr,
-                                         helper().autofill_webdata_service(),
-                                         /*history_service=*/nullptr,
-                                         /*strike_database=*/nullptr};
+  EntityDataManager entity_data_manager_;
 };
 
 // Tests that AddOrUpdateEntityInstance() asynchronously adds entities.

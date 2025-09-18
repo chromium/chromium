@@ -43,6 +43,7 @@ class EntityInstanceCleaner : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Used to ensure that cleanups are only performed once per profile startup.
   bool are_cleanups_pending_ = true;

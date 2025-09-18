@@ -31,6 +31,8 @@ class AutofillEntityDataManagerFactory : public ProfileKeyedServiceFactory {
  private:
   friend base::NoDestructor<AutofillEntityDataManagerFactory>;
 
+  bool ServiceIsNULLWhileTesting() const override;
+
   AutofillEntityDataManagerFactory();
   ~AutofillEntityDataManagerFactory() override;
 

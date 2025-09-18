@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
@@ -28,6 +29,10 @@ class DeletionInfo;
 namespace strike_database {
 class StrikeDatabaseBase;
 }  // namespace strike_database
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace autofill {
 
@@ -53,8 +58,9 @@ class EntityDataManager : public KeyedService,
   };
 
   explicit EntityDataManager(
-      const PrefService* pref_service,
+      PrefService* pref_service,
       const signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
       strike_database::StrikeDatabaseBase* strike_database);
@@ -139,6 +145,8 @@ class EntityDataManager : public KeyedService,
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
 
   base::ObserverList<Observer> observers_;
+
+  EntityInstanceCleaner entity_instance_cleaner_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };

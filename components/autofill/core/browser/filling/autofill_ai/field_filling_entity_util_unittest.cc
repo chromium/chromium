@@ -130,7 +130,8 @@ class GetFieldsFillableByAutofillAiTest : public testing::Test {
   GetFieldsFillableByAutofillAiTest() {
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         client().GetPrefs(), client().GetIdentityManager(),
-        helper_.autofill_webdata_service(), /*history_service=*/nullptr,
+        client().GetSyncService(), helper_.autofill_webdata_service(),
+        /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
     client().SetUpPrefsAndIdentityForAutofillAi();
 
