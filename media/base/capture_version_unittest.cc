@@ -131,8 +131,4 @@ TEST(CaptureVersionTest, SourceGreaterSubCaptureGreater) {
   EXPECT_FALSE(kLhs < kRhs);
 }
 
-// TODO(crbug.com/394794490): Once `source` is added, also add tests verifying
-// that `source` is the major element and `sub_capture` the minor element
-// with respect to operator<=>.
-
 }  // namespace
