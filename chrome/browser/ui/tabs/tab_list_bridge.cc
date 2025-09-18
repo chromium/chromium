@@ -5,10 +5,32 @@
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/tabs/public/tab_interface.h"
+
+namespace {
+
+// Returns the browser with the corresponding `target_session_id` if and only
+// if the profile also matches `restrict_to_profile`.
+BrowserWindowInterface* GetBrowserWithSessionId(
+    const SessionID& target_session_id,
+    const Profile* restrict_to_profile) {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  for (auto* browser : all_browsers) {
+    if (browser->GetProfile() == restrict_to_profile &&
+        browser->GetSessionID() == target_session_id) {
+      return browser;
+    }
+  }
+
+  return nullptr;
+}
+
+}  // namespace
 
 DEFINE_USER_DATA(TabListBridge);
 
@@ -132,7 +154,29 @@ void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {}
 
 void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
                                     SessionID destination_window_id,
-                                    int destination_index) {}
+                                    int destination_index) {
+  int source_index = GetIndexOfTab(tab);
+  CHECK_NE(source_index, TabStripModel::kNoTab);
+
+  BrowserWindowInterface* target_window =
+      GetBrowserWithSessionId(destination_window_id, tab_strip_->profile());
+  CHECK(target_window);
+  TabListInterface* target_list_interface =
+      TabListInterface::From(target_window);
+  CHECK(target_list_interface);
+  // This is the only implementation on these platforms, so this cast is safe.
+  TabListBridge* target_bridge =
+      static_cast<TabListBridge*>(target_list_interface);
+
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      tab_strip_->DetachTabAtForInsertion(source_index);
+  if (!detached_tab) {
+    return;
+  }
+
+  target_bridge->tab_strip_->InsertDetachedTabAt(
+      destination_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
+}
 
 void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                          SessionID destination_window_id,

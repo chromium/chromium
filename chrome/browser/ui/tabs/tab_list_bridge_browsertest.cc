@@ -271,3 +271,42 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTab) {
               testing::ElementsAre(MatchesTab(url3), MatchesTab(url2),
                                    MatchesTab(url1)));
 }
+
+IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTabToWindow) {
+  const GURL url1("http://one.example");
+  const GURL url2("http://two.example");
+
+  // Open two tabs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  TabListInterface* source_list_interface = TabListInterface::From(browser());
+  ASSERT_TRUE(source_list_interface);
+
+  // Create a second browser.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  TabListInterface* destination_list_interface =
+      TabListInterface::From(second_browser);
+  ASSERT_TRUE(destination_list_interface);
+
+  EXPECT_EQ(2, source_list_interface->GetTabCount());
+  EXPECT_EQ(1, destination_list_interface->GetTabCount());
+
+  // Move the second tab from the first browser to the second.
+  tabs::TabInterface* tab_to_move = source_list_interface->GetTab(1);
+  source_list_interface->MoveTabToWindow(tab_to_move->GetHandle(),
+                                         second_browser->session_id(), 1);
+
+  // Verify the tabs are in the correct places.
+  EXPECT_EQ(1, source_list_interface->GetTabCount());
+  EXPECT_EQ(2, destination_list_interface->GetTabCount());
+
+  EXPECT_THAT(source_list_interface->GetAllTabs(),
+              testing::ElementsAre(MatchesTab(url1)));
+  EXPECT_THAT(destination_list_interface->GetAllTabs(),
+              testing::ElementsAre(testing::_, MatchesTab(url2)));
+}
