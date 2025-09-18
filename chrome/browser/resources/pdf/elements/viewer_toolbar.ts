@@ -388,6 +388,11 @@ export class ViewerToolbarElement extends CrLitElement {
     return mode === this.annotationMode ? 'active' : '';
   }
 
+  // Returns true if the button is toggled on, false otherwise.
+  protected getAriaPressed_(mode: AnnotationMode): string {
+    return mode === this.annotationMode ? 'true' : 'false';
+  }
+
   protected onAnnotationClick_() {
     assert(this.pdfInk2Enabled);
 

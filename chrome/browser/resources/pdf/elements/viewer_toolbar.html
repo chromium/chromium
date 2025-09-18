@@ -59,14 +59,16 @@ import {AnnotationMode} from '../constants.js';
               class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
               @click="${this.onTextAnnotationClick_}"
               ?disabled="${!this.annotationAvailable}"
+              aria-pressed="${this.getAriaPressed_(AnnotationMode.TEXT)}"
               title="Text annotation">
           </cr-icon-button>
         ` : ''}
         <cr-icon-button id="annotate" iron-icon="pdf-ink:annotate"
             class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
             @click="${this.onAnnotationClick_}"
-            aria-label="$i18n{ink2Draw}"
             ?disabled="${!this.annotationAvailable}"
+            aria-pressed="${this.getAriaPressed_(AnnotationMode.DRAW)}"
+            aria-label="$i18n{ink2Draw}"
             title="$i18n{ink2Draw}"></cr-icon-button>
         <span class="vertical-separator"></span>
         <cr-icon-button id="undo" ?disabled="${!this.computeEnableUndo_()}"
