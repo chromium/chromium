@@ -26,13 +26,153 @@ enum Disposition {
 // determine from the path prefixes control file.
 llvm::StringMap<Disposition> g_checked_files_cache;
 
-struct CheckFilePrefixes {
-  // `buffer` owns the memory for the strings in `prefix_map`.
-  std::unique_ptr<llvm::MemoryBuffer> buffer;
-  std::map<llvm::StringRef, char> prefix_map;
-  llvm::SmallVector<char> path_to_source_root_;
+class UnsafeBuffersConfig {
+ public:
+  bool LoadFromPath(std::string_view path) {
+    // Parse the contents of the path suppression file.
+    //
+    // The file format is as follows:
+    // * `#` introduces a comment until the end of the line.
+    // * Empty lines are ignored.
+    // * Active lines consist of a one-character command followed by data.
+    // * A line beginning with a `.` lists diagnostics to enable. These
+    //   are comma-separated and currently allow: `buffers`, `libc`.
+    // * A line beginning with a `$` gives the path from this file to
+    //   the source tree root. Path prefixes in this file are interpreted
+    //   relative to this value (default is that this file is in the root).
+    // * A line beginning with ''@' is silently ignored (reserved for
+    //   rolling in future features without breakage).
+    // * Every other line is a path prefix from the source tree root using
+    //   unix-style delimiters:
+    //   * Each line either removes a path from checks or adds a path to checks.
+    //   * If the line starts with `+` paths matching the line will be added.
+    //   * If the line starts with `-` paths matching the line will removed.
+    //   * Other starting characters are not allowed.
+    //   * Paths naming directories match the entire sub-directory. For instance
+    //     `+a/b/` will match the file at `//a/b/c.h` but will *not* match
+    //     `//other/a/b/c.h`.
+    //   * Paths naming files match the single file and look like `+a/b/c.h`.
+    //   * Trailing slashes for directories are recommended, but not enforced.
+    //   * The longest (most specific) match takes precedence.
+    //   * Files that do not match any of the prefixes file will be checked.
+    //   * Duplicate prefixes are not allowed and produce compilation errors.
+    //
+    // Example:
+    // ```
+    // # A file of path prefixes.
+    // # Matches anything under the directory //foo/bar, opting them into
+    // # checks.
+    // +foo/bar/
+    // # Avoids checks in the //my directory.
+    // -my/
+    // # Matches a specific file at //my/file.cc, overriding the `-my/` above
+    // # for this one file.
+    // +my/file.cc
+    // ```
+    //
+    if (auto buffer_or_error = llvm::MemoryBuffer::getFileAsStream(path)) {
+      buffer_ = std::move(buffer_or_error.get());
+    } else {
+      llvm::errs() << "[unsafe-buffers] Error reading file: '"
+                   << buffer_or_error.getError().message() << "'\n";
+      return false;
+    }
+
+    path_to_source_root_.assign(path.begin(), path.end());
+    llvm::sys::path::remove_filename(path_to_source_root_);
+    if (!path_to_source_root_.empty() && path_to_source_root_.back() != '/') {
+      path_to_source_root_.append(1, '/');
+    }
+
+    llvm::StringRef string = buffer_->getBuffer();
+    while (!string.empty()) {
+      auto [line, remainder] = string.split('\n');
+      string = remainder;
+      auto [active, comment] = line.split('#');
+      active = active.trim();
+      if (active.empty()) {
+        continue;
+      }
+      char symbol = active[0u];
+      llvm::StringRef operand = active.substr(1u);
+      if (symbol == '.') {
+        // A "dot" line contains directives to enable.
+        if (operand.contains("buffers")) {
+          check_buffers = true;
+        }
+        if (operand.contains("libc")) {
+          check_libc_calls = true;
+        }
+        continue;
+      }
+      if (symbol == '$') {
+        // A "dollar" line contains path adjustment to find source root.
+        path_to_source_root_.append(operand.begin(), operand.end());
+        llvm::sys::path::remove_dots(path_to_source_root_, true);
+        path_to_source_root_.append(1, '/');
+        continue;
+      }
+      if (symbol == '@') {
+        // Reserved for future expansion, file inclusion.
+        continue;
+      }
+      if (symbol != '+' && symbol != '-') {
+        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, must "
+                     << "start with +/-: '" << line << "'\n";
+        return false;
+      }
+      llvm::StringRef prefix = operand.rtrim('/');
+      if (prefix.empty()) {
+        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, path "
+                     << "must immediately follow +/-: '" << line << "'\n";
+        return false;
+      }
+      auto [ignore, was_inserted] = prefix_map_.insert({prefix, symbol});
+      if (!was_inserted) {
+        llvm::errs() << "[unsafe-buffers] Duplicate entry in paths file "
+                        "for '"
+                     << line << "'\n";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Disposition ShouldCheck(llvm::StringRef cmp_filename) {
+    // Remove any leading ./ prefix.
+    while (cmp_filename.consume_front("./")) {
+      continue;
+    }
+
+    // Resolve the ../../ prefixes.
+    llvm::StringRef path_to_source_ref(path_to_source_root_.data(),
+                                       path_to_source_root_.size());
+    if (!cmp_filename.consume_front(path_to_source_ref)) {
+      llvm::errs() << "[unsafe-buffers] file '" << cmp_filename
+                   << "' testing against '" << path_to_source_ref << "'\n";
+      return kSkip;
+    }
+
+    // Find the longest prefix match.
+    while (!cmp_filename.empty()) {
+      auto it = prefix_map_.find(cmp_filename);
+      if (it != prefix_map_.end()) {
+        return it->second == '+' ? kCheck : kSkip;
+      }
+      cmp_filename = llvm::sys::path::parent_path(cmp_filename);
+    }
+
+    return kCheck;
+  }
+
   bool check_buffers = true;
   bool check_libc_calls = false;
+
+ private:
+  // `buffer` owns the memory for the strings in `prefix_map_`.
+  std::unique_ptr<llvm::MemoryBuffer> buffer_;
+  std::map<llvm::StringRef, char> prefix_map_;
+  llvm::SmallVector<char> path_to_source_root_;
 };
 
 class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
@@ -40,11 +180,11 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   UnsafeBuffersDiagnosticConsumer(clang::DiagnosticsEngine* engine,
                                   clang::DiagnosticConsumer* next,
                                   clang::CompilerInstance* instance,
-                                  CheckFilePrefixes check_file_prefixes)
+                                  UnsafeBuffersConfig config)
       : engine_(engine),
         next_(next),
         instance_(instance),
-        check_file_prefixes_(std::move(check_file_prefixes)),
+        unsafe_buffers_config_(std::move(config)),
         diag_note_link_(engine_->getCustomDiagID(
             clang::DiagnosticsEngine::Level::Note,
             "See //docs/unsafe_buffers.md for help.")) {}
@@ -126,16 +266,16 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
         diag_id == clang::diag::note_unsafe_buffer_printf_call;
 
     const bool ignore_diagnostic =
-        (is_buffers_diagnostic && !check_file_prefixes_.check_buffers) ||
-        (is_libc_diagnostic && !check_file_prefixes_.check_libc_calls);
+        (is_buffers_diagnostic && !unsafe_buffers_config_.check_buffers) ||
+        (is_libc_diagnostic && !unsafe_buffers_config_.check_libc_calls);
 
     if (ignore_diagnostic) {
       return;
     }
 
     const bool handle_diagnostic =
-        (is_buffers_diagnostic && check_file_prefixes_.check_buffers) ||
-        (is_libc_diagnostic && check_file_prefixes_.check_libc_calls);
+        (is_buffers_diagnostic && unsafe_buffers_config_.check_buffers) ||
+        (is_libc_diagnostic && unsafe_buffers_config_.check_libc_calls);
 
     if (!handle_diagnostic) {
       return PassthroughDiagnostic(level, diag);
@@ -240,7 +380,7 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     std::string filename = GetFilename(sm, loc, FilenameLocationType::kExactLoc,
                                        FilenamesFollowPresumed::kNo);
 
-    // Avoid searching `check_file_prefixes_` more than once for a file.
+    // Avoid searching `unsafe_buffers_config_` more than once for a file.
     auto cache_it = g_checked_files_cache.find(filename);
     if (cache_it != g_checked_files_cache.end()) {
       return cache_it->second;
@@ -259,31 +399,8 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       }
     }
 
-    // Remove any leading ./ prefix.
-    while (cmp_filename.consume_front("./")) {
-      continue;
-    }
-
-    // Resolve the ../../ prefixes.
-    llvm::StringRef path_to_source_root(
-        check_file_prefixes_.path_to_source_root_.data(),
-        check_file_prefixes_.path_to_source_root_.size());
-
-    if (!cmp_filename.consume_front(path_to_source_root)) {
-      llvm::errs() << "[unsafe-buffers] file '" << cmp_filename
-                   << "' testing against '" << path_to_source_root << "'\n";
-      return kSkip;
-    }
-
-    Disposition should_check = kCheck;
-    while (!cmp_filename.empty()) {
-      auto it = check_file_prefixes_.prefix_map.find(cmp_filename);
-      if (it != check_file_prefixes_.prefix_map.end()) {
-        should_check = it->second == '+' ? kCheck : kSkip;
-        break;
-      }
-      cmp_filename = llvm::sys::path::parent_path(cmp_filename);
-    }
+    // Check and cache results.
+    Disposition should_check = unsafe_buffers_config_.ShouldCheck(cmp_filename);
     g_checked_files_cache.insert({filename, should_check});
     return should_check;
   }
@@ -310,14 +427,14 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
   clang::DiagnosticsEngine* engine_;
   clang::DiagnosticConsumer* next_;
   clang::CompilerInstance* instance_;
-  CheckFilePrefixes check_file_prefixes_;
+  UnsafeBuffersConfig unsafe_buffers_config_;
   unsigned diag_note_link_;
 };
 
 class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
  public:
   UnsafeBuffersASTConsumer(clang::CompilerInstance* instance,
-                           CheckFilePrefixes check_file_prefixes)
+                           UnsafeBuffersConfig path_file_config)
       : instance_(instance) {
     // Replace the DiagnosticConsumer with our own that sniffs diagnostics and
     // can omit them.
@@ -326,7 +443,7 @@ class UnsafeBuffersASTConsumer : public clang::ASTConsumer {
     old_owned_client_ = engine.takeClient();
     engine.setClient(
         new UnsafeBuffersDiagnosticConsumer(&engine, old_client_, instance_,
-                                            std::move(check_file_prefixes)),
+                                            std::move(path_file_config)),
         /*owned=*/true);
 
     // Enable the -Wunsafe-buffer-usage warning as a remark. This prevents it
@@ -368,13 +485,13 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
   std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
       clang::CompilerInstance& instance,
       llvm::StringRef ref) override {
-    assert(!moved_prefixes_);  // This would mean we move the prefixes twice.
-    moved_prefixes_ = true;
+    assert(!moved_config_);  // This would mean we move the config twice.
+    moved_config_ = true;
 
     // The ASTConsumer can outlive `this`, so we can't give it references to
-    // members here and must move the `check_file_prefixes_` vector instead.
+    // members here and must move the `unsafe_buffers_config_` vector instead.
     return std::make_unique<UnsafeBuffersASTConsumer>(
-        &instance, std::move(check_file_prefixes_));
+        &instance, std::move(unsafe_buffers_config_));
   }
 
   bool ParseArgs(const clang::CompilerInstance& instance,
@@ -393,7 +510,7 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
 
       // Anything not recognized as a switch is the unsafe buffer paths file.
       found_file_arg = true;
-      if (!LoadCheckFilePrefixes(arg)) {
+      if (!unsafe_buffers_config_.LoadFromPath(arg)) {
         llvm::errs() << "[unsafe-buffers] Failed to load paths from file '"
                      << arg << "'\n";
         return false;
@@ -402,123 +519,9 @@ class UnsafeBuffersASTAction : public clang::PluginASTAction {
     return true;
   }
 
-  bool LoadCheckFilePrefixes(std::string_view path) {
-    if (auto buffer = llvm::MemoryBuffer::getFileAsStream(path)) {
-      check_file_prefixes_.buffer = std::move(buffer.get());
-    } else {
-      llvm::errs() << "[unsafe-buffers] Error reading file: '"
-                   << buffer.getError().message() << "'\n";
-      return false;
-    }
-
-    check_file_prefixes_.path_to_source_root_.assign(path.begin(), path.end());
-    llvm::sys::path::remove_filename(check_file_prefixes_.path_to_source_root_);
-    if (!check_file_prefixes_.path_to_source_root_.empty()) {
-      if (check_file_prefixes_.path_to_source_root_.back() != '/') {
-        check_file_prefixes_.path_to_source_root_.append(1, '/');
-      }
-    }
-
-    // Parse the contents of the path suppression file.
-    //
-    // The file format is as follows:
-    // * `#` introduces a comment until the end of the line.
-    // * Empty lines are ignored.
-    // * Active lines consist of a one-character command followed by data.
-    // * A line beginning with a `.` lists diagnostics to enable. These
-    //   are comma-separated and currently allow: `buffers`, `libc`.
-    // * A line beginning with a `$` gives the path from this file to
-    //   the source tree root. Path prefixes in this file are interpreted
-    //   relative to this value (default is that this file is in the root).
-    // * A line beginning with ''@' is silently ignored (reserved for
-    //   rolling in future features without breakage).
-    // * Every other line is a path prefix from the source tree root using
-    //   unix-style delimiters:
-    //   * Each line either removes a path from checks or adds a path to checks.
-    //   * If the line starts with `+` paths matching the line will be added.
-    //   * If the line starts with `-` paths matching the line will removed.
-    //   * Other starting characters are not allowed.
-    //   * Paths naming directories match the entire sub-directory. For instance
-    //     `+a/b/` will match the file at `//a/b/c.h` but will *not* match
-    //     `//other/a/b/c.h`.
-    //   * Paths naming files match the single file and look like `+a/b/c.h`.
-    //   * Trailing slashes for directories are recommended, but not enforced.
-    //   * The longest (most specific) match takes precedence.
-    //   * Files that do not match any of the prefixes file will be checked.
-    //   * Duplicate prefixes are not allowed and produce compilation errors.
-    //
-    // Example:
-    // ```
-    // # A file of path prefixes.
-    // # Matches anything under the directory //foo/bar, opting them into
-    // # checks.
-    // +foo/bar/
-    // # Avoids checks in the //my directory.
-    // -my/
-    // # Matches a specific file at //my/file.cc, overriding the `-my/` above
-    // # for this one file.
-    // +my/file.cc
-    // ```
-    //
-    llvm::StringRef string = check_file_prefixes_.buffer->getBuffer();
-    while (!string.empty()) {
-      auto [line, remainder] = string.split('\n');
-      string = remainder;
-      auto [active, comment] = line.split('#');
-      active = active.trim();
-      if (active.empty()) {
-        continue;
-      }
-      char symbol = active[0u];
-      llvm::StringRef operand = active.substr(1u);
-      if (symbol == '.') {
-        // A "dot" line contains directives to enable.
-        if (operand.contains("buffers")) {
-          check_file_prefixes_.check_buffers = true;
-        }
-        if (operand.contains("libc")) {
-          check_file_prefixes_.check_libc_calls = true;
-        }
-        continue;
-      }
-      if (symbol == '$') {
-        check_file_prefixes_.path_to_source_root_.append(operand.begin(),
-                                                         operand.end());
-        llvm::sys::path::remove_dots(check_file_prefixes_.path_to_source_root_,
-                                     true);
-        check_file_prefixes_.path_to_source_root_.append(1, '/');
-        continue;
-      }
-      if (symbol == '@') {
-        // Reserved for future expansion, file inclusion.
-        continue;
-      }
-      if (symbol != '+' && symbol != '-') {
-        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, must "
-                     << "start with +/-: '" << line << "'\n";
-        return false;
-      }
-      llvm::StringRef prefix = operand.rtrim('/');
-      if (prefix.empty()) {
-        llvm::errs() << "[unsafe-buffers] Invalid line in paths file, path "
-                     << "must immediately follow +/-: '" << line << "'\n";
-        return false;
-      }
-      auto [ignore, was_inserted] =
-          check_file_prefixes_.prefix_map.insert({prefix, symbol});
-      if (!was_inserted) {
-        llvm::errs() << "[unsafe-buffers] Duplicate entry in paths file "
-                        "for '"
-                     << line << "'\n";
-        return false;
-      }
-    }
-    return true;
-  }
-
  private:
-  CheckFilePrefixes check_file_prefixes_;
-  bool moved_prefixes_ = false;
+  UnsafeBuffersConfig unsafe_buffers_config_;
+  bool moved_config_ = false;
 };
 
 class AllowUnsafeBuffersPragmaHandler : public clang::PragmaHandler {
