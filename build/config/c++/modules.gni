@@ -36,7 +36,8 @@ if (is_chromeos) {
   module_platform = "${current_os}-x64"
 }
 
-if (clang_modules_platform_supported) {
+use_generated_modules_build_file = clang_modules_platform_supported && !is_ios
+if (use_generated_modules_build_file) {
   chrome_build_file_bug = "https://g-issues.chromium.org/issues/new?cc=chrome-build-team@google.com&component=1456832&type=BUG&priority=P2&severity=S2&template=1959503"
 
   assert(
