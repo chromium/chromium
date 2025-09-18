@@ -1454,8 +1454,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
   tab_data->show_icon = tab_renderer_data.show_icon;
 
+  // https://crbug.com/435697558: Use the max value of
+  // GetLastInteractionTimeTicks and GetLastActiveTimeTicks to account for
+  // interaction without across multiple windows without switching tabs.
   const base::TimeTicks last_active_time_ticks =
-      contents->GetLastActiveTimeTicks();
+      std::max(contents->GetLastInteractionTimeTicks(),
+               contents->GetLastActiveTimeTicks());
   tab_data->last_active_time_ticks = last_active_time_ticks;
 
   // last_active_time_for_testing can affect pixel tests depending on when the

@@ -405,6 +405,52 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   handler()->GetProfileData(std::move(callback3));
 }
 
+TEST_F(TabSearchPageHandlerTest, TabActivationChangedByInteraction) {
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  base::TimeTicks tab1_ticks;
+  base::TimeTicks tab2_ticks;
+
+  // Get initial last active time ticks.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_EQ(2u, window1->tabs.size());
+            // Tabs are in index order.
+            tab1_ticks = window1->tabs[0]->last_active_time_ticks;
+            tab2_ticks = window1->tabs[1]->last_active_time_ticks;
+          });
+  handler()->GetProfileData(std::move(callback1));
+
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  task_runner->FastForwardBy(base::Seconds(1));
+
+  // Simulate interaction with the first tab.
+  browser1()->tab_strip_model()->GetWebContentsAt(0)->Copy();
+
+  // Get last active time ticks again and verify.
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            ASSERT_EQ(2u, profile_tabs->windows.size());
+            auto* window1 = profile_tabs->windows[0].get();
+            ASSERT_EQ(2u, window1->tabs.size());
+            base::TimeTicks new_tab1_ticks =
+                window1->tabs[0]->last_active_time_ticks;
+            base::TimeTicks new_tab2_ticks =
+                window1->tabs[1]->last_active_time_ticks;
+            EXPECT_GT(new_tab1_ticks, tab1_ticks);
+            EXPECT_EQ(new_tab2_ticks, tab2_ticks);
+          });
+  handler()->GetProfileData(std::move(callback2));
+}
+
 TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
