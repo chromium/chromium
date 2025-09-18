@@ -192,6 +192,11 @@ bool IsArcVmDlcEnabled() {
       ash::switches::kEnableArcVmDlc);
 }
 
+bool IsArcVmDlcHardwareRequirementSatisfied() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcVmDlcHardwareRequirementSatisfied);
+}
+
 int GetArcAndroidSdkVersionAsInt() {
   const auto arc_version_str =
       chromeos::version_loader::GetArcAndroidSdkVersion();

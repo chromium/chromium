@@ -485,6 +485,11 @@ const char kEnableArcVm[] = "enable-arcvm";
 // Enables ARCVM DLC.
 const char kEnableArcVmDlc[] = "enable-arcvm-dlc";
 
+// This flag is set when the device's hardware meets the hardware requirements
+// for the ARCVM DLC.
+const char kArcVmDlcHardwareRequirementSatisfied[] =
+    "arcvm-dlc-hardware-satisfied";
+
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 

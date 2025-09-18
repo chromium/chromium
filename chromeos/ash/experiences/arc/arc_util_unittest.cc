@@ -222,6 +222,14 @@ TEST_F(ArcUtilTest, IsArcVmDlcEnabled) {
   EXPECT_TRUE(IsArcVmDlcEnabled());
 }
 
+TEST_F(ArcUtilTest, IsArcVmDlcHardwareRequirementSatisfied) {
+  EXPECT_FALSE(IsArcVmDlcHardwareRequirementSatisfied());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arcvm-dlc-hardware-satisfied"});
+  EXPECT_TRUE(IsArcVmDlcHardwareRequirementSatisfied());
+}
+
 TEST_F(ArcUtilTest, GetArcAndroidSdkVersionAsInt) {
   // Make sure that the function does not crash even when /etc/lsb-release is
   // not available (e.g. unit tests) or corrupted.

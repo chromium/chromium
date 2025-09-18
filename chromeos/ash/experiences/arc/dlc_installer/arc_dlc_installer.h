@@ -24,17 +24,12 @@ class TimeTicks;
 
 namespace arc {
 
-class ArcDlcInstallHardwareChecker;
-
 // The ArcDlcInstaller class manages the installation process for ARC DLC
-// (Android Runtime for Chrome). It handles hardware compatibility checks,
-// manages notifications related to the installation, and facilitates
-// enabling ARC on devices.
+// (Android Runtime for Chrome). It manages notifications related to the
+// installation, and facilitates enabling ARC on devices.
 class ArcDlcInstaller {
  public:
-  ArcDlcInstaller(
-      std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker,
-      ash::CrosSettings* cros_settings);
+  explicit ArcDlcInstaller(ash::CrosSettings* cros_settings);
 
   ArcDlcInstaller(const ArcDlcInstaller&) = delete;
   ArcDlcInstaller& operator=(const ArcDlcInstaller&) = delete;
@@ -42,9 +37,8 @@ class ArcDlcInstaller {
   ~ArcDlcInstaller();
 
   // Checks if ARC should be enabled on a device. If the device needs the
-  // DLC, it performs a hardware compatibility check.
+  // DLC.
   void PrepareArc(base::OnceCallback<void(bool)> callback);
-
 
   // Determines if the DLC installation is necessary based on
   // board, management, and feature flag conditions.
@@ -58,14 +52,6 @@ class ArcDlcInstaller {
   // configure the necessary Upstart jobs that bind mount the DLC image and set
   // up the ARC environment.
   void OnPrepareArcDlc(base::OnceCallback<void(bool)> callback, bool result);
-
-  // Handles the completion of the hardware compatibility check for ARC on
-  // devices. If compatible, logs the compatibility, displays a preload
-  // notification, and initiates the installation of the ARCVM DLC. If not
-  // compatible, logs the incompatibility and invokes the callback with a
-  // failure status.
-  void OnHardwareCheckComplete(base::OnceCallback<void(bool)> callback,
-                               bool is_compatible);
 
   // Called when the availability of the DLC service is determined. If
   // available, this function initiates the installation of the ARCVM DLC.
@@ -87,7 +73,6 @@ class ArcDlcInstaller {
   // determine whether the DLC image was installed.
   void OnDlcProgress(bool* installation_triggered, double progress);
 
-  std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker_;
   raw_ptr<ash::CrosSettings> cros_settings_;
   base::OnceCallback<void(bool)> prepare_arc_callback_;
   base::WeakPtrFactory<ArcDlcInstaller> weak_ptr_factory_{this};

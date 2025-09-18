@@ -85,7 +85,6 @@
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 #include "chromeos/ash/experiences/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
-#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/ime/arc_ime_service.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_icon_cache_delegate.h"
@@ -185,7 +184,6 @@ ArcServiceLauncher::ArcServiceLauncher(
                                   scheduler_configuration_manager)),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>(
-          std::make_unique<ArcDlcInstallHardwareChecker>(),
           ash::CrosSettings::Get())) {
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
@@ -451,7 +449,6 @@ void ArcServiceLauncher::ResetForTesting() {
   // Recreate arc_dlc_installer_ after shutdown because browser_test will run
   // ResetForTesting and then do the OnPrimaryUserProfilePrepared.
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
-      std::make_unique<ArcDlcInstallHardwareChecker>(),
       ash::CrosSettings::Get());
 }
 

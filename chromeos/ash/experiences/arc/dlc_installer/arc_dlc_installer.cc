@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
-#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
 
 namespace arc {
@@ -29,11 +28,8 @@ constexpr const char kArcvmBindMountDlcPath[] =
 
 }  // namespace
 
-ArcDlcInstaller::ArcDlcInstaller(
-    std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker,
-    ash::CrosSettings* cros_settings)
-    : hardware_checker_(std::move(hardware_checker)),
-      cros_settings_(std::move(cros_settings)) {}
+ArcDlcInstaller::ArcDlcInstaller(ash::CrosSettings* cros_settings)
+    : cros_settings_(std::move(cros_settings)) {}
 
 ArcDlcInstaller::~ArcDlcInstaller() = default;
 
@@ -43,21 +39,15 @@ void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
     return;
   }
 
-  hardware_checker_->IsCompatible(
-      base::BindOnce(&ArcDlcInstaller::OnHardwareCheckComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ArcDlcInstaller::OnHardwareCheckComplete(
-    base::OnceCallback<void(bool)> callback,
-    bool is_compatible) {
-  if (!is_compatible) {
-    VLOG(1) << "Device is not compatible for ARC.";
+  if (!IsArcVmDlcHardwareRequirementSatisfied()) {
+    VLOG(1) << "The device does not meet the minimum hardware requirements to "
+               "install the ARCVM image from a DLC.";
     std::move(callback).Run(false);
     return;
   }
 
-  VLOG(1) << "Device is compatible for ARC. Checking DLC service.";
+  VLOG(1) << "Device is allowed to install ARCVM image from DLC. Checking DLC"
+             "service.";
   prepare_arc_callback_ = std::move(callback);
   ash::DlcserviceClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &ArcDlcInstaller::OnDlcServiceAvailable, weak_ptr_factory_.GetWeakPtr()));
