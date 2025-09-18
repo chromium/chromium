@@ -82,7 +82,7 @@ namespace {
 
 String SerializeGetUserMediaMediaConstraints(
     const MediaConstraints& constraints) {
-  return String(constraints.ToString());
+  return constraints.ToString();
 }
 
 String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
@@ -1027,19 +1027,30 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
     const MediaStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // Serialize audio and video track information (id and label) or an
-  // empty string when there is no such track.
-  String audio_track_info =
-      stream->getAudioTracks().empty()
-          ? g_empty_string
-          : StrCat({"id:", stream->getAudioTracks()[0]->id(),
-                    " label:", stream->getAudioTracks()[0]->label()});
-  String video_track_info =
-      stream->getVideoTracks().empty()
-          ? g_empty_string
-          : StrCat({"id:", stream->getVideoTracks()[0]->id(),
-                    " label:", stream->getVideoTracks()[0]->label()});
-
+  // Serialize audio and video track information (id and label) or "null"
+  // when there is no such track.
+  String audio_track_info;
+  if (!stream->getAudioTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getAudioTracks()[0]->id());
+    json->SetString("label", stream->getAudioTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    audio_track_info = value.ToString();
+  } else {
+    audio_track_info = "null";
+  }
+  String video_track_info;
+  if (!stream->getVideoTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getVideoTracks()[0]->id());
+    json->SetString("label", stream->getVideoTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    video_track_info = value.ToString();
+  } else {
+    video_track_info = "null";
+  }
   peer_connection_tracker_host_->GetUserMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,
       video_track_info);
@@ -1073,19 +1084,30 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
     MediaStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // Serialize audio and video track information (id and label) or an
-  // empty string when there is no such track.
-  String audio_track_info =
-      stream->getAudioTracks().empty()
-          ? g_empty_string
-          : StrCat({"id:", stream->getAudioTracks()[0]->id(),
-                    " label:", stream->getAudioTracks()[0]->label()});
-  String video_track_info =
-      stream->getVideoTracks().empty()
-          ? g_empty_string
-          : StrCat({"id:", stream->getVideoTracks()[0]->id(),
-                    " label:", stream->getVideoTracks()[0]->label()});
-
+  // Serialize audio and video track information (id and label) or "null"
+  // when there is no such track.
+  String audio_track_info;
+  if (!stream->getAudioTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getAudioTracks()[0]->id());
+    json->SetString("label", stream->getAudioTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    audio_track_info = value.ToString();
+  } else {
+    audio_track_info = "null";
+  }
+  String video_track_info;
+  if (!stream->getVideoTracks().empty()) {
+    auto json = std::make_unique<JSONObject>();
+    json->SetString("id", stream->getVideoTracks()[0]->id());
+    json->SetString("label", stream->getVideoTracks()[0]->label());
+    StringBuilder value;
+    json->WriteJSON(&value);
+    video_track_info = value.ToString();
+  } else {
+    video_track_info = "null";
+  }
   peer_connection_tracker_host_->GetDisplayMediaSuccess(
       user_media_request->request_id(), stream->id(), audio_track_info,
       video_track_info);
