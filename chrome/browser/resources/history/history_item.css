@@ -110,6 +110,7 @@
 
 #actor-icon {
   --cr-icon-size: 20px;
+  --paper-tooltip-min-width: 0;
   padding-inline-start: 12px;
 }
 
