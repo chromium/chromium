@@ -305,20 +305,20 @@
         Change protections
       </message>
       <!-- Mode B Rollback -->
-      <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_MODE_B_ROLLBACK_GOT_IT" desc="Label for a button on the 3PCD rollback notice that acknowledges and closes the notice." formatter_data="android_java">
         Got it
       </message>
-      <message name="IDS_MODE_B_ROLLBACK_SETTINGS" desc="" translateable="false">
+      <message name="IDS_MODE_B_ROLLBACK_SETTINGS" desc="Label for a button on the 3PCD rollback notice that opens the third-party cookie settings page.">
         Settings
       </message>
       <if expr="_google_chrome">
         <then>
-          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
             Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
           </message>
         </then>
         <else>
-          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+          <message name="IDS_MODE_B_ROLLBACK_DESCRIPTION" desc="Description text on the 3PCD rollback notice. Explains to the user that their settings state has been updated to allow third-party cookies and that this can be changed in settings." formatter_data="android_java">
             Your current Chromium settings have been updated to allow websites to access third-party cookies. You can change this setting any time.
           </message>
         </else>
