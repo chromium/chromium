@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IPC_NATIVE_HANDLE_TYPE_CONVERTERS_H_
-#define IPC_NATIVE_HANDLE_TYPE_CONVERTERS_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_NATIVE_HANDLE_TYPE_CONVERTERS_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_LIB_NATIVE_HANDLE_TYPE_CONVERTERS_H_
 
 #include "ipc/ipc_message_attachment.h"
-#include "mojo/public/cpp/bindings/type_converter.h"  // nogncheck
+#include "mojo/public/cpp/bindings/type_converter.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom-shared.h"
 
 namespace mojo {
@@ -27,4 +27,4 @@ struct TypeConverter<native::SerializedHandleType,
 
 }  // namespace mojo
 
-#endif  // IPC_NATIVE_HANDLE_TYPE_CONVERTERS_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_NATIVE_HANDLE_TYPE_CONVERTERS_H_

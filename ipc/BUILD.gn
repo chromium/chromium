@@ -62,7 +62,6 @@ component("ipc") {
     ":message_support",
     ":mojom",
     ":mojom_constants",
-    ":native_handle_type_converters",
     ":param_traits",
     "//base",
     "//mojo/public/cpp/base",
@@ -142,17 +141,6 @@ component("message_support") {
     # On Mac MachPortAttachmentMac needs to generate random IDs.
     deps = [ "//crypto" ]
   }
-}
-
-source_set("native_handle_type_converters") {
-  sources = [
-    "native_handle_type_converters.cc",
-    "native_handle_type_converters.h",
-  ]
-  public_deps = [
-    ":message_support",
-    "//mojo/public/interfaces/bindings:bindings_headers",
-  ]
 }
 
 mojom_component("mojom") {
