@@ -30,7 +30,10 @@
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -194,10 +197,11 @@
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   SigninContextStyle style = SigninContextStyle::kDefault;
+  Browser* regularBrowser = signin::GetRegularBrowser(self.browser);
   _signinCoordinator = [SigninCoordinator
       primaryAccountReauthCoordinatorWithBaseViewController:
           self.recentTabsTableViewController
-                                                    browser:self.browser
+                                                    browser:regularBrowser
                                                contextStyle:style
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction

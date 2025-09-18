@@ -108,6 +108,7 @@ source_set("ui") {
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:session_util",
     "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",

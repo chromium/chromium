@@ -146,6 +146,10 @@ void maybeShowSettingsIPH(Browser* browser) {
                                        URL:(const GURL&)url {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    // All authentication related work must be done in the regular profile, even
+    // if started from incognito browser.
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _accessPoint = accessPoint;
     _anchorView = anchorView;
     _accessPoint = accessPoint;

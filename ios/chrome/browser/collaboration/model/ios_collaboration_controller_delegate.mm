@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -41,6 +42,8 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -267,6 +270,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
   const FlowConfig flow_config = GetFlowConfig(flow_type);
 
   ServiceStatus service_status = collaboration_service_->GetServiceStatus();
+  Browser* regular_browser = signin::GetRegularBrowser(browser_);
   switch (service_status.signin_status) {
     case SigninStatus::kNotSignedIn:  // Fallthrough
     case SigninStatus::kSignedIn: {
@@ -292,7 +296,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       [signin_coordinator_ stop];
       signin_coordinator_ = [SigninCoordinator
           signinCoordinatorWithCommand:command
-                               browser:browser_
+                               browser:regular_browser
                     baseViewController:base_view_controller_];
       [signin_coordinator_ start];
       return;
@@ -312,7 +316,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       signin_coordinator_ = [SigninCoordinator
           primaryAccountReauthCoordinatorWithBaseViewController:
               base_view_controller_
-                                                        browser:browser_
+                                                        browser:regular_browser
                                                    contextStyle:
                                                        flow_config.context_style
                                                     accessPoint:

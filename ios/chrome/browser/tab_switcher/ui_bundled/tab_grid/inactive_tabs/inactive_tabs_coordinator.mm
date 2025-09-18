@@ -683,7 +683,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // controller.
 - (void)presentSettings {
   _settingsController = [SettingsNavigationController
-      inactiveTabsControllerForBrowser:self.browser
+      inactiveTabsControllerForBrowser:self.browser->GetActiveBrowser()
                               delegate:self];
   [self.viewController presentViewController:_settingsController
                                     animated:YES

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -61,6 +62,8 @@ constexpr CGFloat kLogoSize = 22;
   if (self) {
     CHECK(viewController, base::NotFatalUntil::M145);
     CHECK(browser, base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     self.shouldUseDefaultDismissal = NO;
     _promoType = promoType;
     _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);

@@ -641,7 +641,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       (id<SettingsNavigationControllerDelegate>)
                                           delegate {
   CHECK(browser);
-  CHECK(!browser->GetProfile()->IsOffTheRecord());
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M146);
   self = [super initWithRootViewController:rootViewController];
   if (self) {
     _browser = browser;

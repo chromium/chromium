@@ -89,6 +89,8 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     CHECK(changeProfileContinuationProvider);
     _baseNavigationController = navigationController;
     _delegate = delegate;

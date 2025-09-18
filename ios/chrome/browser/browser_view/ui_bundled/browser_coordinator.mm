@@ -2600,7 +2600,8 @@ enum class ToolbarKind {
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
-                                          browser:self.browser
+                                          browser:signin::GetRegularBrowser(
+                                                      self.browser)
                                      contextStyle:contextStyle
                                       accessPoint:accessPoint
                                    prefilledEmail:email
@@ -3983,9 +3984,10 @@ enum class ToolbarKind {
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kReauthInfoBar;
   SigninContextStyle style = SigninContextStyle::kDefault;
+  Browser* regularBrowser = signin::GetRegularBrowser(self.browser);
   _signinCoordinator = [SigninCoordinator
       primaryAccountReauthCoordinatorWithBaseViewController:self.viewController
-                                                    browser:self.browser
+                                                    browser:regularBrowser
                                                contextStyle:style
                                                 accessPoint:accessPoint
                                                 promoAction:promoAction
@@ -4065,9 +4067,10 @@ enum class ToolbarKind {
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
 
+  Browser* regularBrowser = signin::GetRegularBrowser(self.browser);
   _signinCoordinator = [SigninCoordinator
       signinAndSyncReauthCoordinatorWithBaseViewController:self.viewController
-                                                   browser:self.browser
+                                                   browser:regularBrowser
                                               contextStyle:contextStyle
                                                accessPoint:accessPoint
                                                promoAction:promoAction
@@ -4088,10 +4091,10 @@ enum class ToolbarKind {
     return;
   }
   [_signinCoordinator stop];
-  _signinCoordinator =
-      [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:self.browser
-                                   baseViewController:self.viewController];
+  _signinCoordinator = [SigninCoordinator
+      signinCoordinatorWithCommand:command
+                           browser:signin::GetRegularBrowser(self.browser)
+                baseViewController:self.viewController];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
@@ -4832,7 +4835,7 @@ enum class ToolbarKind {
     self.nonModalSignInPromoCoordinator =
         [[NonModalSignInPromoCoordinator alloc]
             initWithBaseViewController:self.viewController
-                               browser:self.browser
+                               browser:signin::GetRegularBrowser(self.browser)
                              promoType:promoType];
     [self.nonModalSignInPromoCoordinator start];
     self.nonModalSignInPromoCoordinator.delegate = self;

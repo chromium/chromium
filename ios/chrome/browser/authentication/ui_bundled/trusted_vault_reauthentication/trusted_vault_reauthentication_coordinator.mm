@@ -51,7 +51,7 @@ using l10n_util::GetNSStringF;
               securityDomainID:(trusted_vault::SecurityDomainId)securityDomainID
                        trigger:(syncer::TrustedVaultUserActionTriggerForUMA)
                                    trigger {
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
+  DCHECK_EQ(browser->type(), Browser::Type::kRegular);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _intent = intent;

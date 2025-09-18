@@ -583,4 +583,14 @@ bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state) {
   return false;
 }
 
+Browser* GetRegularBrowser(Browser* browser) {
+  if (browser->type() == Browser::Type::kRegular) {
+    // Returning the browser directly ensure that this work in test without
+    // scene state.
+    return browser;
+  }
+  return browser->GetSceneState()
+      .browserProviderInterface.mainBrowserProvider.browser;
+}
+
 }  // namespace signin

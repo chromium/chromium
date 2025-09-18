@@ -53,7 +53,10 @@
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -1568,9 +1571,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
   }
   [_signinCoordinator stop];
-  _signinCoordinator = [SigninCoordinator signinCoordinatorWithCommand:command
-                                                               browser:_browser
-                                                    baseViewController:self];
+  _signinCoordinator = [SigninCoordinator
+      signinCoordinatorWithCommand:command
+                           browser:signin::GetRegularBrowser(_browser)
+                baseViewController:self];
   [_signinCoordinator start];
 }
 

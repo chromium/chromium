@@ -170,6 +170,9 @@ void SwitchToPersonalProfile(SceneState* scene_state,
 // scene where the user is signed-in.
 bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state);
 
+// Returns the regular browser.
+Browser* GetRegularBrowser(Browser* browser);
+
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_UTILS_H_

@@ -70,7 +70,6 @@
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
-    CHECK(browser, base::NotFatalUntil::M142);
     CHECK(viewController, base::NotFatalUntil::M142);
     CHECK(continuationProvider);
     _identity = identity;

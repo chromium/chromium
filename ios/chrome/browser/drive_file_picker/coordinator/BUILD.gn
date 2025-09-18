@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/drive_file_picker/ui:constants",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",

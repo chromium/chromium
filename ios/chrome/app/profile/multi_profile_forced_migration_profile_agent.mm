@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -95,8 +96,11 @@
   id<BrowserProvider> presentingInterface =
       self.profileState.foregroundActiveScene.browserProviderInterface
           .currentBrowserProvider;
+  Browser* browser = presentingInterface.browser;
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
 
-  ProfileIOS* profile = presentingInterface.browser->GetProfile();
+  ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
 
@@ -121,7 +125,7 @@
                                    systemIdentityManager
                                        ->GetCachedHostedDomainForIdentity(
                                            systemIdentity)
-                                    browser:presentingInterface.browser
+                                    browser:browser
                   skipBrowsingDataMigration:YES
                  mergeBrowsingDataByDefault:NO
       browsingDataMigrationDisabledByPolicy:NO

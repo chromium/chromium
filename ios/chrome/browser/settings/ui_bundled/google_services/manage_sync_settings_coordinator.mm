@@ -135,6 +135,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   if ((self = [super initWithBaseViewController:navigationController
                                         browser:browser])) {
     CHECK(navigationController, base::NotFatalUntil::M142);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _baseNavigationController = navigationController;
   }
   return self;

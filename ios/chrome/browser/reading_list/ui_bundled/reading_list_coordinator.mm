@@ -51,7 +51,10 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_menu_provider.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_controller.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -603,7 +606,7 @@
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
-                           browser:self.browser
+                           browser:signin::GetRegularBrowser(self.browser)
                 baseViewController:self.navigationController];
   [_signinCoordinator start];
 }

@@ -66,7 +66,7 @@ using base::UserMetricsAction;
                    promoAction:(signin_metrics::PromoAction)promoAction
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider {
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
+  DCHECK_EQ(browser->type(), Browser::Type::kRegular);
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle

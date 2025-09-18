@@ -349,7 +349,7 @@ struct EnhancedSafeBrowsingActivePromoData
 - (instancetype)initWithBrowser:(Browser*)browser
        hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
   DCHECK(browser);
-  DCHECK(!browser->GetProfile()->IsOffTheRecord());
+  DCHECK_EQ(browser->type(), Browser::Type::kRegular);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {

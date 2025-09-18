@@ -1205,9 +1205,12 @@
                                            continuationProvider:
                                                DoNothingContinuationProvider()];
   } else {
+    Browser* browser = self.browser;
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _signinCoordinator = [SigninCoordinator
         instantSigninCoordinatorWithBaseViewController:self.NTPViewController
-                                               browser:self.browser
+                                               browser:browser
                                               identity:nil
                                           contextStyle:SigninContextStyle::
                                                            kDefault

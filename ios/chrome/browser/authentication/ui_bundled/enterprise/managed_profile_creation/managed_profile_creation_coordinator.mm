@@ -59,6 +59,9 @@
   DCHECK(viewController);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    // Sign-in related work should be done on regular browser.
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _identity = identity;
     _hostedDomain = hostedDomain;
     _skipBrowsingDataMigration = skipBrowsingDataMigration;

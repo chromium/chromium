@@ -81,8 +81,9 @@ void AuthenticationFlowContinuationImpl(
     base::OnceClosure closure) {
   CHECK(delegate);
   [delegate
-      didSwitchToProfileWithNewProfileBrowser:
-          scene_state.browserProviderInterface.currentBrowserProvider.browser
+      didSwitchToProfileWithNewProfileBrowser:scene_state
+                                                  .browserProviderInterface
+                                                  .mainBrowserProvider.browser
                                    completion:std::move(closure)];
 }
 
@@ -95,6 +96,8 @@ void HandleSignoutForSnackbar(
   if (!browser) {
     return;
   }
+  // The regular browser should be used to execute the signout.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
 
   base::RecordAction(
       base::UserMetricsAction("Mobile.Signin.SnackbarUndoTapped"));
@@ -169,7 +172,7 @@ void CompletePostSignInActionsContinuationImpl(
     SceneState* scene_state,
     base::OnceClosure closure) {
   Browser* browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
+      scene_state.browserProviderInterface.mainBrowserProvider.browser;
   CompletePostSignInActions(post_signin_actions, identity, browser,
                             access_point);
   std::move(closure).Run();
@@ -189,7 +192,9 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                                id<SystemIdentity> identity,
                                Browser* browser,
                                signin_metrics::AccessPoint access_point) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M145);
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
@@ -298,6 +303,9 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                  withCompletion:(ProceduralBlock)callback
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser {
+  CHECK(browser, base::NotFatalUntil::M145);
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   [self checkNoDialog];
 
   base::RecordAction(base::UserMetricsAction(

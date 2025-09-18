@@ -219,8 +219,6 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   // UI.
   DCHECK(_presentingSceneState);
 
-  id<BrowserProvider> presentingInterface =
-      _presentingSceneState.browserProviderInterface.currentBrowserProvider;
   ProfileIOS* profile = [self originalProfile];
 
   DCHECK(!_firstRunUIBlocker);
@@ -232,11 +230,15 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   FirstRunScreenProvider* provider =
       [[FirstRunScreenProvider alloc] initForProfile:profile];
-
-  _firstRunCoordinator = [[FirstRunCoordinator alloc]
-      initWithBaseViewController:presentingInterface.viewController
-                         browser:presentingInterface.browser
-                  screenProvider:provider];
+  UIViewController* baseViewController =
+      _presentingSceneState.browserProviderInterface.currentBrowserProvider
+          .viewController;
+  Browser* mainBrowser = _presentingSceneState.browserProviderInterface
+                             .mainBrowserProvider.browser;
+  _firstRunCoordinator =
+      [[FirstRunCoordinator alloc] initWithBaseViewController:baseViewController
+                                                      browser:mainBrowser
+                                               screenProvider:provider];
   _firstRunCoordinator.delegate = self;
   [_firstRunCoordinator start];
 }

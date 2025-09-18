@@ -65,7 +65,10 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -707,7 +710,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   }];
   _signinCoordinator = [SigninCoordinator
       signinCoordinatorWithCommand:command
-                           browser:_browser.get()
+                           browser:signin::GetRegularBrowser(_browser.get())
                 baseViewController:self.navigationController];
   [_signinCoordinator start];
 }

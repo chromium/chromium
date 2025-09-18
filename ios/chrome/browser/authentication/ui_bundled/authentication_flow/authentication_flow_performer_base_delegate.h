@@ -15,7 +15,8 @@ class Browser;
 @protocol AuthenticationFlowPerformerBaseDelegate <NSObject>
 
 // Indicates that switching to a different profile was completed.
-// The continuation must be executed with `completion`.
+// `newProfileBrowser` must be regular. The continuation must be executed with
+// `completion`.
 - (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
                                      completion:(base::OnceClosure)completion;
 

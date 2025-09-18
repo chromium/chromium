@@ -82,6 +82,8 @@ class FirstRunCoordinatorMetricsHelper final {
                             screenProvider:(ScreenProvider*)screenProvider {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _screenProvider = screenProvider;
     _navigationController =
         [[UINavigationController alloc] initWithNavigationBarClass:nil

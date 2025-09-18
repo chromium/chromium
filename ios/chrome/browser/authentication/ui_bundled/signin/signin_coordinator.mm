@@ -47,6 +47,9 @@ using signin_metrics::PromoAction;
                                    (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK(browser);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();

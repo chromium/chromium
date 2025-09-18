@@ -68,6 +68,7 @@ enum class AuthenticationFlowInProfileState {
   // `YES` if `_identityToSignIn` is a managed identity.
   BOOL _isManagedIdentity;
   AuthenticationFlowInProfilePerformer* _performer;
+  // The regular browser used at the end of the authentication flow.
   raw_ptr<Browser> _browser;
   std::unique_ptr<BrowserObserverBridge> _browserObserver;
   signin_metrics::AccessPoint _accessPoint;

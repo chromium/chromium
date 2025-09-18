@@ -170,6 +170,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                                                          (UIView*)anchorView
                                                      anchorRect:
                                                          (CGRect)anchorRect {
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   __weak __typeof(self) weakSelf = self;
   _leavingPrimaryAccountConfirmationDialogCoordinator =
       GetLeavingPrimaryAccountConfirmationDialog(
@@ -290,6 +292,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                     mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
          browsingDataMigrationDisabledByPolicy:
              (BOOL)browsingDataMigrationDisabledByPolicy {
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   [self checkNoDialog];
 
   base::RecordAction(
