@@ -265,6 +265,30 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Notifications"/>
 </enum>
 
+<!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
+
+<enum name="IndexedDbSqliteSpecificEvent">
+  <int value="0" label="Database opened"/>
+  <int value="1"
+      label="Database had at least one SQLite error in connection lifetime"/>
+  <int value="2"
+      label="Error when updating active blob bookkeeping after txn rollback"/>
+  <int value="3" label="Failed to retrieve streaming handle to blob in DB"/>
+  <int value="4" label="Failed to increment refcount to a streaming blob"/>
+  <int value="5" label="Failed to decrement refcount for a streaming blob"/>
+  <int value="6" label="pragma to get page count failed"/>
+  <int value="7" label="pragma to get page size failed"/>
+  <int value="8" label="Metadata table was missing"/>
+  <int value="9" label="Database compatible version indicated DB too new"/>
+  <int value="10" label="Database version indicated DB too new"/>
+  <int value="11" label="Database stored name didn't match hash"/>
+  <int value="12" label="A requested blob overflow chunk was missing"/>
+  <int value="13" label="Object store unexpectedly not found in DB"/>
+  <int value="14" label="Invalid type found for blob"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->
+
 <!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
 
 <enum name="InterestGroupStorageInitializationResult">

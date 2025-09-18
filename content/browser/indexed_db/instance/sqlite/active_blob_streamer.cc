@@ -198,10 +198,7 @@ void ActiveBlobStreamer::ReadRange(
        base::BindRepeating(
            [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
               base::span<uint8_t> into) -> bool {
-             if (!streamer) {
-               return false;
-             }
-             return streamer->ReadBlobBytes(offset, into);
+             return streamer && streamer->ReadBlobBytes(offset, into);
            },
            weak_factory_.GetWeakPtr()),
        blob_length_, offset, ClampReadLength(offset, length), std::move(handle),
@@ -268,10 +265,7 @@ void ActiveBlobStreamer::Read(
        base::BindRepeating(
            [](base::WeakPtr<ActiveBlobStreamer> streamer, uint64_t offset,
               base::span<uint8_t> into) -> bool {
-             if (!streamer) {
-               return false;
-             }
-             return streamer->ReadBlobBytes(offset, into);
+             return streamer && streamer->ReadBlobBytes(offset, into);
            },
            weak_factory_.GetWeakPtr()),
        offset, ClampReadLength(offset, length), std::move(pipe),

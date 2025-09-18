@@ -13,6 +13,7 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -42,9 +43,6 @@
 // backend-agnostic utils to encode/decode IDB types, and potentially move the
 // (Encode/Decode)KeyPath methods below to this file.
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-
-// TODO(crbug.com/40253999): Remove after handling all error cases.
-#define TRANSIENT_CHECK(condition) CHECK(condition)
 
 // Returns an error if the given SQL statement has not succeeded/is no longer
 // valid (`Succeeded()` returns false; `db_` has an error).
@@ -112,7 +110,7 @@ blink::IndexedDBKeyPath ColumnKeyPath(sql::Statement& statement,
     return blink::IndexedDBKeyPath();
   }
   std::u16string encoded;
-  TRANSIENT_CHECK(statement.ColumnBlobAsString16(column_index, &encoded));
+  statement.ColumnBlobAsString16(column_index, &encoded);
   std::vector<std::u16string> parts = base::SplitString(
       encoded, kKeyPathSeparator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.empty()) {
@@ -774,6 +772,8 @@ DatabaseConnection::~DatabaseConnection() {
     sql::Database::Delete(path_);
   } else if (!sql::IsSqliteSuccessCode(
                  sql::ToSqliteResultCode(db_->GetErrorCode()))) {
+    LogEvent(SpecificEvent::kDatabaseHadSqlError);
+
     // Note that `DatabaseConnection` does not set an error callback on
     // sql::Database. Instead, errors are returned for individual operations,
     // which will trickle up through backing store agnostic code and close all
@@ -797,6 +797,8 @@ DatabaseConnection::~DatabaseConnection() {
 }
 
 Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
+  LogEvent(SpecificEvent::kDatabaseOpenAttempt);
+
   constexpr sql::Database::Tag kSqlTag = "IndexedDB";
   constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
   db_ = std::make_unique<sql::Database>(
@@ -828,9 +830,8 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
                                            kCompatibleSchemaVersion));
 
   if (meta_table_->GetCompatibleVersionNumber() > kCurrentSchemaVersion) {
-    // TODO(crbug.com/419272070): handle this and other cases where the DB needs
-    // to be deleted even though there is no SQL error.
-    return Fatal(Status::NotFound("Database too new"));
+    return Fatal(Status::NotFound("Database too new"),
+                 SpecificEvent::kDatabaseTooNew);
   }
 
   switch (meta_table_->GetVersionNumber()) {
@@ -842,7 +843,8 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
       break;
     default:
       return Fatal(Status::NotFound(
-          "Unknown database schema version (database too new?)"));
+                       "Unknown database schema version (database too new?)"),
+                   SpecificEvent::kDatabaseSchemaUnknown);
   }
 
   StatusOr<blink::IndexedDBDatabaseMetadata> metadata =
@@ -854,7 +856,8 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   metadata_ = *std::move(metadata);
   // Database corruption can cause a mismatch.
   if (name && (metadata_.name != *name)) {
-    return Fatal(Status::Corruption("Database name mismatch"));
+    return Fatal(Status::Corruption("Database name mismatch"),
+                 SpecificEvent::kDatabaseNameMismatch);
   }
 
   // There should be no active blobs in this database at this point, so we can
@@ -889,12 +892,18 @@ uint64_t DatabaseConnection::GetInMemorySize() const {
   uint16_t page_size = 0;
   {
     sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_count"));
-    TRANSIENT_CHECK(statement.Step());
+    if (!statement.Step()) {
+      LogEvent(SpecificEvent::kPragmaPageCountFailed);
+      return 0;
+    }
     page_count = static_cast<uint32_t>(statement.ColumnInt(0));
   }
   {
     sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_size"));
-    TRANSIENT_CHECK(statement.Step());
+    if (!statement.Step()) {
+      LogEvent(SpecificEvent::kPragmaPageSizeFailed);
+      return 0;
+    }
     page_size = static_cast<uint16_t>(statement.ColumnInt(0));
   }
   return static_cast<uint64_t>(page_count) * page_size;
@@ -1007,7 +1016,10 @@ DatabaseConnection::OpenBlobChunkForStreaming(int64_t blob_row_id,
     // If the statement succeeded (no SQLite error), there's a programming
     // error.
     if (statement.Succeeded()) {
-      Fatal(Status::NotFound("Blob chunk missing"));
+      Fatal(Status::NotFound("Blob chunk missing"),
+            SpecificEvent::kBlobChunkMissing);
+    } else {
+      LogEvent(SpecificEvent::kOpenBlobForStreamingFailed);
     }
     return std::nullopt;
   }
@@ -1035,6 +1047,7 @@ void DatabaseConnection::OnBlobWriteComplete(int64_t blob_row_id,
 void DatabaseConnection::OnFsaHandleSerialized(
     int64_t blob_row_id,
     const std::vector<uint8_t>& data) {
+  bool success = false;
   if (!data.empty()) {
     sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE,
                                                      "UPDATE blobs "
@@ -1042,10 +1055,10 @@ void DatabaseConnection::OnFsaHandleSerialized(
                                                      "WHERE row_id = ?"));
     statement.BindBlob(0, data);
     statement.BindInt64(1, blob_row_id);
-    TRANSIENT_CHECK(statement.Run());
+    success = statement.Run();
   }
 
-  OnBlobWriteComplete(blob_row_id, /*success=*/!data.empty());
+  OnBlobWriteComplete(blob_row_id, success);
 }
 
 void DatabaseConnection::CancelBlobWriting() {
@@ -1115,7 +1128,10 @@ void DatabaseConnection::EndTransaction(
   // table may be lost. Make sure that table is up to date with memory state.
   if (sync_active_blobs_after_transaction_) {
     sql::Transaction sql_transaction(db_.get());
-    TRANSIENT_CHECK(sql_transaction.Begin());
+    if (!sql_transaction.Begin()) {
+      LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
+      return;
+    }
 
     // Step 1, mark existing active references with an invalid (but not null)
     // row id. This can't immediately remove them as that could trigger cleanup
@@ -1125,21 +1141,35 @@ void DatabaseConnection::EndTransaction(
           db_->GetCachedStatement(SQL_FROM_HERE,
                                   "UPDATE blob_references SET record_row_id = 0"
                                   "   WHERE record_row_id IS NULL"));
-      TRANSIENT_CHECK(statement.Run());
+      if (!statement.Run()) {
+        LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
+        // `sql_transaction` will attempt rollback.
+        return;
+      }
     }
-    // Step 2, make add all the active references.
+    // Step 2, add all the active references.
     for (auto& [blob_number, _] : active_blobs_) {
-      AddActiveBlobReference(blob_number);
+      if (!AddActiveBlobReference(blob_number)) {
+        LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
+        // `sql_transaction` will attempt rollback.
+        return;
+      }
     }
     // Step 3, remove the old references.
     {
       sql::Statement statement(db_->GetCachedStatement(
           SQL_FROM_HERE,
           "DELETE FROM blob_references WHERE record_row_id = 0"));
-      TRANSIENT_CHECK(statement.Run());
+      if (!statement.Run()) {
+        LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
+        // `sql_transaction` will attempt rollback.
+        return;
+      }
     }
 
-    TRANSIENT_CHECK(sql_transaction.Commit());
+    if (!sql_transaction.Commit()) {
+      LogEvent(SpecificEvent::kSyncActiveBlobsFailed);
+    }
     sync_active_blobs_after_transaction_ = false;
   }
 }
@@ -1350,7 +1380,8 @@ StatusOr<int64_t> DatabaseConnection::GetKeyGeneratorCurrentNumber(
   if (!statement.Step()) {
     RETURN_IF_STATEMENT_ERRORED(statement);
     return base::unexpected(
-        Fatal(Status::NotFound("Object store not found in database")));
+        Fatal(Status::NotFound("Object store not found in database"),
+              SpecificEvent::kObjectStoreNotFound));
   }
   return statement.ColumnInt64(0);
 }
@@ -1460,7 +1491,8 @@ StatusOr<IndexedDBValue> DatabaseConnection::AddExternalObjectMetadataToValue(
               /*size=*/statement.ColumnInt64(3));
         } else {
           return base::unexpected(
-              Fatal(Status::Corruption("Unknown object type in `blobs`")));
+              Fatal(Status::Corruption("Unknown object type in `blobs`"),
+                    SpecificEvent::kBlobTypeUnknown));
         }
       }
     }
@@ -1788,7 +1820,9 @@ DatabaseConnection::CreateAllExternalObjects(
                          base::Unretained(this), object.blob_number()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
                .first;
-      AddActiveBlobReference(object.blob_number());
+      if (!AddActiveBlobReference(object.blob_number())) {
+        LogEvent(SpecificEvent::kAddActiveBlobReferenceFailed);
+      }
     }
     it->second->AddReceiver(std::move(receiver),
                             backing_store_->blob_storage_context());
@@ -1840,21 +1874,6 @@ void DatabaseConnection::DeleteIdbDatabase(
 void DatabaseConnection::OnBlobBecameInactive(int64_t blob_number) {
   CHECK_EQ(active_blobs_.erase(blob_number), 1U);
 
-  RemoveActiveBlobReference(blob_number);
-}
-
-void DatabaseConnection::AddActiveBlobReference(int64_t blob_number) {
-  if (active_rw_transaction_) {
-    sync_active_blobs_after_transaction_ = true;
-  }
-
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "INSERT INTO blob_references (blob_row_id) VALUES (?)"));
-  statement.BindInt64(0, blob_number);
-  TRANSIENT_CHECK(statement.Run());
-}
-
-void DatabaseConnection::RemoveActiveBlobReference(int64_t blob_number) {
   if (active_rw_transaction_) {
     sync_active_blobs_after_transaction_ = true;
   }
@@ -1866,7 +1885,9 @@ void DatabaseConnection::RemoveActiveBlobReference(int64_t blob_number) {
                                 "WHERE blob_row_id = ? "
                                 "AND record_row_id IS NULL"));
     statement.BindInt64(0, blob_number);
-    TRANSIENT_CHECK(statement.Run());
+    if (!statement.Run()) {
+      LogEvent(SpecificEvent::kRemoveActiveBlobReferenceFailed);
+    }
   }
 
   if (CanBeDestroyed()) {
@@ -1874,6 +1895,17 @@ void DatabaseConnection::RemoveActiveBlobReference(int64_t blob_number) {
     // `this` is deleted.
     return;
   }
+}
+
+bool DatabaseConnection::AddActiveBlobReference(int64_t blob_number) {
+  if (active_rw_transaction_) {
+    sync_active_blobs_after_transaction_ = true;
+  }
+
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE, "INSERT INTO blob_references (blob_row_id) VALUES (?)"));
+  statement.BindInt64(0, blob_number);
+  return statement.Run();
 }
 
 bool DatabaseConnection::CanBeDestroyed() const {
@@ -1968,7 +2000,8 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
     if (!statement.Step()) {
       RETURN_IF_STATEMENT_ERRORED(statement);
       return base::unexpected(
-          Fatal(Status::Corruption("Missing table `indexed_db_metadata`")));
+          Fatal(Status::Corruption("Missing table `indexed_db_metadata`"),
+                SpecificEvent::kMissingMetadataTable));
     }
     statement.ColumnBlobAsString16(0, &metadata.name);
     metadata.version = statement.ColumnInt64(1);
@@ -2017,8 +2050,18 @@ DatabaseConnection::GenerateIndexedDbMetadata() {
   return metadata;
 }
 
-Status DatabaseConnection::Fatal(Status s) {
-  // TODO(crbug.com/419203257): adding logging.
+void DatabaseConnection::LogEvent(SpecificEvent event) const {
+  if (path_.empty()) {
+    base::UmaHistogramEnumeration("IndexedDB.SQLite.SpecificEvent.InMemory",
+                                  event);
+  } else {
+    base::UmaHistogramEnumeration("IndexedDB.SQLite.SpecificEvent.OnDisk",
+                                  event);
+  }
+}
+
+Status DatabaseConnection::Fatal(Status s, SpecificEvent event) {
+  LogEvent(event);
   marked_for_permanent_deletion_ = true;
   return s;
 }
