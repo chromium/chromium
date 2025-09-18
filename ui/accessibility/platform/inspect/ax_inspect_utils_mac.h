@@ -17,6 +17,7 @@
 
 namespace ui {
 
+class AXPlatformNode;
 class AXPlatformTreeManager;
 
 // Returns true if the given accessibility attribute is valid, and could have
@@ -54,11 +55,11 @@ base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
     AXUIElementRef parent,
     const std::string& pattern);
 
-// Returns true if the given AXUIElementRef corresponds to an AXPlatformNode
-// that is web content.
+// Returns the corresponding AXPlatformNode for the given AXUIElementRef. If no
+// node is found, returns nullptr.
 COMPONENT_EXPORT(AX_PLATFORM)
-bool IsWebContent(AXUIElementRef element,
-                  base::WeakPtr<AXPlatformTreeManager> manager);
+AXPlatformNode* GetAXPlatformNode(AXUIElementRef element,
+                                  base::WeakPtr<AXPlatformTreeManager> manager);
 
 }  // namespace ui
 

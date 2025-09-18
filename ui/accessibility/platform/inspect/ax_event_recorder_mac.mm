@@ -19,7 +19,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
-#include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
@@ -148,20 +147,18 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
     return;
   }
 
-  if (only_web_events_ && !IsWebContent(element, manager_)) {
+  AXPlatformNode* ax_platform_node = GetAXPlatformNode(element, manager_);
+
+  bool is_web_content = ax_platform_node && ax_platform_node->IsWebContent();
+  if (only_web_events_ && !is_web_content) {
     return;
   }
 
-#if DCHECK_IS_ON()
   // Log the AXNodeData for incoming events, for easier debugging.
-  AXElementWrapper wrapper((__bridge id)element);
-  NSString* chrome_node_id =
-      *wrapper.GetAttributeValue(NSAccessibilityChromeAXNodeIdAttribute);
-  AXPlatformNode* ax_platform_node =
-      manager_->GetPlatformNodeFromTree([chrome_node_id intValue]);
-  DVLOG(1) << "Receiving event: " << notification_str
-           << " with AXNodeData: " << ax_platform_node->ToString();
-#endif
+  if (ax_platform_node) {
+    DVLOG(1) << "Receiving event: " << notification_str
+             << " with AXNodeData: " << ax_platform_node->ToString();
+  }
 
   auto formatter = AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
