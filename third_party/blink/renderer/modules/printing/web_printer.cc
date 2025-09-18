@@ -138,9 +138,11 @@ ScriptPromise<WebPrintJob> WebPrinter::submitPrintJob(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WebPrintJob>>(
       script_state, exception_state.GetContext());
-  printer_->Print(document_data->AsMojoBlob(), std::move(attributes),
-                  resolver->WrapCallbackInScriptScope(
-                      BindOnce(&WebPrinter::OnPrint, WrapPersistent(this))));
+  printer_->Print(
+      document_data->AsMojoBlob(), std::move(attributes),
+      resolver->WrapCallbackInScriptScope(
+          BindOnce(&WebPrinter::OnPrint, WrapPersistent(this),
+                   WrapPersistent(pjt_attributes->getAbortSignalOr(nullptr)))));
   return resolver->Promise();
 }
 
@@ -172,7 +174,8 @@ void WebPrinter::OnFetchAttributes(
   fetch_attributes_resolver_ = nullptr;
 }
 
-void WebPrinter::OnPrint(ScriptPromiseResolver<WebPrintJob>* resolver,
+void WebPrinter::OnPrint(AbortSignal* abort_signal,
+                         ScriptPromiseResolver<WebPrintJob>* resolver,
                          mojom::blink::WebPrintResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {
@@ -199,7 +202,8 @@ void WebPrinter::OnPrint(ScriptPromiseResolver<WebPrintJob>* resolver,
   }
 
   auto* print_job = MakeGarbageCollected<WebPrintJob>(
-      resolver->GetExecutionContext(), std::move(result->get_print_job_info()));
+      resolver->GetExecutionContext(), std::move(result->get_print_job_info()),
+      abort_signal);
   resolver->Resolve(print_job);
 }
 

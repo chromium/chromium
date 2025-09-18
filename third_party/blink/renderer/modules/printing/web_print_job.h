@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -29,7 +30,8 @@ class MODULES_EXPORT WebPrintJob
 
  public:
   WebPrintJob(ExecutionContext* execution_context,
-              mojom::blink::WebPrintJobInfoPtr print_job_info);
+              mojom::blink::WebPrintJobInfoPtr print_job_info,
+              AbortSignal* abort_signal = nullptr);
   ~WebPrintJob() override;
 
   // Web-exposed interfaces:
@@ -52,6 +54,7 @@ class MODULES_EXPORT WebPrintJob
   bool cancel_called_ = false;
 
   Member<WebPrintJobAttributes> attributes_;
+  Member<AbortSignal::AlgorithmHandle> cancel_handle_;
 
   HeapMojoReceiver<mojom::blink::WebPrintJobStateObserver, WebPrintJob>
       observer_;

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/printing/web_printing_type_converters.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -36,7 +37,8 @@ bool AreFurtherStateUpdatesPossible(V8JobStateEnum state) {
 }  // namespace
 
 WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
-                         mojom::blink::WebPrintJobInfoPtr print_job_info)
+                         mojom::blink::WebPrintJobInfoPtr print_job_info,
+                         AbortSignal* abort_signal)
     : ActiveScriptWrappable<WebPrintJob>({}),
       ExecutionContextClient(execution_context),
       attributes_(MakeGarbageCollected<WebPrintJobAttributes>()),
@@ -52,6 +54,10 @@ WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
   controller_.Bind(
       std::move(print_job_info->controller),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  if (abort_signal) {
+    cancel_handle_ = abort_signal->AddAlgorithm(
+        BindOnce(&WebPrintJob::cancel, WrapWeakPersistent(this)));
+  }
 }
 
 WebPrintJob::~WebPrintJob() = default;
@@ -64,6 +70,7 @@ void WebPrintJob::cancel() {
     return;
   }
   cancel_called_ = true;
+  cancel_handle_.Clear();
   controller_->Cancel();
 }
 
@@ -99,6 +106,7 @@ void WebPrintJob::Trace(Visitor* visitor) const {
   visitor->Trace(attributes_);
   visitor->Trace(observer_);
   visitor->Trace(controller_);
+  visitor->Trace(cancel_handle_);
   ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
 }
