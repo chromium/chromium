@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
@@ -46,6 +47,8 @@ class OptimizationGuideGlobalState final
     return prediction_model_store_;
   }
 
+  PredictionManager& prediction_manager() { return prediction_manager_; }
+
   // Create a new asset manager to provide extra models/configs to the broker.
   std::unique_ptr<OnDeviceAssetManager> CreateAssetManager(
       OptimizationGuideModelProvider* provider) {
@@ -71,6 +74,7 @@ class OptimizationGuideGlobalState final
   PredictionModelStore prediction_model_store_;
 
   ChromeProfileDownloadServiceTracker profile_download_service_tracker_;
+  PredictionManager prediction_manager_;
 
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;

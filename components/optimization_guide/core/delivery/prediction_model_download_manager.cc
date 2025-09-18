@@ -118,11 +118,11 @@ const char kPredictionModelOptimizationTargetCustomDataKey[] =
 
 PredictionModelDownloadManager::PredictionModelDownloadManager(
     PrefService* local_state,
-    download::BackgroundDownloadService* download_service,
+    ProfileDownloadServiceTracker& download_service_tracker,
     GetBaseModelDirForDownloadCallback get_base_model_dir_for_download_callback,
     unzip::UnzipperFactory unzipper_factory,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : download_service_(download_service),
+    : download_service_tracker_(download_service_tracker),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
       get_base_model_dir_for_download_callback_(
@@ -162,13 +162,26 @@ void PredictionModelDownloadManager::StartDownload(
   download_params.scheduling_params.network_requirements =
       download::SchedulingParams::NetworkRequirements::NONE;
 
-  download_service_->StartDownload(std::move(download_params));
+  download::BackgroundDownloadService* download_service =
+      download_service_tracker_->GetBackgroundDownloadService();
+  if (!download_service) {
+    RecordPredictionModelDownloadState(optimization_target,
+                                       kNoDownloadServiceFromTracker);
+    return;
+  }
+
+  download_service->StartDownload(std::move(download_params));
   RecordPredictionModelDownloadState(optimization_target, kRequested);
 }
 
 void PredictionModelDownloadManager::CancelAllPendingDownloads() {
+  download::BackgroundDownloadService* download_service =
+      download_service_tracker_->GetBackgroundDownloadService();
+  if (!download_service) {
+    return;
+  }
   for (const std::string& pending_download_guid : pending_download_guids_) {
-    download_service_->CancelDownload(pending_download_guid);
+    download_service->CancelDownload(pending_download_guid);
   }
 }
 

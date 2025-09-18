@@ -71,6 +71,7 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
     // state are also freed.
     network_time_tracker_.reset();
     push_notification_service_.reset();
+    optimization_guide_global_state_.reset();
   }
   local_state_ = local_state;
 }

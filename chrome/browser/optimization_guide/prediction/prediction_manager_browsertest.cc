@@ -228,6 +228,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     if (request.GetURL() == model_file_with_good_additional_file_url_) {
       return nullptr;
     }
+
     if (request.GetURL() == model_file_with_nonexistent_additional_file_url_) {
       return nullptr;
     }
@@ -492,37 +493,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
     otr_histogram_tester.ExpectTotalCount(
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   }
-}
-
-// TODO(crbug.com/336399137): Flaky on Linux Chromium OS ASan LSan Tests.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_TestIncognitoDoesntFetchModels \
-  DISABLED_TestIncognitoDoesntFetchModels
-#else
-#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
-#endif
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       MAYBE_TestIncognitoDoesntFetchModels) {
-  base::HistogramTester histogram_tester;
-
-  SetResponseType(PredictionModelsFetcherRemoteResponseType::
-                      kSuccessfulWithInvalidModelFile);
-
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-
-  // Registering should not initiate the fetch and the model updated callback
-  // should not be triggered too.
-  RegisterModelFileObserverWithKeyedService(otr_browser->profile());
-
-  SetUpNoModelInfoReceival(model_file_observer());
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "OptimizationGuide.PredictionManager.StoreInitialized",
-      1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
@@ -879,57 +849,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, other_path);
   CreateBrowser(&profile);
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-// CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       GuestProfileReceivesModel) {
-  SetResponseType(
-      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
-
-  {
-    base::HistogramTester histogram_tester;
-    // Register in the primary profile and ensure the model returns.
-    RegisterModelFileObserverWithKeyedService(browser()->profile());
-
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(model_file_observer(), run_loop.get());
-    run_loop->Run();
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-        PredictionModelDownloadStatus::kSuccess, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    // Now hook everything up in the guest profile and we should still get the
-    // model back but no additional fetches should be made.
-    Browser* guest_browser = CreateGuestBrowser();
-
-    // To prevent any race, ensure the store has be initialized.
-    RetryForHistogramUntilCountReached(
-        &histogram_tester,
-        "OptimizationGuide.PredictionManager.StoreInitialized", 1);
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    ModelFileObserver model_file_observer;
-    SetUpValidModelInfoReceival(&model_file_observer, run_loop.get());
-    OptimizationGuideKeyedServiceFactory::GetForProfile(
-        guest_browser->profile())
-        ->AddObserverForOptimizationTargetModel(
-            proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, &model_file_observer);
-    // Wait until the opt guide is up and the model is loaded as its shared
-    // between profiles.
-    RetryForHistogramUntilCountReached(
-        &histogram_tester,
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-
-    run_loop->Run();
-    histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  }
-}
-#endif
 
 class PredictionManagerModelPackageOverrideTest : public InProcessBrowserTest {
  public:

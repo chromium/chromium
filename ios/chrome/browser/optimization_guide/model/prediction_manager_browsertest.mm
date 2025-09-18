@@ -140,9 +140,10 @@ class PredictionManagerTestBase : public TestWithProfile {
     SetUpCommandLine(scoped_command_line_.GetProcessCommandLine());
 
     scoped_profile_ = CreateProfile("foo");
-    OptimizationGuideServiceFactory::GetForProfile(scoped_profile_.profile())
-        ->GetPredictionManager()
-        ->SetUrlLoaderFactoryForTesting(
+    TestingApplicationContext::GetGlobal()
+        ->GetOptimizationGuideGlobalState()
+        ->prediction_manager()
+        .SetUrlLoaderFactoryForTesting(
             scoped_profile_.profile()->GetSharedURLLoaderFactory());
   }
 

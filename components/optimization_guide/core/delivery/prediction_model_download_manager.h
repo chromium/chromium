@@ -12,12 +12,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/optimization_guide/core/delivery/prediction_model_store.h"
+#include "components/optimization_guide/core/delivery/profile_download_service_tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -72,7 +73,7 @@ class PredictionModelDownloadManager {
 
   PredictionModelDownloadManager(
       PrefService* local_state,
-      download::BackgroundDownloadService* download_service,
+      ProfileDownloadServiceTracker& download_service_tracker,
       GetBaseModelDirForDownloadCallback
           get_base_model_dir_for_download_callback,
       unzip::UnzipperFactory unzipper_factory,
@@ -186,10 +187,7 @@ class PredictionModelDownloadManager {
   // The set of GUIDs that are still pending download.
   std::set<std::string> pending_download_guids_;
 
-  // The Download Service to schedule model downloads with.
-  //
-  // Guaranteed to outlive |this|.
-  raw_ptr<download::BackgroundDownloadService> download_service_;
+  const raw_ref<ProfileDownloadServiceTracker> download_service_tracker_;
 
   // Whether the download service is available.
   bool is_available_for_downloads_;

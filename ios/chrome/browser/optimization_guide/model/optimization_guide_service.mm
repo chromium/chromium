@@ -85,17 +85,6 @@ OptimizationGuideService::OptimizationGuideService(
       top_host_provider_.get(), tab_url_provider_.get(), url_loader_factory,
       identity_manager, optimization_guide_logger_.get());
 
-  if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
-    prediction_manager_ =
-        std::make_unique<optimization_guide::PredictionManager>(
-            &GetApplicationContext()
-                 ->GetOptimizationGuideGlobalState()
-                 ->prediction_model_store(),
-            url_loader_factory, GetApplicationContext()->GetLocalState(),
-            application_locale, optimization_guide_logger_.get(),
-            base::BindRepeating(&unzip::LaunchInProcessUnzipper));
-  }
-
   if (!off_the_record_) {
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
@@ -130,10 +119,6 @@ void OptimizationGuideService::DoFinalInit(
       "SyntheticOptimizationGuideRemoteFetching",
       optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  if (background_download_service) {
-    prediction_manager_->MaybeInitializeModelDownloads(
-        GetApplicationContext()->GetLocalState(), background_download_service);
-  }
 }
 
 optimization_guide::HintsManager* OptimizationGuideService::GetHintsManager() {
@@ -142,7 +127,9 @@ optimization_guide::HintsManager* OptimizationGuideService::GetHintsManager() {
 
 optimization_guide::PredictionManager*
 OptimizationGuideService::GetPredictionManager() {
-  return prediction_manager_.get();
+  return &GetApplicationContext()
+              ->GetOptimizationGuideGlobalState()
+              ->prediction_manager();
 }
 
 void OptimizationGuideService::AddHintForTesting(
@@ -276,7 +263,7 @@ void OptimizationGuideService::AddObserverForOptimizationTargetModel(
     const std::optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
-    prediction_manager_->AddObserverForOptimizationTargetModel(
+    GetPredictionManager()->AddObserverForOptimizationTargetModel(
         optimization_target, model_metadata, observer);
   }
 }
@@ -285,7 +272,7 @@ void OptimizationGuideService::RemoveObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     optimization_guide::OptimizationTargetModelObserver* observer) {
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
-    prediction_manager_->RemoveObserverForOptimizationTargetModel(
+    GetPredictionManager()->RemoveObserverForOptimizationTargetModel(
         optimization_target, observer);
   }
 }
