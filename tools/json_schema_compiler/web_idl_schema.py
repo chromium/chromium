@@ -11,7 +11,7 @@ import os.path
 import re
 import sys
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, NamedTuple
+from typing import Dict, List, Optional, NamedTuple, Union
 from collections import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
@@ -308,7 +308,7 @@ class Type():
   def __init__(self,
                type_node: IDLNode,
                descriptions: Optional[OrderedDict[str, str]] = None) -> None:
-    assert type_node.GetClass() == 'Type'
+    assert type_node.GetClass() in ['Type', 'Const']
     self.descriptions = descriptions
     self.type_node = type_node
 
@@ -768,6 +768,55 @@ class Event:
           'Event Interface missing hasListener Operation definition.', event)
 
 
+class Property:
+  """Represents a property on an API namespace and processes the details of it.
+
+  Given an IDLNode of type Const, processes it into the key value pair for it to
+  be exposed as a property on an API namespace.
+
+  Attributes:
+    node: The IDLNode for the Const definition that represents this type.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+
+  def process(self) -> (str, dict):
+    properties = Type(self.node).Process()
+    value = self.node.GetOneOf('Value').GetProperty('VALUE')
+    # The IDL Parser always returns values as strings, so cast to their real
+    # type.
+    # TODO(crbug.com/445495198): Add support for DOMString const values.
+    properties['value'] = self._CastFromType(properties['type'], value)
+
+    description_data = ProcessNodeDescription(self.node)
+    if (description_data.description):
+      properties['description'] = description_data.description
+
+    # TODO(crbug.com/445495198): Add support for appropriate extended attributes
+    # on properties (deprecated, nodoc, nocompile).
+
+    return (self.node.GetName(), properties)
+
+  def _CastFromType(self, type_name: str,
+                    string_value: str) -> Union[int, float, str]:
+    """Casts from a string value to a real Python type based on type name.
+
+    Args:
+      type_name: The string representing the name of the Schema Compiler type to
+      cast using.
+      string_value: The string representation of the value to try and cast.
+
+    Returns:
+      The value cast to the appropriate Python type
+    """
+    if type_name == 'integer':
+      return int(string_value)
+    if type_name == 'number':
+      return float(string_value)
+    return string_value
+
+
 class Namespace:
   """Represents an API namespace and processes individual details of it.
 
@@ -818,6 +867,11 @@ class Namespace:
     # use types that are defined as Interfaces on the top level of the IDL file.
     for node in self.namespace.GetListOf('Attribute'):
       events.append(Event(node).process(self.namespace.GetParent()))
+
+    # Properties are defined with Consts on the API Interface definition.
+    for node in self.namespace.GetListOf('Const'):
+      property_key, property_value = Property(node).process()
+      properties[property_key] = property_value
 
     # Several special attributes specific to the schema compilation process are
     # defined using Extended Attributes on the API Interface definition.

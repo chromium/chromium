@@ -44,6 +44,9 @@ interface TestWebIdl {
   static Promise<sequence<long>> longSequencePromiseReturn();
   static Promise<sequence<ExampleType>> customTypeSequencePromiseReturn();
 
+  const long CONSTANT_LONG = 39;
+  const double CONSTANT_DOUBLE = 3.9;
+
   // Items for testing the processing of IDL comments to schema descriptions:
 
   static undefined noDescription();
@@ -86,6 +89,9 @@ interface TestWebIdl {
   // General function description for the describedReturnFunction.
   // |Returns|: Description for the returns object itself.
   static DOMString describedReturnFunction();
+
+  // Comment on a constant property with a value.
+  const long DESCRIBED_CONSTANT = 9;
 };
 
 // Comment for parameter descriptions on the onTestOne event. The first part of

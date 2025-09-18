@@ -519,6 +519,33 @@ class WebIdlSchemaTest(unittest.TestCase):
         ' line or non-comment is reached.</p>')
     self.assertEqual(expected_description, schema['description'])
 
+  # Tests that constants defined on an API Interface are processed into the
+  # 'properties' object.
+  def testConstantProperties(self):
+    schema = self.idl_basics
+    properties = schema['properties']
+    # Properties are an ordered dict, so ordering matches order in the IDL file.
+    self.assertEqual(
+        ['CONSTANT_LONG', 'CONSTANT_DOUBLE', 'DESCRIBED_CONSTANT'],
+        list(properties.keys()),
+    )
+    self.assertEqual({
+        'type': 'integer',
+        'value': 39
+    }, properties['CONSTANT_LONG'])
+    self.assertEqual({
+        'type': 'number',
+        'value': 3.9
+    }, properties['CONSTANT_DOUBLE'])
+    self.assertEqual(
+        {
+            'type': 'integer',
+            'value': 9,
+            'description': 'Comment on a constant property with a value.',
+        },
+        properties['DESCRIBED_CONSTANT'],
+    )
+
   # Tests that if the nodoc extended attribute is not specified on the API
   # interface the related attribute is set to false after processing.
   def testNodocUnspecifiedOnNamespace(self):
