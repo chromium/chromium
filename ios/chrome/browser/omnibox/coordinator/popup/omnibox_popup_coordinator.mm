@@ -165,9 +165,15 @@
 
 - (void)stop {
   [_omniboxDebuggerMediator disconnect];
+  _omniboxDebuggerMediator = nil;
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+
+  self.popupViewController = nil;
+  self.mediator = nil;
+  self.autocompleteController = nullptr;
+  _omniboxImageFetcher = nil;
 }
 
 - (BOOL)isOpen {

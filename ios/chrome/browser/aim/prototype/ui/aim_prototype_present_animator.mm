@@ -39,7 +39,6 @@ const NSTimeInterval kSlideInDuration = 0.1;
   [containerView addSubview:toView];
 
   UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];
-  UITextView* textView = [_contextProvider textViewForAnimation];
 
   toView.alpha = 0.0;
   CGRect finalFrame = inputPlateView.frame;
@@ -51,7 +50,6 @@ const NSTimeInterval kSlideInDuration = 0.1;
   __weak id<AIMPrototypeAnimationContextProvider> contextProvider =
       _contextProvider;
 
-  [textView becomeFirstResponder];
   [UIView
       animateKeyframesWithDuration:[self transitionDuration:transitionContext]
       delay:0

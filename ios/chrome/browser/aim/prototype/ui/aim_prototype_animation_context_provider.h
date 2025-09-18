@@ -11,8 +11,6 @@
 @protocol AIMPrototypeAnimationContextProvider
 // The input plate view to be animated downwards.
 @property(nonatomic, readonly) UIView* inputPlateViewForAnimation;
-// The text view to be focused after the presentation animation.
-@property(nonatomic, readonly) UITextView* textViewForAnimation;
 
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;

@@ -29,7 +29,7 @@ extern const CGFloat kOmniboxPopupCellMinimumHeight;
     : NSObject <UIContentConfiguration>
 
 /// Autocomplete suggestion.
-@property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
+@property(nonatomic, weak) id<AutocompleteSuggestion> suggestion;
 /// Delegate for events in OmniboxPopupRow.
 @property(nonatomic, weak)
     id<OmniboxPopupRowDelegate, OmniboxPopupActionsRowDelegate>

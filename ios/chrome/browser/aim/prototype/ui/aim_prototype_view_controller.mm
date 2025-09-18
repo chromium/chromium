@@ -21,8 +21,6 @@
 namespace {
 /// The reuse identifier for the input item cells in the carousel.
 NSString* const kItemCellReuseIdentifier = @"AIMInputItemCell";
-/// The maximum number of lines for the text view before it starts scrolling.
-const int kMaxLines = 5;
 /// The identifier for the main section of the collection view.
 NSString* const kMainSectionIdentifier = @"MainSection";
 
@@ -62,10 +60,12 @@ const CGFloat kAIMButtonSymbolPointSize = 12.0f;
 const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonHeight = 32.0f;
+
 /// The duration for the glow effect.
 const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
 const CGFloat kGlowEffectWidth = 4.0f;
+
 /// The size for the close button.
 const CGFloat kCloseButtonSize = 30.0f;
 /// The alpha for the close button.
@@ -93,12 +93,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIView* _inputPlateContainerView;
   /// The stack view for the input plate.
   UIStackView* _inputPlateStackView;
-  /// The label used as a placeholder for the text view.
-  UILabel* _placeholderLabel;
-  /// The constraint for the height of the text view.
-  NSLayoutConstraint* _textViewHeightConstraint;
-  /// The text view for user input.
-  UITextView* _textView;
+
   /// The button to toggle AI mode.
   UIButton* _aimButton;
   /// The glow effect around the input plate container.
@@ -115,7 +110,6 @@ const CGFloat kFadeViewWidth = 30.0f;
 
 /// AIMPrototypeAnimationContextProvider
 @synthesize inputPlateViewForAnimation = _inputPlateContainerView;
-@synthesize textViewForAnimation = _textView;
 
 - (instancetype)init {
   self = [super init];
@@ -151,6 +145,21 @@ const CGFloat kFadeViewWidth = 30.0f;
         forControlEvents:UIControlEventTouchUpInside];
   [self.view addSubview:closeButton];
 
+  // Omnibox popup container.
+  _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_omniboxPopupContainer];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_omniboxPopupContainer.topAnchor
+        constraintEqualToAnchor:closeButton.bottomAnchor],
+    [_omniboxPopupContainer.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_omniboxPopupContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_omniboxPopupContainer.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+  ]];
+
   // --- Bottom Input Area ---
 
   // Input plate container
@@ -177,20 +186,6 @@ const CGFloat kFadeViewWidth = 30.0f;
   }
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view insertSubview:_omniboxPopupContainer
-              belowSubview:_inputPlateContainerView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_omniboxPopupContainer.topAnchor
-        constraintEqualToAnchor:closeButton.bottomAnchor],
-    [_omniboxPopupContainer.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_omniboxPopupContainer.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_omniboxPopupContainer.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
-  ]];
 
   // Carousel view
   UICollectionViewFlowLayout* layout =
@@ -350,6 +345,8 @@ const CGFloat kFadeViewWidth = 30.0f;
     [closeButton.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kCloseButtonPadding],
+    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
+    [closeButton.widthAnchor constraintEqualToAnchor:closeButton.heightAnchor],
 
     // Input Plate.
     [_inputPlateContainerView.leadingAnchor
@@ -457,39 +454,6 @@ const CGFloat kFadeViewWidth = 30.0f;
       [currentSnapshot copy];
   [newSnapshot reconfigureItemsWithIdentifiers:@[ itemToUpdate ]];
   [_dataSource applySnapshot:newSnapshot animatingDifferences:YES];
-}
-
-#pragma mark - UITextViewDelegate
-
-// The final implementation in the omnibox is expected to use a UIKeyCommand
-// override to handle the return key. This delegate method is a temporary
-// solution for this prototype.
-- (BOOL)textView:(UITextView*)textView
-    shouldChangeTextInRange:(NSRange)range
-            replacementText:(NSString*)text {
-  if ([text isEqualToString:@"\n"]) {
-    [self.mutator sendText:textView.text];
-    textView.text = @"";
-    // Manually trigger textViewDidChange to update placeholder and layout.
-    [self textViewDidChange:textView];
-    return NO;
-  }
-  return YES;
-}
-
-- (void)textViewDidChange:(UITextView*)textView {
-  _placeholderLabel.hidden = textView.hasText;
-
-  // Recalculate textView height and update it to clip and scroll if necessary.
-  CGFloat verticalPadding =
-      _textView.textContainerInset.top + _textView.textContainerInset.bottom;
-  CGFloat maxHeight = (_textView.font.lineHeight * kMaxLines) + verticalPadding;
-  CGSize size = [_textView
-      sizeThatFits:CGSizeMake(_textView.frame.size.width, CGFLOAT_MAX)];
-  CGFloat newHeight = MIN(size.height, maxHeight);
-  _textViewHeightConstraint.constant = newHeight;
-  _textView.scrollEnabled = size.height > maxHeight;
-  [self.view layoutIfNeeded];
 }
 
 #pragma mark - Actions
