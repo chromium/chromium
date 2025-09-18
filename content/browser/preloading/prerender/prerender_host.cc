@@ -699,7 +699,9 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
           *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
               *navigation_handle);
       prerender_initial_preload_serving_metrics_ =
-          initial_preload_serving_metrics_holder.Take();
+          initial_preload_serving_metrics_holder.Take(
+              PreloadServingMetricsHolder::CallerOfTake::
+                  kPrerenderHostDidFinishNavigation);
     }
   }
 
@@ -1848,7 +1850,9 @@ void PrerenderHost::OnWillBeCancelled(
         *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
             *navigation_request);
     prerender_initial_preload_serving_metrics_ =
-        initial_preload_serving_metrics_holder.Take();
+        initial_preload_serving_metrics_holder.Take(
+            PreloadServingMetricsHolder::CallerOfTake::
+                kPrerenderHostOnWillBeCancelled);
   }();
 
   if (prerender_initial_preload_serving_metrics_) {

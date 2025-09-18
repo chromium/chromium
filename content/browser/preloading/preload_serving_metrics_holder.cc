@@ -4,6 +4,9 @@
 
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+
 namespace content {
 
 base::RepeatingCallback<void(std::unique_ptr<PreloadServingMetrics>)>&
@@ -39,7 +42,22 @@ PreloadServingMetricsHolder::~PreloadServingMetricsHolder() {
 void PreloadServingMetricsHolder::AddPrefetchMatchMetrics(
     std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics) {
   CHECK(prefetch_match_metrics);
-  CHECK(preload_serving_metrics_);
+
+  // Do nothing if `PreloadServingMetrics` is already taken.
+  //
+  // For more details, see
+  // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
+  if (!preload_serving_metrics_) {
+    // Determine which caller of `Take()` is causing this case.
+    //
+    // TODO(crbug.com/444634885): Remove this once we check the callers.
+    CHECK(caller_of_take_.has_value());
+    SCOPED_CRASH_KEY_NUMBER("PreloadServingMetrics", "AddPMMAfterTake",
+                            static_cast<int>(caller_of_take_.value()));
+    base::debug::DumpWithoutCrashing();
+
+    return;
+  }
 
   preload_serving_metrics_->prefetch_match_metrics_list.push_back(
       std::move(prefetch_match_metrics));
@@ -55,9 +73,12 @@ void PreloadServingMetricsHolder::SetPrerenderInitialPreloadServingMetrics(
       std::move(prerender_initial_preload_serving_metrics);
 }
 
-std::unique_ptr<PreloadServingMetrics> PreloadServingMetricsHolder::Take() {
+std::unique_ptr<PreloadServingMetrics> PreloadServingMetricsHolder::Take(
+    CallerOfTake caller) {
   // Ensures not to take it twice.
   CHECK(preload_serving_metrics_);
+
+  caller_of_take_ = caller;
 
   return std::move(preload_serving_metrics_);
 }
