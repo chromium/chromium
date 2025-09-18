@@ -71,13 +71,23 @@ SharedImageInterfaceInProcess::Create(
     gpu::SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
     bool is_for_display_compositor,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    bool always_create_native_gmb_handles /*=false*/) {
   // ensure Initialize() is called before pointer returned to caller
   auto sii = base::WrapRefCounted(new SharedImageInterfaceInProcess{
       task_sequence, shared_image_manager, std::move(gpu_task_runner)});
   sii->Initialize(std::make_unique<SetUpOnGpuParams>(
       gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
       shared_image_manager, is_for_display_compositor));
+
+  if (always_create_native_gmb_handles) {
+    // Creation with this option can be done only on the GPU thread, since we
+    // must construct the SharedImageFactory eagerly to ensure that it is
+    // immediately available to create GMB handles on the IO thread.
+    CHECK(sii->gpu_task_runner_->BelongsToCurrentThread());
+    sii->GetSharedImageFactoryOnGpuThread();
+    sii->always_create_native_gmb_handles_ = true;
+  }
   return sii;
 }
 
@@ -165,6 +175,45 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
 
   context_state_ = nullptr;
   completion->Signal();
+}
+
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
+
+  if (always_create_native_gmb_handles_) {
+#if BUILDFLAG(IS_ANDROID)
+    // Creation of native buffer handles is not supported on Android (the
+    // only way that a non-null GpuMemoryBufferHandle can be created on
+    // Android is by importing an external AHB).
+    return nullptr;
+#else
+    // The below method doesn't (yet?) take in pool IDs.
+    CHECK(!pool_id);
+
+    // The SIFactory may be null if it was not possible for it to be created in
+    // the constructor (because the context was lost). In this case, there is
+    // nothing possible to do (context loss is sticky and will eventually be
+    // resolved by recreating the SII in one way or another).
+    if (!shared_image_factory_) {
+      return nullptr;
+    }
+    auto gmb_handle = shared_image_factory_->CreateNativeGpuMemoryBufferHandle(
+        si_info.meta.size, si_info.meta.format, buffer_usage);
+    if (gmb_handle.is_null()) {
+      return nullptr;
+    }
+    return SharedImageInterfaceInProcessBase::CreateSharedImage(
+        si_info, surface_handle, buffer_usage, std::move(gmb_handle));
+#endif
+  }
+
+  return SharedImageInterfaceInProcessBase::CreateSharedImage(
+      si_info, surface_handle, buffer_usage, pool_id);
 }
 
 SharedImageFactory*

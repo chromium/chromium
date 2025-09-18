@@ -57,11 +57,19 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       gpu::SharedContextState* context_state,
       SharedImageManager* shared_image_manager,
       bool is_for_display_compositor,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+      bool always_create_native_gmb_handles = false);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
       const SharedImageInterfaceInProcess&) = delete;
+
+  // SharedImageInterface:
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      const SharedImageInfo& si_info,
+      SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage,
+      std::optional<SharedImagePoolId> pool_id) override;
 
  protected:
   ~SharedImageInterfaceInProcess() override;
@@ -112,6 +120,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   scoped_refptr<SharedContextState> context_state_;
   ScopedSyncPointClientState sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
+  bool always_create_native_gmb_handles_ = false;
 };
 
 }  // namespace gpu
