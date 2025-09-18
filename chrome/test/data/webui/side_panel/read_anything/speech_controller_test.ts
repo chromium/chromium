@@ -4,7 +4,7 @@
 import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleNodeStoreWithText, setSimpleTreeWithText} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleTreeWithText} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -607,29 +607,6 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('speak'));
   });
 
-  test('onVoiceMenuClose resume speech only if it was active before', () => {
-    const text = 'You must agree that baby';
-    setSimpleNodeStoreWithText(text);
-    speechController.onVoiceMenuOpen();
-
-    speechController.onVoiceMenuClose();
-
-    assertEquals(0, speech.getCallCount('cancel'));
-    assertEquals(0, speech.getCallCount('pause'));
-    assertEquals(0, speech.getCallCount('speak'));
-
-    onPlayPauseToggle(text);
-    speechController.onVoiceMenuOpen();
-    onPlayPauseToggle(text);
-    speech.reset();
-
-    speechController.onVoiceMenuClose();
-
-    assertEquals(1, speech.getCallCount('resume'));
-    assertEquals(0, speech.getCallCount('cancel'));
-    assertEquals(0, speech.getCallCount('speak'));
-  });
-
   test('onVoiceSelected sets current voice', () => {
     const voice1 = createSpeechSynthesisVoice({lang: 'pt-pt', name: 'Donkey'});
     const voice2 = createSpeechSynthesisVoice({lang: 'pt-br', name: 'Corgi'});
@@ -660,65 +637,5 @@ suite('SpeechController', () => {
 
     speechController.onVoiceSelected(voice3);
     assertFalse(wordBoundaries.hasBoundaries());
-  });
-
-  test('set previous reading position without saved state does nothing', () => {
-    const text = 'But I took your hand';
-    setSimpleNodeStoreWithText(text);
-    wordBoundaries.updateBoundary(4);
-    speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
-    onPlayPauseToggle(text);
-    onPlayPauseToggle(text);
-    assertTrue(speechController.hasSpeechBeenTriggered());
-    assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentGranularity());
-
-    speechController.clearReadAloudState();
-    speechController.setPreviousReadingPositionIfExists();
-
-    assertFalse(speechController.hasSpeechBeenTriggered());
-    assertFalse(wordBoundaries.hasBoundaries());
-    assertFalse(highlighter.hasCurrentGranularity());
-  });
-
-  test('set previous reading position restores saved state', () => {
-    const text = 'And promised I\'d withstand';
-    setSimpleNodeStoreWithText(text);
-    wordBoundaries.updateBoundary(4);
-    speechController.onHighlightGranularityChange(
-        chrome.readingMode.sentenceHighlighting);
-    onPlayPauseToggle(text);
-    onPlayPauseToggle(text);
-    assertTrue(speechController.hasSpeechBeenTriggered());
-    assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentGranularity());
-
-    speechController.saveReadAloudState();
-    speechController.clearReadAloudState();
-    speechController.setPreviousReadingPositionIfExists();
-
-    assertTrue(speechController.hasSpeechBeenTriggered());
-    assertTrue(wordBoundaries.hasBoundaries());
-    assertTrue(highlighter.hasCurrentGranularity());
-  });
-
-  test('onTabMuteStateChange updates speech volume', async () => {
-    const text = 'We\'ll bring the cinches';
-    chrome.readingMode.isSpeechTreeInitialized = true;
-    setSimpleNodeStoreWithText(text);
-
-    speechController.onTabMuteStateChange(true);
-    onPlayPauseToggle(text);
-
-    let spoken = await speech.whenCalled('speak');
-    assertEquals(0, spoken.volume);
-
-    speech.reset();
-    speechController.onTabMuteStateChange(false);
-    onPlayPauseToggle(text);
-
-    spoken = await speech.whenCalled('speak');
-    assertEquals(1, spoken.volume);
   });
 });

@@ -127,7 +127,7 @@ export function setSimpleAxTreeWithText(text: string) {
 
 // TODO: crbug.com/440400392- Merge setSimpleNodeStoreWithText with
 // setSimpleNodeStoreWithTextAndModel
-export function setSimpleNodeStoreWithText(text: string) {
+function setSimpleNodeStoreWithText(text: string) {
   const id = 2;
   chrome.readingMode.getCurrentTextSegments =
       () => [{nodeId: id, start: 0, length: text.length}];
