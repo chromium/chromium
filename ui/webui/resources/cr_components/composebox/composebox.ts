@@ -425,6 +425,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.pageHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
     this.clearAutocompleteMatches_();
+    this.lastQueriedInput_ = this.$.input.value;
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
   }

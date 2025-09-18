@@ -379,9 +379,7 @@ void ComposeboxQueryController::ClearSuggestInputs() {
   // inputs should instead be updated to reflect this file being deleted.
   // Suggest inputs must be cleared so when autocomplete is queried again
   // in the UI, contextual suggestions do not appear.
-  if (active_files_.size() == 1) {
     suggest_inputs_.Clear();
-  }
 }
 
 bool ComposeboxQueryController::DeleteFile(
