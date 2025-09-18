@@ -2873,6 +2873,14 @@
       public: true,
     },
     {
+      // Adds `!important` to `[inert] {interactivity: auto}` in the UA
+      // stylesheet. Resolved in the CSSWG here:
+      // https://github.com/w3c/csswg-drafts/issues/12049#issuecomment-3303716541
+      // This killswitch is shipping in M142, and can ge removed in M144.
+      name: "InteractivityInertImportant",
+      status: "stable",
+    },
+    {
       name: "InterestGroupsInSharedStorageWorklet",
       public: true,
       status: "stable",

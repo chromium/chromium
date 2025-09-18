@@ -1791,8 +1791,15 @@ img:is([sizes="auto" i], [sizes^="auto," i]) {
 dialog:where(:modal) {
   interactivity: auto;
 }
+
+/* Remove this when the InteractivityInertImportant flag is removed. */
 [inert] {
   interactivity: inert;
+}
+@supports blink-feature(InteractivityInertImportant) {
+  [inert] {
+    interactivity: inert !important;
+  }
 }
 
 /* noscript is handled internally, as it depends on settings. */
