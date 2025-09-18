@@ -10,7 +10,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
@@ -467,82 +466,6 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
           .Build());
 }
 
-void ProfileMenuViewBase::AddPromoButton(const std::u16string& text,
-                                         base::RepeatingClosure action,
-                                         const gfx::VectorIcon& icon) {
-  // Initialize layout if this is the first time a button is added.
-  if (!promo_container_->GetLayoutManager()) {
-    promo_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-  }
-
-  // Do not allow more than 2 promos to be shown at the same time in the Profile
-  // Menu. Currently there only exist two types of promos - if we ever need to
-  // support more, a more complex logic to decide which promo to be shown is
-  // needed.
-  if (promo_container_->children().size() == 2u) {
-    return;
-  }
-
-  // Only first and last buttons should have the rounded corners.
-  bool is_first_button_being_added = promo_container_->children().empty();
-
-  // Reset the last button bottom corners since it will not be the last one
-  // anymore.
-  if (!is_first_button_being_added) {
-    HoverButton* last_child =
-        views::AsViewClass<HoverButton>(promo_container_->children().back());
-    std::optional<gfx::RoundedCornersF> current_rounded_corners =
-        last_child->background()->GetRoundedCornerRadii();
-    CHECK(current_rounded_corners.has_value());
-    current_rounded_corners->set_lower_left(0.f);
-    current_rounded_corners->set_lower_right(0.f);
-    // Override the background with the updated corners.
-    last_child->SetBackground(views::CreateRoundedRectBackground(
-        kColorProfileMenuPromoButtonsBackground,
-        current_rounded_corners.value(),
-        gfx::Insets::VH(0, kIdentityContainerMargin)));
-  }
-
-  // Add background color for promos.
-  constexpr int kBackgroundCornerSize = 8;
-  constexpr int kButtonBackgroundVerticalSize = 40;
-  constexpr int kPromoSeparation = 2;
-
-  std::unique_ptr<HoverButton> button = CreateMenuRowButton(
-      std::move(action), std::make_unique<FeatureButtonIconView>(icon, 1.0f),
-      text);
-
-  // The current button being added to the end, we can already set the bottom
-  // corners.
-  gfx::RoundedCornersF rounded_corners(0.f, 0.f, kBackgroundCornerSize,
-                                       kBackgroundCornerSize);
-  // First element should have upper corners rounded.
-  if (is_first_button_being_added) {
-    rounded_corners.set_upper_left(kBackgroundCornerSize);
-    rounded_corners.set_upper_right(kBackgroundCornerSize);
-  }
-  button->SetBackground(views::CreateRoundedRectBackground(
-      kColorProfileMenuPromoButtonsBackground, rounded_corners,
-      gfx::Insets::VH(0, kIdentityContainerMargin)));
-  // Button with a background should have a larger size to fit the background.
-  button->SetPreferredSize(
-      gfx::Size(kMenuWidth, kButtonBackgroundVerticalSize));
-
-  // When adding the first element in the promo container, ensure a separation
-  // between the promo container and the next container. Otherwise, add a top
-  // margin to the button to add a separatation with the previous promos.
-  if (is_first_button_being_added) {
-    promo_container_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets().set_bottom(kDefaultMargin));
-  } else {
-    button->SetProperty(views::kMarginsKey,
-                        gfx::Insets().set_top(kPromoSeparation));
-  }
-
-  promo_container_->AddChildView(std::move(button));
-}
-
 void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
                                            base::RepeatingClosure action,
                                            const gfx::VectorIcon& icon,
@@ -705,7 +628,6 @@ void ProfileMenuViewBase::Reset() {
   // First, add the parts of the current profile.
   identity_info_container_ =
       components->AddChildView(std::make_unique<views::View>());
-  promo_container_ = components->AddChildView(std::make_unique<views::View>());
   features_container_ =
       components->AddChildView(std::make_unique<views::View>());
   profile_mgmt_separator_container_ =
