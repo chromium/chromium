@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/browser_process.h"
@@ -345,11 +347,27 @@ class DebouncerDeduper {
   glic::mojom::FocusedTabDataPtr next_data_candidate_;
 };
 
+const char kGlicActorJournalLog[] = "glic-actor-journal";
+
 // Class that encapsulates interacting with the actor journal.
 class JournalHandler {
  public:
   explicit JournalHandler(Profile* profile)
-      : actor_keyed_service_(actor::ActorKeyedService::Get(profile)) {}
+      : actor_keyed_service_(actor::ActorKeyedService::Get(profile)) {
+    base::FilePath path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kGlicActorJournalLog);
+    if (!path.empty()) {
+      path = base::GetUniquePathWithSuffixFormat(path, "_%d");
+      LOG(ERROR) << "Glic Journal: " << path;
+      file_journal_serializer_ =
+          std::make_unique<actor::AggregatedJournalFileSerializer>(
+              actor_keyed_service_->GetJournal());
+      file_journal_serializer_->Init(
+          path, base::BindOnce(&JournalHandler::FileInitDone,
+                               base::Unretained(this)));
+    }
+  }
 
   void LogBeginAsyncEvent(uint64_t event_async_id,
                           int32_t task_id,
@@ -486,12 +504,20 @@ class JournalHandler {
     feedback_data->OnFeedbackPageDataComplete();
   }
 
+  void FileInitDone(bool success) {
+    if (!success) {
+      file_journal_serializer_.reset();
+    }
+  }
+
   absl::flat_hash_map<
       uint64_t,
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
       active_journal_events_;
   std::unique_ptr<actor::AggregatedJournalInMemorySerializer>
       journal_serializer_;
+  std::unique_ptr<actor::AggregatedJournalFileSerializer>
+      file_journal_serializer_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 };
 
