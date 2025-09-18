@@ -137,6 +137,9 @@ public interface ChromeAndroidTask {
     /** Returns whether this {@link ChromeAndroidTask} is currently in fullscreen mode. */
     boolean isFullscreen();
 
+    /** Non-maximized bounds of the task even when currently maximized or minimized. */
+    Rect getRestoredBounds();
+
     /**
      * Returns the most recent timestamp when this {@link ChromeAndroidTask} became active, i.e.,
      * when its state changed from nonexistent or inactive (minimized/unfocused), to the active
@@ -181,6 +184,12 @@ public interface ChromeAndroidTask {
 
     /** Minimizes this {@link ChromeAndroidTask}. */
     void minimize();
+
+    /**
+     * Restores this {@link ChromeAndroidTask}. This positions the window to the last known position
+     * and size before it was maximized, minimized or fullscreen.
+     */
+    void restore();
 
     /**
      * Sets the {@link ChromeAndroidTask}'s size and position to the specified values.

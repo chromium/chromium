@@ -71,9 +71,11 @@ gfx::NativeWindow AndroidBaseWindow::GetNativeWindow() const {
 }
 
 gfx::Rect AndroidBaseWindow::GetRestoredBounds() const {
-  // TODO(http://crbug.com/435478605): Implement this.
-  NOTIMPLEMENTED();
-  return gfx::Rect();
+  std::vector<int> sizes = Java_AndroidBaseWindow_getRestoredBounds(
+      AttachCurrentThread(), java_android_base_window_);
+  gfx::Rect bounds = gfx::Rect(
+      /*x=*/sizes[0], /*y=*/sizes[1], /*width=*/sizes[2], /*height=*/sizes[3]);
+  return bounds;
 }
 
 ui::mojom::WindowShowState AndroidBaseWindow::GetRestoredState() const {
@@ -132,7 +134,8 @@ void AndroidBaseWindow::Minimize() {
 }
 
 void AndroidBaseWindow::Restore() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_restore(AttachCurrentThread(),
+                                 java_android_base_window_);
 }
 
 void AndroidBaseWindow::SetBounds(const gfx::Rect& bounds) {
