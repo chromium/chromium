@@ -2801,30 +2801,11 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
   // Prevent image_data from being deleted while lock is not held.
   scoped_refptr<ImageData> image_data_holder(image_data);
 
-  // For kGpu, we upload and color convert (if necessary).
   if (image_data->mode == DecodedDataMode::kGpu) {
-    DCHECK(!use_transfer_cache_);
-    base::AutoUnlock unlock(lock_);
-    uploaded_y_image = SkImages::TextureFromImage(
-        context_->GrContext(), uploaded_y_image, image_needs_mips);
-    uploaded_u_image = SkImages::TextureFromImage(
-        context_->GrContext(), uploaded_u_image, image_needs_mips);
-    uploaded_v_image = SkImages::TextureFromImage(
-        context_->GrContext(), uploaded_v_image, image_needs_mips);
-    if (!uploaded_y_image || !uploaded_u_image || !uploaded_v_image) {
-      DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
-      return;
-    }
-
-    int image_width = uploaded_y_image->width();
-    int image_height = uploaded_y_image->height();
-    uploaded_image = CreateImageFromYUVATexturesInternal(
-        uploaded_y_image.get(), uploaded_u_image.get(), uploaded_v_image.get(),
-        image_width, image_height,
-        image_data->info.yuva->yuvaInfo().planeConfig(),
-        image_data->info.yuva->yuvaInfo().subsampling(),
-        image_data->info.yuva->yuvaInfo().yuvColorSpace(), color_space,
-        decoded_color_space);
+    // This codepath is no longer supported post-OOP-R.
+    // TODO(crbug.com/391648152): Once `use_transfer_cache_` is always true,
+    // confirm that this entire method can be eliminated and do so.
+    return;
   }
 
   // At-raster may have decoded this while we were unlocked. If so, ignore our

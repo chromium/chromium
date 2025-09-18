@@ -4376,19 +4376,6 @@ SkColorType test_color_types[] = {kN32_SkColorType, kARGB_4444_SkColorType,
                                   kRGBA_F16_SkColorType};
 
 INSTANTIATE_TEST_SUITE_P(
-    GpuImageDecodeCacheTestsInProcessRaster,
-    GpuImageDecodeCacheTest,
-    testing::Combine(
-        testing::ValuesIn(test_color_types),
-        testing::Values(false) /* use_transfer_cache */,
-        testing::Bool() /* do_yuv_decode */,
-        testing::Values(false) /* allow_accelerated_jpeg_decoding */,
-        testing::Values(false) /* allow_accelerated_webp_decoding */,
-        testing::Values(false) /* advertise_accelerated_decoding */,
-        testing::Bool() /* enable_clipped_image_scaling */,
-        testing::Values(false) /* no_discardable_memory */));
-
-INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
     GpuImageDecodeCacheTest,
     testing::Combine(
