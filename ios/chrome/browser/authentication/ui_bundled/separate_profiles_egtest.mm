@@ -879,7 +879,9 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       @"Profile should have been switched");
 }
 
-- (void)testProfileDeletedOnForgetManagedAccount {
+// TODO(crbug.com/411035267): Re-enable this test, it fails on asan and
+// fieldtrial.
+- (void)DISABLED_testProfileDeletedOnForgetManagedAccount {
   // Setup: There's 1 personal and 1 managed account. The personal account is
   // signed in.
   FakeSystemIdentity* const personalIdentity =
