@@ -39,9 +39,9 @@
     </template>
   </template>
 
-  <template is="dom-if" if="[[renderOldView_(currentRoute, inSearchMode)]]">
+  <template is="dom-if" if="[[renderPrivacyView_(currentRoute, inSearchMode)]]">
     <settings-privacy-page slot="view" id="privacy" prefs="{{prefs}}"
-        in-search-mode="[[inSearchMode]]">
+        route-path$="[[routes_.PRIVACY.path]]">
     </settings-privacy-page>
   </template>
 

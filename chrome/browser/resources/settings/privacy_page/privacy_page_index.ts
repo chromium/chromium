@@ -259,9 +259,12 @@ export class SettingsPrivacyPageIndexElement extends
     return defaultViews;
   }
 
-  private isPrivacyRoute_(route: Route, hasMigratedToPlugin: boolean): boolean {
-    return routes.PRIVACY.contains(route) &&
-        (route.hasMigratedToPlugin === hasMigratedToPlugin);
+  private isRouteHostedWithinPrivacyView_(route: Route): boolean {
+    const nestedRoutes = [routes.CLEAR_BROWSER_DATA];
+    if (loadTimeData.getBoolean('showPrivacyGuide')) {
+      nestedRoutes.push(routes.PRIVACY_GUIDE);
+    }
+    return nestedRoutes.includes(route);
   }
 
   // Return the list of view IDs to be displayed, or null if a view should
@@ -284,18 +287,17 @@ export class SettingsPrivacyPageIndexElement extends
         // of search results.
         return this.inSearchMode ? this.getDefaultViews_() : [];
       default: {
-        // Handle case where Privacy child route has migrated to the new
-        // architecture.
-        if (this.isPrivacyRoute_(route, /*hasMigratedToPlugin*/ true)) {
+        // Handle case of routes whose UIs are still hosted within
+        // settings-privacy-page.
+        if (this.isRouteHostedWithinPrivacyView_(route)) {
+          return ['privacy'];
+        }
+
+        // Handle case of a Privacy child route.
+        if (routes.PRIVACY.contains(route)) {
           const view = this.$.viewManager.querySelector(
               `[slot='view'][route-path='${route.path}']`);
           return view ? [view.id] : null;
-        }
-
-        // Handle case where Privacy child route has not migrated to the new
-        // architecture.
-        if (this.isPrivacyRoute_(route, /*hasMigratedToPlugin*/ false)) {
-          return ['privacy'];
         }
 
         // Nothing to do. Other parent elements are responsible for updating
@@ -367,7 +369,7 @@ export class SettingsPrivacyPageIndexElement extends
         (!!this.currentRoute && this.currentRoute === route);
   }
 
-  private renderOldView_(): boolean {
+  private renderPrivacyView_(): boolean {
     // <if expr="is_chromeos">
     if (getTopLevelRoute() === routes.PRIVACY &&
         this.currentRoute === routes.BASIC) {
@@ -379,8 +381,8 @@ export class SettingsPrivacyPageIndexElement extends
 
     return this.inSearchMode ||
         (!!this.currentRoute &&
-         this.isPrivacyRoute_(
-             this.currentRoute, /*hasMigratedToPlugin*/ false));
+         (this.currentRoute === routes.PRIVACY ||
+          this.isRouteHostedWithinPrivacyView_(this.currentRoute)));
   }
 
   private updatePrivacyGuidePromoVisibility_() {
