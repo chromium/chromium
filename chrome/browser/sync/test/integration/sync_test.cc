@@ -204,7 +204,7 @@ class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
 SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode(
     SyncTestMode sync_test_mode) {
   return sync_test_mode == SyncTestMode::kSignInOnly
-             ? SyncTest::kSyncTransportModeOnly
+             ? SyncTest::kSyncTransportOnly
              : SyncTest::kSyncTheFeature;
 }
 
@@ -672,7 +672,7 @@ bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
     SyncServiceImplHarness* client = GetClient(client_index);
     DVLOG(1) << "Setting up " << client_index << " client";
 
-    if (setup_mode == kSyncTransportModeOnly) {
+    if (setup_mode == kSyncTransportOnly) {
       if (!client->SignInPrimaryAccount(account) ||
           !client->AwaitEngineInitialization()) {
         ADD_FAILURE() << "SetupSync() failed.";
@@ -708,7 +708,7 @@ bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
       case NO_WAITING:
         break;
       case WAIT_FOR_SYNC_SETUP_TO_COMPLETE:
-        if (setup_mode == kSyncTransportModeOnly) {
+        if (setup_mode == kSyncTransportOnly) {
           if (!client->AwaitSyncTransportActive()) {
             ADD_FAILURE() << "AwaitSyncTransportActive() failed";
             return false;
@@ -725,7 +725,7 @@ bool SyncTest::SetupSyncInternal(SyncWaitCondition wait_condition,
         }
         break;
       case WAIT_FOR_COMMITS_TO_COMPLETE:
-        if (setup_mode == kSyncTransportModeOnly) {
+        if (setup_mode == kSyncTransportOnly) {
           if (!client->AwaitSyncTransportActive()) {
             ADD_FAILURE() << "AwaitSyncTransportActive() failed";
             return false;
