@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -512,8 +513,16 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       chrome::ShowExtensions(browser_, extension->id());
 #else
-      // TODO(crbug.com/441744719): Show extensions page on Desktop Android.
-      NOTIMPLEMENTED();
+      const std::string& extension_to_highlight = extension->id();
+      GURL url(chrome::kChromeUIExtensionsURL);
+      if (!extension_to_highlight.empty()) {
+        GURL::Replacements replacements;
+        std::string query("id=");
+        query += extension_to_highlight;
+        replacements.SetQueryStr(query);
+        url = url.ReplaceComponents(replacements);
+      }
+      OpenUrl(GetActiveWebContents(), url);
 #endif
       break;
     }
