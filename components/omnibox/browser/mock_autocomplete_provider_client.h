@@ -142,6 +142,13 @@ class MockAutocompleteProviderClient
     return nullptr;
   }
 
+#if BUILDFLAG(IS_IOS)
+  MOCK_METHOD(GeminiPrototypeOmniboxService*,
+              GetGeminiPrototypeOmniboxService,
+              (),
+              (const));
+#endif
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());

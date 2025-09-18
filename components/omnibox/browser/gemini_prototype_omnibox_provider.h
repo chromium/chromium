@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/gemini_prototype_omnibox_service.h"
 
 class AutocompleteProviderClient;
 
@@ -29,7 +30,10 @@ class GeminiPrototypeOmniboxProvider : public AutocompleteProvider {
   // Callback for when the Gemini backend returns a suggestion.
   void OnSuggestionReceived(const std::u16string& suggestion);
 
-  raw_ptr<AutocompleteProviderClient> const client_;
+  raw_ptr<AutocompleteProviderClient> client_;
+  raw_ptr<GeminiPrototypeOmniboxService> service_;
+  std::u16string last_suggestion_;
+  GURL last_url_;
   // Weak pointers are used to safely cancel callbacks if the provider is
   // stopped.
   base::WeakPtrFactory<GeminiPrototypeOmniboxProvider> weak_ptr_factory_{this};

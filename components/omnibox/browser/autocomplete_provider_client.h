@@ -38,6 +38,9 @@ class ZeroSuggestCacheService;
 struct AutocompleteMatch;
 struct ProviderStateService;
 class AimEligibilityService;
+#if BUILDFLAG(IS_IOS)
+class GeminiPrototypeOmniboxService;
+#endif  // BUILDFLAG(IS_IOS)
 
 namespace bookmarks {
 class BookmarkModel;
@@ -118,6 +121,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
       LensOverlaySuggestInputsCallback callback) const = 0;
   virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() const = 0;
   virtual AimEligibilityService* GetAimEligibilityService() const = 0;
+#if BUILDFLAG(IS_IOS)
+  virtual GeminiPrototypeOmniboxService* GetGeminiPrototypeOmniboxService()
+      const = 0;
+#endif  // BUILDFLAG(IS_IOS)
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.

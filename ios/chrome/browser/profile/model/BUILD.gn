@@ -141,6 +141,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/app_store_bundle/model:app_store_bundle_service_factory",
     "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/autocomplete/model/prototype",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/bring_android_tabs/model",

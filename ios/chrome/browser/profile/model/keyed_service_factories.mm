@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/on_device_tail_model_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/prototype/gemini_prototype_omnibox_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
@@ -300,6 +301,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   }
   ExternalFileRemoverFactory::GetInstance();
   FollowServiceFactory::GetInstance();
+  GeminiPrototypeOmniboxServiceFactory::GetInstance();
   BwgServiceFactory::GetInstance();
   GoogleGroupsManagerFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();

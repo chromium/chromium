@@ -9,6 +9,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
+#import "components/omnibox/browser/gemini_prototype_omnibox_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 
@@ -79,6 +80,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       LensOverlaySuggestInputsCallback callback) const override;
   AimEligibilityService* GetAimEligibilityService() const override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
+  GeminiPrototypeOmniboxService* GetGeminiPrototypeOmniboxService()
+      const override;
 
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;

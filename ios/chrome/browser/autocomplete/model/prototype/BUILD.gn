@@ -1,0 +1,28 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prototype") {
+  sources = [
+    "gemini_prototype_omnibox_service_factory.h",
+    "gemini_prototype_omnibox_service_factory.mm",
+    "gemini_prototype_omnibox_service_ios.h",
+    "gemini_prototype_omnibox_service_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/omnibox/browser",
+    "//components/optimization_guide/core:model_execution",
+    "//ios/chrome/browser/ai_prototyping/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}

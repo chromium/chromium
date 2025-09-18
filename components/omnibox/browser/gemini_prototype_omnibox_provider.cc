@@ -29,7 +29,8 @@ GeminiPrototypeOmniboxProvider::GeminiPrototypeOmniboxProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_GEMINI_PROTOTYPE),
-      client_(client) {
+      client_(client),
+      service_(client->GetGeminiPrototypeOmniboxService()) {
   AddListener(listener);
 }
 
@@ -64,13 +65,20 @@ void GeminiPrototypeOmniboxProvider::Start(const AutocompleteInput& input,
   matches_.clear();
   done_ = false;
 
-  // This simulates the network latency of a real backend call.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
+  if (!service_) {
+    return;
+  }
+
+  if (input.current_url() == last_url_ && !last_suggestion_.empty()) {
+    OnSuggestionReceived(last_suggestion_);
+    return;
+  }
+
+  last_url_ = input.current_url();
+  service_->RequestSuggestions(
+      input,
       base::BindOnce(&GeminiPrototypeOmniboxProvider::OnSuggestionReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     u"Simulated Gemini Suggestion"),
-      base::Milliseconds(200));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GeminiPrototypeOmniboxProvider::Stop(AutocompleteStopReason stop_reason) {
@@ -83,6 +91,7 @@ void GeminiPrototypeOmniboxProvider::Stop(AutocompleteStopReason stop_reason) {
 void GeminiPrototypeOmniboxProvider::OnSuggestionReceived(
     const std::u16string& suggestion) {
   done_ = true;
+  last_suggestion_ = suggestion;
   if (suggestion.empty()) {
     return;
   }
@@ -100,14 +109,18 @@ void GeminiPrototypeOmniboxProvider::OnSuggestionReceived(
 
   // Set the group id in order to have the suggestion displayed in
   // IOSWebZpsSection.
-  match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
-  match.contents = suggestion;
-  match.destination_url = GURL("http://www.google.com/");
+  match.suggestion_group_id = omnibox::GROUP_VISITED_DOC_RELATED;
+
+  match.contents = AutocompleteMatch::SanitizeString(suggestion);
+  match.destination_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(suggestion),
+      client_->GetTemplateURLService()->search_terms_data()));
   match.contents_class.emplace_back(
       0, ACMatchClassification::MATCH | ACMatchClassification::URL);
   match.fill_into_edit = suggestion;
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.keyword = default_provider->keyword();
+
   matches_.emplace_back(match);
   NotifyListeners(true);
 }

@@ -341,6 +341,7 @@ static_library("browser") {
     sources += [
       "gemini_prototype_omnibox_provider.cc",
       "gemini_prototype_omnibox_provider.h",
+      "gemini_prototype_omnibox_service.h",
     ]
   }
 
