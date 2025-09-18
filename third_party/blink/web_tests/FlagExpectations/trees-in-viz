@@ -66,11 +66,6 @@ crbug.com/401453196 virtual/fluent-overlay-scrollbar/virtual/overlay-scrollbar/o
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/hover-over-scrollbar-thumb.html [ Failure ]
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/scrollbar-show-tickmarks.html [ Failure ]
 
-crbug.com/401453196 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-parent-element-overflow-hidden-and-border-radius-2.html [ Failure ]
-crbug.com/401453196 external/wpt/css/css-masking/mask-image/mask-under-border-radius.html [ Failure ]
-crbug.com/401453196 external/wpt/css/filter-effects/backdrop-filter-clip-rounded-clip.html [ Failure ]
-crbug.com/401453196 external/wpt/css/filter-effects/backdrop-filter-clipped.html [ Failure ]
-crbug.com/401453196 external/wpt/css/filter-effects/css-backdrop-filter-transform-clip.html [ Failure ]
 crbug.com/401453196 compositing/perspective-interest-rect.html [ Failure ]
 crbug.com/401453196 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
 crbug.com/401453196 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]

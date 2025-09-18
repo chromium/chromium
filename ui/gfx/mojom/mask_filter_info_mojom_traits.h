@@ -24,6 +24,10 @@ struct StructTraits<gfx::mojom::MaskFilterInfoDataView, gfx::MaskFilterInfo> {
     return info.gradient_mask();
   }
 
+  static const std::optional<int>& clip_id(const gfx::MaskFilterInfo& info) {
+    return info.clip_id();
+  }
+
   static bool Read(gfx::mojom::MaskFilterInfoDataView data,
                    gfx::MaskFilterInfo* out);
 };
