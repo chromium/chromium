@@ -120,8 +120,6 @@ void MediaStreamVideoCapturerSource::StartSourceImpl(
       std::move(media_stream_callbacks.capture_version_cb);
   video_capture_callbacks.frame_dropped_cb =
       std::move(media_stream_callbacks.frame_dropped_cb);
-  video_capture_callbacks.state_update_cb =
-      std::move(media_stream_callbacks.state_update_cb);
   source_->StartCapture(
       capture_params_, std::move(video_capture_callbacks),
       blink::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,

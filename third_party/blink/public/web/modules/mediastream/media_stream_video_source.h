@@ -53,7 +53,6 @@ class VideoTrackAdapterSettings;
 // `encoded_frame_cb` is called when an encoded video frame is available.
 // `settings_cb` is called when the video track settings are updated.
 // `format_cb` is called when the video track format is updated.
-// `state_update_cb` is called when the video capturer state is updated.
 struct MediaStreamVideoSourceCallbacks {
   VideoCaptureDeliverFrameCB deliver_frame_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
@@ -61,7 +60,6 @@ struct MediaStreamVideoSourceCallbacks {
   EncodedVideoFrameCB encoded_frame_cb;
   VideoTrackSettingsCallback settings_cb;
   VideoTrackFormatCallback format_cb;
-  VideoCaptureStateUpdateCB state_update_cb;
 };
 
 // MediaStreamVideoSource is an interface used for sending video frames to a
