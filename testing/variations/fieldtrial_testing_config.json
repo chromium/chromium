@@ -26509,14 +26509,13 @@
                 "android_webview",
                 "chromeos",
                 "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "DeadlineRatio0_5",
+                    "name": "PredictAtDeadline",
                     "params": {
-                        "deadline_ratio": "0.5"
+                        "mode": "UseScrollPredictorForDeadline"
                     },
                     "enable_features": [
                         "WaitForLateScrollEvents"
