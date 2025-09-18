@@ -488,6 +488,10 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('image upload button clicks file input', async () => {
+    loadTimeData.overrideValues({
+      'composeboxShowContextMenu': false,
+    });
+    createComposeboxElement();
     const imageUploadEventPromise =
         eventToPromise('click', composeboxElement.$.imageInput);
     composeboxElement.$.imageUploadButton.click();
@@ -497,7 +501,11 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('file upload button clicks file input', async () => {
-    loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
+    loadTimeData.overrideValues({
+      'composeboxShowPdfUpload': true,
+      'composeboxShowContextMenu': false,
+    });
+    createComposeboxElement();
     const fileUploadClickEventPromise =
         eventToPromise('click', composeboxElement.$.fileInput);
     composeboxElement.$.fileUploadButton.click();

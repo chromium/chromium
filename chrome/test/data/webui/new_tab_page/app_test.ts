@@ -39,6 +39,7 @@ suite('NewTabPageAppTest', () => {
   let moduleRegistry: TestMock<ModuleRegistry>;
   let backgroundManager: TestMock<BackgroundManager>;
   let moduleResolver: PromiseResolver<Module[]>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
 
   const url: URL = new URL(location.href);
   const backgroundImageLoadTime: number = 123;
@@ -84,11 +85,12 @@ suite('NewTabPageAppTest', () => {
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
 
+    searchboxHandler = installMock(SearchboxPageHandlerRemote, () => {});
     composeboxHandler = installMock(
         ComposeboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new ComposeboxPageCallbackRouter(),
-            new SearchboxPageHandlerRemote(),
+            searchboxHandler as unknown as SearchboxPageHandlerRemote,
             new SearchboxPageCallbackRouter())));
 
     app = document.createElement('ntp-app');
