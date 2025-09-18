@@ -476,6 +476,8 @@ class BrowserWindowFeatures {
   GetUserDataFactoryForTesting();
 
  private:
+  class ExtensionKeybindingRegistryDelegateTabStrip;
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactory();
 
@@ -567,7 +569,10 @@ class BrowserWindowFeatures {
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
 
-  // The class that registers for keyboard shortcuts for extension commands.
+  // The class that registers for keyboard shortcuts for extension commands,
+  // and its delegate.
+  std::unique_ptr<ExtensionKeybindingRegistryDelegateTabStrip>
+      extension_keybinding_delegate_;
   std::unique_ptr<ExtensionKeybindingRegistryViews>
       extension_keybinding_registry_;
 

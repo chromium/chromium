@@ -47,6 +47,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
    public:
     // Returns the currently active WebContents, or nullptr if there is none.
     virtual content::WebContents* GetWebContentsForExtension() = 0;
+
+   protected:
+    ~Delegate() {}  // should only be deleted via concrete type.
   };
 
   // If `extension_filter` is not ALL_EXTENSIONS, only keybindings by

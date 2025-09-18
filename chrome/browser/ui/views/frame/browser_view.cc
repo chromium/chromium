@@ -6024,12 +6024,6 @@ void BrowserView::DestroyAnyExclusiveAccessBubble() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserView, extension::ExtensionKeybindingRegistry::Delegate implementation:
-content::WebContents* BrowserView::GetWebContentsForExtension() {
-  return GetActiveWebContents();
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ImmersiveModeController::Observer implementation:
 void BrowserView::OnImmersiveRevealStarted() {
   AppMenuButton* app_menu_button =

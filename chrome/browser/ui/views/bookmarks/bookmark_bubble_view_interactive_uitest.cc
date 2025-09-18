@@ -20,6 +20,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"

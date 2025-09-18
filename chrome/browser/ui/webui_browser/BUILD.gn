@@ -23,7 +23,6 @@ source_set("webui_browser") {
     ":browser_mojo_bindings",
     ":feature_flag",
     "//base",
-    "//chrome/browser/extensions",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/views/interaction",

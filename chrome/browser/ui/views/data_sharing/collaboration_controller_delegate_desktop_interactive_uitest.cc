@@ -20,6 +20,7 @@
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/features.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/collaboration_finder.h"
 #include "components/saved_tab_groups/public/features.h"

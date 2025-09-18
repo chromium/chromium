@@ -156,6 +156,27 @@
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #endif  // defined(USE_AURA)
 
+class BrowserWindowFeatures::ExtensionKeybindingRegistryDelegateTabStrip final
+    : public extensions::ExtensionKeybindingRegistry::Delegate {
+ public:
+  explicit ExtensionKeybindingRegistryDelegateTabStrip(
+      TabStripModel& tab_strip_model)
+      : tab_strip_model_(tab_strip_model) {}
+  ~ExtensionKeybindingRegistryDelegateTabStrip() = default;
+
+  ExtensionKeybindingRegistryDelegateTabStrip(
+      const ExtensionKeybindingRegistryDelegateTabStrip& other) = delete;
+  ExtensionKeybindingRegistryDelegateTabStrip& operator=(
+      const ExtensionKeybindingRegistryDelegateTabStrip& other) = delete;
+
+  content::WebContents* GetWebContentsForExtension() override {
+    return tab_strip_model_->GetActiveWebContents();
+  }
+
+ private:
+  const raw_ref<TabStripModel> tab_strip_model_;
+};
+
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
 
@@ -511,19 +532,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     toast_service_ = std::make_unique<ToastService>(browser);
   }
 
+  views::FocusManager* focus_manager = nullptr;
   if (BrowserView* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser)) {
+    focus_manager = browser_view->GetFocusManager();
     contents_border_controller_ =
         std::make_unique<ContentsBorderController>(browser_view);
-
-    // Focus manager can be null in tests.
-    if (views::FocusManager* focus_manager = browser_view->GetFocusManager()) {
-      extension_keybinding_registry_ =
-          std::make_unique<ExtensionKeybindingRegistryViews>(
-              profile, focus_manager,
-              extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-              browser_view);
-    }
 
     // BrowserView is an AcceleratorProvider.
     accelerator_provider_ = browser_view;
@@ -537,6 +551,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   if (WebUIBrowserWindow* webui_browser_window =
           WebUIBrowserWindow::FromBrowser(browser)) {
+    focus_manager = webui_browser_window->widget()->GetFocusManager();
     webui_browser_side_panel_ui_ =
         std::make_unique<WebUIBrowserSidePanelUI>(browser);
 
@@ -545,6 +560,18 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     find_bar_owner_ =
         std::make_unique<FindBarOwnerWebUIBrowser>(webui_browser_window);
+  }
+
+  // Focus manager can be null in tests.
+  if (focus_manager) {
+    extension_keybinding_delegate_ =
+        std::make_unique<ExtensionKeybindingRegistryDelegateTabStrip>(
+            *browser->GetTabStripModel());
+    extension_keybinding_registry_ =
+        std::make_unique<ExtensionKeybindingRegistryViews>(
+            profile, focus_manager,
+            extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
+            extension_keybinding_delegate_.get());
   }
 }
 

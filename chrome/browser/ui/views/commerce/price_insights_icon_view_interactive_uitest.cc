@@ -27,6 +27,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search/ntp_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
