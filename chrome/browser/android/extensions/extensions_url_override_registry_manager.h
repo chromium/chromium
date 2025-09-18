@@ -7,14 +7,18 @@
 
 #include <jni.h>
 
+#include <memory>
+
+#include "chrome/browser/android/extensions/extensions_url_override_state_tracker.h"
+
 namespace extensions {
 // Listens to changes to the Native-level extensions URL registry and handles
 // updates to Android classes.
-class ExtensionsUrlOverrideRegistryManager {
+class ExtensionsUrlOverrideRegistryManager
+    : public ExtensionUrlOverrideStateTracker::StateListener {
  public:
-  ExtensionsUrlOverrideRegistryManager() = default;
-
-  ~ExtensionsUrlOverrideRegistryManager() = default;
+  explicit ExtensionsUrlOverrideRegistryManager(Profile* profile);
+  virtual ~ExtensionsUrlOverrideRegistryManager();
 
   ExtensionsUrlOverrideRegistryManager(
       const ExtensionsUrlOverrideRegistryManager& client) = delete;
@@ -23,6 +27,12 @@ class ExtensionsUrlOverrideRegistryManager {
 
   // Called by Java to destroy this object. Do not call directly in C++.
   void Destroy(JNIEnv* env);
+
+  void OnUrlOverrideEnabled(const std::string& chrome_url_path,
+                            bool incognito_enabled) override;
+  void OnUrlOverrideDisabled(const std::string& chrome_url_path) override;
+
+  std::unique_ptr<ExtensionUrlOverrideStateTracker> state_tracker_;
 };
 }  // namespace extensions
 

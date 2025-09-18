@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
     "extensions_url_override_registry_manager.cc",
     "extensions_url_override_registry_manager.h",
+    "extensions_url_override_state_tracker.h",
   ]
 
   deps = [
@@ -16,8 +18,21 @@ source_set("android") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//third_party/jni_zero",
   ]
+
+  if (enable_extensions) {
+    sources += [
+      "extensions_url_override_state_tracker_impl.cc",
+      "extensions_url_override_state_tracker_impl.h",
+    ]
+
+    deps += [
+      "//extensions/browser:browser_sources",
+      "//extensions/common",
+    ]
+  }
 }
 
 generate_jni("jni_headers") {
@@ -32,6 +47,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.extensions;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Listens to changes to the Native-level extensions URL registry and handles updates to Android
@@ -18,8 +20,8 @@ import org.chromium.build.annotations.NullMarked;
 public class ExtensionsUrlOverrideRegistryManager {
     private long mNativePtr;
 
-    public ExtensionsUrlOverrideRegistryManager() {
-        mNativePtr = ExtensionsUrlOverrideRegistryManagerJni.get().initialize(this);
+    public ExtensionsUrlOverrideRegistryManager(Profile profile) {
+        mNativePtr = ExtensionsUrlOverrideRegistryManagerJni.get().initialize(this, profile);
     }
 
     public void destroy() {
@@ -31,7 +33,9 @@ public class ExtensionsUrlOverrideRegistryManager {
 
     @NativeMethods
     interface Natives {
-        long initialize(ExtensionsUrlOverrideRegistryManager javaObject);
+        long initialize(
+                ExtensionsUrlOverrideRegistryManager javaObject,
+                @JniType("Profile*") Profile profile);
 
         void destroy(long nativeExtensionsUrlOverrideRegistryManager);
     }
