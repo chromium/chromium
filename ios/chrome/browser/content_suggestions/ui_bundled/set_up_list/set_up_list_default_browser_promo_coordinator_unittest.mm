@@ -91,7 +91,6 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
   OCMExpect([delegate_ setUpListDefaultBrowserPromoDidFinish:YES]);
 
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
   if (@available(iOS 18.3, *)) {
     if (IsDefaultAppsDestinationAvailable() &&
         IsUseDefaultAppsDestinationForPromosEnabled()) {
@@ -99,7 +98,6 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
           URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
     }
   }
-#endif
   OCMExpect([mock_application_ openURL:url options:{} completionHandler:nil]);
   [coordinator_ didTapPrimaryActionButton];
   [delegate_ verify];

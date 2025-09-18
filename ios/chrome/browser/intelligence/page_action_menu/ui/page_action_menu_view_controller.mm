@@ -37,11 +37,7 @@ const CGFloat kStackViewMargins = 16;
 // The padding surrounding the menu's content.
 const CGFloat kMenuSidePadding = 16;
 const CGFloat kMenuTopPadding = 8;
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kMenuBottomPadding = 60;
-#else
-const CGFloat kMenuBottomPadding = 54;
-#endif
 
 // The height of the menu's buttons.
 const CGFloat kLargeButtonHeight = 60;

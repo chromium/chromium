@@ -38,11 +38,9 @@
 
 namespace {
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 // Enables the liquid glass effect for the home customization menu background.
 BASE_FEATURE(kHomeCustomizationLiquidGlassBackground,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // The height of the menu's initial detent, which roughly represents a header
 // and 3 cells.
@@ -267,13 +265,13 @@ CGFloat const kSheetCornerRadius = 30;
   // Configure the navigation controller.
   UINavigationController* navigationController =
       [[UINavigationController alloc] initWithRootViewController:menuPage];
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+
   if (@available(iOS 26, *)) {
     if (base::FeatureList::IsEnabled(kHomeCustomizationLiquidGlassBackground)) {
       menuPage.view.backgroundColor = [UIColor clearColor];
     }
   }
-#endif
+
   navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
 
   // Configure the presentation controller with a custom initial detent.

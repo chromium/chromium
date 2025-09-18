@@ -31,11 +31,7 @@ const CGFloat kAnimationDuration = 1.0;
 const CGFloat kDamping = 0.85;
 
 // Spacing for secondary button.
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 const CGFloat kSpacingAfterSecondaryButton = 8.0;
-#else
-const CGFloat kSpacingAfterSecondaryButton = 0.0;
-#endif
 
 }  // namespace
 
@@ -156,8 +152,11 @@ const CGFloat kSpacingAfterSecondaryButton = 0.0;
 
 // Returns the child view controller's content height.
 - (CGFloat)childContentHeight {
-  return [_currentChildViewController contentHeight] +
-         kSpacingAfterSecondaryButton;
+  if (@available(iOS 26, *)) {
+    return [_currentChildViewController contentHeight] +
+           kSpacingAfterSecondaryButton;
+  }
+  return [_currentChildViewController contentHeight];
 }
 
 // Creates and returns the stack view containing the animated logos.
