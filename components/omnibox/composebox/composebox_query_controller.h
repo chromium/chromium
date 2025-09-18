@@ -190,7 +190,8 @@ class ComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      bool send_lns_surface);
+      bool send_lns_surface,
+      bool enable_multi_context_input_flow);
   virtual ~ComposeboxQueryController();
 
   // Session management. Virtual for testing.
@@ -433,6 +434,9 @@ class ComposeboxQueryController {
   // TODO(crbug.com/430070871): Remove this once the server supports the
   // `lns_surface` parameter.
   bool send_lns_surface_ = false;
+
+  // Whether or not to use the multiple-input id request generation flow.
+  bool enable_multi_context_input_flow_ = false;
 
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
 

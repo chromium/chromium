@@ -111,14 +111,16 @@ class MockQueryController : public TestComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      bool send_lns_surface)
+      bool send_lns_surface,
+      bool enable_multi_context_input_flow)
       : TestComposeboxQueryController(identity_manager,
                                       url_loader_factory,
                                       channel,
                                       locale,
                                       template_url_service,
                                       variations_client,
-                                      send_lns_surface) {}
+                                      send_lns_surface,
+                                      enable_multi_context_input_flow) {}
   ~MockQueryController() override = default;
 
   MOCK_METHOD(void, NotifySessionStarted, ());
@@ -193,7 +195,8 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, "en-US", template_url_service_,
-        fake_variations_client_.get(), /*send_lns_surface=*/false);
+        fake_variations_client_.get(), /*send_lns_surface=*/false,
+        /*enable_multi_context_input_flow=*/false);
     query_controller_ = query_controller_ptr.get();
     web_contents()->SetDelegate(&delegate_);
     auto metrics_recorder_ptr = std::make_unique<MockMetricsRecorder>();
@@ -487,8 +490,8 @@ class ComposeboxHandlerTabsTest : public ComposeboxHandlerTest {
     content::WebContentsTester::For(contents_unique_ptr.get())
         ->NavigateAndCommit(url);
     content::WebContents* content_ptr = contents_unique_ptr.get();
-    content::WebContentsTester::For(content_ptr)->SetLastActiveTimeTicks(
-        IncrementTimeTicksAndGet());
+    content::WebContentsTester::For(content_ptr)
+        ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
     tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
     tabs::TabInterface* tab_interface =
         tab_strip_model()->GetTabForWebContents(content_ptr);

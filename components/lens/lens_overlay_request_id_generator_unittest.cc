@@ -221,4 +221,25 @@ TEST_F(
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
 }
 
+TEST_F(
+    LensOverlayRequestIdGeneratorTest,
+    GetNextIdForMultiContextUploadRequest_SetsSequenceAndImageSequenceAndChangesUuid) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kMultiContextUploadRequest);
+  ASSERT_EQ(first_id->image_sequence_id(), 1);
+  ASSERT_EQ(first_id->sequence_id(), 1);
+  ASSERT_EQ(first_id->long_context_id(), 0);
+
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kMultiContextUploadRequest);
+  ASSERT_EQ(second_id->image_sequence_id(), 1);
+  ASSERT_EQ(second_id->sequence_id(), 1);
+  ASSERT_EQ(second_id->long_context_id(), 0);
+  ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
+  ASSERT_NE(first_id->uuid(), second_id->uuid());
+}
+
 }  // namespace lens

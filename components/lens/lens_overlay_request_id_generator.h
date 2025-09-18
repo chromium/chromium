@@ -11,7 +11,6 @@
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
-
 namespace lens {
 
 class TestLensOverlayQueryController;
@@ -49,6 +48,11 @@ enum class RequestIdUpdateMode {
   // request with a viewport screenshot, i.e. incrementing the sequence id,
   // image sequence id, long context id, and creating a new analytics id.
   kPageContentWithViewportRequest = 7,
+  // Indicates that the request id should be modified for a new context upload
+  // in a multi-context upload flow, i.e. incrementing the sequence id, image
+  // sequence id, and creating a new uuid and analytics id, regardless of the
+  // context upload mime type.
+  kMultiContextUploadRequest = 8,
 };
 
 // Manages creating lens overlay request IDs. Owned by a single Lens overlay

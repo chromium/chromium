@@ -37,7 +37,8 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
       g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
       g_browser_process->GetApplicationLocale(),
       TemplateURLServiceFactory::GetForProfile(profile),
-      profile->GetVariationsClient(), false);
+      profile->GetVariationsClient(), /*send_lns_surface=*/false,
+      /*enable_multi_context_input_flow=*/false);
   query_controller_->AddObserver(this);
 }
 

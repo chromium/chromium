@@ -107,7 +107,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
           templateURLService,
           VariationsClientServiceFactory::GetForProfile(self.profile),
-          /*send_lns_surface=*/false);
+          /*send_lns_surface=*/false,
+          /*enable_multi_context_input_flow=*/false);
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);

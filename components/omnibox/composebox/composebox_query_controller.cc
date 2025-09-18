@@ -205,14 +205,16 @@ ComposeboxQueryController::ComposeboxQueryController(
     std::string locale,
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
-    bool send_lns_surface)
+    bool send_lns_surface,
+    bool enable_multi_context_input_flow)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       channel_(channel),
       locale_(locale),
       template_url_service_(template_url_service),
       variations_client_(variations_client),
-      send_lns_surface_(send_lns_surface) {
+      send_lns_surface_(send_lns_surface),
+      enable_multi_context_input_flow_(enable_multi_context_input_flow) {
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -243,6 +245,8 @@ ComposeboxQueryController::GetNextRequestId(
   suggest_inputs_.set_encoded_request_id(
       lens::Base64EncodeRequestId(*request_id));
   if (!base::Contains(lens::kUnsupportedVitMimeTypes, mime_type)) {
+    // TODO(crbug.com/445777189): Support multi-context input id flow for
+    // suggest.
     suggest_inputs_.set_contextual_visual_input_type(
         lens::VitQueryParamValueForMimeType(mime_type));
   }
@@ -262,9 +266,9 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
   if (!active_files_.empty() && cluster_info_.has_value()) {
     // Since multiple file upload isn't supported right now, use the last file
     // uploaded to determine `vit` param.
-    // TODO(crbug.com/428967670): Support multiple file upload.
+    // TODO(crbug.com/445777721): Support multiple file upload.
     const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
-    // TODO(crbug.com/428967670): Update `num_files_in_request_` when more than
+    // TODO(crbug.com/445777721): Update `num_files_in_request_` when more than
     // 1 file is supported.
     num_files_in_request_ = 1;
     if (IsValidFileUploadStatusForMultimodalRequest(
@@ -322,11 +326,14 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Unlike image uploads, PDF / page content uploads need to increment the
   // long context id instead of the image sequence id.
   current_file_info.request_id_ = GetNextRequestId(
-      current_file_info.mime_type_ == lens::MimeType::kImage
-          ? lens::RequestIdUpdateMode::kFullImageRequest
-          : (has_viewport_screenshot
-                 ? lens::RequestIdUpdateMode::kPageContentWithViewportRequest
-                 : lens::RequestIdUpdateMode::kPageContentRequest),
+      enable_multi_context_input_flow_
+          ? lens::RequestIdUpdateMode::kMultiContextUploadRequest
+          : (current_file_info.mime_type_ == lens::MimeType::kImage
+                 ? lens::RequestIdUpdateMode::kFullImageRequest
+                 : (has_viewport_screenshot
+                        ? lens::RequestIdUpdateMode::
+                              kPageContentWithViewportRequest
+                        : lens::RequestIdUpdateMode::kPageContentRequest)),
       current_file_info.mime_type_,
       GetMediaType(current_file_info.mime_type_, has_viewport_screenshot));
 
