@@ -665,18 +665,10 @@ source_set("main") {
     deps += [ "//ios/components/order_file" ]
   }
   assert_no_deps = []
-
-  if (ios_chrome_links_with_material_components_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
+  assert_no_deps += [
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+  ]
 }
 
 if (ios_chrome_privacy_manifest != "") {
@@ -813,18 +805,10 @@ chrome_app("chrome") {
   }
 
   assert_no_deps = ios_assert_no_deps + ios_chrome_extra_assert_no_deps
-
-  if (ios_chrome_links_with_material_components_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
+  assert_no_deps += [
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+  ]
 
   # Lottie links with GLKit which does not support macCatalyst environment
   # (see https://crbug.com/1394553 for details of the build failure). This
