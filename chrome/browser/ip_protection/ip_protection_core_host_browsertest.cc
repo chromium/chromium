@@ -13,8 +13,10 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ip_protection/ip_protection_core_host_factory.h"
+#include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -692,6 +694,9 @@ class IpProtectionCoreHostUserSettingBrowserTest
     scoped_feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionUx);
   }
 
+ protected:
+  const GURL kTestUrl = GURL("https://a.test");
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -798,6 +803,150 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
             incognito_profile_auth_token_getter_interceptor_->expiration());
 
   DestroyIncognitoNetworkContextAndInterceptors();
+}
+
+// TODO(crbug.com/445983566): Re-enable once PRE_ tests are fixed on Android
+// (crbug.com/40200835).
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart \
+  DISABLED_PRE_TrackingProtectionExceptionRemainsAfterRestart
+#define MAYBE_TrackingProtectionExceptionRemainsAfterRestart \
+  DISABLED_TrackingProtectionExceptionRemainsAfterRestart
+#else
+#define MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart \
+  PRE_TrackingProtectionExceptionRemainsAfterRestart
+#define MAYBE_TrackingProtectionExceptionRemainsAfterRestart \
+  TrackingProtectionExceptionRemainsAfterRestart
+#endif
+
+// Verify that Tracking Protection exceptions persist across network service
+// restarts and crashes.
+IN_PROC_BROWSER_TEST_F(
+    IpProtectionCoreHostUserSettingBrowserTest,
+    MAYBE_PRE_TrackingProtectionExceptionRemainsAfterRestart) {
+  // Ensure that the tracking protection exception is not set yet.
+  base::test::TestFuture<bool> has_exception_future;
+
+  ip_protection::mojom::CoreControl* ipp_control =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile())
+          ->last_remote_for_testing();
+
+  mojo::Remote<ip_protection::mojom::CoreControlTest> ipp_control_test;
+  ipp_control->BindTestInterfaceForTesting(
+      ipp_control_test.BindNewPipeAndPassReceiver());
+
+  ipp_control_test->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+
+  ASSERT_FALSE(has_exception_future.Get());
+
+  // Simulate setting User Bypass settings.
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  host_content_settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(kTestUrl),
+      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
+
+  GetProfile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  // Verify that the settings are propagated to IP Protection Core.
+  has_exception_future.Clear();
+
+  ipp_control_test->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+  // Ensure that the exception is present before the restart.
+  EXPECT_TRUE(has_exception_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
+                       MAYBE_TrackingProtectionExceptionRemainsAfterRestart) {
+  // Check that the settings are still propagated to IP Protection Core after
+  // restart.
+  ip_protection::mojom::CoreControl* ipp_control =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile())
+          ->last_remote_for_testing();
+  mojo::Remote<ip_protection::mojom::CoreControlTest> ipp_control_test;
+  ipp_control->BindTestInterfaceForTesting(
+      ipp_control_test.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<bool> has_exception_future;
+
+  ipp_control_test->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+
+  EXPECT_TRUE(has_exception_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IpProtectionCoreHostUserSettingBrowserTest,
+    TrackingProtectionExceptionRemainsAfterNetworkServiceCrash) {
+  // If the network service isn't out-of-process then we can't crash it.
+  if (!content::IsOutOfProcessNetworkService()) {
+    GTEST_SKIP() << "Unable to crash: Network service is not out-of-process. "
+                    "Skipping test.";
+  }
+
+  // Ensure that the tracking protection exception is not set yet.
+  ip_protection::mojom::CoreControl* ipp_control_pre_crash =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile())
+          ->last_remote_for_testing();
+
+  mojo::Remote<ip_protection::mojom::CoreControlTest>
+      ipp_control_test_pre_crash;
+  ipp_control_pre_crash->BindTestInterfaceForTesting(
+      ipp_control_test_pre_crash.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<bool> has_exception_future;
+
+  ipp_control_test_pre_crash->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+
+  ASSERT_FALSE(has_exception_future.Get());
+
+  // Simulate setting User Bypass settings.
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  host_content_settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(kTestUrl),
+      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
+
+  GetProfile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  // Check that the settings are propagated to IP Protection Core before the
+  // crash.
+  has_exception_future.Clear();
+
+  ipp_control_test_pre_crash->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+
+  ASSERT_TRUE(has_exception_future.Get());
+
+  // Crash the Network Service, and then restart it to ensure that the settings
+  // are still propagated after the crash.
+  SimulateNetworkServiceCrash();
+
+  // Check that the settings are still propagated to IP Protection Core after
+  // the crash.
+  ip_protection::mojom::CoreControl* ipp_control_post_crash =
+      IpProtectionCoreHostFactory::GetForProfile(GetProfile())
+          ->last_remote_for_testing();
+
+  ASSERT_NE(ipp_control_post_crash, ipp_control_pre_crash);
+
+  mojo::Remote<ip_protection::mojom::CoreControlTest>
+      ipp_control_test_post_crash;
+  ipp_control_post_crash->BindTestInterfaceForTesting(
+      ipp_control_test_post_crash.BindNewPipeAndPassReceiver());
+
+  has_exception_future.Clear();
+  ipp_control_test_post_crash->HasTrackingProtectionExceptionForTesting(
+      kTestUrl, has_exception_future.GetCallback());
+
+  EXPECT_TRUE(has_exception_future.Get());
 }
 
 class IpProtectionCoreHostPolicyBrowserTest : public policy::PolicyTest {

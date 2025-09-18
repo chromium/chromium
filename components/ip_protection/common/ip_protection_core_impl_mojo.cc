@@ -225,6 +225,13 @@ void IpProtectionCoreImplMojo::GetAuthTokenForTesting(
       IpProtectionCoreImpl::GetAuthTokenForTesting(proxy_layer, geo_id));
 }
 
+void IpProtectionCoreImplMojo::HasTrackingProtectionExceptionForTesting(
+    const GURL& first_party_url,
+    ip_protection::mojom::CoreControlTest::
+        HasTrackingProtectionExceptionForTestingCallback callback) {
+  std::move(callback).Run(HasTrackingProtectionException(first_party_url));
+}
+
 void IpProtectionCoreImplMojo::OnIpProtectionConfigAvailableForTesting(
     VerifyIpProtectionCoreHostForTestingCallback callback) {
   auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(

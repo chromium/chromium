@@ -1565,6 +1565,13 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       network_context_params->ip_protection_data_directory =
           profile_->GetPath();
     }
+
+    ContentSettingsForOneType tracking_protection_content_settings =
+        HostContentSettingsMapFactory::GetForProfile(profile_)
+            ->GetSettingsForOneType(ContentSettingsType::TRACKING_PROTECTION);
+
+    network_context_params->tracking_protection_content_settings =
+        std::move(tracking_protection_content_settings);
   }
 
   network_context_params->device_bound_sessions_enabled =

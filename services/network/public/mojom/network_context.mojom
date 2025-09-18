@@ -651,6 +651,12 @@ struct NetworkContextParams {
   // Modifies the default value of the QUIC connection timeout, this value
   // gets applied while constructing NetworkContext by updating the quic_params.
   int64? quic_idle_connection_timeout_seconds;
+
+  // Defines the current state of Tracking Protection content settings. This is
+  // used by IP Protection, and only set when IP Protection is enabled
+  // for the profile.
+  array<content_settings.mojom.ContentSettingPatternSource>
+      tracking_protection_content_settings;
 };
 
 struct NetworkConditions {
@@ -1381,8 +1387,7 @@ interface NetworkContext {
       RestrictedUDPSocketParams? params,
       pending_receiver<RestrictedUDPSocket> receiver,
       pending_remote<UDPSocketListener>? listener,
-      bool allow_multicast)
-      => (int32 result, IPEndPoint? local_addr_out);
+      bool allow_multicast) => (int32 result, IPEndPoint? local_addr_out);
 
   // Creates a TCP server socket that listens on |local_addr|. The socket
   // created can only be used for the purpose specified in |traffic_annotation|,

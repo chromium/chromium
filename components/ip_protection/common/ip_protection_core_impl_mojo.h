@@ -76,6 +76,10 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       const std::string& geo_id,
       ip_protection::mojom::CoreControlTest::GetAuthTokenForTestingCallback
           callback) override;
+  void HasTrackingProtectionExceptionForTesting(
+      const GURL& first_party_url,
+      ip_protection::mojom::CoreControlTest::
+          HasTrackingProtectionExceptionForTestingCallback callback) override;
 
  private:
   IpProtectionCoreImplMojo(

@@ -2727,6 +2727,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.set_proxy_delegate(
         std::make_unique<ip_protection::IpProtectionProxyDelegate>(
             ip_protection_core_impl.get()));
+    // Set tracking protection content settings if there are any provided.
+    ip_protection_core_impl->SetTrackingProtectionContentSetting(
+        params_->tracking_protection_content_settings);
+
     ip_protection_core_ = std::move(ip_protection_core_impl);
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {

@@ -98,6 +98,7 @@ source_set("browser_tests") {
     ":ip_protection",
     "//base/test:test_support",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/signin",
     "//chrome/test:test_support",

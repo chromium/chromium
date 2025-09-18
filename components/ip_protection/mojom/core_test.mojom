@@ -6,6 +6,7 @@ module ip_protection.mojom;
 
 import "components/ip_protection/mojom/data_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // Testing support for the IP Protection state in the network service process.
 interface CoreControlTest {
@@ -23,4 +24,8 @@ interface CoreControlTest {
   // fetched).
   GetAuthTokenForTesting(ProxyLayer proxy_layer, string geo_id)
       => (BlindSignedAuthToken? token);
+
+  // Check whether IP Protection has any bypasses set by User Bypass
+  HasTrackingProtectionExceptionForTesting(url.mojom.Url first_party_url)
+      => (bool has_exception);
 };
