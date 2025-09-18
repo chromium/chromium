@@ -136,10 +136,12 @@ class SaveAndFillManagerImplTest : public testing::Test {
 
   void SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult result,
-      bool create_valid_legal_message) {
+      bool create_valid_legal_message,
+      const std::vector<std::pair<int, int>>& supported_card_bin_ranges = {}) {
     ON_CALL(*mock_network_interface_,
             GetDetailsForCreateCard(testing::_, testing::_))
-        .WillByDefault([&, result, create_valid_legal_message](
+        .WillByDefault([&, result, create_valid_legal_message,
+                        supported_card_bin_ranges](
                            const auto& /*request_details*/,
                            base::OnceCallback<void(
                                PaymentsAutofillClient::PaymentsRpcResult,
@@ -155,7 +157,7 @@ class SaveAndFillManagerImplTest : public testing::Test {
                   : std::make_unique<base::Value::Dict>(
                         base::JSONReader::ReadDict(kInvalidLegalMessageLines)
                             .value()),
-              {});
+              supported_card_bin_ranges);
           return RequestId("11223344");
         });
   }
@@ -1206,6 +1208,83 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
       "Autofill.SaveAndFill.Funnel.Local.Success",
       autofill_metrics::SaveAndFillFormEvent::kFormSubmitted,
       /*expected_count=*/1);
+}
+
+// Test that if the user enters a card with a BIN that is not in the
+// supported BIN ranges returned by the server, the upload flow is terminated
+// and local save is offered instead as a fallback.
+TEST_F(SaveAndFillManagerImplTest,
+       UnsupportedBinRange_TriggersLocalSaveFallback) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true,
+      /*supported_card_bin_ranges=*/{{400000, 499999}});
+
+  auto user_provided_details = CreateUserProvidedCardDetails(
+      /*card_number=*/u"5454545454545454",
+      /*cardholder_name=*/u"Jane Smith",
+      /*expiration_date_month=*/u"06",
+      /*expiration_date_year=*/u"2035",
+      /*security_code=*/u"456");
+  SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
+
+  EXPECT_CALL(*mock_network_interface_, CreateCard(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .Times(1);
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  std::vector<const CreditCard*> cards =
+      payments_autofill_client_->GetPaymentsDataManager().GetLocalCreditCards();
+  ASSERT_EQ(cards.size(), 1U);
+  EXPECT_EQ(cards[0]->number(), u"5454545454545454");
+}
+
+// Test that if the user enters a card with a supported BIN, the upload flow
+// proceeds as normal.
+TEST_F(SaveAndFillManagerImplTest, UploadSaveOfferedForSupportedBinCard) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true,
+      /*supported_card_bin_ranges=*/{{4111, 4111}});
+
+  auto user_provided_details = CreateUserProvidedCardDetails(
+      /*card_number=*/u"4111111111111111",
+      /*cardholder_name=*/u"Jane Smith",
+      /*expiration_date_month=*/u"06",
+      /*expiration_date_year=*/u"2035",
+      /*security_code=*/u"456");
+  SetUpUploadSaveAndFillDialogDecision(
+      CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
+
+  SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+                          "112233445566L");
+
+  ON_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillByDefault([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("some risk data");
+      });
+
+  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
+      .Times(1);
+  EXPECT_CALL(
+      *payments_autofill_client_,
+      CreditCardUploadCompleted(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, testing::_));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  EXPECT_TRUE(payments_autofill_client_->GetPaymentsDataManager()
+                  .GetLocalCreditCards()
+                  .empty());
 }
 
 }  // namespace autofill::payments
