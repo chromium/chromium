@@ -290,7 +290,7 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   // Use desktop widget so that it is not constrained by the boundary of the
   // host window.
   dialog->set_use_desktop_widget_override(
-      !dialog_host->ShouldDialogBoundsConstrainedByHost());
+      !dialog_host->ShouldConstrainDialogBoundsByHost());
 
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(), dialog_host->GetHostView());

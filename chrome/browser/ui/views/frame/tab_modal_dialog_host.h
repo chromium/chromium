@@ -32,7 +32,7 @@ class TabModalDialogHost : public web_modal::WebContentsModalDialogHost,
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) override;
   bool ShouldActivateDialog() const override;
-  bool ShouldDialogBoundsConstrainedByHost() override;
+  bool ShouldConstrainDialogBoundsByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 

@@ -171,7 +171,7 @@ class BrowserViewLayout::BrowserModalDialogHostViews
            browser_view_layout_->browser_view_->browser();
   }
 
-  bool ShouldDialogBoundsConstrainedByHost() override {
+  bool ShouldConstrainDialogBoundsByHost() override {
     return !base::FeatureList::IsEnabled(features::kTabModalUsesDesktopWidget);
   }
 

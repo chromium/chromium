@@ -45,7 +45,7 @@ class WEB_MODAL_EXPORT ModalDialogHost {
   // bounds of the modal host. True by default. Please consult with
   // //constrained_window OWNERS if you intend to release the bounds constraint
   // for your WebContents container (i.e. returning false from this function).
-  virtual bool ShouldDialogBoundsConstrainedByHost();
+  virtual bool ShouldConstrainDialogBoundsByHost();
 
   // Add/remove observer. The host must implement these methods, store the
   // observers in a list, and call OnHostDestroying() on each before host

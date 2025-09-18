@@ -1679,7 +1679,7 @@ gfx::Point GlicWindowControllerImpl::GetDialogPosition(
   return gfx::Point();
 }
 
-bool GlicWindowControllerImpl::ShouldDialogBoundsConstrainedByHost() {
+bool GlicWindowControllerImpl::ShouldConstrainDialogBoundsByHost() {
   // Allows web modal dialogs to extend beyond the boundary of glic window.
   // These web modals are usually larger than the glic window.
   return false;

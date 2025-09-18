@@ -65,7 +65,7 @@ bool TabModalDialogHost::ShouldActivateDialog() const {
          browser_view_->browser();
 }
 
-bool TabModalDialogHost::ShouldDialogBoundsConstrainedByHost() {
+bool TabModalDialogHost::ShouldConstrainDialogBoundsByHost() {
   return !base::FeatureList::IsEnabled(features::kTabModalUsesDesktopWidget);
 }
 

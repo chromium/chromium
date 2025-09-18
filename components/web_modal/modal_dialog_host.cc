@@ -16,7 +16,7 @@ bool ModalDialogHost::ShouldActivateDialog() const {
   return true;
 }
 
-bool ModalDialogHost::ShouldDialogBoundsConstrainedByHost() {
+bool ModalDialogHost::ShouldConstrainDialogBoundsByHost() {
   // Please consult with //constrained_window OWNERS if you intend to release
   // the bounds constraint for your WebContents container (i.e. returning
   // false from this function).

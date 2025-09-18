@@ -62,7 +62,7 @@ gfx::Size ExtensionViewHostWebModalHandler::GetMaximumDialogSize() {
   return ExtensionPopup::kMaxSize;
 }
 
-bool ExtensionViewHostWebModalHandler::ShouldDialogBoundsConstrainedByHost() {
+bool ExtensionViewHostWebModalHandler::ShouldConstrainDialogBoundsByHost() {
   // Allow dialogs in extension popups to break out of the popup bounds to
   // prevent clipping on Windows and Linux. This matches the behavior on macOS
   // where extension popup dialogs are shown as sheets over the popup.
