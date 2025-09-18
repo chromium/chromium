@@ -70,6 +70,12 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
 // Enables the new ETC1 encoder (used in tab and back/forward thumbnails).
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Encoder);
 
+// Conducts a check to determine if the View is eligible to a Hit. This is a
+// mitigation of when the prerendered view (hidden) somehow receives the touch
+// event even though it is hidden, due to the ordering of the `children_` in
+// `ViewAndroid`. Refer to crbug.com/442832509 for more details.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckHitEligibility);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_
