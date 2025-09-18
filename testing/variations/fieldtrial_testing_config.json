@@ -26549,9 +26549,9 @@
             ],
             "experiments": [
                 {
-                    "name": "PredictAtDeadline",
+                    "name": "DeadlineRatio0_5",
                     "params": {
-                        "mode": "UseScrollPredictorForDeadline"
+                        "deadline_ratio": "0.5"
                     },
                     "enable_features": [
                         "WaitForLateScrollEvents"
