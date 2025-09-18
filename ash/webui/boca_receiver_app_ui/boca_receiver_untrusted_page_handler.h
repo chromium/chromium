@@ -12,15 +12,22 @@
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/boca_request.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
+#include "chromeos/ash/components/boca/proto/receiver.pb.h"
+#include "chromeos/ash/components/boca/retriable_request_sender.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class SkBitmap;
+
 namespace ash::boca {
 class InvalidationServiceImpl;
+class SpotlightRemotingClientManager;
+enum class CrdConnectionState;
 }  // namespace ash::boca
 
 namespace google_apis {
@@ -31,6 +38,10 @@ enum class HttpRequestMethod;
 namespace net {
 struct NetworkTrafficAnnotationTag;
 }  // namespace net
+
+namespace webrtc {
+class DesktopFrame;
+}  // namespace webrtc
 
 namespace ash::boca_receiver {
 
@@ -51,6 +62,11 @@ class BocaReceiverUntrustedPageHandler
   ~BocaReceiverUntrustedPageHandler() override;
 
  private:
+  using ConnectionInfoRequestSender =
+      boca::RetriableRequestSender<::boca::KioskReceiverConnection>;
+  using UpdateReceiverStateRequestSender =
+      boca::RetriableRequestSender<::boca::ReceiverConnectionState>;
+
   // boca::InvalidationServiceDelegate:
   void UploadToken(
       const std::string& fcm_token,
@@ -66,12 +82,42 @@ class BocaReceiverUntrustedPageHandler
   void Register(const std::string& fcm_token,
                 base::OnceCallback<void(bool)> on_done_cb);
   void OnRegisterResponse(base::OnceCallback<void(bool)> on_done_cb,
-                          std::optional<std::string> device_id);
+                          std::optional<std::string> receiver_id);
+
+  void UpdateConnection(const std::string& connection_id,
+                        ::boca::ReceiverConnectionState request_state);
+  void OnUpdateConnectionResponse(
+      std::optional<::boca::ReceiverConnectionState> response_state);
+
+  void GetConnectionInfo();
+  void OnGetConnectionInfoResponse(
+      std::optional<::boca::KioskReceiverConnection> new_connection_info);
+
+  void ProcessStartRequested(
+      ::boca::KioskReceiverConnection new_connection_info);
+  void MaybeStartConnection(
+      ::boca::KioskReceiverConnection new_connection_info);
+  void MaybeEndConnection(mojom::ConnectionClosedReason reason);
+
+  void OnCrdSessionEnded();
+  void OnCrdFrameReceived(SkBitmap bitmap,
+                          std::unique_ptr<webrtc::DesktopFrame>);
+  void OnCrdConnectionStateUpdated(boca::CrdConnectionState state);
 
   mojo::Remote<mojom::UntrustedPage> page_;
-  raw_ptr<ReceiverHandlerDelegate> delegate_;
+  const raw_ptr<ReceiverHandlerDelegate> delegate_;
+  const std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_;
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_;
   std::unique_ptr<google_apis::RequestSender> registration_request_sender_;
+  std::optional<std::string> receiver_id_;
+  std::unique_ptr<ConnectionInfoRequestSender>
+      connection_info_retriable_sender_;
+  std::optional<::boca::KioskReceiverConnection> connection_info_;
+  std::unique_ptr<UpdateReceiverStateRequestSender>
+      update_connection_retriable_sender_;
+
+  base::WeakPtrFactory<BocaReceiverUntrustedPageHandler> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash::boca_receiver

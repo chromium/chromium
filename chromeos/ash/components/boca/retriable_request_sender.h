@@ -43,6 +43,8 @@ class RetriableRequestSender {
   RetriableRequestSender(const RetriableRequestSender&) = delete;
   RetriableRequestSender& operator=(const RetriableRequestSender&) = delete;
 
+  ~RetriableRequestSender() = default;
+
   void SendRequest(CreateDelegateCallback create_delegate_callback,
                    ResponseCallback response_callback) {
     auto backoff_entry = std::make_unique<net::BackoffEntry>(&backoff_policy_);

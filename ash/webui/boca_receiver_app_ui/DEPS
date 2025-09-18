@@ -1,3 +1,5 @@
 include_rules = [
   "+google_apis/common",
+  "+third_party/skia/include/core/SkBitmap.h",
+  "+third_party/webrtc/modules/desktop_capture/desktop_frame.h",
 ]
