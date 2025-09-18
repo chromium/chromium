@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1089,20 +1088,11 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
   void SetUp() override {
     accelerated_canvas_scope_ =
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
-    std::unique_ptr<viz::TestGLES2Interface> gl_context =
-        std::make_unique<viz::TestGLES2Interface>();
-    gl_context->set_gpu_rasterization(true);
-    std::unique_ptr<viz::TestContextSupport> context_support =
-        std::make_unique<viz::TestContextSupport>();
-    std::unique_ptr<viz::TestRasterInterface> raster_interface =
-        std::make_unique<viz::TestRasterInterface>();
-    test_context_provider_ = base::MakeRefCounted<viz::TestContextProvider>(
-        std::move(context_support), std::move(gl_context),
-        std::move(raster_interface),
-        /*shared_image_interface=*/nullptr,
-        /*support_locking=*/false);
 
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    test_context_provider_->UnboundTestRasterInterface()->set_gpu_rasterization(
+        true);
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
 
     PrintContextTest::SetUp();
     accelerated_compositing_scope_ = std::make_unique<
