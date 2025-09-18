@@ -14,6 +14,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/chromecast_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/ui_base_switches.h"
@@ -21,6 +22,7 @@
 #include "ui/linux/fallback_linux_ui.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(USE_GTK)
 #include "ui/gtk/gtk_ui_factory.h"
@@ -63,6 +65,16 @@ LinuxUiAndTheme* GetLinuxUi(CreateLinuxUiFunc&& create_linux_ui) {
   if (!ui_and_theme) {
     return nullptr;
   }
+
+  // Calling `Initialize()` below may create new `NativeTheme` and/or
+  // `OsSettingsProvider` instances, triggering NativeTheme update
+  // notifications. If these happen synchronously, observers may attempt to
+  // obtain the `ThemeService` instance while this callstack is still setting it
+  // up, leading to unexpected null pointers. To avoid this, delay any such
+  // notifications until the callstack has unwound.
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE,
+      std::make_unique<NativeTheme::UpdateNotificationDelayScoper>());
 
   // This function is reentrant: it may be called while Initialize() is running.
   // In that case, return `linux_ui`. However, if Initialize() fails,

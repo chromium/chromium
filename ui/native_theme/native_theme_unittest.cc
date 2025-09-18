@@ -5,12 +5,16 @@
 #include "ui/native_theme/native_theme.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 namespace ui {
 
@@ -92,6 +96,48 @@ TEST_F(NativeThemeTest, MetricsEmitted) {
   histogram_tester.ExpectUniqueSample(
       "Views.Browser.NumColorProvidersInitializedDuringOnNativeThemeUpdated", 0,
       2);
+}
+
+TEST_F(NativeThemeTest, DelayScoper) {
+  // Monitor calls to `OnNativeThemeUpdated()`.
+  struct MockObserver : NativeThemeObserver {
+    void OnNativeThemeUpdated(NativeTheme* observed_theme) override {
+      ++call_count;
+    }
+
+    int call_count = 0;
+  } observer;
+  base::ScopedObservation<NativeTheme, NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(NativeTheme::GetInstanceForNativeUi());
+
+  const auto expect_notification_count = [&](int n) {
+    EXPECT_EQ(std::exchange(observer.call_count, 0), n);
+  };
+
+  // Sanity check: setting the color should normally notify.
+  os_settings_provider().SetAccentColor(SK_ColorRED);
+  expect_notification_count(1);
+
+  // When there are scopers alive, there should be no notifications.
+  std::optional<NativeTheme::UpdateNotificationDelayScoper> scoper_1, scoper_2;
+  scoper_1.emplace();
+  scoper_2.emplace();
+  os_settings_provider().SetAccentColor(SK_ColorGREEN);
+  expect_notification_count(0);
+
+  // Destroying some, but not all scopers should still not notify.
+  scoper_2.reset();
+  expect_notification_count(0);
+
+  // Since there are still scopers, further changes should still not notify.
+  os_settings_provider().SetAccentColor(SK_ColorBLUE);
+  expect_notification_count(0);
+
+  // When the last scoper is destroyed, there should only be one notification,
+  // even though there were multiple changes above.
+  scoper_1.reset();
+  expect_notification_count(1);
 }
 
 }  // namespace ui

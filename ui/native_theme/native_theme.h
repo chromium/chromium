@@ -5,16 +5,20 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <variant>
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -338,6 +342,34 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
                                    TextFieldExtraParams,
                                    TrackbarExtraParams>;
 
+  // Creating an instance of this class prevents `NotifyOnNativeThemeUpdated()`
+  // from having an effect in any `NativeTheme` instance until no scopers
+  // remain. When the last scoper is destroyed, any such delayed notifications
+  // will be fired.
+  class [[maybe_unused, nodiscard]] COMPONENT_EXPORT(NATIVE_THEME)
+      UpdateNotificationDelayScoper {
+   public:
+    UpdateNotificationDelayScoper();
+    UpdateNotificationDelayScoper(const UpdateNotificationDelayScoper&);
+    UpdateNotificationDelayScoper(UpdateNotificationDelayScoper&&);
+    UpdateNotificationDelayScoper& operator=(
+        const UpdateNotificationDelayScoper&) = default;
+    UpdateNotificationDelayScoper& operator=(UpdateNotificationDelayScoper&&) =
+        default;
+    ~UpdateNotificationDelayScoper();
+
+    static bool exists(base::PassKey<NativeTheme>) { return !!num_instances_; }
+
+    static base::CallbackListSubscription RegisterCallback(
+        base::PassKey<NativeTheme>,
+        base::OnceClosure cb);
+
+   private:
+    static base::OnceClosureList& GetDelayedNotifications();
+
+    static size_t num_instances_;
+  };
+
   NativeTheme(const NativeTheme&) = delete;
   NativeTheme& operator=(const NativeTheme&) = delete;
 
@@ -446,10 +478,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   //     call `NotifyOnNativeThemeUpdated()`. Failing to call that manually
   //     after using them typically results in cryptic bugs.
   //
-  // TODO(pkasting): Consider adding a scoping object to freeze update
-  // notifications until the last such object is destroyed. Then use that
-  // everywhere that currently calls these setters or writes directly to the
-  // underlying members.
+  // TODO(pkasting): To address the third point, consider using
+  // `UpdateNotificationDelayScoper` everywhere that currently calls these
+  // setters or writes directly to the underlying members. Then make the setters
+  // call `NotifyOnNativeThemeUpdated()` whenever the actual value changes and
+  // change all direct writes to use the setters. At that point forgetting to
+  // notify will be impossible, but we will only get one such notification.
 
   SystemTheme system_theme() const { return system_theme_; }
 
@@ -554,6 +588,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   PreferredContrast CalculatePreferredContrast() const;
 
   base::CallbackListSubscription os_settings_changed_subscription_;
+  base::CallbackListSubscription update_delay_subscription_;
   base::ObserverList<NativeThemeObserver> native_theme_observers_;
   SystemTheme system_theme_;
   bool use_overlay_scrollbar_ = false;

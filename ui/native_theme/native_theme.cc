@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -22,6 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -56,21 +58,7 @@
 
 namespace ui {
 
-NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
-
-NativeTheme::MenuListExtraParams::MenuListExtraParams(
-    const NativeTheme::MenuListExtraParams&) = default;
-
-NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
-    const NativeTheme::MenuListExtraParams&) = default;
-
-NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
-
-NativeTheme::TextFieldExtraParams::TextFieldExtraParams(
-    const NativeTheme::TextFieldExtraParams&) = default;
-
-NativeTheme::TextFieldExtraParams& NativeTheme::TextFieldExtraParams::operator=(
-    const NativeTheme::TextFieldExtraParams&) = default;
+namespace {
 
 #if BUILDFLAG(IS_MAC)
 using NativeUiTheme = NativeThemeMac;
@@ -100,6 +88,62 @@ NativeTheme* GetInstanceForWebImpl() {
 using NativeUiTheme = NativeThemeMobile;
 using WebUiTheme = NativeThemeMobile;
 #endif
+
+}  // namespace
+
+NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
+
+NativeTheme::MenuListExtraParams::MenuListExtraParams(
+    const NativeTheme::MenuListExtraParams&) = default;
+
+NativeTheme::MenuListExtraParams& NativeTheme::MenuListExtraParams::operator=(
+    const NativeTheme::MenuListExtraParams&) = default;
+
+NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
+
+NativeTheme::TextFieldExtraParams::TextFieldExtraParams(
+    const NativeTheme::TextFieldExtraParams&) = default;
+
+NativeTheme::TextFieldExtraParams& NativeTheme::TextFieldExtraParams::operator=(
+    const NativeTheme::TextFieldExtraParams&) = default;
+
+NativeTheme::UpdateNotificationDelayScoper::UpdateNotificationDelayScoper() {
+  ++num_instances_;
+}
+
+NativeTheme::UpdateNotificationDelayScoper::UpdateNotificationDelayScoper(
+    const UpdateNotificationDelayScoper&) {
+  ++num_instances_;
+}
+
+NativeTheme::UpdateNotificationDelayScoper::UpdateNotificationDelayScoper(
+    UpdateNotificationDelayScoper&&) {
+  ++num_instances_;
+}
+
+NativeTheme::UpdateNotificationDelayScoper::~UpdateNotificationDelayScoper() {
+  if (--num_instances_ == 0) {
+    GetDelayedNotifications().Notify();
+  }
+}
+
+// static
+base::CallbackListSubscription
+NativeTheme::UpdateNotificationDelayScoper::RegisterCallback(
+    base::PassKey<NativeTheme>,
+    base::OnceClosure cb) {
+  return GetDelayedNotifications().Add(std::move(cb));
+}
+
+// static
+base::OnceClosureList&
+NativeTheme::UpdateNotificationDelayScoper::GetDelayedNotifications() {
+  static base::NoDestructor<base::OnceClosureList> s_delayed_notifications;
+  return *s_delayed_notifications;
+}
+
+// static
+size_t NativeTheme::UpdateNotificationDelayScoper::num_instances_ = 0;
 
 // static
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
@@ -206,6 +250,25 @@ void NativeTheme::NotifyOnNativeThemeUpdated() {
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::PassKey<NativeTheme> pass_key;
+      UpdateNotificationDelayScoper::exists(pass_key)) {
+    // At least one scoper exists, so delay notifications until it's gone.
+    if (!update_delay_subscription_) {
+      update_delay_subscription_ =
+          UpdateNotificationDelayScoper::RegisterCallback(
+              pass_key, base::BindOnce(&NativeTheme::NotifyOnNativeThemeUpdated,
+                                       base::Unretained(this)));
+    }
+    return;
+  }
+
+  if (update_delay_subscription_) {
+    // No scopers exist, but a subscription does: this is the callback from the
+    // last scoper being destroyed. Reset the subscription so it can be
+    // recreated in the future when necessary.
+    update_delay_subscription_ = {};
+  }
 
   base::ElapsedTimer timer;
   auto& color_provider_manager = ColorProviderManager::Get();

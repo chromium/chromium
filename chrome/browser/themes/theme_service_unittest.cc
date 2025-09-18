@@ -5,6 +5,7 @@
 #include "chrome/browser/themes/theme_service.h"
 
 #include <cmath>
+#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
@@ -13,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
@@ -39,6 +41,7 @@
 #include "components/color/color_mixers.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,6 +59,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -128,6 +132,41 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
 }  // namespace
 
 namespace theme_service_internal {
+
+class ThemeUpdatedTest : public ::testing::Test,
+                         public ::testing::WithParamInterface<SystemTheme> {
+ public:
+#if BUILDFLAG(IS_LINUX)
+  // ::testing::Test:
+  void SetUp() override {
+    static bool initialized = false;
+    if (!initialized) {
+      // Ensures LinuxUi is configured on supported linux platforms.
+      auto* const linux_ui = ui::GetDefaultLinuxUi();
+      ASSERT_TRUE(linux_ui);
+      ui::LinuxUi::SetInstance(linux_ui);
+      initialized = true;
+    }
+
+    linux_ui_getter_ =
+        std::make_unique<LinuxUiGetterImpl>(GetParam() == SystemTheme::kCustom);
+  }
+#endif
+
+  Profile* profile() { return &profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+#if BUILDFLAG(IS_LINUX)
+  std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ThemeUpdatedTest,
+                         ::testing::Values(SystemTheme::kDefault,
+                                           SystemTheme::kCustom));
 
 class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
  public:
@@ -353,6 +392,25 @@ INSTANTIATE_TEST_SUITE_P(
                           ui::NativeTheme::PreferredContrast::kMore),
         ::testing::Values(SystemTheme::kDefault, SystemTheme::kCustom)),
     ColorProviderTest::ParamInfoToString);
+
+TEST_P(ThemeUpdatedTest, NoUpdateOnCreation) {
+  // Monitor calls to `OnNativeThemeUpdated()`.
+  struct MockObserver : ui::NativeThemeObserver {
+    void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {
+      ++call_count;
+    }
+
+    int call_count = 0;
+  } observer;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver> observation(
+      &observer);
+  observation.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+
+  // Creating the theme service should not synchronously trigger any NativeTheme
+  // notifications.
+  ThemeServiceFactory::GetForProfile(profile());
+  EXPECT_EQ(observer.call_count, 0);
+}
 
 // Installs then uninstalls a theme and makes sure that the ThemeService
 // reverts to the default theme after the uninstall.
