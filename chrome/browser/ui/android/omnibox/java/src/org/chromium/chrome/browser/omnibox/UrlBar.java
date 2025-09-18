@@ -250,9 +250,9 @@ public class UrlBar extends AutocompleteEditText {
         // Glitch text can be generated online using glitch text generators.
         // Set the clipping bounds to the padding
         mClipBounds.left = getScrollX();
-        mClipBounds.top = getPaddingTop();
+        mClipBounds.top = getPaddingTop() + getScrollY();
         mClipBounds.right = getScrollX() + getWidth();
-        mClipBounds.bottom = getHeight() - getPaddingBottom();
+        mClipBounds.bottom = getHeight() + getScrollY() - getPaddingBottom();
         canvas.clipRect(mClipBounds);
 
         super.onDraw(canvas);
