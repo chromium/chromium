@@ -71,6 +71,7 @@ ImageRecord::ImageRecord(Node* node,
                          const gfx::Rect& frame_visual_rect,
                          const gfx::RectF& root_visual_rect,
                          MediaRecordIdHash hash,
+                         double entropy_for_lcp,
                          SoftNavigationContext* soft_navigation_context)
     : PaintTimingRecord(node,
                         new_recorded_size,
@@ -78,15 +79,9 @@ ImageRecord::ImageRecord(Node* node,
                         root_visual_rect,
                         soft_navigation_context),
       media_timing_(new_media_timing),
-      hash_(hash) {
+      hash_(hash),
+      entropy_for_lcp_(entropy_for_lcp) {
   CHECK_GT(RecordedSize(), 0u);
-}
-
-double ImageRecord::EntropyForLCP() const {
-  if (RecordedSize() == 0 || !GetMediaTiming()) {
-    return 0.0;
-  }
-  return GetMediaTiming()->ContentSizeForEntropy() * 8.0 / RecordedSize();
 }
 
 std::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {

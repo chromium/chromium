@@ -317,9 +317,23 @@ bool ImagePaintTimingDetector::RecordImage(
   gfx::RectF mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           image_border, current_paint_chunk_properties);
-  uint64_t rect_size = ComputeImageRectSize(
+  uint64_t visual_size = ComputeImageRectSize(
       image_border, mapped_visual_rect, intrinsic_size,
       current_paint_chunk_properties, object, media_timing);
+  // Don't process the image yet if it is invisible, as it may later become
+  // visible, and potentially eligible to be an LCP candidate.
+  if (visual_size == 0u) {
+    return false;
+  }
+
+  // Check the entropy before creating an `ImageRecord`, to ensure the invariant
+  // that all `ImageRecord`s have sufficient entropy.
+  double entropy_for_lcp =
+      media_timing.ContentSizeForEntropy() * 8.0 / visual_size;
+  if (entropy_for_lcp < kMinimumEntropyForLCP) {
+    records_manager_.RecordImage(record_id_hash);
+    return false;
+  }
 
   if (int depth = IgnorePaintTimingScope::IgnoreDepth()) {
     // Record the largest loaded image that is hidden due to documentElement
@@ -328,8 +342,8 @@ bool ImagePaintTimingDetector::RecordImage(
     if (depth == 1 && IgnorePaintTimingScope::IsDocumentElementInvisible() &&
         media_timing.IsSufficientContentLoadedForPaint()) {
       records_manager_.MaybeUpdateLargestIgnoredImage(
-          record_id, rect_size, image_border, mapped_visual_rect,
-          IsRecordingLargestImagePaint());
+          record_id, visual_size, image_border, mapped_visual_rect,
+          entropy_for_lcp, IsRecordingLargestImagePaint());
     }
     return false;
   }
@@ -351,12 +365,9 @@ bool ImagePaintTimingDetector::RecordImage(
   if (records_manager_.IsRecordedImage(record_id_hash)) {
     record = records_manager_.GetPendingImage(record_id_hash);
   } else {
-    double bpp = (rect_size > 0)
-                     ? media_timing.ContentSizeForEntropy() * 8.0 / rect_size
-                     : 0.0;
     record = records_manager_.RecordFirstPaintAndMaybeCreateImageRecord(
-        IsRecordingLargestImagePaint(), record_id, rect_size, image_border,
-        mapped_visual_rect, bpp, context);
+        IsRecordingLargestImagePaint(), record_id, visual_size, image_border,
+        mapped_visual_rect, entropy_for_lcp, context);
   }
 
   // Note: Even if IsRecordedImage() returns `true`, or if we are calling a new
@@ -561,16 +572,19 @@ void ImageRecordsManager::OnImageLoadedInternal(ImageRecord* record,
 
 void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const MediaRecordId& record_id,
-    const uint64_t& visual_size,
+    uint64_t visual_size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
+    double entropy_for_lcp,
     bool is_recording_lcp) {
-  if (visual_size && is_recording_lcp &&
+  CHECK(visual_size);
+  if (is_recording_lcp &&
       (!largest_ignored_image_ ||
        visual_size > largest_ignored_image_->RecordedSize())) {
     largest_ignored_image_ = MakeGarbageCollected<ImageRecord>(
         record_id.GetLayoutObject()->GetNode(), record_id.GetMediaTiming(),
         visual_size, frame_visual_rect, root_visual_rect, record_id.GetHash(),
+        entropy_for_lcp,
         /*soft_navigation_context=*/nullptr);
     largest_ignored_image_->SetLoadTime(base::TimeTicks::Now());
   }
@@ -582,13 +596,9 @@ ImageRecord* ImageRecordsManager::RecordFirstPaintAndMaybeCreateImageRecord(
     const uint64_t& visual_size,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
-    double bpp,
+    double entropy_for_lcp,
     SoftNavigationContext* soft_navigation_context) {
-  // Don't process the image yet if it is invisible, as it may later become
-  // visible, and potentially eligible to be an LCP candidate.
-  if (visual_size == 0u) {
-    return nullptr;
-  }
+  CHECK(visual_size);
   recorded_images_.insert(record_id.GetHash());
 
   // If we are recording LCP, take the timing unless the correct LCP is already
@@ -607,14 +617,10 @@ ImageRecord* ImageRecordsManager::RecordFirstPaintAndMaybeCreateImageRecord(
     return nullptr;
   }
 
-  if (bpp < kMinimumEntropyForLCP) {
-    return nullptr;
-  }
-
   ImageRecord* record = MakeGarbageCollected<ImageRecord>(
       record_id.GetLayoutObject()->GetNode(), record_id.GetMediaTiming(),
       visual_size, frame_visual_rect, root_visual_rect, record_id.GetHash(),
-      soft_navigation_context);
+      entropy_for_lcp, soft_navigation_context);
   AddPendingImage(record, is_recording_lcp);
   return record;
 }

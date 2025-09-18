@@ -81,6 +81,11 @@ class CORE_EXPORT ImageRecordsManager {
       // |AssignPaintTimeToRegisteredQueuedRecords|.
     }
   }
+
+  inline void RecordImage(MediaRecordIdHash record_id_hash) {
+    recorded_images_.insert(record_id_hash);
+  }
+
   // Always adds media record to `recorded_images_`, and might create a new
   // ImageRecord to add to `pending_images_`.
   ImageRecord* RecordFirstPaintAndMaybeCreateImageRecord(
@@ -89,8 +94,9 @@ class CORE_EXPORT ImageRecordsManager {
       const uint64_t& visual_size,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect,
-      double bpp,
+      double entropy_for_lcp,
       SoftNavigationContext* soft_navigation_context);
+
   bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
     return recorded_images_.Contains(record_id_hash);
   }
@@ -120,9 +126,10 @@ class CORE_EXPORT ImageRecordsManager {
   // opacity. May update |largest_ignored_image_| if the new candidate has a
   // larger size.
   void MaybeUpdateLargestIgnoredImage(const MediaRecordId&,
-                                      const uint64_t& visual_size,
+                                      uint64_t visual_size,
                                       const gfx::Rect& frame_visual_rect,
                                       const gfx::RectF& root_visual_rect,
+                                      double entropy_for_lcp,
                                       bool is_recording_lcp);
   void ReportLargestIgnoredImage(uint32_t current_frame_index,
                                  bool is_recording_lcp);

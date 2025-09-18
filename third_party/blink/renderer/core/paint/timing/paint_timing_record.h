@@ -113,6 +113,7 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect,
               MediaRecordIdHash hash,
+              double entropy_for_lcp,
               SoftNavigationContext* soft_navigation_context);
 
   void PopulateTraceValue(TracedValue&) const override;
@@ -120,9 +121,8 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   bool IsImageRecord() const override { return true; }
 
   // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
-  // determine whether the image is a potential LCP candidate. Will return 0.0
-  // if there is no `media_timing`.
-  double EntropyForLCP() const;
+  // determine whether the image is a potential LCP candidate.
+  double EntropyForLCP() const { return entropy_for_lcp_; }
 
   // Returns the image's loading priority. Will return `std::nullopt` if there
   // is no `media_timing`.
@@ -169,6 +169,7 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
   // Images that come from origin-dirty styles should have some limitations on
   // what they report.
   bool is_origin_clean_ = true;
+  const double entropy_for_lcp_;
 };
 
 template <>
