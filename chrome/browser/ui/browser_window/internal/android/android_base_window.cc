@@ -150,5 +150,7 @@ ui::ZOrderLevel AndroidBaseWindow::GetZOrderLevel() const {
 }
 
 void AndroidBaseWindow::SetZOrderLevel(ui::ZOrderLevel order) {
-  NOTREACHED();
+  // Android doesn't support |SetZOrderLevel|.
+  // Per documentation of |ui::ZOrderLevel|, Android ZOrderLevel should always
+  // be |ui::ZOrderLevel::kNormal|.
 }
