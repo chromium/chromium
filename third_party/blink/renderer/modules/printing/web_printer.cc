@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.h"
@@ -119,7 +118,7 @@ ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
 ScriptPromise<WebPrintJob> WebPrinter::submitPrintJob(
     ScriptState* script_state,
     const String& job_name,
-    const WebPrintDocumentDescription* document,
+    Blob* document_data,
     const WebPrintJobTemplateAttributes* pjt_attributes,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -139,7 +138,7 @@ ScriptPromise<WebPrintJob> WebPrinter::submitPrintJob(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WebPrintJob>>(
       script_state, exception_state.GetContext());
-  printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
+  printer_->Print(document_data->AsMojoBlob(), std::move(attributes),
                   resolver->WrapCallbackInScriptScope(
                       BindOnce(&WebPrinter::OnPrint, WrapPersistent(this))));
   return resolver->Promise();

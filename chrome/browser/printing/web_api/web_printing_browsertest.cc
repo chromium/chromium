@@ -60,24 +60,24 @@ startxref
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
     const printers = await navigator.printing.getPrinters();
 
-    const printJob = await printers[0].submitPrintJob("Title", {
-      data: pdfBlob
-    }, {
-      mediaCol: {
-        mediaSize: {
-          xDimension: 21000,
-          yDimension: 29700,
-        }
-      },
-      mediaSource: "tray-1",
-      printColorMode: "color",
-      multipleDocumentHandling: "separate-documents-collated-copies",
-      printerResolution: {
-        crossFeedDirectionResolution: 300,
-        feedDirectionResolution: 400,
-        units: "dots-per-inch",
-      },
-    });
+    const printJob = await printers[0].submitPrintJob("Title",
+      pdfBlob,
+      {
+        mediaCol: {
+          mediaSize: {
+            xDimension: 21000,
+            yDimension: 29700,
+          }
+        },
+        mediaSource: "tray-1",
+        printColorMode: "color",
+        multipleDocumentHandling: "separate-documents-collated-copies",
+        printerResolution: {
+          crossFeedDirectionResolution: 300,
+          feedDirectionResolution: 400,
+          units: "dots-per-inch",
+        },
+      });
     const printJobComplete = new Promise((resolve, reject) => {
       printJob.onjobstatechange = () => {
         if (printJob.attributes().jobState === $1) {
@@ -470,8 +470,7 @@ startxref
 149
 %EOF`;
       const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
-      const printJob = await printer.submitPrintJob("Fail", { data: pdfBlob },
-        {});
+      const printJob = await printer.submitPrintJob("Fail", pdfBlob, {});
     })();
   )";
   ASSERT_THAT(
@@ -504,8 +503,7 @@ startxref
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
     const printers = await navigator.printing.getPrinters();
 
-    const printJob = await printers[0].submitPrintJob("Title",
-      { data: pdfBlob }, {});
+    const printJob = await printers[0].submitPrintJob("Title", pdfBlob, {});
     let phase = 0;
     const printJobCanceled = new Promise((resolve, reject) => {
       printJob.onjobstatechange = () => {
@@ -558,8 +556,7 @@ startxref
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
     const printers = await navigator.printing.getPrinters();
 
-    const printJob = await printers[0].submitPrintJob("Title",
-      { data: pdfBlob }, {});
+    const printJob = await printers[0].submitPrintJob("Title", pdfBlob, {});
     let phase = 0;
     const printJobProcessingThenCanceled = new Promise((resolve, reject) => {
       printJob.onjobstatechange = () => {

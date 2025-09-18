@@ -13,10 +13,6 @@ dictionary WebPrintingResolution {
   WebPrintingResolutionUnits units;
 };
 
-dictionary WebPrintDocumentDescription {
-  required Blob data;
-};
-
 typedef (WebPrintingRange or unsigned long) WebPrintingMediaSizeDimension;
 
 dictionary WebPrintingMediaSize {

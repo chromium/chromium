@@ -3426,8 +3426,6 @@ if (!target_os_is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_attributes.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_attributes.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.cc",

@@ -15,9 +15,9 @@
 
 namespace blink {
 
+class Blob;
 class ExceptionState;
 class ExecutionContext;
-class WebPrintDocumentDescription;
 class WebPrintJob;
 class WebPrintJobTemplateAttributes;
 class WebPrinterAttributes;
@@ -37,7 +37,7 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   ScriptPromise<WebPrintJob> submitPrintJob(
       ScriptState* script_state,
       const String& job_name,
-      const WebPrintDocumentDescription* document,
+      Blob* document_data,
       const WebPrintJobTemplateAttributes* pjt_attributes,
       ExceptionState& exception_state);
 
