@@ -573,6 +573,15 @@ void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
   transport_->CloseIfNonceMatches(nonce);
 }
 
+void WebTransport::OnLocalNetworkAccessCheck(
+    const net::IPEndPoint& server_address,
+    net::CompletionOnceCallback callback) {
+  // TODO(crbug.com/421216834): Implement actual LNA check, flag-guarded, once
+  // the URL network observer and the client security state are threaded through
+  // to make this check feasible.
+  std::move(callback).Run(net::OK);
+}
+
 void WebTransport::OnBeforeConnect(const net::IPEndPoint& server_address) {
   if (torn_down_ || closing_) {
     return;

@@ -42,6 +42,15 @@ using ::testing::DoAll;
 using ::testing::Optional;
 using ::testing::SaveArg;
 
+// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
+// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
+// and `T` is the callback's type.
+ACTION_TEMPLATE(InvokeCallbackArgument,
+                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
+                AND_1_VALUE_PARAMS(net_err)) {
+  std::move(const_cast<T&>(std::get<k>(args))).Run(net_err);
+}
+
 class MockVisitor : public WebTransportClientVisitor {
  public:
   MOCK_METHOD(void,
@@ -49,6 +58,10 @@ class MockVisitor : public WebTransportClientVisitor {
               (scoped_refptr<HttpResponseHeaders>),
               (override));
   MOCK_METHOD(void, OnConnectionFailed, (const WebTransportError&), (override));
+  MOCK_METHOD(void,
+              OnLocalNetworkAccessCheck,
+              (const IPEndPoint&, CompletionOnceCallback callback),
+              (override));
   MOCK_METHOD(void, OnBeforeConnect, (const IPEndPoint&), (override));
   MOCK_METHOD(void,
               OnClosed,
@@ -129,6 +142,8 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
             run_loop_->Quit();
           }
         });
+    ON_CALL(visitor_, OnLocalNetworkAccessCheck(_, _))
+        .WillByDefault(InvokeCallbackArgument<1, CompletionOnceCallback>(OK));
   }
 
   // Use a URLRequestContextBuilder to set `context_`.
@@ -223,6 +238,27 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   Run();
 }
 
+// Check that the Local Network Access check returning an error correctly fails
+// the connection before attempting the connection.
+TEST_F(DedicatedWebTransportHttp3Test, ConnectLocalNetworkAccessCheckFail) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
+      WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnLocalNetworkAccessCheck)
+      .WillOnce(InvokeCallbackArgument<1, CompletionOnceCallback>(
+          ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS));
+
+  WebTransportError error;
+  EXPECT_CALL(visitor_, OnConnectionFailed)
+      .WillOnce(DoAll(StopRunning(), SaveArg<0>(&error)));
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() == nullptr);
+  EXPECT_EQ(error.net_error, ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+}
+
 // Check that connecting via a proxy fails. This is currently not implemented,
 // but it's important that WebTransport not be usable to _bypass_ a proxy -- if
 // a proxy is configured, it must be used.
@@ -237,8 +273,6 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectViaProxy) {
       GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
       WebTransportParameters());
 
-  // This will fail before the run loop starts.
-  EXPECT_CALL(visitor_, OnConnectionFailed(_));
   client_->Connect();
 }
 

@@ -469,6 +469,12 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
       case CONNECT_STATE_RESOLVE_HOST_COMPLETE:
         rv = DoResolveHostComplete(rv);
         break;
+      case CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS:
+        rv = DoLocalNetworkAccessCheck();
+        break;
+      case CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS_COMPLETE:
+        rv = DoLocalNetworkAccessCheckComplete(rv);
+        break;
       case CONNECT_STATE_CONNECT:
         DCHECK_EQ(rv, OK);
         rv = DoConnect();
@@ -570,6 +576,26 @@ int DedicatedWebTransportHttp3Client::DoResolveHostComplete(int rv) {
     return rv;
 
   DCHECK(!resolve_host_request_->GetAddressResults().empty());
+  next_connect_state_ = CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS;
+  return OK;
+}
+
+int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheck() {
+  next_connect_state_ = CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS_COMPLETE;
+  IPEndPoint server_address =
+      resolve_host_request_->GetAddressResults().front();
+  visitor_->OnLocalNetworkAccessCheck(
+      server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
+                                     base::Unretained(this)));
+  return ERR_IO_PENDING;
+}
+
+int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheckComplete(
+    int rv) {
+  if (rv != OK) {
+    return rv;
+  }
+
   next_connect_state_ = CONNECT_STATE_CONNECT;
   return OK;
 }

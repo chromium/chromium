@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/completion_once_callback.h"
 #include "net/quic/web_transport_client.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
@@ -73,6 +74,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void Close(mojom::WebTransportCloseInfoPtr close_info) override;
 
   // WebTransportClientVisitor implementation:
+  void OnLocalNetworkAccessCheck(const net::IPEndPoint& server_address,
+                                 net::CompletionOnceCallback callback) override;
   void OnBeforeConnect(const net::IPEndPoint& server_address) override;
   void OnConnected(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
