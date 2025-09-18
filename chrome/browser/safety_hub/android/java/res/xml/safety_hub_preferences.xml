@@ -13,7 +13,7 @@ found in the LICENSE file.
         app:allowDividerBelow="false"
         app:isPreferenceVisible="false"
         app:backgroundStyle="card"
-        app:backgroundColor="?attr/colorPrimaryContainer" />
+        app:backgroundColor="?attr/colorSurfaceContainerHighest" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="safety_hub_description"

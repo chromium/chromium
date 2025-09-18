@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -180,6 +181,10 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         }
 
         mScanButton = v.findViewById(R.id.scan_card_button);
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            mScanButton.setBackgroundColor(
+                    ChromeColors.getSettingsContainerBackgroundColor(mScanButton.getContext()));
+        }
         mScanButton.setVisibility(View.GONE);
         mScannerManager = new CreditCardScannerManager(this);
         if (mScannerManager.canScan()) {

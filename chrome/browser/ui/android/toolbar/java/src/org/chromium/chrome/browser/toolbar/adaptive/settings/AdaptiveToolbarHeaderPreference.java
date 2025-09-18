@@ -47,6 +47,6 @@ public class AdaptiveToolbarHeaderPreference extends Preference implements Custo
 
     @Override
     public int getCustomBackgroundColor() {
-        return SemanticColorUtils.getColorPrimaryContainer(getContext());
+        return SemanticColorUtils.getColorSurfaceContainerHighest(getContext());
     }
 }
