@@ -27,6 +27,12 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
+BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAskGeminiChipEnabled() {
+  return base::FeatureList::IsEnabled(kAskGeminiChip);
+}
+
 BASE_FEATURE(kGeminiCrossTab, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiCrossTabEnabled() {

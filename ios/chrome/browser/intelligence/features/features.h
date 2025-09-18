@@ -23,6 +23,12 @@ BASE_DECLARE_FEATURE(kPageActionMenu);
 // Returns true if the page action menu is enabled.
 bool IsPageActionMenuEnabled();
 
+// Feature flag controlling the Ask Gemini chip.
+BASE_DECLARE_FEATURE(kAskGeminiChip);
+
+// Returns true if the Ask Gemini chip is enabled.
+bool IsAskGeminiChipEnabled();
+
 // Feature flag controlling the cross-tab floaty chat persistence.
 BASE_DECLARE_FEATURE(kGeminiCrossTab);
 
