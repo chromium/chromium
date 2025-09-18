@@ -34,9 +34,16 @@ const NSTimeInterval kSlideInDuration = 0.1;
 
 - (void)animateTransition:
     (id<UIViewControllerContextTransitioning>)transitionContext {
-  UIView* toView = [transitionContext viewForKey:UITransitionContextToViewKey];
+  UIViewController* toViewController = [transitionContext
+      viewControllerForKey:UITransitionContextToViewControllerKey];
+  UIView* toView = toViewController.view;
   UIView* containerView = transitionContext.containerView;
   [containerView addSubview:toView];
+
+  // Force a layout pass to ensure `inputPlateView` has its final frame.
+  toView.frame =
+      [transitionContext finalFrameForViewController:toViewController];
+  [toView layoutIfNeeded];
 
   UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];
 
