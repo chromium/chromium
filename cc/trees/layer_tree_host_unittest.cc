@@ -33,6 +33,7 @@
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/solid_color_layer.h"
+#include "cc/layers/texture_layer.h"
 #include "cc/layers/video_layer.h"
 #include "cc/layers/view_transition_content_layer.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
@@ -83,6 +84,7 @@
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -11286,6 +11288,133 @@ class LayerTreeHostTestCustomPropertyTreeDelegate : public LayerTreeHostTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestCustomPropertyTreeDelegate);
+
+// This test fixture verifies the fix for a bug where a TextureLayer that is
+// created with a resource while off-screen fails to have that resource
+// correctly pushed to Viz after being scrolled into the view. The bug was
+// specific to the TreesInViz architecture.
+class LayerTreeHostTestTextureLayerOffscreenScroll : public LayerTreeTest {
+ protected:
+  void SetupTree() override {
+    LayerTreeTest::SetupTree();
+    Layer* root = layer_tree_host()->root_layer();
+    ASSERT_TRUE(root);
+
+    // The root layer acts as the viewport.
+    root->SetBounds(gfx::Size(100, 100));
+
+    // Create a scrollable layer that is a child of the root.
+    scroll_layer_ = Layer::Create();
+    scroll_layer_->SetElementId(
+        LayerIdToElementIdForTesting(scroll_layer_->id()));
+    scroll_layer_->SetBounds(gfx::Size(100, 3000));
+    scroll_layer_->SetScrollable(root->bounds());
+    root->AddChild(scroll_layer_);
+
+    texture_layer_ = TextureLayer::Create(nullptr);
+    texture_layer_->SetIsDrawable(true);
+
+    // Position the layer far down the page, well outside the initial viewport.
+    texture_layer_->SetPosition(gfx::PointF(0, 2000));
+    texture_layer_->SetBounds(gfx::Size(10, 10));
+    scroll_layer_->AddChild(texture_layer_);
+
+    // The resource is created on the main thread and sent to the impl thread.
+    auto resource = MakeResource();
+    texture_layer_->SetTransferableResource(resource, base::DoNothing());
+  }
+
+  viz::TransferableResource MakeResource() {
+    // Prepare a transferable resource for the TextureLayer. This uses the
+    // "push" model, where the main thread provides the resource directly.
+    auto mailbox = gpu::Mailbox::Generate();
+    // Use a verified SyncToken as is conventional in tests.
+    gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
+                              gpu::CommandBufferId::FromUnsafeValue(0x123),
+                              0x456);
+    sync_token.SetVerifyFlush();
+
+    // Correctly create a TransferableResource. The MakeGpu factory is private,
+    // so we use the public constructor and populate the fields.
+    auto resource = viz::TransferableResource();
+    resource.format = viz::SinglePlaneFormat::kRGBA_8888;
+    resource.size = texture_layer_->bounds();
+    resource.set_mailbox(mailbox);
+    resource.set_texture_target(GL_TEXTURE_2D);
+    resource.set_sync_token(sync_token);
+
+    return resource;
+  }
+
+  void BeginTest() override {
+    // Set the initial viewport and kick off the first frame.
+    layer_tree_host()->SetViewportRectAndScale(gfx::Rect(100, 100), 1.f,
+                                               viz::LocalSurfaceId());
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void DidCommitAndDrawFrame() override {
+    // This runs on the MAIN THREAD.
+    // After the first frame has been committed and drawn (with the layer
+    // off-screen), we trigger the scroll.
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      // Scroll the scroll layer down to make the texture_layer_ visible.
+      // Setting the scroll offset on the main thread will dirty the tree and
+      // automatically trigger a second commit.
+      scroll_layer_->SetScrollOffset(gfx::PointF(0, 2000));
+    }
+  }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    // This method runs on IMPL thread.
+    ++frame_count_on_impl_thread_;
+    if (frame_count_on_impl_thread_ == 1) {
+      // FRAME 1: VERIFY THE BUGGY STATE
+      // The layer is off-screen. Its resource should not have been imported on
+      // the compositor thread, so no quad with a valid ID should be sent to
+      // Viz.
+      bool found_texture_quad = false;
+      for (const auto& pass : frame.render_pass_list) {
+        for (const auto* quad : pass->quad_list) {
+          if (quad->material == viz::DrawQuad::Material::kTextureContent) {
+            found_texture_quad = true;
+          }
+        }
+      }
+      EXPECT_FALSE(found_texture_quad)
+          << "Texture quad should not be present before layer is visible.";
+    } else if (frame_count_on_impl_thread_ == 2) {
+      // FRAME 2: VERIFY THE FIX
+      // The layer is now on-screen. WillDraw() should have run, importing the
+      // resource and (with the fix) triggering a re-push to Viz.
+      bool found_texture_quad_with_valid_resource_id = false;
+      for (const auto& pass : frame.render_pass_list) {
+        for (const auto* quad : pass->quad_list) {
+          if (quad->material == viz::DrawQuad::Material::kTextureContent) {
+            const auto* texture_quad = viz::TextureDrawQuad::MaterialCast(quad);
+            if (texture_quad->resource_id != viz::kInvalidResourceId) {
+              found_texture_quad_with_valid_resource_id = true;
+            }
+          }
+        }
+      }
+      EXPECT_TRUE(found_texture_quad_with_valid_resource_id)
+          << "Texture quad with a valid ResourceID should be present "
+             "after layer is scrolled into view.";
+      EndTest();
+    }
+  }
+
+  // Variable used to track frame count on impl thread since
+  // LayerTreeHost::SourceFrameNumber() can only be called on main thread.
+  int frame_count_on_impl_thread_ = 0;
+  scoped_refptr<Layer> scroll_layer_;
+  scoped_refptr<TextureLayer> texture_layer_;
+};
+
+// This macro registers the test to be run.
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTextureLayerOffscreenScroll);
 
 }  // namespace
 }  // namespace cc
