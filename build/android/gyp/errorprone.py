@@ -34,11 +34,71 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
 
+    # Still to look into:
+    'AnnotationPosition',
+    'AvoidObjectArrays',
+    'BanSerializableRead',
+    'BooleanParameter',
+    'CannotMockMethod',
+    'CatchingUnchecked',
+    'CheckedExceptionNotThrown',
+    'ConstantField',
+    'ConstantPatternCompile',
+    'DeduplicateConstants',
+    'DefaultLocale',
+    'DepAnn',
+    'DifferentNameButSame',
+    'ExpectedExceptionChecker',
+    'ForEachIterable',
+    'FunctionalInterfaceClash',
+    'IdentifierName',
+    'ImmutableMemberCollection',
+    'InconsistentOverloads',
+    'InitializeInline',
+    'InterruptedExceptionSwallowed',
+    'Interruption',
+    'MethodCanBeStatic',
+    'MissingDefault',
+    'MixedArrayDimensions',
+    'MockitoDoSetup',
+    'NegativeBoolean',
+    'NonCanonicalStaticMemberImport',
+    'NonFinalStaticField',
+    'PreferJavaTimeOverload',
+    'PreferredInterfaceType',
+    'PrimitiveArrayPassedToVarargsMethod',
+    'PrivateConstructorForUtilityClass',
+    'RedundantThrows',
+    'ReturnsNullCollection',
+    'StringFormatWithLiteral',
+    'SuppressWarningsWithoutExplanation',
+    'SystemExitOutsideMain',
+    'SystemOut',
+    'TestExceptionChecker',
+    'ThrowSpecificExceptions',
+    'ThrowsUncheckedException',
+    'TooManyParameters',
+    'TryFailRefactoring',
+    'TypeParameterNaming',
+    'UngroupedOverloads',
+    'UnnecessaryAnonymousClass',
+    'UnnecessaryBoxedAssignment',
+    'UnnecessaryDefaultInEnumSwitch',
+    'UnnecessaryFinal',
+    'UnsafeLocaleUsage',
+    'UnusedException',
+    'UseEnumSwitch',
+    'UsingJsr305CheckReturnValue',
+    'Var',
+    'Varifier',
+    'YodaCondition',
+
     # Low priority.
     'CatchAndPrintStackTrace',
     'EqualsHashCode',
     'JavaUtilDate',
     'OverrideThrowableToString',
+    'ParameterComment',
     'PatternMatchingInstanceof',
     'StatementSwitchToExpressionSwitch',
     'UndefinedEquals',
@@ -48,10 +108,14 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StringCharset',
     'ThreadLocalUsage',
     'TypeParameterUnusedInFormals',
+    'UnnecessaryBoxedVariable',
+    'UnnecessarilyFullyQualified',
     'UnsafeReflectiveConstructionCast',
 
     # Never Enable:
     #
+    # Chromium uses assert statements.
+    'AssertFalse',
     # Debatable whether it makes code less readable by forcing larger names for
     # "Builder".
     'BadImport',
@@ -101,6 +165,20 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # normal in non-test code, they also show up in test helpers, which are
     # arguably false-positives.
     'UseCorrectAssertInTests',
+    # NullAway makes these redundant.
+    'FieldMissingNullable',
+    'ParameterMissingNullable',
+    'ReturnMissingNullable',
+    # Style guide difference between google3 & chromium.
+    'MissingBraces',
+    # Does not seem to take into account R8 backports. Redundant with Android
+    # Lint anyways.
+    'AndroidJdkLibsChecker',
+    'Java8ApiChecker',
+    # Style guide difference between google3 & chromium.
+    'UnnecessaryTestMethodPrefix',
+    # Too many suggestions where it's not actually necessary.
+    'CanIgnoreReturnValueSuggester',
 
     # These are all for Javadoc, which we don't really care about.
     'InvalidBlockTag',
@@ -234,6 +312,11 @@ def main():
     errorprone_flags.extend('-Xep:{}:OFF'.format(x)
                             for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
     errorprone_flags += ['-XepCompilingTestOnlyCode']
+
+  # TODO(40661145): Enable stricter CheckReturnValue checks:
+  # packages = 'org.chromium,com.google,java.util.regex'
+  # errorprone_flags += ['-XepOpt:CheckReturnValue:Packages=' + packages]
+  # errorprone_flags += ['-XepOpt:CheckReturnValue:CheckAllConstructors=true']
 
   if ERRORPRONE_CHECKS_TO_APPLY:
     to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
