@@ -36,6 +36,7 @@
 #include "services/webnn/dml/tensor_impl_dml.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -502,7 +503,7 @@ class WebNNTensorImplDmlBackendTest : public WebNNTensorImplBackendTest {
     ASSERT_TRUE(webnn_context_remote_.is_bound());
   }
 
-  base::WeakPtr<native::d3d12::WebNNTensor> GetWebNNTensor(
+  base::WeakPtr<dml::TensorImplDml> GetWebNNTensor(
       const blink::WebNNTensorToken& webnn_tensor_handle) const {
     base::optional_ref<WebNNContextImpl> context_impl =
         webnn_test_environment_.context_provider()
@@ -556,11 +557,11 @@ TEST_F(WebNNTensorImplDmlBackendTest, EndAccessWebNNTwiceTest) {
 
   webnn_context_remote_.FlushForTesting();
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -572,7 +573,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, EndAccessWebNNTwiceTest) {
       webnn_fence_to_wait_for_1->GetD3D12Fence(),
       webnn_fence_to_wait_for_1->GetFenceValue()));
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 
@@ -609,7 +610,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, UsageAfterBeginAccessWebNNTest) {
 
   webnn_context_remote_.FlushForTesting();
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
@@ -620,7 +621,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, UsageAfterBeginAccessWebNNTest) {
   webnn_tensor_remote->WriteTensor(mojo_base::BigBuffer(input_data));
   webnn_tensor_remote.FlushForTesting();
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for);
 
@@ -699,7 +700,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   UNSAFE_BUFFERS(WriteTensorData(
       base::span(input_data.data(), input_data.size()), upload_buffer.Get()));
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
@@ -722,7 +723,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   // 13.    Signal
   // 14.         |----------> Wait
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -755,7 +756,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   }
 
   // Step 8. Simulate more external queue use with new data.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 
@@ -827,13 +828,13 @@ TEST_F(WebNNTensorImplDmlBackendTest, NoWebNNQueueAccessInBetweenTest) {
       dml::CommandQueue::Create(adapter_->d3d12_device());
   ASSERT_NE(command_queue, nullptr);
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
   // End access without any WebNN work prior returns WebNN's submission
   // fence which should be completed.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -850,7 +851,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, NoWebNNQueueAccessInBetweenTest) {
 
   // Calling end access again, with no WebNN work, should
   // return the last fence without WebNN calling wait on it.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 

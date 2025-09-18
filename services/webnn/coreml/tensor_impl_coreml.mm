@@ -189,14 +189,9 @@ TensorImplCoreml::Create(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
-  auto representation_access = representation->BeginScopedAccess();
-  if (!representation_access) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to begin access to tensor."));
-  }
-
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+        representation_access) {
   if (tensor_info->descriptor.data_type() != OperandDataType::kFloat16) {
     return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kUnknownError,
@@ -270,10 +265,9 @@ TensorImplCoreml::TensorImplCoreml(
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info),
-                      std::move(representation)),
-      buffer_state_(std::move(buffer_state)) {
-  representation_access_ = std::move(representation_access);
-}
+                      std::move(representation),
+                      std::move(representation_access)),
+      buffer_state_(std::move(buffer_state)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
@@ -362,6 +356,15 @@ const scoped_refptr<QueueableResourceState<BufferContent>>&
 TensorImplCoreml::GetBufferState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   return buffer_state_;
+}
+
+bool TensorImplCoreml::ImportTensorImpl() {
+  // Always true since CoreML requires no device synchronization.
+  return true;
+}
+
+void TensorImplCoreml::ExportTensorImpl() {
+  // Empty since CoreML requires no device synchronization.
 }
 
 }  // namespace webnn::coreml

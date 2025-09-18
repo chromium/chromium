@@ -13,7 +13,6 @@ include_rules = [
   "+components/viz/common/resources/resource_sizes.h",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
-  "+services/webnn/d3d12_backend.h",
   "+ui/base/ozone_buildflags.h",
 ]
 

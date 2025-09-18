@@ -28,12 +28,15 @@ WebNNTensorImpl::WebNNTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation)
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+        representation_access)
     : WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>(
           std::move(receiver),
           context->scheduler_task_runner()),
       context_(std::move(context)),
       representation_(std::move(representation)),
+      representation_access_(std::move(representation_access)),
       descriptor_(std::move(tensor_info->descriptor)),
       usage_(std::move(tensor_info->usage)) {}
 
@@ -123,8 +126,20 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
         CHECK(self->representation_)
             << "Tensor must have a representation to import.";
 
-        self->representation_access_ =
-            self->representation_->BeginScopedAccess();
+        auto representation_access = self->representation_->BeginScopedAccess();
+        if (!representation_access) {
+          LOG(ERROR) << "[WebNN] Failed to begin access from shared image.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        if (!self->ImportTensorImpl()) {
+          LOG(ERROR) << "[WebNN] Failed to import tensor from shared image.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        self->representation_access_ = std::move(representation_access);
       },
       base::RetainedRef(this), GetMojoReceiver().GetBadMessageCallback()));
 }
@@ -148,6 +163,8 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
 
         CHECK(self->representation_)
             << "Tensor must have a representation to export.";
+
+        self->ExportTensorImpl();
 
         // End WebNN access which makes the tensor be exported.
         self->representation_access_.reset();

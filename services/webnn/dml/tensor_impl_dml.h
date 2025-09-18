@@ -5,7 +5,6 @@
 #ifndef SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
 #define SERVICES_WEBNN_DML_TENSOR_IMPL_DML_H_
 
-#include "services/webnn/d3d12_backend.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
@@ -13,26 +12,16 @@
 // Windows SDK headers should be included after DirectX headers.
 #include <wrl.h>
 
+namespace gfx {
+class D3DSharedFence;
+}  // namespace gfx
+
 namespace webnn::dml {
 
 class CommandQueue;
 
-struct SharedFence final : public native::d3d12::WebNNSharedFence {
-  SharedFence(Microsoft::WRL::ComPtr<ID3D12Fence> fence, UINT64 fence_value);
-  ~SharedFence() override;
-
-  SharedFence(SharedFence&&);
-
-  // native::d3d12::WebNNSharedFence implementation
-  Microsoft::WRL::ComPtr<ID3D12Fence> GetD3D12Fence() const override;
-  uint64_t GetFenceValue() const override;
-
-  const Microsoft::WRL::ComPtr<ID3D12Fence> fence;
-  const uint64_t fence_value;
-};
-
-class TensorImplDml final : public WebNNTensorImpl,
-                            public native::d3d12::WebNNTensor {
+class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
+    : public WebNNTensorImpl {
  public:
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 Microsoft::WRL::ComPtr<ID3D12Resource> buffer,
@@ -41,6 +30,8 @@ class TensorImplDml final : public WebNNTensorImpl,
 
   TensorImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
                 std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+                std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+                    representation_access,
                 base::WeakPtr<WebNNContextImpl> context,
                 mojom::TensorInfoPtr tensor_info);
 
@@ -61,16 +52,26 @@ class TensorImplDml final : public WebNNTensorImpl,
 
   HRESULT WaitForExternalFenceAndReset(CommandQueue* command_queue);
 
+  // Begin WebNN access to the underlying buffer held in the `WebNNTensor`
+  // instance. Input is a fence which will be waited on by WebNN before
+  // execution resumes. If successful, EndAccessWebNN() must be called to
+  // BeginAccessWebNN() again.
+  bool BeginAccessWebNN(Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
+                        uint64_t wait_fence_value);
+
+  // End WebNN access to the underlying buffer held in the `WebNNTensor`
+  // instance. Outputs a fence to be signaled by WebNN after execution
+  // completes. If successful, BeginAccessWebNN() must be called to restore
+  // access to WebNN and to EndAccessWebNN() again.
+  scoped_refptr<gfx::D3DSharedFence> EndAccessWebNN();
+
  private:
   ~TensorImplDml() override;
 
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
-
-  // native::d3d12::WebNNTensor implementation
-  bool BeginAccessWebNN(Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
-                        uint64_t wait_fence_value) override;
-  std::unique_ptr<native::d3d12::WebNNSharedFence> EndAccessWebNN() override;
+  bool ImportTensorImpl() override;
+  void ExportTensorImpl() override;
 
   // The D3D12 resource that holds the tensor data.
   // The buffer must always remain valid after creation and could outlive
@@ -86,7 +87,7 @@ class TensorImplDml final : public WebNNTensorImpl,
   // Required input to `BeginAccessWebNN()` to resume WebNN execution after
   // this fence is signaled. If no value, there is no need to wait for access to
   // the tensor.
-  std::optional<SharedFence> wait_fence_external_;
+  scoped_refptr<gfx::D3DSharedFence> wait_fence_external_;
 
   base::WeakPtrFactory<TensorImplDml> weak_factory_{this};
 };

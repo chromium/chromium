@@ -29,17 +29,6 @@ source_set("webnn_switches") {
   ]
 }
 
-# Public WebNN native headers so they can be visible for dependencies
-# of webnn native.
-source_set("webnn_headers") {
-  sources = [
-    # Backend headers must be included here so that dependent targets can
-    # still include them, even if the backends are disabled.
-    "d3d12_backend.h",
-  ]
-  public_deps = [ "//base" ]
-}
-
 component("webnn_service") {
   defines = [ "IS_WEBNN_SERVICE_IMPL" ]
 
@@ -68,7 +57,6 @@ component("webnn_service") {
 
   deps = [
     ":buildflags",
-    ":webnn_headers",
     ":webnn_switches",
     "//base",
     "//gpu/command_buffer/service",
@@ -290,7 +278,6 @@ source_set("tests") {
 
   deps = [
     ":buildflags",
-    ":webnn_headers",
     ":webnn_service",
     ":webnn_test_support",
     "//base",

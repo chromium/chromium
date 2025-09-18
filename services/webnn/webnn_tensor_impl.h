@@ -32,7 +32,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation);
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+          representation_access);
 
   WebNNTensorImpl(const WebNNTensorImpl&) = delete;
   WebNNTensorImpl& operator=(const WebNNTensorImpl&) = delete;
@@ -54,6 +56,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // validated. A backend subclass should implement this method to write data
   // to a platform specific buffer.
   virtual void WriteTensorImpl(mojo_base::BigBuffer src_buffer) = 0;
+
+  // Called by `ImportTensor()` after WebNN begins access of the
+  // platform-specific tensor as a shared image.
+  // Backend subclasses implement this to perform any necessary
+  // device synchronization. Returns true on success.
+  virtual bool ImportTensorImpl() = 0;
+
+  // Called by `ExportTensor()` after WebNN finishes access of the
+  // platform-specific tensor as a shared image.
+  // Backend subclasses implement this to perform any necessary
+  // device synchronization.
+  virtual void ExportTensorImpl() = 0;
 
   // Returns true if the tensor has been exported (e.g., to WebGPU)
   // and is not currently being accessed by WebNN.

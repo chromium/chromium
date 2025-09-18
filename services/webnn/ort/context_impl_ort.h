@@ -70,10 +70,12 @@ class ContextImplOrt final : public WebNNContextImpl {
                    mojom::TensorInfoPtr tensor_info) override;
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-  CreateTensorFromMailboxImpl(
+  CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox) override;
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
+          representation_access) override;
 
   scoped_refptr<Environment> env_;
 
