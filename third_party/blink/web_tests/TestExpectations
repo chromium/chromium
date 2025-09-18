@@ -9715,3 +9715,10 @@ crbug.com/443229243 inspector-protocol/page/reload-with-script.js [ Failure Pass
 
 # Gardener 2025-09-08
 crbug.com/443533494 [ Linux ] http/tests/worklet/paint-worklet-csp-eval.html [ Failure Pass ]
+
+# Gardener 2025-09-17
+crbug.com/444447168 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Crash Failure Pass ]
+crbug.com/444445518 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Crash Failure Pass ]
+crbug.com/444450168 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?gpu [ Crash Failure Pass ]
+crbug.com/444433224 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?gpu [ Crash Failure Pass ]
+crbug.com/444405358 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash Failure Pass ]
