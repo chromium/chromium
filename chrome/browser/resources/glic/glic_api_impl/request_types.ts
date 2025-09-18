@@ -343,6 +343,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       reactionType: MetricUserInputReactionType,
     },
   },
+  glicBrowserOnContextUploadStarted: {
+    backgroundAllowed: true,
+  },
+  glicBrowserOnContextUploadCompleted: {
+    backgroundAllowed: true,
+  },
   glicBrowserOnResponseStarted: {
     backgroundAllowed: true,
   },
@@ -712,6 +718,8 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         SwitchConversation: 64,
         RegisterConversation: 65,
         OnReaction: 66,
+        OnContextUploadCompleted: 67,
+        OnContextUploadStarted: 68,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

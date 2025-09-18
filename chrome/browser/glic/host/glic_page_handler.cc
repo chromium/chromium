@@ -1167,6 +1167,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnUserInputSubmitted(mode);
   }
 
+  void OnContextUploadStarted() override {
+    glic_service_->metrics()->OnContextUploadStarted();
+  }
+
+  void OnContextUploadCompleted() override {
+    glic_service_->metrics()->OnContextUploadCompleted();
+  }
+
   void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
     glic_service_->metrics()->OnReaction(reaction_type);
   }

@@ -786,6 +786,12 @@ export declare interface GlicBrowserHostMetrics {
    */
   onReaction?(reactionType: MetricUserInputReactionType): void;
 
+  /** Called when starting to upload context to the server. */
+  onContextUploadStarted?(): void;
+
+  /** Called when finished uploading context to the server. */
+  onContextUploadCompleted?(): void;
+
   /**
    * Called when the web client has sufficiently processed the input such that
    * it is able to start providing a response.

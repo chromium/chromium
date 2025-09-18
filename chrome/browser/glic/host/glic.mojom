@@ -727,6 +727,12 @@ interface WebClientHandler {
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
 
+  // Called when starting to upload context to the server.
+  OnContextUploadStarted();
+
+  // Called when finished uploading context to the server.
+  OnContextUploadCompleted();
+
   // Called after user input is submitted, but before a response starts,
   // when the UI shows a message that explains the progress of the request.
   OnReaction(MetricUserInputReactionType reactionType);

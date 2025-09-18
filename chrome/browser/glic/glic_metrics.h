@@ -264,6 +264,8 @@ class GlicMetrics {
   // lifetime of the web client is scoped to that of the window, so if these
   // methods are called then controller_ is guaranteed to exist.
   void OnUserInputSubmitted(mojom::WebClientMode mode);
+  void OnContextUploadStarted();
+  void OnContextUploadCompleted();
   void OnReaction(mojom::MetricUserInputReactionType reaction_type);
   void OnResponseStarted();
   void OnResponseStopped(mojom::ResponseStopCause cause);

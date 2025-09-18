@@ -996,6 +996,16 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.sender.requestNoResponse('glicBrowserOnReaction', {reactionType});
   }
 
+  onContextUploadStarted(): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOnContextUploadStarted', undefined);
+  }
+
+  onContextUploadCompleted(): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOnContextUploadCompleted', undefined);
+  }
+
   onResponseStarted(): void {
     this.sender.requestNoResponse('glicBrowserOnResponseStarted', undefined);
   }

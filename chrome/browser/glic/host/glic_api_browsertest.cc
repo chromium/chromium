@@ -1144,6 +1144,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testMetrics) {
 
   histogram_tester->ExpectUniqueSample("Glic.Response.ClosedCaptionsShown",
                                        true, 1);
+  EXPECT_EQ(1, user_action_tester->GetActionCount("GlicContextUploadStarted"));
+  EXPECT_EQ(1,
+            user_action_tester->GetActionCount("GlicContextUploadCompleted"));
   EXPECT_EQ(1, user_action_tester->GetActionCount("GlicReactionModelled"));
   EXPECT_EQ(1, user_action_tester->GetActionCount("GlicResponseStopByUser"));
   histogram_tester->ExpectTotalCount("Glic.FirstReaction.Text.Modelled.Time",

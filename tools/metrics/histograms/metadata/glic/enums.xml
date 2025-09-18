@@ -294,6 +294,8 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="SwitchConversation"/>
   <int value="65" label="RegisterConversation"/>
   <int value="66" label="OnReaction"/>
+  <int value="67" label="OnContextUploadCompleted"/>
+  <int value="68" label="OnContextUploadStarted"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

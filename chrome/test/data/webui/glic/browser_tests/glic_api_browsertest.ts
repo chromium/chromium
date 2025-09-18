@@ -705,12 +705,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metrics.onResponseRated);
     assertDefined(metrics.onUserInputSubmitted);
     assertDefined(metrics.onReaction);
+    assertDefined(metrics.onContextUploadStarted);
+    assertDefined(metrics.onContextUploadCompleted);
     assertDefined(metrics.onResponseStarted);
     assertDefined(metrics.onResponseStopped);
     assertDefined(metrics.onSessionTerminated);
     assertDefined(metrics.onClosedCaptionsShown);
     metrics.onResponseRated(true);
     metrics.onUserInputSubmitted(WebClientMode.TEXT);
+    metrics.onContextUploadStarted();
+    metrics.onContextUploadCompleted();
     metrics.onReaction(MetricUserInputReactionType.MODEL);
     metrics.onResponseStarted();
     metrics.onResponseStopped({cause: ResponseStopCause.USER});

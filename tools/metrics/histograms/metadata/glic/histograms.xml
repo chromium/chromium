@@ -139,6 +139,8 @@ chromium-metrics-reviews@google.com.
     <variant name="LogInstantEvent"/>
     <variant name="MaybeRefreshUserStatus"/>
     <variant name="OnClosedCaptionsShown"/>
+    <variant name="OnContextUploadCompleted"/>
+    <variant name="OnContextUploadStarted"/>
     <variant name="OnModelChanged"/>
     <variant name="OnReaction"/>
     <variant name="OnResponseRated"/>

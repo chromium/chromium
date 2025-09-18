@@ -271,6 +271,14 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   last_input_mode_ = mode;
 }
 
+void GlicMetrics::OnContextUploadStarted() {
+  base::RecordAction(base::UserMetricsAction("GlicContextUploadStarted"));
+}
+
+void GlicMetrics::OnContextUploadCompleted() {
+  base::RecordAction(base::UserMetricsAction("GlicContextUploadCompleted"));
+}
+
 void GlicMetrics::OnReaction(mojom::MetricUserInputReactionType reaction_type) {
   std::optional<base::TimeDelta> time_to_reaction;
   if (!turn_.input_submitted_time_.is_null() &&

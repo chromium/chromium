@@ -12944,6 +12944,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicContextUploadCompleted" not_user_triggered="true">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Reported when completing the upload of context necessary to answer a Glic
+    query.
+  </description>
+</action>
+
+<action name="GlicContextUploadStarted" not_user_triggered="true">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <description>
+    Reported when starting to upload the context necessary to answer a Glic
+    query.
+  </description>
+</action>
+
 <action name="GlicLocationPermissionDisabled">
   <owner>tommasin@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
