@@ -259,13 +259,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.tableView.dragDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(verifyTableIsEmpty)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(verifyTableIsEmpty)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
