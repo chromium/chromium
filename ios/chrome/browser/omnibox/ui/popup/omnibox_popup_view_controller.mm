@@ -351,12 +351,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   self.preselectedMatchGroupIndex = groupIndex;
   self.currentResult = result;
 
-  // Explicitly reload without animation to avoid flickering when reloading
-  // the table data.
-  [UIView performWithoutAnimation:^{
-    [self.tableView reloadData];
-    [self.tableView layoutIfNeeded];
-  }];
+  [self.tableView reloadData];
 
   self.forwardsScrollEvents = YES;
   id<AutocompleteSuggestion> firstSuggestionOfPreselectedGroup =
