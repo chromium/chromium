@@ -233,6 +233,7 @@ def main():
   if options.testonly:
     errorprone_flags.extend('-Xep:{}:OFF'.format(x)
                             for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
+    errorprone_flags += ['-XepCompilingTestOnlyCode']
 
   if ERRORPRONE_CHECKS_TO_APPLY:
     to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
