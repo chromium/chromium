@@ -5,16 +5,14 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "crypto/signature_verifier.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
-
-BASE_DECLARE_FEATURE(kBoundSessionRegistrationListHeaderSupport);
 
 class BoundSessionRegistrationFetcherParam {
  public:
@@ -61,9 +59,6 @@ class BoundSessionRegistrationFetcherParam {
   static std::vector<BoundSessionRegistrationFetcherParam>
   MaybeCreateFromListHeader(const GURL& request_url,
                             std::string_view header_value);
-  static std::vector<BoundSessionRegistrationFetcherParam>
-  MaybeCreateFromLegacyHeader(const GURL& request_url,
-                              std::string_view header_value);
 
   BoundSessionRegistrationFetcherParam(
       GURL registration_endpoint,

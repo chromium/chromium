@@ -5,33 +5,21 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
 
 #include <optional>
+#include <string>
+#include <vector>
 
-#include "base/base64.h"
-#include "base/base64url.h"
-#include "base/feature_list.h"
-#include "base/strings/escape.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/signin/public/base/session_binding_utils.h"
-#include "net/base/schemeful_site.h"
 #include "net/http/structured_headers.h"
+#include "url/gurl.h"
 
 namespace {
-constexpr char kAlgoItemKey[] = "supported-alg";
-constexpr char kRegistrationHeaderName[] = "Sec-Session-Google-Registration";
 constexpr char kRegistrationListHeaderName[] =
     "Sec-Session-Google-Registration-List";
-constexpr char kRegistrationItemKey[] = "registration";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kPathItemKey[] = "path";
 constexpr char kWsbetaItemKey[] = "wsbeta";
 }  // namespace
-
-// A temporary feature to gate the new list header support until its format is
-// finalized.
-BASE_FEATURE(kBoundSessionRegistrationListHeaderSupport,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     BoundSessionRegistrationFetcherParam&& other) noexcept = default;
@@ -62,23 +50,14 @@ BoundSessionRegistrationFetcherParam::CreateFromHeaders(
     return {};
   }
 
-  // First, try the new header format (gated behind a feature flag).
-  if (base::FeatureList::IsEnabled(
-          kBoundSessionRegistrationListHeaderSupport)) {
-    if (std::optional<std::string> list_header_value =
-            headers->GetNormalizedHeader(kRegistrationListHeaderName)) {
-      return MaybeCreateFromListHeader(request_url, *list_header_value);
-    }
+  const std::optional<std::string> list_header_value =
+      headers->GetNormalizedHeader(kRegistrationListHeaderName);
+
+  if (!list_header_value.has_value()) {
+    return {};
   }
 
-  // Only if the new format header is missing, try the legacy format.
-  if (std::optional<std::string> legacy_header_value =
-          headers->GetNormalizedHeader(kRegistrationHeaderName)) {
-    return MaybeCreateFromLegacyHeader(request_url, *legacy_header_value);
-  }
-
-  // Return an empty result if none of the headers are present.
-  return {};
+  return MaybeCreateFromListHeader(request_url, *list_header_value);
 }
 
 // static
@@ -165,58 +144,4 @@ BoundSessionRegistrationFetcherParam::MaybeCreateFromListHeader(
   }
 
   return params;
-}
-
-// static
-std::vector<BoundSessionRegistrationFetcherParam>
-BoundSessionRegistrationFetcherParam::MaybeCreateFromLegacyHeader(
-    const GURL& request_url,
-    std::string_view header_value) {
-  GURL registration_endpoint;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
-  std::string challenge;
-  base::StringPairs items;
-  base::SplitStringIntoKeyValuePairs(header_value, '=', ';', &items);
-  for (const auto& [key, value] : items) {
-    if (base::EqualsCaseInsensitiveASCII(key, kRegistrationItemKey)) {
-      GURL potential_registration_endpoint =
-          bound_session_credentials::ResolveEndpointPath(request_url, value);
-      if (potential_registration_endpoint.is_valid()) {
-        registration_endpoint = potential_registration_endpoint;
-      }
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(key, kAlgoItemKey)) {
-      auto list = base::SplitString(value, ",",
-                                    base::WhitespaceHandling::TRIM_WHITESPACE,
-                                    base::SplitResult::SPLIT_WANT_NONEMPTY);
-      for (const auto& alg_string : list) {
-        std::optional<crypto::SignatureVerifier::SignatureAlgorithm> alg =
-            signin::SignatureAlgorithmFromString(alg_string);
-        if (alg.has_value()) {
-          supported_algos.push_back(alg.value());
-        }
-      }
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(key, kChallengeItemKey)) {
-      // Challenge will be eventually written into a `base::Value`, when
-      // generating the registration token, which is restricted to UTF8.
-      if (!base::IsStringUTF8AllowingNoncharacters(value)) {
-        return {};
-      }
-      challenge = value;
-    }
-  }
-
-  if (registration_endpoint.is_valid() && !supported_algos.empty() &&
-      !challenge.empty()) {
-    std::vector<BoundSessionRegistrationFetcherParam> result;
-    result.push_back(BoundSessionRegistrationFetcherParam(
-        std::move(registration_endpoint), std::move(supported_algos),
-        std::move(challenge), /*is_wsbeta=*/false));
-    return result;
-  } else {
-    return {};
-  }
 }
