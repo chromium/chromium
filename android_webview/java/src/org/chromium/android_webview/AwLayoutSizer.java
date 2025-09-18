@@ -39,7 +39,9 @@ public class AwLayoutSizer {
     // Callback object for interacting with the View.
     private Delegate mDelegate;
 
-    /** Delegate interface through which the AwLayoutSizer communicates with the view it's sizing. */
+    /**
+     * Delegate interface through which the AwLayoutSizer communicates with the view it's sizing.
+     */
     public interface Delegate {
         void requestLayout();
 
@@ -71,8 +73,8 @@ public class AwLayoutSizer {
     }
 
     /**
-     * Stop postponing layout requests and request layout if such a request would have been made
-     * had the freezeLayoutRequests method not been called before.
+     * Stop postponing layout requests and request layout if such a request would have been made had
+     * the freezeLayoutRequests method not been called before.
      */
     public void unfreezeLayoutRequests() {
         mFreezeLayoutRequests = false;
@@ -83,18 +85,16 @@ public class AwLayoutSizer {
     }
 
     /**
-     * Update the contents size.
-     * This should be called whenever the content size changes (due to DOM manipulation or page
-     * load, for example).
+     * Update the contents size. This should be called whenever the content size changes (due to DOM
+     * manipulation or page load, for example).
      */
     public void onContentSizeChanged(int widthCss, int heightCss) {
         doUpdate(widthCss, heightCss, mPageScaleFactor);
     }
 
     /**
-     * Update the contents page scale.
-     * This should be called whenever the content page scale factor changes (due to pinch zoom, for
-     * example).
+     * Update the contents page scale. This should be called whenever the content page scale factor
+     * changes (due to pinch zoom, for example).
      */
     public void onPageScaleChanged(float pageScaleFactor) {
         doUpdate(mContentWidthCss, mContentHeightCss, pageScaleFactor);
@@ -130,51 +130,27 @@ public class AwLayoutSizer {
     }
 
     /**
-     * Calculate the size of the view.
-     * This is designed to be used to implement the android.view.View#onMeasure() method.
+     * Calculate the size of the view. This is designed to be used to implement the
+     * android.view.View#onMeasure() method.
      */
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-
         int contentHeightPix = (int) (mContentHeightCss * mPageScaleFactor * mDIPScale);
         int contentWidthPix = (int) (mContentWidthCss * mPageScaleFactor * mDIPScale);
+        MeasuredWidthAttributes widthSpec =
+                getMeasuredWidthAttributes(widthMeasureSpec, contentWidthPix);
+        MeasuredHeightAttributes heightSpec =
+                getMeasuredHeightAttributes(heightMeasureSpec, contentHeightPix);
+        mWidthMeasurementIsFixed = widthSpec.widthMeasurementIsFixed;
+        mHeightMeasurementIsFixed = heightSpec.heightMeasurementIsFixed;
+        mHeightMeasurementLimited = heightSpec.heightMeasurementLimited;
+        mHeightMeasurementLimit = heightSpec.heightMeasurementLimit;
 
-        int measuredHeight = contentHeightPix;
-        int measuredWidth = contentWidthPix;
-
-        // Always use the given size unless unspecified. This matches WebViewClassic behavior.
-        mWidthMeasurementIsFixed = (widthMode != MeasureSpec.UNSPECIFIED);
-        mHeightMeasurementIsFixed = (heightMode == MeasureSpec.EXACTLY);
-        mHeightMeasurementLimited =
-                (heightMode == MeasureSpec.AT_MOST) && (contentHeightPix > heightSize);
-        mHeightMeasurementLimit = heightSize;
-
-        if (mHeightMeasurementIsFixed || mHeightMeasurementLimited) {
-            measuredHeight = heightSize;
-        }
-
-        if (mWidthMeasurementIsFixed) {
-            measuredWidth = widthSize;
-        }
-
-        if (measuredHeight < contentHeightPix) {
-            measuredHeight |= View.MEASURED_STATE_TOO_SMALL;
-        }
-
-        if (measuredWidth < contentWidthPix) {
-            measuredWidth |= View.MEASURED_STATE_TOO_SMALL;
-        }
-
-        mDelegate.setMeasuredDimension(measuredWidth, measuredHeight);
+        mDelegate.setMeasuredDimension(widthSpec.measuredWidth, heightSpec.measuredHeight);
     }
 
     /**
-     * Notify the AwLayoutSizer that the size of the view has changed.
-     * This should be called by the Android view system after onMeasure if the view's size has
-     * changed.
+     * Notify the AwLayoutSizer that the size of the view has changed. This should be called by the
+     * Android view system after onMeasure if the view's size has changed.
      */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         updateLayoutSettings();
@@ -182,8 +158,8 @@ public class AwLayoutSizer {
 
     /**
      * Notify the AwLayoutSizer that the layout pass requested via Delegate.requestLayout has
-     * completed.
-     * This should be called after onSizeChanged regardless of whether the size has changed or not.
+     * completed. This should be called after onSizeChanged regardless of whether the size has
+     * changed or not.
      */
     public void onLayoutParamsChange() {
         updateLayoutSettings();
@@ -193,5 +169,66 @@ public class AwLayoutSizer {
     // params are updated.
     private void updateLayoutSettings() {
         mDelegate.setForceZeroLayoutHeight(mDelegate.isLayoutParamsHeightWrapContent());
+    }
+
+    public static class MeasuredWidthAttributes {
+        public int measuredWidth;
+        public boolean widthMeasurementIsFixed;
+
+        MeasuredWidthAttributes(int measuredWidth, boolean widthMeasurementIsFixed) {
+            this.measuredWidth = measuredWidth;
+            this.widthMeasurementIsFixed = widthMeasurementIsFixed;
+        }
+    }
+
+    public static class MeasuredHeightAttributes {
+        public int measuredHeight;
+        public boolean heightMeasurementIsFixed;
+        public boolean heightMeasurementLimited;
+        public int heightMeasurementLimit;
+
+        public MeasuredHeightAttributes(
+                int measuredHeight,
+                boolean heightMeasurementIsFixed,
+                boolean heightMeasurementLimited,
+                int heightMeasurementLimit) {
+            this.measuredHeight = measuredHeight;
+            this.heightMeasurementIsFixed = heightMeasurementIsFixed;
+            this.heightMeasurementLimited = heightMeasurementLimited;
+            this.heightMeasurementLimit = heightMeasurementLimit;
+        }
+    }
+
+    public static MeasuredWidthAttributes getMeasuredWidthAttributes(
+            int widthMeasureSpec, int contentWidthPix) {
+        int measuredWidth = contentWidthPix;
+        // Always use the given size unless unspecified. This matches WebViewClassic behavior.
+        boolean widthMeasurementIsFixed =
+                (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.UNSPECIFIED);
+        if (widthMeasurementIsFixed) {
+            measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        }
+        if (measuredWidth < contentWidthPix) {
+            measuredWidth |= View.MEASURED_STATE_TOO_SMALL;
+        }
+        return new MeasuredWidthAttributes(measuredWidth, widthMeasurementIsFixed);
+    }
+
+    public static MeasuredHeightAttributes getMeasuredHeightAttributes(
+            int heightMeasureSpec, int contentHeightPix) {
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        int measuredHeight = contentHeightPix;
+        boolean heightMeasurementIsFixed = (heightMode == MeasureSpec.EXACTLY);
+        boolean heightMeasurementLimited =
+                (heightMode == MeasureSpec.AT_MOST) && (contentHeightPix > heightSize);
+        if (heightMeasurementIsFixed || heightMeasurementLimited) {
+            measuredHeight = heightSize;
+        }
+        if (measuredHeight < contentHeightPix) {
+            measuredHeight |= View.MEASURED_STATE_TOO_SMALL;
+        }
+        return new MeasuredHeightAttributes(
+                measuredHeight, heightMeasurementIsFixed, heightMeasurementLimited, heightSize);
     }
 }

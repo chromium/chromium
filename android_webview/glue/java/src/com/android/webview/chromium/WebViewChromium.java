@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Picture;
 import android.graphics.Rect;
@@ -64,9 +65,11 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.common.AwSwitches;
@@ -1334,8 +1337,8 @@ class WebViewChromium
         mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
-                recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-                checkThread();
+            recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
+            checkThread();
             mAwContents.evaluateJavaScript(
                     script, CallbackConverter.fromValueCallback(resultCallback));
         }
@@ -2279,8 +2282,8 @@ class WebViewChromium
     /**
      * Returns true if the supplied {@link WebChromeClient} supports fullscreen.
      *
-     * <p>For fullscreen support, implementations of {@link WebChromeClient#onShowCustomView}
-     * and {@link WebChromeClient#onHideCustomView()} are required.
+     * <p>For fullscreen support, implementations of {@link WebChromeClient#onShowCustomView} and
+     * {@link WebChromeClient#onHideCustomView()} are required.
      */
     private boolean doesSupportFullscreen(WebChromeClient client) {
         try (TraceEvent event =
@@ -2876,18 +2879,23 @@ class WebViewChromium
     @Override
     @SuppressLint("DrawAllocation")
     public void onDraw(final Canvas canvas) {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_DRAW);
-        if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onDraw(canvas);
-                        }
-                    });
-            return;
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                mAwContents.getViewMethods().onDraw(canvas);
+            } else {
+                mFactory.runVoidTaskOnUiThreadBlocking(() -> onDraw(canvas));
+            }
+        } else {
+            boolean isAppUsingDarkTheme =
+                    DarkModeHelper.getLightTheme(mContext)
+                            == DarkModeHelper.LightTheme.LIGHT_THEME_FALSE;
+            if (isAppUsingDarkTheme) {
+                canvas.drawColor(Color.BLACK);
+            } else {
+                // In force-dark mode, the framework will invert this and display Color.BLACK
+                canvas.drawColor(Color.WHITE);
+            }
         }
-        mAwContents.getViewMethods().onDraw(canvas);
     }
 
     @Override
@@ -3040,11 +3048,11 @@ class WebViewChromium
 
     @Override
     public void onAttachedToWindow() {
-        // This API is our strongest signal from the View system that this
-        // WebView is going to be bound to a View hierarchy and so at this
-        // point we must bind Chromium's UI thread to the current thread.
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_ATTACHED_TO_WINDOW);
         checkThread();
+        if (checkNeedsPost()) {
+            mFactory.addTask(this::onAttachedToWindow);
+            return;
+        }
         mAwContents.getViewMethods().onAttachedToWindow();
     }
 
@@ -3273,18 +3281,18 @@ class WebViewChromium
     @Override
     @SuppressLint("DrawAllocation")
     public void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_MEASURE);
-        if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onMeasure(widthMeasureSpec, heightMeasureSpec);
-                        }
-                    });
-            return;
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                mAwContents.getViewMethods().onMeasure(widthMeasureSpec, heightMeasureSpec);
+            } else {
+                mFactory.runVoidTaskOnUiThreadBlocking(
+                        () -> onMeasure(widthMeasureSpec, heightMeasureSpec));
+            }
+        } else {
+            mWebViewPrivate.setMeasuredDimension(
+                    AwLayoutSizer.getMeasuredWidthAttributes(widthMeasureSpec, 0).measuredWidth,
+                    AwLayoutSizer.getMeasuredHeightAttributes(heightMeasureSpec, 0).measuredHeight);
         }
-        mAwContents.getViewMethods().onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -3525,9 +3533,8 @@ class WebViewChromium
 
     @Override
     public void computeScroll() {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_COMPUTE_SCROLL);
         if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
+            mFactory.addTask(
                     new Runnable() {
                         @Override
                         public void run() {
