@@ -3279,7 +3279,7 @@ void StyleEngine::InvalidateEnvDependentStylesIfNeeded() {
   });
 }
 
-bool StyleEngine::HasComplexSafaAreaConstraints() {
+bool StyleEngine::HasComplexSafeAreaConstraints() {
   DCHECK(RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled());
   if (needs_to_update_complex_safe_area_constraints_) {
     has_complex_safe_area_constraints_ = ElementHasComplexSafeAreaConstraint(

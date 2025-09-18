@@ -2780,8 +2780,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
 
   if (GetFrame()->IsMainFrame() &&
       RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled()) {
-    GetViewportData().SetHasComplexSafaAreaConstraint(
-        style_engine.HasComplexSafaAreaConstraints());
+    GetViewportData().SetHasComplexSafeAreaConstraint(
+        style_engine.HasComplexSafeAreaConstraints());
   }
 
   rendering_had_begun_for_last_style_update_ = RenderingHasBegun();

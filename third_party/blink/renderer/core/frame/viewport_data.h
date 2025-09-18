@@ -31,7 +31,7 @@ class ViewportData final : public GarbageCollected<ViewportData> {
 
   void UpdateViewportDescription();
 
-  void SetHasComplexSafaAreaConstraint(bool value);
+  void SetHasComplexSafeAreaConstraint(bool value);
 
   // When true this will force a kCover viewport fit value which will result in
   // the document expanding into the display cutout area.

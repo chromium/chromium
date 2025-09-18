@@ -7407,7 +7407,7 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
       GetStyleEngine().CreateUnconnectedRuleSet(*sheet, /*mixins=*/{}));
 }
 
-TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
+TEST_F(StyleEngineTest, HasComplexSafeAreaConstraints) {
   ScopedUpdateComplexSafaAreaConstraintsForTest
       update_complex_safe_area_constraints(true);
 
@@ -7418,19 +7418,19 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="padding-bottom: 30px" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="padding-bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // (b) Any styles that are 'bottom' anchored, may have complex safe area
   // constraints depending on the following usages.
@@ -7441,7 +7441,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; padding-bottom: 30px" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
   // there are complex safe area constraints.
@@ -7449,7 +7449,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; padding-bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When the 'bottom' style property uses env(safe-area-inset-bottom)
   // as defined under 'IsBottomRelativeToSafeAreaInset' in
@@ -7459,7 +7459,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: env(safe-area-inset-bottom)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses calc() with
   // env(safe-area-inset-bottom), there are complex safe area constraints.
@@ -7467,7 +7467,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
     <div style="bottom: 5px; height: calc(env(safe-area-inset-bottom) + 30px)" />
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 }
 
 TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
@@ -7485,7 +7485,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
   // there are complex safe area constraints.
@@ -7495,7 +7495,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When the 'bottom' style property uses env(safe-area-inset-bottom)
   // as defined under 'IsBottomRelativeToSafeAreaInset' in
@@ -7507,7 +7507,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafeAreaConstraints());
 
   // When a style property other than 'bottom' uses calc() with
   // env(safe-area-inset-bottom), there are complex safe area constraints.
@@ -7517,7 +7517,7 @@ TEST_F(StyleEngineTest, HasComplexSafaAreaConstraintsNestedBottom) {
     </div>
   )HTML");
   UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafeAreaConstraints());
 }
 
 TEST_F(StyleEngineTest, ScrollStateUseCounter) {
