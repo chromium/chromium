@@ -379,6 +379,302 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(reported_average_viewport_density);
 }
 
+// Test that viewport ad density does not accumulate for ads that are injected
+// while the tab is in the background.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverBrowserTest,
+    AdDensity_AdCreatedInBackgroundNotAccountedWhileInBackground) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
+  waiter->Wait();
+
+  // Open a new tab, which backgrounds the original web_contents.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Verify the original tab is hidden.
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents->GetVisibility());
+
+  // In the backgrounded tab, add a full-viewport image ad.
+  GURL image_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  std::string create_image_script = content::JsReplace(R"(
+          const img = document.createElement('img');
+          img.style.position = 'fixed';
+          img.style.left = '0';
+          img.style.top = '0';
+          img.style.width = '100vw';
+          img.style.height = '100vh';
+          img.src = $1;
+          document.body.appendChild(img);
+      )",
+                                                       image_url.spec());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_image_script));
+
+  // Wait for 0.5 seconds. If ad density tracking were buggy and still running
+  // while hidden, this delay would give it time to (incorrectly) accumulate a
+  // non-zero density value.
+  base::RunLoop loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(500));
+  loop.Run();
+
+  // Navigate the backgrounded tab away to trigger metric recording.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+
+  // Check the recorded metrics.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling4::
+                                      kAverageViewportAdDensityName);
+
+  // The density should be 0. When a tab is hidden, ad density tracking is
+  // paused in the browser. Furthermore, the renderer's lifecycle update also
+  // stops, so the browser wouldn't be notified of the new ad's geometry anyway.
+  EXPECT_TRUE(reported_average_viewport_density);
+  EXPECT_EQ(*reported_average_viewport_density, 0);
+}
+
+// Tests that viewport ad density starts to accumulate for an ad injected in a
+// backgrounded tab, once that tab is shown again.
+IN_PROC_BROWSER_TEST_F(
+    AdsPageLoadMetricsObserverBrowserTest,
+    AdDensity_AdCreatedInBackgroundAccountedWhenTabRefocused) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
+  waiter->Wait();
+
+  int original_tab_index = browser()->tab_strip_model()->active_index();
+
+  // Open a new tab, which backgrounds the original web_contents.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Verify the original tab is hidden.
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents->GetVisibility());
+
+  // In the backgrounded tab, add a full-viewport image ad.
+  GURL image_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  std::string create_image_script = content::JsReplace(R"(
+          const img = document.createElement('img');
+          img.style.position = 'fixed';
+          img.style.left = '0';
+          img.style.top = '0';
+          img.style.width = '100vw';
+          img.style.height = '100vh';
+          img.src = $1;
+          document.body.appendChild(img);
+      )",
+                                                       image_url.spec());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_image_script));
+
+  // Switch back to the original tab. This should trigger the renderer to detect
+  // the ad and report its geometry.
+  waiter->SetMainFrameAdRectsExpectation();
+  browser()->tab_strip_model()->ActivateTabAt(original_tab_index);
+  waiter->Wait();
+
+  // Wait for 0.5 seconds to allow time for ad density to accumulate now that
+  // the tab is visible.
+  base::RunLoop loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), base::Milliseconds(500));
+  loop.Run();
+
+  // Navigate the tab away to trigger metric recording.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+
+  // Check the recorded metrics.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling4::
+                                      kAverageViewportAdDensityName);
+
+  // The density should be greater than 0. When the tab becomes visible again,
+  // the ad's geometry is reported and density tracking resumes.
+  EXPECT_TRUE(reported_average_viewport_density);
+  EXPECT_GT(*reported_average_viewport_density, 0);
+}
+
+// Tests that viewport ad density does not accumulate time when the tab is
+// backgrounded.
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       AdDensity_BackgroundedTimeNotAccounted) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("pixel.png")});
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
+  waiter->Wait();
+
+  waiter->SetMainFrameAdRectsExpectation();
+
+  base::ElapsedTimer timer1;
+
+  // This variable will track the total duration the ad was present *and* the
+  // tab was visible. Due to the asynchronous nature of the test, this measures
+  // the *maximum potential* time, capturing the brief windows between ad
+  // insertion/removal and tab visibility changes.
+  base::TimeDelta max_potential_ad_visible_time;
+
+  // In the backgrounded tab, add a full-viewport image ad.
+  GURL image_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  std::string create_image_script = content::JsReplace(R"(
+          const img = document.createElement('img');
+          img.style.position = 'fixed';
+          img.style.left = '0';
+          img.style.top = '0';
+          img.style.width = '100vw';
+          img.style.height = '100vh';
+          img.src = $1;
+          document.body.appendChild(img);
+      )",
+                                                       image_url.spec());
+
+  EXPECT_TRUE(ExecJs(web_contents, create_image_script));
+  waiter->Wait();
+
+  int original_tab_index = browser()->tab_strip_model()->active_index();
+
+  // Open a new tab, which backgrounds the original web_contents.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Verify the original tab is hidden.
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents->GetVisibility());
+
+  // `max_potential_ad_visible_time` now holds the duration from ad insertion
+  // until the tab was hidden.
+  max_potential_ad_visible_time += timer1.Elapsed();
+
+  // Stay backgrouneded for 1 second. The test will assert that this 1-second
+  // duration, where the ad is present but backgrounded, is *not* counted
+  // towards the ad density accumulation.
+  {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), base::Seconds(1));
+    loop.Run();
+  }
+
+  std::string remove_image_script =
+      R"(
+          const images = document.getElementsByTagName('img');
+          images[0].remove();
+      )";
+  EXPECT_TRUE(ExecJs(web_contents, remove_image_script));
+
+  base::ElapsedTimer timer2;
+
+  // Switch back to the original tab, and wait for the removal event (a new,
+  // empty rectangle).
+  waiter->SetMainFrameAdRectsExpectation();
+  browser()->tab_strip_model()->ActivateTabAt(original_tab_index);
+  waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(gfx::Rect(0, 0, 0, 0)));
+
+  // There can be a small window between the tab becoming visible and the
+  // browser processing the ad removal. Ad density could accumulate during
+  // this brief period, so we add it to `max_potential_ad_visible_time`.
+  max_potential_ad_visible_time += timer2.Elapsed();
+
+  // Wait for 0.5 seconds while the tab is visible and the ad is gone. This adds
+  // to the total visible time, which is the denominator in the average density
+  // calculation.
+  {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), base::Milliseconds(500));
+    loop.Run();
+  }
+
+  // Navigate the tab away to trigger metric recording.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+
+  // Check the recorded metrics.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling4::
+                                      kAverageViewportAdDensityName);
+
+  // `max_potential_ad_visible_time` should be less than 0.5 seconds in a
+  // reasonably fast test environment. We only run the assertion if this
+  // condition holds, to avoid flakiness on very slow bots.
+  if (max_potential_ad_visible_time < base::Milliseconds(500)) {
+    // The density should be less than 50%. This implies the backgrouned time
+    // was not accounted in the density accumulation.
+    EXPECT_TRUE(reported_average_viewport_density);
+    EXPECT_LE(*reported_average_viewport_density, 50);
+  }
+}
+
 // Verifies that the page ad density records the maximum value during
 // a page's lifecycling by creating a large ad frame, destroying it, and
 // creating a smaller iframe. The ad density recorded is the density with

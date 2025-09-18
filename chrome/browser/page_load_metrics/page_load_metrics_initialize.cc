@@ -198,6 +198,9 @@ void PageLoadMetricsEmbedder::RegisterObservers(
         std::make_unique<HttpsEngagementPageLoadMetricsObserver>(
             web_contents()->GetBrowserContext()));
     tracker->AddObserver(std::make_unique<ProtocolPageLoadMetricsObserver>());
+
+    bool is_in_foreground =
+        tracker->GetVisibilityTracker().currently_in_foreground();
     bool is_incognito = IsIncognito(tracker->GetWebContents());
     std::unique_ptr<page_load_metrics::AdsPageLoadMetricsObserver>
         ads_observer =
@@ -209,7 +212,8 @@ void PageLoadMetricsEmbedder::RegisterObservers(
                     Profile::FromBrowserContext(
                         web_contents()->GetBrowserContext()),
                     ServiceAccessType::EXPLICIT_ACCESS),
-                base::BindRepeating(&GetApplicationLocale), is_incognito);
+                base::BindRepeating(&GetApplicationLocale), is_in_foreground,
+                is_incognito);
     if (ads_observer) {
       tracker->AddObserver(std::move(ads_observer));
     }

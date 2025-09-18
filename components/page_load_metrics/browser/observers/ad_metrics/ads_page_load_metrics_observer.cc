@@ -192,6 +192,7 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     history::HistoryService* history_service,
     const ApplicationLocaleGetter& application_locale_getter,
+    bool is_in_foreground,
     bool is_incognito) {
   // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
   // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
@@ -204,7 +205,7 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
 
   return std::make_unique<AdsPageLoadMetricsObserver>(
       heavy_ad_service, history_service, application_locale_getter,
-      is_incognito);
+      is_in_foreground, is_incognito);
 }
 
 // static
@@ -270,6 +271,7 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     history::HistoryService* history_service,
     const ApplicationLocaleGetter& application_locale_getter,
+    bool is_in_foreground,
     bool is_incognito,
     base::TickClock* clock,
     heavy_ad_intervention::HeavyAdBlocklist* blocklist)
@@ -283,7 +285,7 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
       heavy_ad_threshold_noise_provider_(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
               heavy_ad_privacy_mitigations_enabled_ /* use_noise */)),
-      page_ad_density_tracker_(clock),
+      page_ad_density_tracker_(is_in_foreground, clock),
       is_incognito_(is_incognito) {
   // Manual setting of the heavy ad blocklist should be used only as a
   // convenience for tests that don't create HeavyAdService.
@@ -620,6 +622,18 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   UpdateAdFrameData(navigation_handle, is_adframe, should_ignore_detected_ad);
 
   ProcessOngoingNavigationResource(navigation_handle);
+}
+
+AdsPageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnHidden(
+    const mojom::PageLoadTiming& timing) {
+  page_ad_density_tracker_.OnHidden();
+  return CONTINUE_OBSERVING;
+}
+
+AdsPageLoadMetricsObserver::ObservePolicy
+AdsPageLoadMetricsObserver::OnShown() {
+  page_ad_density_tracker_.OnShown();
+  return CONTINUE_OBSERVING;
 }
 
 void AdsPageLoadMetricsObserver::FrameReceivedUserActivation(

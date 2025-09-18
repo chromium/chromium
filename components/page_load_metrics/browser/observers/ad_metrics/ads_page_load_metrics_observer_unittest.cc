@@ -906,7 +906,8 @@ class AdsPageLoadMetricsObserverTest
         /*heavy_ad_service=*/nullptr,
         /*history_service=*/nullptr,
         base::BindRepeating([]() { return std::string("en-US"); }),
-        IsIncognito(), clock_.get(), test_blocklist_.get());
+        /*is_in_foreground=*/true, IsIncognito(), clock_.get(),
+        test_blocklist_.get());
     // Mock the noise provider to make tests deterministic. Tests can override
     // this again to test non-zero noise.
     observer->SetHeavyAdThresholdNoiseProviderForTesting(

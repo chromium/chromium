@@ -38,11 +38,21 @@ class PageAdDensityTracker {
     std::optional<int> ad_density_by_area;
   };
 
-  explicit PageAdDensityTracker(base::TickClock* clock = nullptr);
+  PageAdDensityTracker(bool is_in_foreground,
+                       const base::TickClock* clock = nullptr);
   ~PageAdDensityTracker();
 
   PageAdDensityTracker(const PageAdDensityTracker&) = delete;
   PageAdDensityTracker& operator=(const PageAdDensityTracker&) = delete;
+
+  // Accumulates the last-measured viewport ad density and pauses further
+  // tracking. Called when the page becomes hidden from view
+  // (e.g., tab is backgrounded).
+  void OnHidden();
+
+  // Starts or resumes ad density tracking. Called when the page becomes visible
+  // (e.g., tab is foregrounded).
+  void OnShown();
 
   // Operations to track the main frame dimensions. The main frame rect has to
   // be set to calculate the page ad density.
@@ -119,8 +129,12 @@ class PageAdDensityTracker {
 
   // Accumulate `last_viewport_ad_density_by_area_` and its weight (i.e. the
   // elapsed time since `last_viewport_density_accumulate_time_`) into
-  // `viewport_ad_density_by_area_stats_`. This can be invoked either when a
-  // new density is calculated, or during `Finalize()`.
+  // `viewport_ad_density_by_area_stats_`.
+  //
+  // This is only called when the page is in the foreground, immediately before:
+  // 1. Calculating a new density.
+  // 2. The page becomes hidden (`OnHidden`).
+  // 3. Finalizing tracking (`Finalize`).
   void AccumulateOutstandingViewportAdDensity();
 
   void CalculatePageAdDensity();
@@ -163,6 +177,9 @@ class PageAdDensityTracker {
   UnivariateStats viewport_ad_density_by_area_stats_;
 
   bool finalize_called_ = false;
+
+  // Whether the page is in foreground.
+  bool is_in_foreground_ = false;
 
   // The tick clock used to get the current time. Can be replaced by tests.
   raw_ptr<const base::TickClock> clock_;
