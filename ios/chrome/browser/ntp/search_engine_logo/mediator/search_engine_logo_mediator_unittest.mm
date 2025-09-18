@@ -126,47 +126,41 @@ TEST_F(SearchEngineLogoMediatorTest, TestTapDoodle_InvalidSearchQuery) {
 // Verifies that the logo fetch is not restarted when the fetch is failed.
 TEST_F(SearchEngineLogoMediatorTest, TestFetchNotRestartedWhenFailed) {
   // Expect one call, which will be "disabled".
-  base::RunLoop run_loop1;
+  search_provider_logos::LogoCallback logo_callback;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
-      .WillOnce(
-          [&run_loop1](search_provider_logos::LogoCallbacks callbacks,
-                       bool for_doodle) {
-            std::move(callbacks.on_fresh_decoded_logo_available)
-                .Run(search_provider_logos::LogoCallbackReason::FAILED,
-                     std::nullopt);
-            run_loop1.Quit();
-          });
+      .WillOnce([&logo_callback](search_provider_logos::LogoCallbacks callbacks,
+                                 bool for_doodle) {
+        logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
+      });
   [mediator_ searchEngineChanged];
-  run_loop1.Run();
+  std::move(logo_callback)
+      .Run(search_provider_logos::LogoCallbackReason::FAILED, std::nullopt);
   // Verify that the logo fetch is not restarted.
-  base::RunLoop run_loop2;
+  base::RunLoop run_loop;
   EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(0);
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, run_loop2.QuitClosure());
-  run_loop2.Run();
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // Verifies that the logo fetch is restarted when the fetch is canceled.
 TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
   // Expect one call, which will be "canceled".
-  base::RunLoop run_loop1;
+  search_provider_logos::LogoCallback logo_callback;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
-      .WillOnce(
-          [&run_loop1](search_provider_logos::LogoCallbacks callbacks,
-                       bool for_doodle) {
-            std::move(callbacks.on_fresh_decoded_logo_available)
-                .Run(search_provider_logos::LogoCallbackReason::CANCELED,
-                     std::nullopt);
-            run_loop1.Quit();
-          });
+      .WillOnce([&logo_callback](search_provider_logos::LogoCallbacks callbacks,
+                                 bool for_doodle) {
+        logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
+      });
   [mediator_ searchEngineChanged];
-  run_loop1.Run();
+  std::move(logo_callback)
+      .Run(search_provider_logos::LogoCallbackReason::CANCELED, std::nullopt);
   // Verify that the logo fetch is restarted.
-  base::RunLoop run_loop2;
-  EXPECT_CALL(*logo_service_, GetLogo(_, false)).WillOnce([&run_loop2] {
-    run_loop2.Quit();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).WillOnce([&run_loop] {
+    run_loop.Quit();
   });
-  run_loop2.Run();
+  run_loop.Run();
 }
 
 // Tests that there is no crash if the mediator is disconnected during a logo
