@@ -53,13 +53,10 @@ if (enable_vr) {
 
     defines = [ "IS_DEVICE_VR_BASE_IMPL" ]
     sources = [
-      "anchor_id.h",
       "create_anchor_request.cc",
       "create_anchor_request.h",
       "hit_test_subscription_data.cc",
       "hit_test_subscription_data.h",
-      "hit_test_subscription_id.h",
-      "plane_id.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_gl_util.cc",

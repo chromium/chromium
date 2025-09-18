@@ -22,7 +22,9 @@
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/create_anchor_request.h"
-#include "device/vr/plane_id.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -534,7 +536,7 @@ ArCoreImpl::ArCoreImpl()
 
 ArCoreImpl::~ArCoreImpl() {
   for (auto& create_anchor : create_anchor_requests_) {
-    create_anchor.TakeCallback().Run(mojom::CreateAnchorResult::FAILURE, 0);
+    create_anchor.TakeCallback().Run(std::nullopt);
   }
 }
 
@@ -1258,7 +1260,7 @@ float ArCoreImpl::GetEstimatedFloorHeight() {
   return kDefaultFloorHeightEstimation;
 }
 
-std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
+std::optional<HitTestSubscriptionId> ArCoreImpl::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
@@ -1274,8 +1276,8 @@ std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       // Validate that we know which plane's space the hit test is interested in
       // tracking.
-      if (!plane_manager_ || !plane_manager_->PlaneExists(PlaneId(
-                                 native_origin_information->get_plane_id()))) {
+      if (!plane_manager_ || !plane_manager_->PlaneExists(
+                                 native_origin_information->get_plane_id())) {
         return std::nullopt;
       }
       break;
@@ -1289,9 +1291,8 @@ std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       // Validate that we know which anchor's space the hit test is interested
       // in tracking.
-      if (!anchor_manager_ ||
-          !anchor_manager_->AnchorExists(
-              AnchorId(native_origin_information->get_anchor_id()))) {
+      if (!anchor_manager_ || !anchor_manager_->AnchorExists(
+                                  native_origin_information->get_anchor_id())) {
         return std::nullopt;
       }
       break;
@@ -1304,10 +1305,11 @@ std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
       HitTestSubscriptionData{std::move(native_origin_information),
                               entity_types, std::move(ray)});
 
-  return subscription_id.GetUnsafeValue();
+  return subscription_id;
 }
 
-std::optional<uint64_t> ArCoreImpl::SubscribeToHitTestForTransientInput(
+std::optional<HitTestSubscriptionId>
+ArCoreImpl::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
@@ -1317,7 +1319,7 @@ std::optional<uint64_t> ArCoreImpl::SubscribeToHitTestForTransientInput(
       subscription_id, TransientInputHitTestSubscriptionData{
                            profile_name, entity_types, std::move(ray)});
 
-  return subscription_id.GetUnsafeValue();
+  return subscription_id;
 }
 
 mojom::XRHitTestSubscriptionResultsDataPtr
@@ -1345,8 +1347,7 @@ ArCoreImpl::GetHitTestSubscriptionResults(
 
     // Since we have a transform, let's use it to obtain hit test results.
     result->results.push_back(GetHitTestSubscriptionResult(
-        HitTestSubscriptionId(subscription_id_and_data.first),
-        *subscription_id_and_data.second.ray,
+        subscription_id_and_data.first, *subscription_id_and_data.second.ray,
         subscription_id_and_data.second.entity_types,
         *maybe_mojo_from_native_origin));
   }
@@ -1365,7 +1366,7 @@ ArCoreImpl::GetHitTestSubscriptionResults(
 
     result->transient_input_results.push_back(
         GetTransientHitTestSubscriptionResult(
-            HitTestSubscriptionId(subscription_id_and_data.first),
+            subscription_id_and_data.first,
             *subscription_id_and_data.second.ray,
             subscription_id_and_data.second.entity_types,
             input_source_ids_and_transforms));
@@ -1396,7 +1397,7 @@ ArCoreImpl::GetHitTestSubscriptionResult(
     hit_results.clear();  // On failure, clear partial results.
   }
 
-  return mojom::XRHitTestSubscriptionResultData::New(id.GetUnsafeValue(),
+  return mojom::XRHitTestSubscriptionResultData::New(id,
                                                      std::move(hit_results));
 }
 
@@ -1410,7 +1411,7 @@ ArCoreImpl::GetTransientHitTestSubscriptionResult(
   auto result =
       device::mojom::XRHitTestTransientInputSubscriptionResultData::New();
 
-  result->subscription_id = id.GetUnsafeValue();
+  result->subscription_id = id;
 
   for (const auto& input_source_id_and_mojo_from_input_source :
        input_source_ids_and_mojo_from_input_sources) {
@@ -1517,12 +1518,12 @@ bool ArCoreImpl::NativeOriginExists(
       return true;
 
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
-      return plane_manager_ ? plane_manager_->PlaneExists(PlaneId(
-                                  native_origin_information.get_plane_id()))
+      return plane_manager_ ? plane_manager_->PlaneExists(
+                                  native_origin_information.get_plane_id())
                             : false;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
-      return anchor_manager_ ? anchor_manager_->AnchorExists(AnchorId(
-                                   native_origin_information.get_anchor_id()))
+      return anchor_manager_ ? anchor_manager_->AnchorExists(
+                                   native_origin_information.get_anchor_id())
                              : false;
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return false;
@@ -1566,12 +1567,12 @@ std::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
           native_origin_information.get_reference_space_type(),
           mojo_from_viewer);
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
-      return plane_manager_ ? plane_manager_->GetMojoFromPlane(PlaneId(
-                                  native_origin_information.get_plane_id()))
+      return plane_manager_ ? plane_manager_->GetMojoFromPlane(
+                                  native_origin_information.get_plane_id())
                             : std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
-      return anchor_manager_ ? anchor_manager_->GetMojoFromAnchor(AnchorId(
-                                   native_origin_information.get_anchor_id()))
+      return anchor_manager_ ? anchor_manager_->GetMojoFromAnchor(
+                                   native_origin_information.get_anchor_id())
                              : std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       return std::nullopt;
@@ -1583,17 +1584,15 @@ std::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
   }
 }
 
-void ArCoreImpl::UnsubscribeFromHitTest(uint64_t subscription_id) {
+void ArCoreImpl::UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id) {
   DVLOG(2) << __func__ << ": subscription_id=" << subscription_id;
 
   // Hit test subscription ID space is the same for transient and non-transient
   // hit test sources, so we can attempt to remove it from both collections (it
   // will succeed only for one of them anyway).
 
-  hit_test_subscription_id_to_data_.erase(
-      HitTestSubscriptionId(subscription_id));
-  hit_test_subscription_id_to_transient_hit_test_data_.erase(
-      HitTestSubscriptionId(subscription_id));
+  hit_test_subscription_id_to_data_.erase(subscription_id);
+  hit_test_subscription_id_to_transient_hit_test_data_.erase(subscription_id);
 }
 
 HitTestSubscriptionId ArCoreImpl::CreateHitTestSubscriptionId() {
@@ -1712,7 +1711,7 @@ bool ArCoreImpl::RequestHitTest(
     // After the first (furthest) hit, for planes, only return hits that are
     // within the actual detected polygon and not just within than the larger
     // plane.
-    uint64_t plane_id = 0;
+    std::optional<PlaneId> plane_id;
     if (ar_trackable_type == AR_TRACKABLE_PLANE) {
       ArPlane* ar_plane = ArAsPlane(ar_trackable.get());
 
@@ -1728,11 +1727,8 @@ bool ArCoreImpl::RequestHitTest(
         }
       }
 
-      std::optional<PlaneId> maybe_plane_id =
+      plane_id =
           plane_manager_ ? plane_manager_->GetPlaneId(ar_plane) : std::nullopt;
-      if (maybe_plane_id) {
-        plane_id = maybe_plane_id->GetUnsafeValue();
-      }
     }
 
     mojom::XRHitResultPtr mojo_hit = mojom::XRHitResult::New();
@@ -1753,7 +1749,7 @@ bool ArCoreImpl::RequestHitTest(
       DVLOG(3) << __func__
                << ": adding hit test result, position=" << position.ToString()
                << ", orientation=" << orientation.ToString()
-               << ", plane_id=" << plane_id << " (0 means no plane)";
+               << ", plane_id=" << mojo_hit->plane_id.value_or(kInvalidPlaneId);
     }
 
     // Insert new results at head to preserver order from ArCore
@@ -1767,7 +1763,7 @@ bool ArCoreImpl::RequestHitTest(
 void ArCoreImpl::CreateAnchor(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<PlaneId> plane_id,
+    const std::optional<PlaneId>& plane_id,
     CreateAnchorCallback callback) {
   DVLOG(2) << __func__ << ": native_origin_information.which()="
            << static_cast<uint32_t>(native_origin_information.which())
@@ -1775,7 +1771,7 @@ void ArCoreImpl::CreateAnchor(
            << native_origin_from_anchor.position().ToString()
            << ", native_origin_from_anchor.orientation()="
            << native_origin_from_anchor.orientation().ToString()
-           << ", plane_id=" << plane_id.value_or(PlaneId(0)).GetUnsafeValue();
+           << ", plane_id=" << plane_id.value_or(kInvalidPlaneId);
 
   create_anchor_requests_.emplace_back(native_origin_information,
                                        native_origin_from_anchor.ToTransform(),
@@ -1806,8 +1802,7 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
           << __func__
           << ": failing outdated anchor creation request, anchor_creation_age="
           << anchor_creation_age;
-      create_anchor.TakeCallback().Run(
-          device::mojom::CreateAnchorResult::FAILURE, 0);
+      create_anchor.TakeCallback().Run(std::nullopt);
       continue;
     }
 
@@ -1818,8 +1813,7 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
       DVLOG(3) << __func__
                << ": failing anchor creation request, native origin does not "
                   "exist";
-      create_anchor.TakeCallback().Run(
-          device::mojom::CreateAnchorResult::FAILURE, 0);
+      create_anchor.TakeCallback().Run(std::nullopt);
       continue;
     }
 
@@ -1846,8 +1840,7 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
       DVLOG(3)
           << __func__
           << ": failing anchor creation request, unable to decompose a matrix";
-      create_anchor.TakeCallback().Run(
-          device::mojom::CreateAnchorResult::FAILURE, 0);
+      create_anchor.TakeCallback().Run(std::nullopt);
       continue;
     }
 
@@ -1860,21 +1853,10 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
       maybe_anchor_id = anchor_manager_->CreateAnchor(*mojo_from_anchor);
     }
 
-    if (!maybe_anchor_id) {
-      // Fail the call now, failure to create anchor in ARCore SDK is unlikely
-      // to resolve itself.
-      DVLOG(3) << __func__
-               << ": failing anchor creation request, anchor creation "
-                  "function did not return an anchor id";
-      create_anchor.TakeCallback().Run(
-          device::mojom::CreateAnchorResult::FAILURE, 0);
-      continue;
-    }
-
-    DVLOG(3) << __func__ << ": anchor creation request succeeded, time taken: "
-             << anchor_creation_age;
-    create_anchor.TakeCallback().Run(device::mojom::CreateAnchorResult::SUCCESS,
-                                     maybe_anchor_id->GetUnsafeValue());
+    DVLOG(3) << __func__ << " anchor creation request finished. Id:"
+             << maybe_anchor_id.value_or(kInvalidAnchorId)
+             << " time taken: " << anchor_creation_age;
+    create_anchor.TakeCallback().Run(maybe_anchor_id);
   }
 
   // Return the postponed requests - all other requests should have their
@@ -1884,9 +1866,9 @@ void ArCoreImpl::ProcessAnchorCreationRequests(
            << create_anchor_requests_.size();
 }
 
-void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
+void ArCoreImpl::DetachAnchor(AnchorId anchor_id) {
   DCHECK(anchor_manager_);
-  anchor_manager_->DetachAnchor(AnchorId(anchor_id));
+  anchor_manager_->DetachAnchor(anchor_id);
 }
 
 mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {

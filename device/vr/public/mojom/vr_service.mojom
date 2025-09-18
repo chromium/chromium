@@ -274,6 +274,18 @@ struct Pose {
   gfx.mojom.Point3F position;
 };
 
+struct PlaneId {
+  uint64 id_value;
+};
+
+struct AnchorId {
+  uint64 id_value;
+};
+
+struct HitTestSubscriptionId {
+  uint64 id_value;
+};
+
 struct XRRay {
   gfx.mojom.Point3F origin;
   gfx.mojom.Vector3dF direction;
@@ -281,10 +293,9 @@ struct XRRay {
 
 struct XRHitResult {
   Pose mojo_from_result;  // Pose of the result (aka intersection point).
-  uint64 plane_id;  // If the hit test result was computed based off of a plane,
-                    // the plane ID will be stored here. 0 signifies no plane.
-                    // TODO(crbug.com/40489779) - make it optional once
-                    // mojo supports optional numeric types.
+  PlaneId? plane_id;  // If the hit test result was computed based off of a
+                      // plane, the plane ID will be stored here. Null signifies
+                      // no plane was hit.
 };
 
 // Describes the eye that a view is associated with. kNone represents views that
@@ -406,8 +417,8 @@ enum XRReferenceSpaceType {
 // & joint, or by input source id & input source space type.
 union XRNativeOriginInformation {
   XRInputSourceSpaceInfo input_source_space_info;
-  uint64 plane_id;
-  uint64 anchor_id;
+  PlaneId plane_id;
+  AnchorId anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
   uint32 image_index;
@@ -451,7 +462,7 @@ struct XRPlanePointData {
 // detected in the real world by the underlying system.
 struct XRPlaneData {
   // Unique (within a session) identifier of the plane.
-  uint64 id;
+  PlaneId id;
 
   // Plane orientation relative to gravity.
   XRPlaneOrientation orientation;
@@ -473,7 +484,7 @@ struct XRPlaneData {
 // present in updated_planes_data.
 struct XRPlaneDetectionData {
   // Array with ids of all tracked planes.
-  array<uint64> all_planes_ids;
+  array<PlaneId> all_planes_ids;
 
   // Array with plane data for all updated planes. Plane is considered updated
   // if its position or polygon has changed. Updated planes are always a subset
@@ -488,7 +499,7 @@ struct XRPlaneDetectionData {
 // evolves.
 struct XRAnchorData {
   // Unique (within a session) identifier of the anchor.
-  uint64 id;
+  AnchorId id;
 
   // Pose of the anchor. Null if the device does not know where the anchor is
   // located in the world space (tracking loss), but the tracking can still be
@@ -502,7 +513,7 @@ struct XRAnchorData {
 // will not be present in updated_anchors_data.
 struct XRAnchorsData {
   // Array with ids of all tracked anchors.
-  array<uint64> all_anchors_ids;
+  array<AnchorId> all_anchors_ids;
 
   // Array with anchor data for all updated anchors. Updated anchors are always
   // a subset of all anchors (i.e. for each anchor found in
@@ -514,7 +525,7 @@ struct XRAnchorsData {
 // This struct is relevant for subscriptions to hit test for persistent input
 // sources.
 struct XRHitTestSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   array<XRHitResult> hit_test_results;
 };
 
@@ -522,7 +533,7 @@ struct XRHitTestSubscriptionResultData {
 // This struct is relevant for subscriptions to hit test for transient input
 // sources.
 struct XRHitTestTransientInputSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   // Map from input source id to array of hit test results obtained using that
   // input source. Required since there might be multiple input sources that
   // match input source profile name passed in at subscription creation (see
@@ -855,16 +866,6 @@ interface VRServiceClient {
   OnDeviceChanged();
 };
 
-enum CreateAnchorResult {
-  SUCCESS = 0,
-  FAILURE = 1,
-};
-
-enum SubscribeToHitTestResult {
-  SUCCESS = 0,
-  FAILURE_GENERIC = 1,
-};
-
 enum EntityTypeForHitTest {
   POINT = 1,
   PLANE = 2,
@@ -895,7 +896,7 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTest(
     XRNativeOriginInformation native_origin_information,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Establishes a hit test subscription on the device. The subscription results
   // will be computed taking into account latest state of the input sources that
@@ -917,14 +918,14 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTestForTransientInput(
     string profile_name,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Notifies the device that subscription with the passed in |subscription_id|
   // is no longer needed and should be removed. The |subscription_id| must be a
   // valid id of a subscription returned by one of the SubscribeToHitTest/
   // SubscribeToHitTestForTransientInput calls, otherwise the call will be
   // ignored.
-  UnsubscribeFromHitTest(uint64 subscription_id);
+  UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id);
 
   // Issues a request to create an anchor. This anchor is free-floating (not
   // attached to any particular real world entity), unless |plane_id| is set.
@@ -935,21 +936,18 @@ interface XREnvironmentIntegrationProvider {
   // This allows specifying a "stationary" pose for the anchor separate from the
   // notion of the plane who should ultimately be its parent, as the center
   // point of a plane may shift from frame to frame.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
+  // On success, |anchor_id| will contain the id of the newly created anchor.
+  // On failure, |anchor_id| will be null.
   CreateAnchor(
     XRNativeOriginInformation native_origin_information,
     Pose native_origin_from_anchor,
-    uint64? plane_id)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Switch anchor_id to nullable integer once
-  // that's available. This will allow us to remove CreateAnchorResult if we're
-  // not interested in obtaining detailed error information from the device.
+    PlaneId? plane_id)
+      => (AnchorId? anchor_id);
 
   // Detaches an existing anchor. The |anchor_id| must be a valid id of an
   // anchor created by one of the CreateAnchor calls, otherwise the call will be
   // ignored.
-  DetachAnchor(uint64 anchor_id);
+  DetachAnchor(AnchorId anchor_id);
 };
 
 struct XRFrameDataRequestOptions {

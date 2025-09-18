@@ -14,7 +14,7 @@
 
 namespace blink {
 
-XRPlane::XRPlane(uint64_t id,
+XRPlane::XRPlane(device::PlaneId id,
                  XRSession* session,
                  const device::mojom::blink::XRPlaneData& plane_data,
                  double timestamp)
@@ -27,7 +27,7 @@ XRPlane::XRPlane(uint64_t id,
               plane_data.mojo_from_plane,
               timestamp) {}
 
-XRPlane::XRPlane(uint64_t id,
+XRPlane::XRPlane(device::PlaneId id,
                  XRSession* session,
                  const std::optional<Orientation>& orientation,
                  HeapVector<Member<DOMPointReadOnly>> polygon,
@@ -43,7 +43,7 @@ XRPlane::XRPlane(uint64_t id,
   DVLOG(3) << __func__;
 }
 
-uint64_t XRPlane::id() const {
+device::PlaneId XRPlane::id() const {
   return id_;
 }
 

@@ -5,7 +5,7 @@
 #define DEVICE_VR_HIT_TEST_SUBSCRIPTION_DATA_H_
 
 #include "base/component_export.h"
-#include "device/vr/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 
 namespace device {

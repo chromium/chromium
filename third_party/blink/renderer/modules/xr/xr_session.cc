@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -198,11 +199,12 @@ Vector<device::mojom::blink::EntityTypeForHitTest> GetEntityTypesForHitTest(
 }
 
 template <typename T>
-HashSet<uint64_t> GetIdsOfUnusedHitTestSources(
-    const HeapHashMap<uint64_t, WeakMember<T>>& id_to_hit_test_source,
-    const HashSet<uint64_t>& all_ids) {
+HashSet<device::HitTestSubscriptionId> GetIdsOfUnusedHitTestSources(
+    const HeapHashMap<device::HitTestSubscriptionId, WeakMember<T>>&
+        id_to_hit_test_source,
+    const HashSet<device::HitTestSubscriptionId>& all_ids) {
   // Gather all IDs of unused hit test sources:
-  HashSet<uint64_t> unused_hit_test_source_ids;
+  HashSet<device::HitTestSubscriptionId> unused_hit_test_source_ids;
   for (auto& id : all_ids) {
     if (!base::Contains(id_to_hit_test_source, id)) {
       unused_hit_test_source_ids.insert(id);
@@ -819,7 +821,7 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
     const gfx::Transform& native_origin_from_anchor,
     const device::mojom::blink::XRNativeOriginInformationPtr&
         native_origin_information,
-    std::optional<uint64_t> maybe_plane_id,
+    std::optional<device::PlaneId> maybe_plane_id,
     ExceptionState& exception_state) {
   DVLOG(2) << __func__;
 
@@ -860,8 +862,8 @@ ScriptPromise<XRAnchor> XRSession::CreateAnchorHelper(
   xr_->xrEnvironmentProviderRemote()->CreateAnchor(
       native_origin_information->Clone(), *maybe_native_origin_from_anchor_pose,
       maybe_plane_id,
-      resolver->WrapCallbackInScriptScope(
-          BindOnce(&XRSession::OnCreateAnchorResult, WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
+          &XRSession::OnCreateAnchorResult, WrapPersistent(this))));
 
   create_anchor_promises_.insert(resolver);
 
@@ -1035,7 +1037,7 @@ ScriptPromise<XRHitTestSource> XRSession::requestHitTestSource(
 
   xr_->xrEnvironmentProviderRemote()->SubscribeToHitTest(
       maybe_native_origin->Clone(), entity_types, std::move(ray_mojo),
-      resolver->WrapCallbackInScriptScope(BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           &XRSession::OnSubscribeToHitTestResult, WrapPersistent(this))));
   request_hit_test_source_promises_.insert(resolver);
 
@@ -1102,9 +1104,9 @@ XRSession::requestHitTestSourceForTransientInput(
 
   xr_->xrEnvironmentProviderRemote()->SubscribeToHitTestForTransientInput(
       options_init->profile(), entity_types, std::move(ray_mojo),
-      resolver->WrapCallbackInScriptScope(
-          BindOnce(&XRSession::OnSubscribeToHitTestForTransientInputResult,
-                   WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
+          &XRSession::OnSubscribeToHitTestForTransientInputResult,
+          WrapPersistent(this))));
   request_hit_test_source_promises_.insert(resolver);
 
   return promise;
@@ -1112,69 +1114,67 @@ XRSession::requestHitTestSourceForTransientInput(
 
 void XRSession::OnSubscribeToHitTestResult(
     ScriptPromiseResolver<XRHitTestSource>* resolver,
-    device::mojom::SubscribeToHitTestResult result,
-    uint64_t subscription_id) {
-  DVLOG(2) << __func__ << ": result=" << result
-           << ", subscription_id=" << subscription_id;
+    const std::optional<device::HitTestSubscriptionId>& subscription_id) {
+  DVLOG(2) << __func__ << ": subscription_id="
+           << subscription_id.value_or(device::kInvalidHitTestSubscriptionId);
 
   DCHECK(request_hit_test_source_promises_.Contains(resolver));
   request_hit_test_source_promises_.erase(resolver);
 
-  if (result != device::mojom::SubscribeToHitTestResult::SUCCESS) {
+  if (!subscription_id) {
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                      kHitTestSubscriptionFailed);
     return;
   }
 
   XRHitTestSource* hit_test_source =
-      MakeGarbageCollected<XRHitTestSource>(subscription_id, this);
+      MakeGarbageCollected<XRHitTestSource>(*subscription_id, this);
 
-  hit_test_source_ids_to_hit_test_sources_.insert(subscription_id,
+  hit_test_source_ids_to_hit_test_sources_.insert(*subscription_id,
                                                   hit_test_source);
-  hit_test_source_ids_.insert(subscription_id);
+  hit_test_source_ids_.insert(*subscription_id);
 
   resolver->Resolve(hit_test_source);
 }
 
 void XRSession::OnSubscribeToHitTestForTransientInputResult(
     ScriptPromiseResolver<XRTransientInputHitTestSource>* resolver,
-    device::mojom::SubscribeToHitTestResult result,
-    uint64_t subscription_id) {
-  DVLOG(2) << __func__ << ": result=" << result
-           << ", subscription_id=" << subscription_id;
+    const std::optional<device::HitTestSubscriptionId>& subscription_id) {
+  DVLOG(2) << __func__ << ": subscription_id="
+           << subscription_id.value_or(device::kInvalidHitTestSubscriptionId);
 
   DCHECK(request_hit_test_source_promises_.Contains(resolver));
   request_hit_test_source_promises_.erase(resolver);
 
-  if (result != device::mojom::SubscribeToHitTestResult::SUCCESS) {
+  if (!subscription_id) {
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                      kHitTestSubscriptionFailed);
     return;
   }
 
   XRTransientInputHitTestSource* hit_test_source =
-      MakeGarbageCollected<XRTransientInputHitTestSource>(subscription_id,
+      MakeGarbageCollected<XRTransientInputHitTestSource>(*subscription_id,
                                                           this);
 
   hit_test_source_ids_to_transient_input_hit_test_sources_.insert(
-      subscription_id, hit_test_source);
-  hit_test_source_for_transient_input_ids_.insert(subscription_id);
+      *subscription_id, hit_test_source);
+  hit_test_source_for_transient_input_ids_.insert(*subscription_id);
 
   resolver->Resolve(hit_test_source);
 }
 
-void XRSession::OnCreateAnchorResult(ScriptPromiseResolver<XRAnchor>* resolver,
-                                     device::mojom::CreateAnchorResult result,
-                                     uint64_t id) {
-  DVLOG(2) << __func__ << ": result=" << result << ", id=" << id;
+void XRSession::OnCreateAnchorResult(
+    ScriptPromiseResolver<XRAnchor>* resolver,
+    const std::optional<device::AnchorId>& id) {
+  DVLOG(2) << __func__ << ": id=" << id.value_or(device::kInvalidAnchorId);
 
   DCHECK(create_anchor_promises_.Contains(resolver));
   create_anchor_promises_.erase(resolver);
 
-  if (result == device::mojom::CreateAnchorResult::SUCCESS) {
+  if (id) {
     // Anchor was created successfully on the device. Subsequent frame update
     // must contain newly created anchor data.
-    anchor_ids_to_pending_anchor_promises_.insert(id, resolver);
+    anchor_ids_to_pending_anchor_promises_.insert(*id, resolver);
   } else {
     resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                      kAnchorCreationFailed);
@@ -1263,7 +1263,7 @@ void XRSession::ProcessAnchorsData(
            << ", all anchors size="
            << tracked_anchors_data->all_anchors_ids.size();
 
-  HeapHashMap<uint64_t, Member<XRAnchor>> updated_anchors;
+  HeapHashMap<device::AnchorId, Member<XRAnchor>> updated_anchors;
 
   // First, process all anchors that had their information updated (new anchors
   // are also processed here).

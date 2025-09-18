@@ -35,6 +35,18 @@ mojom_component("vr_service") {
         mojom = "device.mojom.Pose"
         cpp = "::device::Pose"
       },
+      {
+        mojom = "device.mojom.PlaneId"
+        cpp = "::device::PlaneId"
+      },
+      {
+        mojom = "device.mojom.AnchorId"
+        cpp = "::device::AnchorId"
+      },
+      {
+        mojom = "device.mojom.HitTestSubscriptionId"
+        cpp = "::device::HitTestSubscriptionId"
+      },
     ]
     traits_headers = [ "//device/vr/public/mojom/vr_service_mojom_traits.h" ]
     traits_public_deps = [ ":vr_public_typemaps" ]
@@ -89,6 +101,9 @@ component("vr_public_typemaps") {
   defines = [ "IS_VR_PUBLIC_TYPEMAPS_IMPL" ]
 
   sources = [
+    "anchor_id.h",
+    "hit_test_subscription_id.h",
+    "plane_id.h",
     "pose.cc",
     "pose.h",
   ]

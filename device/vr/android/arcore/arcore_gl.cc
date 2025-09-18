@@ -29,8 +29,10 @@
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/android/xr_java_coordinator.h"
-#include "device/vr/plane_id.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -1336,23 +1338,16 @@ void ArCoreGl::SubscribeToHitTest(
     DVLOG(1) << __func__
              << ": ARCore device supports only transient input sources for "
                 "now. Rejecting subscription request.";
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
-      std::move(native_origin_information), entity_types, std::move(ray));
-
-  if (maybe_subscription_id) {
-    DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
-    std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                            *maybe_subscription_id);
-  } else {
-    DVLOG(1) << __func__ << ": subscription failed";
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
-  }
+  std::optional<HitTestSubscriptionId> maybe_subscription_id =
+      arcore_->SubscribeToHitTest(std::move(native_origin_information),
+                                  entity_types, std::move(ray));
+  DVLOG(2) << __func__ << ": subscription_id="
+           << maybe_subscription_id.value_or(kInvalidHitTestSubscriptionId);
+  std::move(callback).Run(maybe_subscription_id);
 }
 
 void ArCoreGl::SubscribeToHitTestForTransientInput(
@@ -1364,22 +1359,16 @@ void ArCoreGl::SubscribeToHitTestForTransientInput(
   DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
            << ", ray direction=" << ray->direction.ToString();
 
-  std::optional<uint64_t> maybe_subscription_id =
+  std::optional<HitTestSubscriptionId> maybe_subscription_id =
       arcore_->SubscribeToHitTestForTransientInput(profile_name, entity_types,
                                                    std::move(ray));
-
-  if (maybe_subscription_id) {
-    DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
-    std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                            *maybe_subscription_id);
-  } else {
-    DVLOG(1) << __func__ << ": subscription failed";
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
-  }
+  DVLOG(2) << __func__ << ": subscription_id="
+           << maybe_subscription_id.value_or(kInvalidHitTestSubscriptionId);
+  std::move(callback).Run(maybe_subscription_id);
 }
 
-void ArCoreGl::UnsubscribeFromHitTest(uint64_t subscription_id) {
+void ArCoreGl::UnsubscribeFromHitTest(
+    const HitTestSubscriptionId& subscription_id) {
   DVLOG(2) << __func__;
 
   arcore_->UnsubscribeFromHitTest(subscription_id);
@@ -1388,17 +1377,17 @@ void ArCoreGl::UnsubscribeFromHitTest(uint64_t subscription_id) {
 void ArCoreGl::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<uint64_t> plane_id,
+    const std::optional<PlaneId>& plane_id,
     CreateAnchorCallback callback) {
   DVLOG(2) << __func__;
 
   DCHECK(native_origin_information);
 
   arcore_->CreateAnchor(*native_origin_information, native_origin_from_anchor,
-                        MaybeCreatePlaneId(plane_id), std::move(callback));
+                        plane_id, std::move(callback));
 }
 
-void ArCoreGl::DetachAnchor(uint64_t anchor_id) {
+void ArCoreGl::DetachAnchor(const AnchorId& anchor_id) {
   DVLOG(2) << __func__;
 
   arcore_->DetachAnchor(anchor_id);

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_id_hash_traits.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
@@ -224,7 +225,7 @@ class XRSession final : public EventTarget,
       const gfx::Transform& native_origin_from_anchor,
       const device::mojom::blink::XRNativeOriginInformationPtr&
           native_origin_information,
-      std::optional<uint64_t> maybe_plane_id,
+      std::optional<device::PlaneId> maybe_plane_id,
       ExceptionState& exception_state);
 
   // Helper POD type containing the information needed for anchor creation in
@@ -472,17 +473,14 @@ class XRSession final : public EventTarget,
 
   void OnSubscribeToHitTestResult(
       ScriptPromiseResolver<XRHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnSubscribeToHitTestForTransientInputResult(
       ScriptPromiseResolver<XRTransientInputHitTestSource>* resolver,
-      device::mojom::SubscribeToHitTestResult result,
-      uint64_t subscription_id);
+      const std::optional<device::HitTestSubscriptionId>& subscription_id);
 
   void OnCreateAnchorResult(ScriptPromiseResolver<XRAnchor>* resolver,
-                            device::mojom::CreateAnchorResult result,
-                            uint64_t id);
+                            const std::optional<device::AnchorId>& id);
 
   void EnsureEnvironmentErrorHandler();
   void OnEnvironmentProviderError();
@@ -567,7 +565,7 @@ class XRSession final : public EventTarget,
   // |anchor_ids_to_pending_anchor_promises_|, and anchors that got created in
   // phase 3 live in |anchor_ids_to_anchors_|.
 
-  HeapHashMap<uint64_t, Member<XRAnchor>> anchor_ids_to_anchors_;
+  HeapHashMap<device::AnchorId, Member<XRAnchor>> anchor_ids_to_anchors_;
 
   // Set of promises returned from CreateAnchor that are still in-flight to the
   // device. Once the device calls us back with the newly created anchor id, the
@@ -577,7 +575,7 @@ class XRSession final : public EventTarget,
   // have not yet been resolved as their data is not yet available to blink.
   // Next frame update should contain the necessary data - the promise will be
   // resolved then.
-  HeapHashMap<uint64_t, Member<ScriptPromiseResolverBase>>
+  HeapHashMap<device::AnchorId, Member<ScriptPromiseResolverBase>>
       anchor_ids_to_pending_anchor_promises_;
 
   // Mapping of hit test source ids (aka hit test subscription ids) to hit test
@@ -591,9 +589,10 @@ class XRSession final : public EventTarget,
   // |hit_test_source_for_transient_input_ids_|.
   // For the specifics of HeapHashMap<Key, WeakMember<Value>> behavior, see:
   // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md#weak-collections
-  HeapHashMap<uint64_t, WeakMember<XRHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId, WeakMember<XRHitTestSource>>
       hit_test_source_ids_to_hit_test_sources_;
-  HeapHashMap<uint64_t, WeakMember<XRTransientInputHitTestSource>>
+  HeapHashMap<device::HitTestSubscriptionId,
+              WeakMember<XRTransientInputHitTestSource>>
       hit_test_source_ids_to_transient_input_hit_test_sources_;
 
   // The entries in the above hash sets will be automatically removed by garbage
@@ -601,9 +600,9 @@ class XRSession final : public EventTarget,
   // introducing pre-finalizers on hit test sources, store the set of IDs that
   // we know about. We will then subsequently cross-reference the sets with hash
   // maps and notify the device about hit test sources that are no longer alive.
-  HashSet<uint64_t> hit_test_source_ids_;
-  HashSet<uint64_t> hit_test_source_for_transient_input_ids_;
-
+  HashSet<device::HitTestSubscriptionId> hit_test_source_ids_;
+  HashSet<device::HitTestSubscriptionId>
+      hit_test_source_for_transient_input_ids_;
   Member<XRPlaneManager> plane_manager_;
 
   // Populated iff the raw camera feature has been enabled and the session

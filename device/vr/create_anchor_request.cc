@@ -8,7 +8,7 @@ namespace device {
 
 CreateAnchorRequest::CreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform native_origin_from_anchor,
+    const gfx::Transform& native_origin_from_anchor,
     std::optional<PlaneId> plane_id,
     CreateAnchorCallback callback)
     : native_origin_information_(native_origin_information.Clone()),

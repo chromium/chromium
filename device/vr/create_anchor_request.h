@@ -8,15 +8,15 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "device/vr/plane_id.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
 
 using CreateAnchorCallback =
-    base::OnceCallback<void(device::mojom::CreateAnchorResult,
-                            uint64_t anchor_id)>;
+    base::OnceCallback<void(const std::optional<device::AnchorId>&)>;
 
 class COMPONENT_EXPORT(DEVICE_VR_BASE) CreateAnchorRequest {
  public:
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) CreateAnchorRequest {
 
   CreateAnchorRequest(
       const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform native_origin_from_anchor,
+      const gfx::Transform& native_origin_from_anchor,
       std::optional<PlaneId> plane_id,
       CreateAnchorCallback callback);
   CreateAnchorRequest(CreateAnchorRequest&& other);

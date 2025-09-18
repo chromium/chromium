@@ -71,23 +71,23 @@ OpenXrSpaceBasedAnchorManager::GetXrLocationFromAnchor(
 
 mojom::XRAnchorsDataPtr OpenXrSpaceBasedAnchorManager::GetCurrentAnchorsData(
     XrTime predicted_display_time) {
-  std::vector<uint64_t> all_anchors_ids;
+  std::vector<AnchorId> all_anchors_ids;
   all_anchors_ids.reserve(openxr_anchors_.size());
   std::vector<mojom::XRAnchorDataPtr> updated_anchors;
   updated_anchors.reserve(openxr_anchors_.size());
   absl::flat_hash_set<AnchorId> deleted_ids;
 
   for (const auto& [anchor_id, anchor_space] : openxr_anchors_) {
-    all_anchors_ids.push_back(anchor_id.GetUnsafeValue());
+    all_anchors_ids.push_back(anchor_id);
     auto maybe_pose = GetAnchorFromMojom(anchor_space, predicted_display_time);
     if (maybe_pose.has_value()) {
-      updated_anchors.push_back(mojom::XRAnchorData::New(
-          anchor_id.GetUnsafeValue(), maybe_pose.value()));
+      updated_anchors.push_back(
+          mojom::XRAnchorData::New(anchor_id, maybe_pose.value()));
     } else {
       // Regardless of why it failed, if we still have it tracked, send it up
       // this frame, but remove it for future frames.
       updated_anchors.push_back(
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt));
+          mojom::XRAnchorData::New(anchor_id, std::nullopt));
       if (maybe_pose.error() == AnchorTrackingErrorType::kPermanent) {
         deleted_ids.insert(anchor_id);
       }

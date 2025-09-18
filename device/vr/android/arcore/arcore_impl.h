@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "device/vr/anchor_id.h"
 #include "device/vr/android/arcore/arcore.h"
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
@@ -18,7 +17,8 @@
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/create_anchor_request.h"
 #include "device/vr/hit_test_subscription_data.h"
-#include "device/vr/plane_id.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 
@@ -75,11 +75,11 @@ class ArCoreImpl : public ArCore {
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       std::vector<mojom::XRHitResultPtr>* hit_results);
 
-  std::optional<uint64_t> SubscribeToHitTest(
+  std::optional<HitTestSubscriptionId> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr nativeOriginInformation,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;
-  std::optional<uint64_t> SubscribeToHitTestForTransientInput(
+  std::optional<HitTestSubscriptionId> SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;
@@ -88,12 +88,12 @@ class ArCoreImpl : public ArCore {
       const gfx::Transform& mojo_from_viewer,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state) override;
 
-  void UnsubscribeFromHitTest(uint64_t subscription_id) override;
+  void UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id) override;
 
   void CreateAnchor(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<PlaneId> plane_id,
+      const std::optional<PlaneId>& plane_id,
       CreateAnchorCallback callback) override;
 
   void ProcessAnchorCreationRequests(
@@ -101,7 +101,7 @@ class ArCoreImpl : public ArCore {
       const std::vector<mojom::XRInputSourceStatePtr>& input_state,
       const base::TimeTicks& frame_time) override;
 
-  void DetachAnchor(uint64_t anchor_id) override;
+  void DetachAnchor(AnchorId anchor_id) override;
 
   mojom::XRDepthDataPtr GetDepthData() override;
 

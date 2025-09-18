@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_RENDER_LOOP_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -20,7 +21,9 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform_helper.h"
+#include "device/vr/public/mojom/anchor_id.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/fps_meter.h"
@@ -237,14 +240,15 @@ class OpenXrRenderLoop : public XRThread,
       mojom::XRRayPtr ray,
       mojom::XREnvironmentIntegrationProvider::
           SubscribeToHitTestForTransientInputCallback callback) override;
-  void UnsubscribeFromHitTest(uint64_t subscription_id) override;
+  void UnsubscribeFromHitTest(
+      const HitTestSubscriptionId& subscription_id) override;
 
   void CreateAnchor(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const device::Pose& native_origin_from_anchor,
-      std::optional<uint64_t> plane_id,
+      const std::optional<PlaneId>& plane_id,
       CreateAnchorCallback callback) override;
-  void DetachAnchor(uint64_t anchor_id) override;
+  void DetachAnchor(const AnchorId& anchor_id) override;
 
   void ProcessCreateAnchorRequests(
       OpenXrAnchorManager* anchor_manager,

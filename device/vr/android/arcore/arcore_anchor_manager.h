@@ -11,10 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "device/vr/anchor_id.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

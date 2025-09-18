@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
+#include "device/vr/public/mojom/plane_id.h"
 
 namespace device {
 
@@ -214,10 +215,10 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
            << plane_id_to_plane_info_.size()
            << ", updated_plane_ids_.size()=" << updated_plane_ids_.size();
 
-  std::vector<uint64_t> all_plane_ids;
+  std::vector<PlaneId> all_plane_ids;
   all_plane_ids.reserve(plane_id_to_plane_info_.size());
   for (const auto& plane_id_and_object : plane_id_to_plane_info_) {
-    all_plane_ids.push_back(plane_id_and_object.first.GetUnsafeValue());
+    all_plane_ids.push_back(plane_id_and_object.first);
   }
 
   std::vector<mojom::XRPlaneDataPtr> updated_planes;
@@ -259,7 +260,7 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
                << ", orientation=" << pose.orientation().ToString();
 
       updated_planes.push_back(mojom::XRPlaneData::New(
-          plane_id.GetUnsafeValue(),
+          plane_id,
           mojo::ConvertTo<device::mojom::XRPlaneOrientation>(plane_type), pose,
           std::move(vertices)));
     } else {
@@ -267,8 +268,8 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
                << ", position=untracked, orientation=untracked";
 
       updated_planes.push_back(mojom::XRPlaneData::New(
-          plane_id.GetUnsafeValue(), device::mojom::XRPlaneOrientation::UNKNOWN,
-          std::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
+          plane_id, device::mojom::XRPlaneOrientation::UNKNOWN, std::nullopt,
+          std::vector<mojom::XRPlanePointDataPtr>{}));
     }
   }
 

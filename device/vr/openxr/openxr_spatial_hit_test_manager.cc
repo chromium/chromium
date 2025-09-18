@@ -299,8 +299,7 @@ std::vector<mojom::XRHitResultPtr> OpenXrSpatialHitTestManager::RequestHitTest(
     // is what we should be sending up for the other hit tests/the default value
     // anyways.
     if (plane_manager_ && raycast_result.id != XR_NULL_SPATIAL_ENTITY_ID_EXT) {
-      hit_result->plane_id =
-          plane_manager_->GetPlaneId(raycast_result.id).GetUnsafeValue();
+      hit_result->plane_id = plane_manager_->GetPlaneId(raycast_result.id);
     }
 
     hit_results.push_back(std::move(hit_result));

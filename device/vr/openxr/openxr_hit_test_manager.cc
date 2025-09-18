@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
@@ -73,7 +74,7 @@ OpenXrHitTestManager::GetHitTestSubscriptionResult(
       mojo_from_native_origin.MapVector(native_origin_ray.direction);
 
   return mojom::XRHitTestSubscriptionResultData::New(
-      id.GetUnsafeValue(), RequestHitTest(origin, direction));
+      id, RequestHitTest(origin, direction));
 }
 
 device::mojom::XRHitTestTransientInputSubscriptionResultDataPtr
@@ -85,7 +86,7 @@ OpenXrHitTestManager::GetTransientHitTestSubscriptionResult(
   auto result =
       device::mojom::XRHitTestTransientInputSubscriptionResultData::New();
 
-  result->subscription_id = id.GetUnsafeValue();
+  result->subscription_id = id;
 
   for (const auto& input_source_id_and_mojo_from_input_source :
        input_source_ids_and_mojo_from_input_sources) {
@@ -136,8 +137,8 @@ OpenXrHitTestManager::GetHitTestResults(
 
     // Since we have a transform, let's use it to obtain hit test results.
     result->results.push_back(GetHitTestSubscriptionResult(
-        HitTestSubscriptionId(subscription_id_and_data.first),
-        *subscription_id_and_data.second.ray, *maybe_mojo_from_native_origin));
+        subscription_id_and_data.first, *subscription_id_and_data.second.ray,
+        *maybe_mojo_from_native_origin));
   }
 
   // Calculate results for transient input sources
@@ -154,7 +155,7 @@ OpenXrHitTestManager::GetHitTestResults(
 
     result->transient_input_results.push_back(
         GetTransientHitTestSubscriptionResult(
-            HitTestSubscriptionId(subscription_id_and_data.first),
+            subscription_id_and_data.first,
             *subscription_id_and_data.second.ray,
             input_source_ids_and_transforms));
   }
@@ -167,10 +168,8 @@ void OpenXrHitTestManager::UnsubscribeFromHitTest(
   // Hit test subscription ID space is the same for transient and non-transient
   // hit test sources, so we can attempt to remove it from both collections (it
   // will succeed only for one of them anyway).
-  hit_test_subscription_id_to_data_.erase(
-      HitTestSubscriptionId(subscription_id));
-  hit_test_subscription_id_to_transient_hit_test_data_.erase(
-      HitTestSubscriptionId(subscription_id));
+  hit_test_subscription_id_to_data_.erase(subscription_id);
+  hit_test_subscription_id_to_transient_hit_test_data_.erase(subscription_id);
   if (hit_test_subscription_id_to_data_.empty() &&
       hit_test_subscription_id_to_transient_hit_test_data_.empty()) {
     OnAllHitTestSubscriptionsRemoved();

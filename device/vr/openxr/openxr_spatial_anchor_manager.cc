@@ -207,7 +207,7 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
 
   // No matter what, we will send all current anchors up to the page, and then
   // we will remove any deleted ones for the next frame.
-  std::vector<uint64_t> all_anchors_ids;
+  std::vector<AnchorId> all_anchors_ids;
   std::vector<mojom::XRAnchorDataPtr> updated_anchors;
   all_anchors_ids.reserve(anchors_.size());
   updated_anchors.reserve(anchors_.size());
@@ -222,7 +222,7 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
     }
 
     AnchorId anchor_id = it->second;
-    all_anchors_ids.push_back(anchor_id.GetUnsafeValue());
+    all_anchors_ids.push_back(anchor_id);
 
     switch (tracking_states[i]) {
       case XR_SPATIAL_ENTITY_TRACKING_STATE_TRACKING_EXT: {
@@ -230,8 +230,7 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
         // and then send that pose as the updated location.
         auto pose = XrPoseToDevicePose(locations[i]);
         cached_anchor_poses_.emplace(anchor_id, pose);
-        updated_anchors.push_back(
-            mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), pose));
+        updated_anchors.push_back(mojom::XRAnchorData::New(anchor_id, pose));
         break;
       }
       case XR_SPATIAL_ENTITY_TRACKING_STATE_PAUSED_EXT: {
@@ -239,7 +238,7 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
         // but we don't know a pose for it at present.
         cached_anchor_poses_.emplace(anchor_id, std::nullopt);
         updated_anchors.push_back(
-            mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt));
+            mojom::XRAnchorData::New(anchor_id, std::nullopt));
         break;
       }
       case XR_SPATIAL_ENTITY_TRACKING_STATE_STOPPED_EXT: {
@@ -248,7 +247,7 @@ mojom::XRAnchorsDataPtr OpenXrSpatialAnchorManager::GetCurrentAnchorsData(
         // and remove it from the list after we're done processing.
         permanently_stopped_anchors.insert(anchor_id);
         updated_anchors.push_back(
-            mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt));
+            mojom::XRAnchorData::New(anchor_id, std::nullopt));
         break;
       }
       case XR_SPATIAL_ENTITY_TRACKING_STATE_MAX_ENUM_EXT:

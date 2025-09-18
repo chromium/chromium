@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
+#include "device/vr/public/mojom/anchor_id.h"
 
 namespace device {
 
@@ -40,10 +41,10 @@ mojom::XRAnchorsDataPtr ArCoreAnchorManager::GetAnchorsData() const {
   was_anchor_data_retrieved_in_current_frame_ = false;
 #endif
 
-  std::vector<uint64_t> all_anchors_ids;
+  std::vector<AnchorId> all_anchors_ids;
   all_anchors_ids.reserve(anchor_id_to_anchor_info_.size());
   for (const auto& anchor_id_and_object : anchor_id_to_anchor_info_) {
-    all_anchors_ids.push_back(anchor_id_and_object.first.GetUnsafeValue());
+    all_anchors_ids.push_back(anchor_id_and_object.first);
   }
 
   std::vector<mojom::XRAnchorDataPtr> updated_anchors;
@@ -62,14 +63,13 @@ mojom::XRAnchorsDataPtr ArCoreAnchorManager::GetAnchorsData() const {
                << ", position=" << pose.position().ToString()
                << ", orientation=" << pose.orientation().ToString();
 
-      updated_anchors.push_back(
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), pose));
+      updated_anchors.push_back(mojom::XRAnchorData::New(anchor_id, pose));
     } else {
       DVLOG(3) << __func__ << ": anchor_id: " << anchor_id.GetUnsafeValue()
                << ", position=untracked, orientation=untracked";
 
       updated_anchors.push_back(
-          mojom::XRAnchorData::New(anchor_id.GetUnsafeValue(), std::nullopt));
+          mojom::XRAnchorData::New(anchor_id, std::nullopt));
     }
   }
 

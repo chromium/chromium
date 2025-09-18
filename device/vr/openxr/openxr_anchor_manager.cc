@@ -24,7 +24,7 @@ OpenXrAnchorManager::~OpenXrAnchorManager() {
 void OpenXrAnchorManager::AddCreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<PlaneId> plane_id,
+    const std::optional<PlaneId>& plane_id,
     CreateAnchorCallback callback) {
   create_anchor_requests_.emplace_back(native_origin_information,
                                        native_origin_from_anchor.ToTransform(),
@@ -64,26 +64,21 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
               openxr, request.GetNativeOriginInformation(),
               request.GetNativeOriginFromAnchor(), input_state);
       if (!anchor_location.has_value()) {
-        request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE,
-                                   0);
+        request.TakeCallback().Run(std::nullopt);
         continue;
       }
       anchor_id = CreateAnchor(anchor_location->pose, anchor_location->space,
                                display_time);
     }
-    if (anchor_id == kInvalidAnchorId) {
-      request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE, 0);
-    } else {
-      request.TakeCallback().Run(device::mojom::CreateAnchorResult::SUCCESS,
-                                 anchor_id.GetUnsafeValue());
-    }
+
+    request.TakeCallback().Run(anchor_id);
   }
   create_anchor_requests_.clear();
 }
 
 void OpenXrAnchorManager::DisposeActiveAnchorCallbacks() {
   for (auto& create_anchor : create_anchor_requests_) {
-    create_anchor.TakeCallback().Run(mojom::CreateAnchorResult::FAILURE, 0);
+    create_anchor.TakeCallback().Run(std::nullopt);
   }
   create_anchor_requests_.clear();
 }
@@ -107,9 +102,8 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
       // Unsupported for now
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
-      return GetXrLocationFromAnchor(
-          AnchorId(native_origin_information.get_anchor_id()),
-          native_origin_from_anchor);
+      return GetXrLocationFromAnchor(native_origin_information.get_anchor_id(),
+                                     native_origin_from_anchor);
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       NOTREACHED() << "Plane origins should be handled by CreatePlaneAnchor. "
                    << "Not all planes are backed by an XrSpace.";

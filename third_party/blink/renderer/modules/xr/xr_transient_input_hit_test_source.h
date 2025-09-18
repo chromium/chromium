@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_TRANSIENT_INPUT_HIT_TEST_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_TRANSIENT_INPUT_HIT_TEST_SOURCE_H_
 
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -21,9 +22,10 @@ class XRTransientInputHitTestSource : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRTransientInputHitTestSource(uint64_t id, XRSession* xr_session);
+  XRTransientInputHitTestSource(const device::HitTestSubscriptionId& id,
+                                XRSession* xr_session);
 
-  uint64_t id() const;
+  device::HitTestSubscriptionId id() const;
 
   void cancel(ExceptionState& exception_state);
 
@@ -39,7 +41,7 @@ class XRTransientInputHitTestSource : public ScriptWrappable {
  private:
   HeapVector<Member<XRTransientInputHitTestResult>> current_frame_results_;
 
-  const uint64_t id_;
+  const device::HitTestSubscriptionId id_;
   Member<XRSession> xr_session_;
 };
 

@@ -145,7 +145,7 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
     mojom::XRPlaneDataPtr& plane_data = entity_id_to_data_[entity_id];
 
     // Can't use `GetPlaneId` until our entity_id is in the map.
-    plane_data->id = GetPlaneId(entity_id).GetUnsafeValue();
+    plane_data->id = GetPlaneId(entity_id);
     plane_data->orientation = ToMojomPlaneOrientation(plane_alignments[i]);
 
     // The incoming pose has the Z axis as the normal, but WebXR expects the Y
@@ -186,8 +186,7 @@ OpenXrSpatialPlaneManager::GetDetectedPlanesData() {
   auto planes_data = mojom::XRPlaneDetectionData::New();
 
   for (const auto& [entity_id, data] : entity_id_to_data_) {
-    planes_data->all_planes_ids.push_back(
-        GetPlaneId(entity_id).GetUnsafeValue());
+    planes_data->all_planes_ids.push_back(GetPlaneId(entity_id));
     if (updated_entity_ids_.contains(entity_id)) {
       planes_data->updated_planes_data.push_back(data.Clone());
     }

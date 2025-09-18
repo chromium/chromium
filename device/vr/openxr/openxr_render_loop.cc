@@ -962,24 +962,16 @@ void OpenXrRenderLoop::SubscribeToHitTest(
   OpenXrHitTestManager* hit_test_manager = openxr_->GetHitTestManager();
 
   if (!hit_test_manager) {
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   std::optional<HitTestSubscriptionId> maybe_subscription_id =
       hit_test_manager->SubscribeToHitTest(std::move(native_origin_information),
                                            entity_types, std::move(ray));
-
-  if (!maybe_subscription_id) {
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
-    return;
-  }
-
-  DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
-  std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                          maybe_subscription_id->GetUnsafeValue());
+  DVLOG(2) << __func__ << ": subscription_id="
+           << maybe_subscription_id.value_or(kInvalidHitTestSubscriptionId);
+  std::move(callback).Run(maybe_subscription_id);
 }
 
 void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
@@ -994,56 +986,48 @@ void OpenXrRenderLoop::SubscribeToHitTestForTransientInput(
   OpenXrHitTestManager* hit_test_manager = openxr_->GetHitTestManager();
 
   if (!hit_test_manager) {
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   std::optional<HitTestSubscriptionId> maybe_subscription_id =
       hit_test_manager->SubscribeToHitTestForTransientInput(
           profile_name, entity_types, std::move(ray));
-
-  if (!maybe_subscription_id) {
-    std::move(callback).Run(
-        device::mojom::SubscribeToHitTestResult::FAILURE_GENERIC, 0);
-    return;
-  }
-
-  DVLOG(2) << __func__ << ": subscription_id=" << *maybe_subscription_id;
-  std::move(callback).Run(device::mojom::SubscribeToHitTestResult::SUCCESS,
-                          maybe_subscription_id->GetUnsafeValue());
+  DVLOG(2) << __func__ << ": subscription_id="
+           << maybe_subscription_id.value_or(kInvalidHitTestSubscriptionId);
+  std::move(callback).Run(maybe_subscription_id);
 }
 
-void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
+void OpenXrRenderLoop::UnsubscribeFromHitTest(
+    const HitTestSubscriptionId& subscription_id) {
   DVLOG(2) << __func__;
   OpenXrHitTestManager* hit_test_manager = openxr_->GetHitTestManager();
   if (hit_test_manager) {
-    hit_test_manager->UnsubscribeFromHitTest(
-        HitTestSubscriptionId(subscription_id));
+    hit_test_manager->UnsubscribeFromHitTest(subscription_id);
   }
 }
 
 void OpenXrRenderLoop::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
-    std::optional<uint64_t> plane_id,
+    const std::optional<PlaneId>& plane_id,
     CreateAnchorCallback callback) {
   OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
-    std::move(callback).Run(mojom::CreateAnchorResult::FAILURE, 0);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  anchor_manager->AddCreateAnchorRequest(
-      *native_origin_information, native_origin_from_anchor,
-      MaybeCreatePlaneId(plane_id), std::move(callback));
+  anchor_manager->AddCreateAnchorRequest(*native_origin_information,
+                                         native_origin_from_anchor, plane_id,
+                                         std::move(callback));
 }
 
-void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
+void OpenXrRenderLoop::DetachAnchor(const AnchorId& anchor_id) {
   OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
   if (!anchor_manager) {
     return;
   }
-  anchor_manager->DetachAnchor(AnchorId(anchor_id));
+  anchor_manager->DetachAnchor(anchor_id);
 }
 
 void OpenXrRenderLoop::StartContextProviderIfNeeded(

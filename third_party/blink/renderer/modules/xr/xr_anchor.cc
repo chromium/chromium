@@ -17,7 +17,7 @@ constexpr char kAnchorAlreadyDeleted[] =
 
 namespace blink {
 
-XRAnchor::XRAnchor(uint64_t id,
+XRAnchor::XRAnchor(device::AnchorId id,
                    XRSession* session,
                    const device::mojom::blink::XRAnchorData& anchor_data)
     : id_(id),
@@ -41,7 +41,7 @@ void XRAnchor::Update(const device::mojom::blink::XRAnchorData& anchor_data) {
   mojo_from_anchor_ = anchor_data.mojo_from_anchor;
 }
 
-uint64_t XRAnchor::id() const {
+device::AnchorId XRAnchor::id() const {
   return id_;
 }
 
