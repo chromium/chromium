@@ -1061,6 +1061,37 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPageContextWebpageContentWithPageContextIneligibleFailure) {
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow with context inputs and page context
+  // params.
+  GURL page_url = GURL("https://www.test.com");
+  std::string page_title = "Test Page";
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kAnnotatedPageContent;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->page_url = page_url;
+  input_data->page_title = page_title;
+  input_data->context_input->push_back(lens::ContextualInput(
+      std::vector<uint8_t>(), lens::MimeType::kAnnotatedPageContent));
+  input_data->is_page_context_eligible = false;
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent,
+                    FileUploadStatus::kValidationFailed,
+                    FileUploadErrorType::kBrowserProcessingError);
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
   // Act: Start the session.
   controller().NotifySessionStarted();
