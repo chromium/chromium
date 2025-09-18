@@ -3081,6 +3081,8 @@ static_library("ui") {
       "cocoa/fullscreen/fullscreen_toolbar_controller.mm",
       "cocoa/fullscreen/fullscreen_toolbar_mouse_tracker.h",
       "cocoa/fullscreen/fullscreen_toolbar_mouse_tracker.mm",
+      "cocoa/group_menu_util.h",
+      "cocoa/group_menu_util.mm",
       "cocoa/handoff_observer.h",
       "cocoa/handoff_observer.mm",
       "cocoa/history_menu_bridge.h",
