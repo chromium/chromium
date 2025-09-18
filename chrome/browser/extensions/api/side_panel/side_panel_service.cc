@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
@@ -233,14 +234,15 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
         base::StringPrintf("No active side panel for windowId: %d", window_id));
   }
 
-  Browser* browser = window_controller->GetBrowser();
-  if (!browser) {
+  BrowserWindowInterface* browser_window =
+      window_controller->GetBrowserWindowInterface();
+  if (!browser_window) {
     return base::unexpected(
-        base::StringPrintf("No browser for windowId: %d", window_id));
+        base::StringPrintf("No browser window for windowId: %d", window_id));
   }
 
   side_panel_util::OpenGlobalExtensionSidePanel(
-      *browser, /*web_contents=*/nullptr, extension.id());
+      *browser_window, /*web_contents=*/nullptr, extension.id());
   return true;
 }
 
@@ -261,10 +263,10 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
         ExtensionTabUtil::kTabNotFoundError, base::ToString(tab_id)));
   }
 
-  Browser* browser = window->GetBrowser();
-  if (!browser) {
+  BrowserWindowInterface* browser_window = window->GetBrowserWindowInterface();
+  if (!browser_window) {
     return base::unexpected(
-        base::StringPrintf("No browser for tabId: %d", tab_id));
+        base::StringPrintf("No browser window for tabId: %d", tab_id));
   }
 
   // If both `tab_id` and `window_id` were provided, ensure the tab is in
@@ -299,10 +301,10 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
 
   // Open the appropriate panel.
   if (has_contextual_panel) {
-    side_panel_util::OpenContextualExtensionSidePanel(*browser, *web_contents,
-                                                      extension.id());
+    side_panel_util::OpenContextualExtensionSidePanel(
+        *browser_window, *web_contents, extension.id());
   } else {
-    side_panel_util::OpenGlobalExtensionSidePanel(*browser, web_contents,
+    side_panel_util::OpenGlobalExtensionSidePanel(*browser_window, web_contents,
                                                   extension.id());
   }
 
@@ -335,12 +337,12 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForTab(
         ExtensionTabUtil::kTabNotFoundError, base::ToString(tab_id)));
   }
 
-  // Retrieve the corresponding browser, since the active side panel for the tab
-  // might be a global one.
-  Browser* browser = window->GetBrowser();
-  if (!browser) {
+  // Retrieve the corresponding browser window, since the active side panel for
+  // the tab might be a global one.
+  BrowserWindowInterface* browser_window = window->GetBrowserWindowInterface();
+  if (!browser_window) {
     return base::unexpected(
-        base::StringPrintf("No browser for tabId: %d", tab_id));
+        base::StringPrintf("No browser window for tabId: %d", tab_id));
   }
 
   // Check that the given `tab_id` belongs to the given `window_id`.
@@ -356,8 +358,8 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForTab(
         base::StringPrintf("No active side panel for tabId: %d", tab_id));
   }
 
-  side_panel_util::CloseContextualExtensionSidePanel(browser, web_contents,
-                                                     extension.id(), window_id);
+  side_panel_util::CloseContextualExtensionSidePanel(
+      browser_window, web_contents, extension.id(), window_id);
   return true;
 }
 
@@ -382,13 +384,15 @@ base::expected<bool, std::string> SidePanelService::CloseSidePanelForWindow(
         base::StringPrintf("No active side panel for windowId: %d", window_id));
   }
 
-  Browser* browser = window_controller->GetBrowser();
-  if (!browser) {
+  BrowserWindowInterface* browser_window =
+      window_controller->GetBrowserWindowInterface();
+  if (!browser_window) {
     return base::unexpected(
-        base::StringPrintf("No browser for windowId: %d", window_id));
+        base::StringPrintf("No browser window for windowId: %d", window_id));
   }
 
-  side_panel_util::CloseGlobalExtensionSidePanel(browser, extension.id());
+  side_panel_util::CloseGlobalExtensionSidePanel(browser_window,
+                                                 extension.id());
   return true;
 }
 
