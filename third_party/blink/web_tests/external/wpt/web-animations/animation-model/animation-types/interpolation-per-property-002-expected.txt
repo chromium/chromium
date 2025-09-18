@@ -13,11 +13,11 @@ Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with keyframe easing
   assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\\"http://localhost/test-1\\")" but got "cross-fade(url(\\"http://localhost/test-1\\") 57.1741%, url(\\"http://localhost/test-2\\"))"
 [FAIL] position-visibility uses discrete animation when animating between "always" and "anchors-valid" with linear easing
-  assert_equals: The value should be anchors-valid at 500ms expected "anchors-valid" but got "always"
+  assert_equals: The value should be anchors-valid at 500ms expected "anchors-valid" but got "anchors-visible"
 [FAIL] position-visibility uses discrete animation when animating between "always" and "anchors-valid" with effect easing
-  assert_equals: The value should be anchors-valid at 960ms expected "anchors-valid" but got "always"
+  assert_equals: The value should be anchors-valid at 960ms expected "anchors-valid" but got "anchors-visible"
 [FAIL] position-visibility uses discrete animation when animating between "always" and "anchors-valid" with keyframe easing
-  assert_equals: The value should be anchors-valid at 960ms expected "anchors-valid" but got "always"
+  assert_equals: The value should be anchors-valid at 960ms expected "anchors-valid" but got "anchors-visible"
 [FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with linear easing
   assert_equals: The value should be underline at 0ms expected "underline" but got "underline rgb(0, 0, 0)"
 [FAIL] text-decoration uses discrete animation when animating between "underline" and "overline" with effect easing

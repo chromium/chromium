@@ -2941,9 +2941,6 @@ crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-stretch.tentative
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units-with-ICB.tentative.html [ Failure ]
 crbug.com/434975373 external/wpt/svg/styling/nested-svg-sizing-viewport-units.tentative.svg [ Failure ]
 
-# Reftest image failures
-crbug.com/435620307 external/wpt/css/css-anchor-position/position-visibility-initial.html [ Failure ]
-
 crbug.com/435704771 external/wpt/navigation-api/navigation-history-entry/opaque-origin.html [ Timeout ]
 crbug.com/435704771 external/wpt/navigation-api/navigation-methods/return-value/back-forward-opaque-origin.html [ Timeout ]
 crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_remove_setcapture_node.html [ Timeout ]
