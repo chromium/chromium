@@ -162,6 +162,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
                                   delegate:(id<InactiveTabsCoordinatorDelegate>)
                                                delegate {
   CHECK(delegate);
+  CHECK_EQ(browser->type(), Browser::Type::kInactive,
+           base::NotFatalUntil::M146);
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _delegate = delegate;
