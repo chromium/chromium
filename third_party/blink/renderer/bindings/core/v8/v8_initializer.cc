@@ -344,9 +344,6 @@ void V8Initializer::ExceptionPropagationCallback(
 
   v8::ExceptionContext context_type = v8_message.GetExceptionContext();
   String class_name = ToCoreString(isolate, v8_message.GetInterfaceName());
-  if (class_name == "global") {
-    class_name = "Window";
-  }
   String property_name = ToCoreString(isolate, v8_message.GetPropertyName());
   if ((context_type == v8::ExceptionContext::kAttributeGet &&
        property_name.StartsWith("get ")) ||
