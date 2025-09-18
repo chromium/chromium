@@ -69,14 +69,17 @@ async def run(command, *args, input="", interruption_signal=signal.SIGKILL):
         raise CommandException("Command not found", command=(command, ) + args)
     except asyncio.CancelledError:
         # Handle cancellation by killing the process group. First, check if
-        # process is running and then wait for the process to be killed unless
-        # it has already exited.
-        try:
-            os.killpg(process.pid, interruption_signal)
-            await asyncio.wait_for(asyncio.create_task(process.wait()),
-                                   timeout=10)
-        except ProcessLookupError:
-            pass
+        # the process is still running, then kill it and wait for it to exit.
+        if process and process.returncode is None:
+            try:
+                os.killpg(process.pid, interruption_signal)
+                await asyncio.wait_for(process.wait(), timeout=10)
+            except:
+                # The process may have exited before kill or wait was called, or
+                # is otherwise unresponsive. Swallow the exception if the
+                # process has exited because that is all we care about here.
+                if process.returncode is not None:
+                    pass
         raise
 
 
