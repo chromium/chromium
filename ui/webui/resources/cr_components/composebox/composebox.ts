@@ -312,8 +312,9 @@ export class ComposeboxElement extends I18nMixinLit
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    if ((changedProperties as Map<PropertyKey, unknown>)
-            .has('showErrorScrim_') &&
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('showErrorScrim_') &&
         this.showErrorScrim_) {
       const announcer = getAnnouncerInstance();
       announcer.announce(this.errorMessage_);
@@ -323,8 +324,7 @@ export class ComposeboxElement extends I18nMixinLit
         dismissErrorButton.focus();
       }
     }
-    if ((changedProperties as Map<PropertyKey, unknown>)
-            .has('selectedMatchIndex_')) {
+    if (changedPrivateProperties.has('selectedMatchIndex_')) {
       if (this.selectedMatch_) {
         // Update the input.
         const text = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
@@ -332,6 +332,11 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.input.value = text;
         this.input_ = text;
         this.submitEnabled_ = true;
+      }
+    }
+    if (changedPrivateProperties.has('smartComposeInlineHint_')) {
+      if (this.smartComposeInlineHint_) {
+        this.adjustInputForSmartCompose();
       }
     }
   }
@@ -359,6 +364,10 @@ export class ComposeboxElement extends I18nMixinLit
       return false;
     }
     return this.result_.matches.some((match) => match.isNoncannedAimSuggestion);
+  }
+
+  protected shouldShowSmartComposeInlineHint_() {
+    return !!this.smartComposeInlineHint_;
   }
 
   protected onDeleteFile_(e: CustomEvent) {
@@ -466,6 +475,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.input_ = '';
       this.lastQueriedInput_ = this.input_;
       this.files_ = new Map();
+      this.smartComposeInlineHint_ = '';
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
       this.$.input.focus();
@@ -502,11 +512,26 @@ export class ComposeboxElement extends I18nMixinLit
       'Escape',
       'PageDown',
       'PageUp',
+      'Tab',
     ];
 
     if (!KEYDOWN_HANDLED_KEYS.includes(e.key)) {
       return;
     }
+
+    if (this.shadowRoot.activeElement === this.$.input) {
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        return;
+      }
+      if (e.key === 'Tab' && this.smartComposeInlineHint_) {
+        this.input_ = this.input_ + this.smartComposeInlineHint_;
+        this.$.input.value = this.input_;
+        this.smartComposeInlineHint_ = '';
+        e.preventDefault();
+        return;
+      }
+    }
+
 
     if (e.key === 'Enter' && this.submitEnabled_) {
       if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
@@ -558,6 +583,13 @@ export class ComposeboxElement extends I18nMixinLit
     // Else, keep the composebox expanded.
     this.expanded_ = !this.isCollapsible;
     this.pageHandler_.focusChanged(false);
+  }
+
+  protected handleScroll_() {
+    const smartCompose =
+        this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input');
+    smartCompose!.scrollTop = input!.scrollTop;
   }
 
   private closeComposebox_() {
@@ -652,15 +684,40 @@ export class ComposeboxElement extends I18nMixinLit
     this.result_ = result;
     const hasMatches = this.result_?.matches?.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
-    this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
-        mojoString16ToString(this.result_.smartComposeInlineHint) :
-        '';
     // Zero suggest matches are not allowed to be default. Therefore, this
     // makes sure zero suggest results aren't focused when they are returned.
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
     } else {
       this.$.matches.unselect();
+    }
+
+    // Populate the smart compose suggestion.
+    this.smartComposeInlineHint_ = this.result_.smartComposeInlineHint ?
+        mojoString16ToString(this.result_.smartComposeInlineHint) :
+        '';
+  }
+
+  private adjustInputForSmartCompose() {
+    // Checks the scroll height of the input + smart complete hint (ghost div)
+    // and updates the height of the actual input to be that height so the
+    // ghost text does not overflow.
+    const input = this.shadowRoot.querySelector<HTMLInputElement>('#input');
+    const smartCompose =
+        this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
+
+    const ghostHeight = smartCompose!.scrollHeight;
+    const maxHeight = 190;
+    input!.style.height = `${Math.min(ghostHeight, maxHeight)}px`;
+
+    // If the height of the input + smart complete hint is greater than the max
+    // height, scroll the smart compose as the input will already scroll. Note
+    // there is an issue at the break point since the input will not have
+    // scrolled yet as it does not have enough content. The smart compose will
+    // display the ghost text below the input and it will be cut off. However,
+    // the current response only works for queries below the max height.
+    if (ghostHeight > maxHeight) {
+      smartCompose!.scrollTop = input!.scrollTop;
     }
   }
 }
