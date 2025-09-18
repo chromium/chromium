@@ -151,12 +151,10 @@ bool HasPriceDropOnTab(TabResumptionItem* item) {
         previousPrice:_item.shopCardData.priceDrop->previous_price];
     [labelStackView addArrangedSubview:_priceNotificationsChip];
     self.accessibilityLabel = _item.shopCardData.accessibilityString;
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(hidePriceDropOnTraitChange)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(hidePriceDropOnTraitChange)];
 
   } else {
     self.accessibilityLabel =

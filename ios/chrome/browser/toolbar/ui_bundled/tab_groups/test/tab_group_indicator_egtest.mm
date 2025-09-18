@@ -246,10 +246,6 @@ void CreateSharedGroupAndOpenMenu(
 // Tests that the tab group indicator view is visible when the active tab is
 // grouped.
 - (void)testTabGroupIndicatorNotVisibleOnIpad {
-  if (@available(iOS 17, *)) {
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 16.");
-  }
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped on iPhone.");
   }
