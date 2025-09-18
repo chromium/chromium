@@ -70,4 +70,11 @@ public interface AccessibilitySettingsDelegate {
      *     preference.
      */
     BooleanPreferenceDelegate getReaderAccessibilityDelegate();
+
+    /**
+     * Returns whether the material slider should be used for the page zoom preference.
+     *
+     * @return True if the slider should be used, false otherwise.
+     */
+    boolean shouldUseSlider();
 }

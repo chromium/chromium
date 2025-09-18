@@ -74,7 +74,11 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         // TODO(crbug.com/439911511): Add PageZoomPreference directly to the xml file instead.
         // Create the page zoom preference.
-        mPageZoomDefaultZoomPref = new PageZoomSeekbarPreference(getContext(), null);
+        if (mDelegate.shouldUseSlider()) {
+            mPageZoomDefaultZoomPref = new PageZoomSliderPreference(getContext(), null);
+        } else {
+            mPageZoomDefaultZoomPref = new PageZoomSeekbarPreference(getContext(), null);
+        }
         mPageZoomDefaultZoomPref.setKey(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         mPageZoomDefaultZoomPref.setOrder(-1);
         getPreferenceScreen().addPreference(mPageZoomDefaultZoomPref);

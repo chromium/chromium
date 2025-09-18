@@ -16,7 +16,11 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Custom preference for the page zoom section of Accessibility Settings, using a SeekBar. */
+/**
+ * Custom preference for the page zoom section of Accessibility Settings.
+ *
+ * <p>TODO(crbug.com/439911511): Legacy preference.
+ */
 @NullMarked
 public class PageZoomSeekbarPreference extends PageZoomPreference
         implements SeekBar.OnSeekBarChangeListener {
@@ -29,7 +33,7 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
 
     @Override
     protected void initializeControls(PreferenceViewHolder holder) {
-        mSeekBar = (SeekBar) holder.findViewById(R.id.page_zoom_slider);
+        mSeekBar = (SeekBar) holder.findViewById(R.id.page_zoom_slider_legacy);
         assumeNonNull(mSeekBar);
         mSeekBar.setVisibility(View.VISIBLE);
         mSeekBar.setOnSeekBarChangeListener(this);
@@ -39,7 +43,8 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
 
     @Override
     protected void initializeContrastControl(PreferenceViewHolder holder) {
-        mTextSizeContrastSeekBar = (SeekBar) holder.findViewById(R.id.text_size_contrast_slider);
+        mTextSizeContrastSeekBar =
+                (SeekBar) holder.findViewById(R.id.text_size_contrast_slider_legacy);
         assumeNonNull(mTextSizeContrastSeekBar);
         mTextSizeContrastSeekBar.setVisibility(View.VISIBLE);
         mTextSizeContrastSeekBar.setOnSeekBarChangeListener(this);
@@ -54,26 +59,27 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
 
     @Override
     protected void setCurrentZoomValue(int value) {
-        assumeNonNull(mSeekBar);
+        // mSeekBar can be null if this method is called before the preference is bound to a view.
+        if (mSeekBar == null) return;
         mSeekBar.setProgress(value);
     }
 
     @Override
     protected int getCurrentContrastValue() {
-        assumeNonNull(mTextSizeContrastSeekBar);
+        if (mTextSizeContrastSeekBar == null) return 0;
         return mTextSizeContrastSeekBar.getProgress();
     }
 
     @Override
     protected void setCurrentContrastValue(int value) {
-        assumeNonNull(mTextSizeContrastSeekBar);
+        if (mTextSizeContrastSeekBar == null) return;
         mTextSizeContrastSeekBar.setProgress(value);
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (fromUser) {
-            boolean isZoom = seekBar.getId() == R.id.page_zoom_slider;
+            boolean isZoom = seekBar.getId() == R.id.page_zoom_slider_legacy;
             updateViews(progress, isZoom);
         }
     }
@@ -83,7 +89,7 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        if (seekBar.getId() == R.id.page_zoom_slider) {
+        if (seekBar.getId() == R.id.page_zoom_slider_legacy) {
             callChangeListener(seekBar.getProgress());
         } else {
             saveTextSizeContrastValueToPreferences();
@@ -93,33 +99,14 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
     // Testing methods.
 
     /**
-     * Returns the zoom seekbar for testing.
-     *
-     * @return The zoom seekbar.
-     */
-    SeekBar getZoomSliderForTesting() {
-        assumeNonNull(mSeekBar);
-        return mSeekBar;
-    }
-
-    /**
      * Sets the zoom value for testing.
      *
-     * @param progress The zoom value to set.
+     * @param value The zoom value to set.
      */
-    void setZoomValueForTesting(int progress) {
-        assumeNonNull(mSeekBar);
-        mSeekBar.setProgress(progress);
-        updateViews(progress, true);
-    }
-
-    /**
-     * Returns the text size contrast seekbar for testing.
-     *
-     * @return The text size contrast seekbar.
-     */
-    @Nullable SeekBar getTextSizeContrastSliderForTesting() {
-        return mTextSizeContrastSeekBar;
+    @Override
+    protected void setZoomValueForTesting(int value) {
+        setCurrentZoomValue(value);
+        updateViews(value, true);
     }
 
     /**
@@ -127,9 +114,9 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
      *
      * @param contrast The text contrast value to set.
      */
-    void setTextContrastValueForTesting(int contrast) {
-        assumeNonNull(mTextSizeContrastSeekBar);
-        mTextSizeContrastSeekBar.setProgress(contrast);
+    @Override
+    protected void setTextContrastValueForTesting(int contrast) {
+        setCurrentContrastValue(contrast);
         updateViews(contrast, false);
     }
 }

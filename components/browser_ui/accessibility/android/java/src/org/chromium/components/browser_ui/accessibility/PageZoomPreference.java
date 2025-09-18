@@ -285,4 +285,8 @@ public abstract class PageZoomPreference extends Preference {
     protected abstract int getCurrentContrastValue();
 
     protected abstract void setCurrentContrastValue(int value);
+
+    protected abstract void setZoomValueForTesting(int value);
+
+    protected abstract void setTextContrastValueForTesting(int contrast);
 }

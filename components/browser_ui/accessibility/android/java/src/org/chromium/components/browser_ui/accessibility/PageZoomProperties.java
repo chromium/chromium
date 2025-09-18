@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -33,6 +34,7 @@ class PageZoomProperties {
 
     static final WritableIntPropertyKey MAXIMUM_BAR_VALUE = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CURRENT_BAR_VALUE = new WritableIntPropertyKey();
+    static final ReadableBooleanPropertyKey USE_SLIDER = new ReadableBooleanPropertyKey();
 
     static final WritableObjectPropertyKey<Double> DEFAULT_ZOOM_FACTOR =
             new WritableObjectPropertyKey<>();
@@ -47,6 +49,7 @@ class PageZoomProperties {
         INCREASE_ZOOM_ENABLED,
         MAXIMUM_BAR_VALUE,
         CURRENT_BAR_VALUE,
+        USE_SLIDER,
         DEFAULT_ZOOM_FACTOR
     };
 }

@@ -46,12 +46,16 @@ public class PageZoomBarCoordinator {
     /**
      * @param delegate Used to interact with the coordinator.
      * @param manager The manager used to interact with the zoom functionality.
+     * @param useSlider Whether the page zoom UI should use the material slider.
      */
     public PageZoomBarCoordinator(
-            PageZoomBarCoordinatorDelegate delegate, PageZoomManager manager) {
+            PageZoomBarCoordinatorDelegate delegate, PageZoomManager manager, boolean useSlider) {
         mDelegate = delegate;
         mManager = manager;
-        mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
+        mModel =
+                new PropertyModel.Builder(PageZoomProperties.ALL_KEYS)
+                        .with(PageZoomProperties.USE_SLIDER, useSlider)
+                        .build();
         mMediator = new PageZoomBarMediator(mModel, mManager, this::onViewInteraction);
         mDismissalCallback = () -> hide();
     }
@@ -127,6 +131,10 @@ public class PageZoomBarCoordinator {
 
     /** Hide the zoom feature UI from the user. */
     public void hide() {
+        if (mView != null) {
+            mView.removeCallbacks(mDismissalCallback);
+        }
+
         // TODO(mschillaci): Add a FrameLayout wrapper so the view can be removed.
         if (mView != null && mView.getVisibility() == View.VISIBLE) {
             Animation animation = getOutAnimation();
@@ -175,6 +183,11 @@ public class PageZoomBarCoordinator {
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
         ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
+    }
+
+    /** Used for testing only, resets the zoom level to 100%. */
+    public void resetZoomForTesting() {
+        mMediator.handleResetClicked(null);
     }
 
     /** Handle when the user interacts with the view */

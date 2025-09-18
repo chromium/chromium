@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -101,5 +101,15 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     public BooleanPreferenceDelegate getReaderAccessibilityDelegate() {
         return new ChromeBooleanPreferenceDelegate(
                 getBrowserContextHandle(), Pref.READER_FOR_ACCESSIBILITY);
+    }
+
+    /**
+     * Returns whether the material slider should be used for the page zoom preference.
+     *
+     * @return True if the slider should be used, false otherwise.
+     */
+    @Override
+    public boolean shouldUseSlider() {
+        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
     }
 }

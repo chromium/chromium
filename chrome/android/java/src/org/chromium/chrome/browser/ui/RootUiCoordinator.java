@@ -579,7 +579,9 @@ public class RootUiCoordinator
                                 return viewStub.inflate();
                             }
                         },
-                        mPageZoomManager);
+                        mPageZoomManager,
+                        /* useSlider= */ ChromeFeatureList.sAndroidSettingsContainment.isEnabled());
+
         mActivityRecreationController =
                 new ActivityRecreationController(
                         mToolbarManagerOneshotSupplier,

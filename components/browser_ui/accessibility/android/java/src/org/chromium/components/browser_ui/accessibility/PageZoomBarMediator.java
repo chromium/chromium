@@ -93,7 +93,6 @@ class PageZoomBarMediator {
         handleIndexChanged(mManager.incrementZoomLevel());
     }
 
-    @VisibleForTesting
     void handleResetClicked(@Nullable Void unused) {
         // Reset as if the user moved the bar to the default zoom value
         handleBarValueChanged(PageZoomUtils.convertZoomFactorToBarValue(mDefaultZoomFactor));

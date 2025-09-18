@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.android.material.slider.Slider;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,7 +39,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -49,11 +54,21 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Unit tests for the PageZoom view and view binder. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2, ContentFeatureList.SMART_ZOOM})
 @Batch(Batch.PER_CLASS)
 public class PageZoomBarViewTest {
+    @ParameterAnnotations.ClassParameter
+    private static final List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("useSlider_false"),
+                    new ParameterSet().value(true).name("useSlider_true"));
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -72,6 +87,13 @@ public class PageZoomBarViewTest {
     private PageZoomBarCoordinatorDelegate mDelegate;
     private PageZoomManagerDelegate mPageZoomManagerDelegate;
     private View mPageZoomView;
+    private final boolean mUseSlider;
+    private Slider mSlider;
+    private SeekBar mSeekBar;
+
+    public PageZoomBarViewTest(boolean useSlider) {
+        mUseSlider = useSlider;
+    }
 
     @BeforeClass
     public static void setupSuite() {
@@ -128,9 +150,27 @@ public class PageZoomBarViewTest {
 
                     mCoordinator =
                             new PageZoomBarCoordinator(
-                                    mDelegate, new PageZoomManager(mPageZoomManagerDelegate));
+                                    mDelegate,
+                                    new PageZoomManager(mPageZoomManagerDelegate),
+                                    mUseSlider);
+                    mSlider = mPageZoomView.findViewById(R.id.page_zoom_slider);
+                    mSeekBar = mPageZoomView.findViewById(R.id.page_zoom_slider_legacy);
                     mCoordinator.show(mWebContents);
                 });
+    }
+
+    private int getBarValue() {
+        if (mUseSlider) {
+            return (int) mSlider.getValue();
+        }
+        return mSeekBar.getProgress();
+    }
+
+    private View getVisibleBar() {
+        if (mUseSlider) {
+            return mSlider;
+        }
+        return mSeekBar;
     }
 
     // Test cases.
@@ -149,8 +189,7 @@ public class PageZoomBarViewTest {
         assertEquals(
                 View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_decrease_zoom_button).getVisibility());
-        assertEquals(
-                View.VISIBLE, mPageZoomView.findViewById(R.id.page_zoom_slider).getVisibility());
+        assertEquals(View.VISIBLE, getVisibleBar().getVisibility());
         assertEquals(
                 View.VISIBLE,
                 mPageZoomView.findViewById(R.id.page_zoom_increase_zoom_button).getVisibility());
@@ -186,8 +225,7 @@ public class PageZoomBarViewTest {
     @Test
     @SmallTest
     public void testDecreaseButton() {
-        assertEquals(
-                50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
+        assertEquals(50, getBarValue());
         assertViewState("100", true, true);
 
         var histogramWatcher =
@@ -201,14 +239,10 @@ public class PageZoomBarViewTest {
                         .build();
 
         onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
-        assertEquals(
-                40, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
+        assertEquals(40, getBarValue());
         assertViewState("90", true, true);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCoordinator.hide();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.hide());
 
         histogramWatcher.assertExpected();
     }
@@ -216,8 +250,7 @@ public class PageZoomBarViewTest {
     @Test
     @SmallTest
     public void testIncreaseButton() {
-        assertEquals(
-                50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
+        assertEquals(50, getBarValue());
         assertViewState("100", true, true);
 
         var histogramWatcher =
@@ -231,14 +264,10 @@ public class PageZoomBarViewTest {
                         .build();
 
         onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
-        assertEquals(
-                60, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
+        assertEquals(60, getBarValue());
         assertViewState("110", true, true);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCoordinator.hide();
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.hide());
 
         histogramWatcher.assertExpected();
     }
@@ -246,14 +275,17 @@ public class PageZoomBarViewTest {
     @Test
     @SmallTest
     public void testResetButton() {
-        assertEquals(
-                50, ((SeekBar) mPageZoomView.findViewById(R.id.page_zoom_slider)).getProgress());
+        assertEquals(50, getBarValue());
         assertViewState("100", true, true);
 
         onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
         assertViewState("110", true, true);
 
-        onView(withId(R.id.page_zoom_reset_zoom_button)).perform(click());
+        // Reset the zoom by directly calling the coordinator's testing method.
+        ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.resetZoomForTesting());
+
+        // Verify the view has updated back to 100%.
+        assertEquals(50, getBarValue());
         assertViewState("100", true, true);
     }
 

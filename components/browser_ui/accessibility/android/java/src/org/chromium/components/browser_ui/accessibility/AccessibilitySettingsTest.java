@@ -193,16 +193,15 @@ public class AccessibilitySettingsTest {
         onView(withText("Image descriptions")).perform(click());
 
         CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    onView(withText("Only on Wi-Fi"))
-                            .check(
-                                    (v, e) ->
-                                            Assert.assertEquals(
-                                                    "Clicking image descriptions should open"
-                                                            + " subpage",
-                                                    View.VISIBLE,
-                                                    v.getVisibility()));
-                });
+                () ->
+                        onView(withText("Only on Wi-Fi"))
+                                .check(
+                                        (v, e) ->
+                                                Assert.assertEquals(
+                                                        "Clicking image descriptions should open"
+                                                                + " subpage",
+                                                        View.VISIBLE,
+                                                        v.getVisibility())));
     }
 
     // Tests related to Page Zoom Enhancements (fast-follow) feature.
