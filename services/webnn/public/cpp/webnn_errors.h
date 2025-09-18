@@ -134,8 +134,8 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
                               const OperandDescriptor& descriptor,
                               SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedConstantTypeError(OperandDataType type,
-                                  SupportedDataTypes supported_types);
+    NotSupportedConstantError(const OperandDescriptor& descriptor,
+                              SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputArgumentTypeError(OperandDataType type,
                                        SupportedDataTypes supported_types);
@@ -143,16 +143,19 @@ std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedInputArgumentError(const OperandDescriptor& descriptor,
                                    SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedInputTypeError(std::string_view input_name,
-                               OperandDataType type,
-                               SupportedDataTypes supported_types);
+    NotSupportedInputError(std::string_view input_name,
+                           const OperandDescriptor& descriptor,
+                           SupportedTensors supported_tensors);
+std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    NotSupportedOpOutputRankError(uint32_t rank,
+                                  SupportedRanks supported_ranks);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedOpOutputTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    NotSupportedOutputTypeError(std::string_view output_name,
-                                OperandDataType type,
-                                SupportedDataTypes supported_types);
+    NotSupportedOutputError(std::string_view output_name,
+                            const OperandDescriptor& descriptor,
+                            SupportedTensors supported_tensors);
 std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     NotSupportedMLTensorTypeError(OperandDataType type,
                                   SupportedDataTypes supported_types);

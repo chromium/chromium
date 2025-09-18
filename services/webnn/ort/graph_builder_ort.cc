@@ -871,10 +871,8 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
 
   CHECK(context_properties_.data_type_limits.arg_min_max_input.Supports(
       GetOperand(arg_min_max.input_operand_id).descriptor));
-  OperandDataType output_data_type =
-      GetOperand(arg_min_max.output_operand_id).descriptor.data_type();
-  CHECK(context_properties_.data_type_limits.arg_min_max_output.Has(
-      output_data_type));
+  CHECK(context_properties_.data_type_limits.arg_min_max_output.Supports(
+      GetOperand(arg_min_max.output_operand_id).descriptor));
 
   std::array<ScopedOrtOpAttr, 2> attributes = {
       model_editor_.CreateAttribute(kAttrAxis,
@@ -883,6 +881,8 @@ void GraphBuilderOrt::AddArgMinMaxOperation(
           kAttrKeepDims, static_cast<int64_t>(arg_min_max.keep_dimensions))};
 
   // ONNX ArgMin/Max only supports int64 output.
+  OperandDataType output_data_type =
+      GetOperand(arg_min_max.output_operand_id).descriptor.data_type();
   bool need_cast = output_data_type != OperandDataType::kInt64;
   const std::string int64_output = need_cast ? GenerateOperandName() : output;
 

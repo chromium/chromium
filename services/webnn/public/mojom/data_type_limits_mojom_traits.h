@@ -14,11 +14,11 @@ namespace mojo {
 template <>
 struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
                     webnn::DataTypeLimits> {
-  static webnn::SupportedDataTypes input(
+  static webnn::SupportedTensors input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.input;
   }
-  static webnn::SupportedDataTypes constant(
+  static webnn::SupportedTensors constant(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.constant;
   }
@@ -26,7 +26,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.arg_min_max_input;
   }
-  static webnn::SupportedDataTypes arg_min_max_output(
+  static webnn::SupportedTensors arg_min_max_output(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.arg_min_max_output;
   }
@@ -274,6 +274,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gru_bias;
   }
+  static webnn::SupportedTensors gru_output_sequence(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.gru_output_sequence;
+  }
   static webnn::SupportedTensors gru_cell_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.gru_cell_input;
@@ -317,6 +321,10 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
   static webnn::SupportedTensors lstm_bias(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.lstm_bias;
+  }
+  static webnn::SupportedTensors lstm_output_sequence(
+      const webnn::DataTypeLimits& data_type_limits) {
+    return data_type_limits.lstm_output_sequence;
   }
   static webnn::SupportedTensors lstm_cell_input(
       const webnn::DataTypeLimits& data_type_limits) {
@@ -548,6 +556,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadGeluInput(&out->gelu_input) &&
            data.ReadGemmA(&out->gemm_a) && data.ReadGemmC(&out->gemm_c) &&
            data.ReadGruInput(&out->gru_input) &&
+           data.ReadGruOutputSequence(&out->gru_output_sequence) &&
            data.ReadGruBias(&out->gru_bias) &&
            data.ReadGruCellInput(&out->gru_cell_input) &&
            data.ReadGruCellBias(&out->gru_cell_bias) &&
@@ -562,6 +571,7 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadLinearInput(&out->linear_input) &&
            data.ReadLstmInput(&out->lstm_input) &&
            data.ReadLstmBias(&out->lstm_bias) &&
+           data.ReadLstmOutputSequence(&out->lstm_output_sequence) &&
            data.ReadLstmCellInput(&out->lstm_cell_input) &&
            data.ReadLstmCellBias(&out->lstm_cell_bias) &&
            data.ReadMatmulInput(&out->matmul_input) &&

@@ -59,12 +59,12 @@ struct SupportedTensors {
 // Keep the order as the same as build methods of `MLGraphBuilder`, for
 // operator with multiple parameters, maintain the parameter positions order.
 struct DataTypeLimits {
-  SupportedDataTypes input;
-  SupportedDataTypes constant;
+  SupportedTensors input;
+  SupportedTensors constant;
 
   // ArgMin/Max.
   SupportedTensors arg_min_max_input;
-  SupportedDataTypes arg_min_max_output;
+  SupportedTensors arg_min_max_output;
 
   SupportedTensors batch_normalization_input;
   // Also used to validate variance, scale and bias.
@@ -149,6 +149,7 @@ struct DataTypeLimits {
   SupportedTensors gru_input;
   // Also used to validate recurrentBias.
   SupportedTensors gru_bias;
+  SupportedTensors gru_output_sequence;
   // Also used to validate weight, recurrentWeight and hiddenState.
   SupportedTensors gru_cell_input;
   // Also used to validate recurrentBias.
@@ -166,6 +167,7 @@ struct DataTypeLimits {
   SupportedTensors lstm_input;
   // Also used to validate recurrentBias and peepholeWeight.
   SupportedTensors lstm_bias;
+  SupportedTensors lstm_output_sequence;
   // Also used to validate weight, recurrentWeight, hiddenState and cellState.
   SupportedTensors lstm_cell_input;
   // Also used to validate recurrentBias and peepholeWeight.

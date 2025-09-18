@@ -1732,9 +1732,10 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     return nullptr;
   }
 
-  if (!ml_context_->GetProperties().data_type_limits.constant.Has(data_type)) {
-    exception_state.ThrowTypeError(String(webnn::NotSupportedConstantTypeError(
-        data_type, ml_context_->GetProperties().data_type_limits.constant)));
+  if (!ml_context_->GetProperties().data_type_limits.constant.Supports(
+          descriptor)) {
+    exception_state.ThrowTypeError(String(webnn::NotSupportedConstantError(
+        descriptor, ml_context_->GetProperties().data_type_limits.constant)));
     return nullptr;
   }
 
@@ -2842,6 +2843,17 @@ MLOperand* MLGraphBuilder::reshape(MLOperand* input,
     return nullptr;
   }
 
+  if (!ml_context_->GetProperties()
+           .data_type_limits.reshape_input.ranks.Supports(new_shape.size())) {
+    exception_state.ThrowTypeError(
+        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
+        String(NotSupportedOpOutputRankError(
+            static_cast<uint32_t>(new_shape.size()),
+            ml_context_->GetProperties()
+                .data_type_limits.reshape_input.ranks)));
+    return nullptr;
+  }
+
   // Setting the initial number of elements to 1 would cover the 0-D scalar with
   // empty dimensions.
   base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
@@ -3313,10 +3325,10 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(ScriptState* script_state,
                                  ScriptPromise<MLGraph>());
 
   for (const auto& named_output : named_outputs) {
-    if (!ml_context_->GetProperties().data_type_limits.output().Has(
-            named_output.second->DataType())) {
-      exception_state.ThrowTypeError(String(webnn::NotSupportedOutputTypeError(
-          named_output.first.Utf8(), named_output.second->DataType(),
+    if (!ml_context_->GetProperties().data_type_limits.output().Supports(
+            named_output.second->Descriptor())) {
+      exception_state.ThrowTypeError(String(webnn::NotSupportedOutputError(
+          named_output.first.Utf8(), named_output.second->Descriptor(),
           ml_context_->GetProperties().data_type_limits.output())));
       return EmptyPromise();
     }

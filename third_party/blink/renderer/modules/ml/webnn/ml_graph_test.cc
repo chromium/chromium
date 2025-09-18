@@ -571,12 +571,12 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
         webnn::InputOperandLayout::kNchw, webnn::Resample2DAxes::kAny,
         webnn::BatchNormalizationAxis::kAny,
         /*tensor_byte_length_limit=*/INT_MAX,
-        {/*input=*/webnn::SupportedDataTypes::All(),
-         /*constant=*/webnn::SupportedDataTypes::All(),
+        {/*input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*constant=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*arg_min_max_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*arg_min_max_output=*/
-         webnn::SupportedDataTypes::All(),
+         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*batch_normalization_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*batch_normalization_mean=*/
@@ -667,6 +667,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*gemm_c=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gru_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gru_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*gru_output_sequence=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gru_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*gru_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*hard_sigmoid_input=*/
@@ -685,6 +686,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*lstm_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*lstm_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*lstm_output_sequence=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*lstm_cell_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*lstm_cell_bias=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*matmul_input=*/

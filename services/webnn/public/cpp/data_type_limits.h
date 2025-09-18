@@ -14,10 +14,10 @@ namespace webnn {
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   explicit DataTypeLimits(mojo::DefaultConstruct::Tag);
 
-  DataTypeLimits(SupportedDataTypes input,
-                 SupportedDataTypes constant,
+  DataTypeLimits(SupportedTensors input,
+                 SupportedTensors constant,
                  SupportedTensors arg_min_max_input,
-                 SupportedDataTypes arg_min_max_output,
+                 SupportedTensors arg_min_max_output,
                  SupportedTensors batch_normalization_input,
                  SupportedTensors batch_normalization_mean,
                  SupportedTensors cast_input,
@@ -79,6 +79,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors gemm_c,
                  SupportedTensors gru_input,
                  SupportedTensors gru_bias,
+                 SupportedTensors gru_output_sequence,
                  SupportedTensors gru_cell_input,
                  SupportedTensors gru_cell_bias,
                  SupportedTensors hard_sigmoid_input,
@@ -90,6 +91,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors linear_input,
                  SupportedTensors lstm_input,
                  SupportedTensors lstm_bias,
+                 SupportedTensors lstm_output_sequence,
                  SupportedTensors lstm_cell_input,
                  SupportedTensors lstm_cell_bias,
                  SupportedTensors matmul_input,
@@ -140,12 +142,12 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   ~DataTypeLimits();
 
   // Output supported data types are the same as inputs.
-  SupportedDataTypes output() const { return input; }
+  SupportedTensors output() const { return input; }
 
-  SupportedDataTypes input;
-  SupportedDataTypes constant;
+  SupportedTensors input;
+  SupportedTensors constant;
   SupportedTensors arg_min_max_input;
-  SupportedDataTypes arg_min_max_output;
+  SupportedTensors arg_min_max_output;
   SupportedTensors batch_normalization_input;
   SupportedTensors batch_normalization_mean;
   SupportedTensors cast_input;
@@ -207,6 +209,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors gemm_c;
   SupportedTensors gru_input;
   SupportedTensors gru_bias;
+  SupportedTensors gru_output_sequence;
   SupportedTensors gru_cell_input;
   SupportedTensors gru_cell_bias;
   SupportedTensors hard_sigmoid_input;
@@ -218,6 +221,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors linear_input;
   SupportedTensors lstm_input;
   SupportedTensors lstm_bias;
+  SupportedTensors lstm_output_sequence;
   SupportedTensors lstm_cell_input;
   SupportedTensors lstm_cell_bias;
   SupportedTensors matmul_input;
@@ -328,6 +332,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gemm_c == rhs.gemm_c &&
          lhs.gru_input == rhs.gru_input &&
          lhs.gru_bias == rhs.gru_bias &&
+         lhs.gru_output_sequence == rhs.gru_output_sequence &&
          lhs.gru_cell_input == rhs.gru_cell_input &&
          lhs.gru_cell_bias == rhs.gru_cell_bias &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
@@ -339,6 +344,7 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.linear_input == rhs.linear_input &&
          lhs.lstm_input == rhs.lstm_input &&
          lhs.lstm_bias == rhs.lstm_bias &&
+         lhs.lstm_output_sequence == rhs.lstm_output_sequence &&
          lhs.lstm_cell_input == rhs.lstm_cell_input &&
          lhs.lstm_cell_bias == rhs.lstm_cell_bias &&
          lhs.matmul_input == rhs.matmul_input &&
