@@ -883,7 +883,7 @@ public class WebViewChromiumAwInit {
                 startChromium(callSite, /* triggeredFromUIThread= */ true);
                 return true;
             }
-            if (mInitState.getAndSet(INIT_POSTED) == INIT_NOT_STARTED) {
+            if (mInitState.compareAndSet(INIT_NOT_STARTED, INIT_POSTED)) {
                 if (callSite != CallSite.ASYNC_WEBVIEW_STARTUP) {
                     mWebViewStartUpDiagnostics.setAsynchronousChromiumInitLocation(
                             new Throwable(
