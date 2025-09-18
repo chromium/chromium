@@ -54,13 +54,13 @@ import {AnnotationMode} from '../constants.js';
       <span id="annotate-controls">
         <span class="vertical-separator"></span>
         ${this.pdfTextAnnotationsEnabled_ ? html`
-          <!-- TODO(crbug.com/402547554): Add aria-label and i18n string -->
           <cr-icon-button id="text-annotate" iron-icon="pdf-ink:text-annotate"
               class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
               @click="${this.onTextAnnotationClick_}"
               ?disabled="${!this.annotationAvailable}"
               aria-pressed="${this.getAriaPressed_(AnnotationMode.TEXT)}"
-              title="Text annotation">
+              aria-label="$i18n{ink2TextAnnotation}"
+              title="$i18n{ink2TextAnnotation}">
           </cr-icon-button>
         ` : ''}
         <cr-icon-button id="annotate" iron-icon="pdf-ink:annotate"
