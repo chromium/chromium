@@ -314,6 +314,7 @@ chrome_java_resources = [
   "java/res/drawable/devices_black_24dp.xml",
   "java/res/drawable/distilled_page_prefs_button_bg.xml",
   "java/res/drawable/down_arrow_on_circular_background.xml",
+  "java/res/drawable/focusable_item_foreground.xml",
   "java/res/drawable/google_pay_with_divider.xml",
   "java/res/drawable/gray_shield.xml",
   "java/res/drawable/history_app_empty_state_illustration.xml",

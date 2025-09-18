@@ -48,7 +48,8 @@ found in the LICENSE file.
                     "@color/reader_mode_prefs_font_style_button_background_color"
                 android:checkable="true"
                 android:contentDescription=
-                    "@string/font_family_sans_serif_accessibility_label" />
+                    "@string/font_family_sans_serif_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/font_serif"
@@ -65,7 +66,8 @@ found in the LICENSE file.
                     "@color/reader_mode_prefs_font_style_button_background_color"
                 android:checkable="true"
                 android:contentDescription=
-                    "@string/font_family_serif_accessibility_label" />
+                    "@string/font_family_serif_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/font_monospace"
@@ -82,7 +84,8 @@ found in the LICENSE file.
                     "@color/reader_mode_prefs_font_style_button_background_color"
                 android:checkable="true"
                 android:contentDescription=
-                    "@string/font_family_monospace_accessibility_label" />
+                    "@string/font_family_monospace_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
@@ -115,7 +118,7 @@ found in the LICENSE file.
                 app:layout_constraintEnd_toStartOf="@+id/font_size_slider"
                 app:layout_constraintHorizontal_chainStyle="packed" />
 
-            <com.google.android.material.slider.Slider
+<com.google.android.material.slider.Slider
                 android:id="@+id/font_size_slider"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
@@ -132,7 +135,8 @@ found in the LICENSE file.
                 app:tickColorInactive="?attr/colorOnSecondaryContainer"
                 android:orientation="horizontal"
                 android:contentDescription=
-                    "@string/font_size_slider_accessibility_label" />
+                    "@string/font_size_slider_accessibility_label"
+                android:foreground="@drawable/focusable_item_foreground" />
             <TextView
                 android:id="@+id/text_size_signifier_large"
                 android:layout_width="wrap_content"
@@ -169,7 +173,8 @@ found in the LICENSE file.
             android:checkable="true"
             android:layout_marginEnd="32dp"
             android:contentDescription=
-                "@string/light_theme_accessibility_label" />
+                "@string/light_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sepia_mode"
@@ -184,7 +189,8 @@ found in the LICENSE file.
             android:checkable="true"
             android:layout_marginEnd="32dp"
             android:contentDescription=
-                "@string/sepia_theme_accessibility_label" />
+                "@string/sepia_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/dark_mode"
@@ -197,6 +203,7 @@ found in the LICENSE file.
             app:strokeWidth="1dp"
             android:checkable="true"
             android:contentDescription=
-                "@string/dark_theme_accessibility_label" />
+                "@string/dark_theme_accessibility_label"
+            android:foreground="@drawable/focusable_item_foreground" />
     </LinearLayout>
 </org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView>
