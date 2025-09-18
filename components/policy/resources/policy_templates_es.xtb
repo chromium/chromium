@@ -8994,7 +8994,7 @@ Si no se define, la lupa estará inhabilitada inicialmente en la pantalla de ini
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
 <translation id="7113803652772945829">Si se le asigna el valor true a esta política, los usuarios podrán usar un gestor de contraseñas de terceros.
-Ese gestor de contraseñas se encargará de guardar y rellenar todas las contraseñas, los datos de pago y los datos de autocompletado.
+Ese gestor de contraseñas se encargará de guardar y rellenar todas las contraseñas, los datos para pagos y los datos de autocompletado.
 Si se le asigna el valor true a esta política o no se define, una opción permitirá cambiar entre el gestor de contraseñas integrado de <ph name="PRODUCT_NAME" /> y el gestor de contraseñas configurado en los ajustes de Android.
 Como <ph name="PRODUCT_NAME" /> usa los mismos datos que Autocompletar con Google, esta opción solo se puede cambiar para usar gestores de contraseñas de terceros si se ha configurado un gestor distinto de Autocompletar con Google en los ajustes del sistema de Android.
 

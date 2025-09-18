@@ -9329,7 +9329,7 @@
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Փակե՞լ ներդիրը և ջնջել խումբը}=1{Փակե՞լ ներդիրները և ջնջել խումբը}one{Փակե՞լ ներդիրները և ջնջել խումբը}other{Փակե՞լ ներդիրները և ջնջել խմբերը}}</translation>
 <translation id="7509097596023256288">Կառավարման պարամետրերը կարգավորվում են</translation>
 <translation id="7509539379068593709">Ապատեղադրել հավելվածը</translation>
-<translation id="7513438205469584978">Առաջարկները հիմնված են <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-ում ձեր գործողություններ<ph name="END_LINK_GOOGLE_ACTIVITY" /> վրա</translation>
+<translation id="7513438205469584978">Առաջարկները հիմնված են <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google-ում ձեր գործողությունների<ph name="END_LINK_GOOGLE_ACTIVITY" /> հիման վրա</translation>
 <translation id="7514239104543605883">Պատճենել սարքում</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7514417110442087199">Ավելացնել նշանակում</translation>

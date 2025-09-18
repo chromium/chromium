@@ -236,7 +236,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1150565364351027703">Zonnebril</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> altijd toegang tot sensoren geven</translation>
 <translation id="1152346050262092795">Geef je wachtwoord opnieuw op om je account te verifiëren.</translation>
-<translation id="1153636665119721804">Het Google-programma 'Geavanceerde beveiliging'</translation>
+<translation id="1153636665119721804">Geavanceerde beveiliging van Google</translation>
 <translation id="1155816283571436363">Verbinding maken met je telefoon</translation>
 <translation id="1157952955648710254">Zijvenster van Google Zoeken sluiten</translation>
 <translation id="1158080958325422608">Hoofdletters van maken</translation>
@@ -1290,7 +1290,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="187145082678092583">Minder apps</translation>
 <translation id="1871534214638631766">Gerelateerde informatie bekijken als je met de rechtermuisknop klikt of lang drukt op content</translation>
 <translation id="1871615898038944731">Je <ph name="DEVICE_TYPE" /> is up-to-date.</translation>
-<translation id="1873513359268939357">Outlook-agenda</translation>
+<translation id="1873513359268939357">Outlook Agenda</translation>
 <translation id="1873920700418191231">Rechten opnieuw toestaan voor <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Toestemming om alle advertenties te bekijken</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Tabblad verplaatsen naar ander venster}other{Tabbladen verplaatsen naar ander venster}}</translation>
@@ -8485,7 +8485,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6913051485529944333">Je ziet Google Agenda niet meer op deze pagina</translation>
 <translation id="6914812290245989348">Geen waarschuwingen tonen voordat je naar niet-beveiligde sites gaat</translation>
 <translation id="6916590542764765824">Extensies beheren</translation>
-<translation id="6916676294509106572">Outlook-agenda verborgen</translation>
+<translation id="6916676294509106572">Outlook Agenda verborgen</translation>
 <translation id="6917873303492266709">Als je tabbladgroepen wilt delen, eraan deelnemen en eraan wilt samenwerken in tabbladgroepen, open je de instellingen en zet je Inloggen bij Chrome toestaan aan</translation>
 <translation id="6918677045355889289">Chrome OS-update vereist</translation>
 <translation id="6918733588290914545">Snel instellen met Android-telefoon</translation>

@@ -1028,7 +1028,7 @@
 <translation id="5833984609253377421">Поделиться ссылкой</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">Все равно скачать файл <ph name="FILE_NAME" />?</translation>
-<translation id="5842871376175639063">Вкладки и группы вкладок, которые вы не открывали в течение определенного количества дней (<ph name="DAYS_INACTIVE" />), попадают в этот список,<ph name="AUTODELETE_SECTION" />. Эти значения можно изменить в разделе "<ph name="SETTINGS_TITLE" />".</translation>
+<translation id="5842871376175639063">Сюда переносятся вкладки и группы вкладок, которые вы не использовали в течение определенного количества дней (<ph name="DAYS_INACTIVE" />)<ph name="AUTODELETE_SECTION" />. Это можно изменить в разделе <ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">Открыть PDF-файл в приложении "<ph name="APP_NAME" />"?</translation>
 <translation id="5849288995120328556">Закрыть доступ?</translation>
 <translation id="5853623416121554550">пауза</translation>
@@ -1076,7 +1076,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
 <translation id="6071995715087444295">Чтобы проверить наличие раскрытых паролей, войдите в аккаунт Google</translation>
-<translation id="6078323886959318429">Добавить</translation>
+<translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="6087286598828478206">Заблокировать и выйти из группы?</translation>
 <translation id="60923314841986378">Осталось <ph name="HOURS" /> ч.</translation>

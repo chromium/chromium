@@ -371,7 +371,7 @@
 <translation id="2381405137052800939">Temel ayarlar</translation>
 <translation id="2384692388811649784">Gizli sekmeleri gizle</translation>
 <translation id="2386793615875593361">1 fotoğraf seçildi</translation>
-<translation id="2390457533592708044">"<ph name="MODULE_NAME" />" öğesini gizle</translation>
+<translation id="2390457533592708044">"<ph name="MODULE_NAME" />" modülünü gizle</translation>
 <translation id="2393230427496852974">Kullanıcıların söylediklerini okuyun</translation>
 <translation id="2394659309569789395">Siteyi yine de aç</translation>
 <translation id="2403129868389095715">Paketiniz teslim edilemiyor</translation>
@@ -651,7 +651,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3540141921715814660">Yer İşaretlerine Ekle</translation>
 <translation id="3546122170015471515">Google.com'da Haritalar Önizlemeleri</translation>
 <translation id="3547356470684043247">Kararlarınızı şekillendirmenize yardımcı olacak yorumlar için ürün, hizmet veya deneyimle ilgili müşteri değerlendirmelerini okuyun.</translation>
-<translation id="3547933853190131743">Yapay Zeka Modu ile arama yap</translation>
+<translation id="3547933853190131743">AI Modu ile arama yap</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
 <translation id="355765753469272474">Geri al</translation>
 <translation id="3565930036634619844">Sekme. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
@@ -1159,7 +1159,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5572648434713976849">Adres çubuğunda daha iyi öneriler görürsünüz</translation>
 <translation id="5578795271662203820">Bu resmi, <ph name="SEARCH_ENGINE" /> üzerinde ara</translation>
 <translation id="5579012242779565775">"Okuma Listesi" seçeneğini gizle</translation>
-<translation id="5581786858144165447">Yapay Zekaya Modu'na sorun</translation>
+<translation id="5581786858144165447">AI Modu'na sorun</translation>
 <translation id="5585019845078534178">Kartlar</translation>
 <translation id="5595485650161345191">Adresi düzenle</translation>
 <translation id="559567008082979829">İndirdikleriniz bir ay sonra silinir.</translation>
@@ -1797,7 +1797,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7952353944614086413">Açık sekmeleriniz ve gruplarınız</translation>
 <translation id="7952670906562503188">{passkey_count} geçiş anahtarını ve oturum açma bilgilerini hiçbir zaman kaydetmemeyi seçtiğiniz site ve uygulamaların listesini silmek üzeresiniz. Siteler ve uygulamalar için oluşturduğunuz hesaplar silinmez.</translation>
 <translation id="7958575506592576831">Sayfa güvenlik bilgileri</translation>
-<translation id="7961015016161918242">Hiçbir Zaman</translation>
+<translation id="7961015016161918242">Hiçbir zaman</translation>
 <translation id="7971136598759319605">1 gün önce etkindi</translation>
 <translation id="7975036700432177008">Deneyin</translation>
 <translation id="797588153137233716">Menü → Geçmiş → Tarama verilerini sil</translation>

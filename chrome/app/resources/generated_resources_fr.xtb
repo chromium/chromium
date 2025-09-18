@@ -1291,7 +1291,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="187145082678092583">Moins d'applications</translation>
 <translation id="1871534214638631766">Afficher des informations associées lorsque vous effectuez un clic droit ou que vous appuyez de manière prolongée sur un contenu</translation>
 <translation id="1871615898038944731">Votre <ph name="DEVICE_TYPE" /> est à jour</translation>
-<translation id="1873513359268939357">Agenda Outlook</translation>
+<translation id="1873513359268939357">Calendrier Outlook</translation>
 <translation id="1873920700418191231">Accorder de nouveau des autorisations pour <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Autorisé à afficher des annonces</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Déplacer l'onglet vers une autre fenêtre}one{Déplacer l'onglet vers une autre fenêtre}other{Déplacer les onglets vers une autre fenêtre}}</translation>
@@ -8493,7 +8493,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6913051485529944333">Vous ne verrez plus Google Agenda sur cette page</translation>
 <translation id="6914812290245989348">Aucun avertissement avant d'accéder à des sites non sécurisés</translation>
 <translation id="6916590542764765824">Gérer les extensions</translation>
-<translation id="6916676294509106572">Agenda Outlook masqué</translation>
+<translation id="6916676294509106572">Calendrier Outlook masqué</translation>
 <translation id="6917873303492266709">Pour rejoindre des groupes d'onglets, en partager et collaborer dessus, accédez aux paramètres et activez "Autoriser la connexion à Chrome"</translation>
 <translation id="6918677045355889289">Mise à jour de Chrome OS requise</translation>
 <translation id="6918733588290914545">Configuration rapide avec un téléphone Android</translation>

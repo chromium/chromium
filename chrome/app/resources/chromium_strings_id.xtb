@@ -85,7 +85,7 @@
 <translation id="2039417478970545937">Setelan.</translation>
 <translation id="2049376729098081731">Pilih apakah akan menyertakan histori Chromium untuk mendapatkan pengalaman yang lebih dipersonalisasi di layanan Google</translation>
 <translation id="2054039611381840095">Untuk mendapatkan update Chromium berikutnya, Anda memerlukan macOS 12 atau yang lebih baru. Komputer ini menggunakan macOS 11.</translation>
-<translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut menipu dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
+<translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>

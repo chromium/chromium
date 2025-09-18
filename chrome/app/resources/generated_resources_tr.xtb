@@ -3296,7 +3296,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3267726687589094446">Otomatik olarak birden fazla dosya indirilmesine izin vermeye devam et</translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
 <translation id="3269093882174072735">Resim yükle</translation>
-<translation id="326911502853238749">Şunu gösterme: <ph name="MODULE_NAME" /></translation>
+<translation id="326911502853238749"><ph name="MODULE_NAME" /> modülünü gösterme</translation>
 <translation id="3269175001434213183">Verilerinizi yedeklemek ve istediğiniz cihazda kullanmak için senkronizasyonu etkinleştirin</translation>
 <translation id="3269612321104318480">Açık turkuaz ve beyaz</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Dosya}other{# dosya}}</translation>
@@ -3531,7 +3531,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="343578350365773421">Kağıt bitti</translation>
 <translation id="3435896845095436175">Etkinleştir</translation>
-<translation id="3436118221454753036">Yapay Zekaya Sorun Modu</translation>
+<translation id="3436118221454753036">AI Modu'na sorun</translation>
 <translation id="3437072258256045988">Gemini Uygulamaları etkinliğinizi yönetin</translation>
 <translation id="3437397693214267762">Outlook Takvim, SharePoint ve OneDrive dosyalarınızı görün</translation>
 <translation id="3438633801274389918">Ninja</translation>
@@ -5941,7 +5941,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5105442806410269908">Diğer Google verilerini yönetin</translation>
 <translation id="5106350808162641062">Kaldır</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" />, Family Link gözetimi altında. Ebeveyn gözetimi ile okul kaynaklarına erişmek için okul hesapları ekleyebilirsiniz.</translation>
-<translation id="5107093668001980925"><ph name="MODULE_NAME" /> adlı satıcıyı asla gösterme</translation>
+<translation id="5107093668001980925"><ph name="MODULE_NAME" /> modülünü asla gösterme</translation>
 <translation id="5108967062857032718">Ayarlar - Android uygulamalarını kaldır</translation>
 <translation id="5109044022078737958">Maya</translation>
 <translation id="5109816792918100764">Kaldır: <ph name="LANGUAGE_NAME" /></translation>
@@ -7140,7 +7140,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5965607173855879702">Veriler siliniyor...</translation>
 <translation id="5966511985653515929">Site verileri tüm pencereleri kapattığınızda cihazınızdan silinir</translation>
 <translation id="5968022600320704045">Arama sonucu yok</translation>
-<translation id="5968400720580217226">Yapay Zeka Modu</translation>
+<translation id="5968400720580217226">AI Modu</translation>
 <translation id="5969364029958154283">Ayarları sıfırlama hakkında daha fazla bilgi</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> sitesi <ph name="FOLDERNAME" /> klasöründeki dosyaları görüntüleyebilir</translation>
 <translation id="5969728632630673489">Klavye kısayolu bildirimi kapatıldı</translation>
@@ -7365,7 +7365,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6130807998512240230">Telefon Merkezi, Yakındakilerle Paylaş</translation>
 <translation id="6130887916931372608">Klavye tuşu</translation>
 <translation id="6131511889181741773">Saçılma</translation>
-<translation id="6132188132833716741">⇥ Yapay Zeka Modu'na soru sormak için sekme ve ardından enter tuşuna basın</translation>
+<translation id="6132188132833716741">⇥ AI Modu'na soru sormak için sekme ve ardından enter tuşuna basın</translation>
 <translation id="6132251717264923430">Düğme sabitlendi</translation>
 <translation id="6132714462430777655">Okula kayıt atlansın mı?</translation>
 <translation id="6134418895482326458">Yeni Sekme sayfasında altbilgiyi gizle</translation>
@@ -7599,7 +7599,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="628726841779494414">Yazıcılarınızı yazıcı ayarlarından yönetin</translation>
 <translation id="6287288864483377583">İçe aktarma yalnızca tek bir sertifika için desteklenir</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
-<translation id="6288559570252410796">Google'ın Yapay Zeka Modu'na sorun</translation>
+<translation id="6288559570252410796">Google'ın AI Modu'na sorun</translation>
 <translation id="6290613030083731160">Yakında paylaşımda bulunan cihaz yok. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Depolama alanı olmadığı için geri yüklenemiyor.</translation>
 <translation id="6291741848715722067">Onay kodu</translation>
@@ -9992,7 +9992,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7958828865373988933">USB güvenlik anahtarıyla <ph name="APP_NAME" /> için bir geçiş anahtarı oluşturmak istiyorsanız anahtarı takıp dokunun</translation>
 <translation id="7959665254555683862">Yeni Gizli Sekme</translation>
 <translation id="7960540720012720106">Pencerelere genel bakışı aç</translation>
-<translation id="7961015016161918242">Hiçbir Zaman</translation>
+<translation id="7961015016161918242">Hiçbir zaman</translation>
 <translation id="7963001036288347286">Dokunmatik alan hızlandırması</translation>
 <translation id="7963408577288987423">{COUNT,plural, =1{1 şifre}other{{COUNT} şifre}}</translation>
 <translation id="7963513503134856713">Pencere sağa taşındı</translation>
@@ -10721,7 +10721,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> ağına bağlandı</translation>
 <translation id="8456067150616457342">Varsayılan tarayıcınızı ayarlayın</translation>
 <translation id="845702320058262034">Bağlanılamıyor. Telefonunuzda Bluetooth'un açık olduğundan emin olun.</translation>
-<translation id="8457251154056341970">Bu sayfada bir daha <ph name="MODULE_NAME" /> adını görmeyeceksiniz</translation>
+<translation id="8457251154056341970"><ph name="MODULE_NAME" /> modülünü bu sayfada bir daha görmeyeceksiniz</translation>
 <translation id="8457451314607652708">Yer işaretlerini içe aktar</translation>
 <translation id="8458259704995116343">Sanal makine başlatılamadı.</translation>
 <translation id="8458341576712814616">Kısayol</translation>

@@ -249,7 +249,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1162479191445552288">Luncurkan saat browser dimulai</translation>
 <translation id="1163931534039071049">&amp;Lihat sumber bingkai</translation>
 <translation id="1164015913575846413">alt + klik</translation>
-<translation id="1164891049599601209">Dimasukkan pada situs penipuan</translation>
+<translation id="1164891049599601209">Dimasukkan pada situs yang tidak jujur</translation>
 <translation id="1165039591588034296">Kesalahan</translation>
 <translation id="1166212789817575481">Tutup Tab di Sebelah Kanan</translation>
 <translation id="1166457390969131095">Gunakan dan simpan sandi serta kunci sandi dari Akun Google Anda</translation>
@@ -3760,7 +3760,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3577745545227000795">Pengumpulan data hardware <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Konfigurasi otomatis alamat IP</translation>
 <translation id="3581861561942370740">Telusuri histori download</translation>
-<translation id="3582057310199111521">Dimasukkan pada situs penipuan dan ditemukan dalam pelanggaran data</translation>
+<translation id="3582057310199111521">Dimasukkan pada situs tidak jujur dan ditemukan dalam pelanggaran data</translation>
 <translation id="3582299299336701326">Ubah layar terang menjadi gelap, dan layar gelap menjadi terang. Tekan Penelusuran + Ctrl + H untuk mengaktifkan dan menonaktifkan inversi warna.</translation>
 <translation id="3584169441612580296">Membaca dan mengubah foto, musik, serta media lain dari komputer Anda</translation>
 <translation id="3586741240886978899">Anda gunakan di situs ini</translation>
@@ -8360,7 +8360,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6813907279658683733">Seluruh Layar</translation>
 <translation id="6814754908910736855">Info Klien Wi-Fi Langsung:</translation>
 <translation id="6815376457351236663">Tetap Buka</translation>
-<translation id="6815787852028615386">File ini bersifat menipu dan dapat membuat perubahan tak diharapkan pada perangkat Anda</translation>
+<translation id="6815787852028615386">File ini bersifat tidak jujur dan dapat membuat perubahan tak diharapkan pada perangkat Anda</translation>
 <translation id="6816097980753839617">Biru-kuning (Tritanomali)</translation>
 <translation id="6816443526270499804">Mencari profil eSIM yang tersedia</translation>
 <translation id="6818198425579322765">Bahasa Asal Terjemahan Halaman</translation>
