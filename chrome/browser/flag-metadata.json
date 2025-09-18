@@ -7439,6 +7439,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-gemini-prototype-provider",
+    "owners": [ "ewannpv@chromium.org", "gambard@chromium.org" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "omnibox-grouping-framework-non-zps",
     "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "ender@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 150

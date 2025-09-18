@@ -118,6 +118,10 @@
 #include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/gemini_prototype_omnibox_provider.h"
+#endif
+
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
@@ -1329,6 +1333,12 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
   if (provider_types & AutocompleteProvider::TYPE_BUILTIN) {
     providers_.push_back(new BuiltinProvider(provider_client_.get()));
   }
+#if BUILDFLAG(IS_IOS)
+  if (omnibox::IsGeminiPrototypeProviderEnabled()) {
+    providers_.push_back(
+        new GeminiPrototypeOmniboxProvider(provider_client_.get(), this));
+  }
+#endif
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_QUICK) {
     history_quick_provider_ = new HistoryQuickProvider(provider_client_.get());
     providers_.push_back(history_quick_provider_.get());

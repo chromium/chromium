@@ -1634,6 +1634,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMobileParityUpdateV3Description,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMobileParityUpdateV3)},
+#if BUILDFLAG(IS_IOS)
+    {"omnibox-gemini-prototype-provider",
+     flag_descriptions::kOmniboxGeminiPrototypeProviderName,
+     flag_descriptions::kOmniboxGeminiPrototypeProviderDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kGeminiPrototypeOmniboxProvider)},
+#endif
     {"force-startup-signin-promo",
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,

@@ -340,6 +340,17 @@ BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
 // users to type in multiline / longer text.
 BASE_FEATURE(kMultilineEditField, "OmniboxMultilineEditField", DISABLED);
 
+#if BUILDFLAG(IS_IOS)
+// Enables the Gemini Prototype Omnibox Provider.
+BASE_FEATURE(kGeminiPrototypeOmniboxProvider,
+             "OmniboxGeminiPrototypeProvider",
+             DISABLED);
+
+bool IsGeminiPrototypeProviderEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiPrototypeOmniboxProvider);
+}
+#endif
+
 // Hides the AIM entrypoint in the Omnibox when user input is in progress.
 BASE_FEATURE(kHideAimEntrypointOnUserInput,
              "OmniboxHideAimEntrypointOnUserInput",

@@ -337,6 +337,13 @@ static_library("browser") {
     "zero_suggest_verbatim_match_provider.h",
   ]
 
+  if (is_ios) {
+    sources += [
+      "gemini_prototype_omnibox_provider.cc",
+      "gemini_prototype_omnibox_provider.h",
+    ]
+  }
+
   public_deps = [
     ":aim_eligibility_service_features",
     ":buildflags",

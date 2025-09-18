@@ -32,6 +32,9 @@ extern const char kAIHubNewBadgeDescription[];
 extern const char kOmniboxDRSPrototypeName[];
 extern const char kOmniboxDRSPrototypeDescription[];
 
+extern const char kOmniboxGeminiPrototypeProviderName[];
+extern const char kOmniboxGeminiPrototypeProviderDescription[];
+
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];
 
