@@ -71,7 +71,7 @@ class GlicInstanceImpl : public GlicInstance,
   void AttachInstance();
   void DetachInstance();
   void CloseInstanceAndShutdown();
-  bool IsShowing() const;
+  bool IsShowing() const override;
   BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
 
   // These methods should only be called by the GlicInstanceCoordinator.

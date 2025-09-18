@@ -58,7 +58,7 @@ enum class AttachChangeReason;
 // See the |State| enum below for the lifecycle of the window. When the glic
 // window is open |attached_browser_| indicates if the window is attached or
 // standalone. See |IsAttached|
-class GlicWindowController {
+class GlicWindowController : public GlicInstance::UIDelegate {
  public:
   struct PanelStateContext {
     raw_ptr<Browser> attached_browser = nullptr;
@@ -75,7 +75,6 @@ class GlicWindowController {
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
-  virtual ~GlicWindowController() = default;
 
   virtual HostManager& host_manager() = 0;
 
@@ -137,7 +136,6 @@ class GlicWindowController {
                                const gfx::Point& mouse_location) = 0;
 
   virtual const mojom::PanelState& GetPanelState() const = 0;
-  virtual bool IsShowing() const = 0;
 
   virtual void AddStateObserver(StateObserver* observer) = 0;
   virtual void RemoveStateObserver(StateObserver* observer) = 0;

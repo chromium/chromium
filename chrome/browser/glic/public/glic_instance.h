@@ -14,10 +14,23 @@ class Host;
 // A type alias for the Glic instance identifier.
 using InstanceId = base::Uuid;
 
-// Public interface for one instance of the glic web client.
-class GlicInstance {
+namespace glic_instance_internal {
+
+// Interface for UI methods that can be called on the instance.
+class UIDelegate {
  public:
-  virtual ~GlicInstance() = default;
+  virtual ~UIDelegate() = default;
+
+  virtual bool IsShowing() const = 0;
+};
+
+}  // namespace glic_instance_internal
+
+// Public interface for one instance of the glic web client.
+class GlicInstance : public glic_instance_internal::UIDelegate {
+ public:
+  // Exposes the UIDelegate interface on GlicInstance::UIDelegate.
+  using UIDelegate = glic_instance_internal::UIDelegate;
 
   // Get this instance's Host which manages the chrome://glic WebContents.
   virtual Host& host() = 0;
