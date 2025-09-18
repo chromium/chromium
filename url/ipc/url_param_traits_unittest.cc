@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/ipc/url_param_traits.h"
+
 #include <string>
 
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
+#include "base/pickle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/ipc/url_param_traits.h"
 
 namespace {
 
 GURL BounceUrl(const GURL& input) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<GURL>::Write(&msg, input);
 
   GURL output;
@@ -69,8 +69,9 @@ TEST(IPCMessageTest, SerializeGurl_ExcessivelyLong) {
 
 // Test of an invalid GURL.
 TEST(IPCMessageTest, SerializeGurl_InvalidUrl) {
-  IPC::Message msg;
+  base::Pickle msg;
   msg.WriteString("#inva://idurl/");
+
   GURL output;
   base::PickleIterator iter(msg);
   EXPECT_FALSE(IPC::ParamTraits<GURL>::Read(&msg, &iter, &output));
@@ -78,8 +79,9 @@ TEST(IPCMessageTest, SerializeGurl_InvalidUrl) {
 
 // Test of a corrupt deserialization input.
 TEST(IPCMessageTest, SerializeGurl_CorruptPayload) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   msg.WriteInt(99);
+
   GURL output;
   base::PickleIterator iter(msg);
   EXPECT_FALSE(IPC::ParamTraits<GURL>::Read(&msg, &iter, &output));
