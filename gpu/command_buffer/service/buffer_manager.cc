@@ -670,7 +670,7 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
         break;
       }
     case GL_BUFFER_MAPPED:
-      *params = buffer->GetMappedRange() == nullptr ? false : true;
+      *params = buffer->GetMappedRange() != nullptr;
       break;
     default:
       NOTREACHED();

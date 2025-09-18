@@ -1835,7 +1835,7 @@ scoped_refptr<TextureRef> TextureRef::Create(TextureManager* manager,
 
 TextureRef::~TextureRef() {
   manager_->StopTracking(this);
-  bool have_context = force_context_lost_ ? false : manager_->have_context_;
+  bool have_context = !force_context_lost_ && manager_->have_context_;
   texture_->RemoveTextureRef(this, have_context);
   manager_ = nullptr;
   if (!have_context && shared_image_)
