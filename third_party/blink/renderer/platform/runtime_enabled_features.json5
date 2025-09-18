@@ -4811,6 +4811,11 @@
       status: "stable",
     },
     {
+      // Disable "external" XSLT stylesheets in SVGImage.
+      name: "SvgImageNoExternalXslt",
+      status: "stable",
+    },
+    {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
       status: "test",
     },

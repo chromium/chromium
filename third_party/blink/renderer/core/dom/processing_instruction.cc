@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"  // for parseAttributes()
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
@@ -41,6 +42,14 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 
 namespace blink {
+
+namespace {
+
+bool IsLocalSheet(const String& href) {
+  return href.length() > 1 && href[0] == '#';
+}
+
+}  // namespace
 
 ProcessingInstruction::ProcessingInstruction(Document& document,
                                              const String& target,
@@ -125,6 +134,14 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
 
   auto it_href = attrs.find("href");
   href = it_href != attrs.end() ? it_href->value : "";
+
+  // Disallow "external" XSLT stylesheets in SVG documents in image contexts.
+  if (is_xsl_ && RuntimeEnabledFeatures::SvgImageNoExternalXsltEnabled() &&
+      SVGImage::IsInSVGImage(this) && !IsLocalSheet(href)) {
+    is_xsl_ = false;
+    return false;
+  }
+
   auto it_charset = attrs.find("charset");
   charset = it_charset != attrs.end() ? it_charset->value : "";
   auto it_alternate = attrs.find("alternate");
@@ -139,7 +156,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
 }
 
 void ProcessingInstruction::Process(const String& href, const String& charset) {
-  if (href.length() > 1 && href[0] == '#') {
+  if (IsLocalSheet(href)) {
     local_href_ = href.Substring(1);
     // We need to make a synthetic XSLStyleSheet that is embedded.
     // It needs to be able to kick off import/include loads that
