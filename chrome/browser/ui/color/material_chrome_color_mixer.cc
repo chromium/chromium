@@ -173,8 +173,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Split View colors.
   mixer[kColorSplitViewBackground] = {ui::kColorSysSurface2};
-  mixer[kColorSplitViewScrim] = ui::SetAlpha(ui::kColorRefNeutral99, 0x99);
-  mixer[kColorMulitContentsViewMiniToolbarForeground] = {kColorToolbarText};
+  mixer[kColorMultiContentsViewMiniToolbarForeground] = {kColorToolbarText};
 
   // Side Panel colors.
   mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
@@ -326,7 +325,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
                           color_utils::kMinimumVisibleContrastRatio);
 
-  mixer[kColorMulitContentsViewMiniToolbarForeground] = {
+  mixer[kColorMultiContentsViewMiniToolbarForeground] = {
       ui::kColorSysOnSurfaceSubtle};
 
   mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(

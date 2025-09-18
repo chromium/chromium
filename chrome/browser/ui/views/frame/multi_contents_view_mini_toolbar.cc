@@ -108,7 +108,7 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   domain_label_->SetMaximumWidthSingleLine(kMiniToolbarDomainMaxWidth);
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   domain_label_->SetSubpixelRenderingEnabled(false);
-  domain_label_->SetEnabledColor(kColorMulitContentsViewMiniToolbarForeground);
+  domain_label_->SetEnabledColor(kColorMultiContentsViewMiniToolbarForeground);
   domain_label_->SetBackgroundColor(kColorToolbar);
   alert_state_indicator_ = AddChildView(std::make_unique<views::ImageView>());
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
@@ -119,12 +119,12 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
         base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
                             base::Unretained(this)),
         kCloseTabChromeRefreshIcon, 16,
-        kColorMulitContentsViewMiniToolbarForeground));
+        kColorMultiContentsViewMiniToolbarForeground));
     SetAccessibleNameAndTooltip(image_button_, IDS_SPLIT_TAB_CLOSE);
   } else {
     image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
         base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
-        kColorMulitContentsViewMiniToolbarForeground));
+        kColorMultiContentsViewMiniToolbarForeground));
     SetAccessibleNameAndTooltip(
         image_button_, IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
     image_button_->SetButtonController(

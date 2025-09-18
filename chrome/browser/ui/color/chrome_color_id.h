@@ -206,10 +206,10 @@
   E_CPONLY(kColorMediaRouterIconActive) \
   E_CPONLY(kColorMediaRouterIconWarning) \
   /* Multi contents view colors. */ \
-  E_CPONLY(kColorMulitContentsViewActiveContentOutline) \
-  E_CPONLY(kColorMulitContentsViewInactiveContentOutline) \
-  E_CPONLY(kColorMulitContentsViewHighlightContentOutline) \
-  E_CPONLY(kColorMulitContentsViewMiniToolbarForeground) \
+  E_CPONLY(kColorMultiContentsViewActiveContentOutline) \
+  E_CPONLY(kColorMultiContentsViewInactiveContentOutline) \
+  E_CPONLY(kColorMultiContentsViewHighlightContentOutline) \
+  E_CPONLY(kColorMultiContentsViewMiniToolbarForeground) \
   /* New tab button colors. */ \
   E_CPONLY(kColorNewTabButtonForegroundFrameActive) \
   E_CPONLY(kColorNewTabButtonForegroundFrameInactive) \
@@ -682,7 +682,6 @@
   E_CPONLY(kColorSidePanelWallpaperSearchInspirationDescriptors) \
   /* Split view colors. */ \
   E_CPONLY(kColorSplitViewBackground) \
-  E_CPONLY(kColorSplitViewScrim) \
   /* Star rating view colors. */ \
   E_CPONLY(kColorStarRatingFullIcon) \
   E_CPONLY(kColorStarRatingEmptyIcon) \

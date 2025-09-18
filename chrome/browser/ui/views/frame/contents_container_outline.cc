@@ -41,10 +41,10 @@ int ContentsContainerOutline::GetThickness(bool is_highlighted) {
 ui::ColorId ContentsContainerOutline::GetColor(bool is_active,
                                                bool is_highlighted) {
   if (is_active) {
-    return is_highlighted ? kColorMulitContentsViewHighlightContentOutline
-                          : kColorMulitContentsViewActiveContentOutline;
+    return is_highlighted ? kColorMultiContentsViewHighlightContentOutline
+                          : kColorMultiContentsViewActiveContentOutline;
   }
-  return kColorMulitContentsViewInactiveContentOutline;
+  return kColorMultiContentsViewInactiveContentOutline;
 }
 
 void ContentsContainerOutline::UpdateState(bool is_active,

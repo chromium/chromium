@@ -262,12 +262,12 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       PickGoogleColor(ui::kColorAccent, kColorToolbar,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverityIcon};
-  mixer[kColorMulitContentsViewActiveContentOutline] = {ui::kColorSysOutline};
-  mixer[kColorMulitContentsViewInactiveContentOutline] = {
+  mixer[kColorMultiContentsViewActiveContentOutline] = {ui::kColorSysOutline};
+  mixer[kColorMultiContentsViewInactiveContentOutline] = {
       ui::kColorSysNeutralOutline};
-  mixer[kColorMulitContentsViewHighlightContentOutline] = {
+  mixer[kColorMultiContentsViewHighlightContentOutline] = {
       ui::kColorSysStateInactiveRing};
-  mixer[kColorMulitContentsViewMiniToolbarForeground] = {kColorToolbarText};
+  mixer[kColorMultiContentsViewMiniToolbarForeground] = {kColorToolbarText};
   mixer[kColorOmniboxChipBackground] = {kColorTabBackgroundActiveFrameActive};
   mixer[kColorOmniboxChipBlockedActivityIndicatorBackground] = {
       kColorInfoBarBackground};
@@ -384,7 +384,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelHeaderButtonIcon] = {ui::kColorIcon};
   mixer[kColorSidePanelHeaderButtonIconDisabled] = {ui::kColorIconDisabled};
   mixer[kColorSidePanelResizeAreaHandle] = {kColorToolbarContentAreaSeparator};
-  mixer[kColorSplitViewScrim] = ui::SetAlpha(ui::kColorRefNeutral99, 0x99);
   mixer[kColorStarRatingFullIcon] =
       ui::SelectBasedOnDarkInput(kColorTabForegroundActiveFrameActive,
                                  gfx::kGoogleYellow500, gfx::kGoogleYellow300);
