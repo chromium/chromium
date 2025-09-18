@@ -406,17 +406,6 @@ SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
                            color_space.ToSkColorSpace());
 }
 
-void CanvasResourceSharedImage::BeginWriteAccess() {
-  RasterInterface()->BeginSharedImageAccessDirectCHROMIUM(
-      GetTextureIdForWriteAccess(),
-      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-}
-
-void CanvasResourceSharedImage::EndWriteAccess() {
-  RasterInterface()->EndSharedImageAccessDirectCHROMIUM(
-      GetTextureIdForWriteAccess());
-}
-
 GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   scoped_refptr<gpu::ClientSharedImage> client_si = GetClientSharedImage();
 

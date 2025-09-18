@@ -221,8 +221,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const gpu::SyncToken GetSyncToken() override;
 
   void NotifyResourceLost() final;
-  void BeginWriteAccess();
-  void EndWriteAccess();
   GrBackendTexture CreateGrTexture() const;
 
   GLuint GetTextureIdForWriteAccess() const {

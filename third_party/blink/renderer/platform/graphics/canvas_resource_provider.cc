@@ -435,14 +435,6 @@ void CanvasResourceProviderSharedImage::EnsureWriteAccess() {
   if (current_resource_has_write_access_ || IsGpuContextLost()) {
     return;
   }
-
-  if (is_accelerated_ && !use_oop_rasterization_) {
-    resource()->BeginWriteAccess();
-  }
-
-  // For the non-accelerated path, we don't need a texture for writes since
-  // its on the CPU, but we set this bit to know whether the GMB needs to be
-  // updated.
   current_resource_has_write_access_ = true;
 }
 
@@ -458,10 +450,6 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
     // complete canvas must have been flushed at this point without triggering
     // copy-on-write.
     mode_ = SkSurface::kRetain_ContentChangeMode;
-
-    if (!use_oop_rasterization_) {
-      resource()->EndWriteAccess();
-    }
   } else {
     // Currently we never use OOP raster when the resource is not accelerated
     // so we check that assumption here.
