@@ -858,13 +858,6 @@ main() {
     note "g_temp_dir = ${g_temp_dir}"
   fi
 
-  # Previous versions may have left a .want_full_installer file to hint to
-  # Chrome that it should append "-full" to its tag in order to avoid a
-  # differential update. These files are no longer needed and should be cleaned
-  # up to fix codesigning failures if it exists. This is not considered a
-  # critical step, because this file normally does not exist at all.
-  rm -f "${installed_app}/.want_full_installer" || true
-
   # If necessary, touch the outermost .app so that it appears to the outside
   # world that something was done to the bundle.  This will cause
   # LaunchServices to invalidate the information it has cached about the
