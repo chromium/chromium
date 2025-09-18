@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   // Scenario 1: A prefetch result has an overridden UA if it is registered and
   // enabled.
   {
-    raw_ptr rfh = GetPrimaryMainFrameHost().GetMainFrame();
+    RenderFrameHostImpl* rfh = GetPrimaryMainFrameHost().GetMainFrame();
 
     // Set UA override and enable it for prefetch and prerender.
     shell()->web_contents()->SetUserAgentOverride(
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   // Scenario 2: A prefetch result has a default UA if an UA override is
   // registered but disabled.
   {
-    raw_ptr rfh = GetPrimaryMainFrameHost().GetMainFrame();
+    RenderFrameHostImpl* rfh = GetPrimaryMainFrameHost().GetMainFrame();
 
     // Disable UA override and make sure the disabled UA override is still
     // registered.
