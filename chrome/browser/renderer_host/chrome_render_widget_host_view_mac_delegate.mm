@@ -24,6 +24,7 @@
 #include "components/spellcheck/common/spellcheck_panel.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -409,6 +410,11 @@
   content::WebContents* webContents = self.webContents;
   if (!webContents) {
     return AcceptMouseEvents::kWhenInActiveWindow;
+  }
+
+  // Allow mouse move events in inactive windows when inspecting.
+  if (content::DevToolsAgentHost::IsDebuggerAttached(webContents)) {
+    return AcceptMouseEvents::kWhenInActiveApp;
   }
 
   // If this web contents is in a tab, and the tab wants to accept mouse events
