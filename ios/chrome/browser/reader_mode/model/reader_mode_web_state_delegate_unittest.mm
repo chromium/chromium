@@ -63,7 +63,7 @@ class MockWebStateDelegate : public web::WebStateDelegate {
 class ReaderModeWebStateDelegateTest : public PlatformTest {
  protected:
   ReaderModeWebStateDelegateTest()
-      : reader_mode_web_state_delegate_(&mock_web_state_delegate_) {}
+      : reader_mode_web_state_delegate_(nullptr, &mock_web_state_delegate_) {}
 
   testing::StrictMock<MockWebStateDelegate> mock_web_state_delegate_;
   ReaderModeWebStateDelegate reader_mode_web_state_delegate_;

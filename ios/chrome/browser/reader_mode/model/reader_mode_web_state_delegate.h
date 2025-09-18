@@ -11,7 +11,8 @@
 // if the method is supported.
 class ReaderModeWebStateDelegate : public web::WebStateDelegate {
  public:
-  ReaderModeWebStateDelegate(web::WebStateDelegate* web_state_delegate);
+  ReaderModeWebStateDelegate(web::WebState* original_web_state,
+                             web::WebStateDelegate* web_state_delegate);
   ~ReaderModeWebStateDelegate() override;
 
   // WebStateDelegate overrides:
@@ -46,7 +47,8 @@ class ReaderModeWebStateDelegate : public web::WebStateDelegate {
       id<UIContextMenuInteractionCommitAnimating> animator) override;
 
  private:
-  raw_ptr<WebStateDelegate> web_state_delegate_;
+  raw_ptr<web::WebState> original_web_state_ = nullptr;
+  raw_ptr<WebStateDelegate> web_state_delegate_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_WEB_STATE_DELEGATE_H_

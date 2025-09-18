@@ -81,7 +81,7 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
   ImageFetchTabHelper::CreateForWebState(web_state());
   OverlayRequestQueue::CreateForWebState(web_state());
   web_state_delegate_ = std::make_unique<ReaderModeWebStateDelegate>(
-      original_web_state->GetDelegate());
+      original_web_state, original_web_state->GetDelegate());
   web_state()->SetDelegate(web_state_delegate_.get());
 }
 

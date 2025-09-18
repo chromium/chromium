@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_delegate.h"
 
 ReaderModeWebStateDelegate::ReaderModeWebStateDelegate(
+    web::WebState* original_web_state,
     web::WebStateDelegate* web_state_delegate)
-    : web_state_delegate_(web_state_delegate) {}
+    : original_web_state_(original_web_state),
+      web_state_delegate_(web_state_delegate) {}
 
 ReaderModeWebStateDelegate::~ReaderModeWebStateDelegate() = default;
 
@@ -15,6 +17,10 @@ web::WebState* ReaderModeWebStateDelegate::CreateNewWebState(
     const GURL& url,
     const GURL& opener_url,
     bool initiated_by_user) {
+  // Override the source forwarded to `CreateNewWebState` so the host WebState
+  // will be considered as the source for the new WebState created as a result
+  // of the navigation action.
+  source = original_web_state_;
   return web_state_delegate_->CreateNewWebState(source, url, opener_url,
                                                 initiated_by_user);
 }
