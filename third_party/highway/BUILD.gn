@@ -94,13 +94,16 @@ test("highway_tests") {
     "src/hwy/tests/sums_abs_diff_test.cc",
     "src/hwy/tests/swizzle_block_test.cc",
     "src/hwy/tests/swizzle_test.cc",
-    "src/hwy/tests/table_test.cc",
     "src/hwy/tests/test_util.cc",
     "src/hwy/tests/test_util_test.cc",
     "src/hwy/tests/truncate_test.cc",
     "src/hwy/tests/tuple_test.cc",
     "src/hwy/tests/widen_mul_test.cc",
   ]
+  if (!is_msan) {
+    # TODO(crbug.com/424075503): This fails under MSan.
+    sources += [ "src/hwy/tests/table_test.cc" ]
+  }
   deps = [
     ":libhwy",
     "//base/test:run_all_unittests",
