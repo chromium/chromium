@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -328,9 +327,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-// Returns true if `kGetUserMediaDeferredDeviceSettingsSelection` is enabled,
-// but gates it on `kCameraMicPreview` also being being enabled. This only
-// applies to user media requests.
+// This only applies to user media requests.
 bool ShouldDeferDeviceSettingsSelection(
     UserMediaRequestType request_type,
     mojom::blink::MediaStreamType media_stream_type) {
@@ -354,9 +351,7 @@ bool ShouldDeferDeviceSettingsSelection(
   }
 
   // Enables camera preview in permission bubble and site settings.
-  return base::FeatureList::IsEnabled(features::kCameraMicPreview) &&
-         base::FeatureList::IsEnabled(
-             features::kGetUserMediaDeferredDeviceSettingsSelection);
+  return true;
 }
 #else
 bool ShouldDeferDeviceSettingsSelection(

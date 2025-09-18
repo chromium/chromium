@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -271,10 +270,6 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 
   if (!camera_permission_label_ && !mic_permission_label_ &&
       !ptz_camera_permission_label_) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
     return;
   }
 

@@ -1476,14 +1476,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "camera-mic-preview",
-    "owners": [
-      "bryantchandler@chromium.org",
-      "openscreen-eng@chromium.org"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "campaigns-test-tag",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 150
@@ -5502,14 +5494,6 @@
       "tovep@chromium.org"
     ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "get-user-media-deferred-device-settings-selection",
-    "owners": [
-      "bryantchandler@chromium.org",
-      "openscreen-eng@chromium.org"
-    ],
-    "expiry_milestone": 145
   },
   {
     "name": "glanceables-time-management-classroom-student-view",

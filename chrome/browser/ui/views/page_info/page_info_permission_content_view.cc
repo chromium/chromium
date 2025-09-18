@@ -383,10 +383,6 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCameraMicPreview)) {
-    return;
-  }
-
   auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
   devices_observer_.Observe(cached_device_info);
   if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||

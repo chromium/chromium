@@ -22,7 +22,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/media_effects/test/fake_audio_service.h"
@@ -221,11 +220,6 @@ constexpr char kGroupId2[] = "group_id_2";
 class PermissionPromptBubbleOneOriginViewTestMediaPreview
     : public TestWithBrowserView {
  protected:
-  PermissionPromptBubbleOneOriginViewTestMediaPreview() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCameraMicPreview);
-  }
-
   void SetUp() override {
     TestWithBrowserView::SetUp();
     base::test::TestFuture<void> mic_infos, camera_infos;
@@ -274,7 +268,6 @@ class PermissionPromptBubbleOneOriginViewTestMediaPreview
         base::NumberToString16(devices));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   media_effects::ScopedFakeAudioService audio_service_;
   media_effects::ScopedFakeVideoCaptureService video_service_;
   std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;

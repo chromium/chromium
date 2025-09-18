@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
@@ -63,11 +62,6 @@ blink::mojom::MediaStreamType GetStreamTypeFromSettingsType(
 class PageInfoPermissionContentViewTestMediaPreview
     : public TestWithBrowserView {
  protected:
-  PageInfoPermissionContentViewTestMediaPreview() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCameraMicPreview);
-  }
-
   void SetUp() override {
     TestWithBrowserView::SetUp();
     base::test::TestFuture<void> mic_infos, camera_infos;
@@ -138,7 +132,6 @@ class PageInfoPermissionContentViewTestMediaPreview
                                       base::NumberToString16(devices));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   media_effects::ScopedFakeAudioService audio_service_;
   media_effects::ScopedFakeVideoCaptureService video_service_;
   std::optional<media_effects::ScopedMediaDeviceInfo> media_device_info_;

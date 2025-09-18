@@ -684,12 +684,6 @@ extern const char kSeparateLocalAndAccountThemesDescription[];
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 extern const char kCameraMicEffectsName[];
 extern const char kCameraMicEffectsDescription[];
-
-extern const char kCameraMicPreviewName[];
-extern const char kCameraMicPreviewDescription[];
-
-extern const char kGetUserMediaDeferredDeviceSettingsSelectionName[];
-extern const char kGetUserMediaDeferredDeviceSettingsSelectionDescription[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
