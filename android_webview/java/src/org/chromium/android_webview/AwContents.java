@@ -54,6 +54,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeUnchecked;
@@ -62,7 +63,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.AwDisplayCutoutController.Delegate;
-import org.chromium.android_webview.AwDisplayCutoutController.Insets;
 import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -1004,8 +1004,9 @@ public class AwContents implements SmartClipProvider {
                                 @Override
                                 public void setDisplayCutoutSafeArea(Insets insets) {
                                     if (mWebContents == null) return;
-                                    mWebContents.setDisplayCutoutSafeArea(
-                                            insets.toRect(mCachedSafeAreaRect));
+                                    mCachedSafeAreaRect.set(
+                                            insets.left, insets.top, insets.right, insets.bottom);
+                                    mWebContents.setDisplayCutoutSafeArea(mCachedSafeAreaRect);
                                 }
 
                                 @Override

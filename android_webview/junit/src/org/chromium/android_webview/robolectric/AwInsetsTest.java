@@ -176,7 +176,7 @@ public class AwInsetsTest {
 
                             @Override
                             public void setDisplayCutoutSafeArea(
-                                    AwDisplayCutoutController.Insets insets) {}
+                                    androidx.core.graphics.Insets insets) {}
 
                             @Override
                             public void bottomImeInsetChanged() {}

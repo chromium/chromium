@@ -17,6 +17,7 @@ import android.view.DisplayCutout;
 import android.view.View;
 import android.view.WindowInsets;
 
+import androidx.core.graphics.Insets;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -33,7 +34,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.android_webview.AwDisplayCutoutController;
-import org.chromium.android_webview.AwDisplayCutoutController.Insets;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -151,7 +151,7 @@ public class AwDisplayCutoutControllerTest {
         mInOrder.verify(mDelegate).getDipScale();
 
         // Note that DIP of 2.0 is applied, so the values are halved.
-        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(Insets.of(10, 20, 30, 40)));
         // Every time the display cutout safe area is changed, we should notify that IME insets have
         // changed.
         mInOrder.verify(mDelegate).bottomImeInsetChanged();
@@ -168,7 +168,7 @@ public class AwDisplayCutoutControllerTest {
         mInOrder.verify(mDelegate).getDipScale();
 
         // Note that DIP of 2.0 is applied, so the values are halved.
-        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(Insets.of(10, 20, 30, 40)));
         // Every time the display cutout safe area is changed, we should notify that IME insets have
         // changed.
         mInOrder.verify(mDelegate).bottomImeInsetChanged();
@@ -185,7 +185,7 @@ public class AwDisplayCutoutControllerTest {
         mInOrder.verify(mDelegate).getDipScale();
 
         // Note that DIP of 2.0 is applied, so the values are halved.
-        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(new Insets(10, 20, 30, 40)));
+        mInOrder.verify(mDelegate).setDisplayCutoutSafeArea(eq(Insets.of(10, 20, 30, 40)));
         // Every time the display cutout safe area is changed, we should notify that IME insets have
         // changed.
         mInOrder.verify(mDelegate).bottomImeInsetChanged();

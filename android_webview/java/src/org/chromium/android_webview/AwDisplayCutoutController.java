@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.view.WindowMetrics;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.android_webview.common.AwFeatureMap;
@@ -62,63 +63,6 @@ public class AwDisplayCutoutController {
          * keyboard has either been shown or hidden.
          */
         void bottomImeInsetChanged();
-    }
-
-    /**
-     * A placeholder for insets.
-     *
-     * android.graphics.Insets is available from Q, while we support display cutout from P and
-     * above, so adding a new class.
-     */
-    public static final class Insets {
-        public int left;
-        public int top;
-        public int right;
-        public int bottom;
-
-        public Insets(int left, int top, int right, int bottom) {
-            set(left, top, right, bottom);
-        }
-
-        public Insets(androidx.core.graphics.Insets insets) {
-            set(insets.left, insets.top, insets.right, insets.bottom);
-        }
-
-        public Rect toRect(Rect rect) {
-            rect.set(left, top, right, bottom);
-            return rect;
-        }
-
-        public void set(Insets insets) {
-            left = insets.left;
-            top = insets.top;
-            right = insets.right;
-            bottom = insets.bottom;
-        }
-
-        public void set(int left, int top, int right, int bottom) {
-            this.left = left;
-            this.top = top;
-            this.right = right;
-            this.bottom = bottom;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof Insets)) return false;
-            Insets i = (Insets) o;
-            return left == i.left && top == i.top && right == i.right && bottom == i.bottom;
-        }
-
-        @Override
-        public String toString() {
-            return "Insets: (" + left + ", " + top + ")-(" + right + ", " + bottom + ")";
-        }
-
-        @Override
-        public int hashCode() {
-            return 3 * left + 5 * top + 7 * right + 11 * bottom;
-        }
     }
 
     /**
@@ -235,7 +179,7 @@ public class AwDisplayCutoutController {
      * @see View#onApplyWindowInsets(WindowInsets)
      * @param insets The window (display) insets.
      */
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
         if (DEBUG) Log.i(TAG, "onApplyWindowInsets: " + insets.toString());
 
@@ -245,13 +189,11 @@ public class AwDisplayCutoutController {
         }
 
         // TODO(crbug.com/40699457): add a throttling logic.
-        Insets safeArea =
-                new Insets(WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes));
+        Insets safeArea = WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes);
         onApplyWindowInsetsInternal(safeArea);
         calculateBottomImeInsetsInternal(
-                new Insets(
-                        WindowInsetsCompat.toWindowInsetsCompat(insets)
-                                .getInsets(WindowInsetsCompat.Type.ime())));
+                WindowInsetsCompat.toWindowInsetsCompat(insets)
+                        .getInsets(WindowInsetsCompat.Type.ime()));
 
         return insets;
     }
@@ -264,10 +206,10 @@ public class AwDisplayCutoutController {
      * @param displayCutoutInsets Insets to store left, top, right, bottom insets.
      */
     @VisibleForTesting
-    public void onApplyWindowInsetsInternal(final Insets displayCutoutInsets) {
+    public void onApplyWindowInsetsInternal(Insets displayCutoutInsets) {
         float dipScale = mDelegate.getDipScale();
         // We only apply this logic when webview is occupying the entire screen.
-        adjustInsetsForScale(displayCutoutInsets, dipScale);
+        displayCutoutInsets = adjustInsetsForScale(displayCutoutInsets, dipScale);
 
         if (DEBUG) {
             Log.i(
@@ -365,11 +307,12 @@ public class AwDisplayCutoutController {
         }
     }
 
-    private static void adjustInsetsForScale(Insets insets, float dipScale) {
-        insets.left = adjustOneInsetForScale(insets.left, dipScale);
-        insets.top = adjustOneInsetForScale(insets.top, dipScale);
-        insets.right = adjustOneInsetForScale(insets.right, dipScale);
-        insets.bottom = adjustOneInsetForScale(insets.bottom, dipScale);
+    private static Insets adjustInsetsForScale(Insets insets, float dipScale) {
+        return Insets.of(
+                adjustOneInsetForScale(insets.left, dipScale),
+                adjustOneInsetForScale(insets.top, dipScale),
+                adjustOneInsetForScale(insets.right, dipScale),
+                adjustOneInsetForScale(insets.bottom, dipScale));
     }
 
     /**
