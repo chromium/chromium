@@ -215,7 +215,6 @@ void OverlayWindowAndroid::DestroyStartedByJava(JNIEnv* env) {
 }
 
 void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env, bool toggleOn) {
-  DCHECK(!controller_->IsPlayerActive());
   if (toggleOn == (playback_state_ == PlaybackState::kPaused)) {
     controller_->TogglePlayPause();
   }
