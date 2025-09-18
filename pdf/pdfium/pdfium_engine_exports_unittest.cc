@@ -82,13 +82,8 @@ std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
   std::vector<gfx::RectF> positions;
   positions.reserve(char_count);
   for (int i = 0; i < char_count; ++i) {
-    double left;
-    double right;
-    double bottom;
-    double top;
-    CHECK(
-        FPDFText_GetCharBox(text_page.get(), i, &left, &right, &bottom, &top));
-    positions.push_back(gfx::RectF(left, bottom, right - left, top - bottom));
+    positions.push_back(
+        GetTextCharBox(text_page.get(), i).value().AsGfxRectF());
   }
   return positions;
 }

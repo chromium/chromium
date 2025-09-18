@@ -206,6 +206,20 @@ std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
   return name;
 }
 
+std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index) {
+  double left;
+  double right;
+  double bottom;
+  double top;
+  if (!FPDFText_GetCharBox(text_page, index, &left, &right, &bottom, &top)) {
+    return std::nullopt;
+  }
+  return PdfRect(/*left=*/left,
+                 /*bottom=*/bottom,
+                 /*right=*/right,
+                 /*top=*/top);
+}
+
 bool RenderPageToBitmap(FPDF_PAGE page,
                         const PDFiumEngineExports::RenderingSettings& settings,
                         void* bitmap_buffer) {

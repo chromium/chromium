@@ -119,19 +119,13 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
 gfx::RectF GetFloatCharRectInPixels(FPDF_PAGE page,
                                     FPDF_TEXTPAGE text_page,
                                     int index) {
-  double left;
-  double right;
-  double bottom;
-  double top;
-  if (!FPDFText_GetCharBox(text_page, index, &left, &right, &bottom, &top))
+  std::optional<PdfRect> char_box = GetTextCharBox(text_page, index);
+  if (!char_box.has_value()) {
     return gfx::RectF();
+  }
 
-  if (right < left)
-    std::swap(left, right);
-  if (bottom < top)
-    std::swap(top, bottom);
-  gfx::RectF page_coords(left, top, right - left, bottom - top);
-  return FloatPageRectToPixelRect(page, page_coords);
+  char_box.value().Normalize();
+  return FloatPageRectToPixelRect(page, char_box.value().AsGfxRectF());
 }
 
 int GetFirstNonUnicodeWhiteSpaceCharIndex(FPDF_TEXTPAGE text_page,
@@ -1267,16 +1261,12 @@ int PDFiumPage::GetLink(int char_index, LinkTarget* target) {
 
   // Get the bounding box of the rect again, since it might have moved because
   // of the tolerance above.
-  double left;
-  double right;
-  double bottom;
-  double top;
-  if (!FPDFText_GetCharBox(GetTextPage(), char_index, &left, &right, &bottom,
-                           &top)) {
+  std::optional<PdfRect> char_box = GetTextCharBox(GetTextPage(), char_index);
+  if (!char_box.has_value()) {
     return -1;
   }
 
-  gfx::Point origin = PageToScreen(gfx::Point(), 1.0, left, top, right, bottom,
+  gfx::Point origin = PageToScreen(gfx::Point(), /*zoom=*/1.0, char_box.value(),
                                    PageOrientation::kOriginal)
                           .origin();
   for (size_t i = 0; i < links_.size(); ++i) {
@@ -1755,20 +1745,15 @@ bool PDFiumPage::GetUnderlyingTextRangeForRect(const gfx::RectF& rect,
   // Iterate over page text to find such continuous characters whose mid-points
   // lie inside the rectangle.
   for (int i = 0; i < char_count; ++i) {
-    double char_left;
-    double char_right;
-    double char_bottom;
-    double char_top;
-    if (!FPDFText_GetCharBox(text_page, i, &char_left, &char_right,
-                             &char_bottom, &char_top)) {
+    std::optional<PdfRect> char_box = GetTextCharBox(text_page, i);
+    if (!char_box.has_value()) {
       break;
     }
 
-    float xmid = (char_left + char_right) / 2;
-    float ymid = (char_top + char_bottom) / 2;
-    if (rect.Contains(xmid, ymid)) {
-      if (start_char_index == -1)
+    if (rect.Contains(char_box.value().AsGfxRectF().CenterPoint())) {
+      if (start_char_index == -1) {
         start_char_index = i;
+      }
       ++cur_char_count;
     } else if (start_char_index != -1) {
       break;
