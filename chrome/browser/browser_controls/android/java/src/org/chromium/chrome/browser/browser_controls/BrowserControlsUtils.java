@@ -4,11 +4,24 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import android.content.Context;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Static utilities related to browser controls interfaces. */
 @NullMarked
 public class BrowserControlsUtils {
+
+    // Disallow top browser controls from scrolling off on large tablets by setting min height
+    // equal to overall height.
+    // TODO(https://crbug.com/436900619): Converge on and implement long-term solution.
+    public static boolean doSyncMinHeightWithTotalHeight(Context context) {
+        return ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(context);
+    }
+
     /**
      * @return True if the browser controls are completely off screen.
      */

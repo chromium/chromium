@@ -182,6 +182,8 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // implemented.
   feature_overrides.EnableFeature(
       chrome::android::kLockTopControlsOnLargeTablets);
+  feature_overrides.EnableFeature(
+      chrome::android::kLockTopControlsOnLargeTabletsV2);
   // TODO(crbug.com/445446479): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(

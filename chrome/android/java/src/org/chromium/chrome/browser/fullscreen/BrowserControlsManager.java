@@ -51,7 +51,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.BrowserControlsOffsetTagConstraints;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OffsetTagConstraints;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -1354,12 +1353,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
     }
 
-    // Disallow top browser controls from scrolling off on large tablets by setting min height
-    // equal to overall height.
-    // TODO(https://crbug.com/436900619): Converge on and implement long-term solution.
     private boolean doSyncMinHeightWithTotalHeight() {
-        return ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mActivity);
+        // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
+        if (ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) return false;
+
+        return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);
     }
 
     @NullUnmarked

@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -53,6 +51,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -174,6 +173,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
@@ -361,6 +361,7 @@ public class RootUiCoordinator
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final ExclusiveAccessManager mExclusiveAccessManager;
     private final PageZoomManager mPageZoomManager;
+    private @Nullable AppHeaderObserver mAppHeaderObserver;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -606,6 +607,28 @@ public class RootUiCoordinator
         } else {
             mExclusiveAccessManager = null;
         }
+
+        if (ChromeFeatureList.sLockTopControlsOnLargeTabletsV2.isEnabled()) {
+
+            if (DeviceInfo.isDesktop()
+                    || BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity)) {
+                mTopControlsStacker.setScrollingDisabled(true);
+            } else if (mDesktopWindowStateManager != null) {
+                mAppHeaderObserver =
+                        new AppHeaderObserver() {
+                            @Override
+                            public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+                                mTopControlsStacker.setScrollingDisabled(isInDesktopWindow);
+                            }
+                        };
+                mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
+                var appHeaderState = mDesktopWindowStateManager.getAppHeaderState();
+                if (appHeaderState != null) {
+                    mAppHeaderObserver.onDesktopWindowingModeChanged(
+                            appHeaderState.isInDesktopWindow());
+                }
+            }
+        }
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -821,7 +844,11 @@ public class RootUiCoordinator
         mBottomControlsStacker.destroy();
         mTopControlsStacker.destroy();
 
-        if (mDesktopWindowStateManager != null && VERSION.SDK_INT >= VERSION_CODES.R) {
+        if (mDesktopWindowStateManager != null) {
+            if (mAppHeaderObserver != null) {
+                mDesktopWindowStateManager.removeObserver(mAppHeaderObserver);
+                mAppHeaderObserver = null;
+            }
             mDesktopWindowStateManager.destroy();
             mDesktopWindowStateManager = null;
         }
