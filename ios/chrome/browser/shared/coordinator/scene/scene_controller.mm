@@ -2264,8 +2264,7 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.completion];
 }
 
-- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint
-                                   URL:(const GURL&)url {
+- (void)showAccountMenuFromWebWithURL:(const GURL&)url {
   if (![self isTabAvailableToPresentViewController]) {
     return;
   }

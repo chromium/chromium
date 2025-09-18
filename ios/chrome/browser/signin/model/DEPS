@@ -5,7 +5,6 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_tracker_service.h",
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
   "+components/trusted_vault",
-  "+ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/browser_state/model/constants.h",

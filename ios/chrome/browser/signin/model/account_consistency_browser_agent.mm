@@ -11,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -187,7 +186,5 @@ bool AccountConsistencyBrowserAgent::ShouldShowAccountMenu() const {
 
 void AccountConsistencyBrowserAgent::ShowAccountMenu(const GURL& url) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
-  [application_handler_
-      showAccountMenuFromAccessPoint:AccountMenuAccessPoint::kWeb
-                                 URL:url];
+  [application_handler_ showAccountMenuFromWebWithURL:url];
 }
