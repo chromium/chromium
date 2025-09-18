@@ -27,6 +27,7 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -51,6 +52,8 @@ import org.chromium.ui.test.util.DeviceRestriction;
 // multi-display mode with Chrome not running in an adjacent window.
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @EnableFeatures({ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES})
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class UmaActivityObserverTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
