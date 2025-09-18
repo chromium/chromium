@@ -33,42 +33,42 @@ TEST(ContextualTaskTest, AddAndRemoveUrl) {
   EXPECT_EQ(0u, task.GetUrls().size());
 }
 
-TEST(ContextualTaskTest, AddChat) {
+TEST(ContextualTaskTest, AddThread) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
 
-  task.AddChat(type, server_id, title);
-  EXPECT_TRUE(task.GetChat().has_value());
-  EXPECT_EQ(task.GetChat()->type, type);
-  EXPECT_EQ(task.GetChat()->server_id, server_id);
-  EXPECT_EQ(task.GetChat()->title, title);
+  task.AddThread(type, server_id, title);
+  EXPECT_TRUE(task.GetThread().has_value());
+  EXPECT_EQ(task.GetThread()->type, type);
+  EXPECT_EQ(task.GetThread()->server_id, server_id);
+  EXPECT_EQ(task.GetThread()->title, title);
 
   std::string server_id_2 = "server_id_2";
   std::string title_2 = "foo_2";
-  task.AddChat(type, server_id_2, title_2);
-  EXPECT_TRUE(task.GetChat().has_value());
-  EXPECT_EQ(task.GetChat()->type, type);
-  EXPECT_EQ(task.GetChat()->server_id, server_id_2);
-  EXPECT_EQ(task.GetChat()->title, title_2);
+  task.AddThread(type, server_id_2, title_2);
+  EXPECT_TRUE(task.GetThread().has_value());
+  EXPECT_EQ(task.GetThread()->type, type);
+  EXPECT_EQ(task.GetThread()->server_id, server_id_2);
+  EXPECT_EQ(task.GetThread()->title, title_2);
 }
 
-TEST(ContextualTaskTest, RemoveChat) {
+TEST(ContextualTaskTest, RemoveThread) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id);
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
 
-  task.AddChat(type, server_id, "foo");
-  EXPECT_TRUE(task.GetChat().has_value());
+  task.AddThread(type, server_id, "foo");
+  EXPECT_TRUE(task.GetThread().has_value());
 
-  task.RemoveChat(type, "wrong_server_id");
-  EXPECT_TRUE(task.GetChat().has_value());
+  task.RemoveThread(type, "wrong_server_id");
+  EXPECT_TRUE(task.GetThread().has_value());
 
-  task.RemoveChat(type, server_id);
-  EXPECT_FALSE(task.GetChat().has_value());
+  task.RemoveThread(type, server_id);
+  EXPECT_FALSE(task.GetThread().has_value());
 }
 
 TEST(ContextualTaskTest, AddAndRemoveSessionId) {

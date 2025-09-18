@@ -31,16 +31,14 @@ class ContextualTasksService : public KeyedService {
   virtual void DeleteTask(const base::Uuid& task_id) = 0;
 
   // Methods related to server-side conversations.
-  // When assigning a server ID to a task_id that does not have a registered
+  // When assigning a thread to a task_id that does not have a registered
   // task, the ContextualTask is created on the fly. We do not automatically
-  // create tasks when removing server IDs.
-  virtual void AssignServerIdToTask(const base::Uuid& task_id,
-                                    ChatType type,
-                                    const std::string& server_id,
-                                    const std::string& title) = 0;
-  virtual void RemoveServerIdFromTask(const base::Uuid& task_id,
-                                      ChatType type,
-                                      const std::string& server_id) = 0;
+  // create tasks when removing threads.
+  virtual void AddThreadToTask(const base::Uuid& task_id,
+                               const Thread& thread) = 0;
+  virtual void RemoveThreadFromTask(const base::Uuid& task_id,
+                                    ThreadType type,
+                                    const std::string& server_id) = 0;
 
   // Methods related to attaching URLs to tasks.
   virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;

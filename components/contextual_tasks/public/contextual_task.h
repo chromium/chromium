@@ -14,20 +14,22 @@
 
 namespace contextual_tasks {
 
-enum class ChatType {
+enum class ThreadType {
   kAiMode,
 };
 
 // Represents a server-side conversation that is part of a `ContextualTask`.
-struct Chat {
-  Chat(ChatType type, const std::string& server_id, const std::string& title);
-  ~Chat();
+struct Thread {
+  Thread(ThreadType type,
+         const std::string& server_id,
+         const std::string& title);
+  ~Thread();
 
   // The type of conversation.
-  ChatType type;
+  ThreadType type;
   // The server-side ID of the conversation.
   std::string server_id;
-  // Title of the chat that will be displayed to user.
+  // Title of the thread that will be displayed to user.
   std::string title;
 };
 
@@ -47,17 +49,17 @@ class ContextualTask {
   // Returns the unique ID of the task.
   const base::Uuid& GetTaskId() const;
 
-  // Adds the server-side conversation to the task. If a task already has a chat
-  // attached to it, it will be overwritten.
-  void AddChat(ChatType type,
-               const std::string& server_id,
-               const std::string& title);
+  // Adds the server-side conversation to the task. If a task already has a
+  // thread attached to it, it will be overwritten.
+  void AddThread(ThreadType type,
+                 const std::string& server_id,
+                 const std::string& title);
 
   // Removes the server-side conversation from the task.
-  void RemoveChat(ChatType type, const std::string& server_id);
+  void RemoveThread(ThreadType type, const std::string& server_id);
 
   // Returns the server-side conversation associated with the task.
-  std::optional<Chat> GetChat() const;
+  std::optional<Thread> GetThread() const;
 
   // Adds a URL to the task. If the URL already exists, this method does
   // nothing.
@@ -84,8 +86,8 @@ class ContextualTask {
   base::Uuid task_id_;
 
   // The server-side conversation associated with the task.
-  // When we persist this, we need to ensure we support up to N Chats.
-  std::optional<Chat> chat_;
+  // When we persist this, we need to ensure we support up to N Threads.
+  std::optional<Thread> thread_;
 
   // URLs relevant to the task.
   std::vector<GURL> urls_;

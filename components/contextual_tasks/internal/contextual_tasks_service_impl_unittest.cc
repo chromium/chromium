@@ -100,34 +100,34 @@ TEST_F(ContextualTasksServiceImplTest, GetTasks_Empty) {
   EXPECT_TRUE(tasks.empty());
 }
 
-TEST_F(ContextualTasksServiceImplTest, AssignServerIdToTask) {
+TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
   ContextualTask task = service_.CreateTask();
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
 
-  service_.AssignServerIdToTask(task.GetTaskId(), type, server_id, title);
+  service_.AddThreadToTask(task.GetTaskId(), Thread(type, server_id, title));
 
   std::optional<ContextualTask> result = service_.GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
-  std::optional<Chat> chat = result->GetChat();
-  ASSERT_TRUE(chat.has_value());
-  EXPECT_EQ(server_id, chat->server_id);
-  EXPECT_EQ(type, chat->type);
-  EXPECT_EQ(title, chat->title);
+  std::optional<Thread> thread = result->GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(server_id, thread->server_id);
+  EXPECT_EQ(type, thread->type);
+  EXPECT_EQ(title, thread->title);
 }
 
-TEST_F(ContextualTasksServiceImplTest, AssignAndRemoveServerId_MultipleTasks) {
+TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
   ContextualTask task1 = service_.CreateTask();
   ContextualTask task2 = service_.CreateTask();
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id1 = "server_id1";
   std::string server_id2 = "server_id2";
   std::string title1 = "foo1";
   std::string title2 = "foo2";
 
-  service_.AssignServerIdToTask(task1.GetTaskId(), type, server_id1, title1);
-  service_.AssignServerIdToTask(task2.GetTaskId(), type, server_id2, title2);
+  service_.AddThreadToTask(task1.GetTaskId(), Thread(type, server_id1, title1));
+  service_.AddThreadToTask(task2.GetTaskId(), Thread(type, server_id2, title2));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(2u, tasks.size());
@@ -137,17 +137,17 @@ TEST_F(ContextualTasksServiceImplTest, AssignAndRemoveServerId_MultipleTasks) {
   ContextualTask result_task2 =
       tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
 
-  std::optional<Chat> chat1 = result_task1.GetChat();
-  ASSERT_TRUE(chat1.has_value());
-  EXPECT_EQ(server_id1, chat1->server_id);
-  EXPECT_EQ(title1, chat1->title);
+  std::optional<Thread> thread1 = result_task1.GetThread();
+  ASSERT_TRUE(thread1.has_value());
+  EXPECT_EQ(server_id1, thread1->server_id);
+  EXPECT_EQ(title1, thread1->title);
 
-  std::optional<Chat> chat2 = result_task2.GetChat();
-  ASSERT_TRUE(chat2.has_value());
-  EXPECT_EQ(server_id2, chat2->server_id);
-  EXPECT_EQ(title2, chat2->title);
+  std::optional<Thread> thread2 = result_task2.GetThread();
+  ASSERT_TRUE(thread2.has_value());
+  EXPECT_EQ(server_id2, thread2->server_id);
+  EXPECT_EQ(title2, thread2->title);
 
-  service_.RemoveServerIdFromTask(task1.GetTaskId(), type, server_id1);
+  service_.RemoveThreadFromTask(task1.GetTaskId(), type, server_id1);
   tasks = service_.GetTasks();
   ASSERT_EQ(2u, tasks.size());
 
@@ -156,50 +156,50 @@ TEST_F(ContextualTasksServiceImplTest, AssignAndRemoveServerId_MultipleTasks) {
   result_task2 =
       tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
 
-  EXPECT_FALSE(result_task1.GetChat().has_value());
-  EXPECT_TRUE(result_task2.GetChat().has_value());
+  EXPECT_FALSE(result_task1.GetThread().has_value());
+  EXPECT_TRUE(result_task2.GetThread().has_value());
 }
 
-TEST_F(ContextualTasksServiceImplTest, RemoveServerIdFromTask) {
+TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
   ContextualTask task = service_.CreateTask();
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
 
-  service_.AssignServerIdToTask(task.GetTaskId(), type, server_id, title);
+  service_.AddThreadToTask(task.GetTaskId(), Thread(type, server_id, title));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
-  EXPECT_TRUE(tasks[0].GetChat().has_value());
+  EXPECT_TRUE(tasks[0].GetThread().has_value());
 
-  service_.RemoveServerIdFromTask(task.GetTaskId(), type, server_id);
+  service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
-  EXPECT_FALSE(tasks[0].GetChat().has_value());
+  EXPECT_FALSE(tasks[0].GetThread().has_value());
 
   // Calling remove again should be a no-op and not crash.
-  service_.RemoveServerIdFromTask(task.GetTaskId(), type, server_id);
+  service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
-  EXPECT_FALSE(tasks[0].GetChat().has_value());
+  EXPECT_FALSE(tasks[0].GetThread().has_value());
 }
 
-TEST_F(ContextualTasksServiceImplTest, AssignServerIdToTask_TaskDoesNotExist) {
+TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  ChatType type = ChatType::kAiMode;
+  ThreadType type = ThreadType::kAiMode;
   std::string server_id = "server_id";
   std::string title = "foo";
 
-  service_.AssignServerIdToTask(task_id, type, server_id, title);
+  service_.AddThreadToTask(task_id, Thread(type, server_id, title));
 
   std::vector<ContextualTask> tasks = service_.GetTasks();
   ASSERT_EQ(1u, tasks.size());
   EXPECT_EQ(task_id, tasks[0].GetTaskId());
-  std::optional<Chat> chat = tasks[0].GetChat();
-  ASSERT_TRUE(chat.has_value());
-  EXPECT_EQ(server_id, chat->server_id);
-  EXPECT_EQ(type, chat->type);
-  EXPECT_EQ(title, chat->title);
+  std::optional<Thread> thread = tasks[0].GetThread();
+  ASSERT_TRUE(thread.has_value());
+  EXPECT_EQ(server_id, thread->server_id);
+  EXPECT_EQ(type, thread->type);
+  EXPECT_EQ(title, thread->title);
 }
 
 TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {

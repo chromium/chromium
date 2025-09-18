@@ -27,13 +27,11 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
       const base::Uuid& task_id) const override;
   std::vector<ContextualTask> GetTasks() const override;
   void DeleteTask(const base::Uuid& task_id) override;
-  void AssignServerIdToTask(const base::Uuid& task_id,
-                            ChatType type,
-                            const std::string& server_id,
-                            const std::string& title) override;
-  void RemoveServerIdFromTask(const base::Uuid& task_id,
-                              ChatType type,
-                              const std::string& server_id) override;
+  void AddThreadToTask(const base::Uuid& task_id,
+                       const Thread& thread) override;
+  void RemoveThreadFromTask(const base::Uuid& task_id,
+                            ThreadType type,
+                            const std::string& server_id) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
   void AttachSessionIdToTask(const base::Uuid& task_id,
