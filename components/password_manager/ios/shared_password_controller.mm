@@ -22,6 +22,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/not_fatal_until.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -75,11 +76,13 @@
 using autofill::AutofillManager;
 using autofill::AutofillManagerObserverBridge;
 using autofill::FieldDataManager;
+using autofill::FieldGlobalId;
 using autofill::FieldRendererId;
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
 using autofill::FormGlobalId;
 using autofill::FormRendererId;
+using autofill::LocalFrameToken;
 using autofill::PasswordFormGenerationData;
 using autofill::password_generation::LogPasswordGenerationEvent;
 using autofill::password_generation::PasswordGenerationType;
@@ -152,6 +155,16 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                    : AcceptedGeneratedPasswordSourceType::kSuggestion;
 }
 
+// Returns a LocalFrameToken that uniquely identifies the `frame`. Returns an
+// empty token if it can't be constructed (i.e. because the frame id isn't of
+// the right length).
+autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
+  CHECK(frame);
+  return std::optional<autofill::LocalFrameToken>(
+             autofill::DeserializeJavaScriptFrameId(frame->GetFrameId()))
+      .value_or(autofill::LocalFrameToken());
+}
+
 }  // namespace
 
 @interface SharedPasswordController ()
@@ -160,7 +173,7 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
 @property(nonatomic, readonly) PasswordSuggestionHelper* suggestionHelper;
 
 // Tracks field when current password was generated.
-@property(nonatomic) FieldRendererId passwordGeneratedIdentifier;
+@property(nonatomic) FieldGlobalId passwordGeneratedIdentifier;
 
 - (BOOL)IsOffTheRecord;
 
@@ -519,7 +532,7 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
   SCOPED_CRASH_KEY_BOOL("Bug40072712", "spc_isPwdGen",
                         self.isPasswordGenerated);
   SCOPED_CRASH_KEY_NUMBER("Bug40072712", "spc_pwdGenId",
-                          self.passwordGeneratedIdentifier.value());
+                          self.passwordGeneratedIdentifier.renderer_id.value());
 
   DCHECK_EQ(_webState, webState);
   if (!webState->GetLastCommittedURLIfTrusted()) {
@@ -556,7 +569,8 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
   if (self.isPasswordGenerated &&
       ([formQuery.type isEqualToString:@"input"] ||
        [formQuery.type isEqualToString:@"keyup"]) &&
-      formQuery.fieldRendererID == self.passwordGeneratedIdentifier) {
+      self.passwordGeneratedIdentifier ==
+          FieldGlobalId{GetLocalFrameToken(frame), formQuery.fieldRendererID}) {
     // On other platforms, when the user clicks on generation field, we show
     // password in clear text. And the user has the possibility to edit it. On
     // iOS, it's harder to do (it's probably bad idea to change field type from
@@ -566,7 +580,7 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
       self.isPasswordGenerated = NO;
       LogPasswordGenerationEvent(
           autofill::password_generation::PASSWORD_DELETED);
-      self.passwordGeneratedIdentifier = FieldRendererId();
+      self.passwordGeneratedIdentifier = FieldGlobalId();
       _passwordManager->OnPasswordNoLongerGenerated();
     } else {
       // Inject updated value to possibly update confirmation field.
@@ -1138,7 +1152,8 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                                    inFrame:frame
                          completionHandler:passwordPresaved];
   self.isPasswordGenerated = YES;
-  self.passwordGeneratedIdentifier = newPasswordUniqueId;
+  self.passwordGeneratedIdentifier = {GetLocalFrameToken(frame),
+                                      newPasswordUniqueId};
 }
 
 - (void)presaveGeneratedPassword:(NSString*)generatedPassword
