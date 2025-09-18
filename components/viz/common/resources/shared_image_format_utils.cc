@@ -388,6 +388,11 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
 gfx::BufferFormat
 SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
     SharedImageFormat format) {
+  if (!HasEquivalentBufferFormat(format)) {
+    DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
+    return gfx::BufferFormat::RGBA_8888;
+  }
+
   if (format.is_single_plane()) {
     return SinglePlaneSharedImageFormatToBufferFormat(format);
   }
