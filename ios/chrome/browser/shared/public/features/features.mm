@@ -208,6 +208,8 @@ const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[] =
     "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox";
 const char kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito[] =
     "kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito";
+const char kNTPMIAEntrypointParamAIMInQuickActions[] =
+    "kNTPMIAEntrypointParamAIMInQuickActions";
 
 // Feature flag to change the MIA entrypoint in NTP.
 BASE_FEATURE(kNTPMIAEntrypoint,

@@ -31,7 +31,10 @@ enum class NTPMIAEntrypointVariation {
   // The entrypoint is shown inside the enlarged fake omnibox without incognito
   // shortcut.
   kEnlargedFakeboxNoIncognito = 4,
-  kMaxValue = kEnlargedFakeboxNoIncognito,
+  // The entrypoint is shown as a quick actions button, with enlarged fake
+  // omnibox
+  kAIMInQuickAction = 5,
+  kMaxValue = kAIMInQuickAction,
 };
 
 #pragma mark - Feature declarations
