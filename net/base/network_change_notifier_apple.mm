@@ -263,7 +263,7 @@ NetworkChangeNotifierApple::CalculateConnectionType(
                               CTRadioAccessTechnologyeHRPD, nil];
     NSSet<NSString*>* technologies_4g =
         [NSSet setWithObjects:CTRadioAccessTechnologyLTE, nil];
-    // TODO: Use constants from CoreTelephony once Cronet builds with XCode 12.1
+    // TODO: Use constants from CoreTelephony once Cronet builds with Xcode 12.1
     NSSet<NSString*>* technologies_5g =
         [NSSet setWithObjects:@"CTRadioAccessTechnologyNRNSA",
                               @"CTRadioAccessTechnologyNR", nil];

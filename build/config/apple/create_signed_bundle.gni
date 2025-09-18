@@ -94,7 +94,7 @@ apple_mobile_xcode_xcuitest_bundle_id =
 #       test target.
 #
 #   xcode_product_bundle_id:
-#       (optional) string, the bundle ID that will be added in the XCode
+#       (optional) string, the bundle ID that will be added in the Xcode
 #       attributes to enable some features when debugging (e.g. MetricKit).
 #
 #   primary_info_plist:

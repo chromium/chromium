@@ -3,20 +3,20 @@
 Adding, removing, and renaming files in iOS Chromium needs to follow a specific
 procedure that will be unfamiliar to engineers coming from other iOS projects.
 Conceptually, every file is recorded in _four_ locations: the local filesystem,
-git, the `BUILD.gn` files, and the XCode projects. Of these, the XCode project
+git, the `BUILD.gn` files, and the Xcode projects. Of these, the Xcode project
 is wholly generated from the others.
 
 [TOC]
 
 ## Overview
 
-**Do not use XCode to manipulate files.** The XCode project used for iOS
+**Do not use Xcode to manipulate files.** The Xcode project used for iOS
 Chromium is _generated_; it's functionally a build artifact. The various
-`BUILD.gn` files in Chromium define structure of the XCode project file. Running
+`BUILD.gn` files in Chromium define structure of the Xcode project file. Running
 `gclient runhooks` causes the project files to be regenerated.
 
-Individual files can have their contents edited within XCode, and all of the
-regular testing and debugging activities can be done within XCode. It just can't
+Individual files can have their contents edited within Xcode, and all of the
+regular testing and debugging activities can be done within Xcode. It just can't
 be used to create files, rename files, delete files, or manipulate the project
 group structure in any way. To do these things, follow the procedures below.
 
@@ -34,7 +34,7 @@ of any kind), the following general steps need to happen:
 1.  The new files need to be added to a target in a `BUILD.gn` file (usually in
     the same directory as the newly added file).
 
-1.  The XCode project needs to be regenerated.
+1.  The Xcode project needs to be regenerated.
 
 For adding new header or implementation files, the following procedure is
 recommended:
@@ -51,12 +51,12 @@ recommended:
     `BUILD.gn` file. Note that `gn format` (which is run as part of `git cl
     format`) will take care of alphabetizing the lists along with other
     formatting, so there's no need to manually do these things. (`BUILD.gn`
-    files cand be edited directly in XCode, or in another editor such as `vi`).
+    files cand be edited directly in Xcode, or in another editor such as `vi`).
 
 4.  Once all of the files have been created, `add`ed and all `BUILD.gn` files
-    have been updated, run `gclient runhooks` to regenerate all XCode projects.
+    have been updated, run `gclient runhooks` to regenerate all Xcode projects.
 
-5.  If XCode is open, it may prompt to "Autocreate Schemes". If so, click on the
+5.  If Xcode is open, it may prompt to "Autocreate Schemes". If so, click on the
     highlighted "Automatically Create Schemes" button.
 
 In the shell, this procedure would look like this:
@@ -69,7 +69,7 @@ $ tools/boilerplate.py ios/chrome/browser/some_feature/feature_class_unittest.mm
 $ git add ios/chrome/browser/some_feature/feature_class*
 // Step 3 -- edit the BUILD.gn file in the editor of your choice
 $ vi ios/chrome/browser/some_feature/BUILD.gn
-// Step 4 -- regenerate the XCode Projects
+// Step 4 -- regenerate the Xcode Projects
 $ gclient runhooks
 ```
 
@@ -92,10 +92,10 @@ To add asset files, follow this procedure:
     all assets into a new or existing `group()` declaration with a `public_deps`
     list containing all of the `imageset` targets.
 
-1.  Regenerate the XCode project with `gclient runhooks`.
+1.  Regenerate the Xcode project with `gclient runhooks`.
 
 To add Markdown documentation files, the procedure is much simpler. These files
-are automatically added to the XCode project without `BUILD.gn` entries, and
+are automatically added to the Xcode project without `BUILD.gn` entries, and
 they have no required boilerplate. So adding new docs is as simple as:
 
 1.  Create a new `.md` file in the appropriate directory (`docs/ios`, for
@@ -103,14 +103,14 @@ they have no required boilerplate. So adding new docs is as simple as:
 
 1. `git add` the file.
 
-The newly added file will be visible in XCode after the next `gclient runhooks`.
+The newly added file will be visible in Xcode after the next `gclient runhooks`.
 
 ## Moving and renaming files.
 
 Renaming a file involves updating the filename in all of the places where it
 exists: the file names in the filesystem, the file names in git, header guards
 in files, import declarations in files, listings in BUILD.gn files, and
-internally in the XCode project. As with adding a file, different tools are used
+internally in the Xcode project. As with adding a file, different tools are used
 for each of these. Unlike creating a file, which starts with actually adding a
 file to the filesystem, a rename starts with updating git (via `git mv`), then
 using the `mass-rename` tool to update file contents.
@@ -141,13 +141,13 @@ The step-by-step procedure for a rename is:
     in both the file system and in git, and in most places where it's used in
     code.
 
-1.  Run `gclient runhooks` to update the XCode project. Check that all of the
+1.  Run `gclient runhooks` to update the Xcode project. Check that all of the
     needed name changes have been made (for example, by building all targets).
     Make any other needed fixes.
 
 1.  If any classes or other symbols need to be renamed (remember that the name
     of the primary interface in each file must match the file name), make those
-    changes. Find-and-replace tools like `tools/git/mffr.py` or XCode's
+    changes. Find-and-replace tools like `tools/git/mffr.py` or Xcode's
     Find/Replace can help here, but there are no compiler-aware tools that can
     do a "smart" rename.
 
@@ -158,7 +158,7 @@ performed using the same steps as a rename. However, while `mass-rename.py` (and
 thus `move_source_file.py`) will update existing file names in `BUILD.gn` files,
 it won't move entries from one `BUILD.gn` file to another. To move files to a
 different directory, the preceding procedure is used, but between steps 2 and 3
-(after moving the files, but before regenerating the XCode project), the old
+(after moving the files, but before regenerating the Xcode project), the old
 filenames will need to be removed from the `BUILD.gn` files in the old
 directories and added to the `BUILD.gn` files in the new directories.
 
@@ -188,8 +188,8 @@ Step-by step:
 
 1.  Manually remove the `BUILD.gn` entries for the files.
 
-1.  Regenerate the XCode project (with `gclient runhooks`) to remove the files
-    from XCode.
+1.  Regenerate the Xcode project (with `gclient runhooks`) to remove the files
+    from Xcode.
 
 ## Finally.
 
@@ -204,7 +204,7 @@ adds, renames, moves, or deletes files, be sure to take the following steps:
     rules (for example: `gn check -C out/Debug-iphonesimulator/`).
 
 1.  Build all targets, to make sure that everything has been added, changed, or
-    removed correctly. This can be done by selecting the "All" target in XCode
+    removed correctly. This can be done by selecting the "All" target in Xcode
     and building (`⌘-B`), or from the command line (for example, `autoninja -C
     out/Debug-iphonesimulator/`).
 
@@ -212,14 +212,14 @@ Changes that involve adding or deleting more than a few files, and most renames
 of any size, should be in a single CL with no other changes, for ease of
 reviewing and (if necessary) reverting or cherry-picking.
 
-## Recovering from accidental XCode Project usage.
+## Recovering from accidental Xcode Project usage.
 
-If files are accidentally added, renamed, or moved through XCode, other settings
-in the XCode project may be changed that will introduce strange local build
+If files are accidentally added, renamed, or moved through Xcode, other settings
+in the Xcode project may be changed that will introduce strange local build
 failures. In this case, take the following steps to recover.
 
-1. Quit XCode.
+1. Quit Xcode.
 
-1. Delete all generated XCode projects and associated files: `rm -rf out/build`.
+1. Delete all generated Xcode projects and associated files: `rm -rf out/build`.
 
-1. Regenerate all XCode projects: `gclient runhooks`.
+1. Regenerate all Xcode projects: `gclient runhooks`.

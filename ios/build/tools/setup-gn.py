@@ -396,7 +396,7 @@ def Main(args):
       help='name of the generated Xcode project (default: %(default)s)')
   parser.add_argument(
       '--no-xcode-project', action='store_true', default=False,
-      help='do not generate the build directory with XCode project')
+      help='do not generate the build directory with Xcode project')
   args = parser.parse_args(args)
 
   # Load configuration (first global and then any user overrides).

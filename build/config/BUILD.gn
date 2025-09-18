@@ -143,7 +143,7 @@ config("release") {
 
   if (is_ios) {
     # Disable NSAssert and GTMDevAssert (from Google Toolbox for Mac). This
-    # follows XCode's default behavior for Release builds.
+    # follows Xcode's default behavior for Release builds.
     defines += [ "NS_BLOCK_ASSERTIONS=1" ]
   }
 }

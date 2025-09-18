@@ -173,11 +173,11 @@ _ENUMERATE_DISABLED_TESTS_OUTPUT = """
 }
 """
 
-class XCodebuildRunnerTest(test_runner_test.TestCase):
+class XcodebuildRunnerTest(test_runner_test.TestCase):
   """Test case to test xcodebuild_runner."""
 
   def setUp(self):
-    super(XCodebuildRunnerTest, self).setUp()
+    super(XcodebuildRunnerTest, self).setUp()
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: ['any_egtests.xctest'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
@@ -204,7 +204,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(xcode_util, 'using_xcode_16_or_higher', lambda: False)
 
   def tearDown(self):
-    super(XCodebuildRunnerTest, self).tearDown()
+    super(XcodebuildRunnerTest, self).tearDown()
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def testLaunchCommand_restartCrashed1stAttempt(self, mock_collect_results):

@@ -53,7 +53,7 @@ void PrintUsage() {
 const int kExitSuccess = EXIT_SUCCESS;
 const int kExitInvalidArguments = 2;
 
-// As of XCode 16.2, passing --console causes `xcode simctl launch` to block
+// As of Xcode 16.2, passing --console causes `xcode simctl launch` to block
 // indefinitely if there is stderr output longer than 8192 bytes (e.g. a long
 // stack trace if a (D)CHECK is hit).
 // Apple's documentation is very vague about the differences between --console

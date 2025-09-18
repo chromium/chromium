@@ -12,7 +12,7 @@ Description:
 This directory contains a stock lcov-1.10 with the following changes:
 
 - Added bin/mcov, an assembly script derived from lcov which is
- particularly useful for dealing with Mac XCode build paths.
+ particularly useful for dealing with Mac Xcode build paths.
 - Added LICENSE file which symlinks to COPYING
 
 N.B.: This code will not be shipped with Chrome.

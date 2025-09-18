@@ -221,7 +221,7 @@ std::string HistogramPrefix(bool include_mismatch) {
                      measurementByConvertingToUnit:NSUnitDuration.milliseconds]
                      .doubleValue;
     // DCHECKS that resolution is less than 10ms.
-    // Note: Real paylods use 10ms resolution but the simulated payload in XCode
+    // Note: Real paylods use 10ms resolution but the simulated payload in Xcode
     // uses 100ms resolution so it will trigger this DCHECK.
     DCHECK_LE(end - start, 10);
     double sample = (end + start) / 2;

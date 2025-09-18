@@ -86,7 +86,7 @@ If you get compiler errors in `WebKitLegacy.framework/PrivateHeaders/WebView.h`,
 you can just edit
 `obj/ios/third_party/webkit/ios/Debug-iphonesimulator/WebKit.framework/Headers/WebKitLegacy.h`
 and remove the import of `WebKitLegacy/WebKit.h`. It's not actually needed, and
-the SDK shipped with XCode doesn't include the WebKitLegacy framework too.
+the SDK shipped with Xcode doesn't include the WebKitLegacy framework too.
 
 ## Running against locally-built libraries
 

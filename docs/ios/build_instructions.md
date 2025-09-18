@@ -470,7 +470,7 @@ hooks as needed.
 
 ## Tips, tricks, and troubleshooting
 
-Remember that the XCode project you interact with while working on Chromium is a
+Remember that the Xcode project you interact with while working on Chromium is a
 build artifact, generated from the `BUILD.gn` files. Do not use it to add new
 files; instead see the procedures for [working with
 files](working_with_files.md).

@@ -390,15 +390,15 @@ your friend. Here are some basic errors which have workarounds:
 ### Mac (not working)
 
 1.  Install cmake if you don't already have it
-1.  Install XCode
-1.  Copy libclang.dylib from XCode to the SublimeClang/internals folder:
+1.  Install Xcode
+1.  Copy libclang.dylib from Xcode to the SublimeClang/internals folder:
 
     ```shell
     cd ~/Library/Application\ Support/Sublime\ Text\ 3/Packages
     git clone --recursive https://github.com/quarnster/SublimeClang SublimeClang
     cd SublimeClang
     cp /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib internals/libclang.dylib
-    # Remove i386 from the build file since XCode's libclang.dylib is only a 64-bit version
+    # Remove i386 from the build file since Xcode's libclang.dylib is only a 64-bit version
     sed -ie 's/CMAKE_OSX_ARCHITECTURES i386 x86_64/CMAKE_OSX_ARCHITECTURES x86_64/' src/CMakeLists.txt
     # Copy libclang.dylib to the internals dir
     # Make the project - should be really quick, since libclang.dylib is already built
