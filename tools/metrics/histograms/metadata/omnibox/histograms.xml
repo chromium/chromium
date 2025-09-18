@@ -2381,6 +2381,49 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.OpenMatchWithKeyboardModifiers"
+    enum="OpenMatchWithKeyboardModifiers" expires_after="2026-03-15">
+  <owner>manukh@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records what keyboard modifiers were used to alter the way the match opens.
+    E.g. &quot;alt+return&quot; to open the match in a new foreground tab.
+
+    Recorded once each time the user presses &quot;return&quot; in the omnibox.
+
+    Recorded when the user presses &quot;return&quot; to open a match. The
+    keyboard modifiers do affect how the match is opened.
+
+    Recorded when the user presses &quot;return&quot; to open a pedal. The
+    keyboard modifiers sometimes affect how the pedal is opened, but sometimes
+    don't; e.g. modifiers don't affect the &quot;open incognito window&quot;
+    pedal.
+
+    Recorded when the user presses &quot;return&quot; to activate the
+    &quot;switch to tab&quot; chip. The keyboard modifiers do not affect how tab
+    switch behaves.
+
+    Recorded when the user presses &quot;return&quot; on a match that does not
+    navigate or perform an action (e.g. empty keyword inputs, instant keyword
+    matches, or null match). The keyboard modifiers do not have an effect.
+
+    Not recorded when the user mouse clicks or gestures to open a match. The
+    keyboard modifiers do not affect how the match is opened.
+
+    Does not record modifiers ignored in determining match opening. E.g.,
+    &quot;option+return&quot; and &quot;option+command+return&quot; both open
+    the match in a new foreground tab and both record the same value. This case
+    of ignored modifiers only occurs on mac with the (&quot;option+return&quot;
+    and &quot;option+command+return&quot;) pair and their +shift and +ctrl
+    variants.
+
+    This metric uses the key names used in the code rather than the names used
+    commonly on each OS. E.g. linux's &quot;super&quot; is coded as
+    &quot;command&quot; in chrome. The user pressing &quot;super+return&quot;
+    will log &quot;command+return&quot; instead.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.PaintTime" units="ms" expires_after="2026-01-18">
   <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>

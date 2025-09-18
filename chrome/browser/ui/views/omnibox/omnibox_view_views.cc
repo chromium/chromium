@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -212,6 +213,28 @@ void LogOmniboxFocusToCutOrCopyAllTextTime(
         elapsed);
   }
 }
+
+const char kOpenMatchWithKeyboardModifiersMetricName[] =
+    "Omnibox.OpenMatchWithKeyboardModifiers";
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OpenMatchWithKeyboardModifiers)
+enum class OpenMatchWithKeyboardModifiers {
+  kNoModifier = 0,
+  kCtrl = 1,
+  kAlt = 2,
+  kCtrlAlt = 3,
+  kShiftCommand = 4,
+  kCtrlShiftCommand = 5,
+  kAltShift = 6,
+  kCtrlAltShift = 7,
+  kCommand = 8,
+  kCtrlCommand = 9,
+  kShift = 10,
+  kCtrlShift = 11,
+  kMaxValue = kCtrlShift,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OpenMatchWithKeyboardModifiers)
 
 }  // namespace
 
@@ -1013,10 +1036,11 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
   if (model()->GetPopupSelection().state ==
-          OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
+      OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
     friendly_suggestion_text_ =
         model()->GetPopupAccessibilityLabelForAimButton();
-  } else if (model()->GetPopupSelection().line == OmniboxPopupSelection::kNoMatch) {
+  } else if (model()->GetPopupSelection().line ==
+             OmniboxPopupSelection::kNoMatch) {
     // If nothing is selected in the popup, we are in the no-default-match edge
     // case, and |match| is a synthetically generated match. In that case,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
@@ -1867,13 +1891,34 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   switch (event.key_code()) {
     case ui::VKEY_RETURN: {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
-      if ((alt && !shift) || (shift && command)) {
+      OpenMatchWithKeyboardModifiers metric_value;
+      if (alt && !shift) {
+        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAlt
+                               : OpenMatchWithKeyboardModifiers::kAlt;
         disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      } else if (alt || command) {
+      } else if (shift && command) {
+        metric_value = control
+                           ? OpenMatchWithKeyboardModifiers::kCtrlShiftCommand
+                           : OpenMatchWithKeyboardModifiers::kShiftCommand;
+        disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      } else if (alt && shift) {
+        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlAltShift
+                               : OpenMatchWithKeyboardModifiers::kAltShift;
         disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-      } else if (shift) {
+      } else if (command && !shift) {
+        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlCommand
+                               : OpenMatchWithKeyboardModifiers::kCommand;
+        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      } else if (shift && !alt) {
+        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrlShift
+                               : OpenMatchWithKeyboardModifiers::kShift;
         disposition = WindowOpenDisposition::NEW_WINDOW;
+      } else {
+        metric_value = control ? OpenMatchWithKeyboardModifiers::kCtrl
+                               : OpenMatchWithKeyboardModifiers::kNoModifier;
       }
+      base::UmaHistogramEnumeration(kOpenMatchWithKeyboardModifiersMetricName,
+                                    metric_value);
       if (model()->PopupIsOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
         model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
@@ -2317,7 +2362,7 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
     return;
   }
   bool dse_placeholder_installed = model()->keyword_placeholder().empty() &&
-      !ShouldInstallAimPlaceholderText();
+                                   !ShouldInstallAimPlaceholderText();
   set_placeholder_text_color(GetColorProvider()->GetColor(
       dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
@@ -2331,7 +2376,8 @@ bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
   // If the hint text is hidden or the AIM button is not visible, the
   // placeholder text is not shown.
   if (omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
-          .hide_aim_hint_text || !AimButtonVisible()) {
+          .hide_aim_hint_text ||
+      !AimButtonVisible()) {
     return false;
   }
   // The placeholder text should only be shown when the omnibox is visibly
@@ -2341,9 +2387,11 @@ bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
   bool ntp_open = !model()->PopupIsOpen() && !model()->user_input_in_progress();
   bool hide_text_on_ntp_open =
       omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
-          .hide_aim_hint_text_on_ntp_open && ntp_open;
+          .hide_aim_hint_text_on_ntp_open &&
+      ntp_open;
   return model()->is_caret_visible() && !model()->is_keyword_selected() &&
-      !model()->GetPopupSelection().IsButtonFocused() && !hide_text_on_ntp_open;
+         !model()->GetPopupSelection().IsButtonFocused() &&
+         !hide_text_on_ntp_open;
 }
 
 BEGIN_METADATA(OmniboxViewViews)

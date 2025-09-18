@@ -199,6 +199,25 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Shortcut text prefix"/>
 </enum>
 
+<!-- LINT.IfChange(OpenMatchWithKeyboardModifiers) -->
+
+<enum name="OpenMatchWithKeyboardModifiers">
+  <int value="0" label="No modifier"/>
+  <int value="1" label="Ctrl"/>
+  <int value="2" label="Alt"/>
+  <int value="3" label="Ctrl+Alt"/>
+  <int value="4" label="Shift+Command"/>
+  <int value="5" label="Ctrl+Shift+Command"/>
+  <int value="6" label="Alt+Shift"/>
+  <int value="7" label="Ctrl+Alt+Shift"/>
+  <int value="8" label="Command"/>
+  <int value="9" label="Ctrl+Command"/>
+  <int value="10" label="Shift"/>
+  <int value="11" label="Ctrl+Shift"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/omnibox/omnibox_view_views.cc:OpenMatchWithKeyboardModifiers) -->
+
 <!-- LINT.IfChange(PaywallSignal) -->
 
 <enum name="PaywallSignal">
