@@ -272,6 +272,9 @@
   E_CPONLY(kColorNewTabPageComposeboxFileChipText) \
   E_CPONLY(kColorNewTabPageComposeboxPdfChipIcon) \
   E_CPONLY(kColorNewTabPageComposeboxFileImageOverlay) \
+  E_CPONLY(kColorNewTabPageComposeboxFileCarouselDivider) \
+  E_CPONLY(kColorNewTabPageComposeboxContextEntrypointTextDisabled) \
+  E_CPONLY(kColorNewTabPageComposeboxContextEntrypointHoverBackground) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
   E_CPONLY(kColorNewTabPageFirstRunBackground) \

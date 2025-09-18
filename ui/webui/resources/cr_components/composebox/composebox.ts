@@ -102,10 +102,6 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      hideFileInputs_: {
-        reflect: true,
-        type: Boolean,
-      },
       result_: {type: Object},
       submitEnabled_: {
         reflect: true,
@@ -145,6 +141,10 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
       },
       smartComposeInlineHint_: {type: String},
+      showFileCarousel_ : {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -169,7 +169,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor enableImageContextualSuggestions_: boolean =
       loadTimeData.getBoolean('composeboxShowImageSuggest');
   // When enabled, the file input buttons will not be rendered.
-  protected accessor hideFileInputs_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
   protected accessor submitting_: boolean = false;
   protected accessor submitEnabled_: boolean = false;
@@ -181,6 +180,7 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getString('searchboxComposePlaceholder');
   protected accessor composeboxShowPdfUpload_: boolean =
       loadTimeData.getBoolean('composeboxShowPdfUpload');
+  protected accessor showFileCarousel_: boolean = false;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private maxFileCount_: number =
@@ -314,6 +314,7 @@ export class ComposeboxElement extends I18nMixinLit
     if (changedPrivateProperties.has('files_')) {
       this.inputsDisabled_ = this.files_.size >= this.maxFileCount_;
       this.submitEnabled_ = this.submitEnabled_ || this.files_.size > 0;
+      this.showFileCarousel_ = this.files_.size > 0;
     }
 
     // When the result initially gets set check if dropdown should show.

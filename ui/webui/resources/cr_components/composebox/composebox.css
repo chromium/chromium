@@ -200,8 +200,9 @@
 }
 
 #carousel {
-  padding-inline-start: var(--text-input-left-spacing);
-  padding-bottom: 12px;
+  padding-inline-start: var(--text-input-inline-start-spacing);
+  margin-bottom: 12px;
+  margin-top: 13px;
 }
 
 #textContainer {
@@ -605,4 +606,14 @@ ntp-composebox-dropdown {
   margin-top: 38px;
   position: absolute;
   transform: translate(-50%);
+}
+
+.carousel-divider {
+  border-radius: 100px;
+  border-top: 1.5px solid
+    var(--color-new-tab-page-composebox-file-carousel-divider);
+  margin-inline-end: 16px;
+  margin-inline-start: var(--text-input-inline-start-spacing);
+  margin-top: 8px;
+  padding-bottom: 10px;
 }

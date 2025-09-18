@@ -306,16 +306,20 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
       dark_mode ? SkColorSetRGB(0x56, 0x59, 0x5E)
                 : SkColorSetRGB(0xAD, 0xAF, 0xB8)};
   mixer[kColorNewTabPageComposeboxFileChipBackground] = {
-      dark_mode ? SkColorSetRGB(0x2A, 0x2B, 0x36)
-                : SkColorSetRGB(0xE1, 0xE3, 0xE8)};
+      SkColorSetRGB(0xED, 0xF2, 0xFA)};
   mixer[kColorNewTabPageComposeboxFileChipText] = {
-      dark_mode ? SkColorSetRGB(0xE6, 0xE8, 0xF0)
-                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
+      SkColorSetRGB(0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageComposeboxPdfChipIcon] = {
       dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
                 : SkColorSetRGB(0x56, 0x59, 0x5E)};
   mixer[kColorNewTabPageComposeboxFileImageOverlay] = {
       SkColorSetARGB(0x99, 0x00, 0x00, 0x00)};
+  mixer[kColorNewTabPageComposeboxFileCarouselDivider] = {
+      SkColorSetRGB(0xD3, 0xE3, 0xFD)};
+  mixer[kColorNewTabPageComposeboxContextEntrypointTextDisabled] = {
+      SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorNewTabPageComposeboxContextEntrypointHoverBackground] = {
+      SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageComposeboxErrorScrimBackground] = {
       ui::kColorSysStateScrim};
   mixer[kColorNewTabPageComposeboxErrorScrimButtonBackground] = {

@@ -169,7 +169,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   async function uploadFileAndVerify(token: Object, file: File) {
     // Assert no files.
-    assertEquals(composeboxElement.$.carousel.files.length, 0);
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
 
     handler.setResultFor(ADD_FILE_CONTEXT_FN, Promise.resolve({token: token}));
 
@@ -240,7 +240,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Check submit button disabled and files empty.
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
-    assertEquals(composeboxElement.$.carousel.files.length, 0);
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
 
     // Close composebox.
     const whenCloseComposebox =
@@ -402,8 +402,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert no files uploaded or rendered on the carousel
     assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
-    const files = composeboxElement.$.carousel.files;
-    assertEquals(files.length, 0);
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
     assertEquals(
         1,
         metrics.count(
@@ -429,8 +428,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert no files uploaded or rendered on the carousel
     assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
-    const files = composeboxElement.$.carousel.files;
-    assertEquals(files.length, 0);
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
     assertEquals(
         1,
         metrics.count(
@@ -464,8 +462,7 @@ suite('NewTabPageComposeboxTest', () => {
           await callbackRouterRemote.$.flushForTesting();
 
           // Assert no files in the carousel.
-          const files = composeboxElement.$.carousel.files;
-          assertEquals(files.length, 0);
+          assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
         });
   });
 
@@ -476,7 +473,7 @@ suite('NewTabPageComposeboxTest', () => {
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Assert no files.
-    assertEquals(composeboxElement.$.carousel.files.length, 0);
+    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
 
     // Arrange.
     const dataTransfer = new DataTransfer();
@@ -1101,7 +1098,7 @@ suite('NewTabPageComposeboxTest', () => {
           Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
       // Assert no files.
-      assertEquals(composeboxElement.$.carousel.files.length, 0);
+      assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
 
       const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
       assertTrue(!!contextMenuButton);
