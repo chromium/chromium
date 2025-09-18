@@ -2148,6 +2148,44 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
 }
 
+TEST_P(PaintLayerScrollableAreaTest,
+       OverscrollBehaviorWithOverflowHiddenUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=scroller style="overflow: hidden; width: 300px; height: 300px; overscroll-behavior: contain;">
+      <div id=content style="width: 200px; height: 200px;"></div>
+    </div>
+  )HTML");
+
+  mojom::WebFeature feature =
+      WebFeature::kOverscrollBehaviorOnNonScrollableScrollContainer;
+  mojom::WebFeature feature_with_hidden =
+      WebFeature::kOverscrollBehaviorWithOverflowHidden;
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  GetDocument().ClearUseCounterForTesting(feature);
+  GetDocument().ClearUseCounterForTesting(feature_with_hidden);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  auto* scroller = GetElementById("scroller");
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehavior,
+                                   CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehavior,
+                                   CSSValueID::kContain);
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflowX,
+                                   CSSValueID::kHidden);
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflowY,
+                                   CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
+}
+
 class PaintLayerScrollableAreaWithWebFrameTest : public ::testing::Test {
  public:
   void SetUp() override { web_view_helper_.Initialize(); }

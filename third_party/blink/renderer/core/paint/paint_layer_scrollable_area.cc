@@ -2578,6 +2578,11 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
     UseCounter::Count(
         GetLayoutBox()->GetDocument(),
         WebFeature::kOverscrollBehaviorOnNonScrollableScrollContainer);
+    if (GetLayoutBox()->StyleRef().OverflowX() == EOverflow::kHidden &&
+        GetLayoutBox()->StyleRef().OverflowY() == EOverflow::kHidden) {
+      UseCounter::Count(GetLayoutBox()->GetDocument(),
+                        WebFeature::kOverscrollBehaviorWithOverflowHidden);
+    }
   }
 
   if (did_scroll_overflow == ScrollsOverflow())
