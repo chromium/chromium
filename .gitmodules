@@ -96,10 +96,6 @@
 	path = ios/third_party/motion_transitioning_objc/src
 	url = https://chromium.googlesource.com/external/github.com/material-motion/motion-transitioning-objc
 	gclient-condition = checkout_ios
-[submodule "ios/third_party/ochamcrest/src"]
-	path = ios/third_party/ochamcrest/src
-	url = https://chromium.googlesource.com/external/github.com/hamcrest/OCHamcrest
-	gclient-condition = checkout_ios
 [submodule "ios/third_party/webkit/src"]
 	path = ios/third_party/webkit/src
 	url = https://chromium.googlesource.com/external/github.com/WebKit/webkit
