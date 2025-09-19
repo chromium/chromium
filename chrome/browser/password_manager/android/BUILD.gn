@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/jni_zero/jni_zero.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
   sources = [ "chromesync_status_code.h" ]
@@ -627,7 +627,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-fuzzable_proto_library("unified_password_manager_proto") {
+proto_library("unified_password_manager_proto") {
   sources = [
     "protos/list_affiliated_passwords_result.proto",
     "protos/list_passwords_result.proto",
