@@ -2276,7 +2276,7 @@ static_library("browser") {
     "//components/metrics:net",
     "//components/metrics:ui",
     "//components/metrics/demographics",
-    "//components/metrics/dwa",
+    "//components/metrics/private_metrics",
     "//components/metrics/structured",
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:structured_metrics_validator",

@@ -34,8 +34,8 @@ source_set("storage_access_api") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/guest_view/buildflags",
-    "//components/metrics/dwa",
     "//components/metrics/dwa:dwa_builders",
+    "//components/metrics/private_metrics",
     "//content/public/browser",
     "//services/network/public/mojom",
   ]

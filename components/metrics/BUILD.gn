@@ -414,7 +414,7 @@ if (!is_cronet_build) {
       public_deps = [ ":metrics" ]
       deps = [
         "//base",
-        "//components/metrics/dwa",
+        "//components/metrics/private_metrics",
         "//content/public/browser",
         "//extensions/buildflags",
         "//gpu/config",
@@ -641,7 +641,7 @@ if (!is_cronet_build) {
       "//build:branding_buildflags",
       "//components/component_updater:test_support",
       "//components/encrypted_messages:encrypted_message_proto",
-      "//components/metrics/dwa",
+      "//components/metrics/private_metrics",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/network_time:network_time_test_support",
       "//components/prefs:test_support",

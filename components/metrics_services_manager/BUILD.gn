@@ -12,7 +12,7 @@ static_library("metrics_services_manager") {
   deps = [
     "//base",
     "//components/metrics",
-    "//components/metrics/dwa",
+    "//components/metrics/private_metrics",
     "//components/metrics/structured",
     "//components/ukm",
     "//components/variations",
