@@ -59,7 +59,10 @@ _HEADER = '''
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import("//build/config/android/config.gni")
-import("//components/optimization_guide/features.gni")
+import("//build_overrides/build.gni")
+if (build_with_chromium) {
+  import("//components/optimization_guide/features.gni")
+}
 import("//third_party/xnnpack/build_defs.gni")
 
 config("xnnpack_public_config") {
@@ -91,28 +94,30 @@ config("xnnpack_private_config") {
 '''.strip()
 
 _MAIN_TMPL = '''
-source_set("xnnpack") {
-  public = [ "src/include/xnnpack.h" ]
+if (build_with_chromium) {
+  source_set("xnnpack") {
+    public = [ "src/include/xnnpack.h" ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-  configs += [ ":xnnpack_private_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
 
-  sources = [
-  "src/include/xnnpack.h",
-  "build_identifier.c",
-%SRCS%
-  ]
+    sources = [
+    "src/include/xnnpack.h",
+    "build_identifier.c",
+  %SRCS%
+    ]
 
-  deps = xnnpack_deps + [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool",
-  ]
+    deps = xnnpack_deps + [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
 
-  public_configs = [ ":xnnpack_public_config" ]
+    public_configs = [ ":xnnpack_public_config" ]
+  }
 }
 
 # This is a target that cannot depend on //base.
@@ -148,29 +153,31 @@ if (build_with_internal_optimization_guide) {
 '''.strip()
 
 _TARGET_TMPL = '''
-source_set("%TARGET_NAME%") {
-  cflags = [
-%CFLAGS%
-  ]
-%ASMFLAGS%
-  sources = [
-    "src/include/xnnpack.h",
-%SRCS%
-  ]
+if (build_with_chromium) {
+  source_set("%TARGET_NAME%") {
+    cflags = [
+  %CFLAGS%
+    ]
+  %ASMFLAGS%
+    sources = [
+      "src/include/xnnpack.h",
+  %SRCS%
+    ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-  configs += [ ":xnnpack_private_config" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+    configs += [ ":xnnpack_private_config" ]
 
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool",
-  ]
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
 
-  public_configs = [ ":xnnpack_public_config" ]
+    public_configs = [ ":xnnpack_public_config" ]
+  }
 }
 
 # This is a target that cannot depend on //base.
@@ -456,9 +463,11 @@ def _generate_per_platform_dep_lists(
         xnnpack_standalone_deps = ',\n'.join(
             ['    ":%s_standalone"' % t for t in targets])
         deps_list += f'''
-  xnnpack_deps = [
+  if (build_with_chromium) {{
+    xnnpack_deps = [
 {xnnpack_deps}
-  ]
+    ]
+  }}
 
   if (build_with_internal_optimization_guide) {{
     xnnpack_standalone_deps = [

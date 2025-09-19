@@ -37,7 +37,10 @@
 #   conditional_deps = [ ":tflite_internal" ]
 # }
 
-import("//components/optimization_guide/features.gni")
+import("//build_overrides/build.gni")
+if (build_with_chromium) {
+  import("//components/optimization_guide/features.gni")
+}
 
 # Set of variables that are forwarded to the actual target.
 minimal_vars_to_forward_to_target = [
@@ -53,7 +56,10 @@ minimal_vars_to_forward_to_target = [
 ]
 
 declare_args() {
-  tflite_target_types = [ "" ]
+  tflite_target_types = []
+  if (build_with_chromium) {
+    tflite_target_types += [ "" ]
+  }
   if (build_with_internal_optimization_guide) {
     tflite_target_types += [ "_standalone" ]
   }

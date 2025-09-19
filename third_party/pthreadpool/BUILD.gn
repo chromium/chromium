@@ -22,46 +22,48 @@ config("pthreadpool_config") {
 }
 
 # This is a target that depends on //base.
-source_set("pthreadpool") {
-  public = [ "src/include/pthreadpool.h" ]
+if (build_with_chromium) {
+  source_set("pthreadpool") {
+    public = [ "src/include/pthreadpool.h" ]
 
-  sources = [
-    "src/src/fastpath.c",
-    "src/src/memory.c",
-    "src/src/portable-api.c",
-    "src/src/threadpool-atomics.h",
-    "src/src/threadpool-common.h",
-    "src/src/threadpool-object.h",
-    "src/src/threadpool-utils.h",
-  ]
+    sources = [
+      "src/src/fastpath.c",
+      "src/src/memory.c",
+      "src/src/portable-api.c",
+      "src/src/threadpool-atomics.h",
+      "src/src/threadpool-common.h",
+      "src/src/threadpool-object.h",
+      "src/src/threadpool-utils.h",
+    ]
 
-  # Use Chromium Jobs API.
-  sources += [ "chromium/jobs.cc" ]
+    # Use Chromium Jobs API.
+    sources += [ "chromium/jobs.cc" ]
 
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [ ":pthreadpool_config" ]
+    public_configs = [ ":pthreadpool_config" ]
 
-  deps = [
-    "//base",
-    "//third_party/fxdiv",
-  ]
-}
+    deps = [
+      "//base",
+      "//third_party/fxdiv",
+    ]
+  }
 
-test("pthreadpool_unittests") {
-  testonly = true
+  test("pthreadpool_unittests") {
+    testonly = true
 
-  sources = [ "chromium/pthreadpool_unittests.cc" ]
+    sources = [ "chromium/pthreadpool_unittests.cc" ]
 
-  public_configs = [ ":pthreadpool_config" ]
+    public_configs = [ ":pthreadpool_config" ]
 
-  deps = [
-    ":pthreadpool",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
+    deps = [
+      ":pthreadpool",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }
 
 config("pthreadpool_standalone_config") {
