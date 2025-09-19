@@ -97,6 +97,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
     history_service->GetHistoryCount(
         /*begin_time=*/time,
         /*end_time=*/time + base::Microseconds(1),
+        history::VisitQuery404sPolicy::kInclude404s,
         base::BindLambdaForTesting([&](history::HistoryCountResult result) {
           ASSERT_TRUE(result.success);
           exists = (result.count != 0);

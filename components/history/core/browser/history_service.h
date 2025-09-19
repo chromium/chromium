@@ -411,6 +411,7 @@ class HistoryService : public KeyedService,
   base::CancelableTaskTracker::TaskId GetHistoryCount(
       const base::Time& begin_time,
       const base::Time& end_time,
+      VisitQuery404sPolicy policy_for_404_visits,
       GetHistoryCountCallback callback,
       base::CancelableTaskTracker* tracker);
 

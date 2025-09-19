@@ -353,8 +353,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // [`begin_time`, `end_time`). Each URL is counted only once per day. For
   // determination of the date, timestamps are converted to dates using local
   // time.
-  HistoryCountResult GetHistoryCount(const base::Time& begin_time,
-                                     const base::Time& end_time);
+  HistoryCountResult GetHistoryCount(
+      const base::Time& begin_time,
+      const base::Time& end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Returns a collection of domain diversity metrics. Each metric is an
   // unsigned integer representing the number of unique domains (effective

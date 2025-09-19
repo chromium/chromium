@@ -2038,10 +2038,14 @@ void HistoryBackend::SetSyncTransportState(
 
 // Statistics ------------------------------------------------------------------
 
-HistoryCountResult HistoryBackend::GetHistoryCount(const Time& begin_time,
-                                                   const Time& end_time) {
+HistoryCountResult HistoryBackend::GetHistoryCount(
+    const Time& begin_time,
+    const Time& end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   int count = 0;
-  return {db_ && db_->GetHistoryCount(begin_time, end_time, &count), count};
+  return {db_ && db_->GetHistoryCount(begin_time, end_time,
+                                      policy_for_404_visits, &count),
+          count};
 }
 
 std::pair<DomainDiversityResults, DomainDiversityResults>

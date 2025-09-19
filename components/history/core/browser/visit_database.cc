@@ -1064,14 +1064,28 @@ bool VisitDatabase::GetVisibleVisitCountToHost(const GURL& url,
 
 bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
                                     const base::Time& end_time,
+                                    VisitQuery404sPolicy policy_for_404_visits,
                                     int* count) {
-  sql::Statement statement(
-      GetDB().GetCachedStatement(SQL_FROM_HERE,
-                                 "SELECT url,"
-                                 "visit_time,"
-                                 "transition "
-                                 "FROM visits "
-                                 "WHERE visit_time >= ? AND visit_time < ?"));
+  sql::Statement statement;
+  switch (policy_for_404_visits) {
+    case VisitQuery404sPolicy::kInclude404s:
+      statement.Assign(
+          GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                     "SELECT url,"
+                                     "visit_time,"
+                                     "transition "
+                                     "FROM visits "
+                                     "WHERE visit_time>=? AND visit_time<?"));
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT v.url,v.visit_time,v.transition "
+          "FROM visits v "
+          "LEFT OUTER JOIN context_annotations c ON v.id=c.visit_id "
+          "WHERE v.visit_time>=? AND v.visit_time<? "
+          "AND (c.response_code IS NULL OR c.response_code!=404)"));
+  }
 
   statement.BindTime(0, begin_time);
   statement.BindTime(1, end_time);
@@ -1079,8 +1093,9 @@ bool VisitDatabase::GetHistoryCount(const base::Time& begin_time,
   // Set of (date, url) pairs.
   std::set<std::pair<base::Time, std::string>> url_days;
   while (statement.Step()) {
-    if (!TransitionIsVisible(statement.ColumnInt(2)))
+    if (!TransitionIsVisible(statement.ColumnInt(2))) {
       continue;
+    }
     url_days.emplace(statement.ColumnTime(1).LocalMidnight(),
                      statement.ColumnString(0));
   }
@@ -1095,8 +1110,9 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
                                        base::Time* last_visit) {
   const GURL http("http://" + host);
   const GURL https("https://" + host);
-  if (!http.is_valid() || !https.is_valid())
+  if (!http.is_valid() || !https.is_valid()) {
     return false;
+  }
 
   // GetOriginSearchBounds only handles origin, so we need to query both http
   // and https versions.
@@ -1146,8 +1162,9 @@ bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
                                          base::Time end_time,
                                          base::Time* last_visit) {
   if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
-                           origin.scheme() == url::kHttpsScheme))
+                           origin.scheme() == url::kHttpsScheme)) {
     return false;
+  }
 
   std::pair<std::string, std::string> origin_bounds =
       GetOriginSearchBounds(origin.GetURL());
@@ -1185,8 +1202,9 @@ DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
                                                       base::Time begin_time,
                                                       base::Time end_time) {
   DailyVisitsResult result;
-  if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS())
+  if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS()) {
     return result;
+  }
 
   std::pair<std::string, std::string> host_bounds = GetOriginSearchBounds(host);
 
@@ -1212,8 +1230,9 @@ DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
 
   std::vector<base::Time> dates;
   while (statement.Step()) {
-    if (!TransitionIsVisible(statement.ColumnInt(1)))
+    if (!TransitionIsVisible(statement.ColumnInt(1))) {
       continue;
+    }
     ++result.total_visits;
     dates.push_back(statement.ColumnTime(0).LocalMidnight());
   }
@@ -1267,8 +1286,9 @@ void VisitDatabase::GetVisitsSource(const VisitVector& visits,
     sql.append("WHERE id IN (");
     // Append all the ids in the statement.
     for (size_t j = start_index; j < end_index; j++) {
-      if (j != start_index)
+      if (j != start_index) {
         sql.push_back(',');
+      }
       sql.append(base::NumberToString(visits[j].visit_id));
     }
     sql.append(") ORDER BY id");
@@ -1287,8 +1307,9 @@ VisitSource VisitDatabase::GetVisitSource(const VisitID visit_id) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "SELECT source FROM visit_source WHERE id=?"));
   statement.BindInt64(0, visit_id);
-  if (!statement.Step())
+  if (!statement.Step()) {
     return VisitSource::SOURCE_BROWSED;
+  }
   return VisitSourceFromInt(statement.ColumnInt(0));
 }
 
@@ -1350,8 +1371,9 @@ bool VisitDatabase::MigrateVisitsWithoutDuration() {
     // to add that field.
     if (!GetDB().Execute(
             "ALTER TABLE visits "
-            "ADD COLUMN visit_duration INTEGER DEFAULT 0 NOT NULL"))
+            "ADD COLUMN visit_duration INTEGER DEFAULT 0 NOT NULL")) {
       return false;
+    }
   }
   return true;
 }
@@ -1363,22 +1385,25 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
 
   if (!GetDB().DoesColumnExist("visits", "incremented_omnibox_typed_score")) {
     // Wrap the creation and initialization of the new column in a transaction
-    // since the value must be computed outside of SQL and iteratively updated.
+    // since the value must be computed outside of SQL and iteratively
+    // updated.
     sql::Transaction committer(&GetDB());
-    if (!committer.Begin())
+    if (!committer.Begin()) {
       return false;
+    }
 
     // Old versions don't have the incremented_omnibox_typed_score column, we
     // modify the table to add that field. We iterate through the table and
     // compute the result for each row.
     if (!GetDB().Execute("ALTER TABLE visits "
                          "ADD COLUMN incremented_omnibox_typed_score BOOLEAN "
-                         "DEFAULT FALSE NOT NULL"))
+                         "DEFAULT FALSE NOT NULL")) {
       return false;
+    }
 
     // Iterate through rows in the visits table and update each with the
-    // appropriate increment_omnibox_typed_score value. Because this column was
-    // newly added, the existing (default) value is not valid/correct.
+    // appropriate increment_omnibox_typed_score value. Because this column
+    // was newly added, the existing (default) value is not valid/correct.
     sql::Statement read(GetDB().GetUniqueStatement(
         "SELECT "
         "id,url,visit_time,from_visit,transition,segment_id,visit_duration,"
@@ -1394,8 +1419,9 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
       row.visit_duration = read.ColumnTimeDelta(6);
       // Check if the visit row is in an invalid state and if it is then
       // leave the new field as the default value.
-      if (row.visit_id == row.referring_visit)
+      if (row.visit_id == row.referring_visit) {
         continue;
+      }
       row.incremented_omnibox_typed_score =
           HistoryBackend::IsTypedIncrement(row.transition);
 
@@ -1414,11 +1440,13 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
       statement.BindBool(6, row.incremented_omnibox_typed_score);
       statement.BindInt64(7, row.visit_id);
 
-      if (!statement.Run())
+      if (!statement.Run()) {
         return false;
+      }
     }
-    if (!read.Succeeded() || !committer.Commit())
+    if (!read.Succeeded() || !committer.Commit()) {
       return false;
+    }
   }
   return true;
 }
@@ -1428,8 +1456,9 @@ bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
     NOTREACHED() << " Visits table should exist before migration";
   }
 
-  if (GetDB().DoesColumnExist("visits", "publicly_routable"))
+  if (GetDB().DoesColumnExist("visits", "publicly_routable")) {
     return true;
+  }
 
   // Old versions don't have the publicly_routable column, we modify the table
   // to add that field.
@@ -1451,8 +1480,9 @@ bool VisitDatabase::
     NOTREACHED() << " Visits table should exist before migration";
   }
 
-  if (GetDB().DoesColumnExist("visits", "opener_visit"))
+  if (GetDB().DoesColumnExist("visits", "opener_visit")) {
     return true;
+  }
 
   sql::Transaction transaction(&GetDB());
   return transaction.Begin() &&
@@ -1508,9 +1538,11 @@ bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
              "visit_duration, incremented_omnibox_typed_score, opener_visit "
              "FROM visits") &&
          GetDB().Execute(
-             "ALTER TABLE visits_tmp ADD COLUMN originator_cache_guid TEXT") &&
+             "ALTER TABLE visits_tmp ADD COLUMN originator_cache_guid "
+             "TEXT") &&
          GetDB().Execute(
-             "ALTER TABLE visits_tmp ADD COLUMN originator_visit_id INTEGER") &&
+             "ALTER TABLE visits_tmp ADD COLUMN originator_visit_id "
+             "INTEGER") &&
          GetDB().Execute("DROP TABLE visits") &&
          GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
          transaction.Commit();
@@ -1551,13 +1583,14 @@ bool VisitDatabase::VisitTableContainsAutoincrement() {
                                  "'table' AND name = 'visits'"));
 
   // visits table does not exist.
-  if (!statement.Step())
+  if (!statement.Step()) {
     return false;
+  }
 
   std::string_view urls_schema = statement.ColumnStringView(0);
   // We check if the whole schema contains "AUTOINCREMENT", since
-  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
-  // other columns could contain "AUTOINCREMENT".
+  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume
+  // no other columns could contain "AUTOINCREMENT".
   return urls_schema.find("AUTOINCREMENT") != std::string::npos;
 }
 
@@ -1586,7 +1619,8 @@ bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
     }
 
     // Note we specifically DO NOT update the existing visits that have
-    // `visit_source` == `SOURCE_SYNCED` to have `is_known_to_sync` set to true.
+    // `visit_source` == `SOURCE_SYNCED` to have `is_known_to_sync` set to
+    // true.
     //
     // This is because we don't know if the user has subsequently turned off
     // Sync, and we only want to flag this on for visits that are CURRENTLY

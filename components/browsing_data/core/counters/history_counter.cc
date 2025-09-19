@@ -73,6 +73,7 @@ void HistoryCounter::Count() {
   // kDbdRevampDesktop is launched.
   history_service_->GetHistoryCount(
       GetPeriodStart(), GetPeriodEnd(),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);

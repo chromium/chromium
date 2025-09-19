@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
@@ -107,6 +108,7 @@ int GetBrowsingHistoryEntryCount(NSError** error) {
   base::CancelableTaskTracker task_tracker;
   history_service->GetHistoryCount(
       base::Time::Min(), base::Time::Max(),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(^(history::HistoryCountResult result) {
         if (result.success) {
           count = result.count;

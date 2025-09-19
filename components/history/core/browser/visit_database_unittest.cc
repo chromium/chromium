@@ -928,7 +928,13 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_CHAIN_START |
       ui::PAGE_TRANSITION_CHAIN_END);
 
+  VisitContextAnnotations context_annotations_401;
+  context_annotations_401.on_visit = {.response_code = 401};
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+
   // Add 5 visits (3 distinct URLs) for the day before yesterday.
+  // One of the URLs has only 404 visits, and the others have non-404 visits.
   // Whether the URL was browsed on this machine or synced has no effect.
   VisitRow first_day_1(1, now, 0, standard_transition, 0, true, 0);
   first_day_1.visit_id = 1;
@@ -938,6 +944,7 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   VisitRow first_day_2(2, now, 0, standard_transition, 0, true, 0);
   first_day_2.visit_id = 2;
   AddVisit(&first_day_2, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(first_day_2.visit_id, context_annotations_401);
   now += base::Hours(1);
 
   VisitRow first_day_3(1, now, 0, standard_transition, 0, true, 0);
@@ -948,25 +955,30 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   VisitRow first_day_4(3, now, 0, standard_transition, 0, true, 0);
   first_day_4.visit_id = 4;
   AddVisit(&first_day_4, SOURCE_SYNCED);
+  AddContextAnnotationsForVisit(first_day_4.visit_id, context_annotations_404);
   now += base::Hours(1);
 
   VisitRow first_day_5(2, now, 0, standard_transition, 0, true, 0);
   first_day_5.visit_id = 5;
   AddVisit(&first_day_5, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(first_day_5.visit_id, context_annotations_401);
   now += base::Hours(1);
 
-  // Add 4 more visits for yesterday. One of them is invalid, as it's not
-  // a user-visible navigation. Of the remaining 3, only 2 are unique.
+  // Add 4 more visits for yesterday. One of them is invalid, as it's not a
+  // user-visible navigation. Of the remaining 3, only 2 are unique, and only 1
+  // of those has a non-404 visit.
   now = yesterday;
 
   VisitRow second_day_1(1, now, 0, standard_transition, 0, true, 0);
   second_day_1.visit_id = 6;
   AddVisit(&second_day_1, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(second_day_1.visit_id, context_annotations_401);
   now += base::Hours(1);
 
   VisitRow second_day_2(1, now, 0, standard_transition, 0, true, 0);
   second_day_2.visit_id = 7;
   AddVisit(&second_day_2, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(second_day_2.visit_id, context_annotations_401);
   now += base::Hours(1);
 
   VisitRow second_day_3(2, now, 0, ui::PAGE_TRANSITION_AUTO_SUBFRAME, 0, false,
@@ -978,43 +990,60 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   VisitRow second_day_4(3, now, 0, standard_transition, 0, true, 0);
   second_day_4.visit_id = 9;
   AddVisit(&second_day_4, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(second_day_4.visit_id, context_annotations_404);
   now += base::Hours(1);
 
   int result;
 
   // There were 3 distinct URLs two days ago.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday, &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday,
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(3, result);
 
+  // But only two if we exclude 404s.
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday,
+                              VisitQuery404sPolicy::kExclude404s, &result));
+  EXPECT_EQ(2, result);
+
   // For both previous days, there should be 5 per-day unique URLs.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago, today, &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, today,
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(5, result);
+
+  // But only 3 if we exclude 404s.
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, today,
+                              VisitQuery404sPolicy::kExclude404s, &result));
+  EXPECT_EQ(3, result);
 
   // Since we only have entries for the two previous days, the infinite time
   // range should yield the same result.
-  EXPECT_TRUE(GetHistoryCount(Time(), Time::Max(), &result));
+  EXPECT_TRUE(GetHistoryCount(Time(), Time::Max(),
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(5, result);
 
   // Narrowing the range to exclude `first_day_1` will still return 5,
   // because `first_day_1` is not unique.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Hours(2), today, &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Hours(2), today,
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(5, result);
 
   // Narrowing the range to exclude `second_day_4` will return 4,
   // because `second_day_4` is unique.
-  EXPECT_TRUE(
-      GetHistoryCount(two_days_ago, yesterday + base::Hours(3), &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday + base::Hours(3),
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(4, result);
 
   // Narrowing the range to exclude both `first_day_1` and `second_day_4` will
   // still return 4.
   EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Hours(2),
-                              yesterday + base::Hours(3), &result));
+                              yesterday + base::Hours(3),
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(4, result);
 
   // A range that contains no visits will return 0.
   EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Microseconds(1),
-                              two_days_ago + base::Hours(1), &result));
+                              two_days_ago + base::Hours(1),
+                              VisitQuery404sPolicy::kInclude404s, &result));
   EXPECT_EQ(0, result);
 
   // If this timezone uses DST, test the behavior on days when the time
@@ -1059,7 +1088,8 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     AddVisit(&backward_2, SOURCE_BROWSED);
 
     EXPECT_TRUE(GetHistoryCount(shift_backward,
-                                shift_backward + base::Hours(25), &result));
+                                shift_backward + base::Hours(25),
+                                VisitQuery404sPolicy::kInclude404s, &result));
     EXPECT_EQ(1, result);
   }
 
@@ -1080,7 +1110,7 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     AddVisit(&forward_2, SOURCE_BROWSED);
 
     EXPECT_TRUE(GetHistoryCount(shift_forward, shift_forward + base::Hours(24),
-                                &result));
+                                VisitQuery404sPolicy::kInclude404s, &result));
     EXPECT_EQ(2, result);
   }
 }

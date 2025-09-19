@@ -229,12 +229,13 @@ class VisitDatabase {
 
   // Gets the number of URLs as seen in chrome://history within the time
   // range [`begin_time`, `end_time`). "User-visible" is defined as in
-  // GetVisibleVisitsInRange() above, i.e. excluding redirects and subframes.
+  // `GetVisibleVisitsInRange()` above, i.e. excluding redirects and subframes.
   // Each URL is counted only once per day. For determination of the date,
-  // timestamps are converted to dates using local time. Returns false if
-  // there is a failure executing the statement. True otherwise.
+  // timestamps are converted to dates using local time. Returns false if there
+  // is a failure executing the statement. True otherwise.
   bool GetHistoryCount(const base::Time& begin_time,
                        const base::Time& end_time,
+                       VisitQuery404sPolicy policy_for_404_visits,
                        int* count);
 
   // Gets the last time any webpage on the given host was visited within the
