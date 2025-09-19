@@ -153,12 +153,44 @@ bool GetResponseFromPrefs(const PrefService* prefs,
 }  // namespace
 
 // static
+bool AimEligibilityService::GenericKillSwitchFeatureCheck(
+    const AimEligibilityService* aim_eligibility_service,
+    const base::Feature& feature) {
+  // If the generic feature is overridden to be false, return false.
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverridden(feature.name) &&
+      !base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  if (!aim_eligibility_service) {
+    return false;
+  }
+
+  // If the server eligibility is enabled, check overall eligibility alone.
+  // The service will control locale rollout so there's no need to check locale
+  // or the state of kMyFeature below.
+  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
+    return aim_eligibility_service->IsAimEligible();
+  }
+
+  // If not locally eligible, return false.
+  if (!aim_eligibility_service->IsAimLocallyEligible()) {
+    return false;
+  }
+
+  // Otherwise, check the generic entrypoint feature.
+  return base::FeatureList::IsEnabled(feature);
+}
+
+// static
 void AimEligibilityService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kResponsePrefName, "");
   registry->RegisterIntegerPref(omnibox::kAIModeSettings,
                                 kAiModeAllowedDefault);
 }
 
+// static
 bool AimEligibilityService::IsAimAllowedByPolicy(const PrefService* prefs) {
   return prefs->GetInteger(omnibox::kAIModeSettings) == kAiModeAllowedDefault;
 }
