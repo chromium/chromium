@@ -57,7 +57,11 @@ void ReaderModeDistillerPage::HandleJavaScriptResult(
     const base::Value* result) {
   switch (GetDistillerType()) {
     case dom_distiller::DistillerType::kReadability: {
-      OnDistillationDone(url, result);
+      base::Value result_as_value;
+      if (result) {
+        result_as_value = result->Clone();
+      }
+      OnDistillationDone(url, &result_as_value);
       break;
     }
     case dom_distiller::DistillerType::kDOMDistiller: {
