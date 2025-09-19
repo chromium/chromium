@@ -172,7 +172,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       self.tableView.contentSize.height +
       self.tableView.adjustedContentInset.top +
       self.tableView.adjustedContentInset.bottom;
-  self.tableView.scrollEnabled =
+  self.tableView.bounces =
       tableViewScrollableHeight > self.view.frame.size.height;
 }
 

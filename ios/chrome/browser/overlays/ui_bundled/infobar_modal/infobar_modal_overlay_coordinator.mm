@@ -14,6 +14,11 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 
+namespace {
+// The padding on top of the navigation bar.
+constexpr CGFloat kIOS26NavigationBarPadding = 10;
+}  // namespace
+
 @interface InfobarModalOverlayCoordinator () <InfobarModalPositioner>
 // The navigation controller used to display the modal view.
 @property(nonatomic) UINavigationController* modalNavController;
@@ -75,8 +80,12 @@
   } else {
     modalContentSize = [modalView sizeThatFits:CGSizeMake(width, CGFLOAT_MAX)];
   }
-  return modalContentSize.height +
-         CGRectGetHeight(self.modalNavController.navigationBar.bounds);
+  CGFloat navigationBarHeight =
+      CGRectGetHeight(self.modalNavController.navigationBar.bounds);
+  if (@available(iOS 26, *)) {
+    navigationBarHeight += kIOS26NavigationBarPadding;
+  }
+  return modalContentSize.height + navigationBarHeight;
 }
 
 #pragma mark - InfobarModalPresentationHandler
