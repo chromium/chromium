@@ -876,7 +876,6 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 }
 
 // Test dynamic origins in web accessible resources.
-// TODO(crbug.com/352267920): Move to web_accessible_resources_browsertest.cc?
 class DynamicOriginBrowserTest : public ExtensionBrowserTest {
  public:
   DynamicOriginBrowserTest() = default;
