@@ -40,8 +40,10 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   ~LensComposeboxHandler() override;
 
   // BaseComposeboxHandler:
-  void SubmitQuery(const std::string& query_text,
-                   WindowOpenDisposition disposition) override;
+  void SubmitQuery(
+      const std::string& query_text,
+      WindowOpenDisposition disposition,
+      std::map<std::string, std::string> additional_params) override;
 
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;

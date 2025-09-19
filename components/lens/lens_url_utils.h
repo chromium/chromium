@@ -6,6 +6,7 @@
 #define COMPONENTS_LENS_LENS_URL_UTILS_H_
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,8 @@ class GURL;
 
 namespace lens {
 
+// Query parameter for the search text query.
+inline constexpr char kTextQueryParameterKey[] = "q";
 // Query parameter for the payload.
 inline constexpr char kPayloadQueryParameter[] = "p";
 // Query parameter for the translate source language.
@@ -64,6 +67,11 @@ bool IsLensMWebResult(const GURL& url);
 std::string Base64EncodeRequestId(LensOverlayRequestId request_id);
 
 std::string VitQueryParamValueForMimeType(MimeType mime_type);
+
+// Returns a key-value map of all parameters in `url` except the query
+// parameter.
+std::map<std::string, std::string> GetParametersMapWithoutQuery(
+    const GURL& url);
 
 }  // namespace lens
 

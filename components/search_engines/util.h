@@ -227,7 +227,8 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 GURL GetUrlForAim(TemplateURLService* turl_service,
                   omnibox::ChromeAimEntryPoint aim_entrypoint,
                   const base::Time& query_start_time,
-                  const std::u16string& query_text = std::u16string());
+                  const std::u16string& query_text = std::u16string(),
+                  std::map<std::string, std::string> additional_params = {});
 
 // Retrieves the URL for the AIM web page if the a file was uploaded as part
 // of the input.
@@ -247,6 +248,7 @@ GURL GetUrlForMultimodalAim(
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
     const std::string& lns_surface = std::string(),
-    const std::u16string& query_text = std::u16string());
+    const std::u16string& query_text = std::u16string(),
+    std::map<std::string, std::string> additional_params = {});
 
 #endif  // COMPONENTS_SEARCH_ENGINES_UTIL_H_

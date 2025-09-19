@@ -174,4 +174,19 @@ std::string VitQueryParamValueForMimeType(MimeType mime_type) {
   return vitValue;
 }
 
+std::map<std::string, std::string> GetParametersMapWithoutQuery(
+    const GURL& url) {
+  std::map<std::string, std::string> additional_query_parameters;
+  net::QueryIterator query_iterator(url);
+  while (!query_iterator.IsAtEnd()) {
+    std::string_view key = query_iterator.GetKey();
+    if (kTextQueryParameterKey != key) {
+      additional_query_parameters.insert(std::make_pair(
+          query_iterator.GetKey(), query_iterator.GetUnescapedValue()));
+    }
+    query_iterator.Advance();
+  }
+  return additional_query_parameters;
+}
+
 }  // namespace lens

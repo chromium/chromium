@@ -136,11 +136,6 @@ GURL AddPDFScrollToParametersToUrl(
     const std::vector<std::string>& text_fragments,
     int pdf_page_number);
 
-// Returns a key-value map of all parameters in `url` except the query
-// parameter.
-std::map<std::string, std::string> GetParametersMapWithoutQuery(
-    const GURL& url);
-
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

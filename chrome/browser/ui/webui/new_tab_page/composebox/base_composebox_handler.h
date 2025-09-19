@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_BASE_COMPOSEBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_COMPOSEBOX_BASE_COMPOSEBOX_HANDLER_H_
 
+#include <map>
 #include <string>
 
 #include "ui/base/window_open_disposition_utils.h"
@@ -17,8 +18,10 @@ class BaseComposeboxHandler {
   virtual ~BaseComposeboxHandler() = default;
 
   // Submits the query with the given text and disposition.
-  virtual void SubmitQuery(const std::string& query_text,
-                           WindowOpenDisposition disposition) = 0;
+  virtual void SubmitQuery(
+      const std::string& query_text,
+      WindowOpenDisposition disposition,
+      std::map<std::string, std::string> additional_params) = 0;
 };
 
 }  // namespace composebox

@@ -4,6 +4,7 @@
 
 #ifndef COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_QUERY_CONTROLLER_H_
 #define COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_QUERY_CONTROLLER_H_
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -205,7 +206,9 @@ class ComposeboxQueryController {
 
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
-  GURL CreateAimUrl(const std::string& query_text, base::Time query_start_time);
+  GURL CreateAimUrl(const std::string& query_text,
+                    base::Time query_start_time,
+                    std::map<std::string, std::string> additional_params = {});
 
   // Observer management.
   void AddObserver(FileUploadStatusObserver* obs);

@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "third_party/skia/include/core/SkBitmap.h"
