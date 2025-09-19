@@ -224,7 +224,7 @@ void PdfCaret::MoveToChar(const PageCharacterIndex& new_index,
     return;
   }
 
-  // TODO(crbug.com/427133563): Extend selection.
+  ExtendSelection(new_index);
   SetChar(new_index);
 }
 
@@ -323,6 +323,30 @@ bool PdfCaret::StartSelection(bool move_right) const {
   }
 
   return false;
+}
+
+void PdfCaret::ExtendSelection(const PageCharacterIndex& new_index) const {
+  if (client_->GetCharCount(new_index.page_index) != 0) {
+    client_->ExtendAndInvalidateSelectionByChar(new_index);
+    return;
+  }
+
+  uint32_t char_count = client_->GetCharCount(index_.page_index);
+  if (char_count == 0) {
+    // Moving from a no-text page to another no-text page. Do nothing.
+    return;
+  }
+
+  // When moving to a no-text page, select the remaining text on the original
+  // page.
+  const bool move_right = index_ < new_index;
+  PageCharacterIndex end_index = {index_.page_index,
+                                  move_right ? char_count : 0};
+  if (end_index == index_) {
+    // `end_index` is already part of the selection.
+    return;
+  }
+  client_->ExtendAndInvalidateSelectionByChar(end_index);
 }
 
 bool PdfCaret::WillCaretExitPage(const PageCharacterIndex& index,

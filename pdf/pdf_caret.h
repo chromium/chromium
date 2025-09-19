@@ -113,6 +113,12 @@ class PdfCaret {
   // depending on the direction specified by `move_right`.
   bool StartSelection(bool move_right) const;
 
+  // Extends the text selection to `new_index`. Must already be selecting text,
+  // otherwise does nothing. Never extends to a non-text page. Instead, the text
+  // selection will be extended to the end of the page of the original caret
+  // position.
+  void ExtendSelection(const PageCharacterIndex& new_index) const;
+
   // Returns whether moving the caret from `index` will cause it to exit the
   // page or not. Does not consider whether there are any adjacent pages.
   bool WillCaretExitPage(const PageCharacterIndex& index,

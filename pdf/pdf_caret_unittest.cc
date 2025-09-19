@@ -1083,9 +1083,11 @@ TEST_F(PdfCaretSelectionTest, SelectRight) {
   InitializeCaretAtChar(kTestChar0);
   caret().SetVisibility(true);
 
-  // Move right.
+  // Move right. Select char 1.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar0));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
 
@@ -1103,9 +1105,11 @@ TEST_F(PdfCaretSelectionTest, SelectLeft) {
   InitializeCaretAtChar(kTestChar2End);
   caret().SetVisibility(true);
 
-  // Move left.
+  // Move left. Select char 2.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar2End));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 2)));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
 
@@ -1123,9 +1127,25 @@ TEST_F(PdfCaretSelectionTest, SelectDown) {
   InitializeCaretAtChar(kTestChar1);
   caret().SetVisibility(true);
 
-  // Move down.
+  // Move down. Select chars 1, 2, 3, 4.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar1));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 5)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  // Move down. Select chars 5, 6, 7, 8.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 9)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  // Move down. Select char 9 'f' (end of page).
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 10)));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
 
@@ -1143,9 +1163,24 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
   InitializeCaretAtChar(kTestChar9);
   caret().SetVisibility(true);
 
-  // Move up.
+  // Move up. Select chars 8, 7, 6, 5.
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_CALL(client(), StartSelection(kTestChar9));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 5)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  // Move up. Select chars 4, 3, 2, 1.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  // Move up. Select char 0 'a' (start of page).
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar0));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
 
@@ -1155,7 +1190,7 @@ TEST_F(PdfCaretSelectionTest, SelectUp) {
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
 }
 
-TEST_F(PdfCaretSelectionTest, SelectNonTextPageToNonTextPage) {
+TEST_F(PdfCaretSelectionTest, SelectStartOnNonTextPageMoveToNonTextPage) {
   SetUpPagesWithCharCounts({0, 0});
   SetUpChar(kTestChar0, '\0', {kDefaultCaret});
   SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
@@ -1174,6 +1209,35 @@ TEST_F(PdfCaretSelectionTest, SelectNonTextPageToNonTextPage) {
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
   EXPECT_TRUE(caret().OnKeyDown(
       GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
+}
+
+TEST_F(PdfCaretSelectionTest, SelectStartOnTextPageMoveToNonTextPages) {
+  SetUpPagesWithCharCounts({1, 0, 0});
+  SetUpChar(kTestChar0, '\0', {kTestChar0ScreenRect});
+  SetUpChar({1, 0}, '\0', {gfx::Rect(10, 50, 1, 12)});
+  SetUpChar({2, 0}, '\0', {gfx::Rect(10, 100, 1, 12)});
+
+  InitializeCaretAtChar(kTestChar0);
+  caret().SetVisibility(true);
+
+  // Select page 0, char 0.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
+  EXPECT_CALL(client(), StartSelection(kTestChar0));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+
+  // Moving to multiple no-text pages should not extend selection.
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(_)).Times(0);
+
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
 }
 
 TEST_F(PdfCaretSelectionTest, SelectNonTextPage) {
@@ -1205,8 +1269,83 @@ TEST_F(PdfCaretSelectionTest, SelectStartingOnNonTextPage) {
 
   // `StartSelection()` should be called on the nearest caret position in the
   // direction of movement. In this case, it would be right of page 1, char 1.
+  constexpr PageCharacterIndex kTestPage1Char1End{1, 2};
   EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
-  EXPECT_CALL(client(), StartSelection(PageCharacterIndex(1, 2)));
+  EXPECT_CALL(client(), StartSelection(kTestPage1Char1End));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestPage1Char1End));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+}
+
+TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftDownMultiPage) {
+  SetUpMultiPageTest();
+
+  // Start at right of page 0, char 0.
+  InitializeCaretAtChar({0, 1});
+  caret().SetVisibility(true);
+
+  // Move down. Select page 1, char 0 'b'.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
+  EXPECT_CALL(client(), StartSelection(PageCharacterIndex(0, 1)));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(1, 1)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  // Move down. Select page 1, char 1 'c'. Caret should be on the no-text page.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(1, 2)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  // Move down. The selection should extend past the no-text page.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(3, 0)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+
+  // Move down. Select page 3, char 0 'd'.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(3, 1)));
+  EXPECT_TRUE(caret().OnKeyDown(
+      GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
+}
+
+TEST_F(PdfCaretSelectionTest, MoveCaretWithShiftUpMultiPage) {
+  SetUpMultiPageTest();
+
+  // Start at right of page 3, char 0 'd'.
+  InitializeCaretAtChar({3, 1});
+  caret().SetVisibility(true);
+
+  // Move up. Select page 3, char 0. Caret should be on no-text page.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
+  EXPECT_CALL(client(), StartSelection(PageCharacterIndex(3, 1)));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(3, 0)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  // Move up. The selection should extend past the no-text page.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(1, 2)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  // Move up. Select page 1, char 1 'c' and page 1, char 0 'b'.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(),
+              ExtendAndInvalidateSelectionByChar(PageCharacterIndex(0, 1)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+
+  // Move up. Select page 0, char 0 'a'.
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  EXPECT_CALL(client(), ExtendAndInvalidateSelectionByChar(kTestChar0));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateShiftKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
 }
