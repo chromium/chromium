@@ -881,7 +881,7 @@ void Channel::Delegate::OnChannelDestroyed() {}
 Channel::Channel(Delegate* delegate,
                  HandlePolicy handle_policy,
                  DispatchBufferPolicy buffer_policy)
-    : is_for_ipcz_(delegate ? delegate->IsIpczTransport() : false),
+    : is_for_ipcz_(delegate && delegate->IsIpczTransport()),
       delegate_(delegate),
       handle_policy_(handle_policy),
       read_buffer_(buffer_policy == DispatchBufferPolicy::kManaged

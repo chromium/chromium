@@ -27,7 +27,7 @@ void BindingStateBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
 }
 
 bool BindingStateBase::HasAssociatedInterfaces() const {
-  return router_ ? router_->HasAssociatedEndpoints() : false;
+  return router_ && router_->HasAssociatedEndpoints();
 }
 
 void BindingStateBase::PauseIncomingMethodCallProcessing() {
