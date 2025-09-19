@@ -13,6 +13,7 @@
 
 namespace password_manager {
 class PasswordManagerClient;
+class PasswordManagerInterface;
 }
 
 namespace actor_login {
@@ -24,6 +25,7 @@ class ActorLoginGetCredentialsHelper
   ActorLoginGetCredentialsHelper(
       const url::Origin& origin,
       password_manager::PasswordManagerClient* client,
+      password_manager::PasswordManagerInterface* password_manager,
       CredentialsOrErrorReply callback);
 
   ActorLoginGetCredentialsHelper(const ActorLoginGetCredentialsHelper&) =
@@ -39,7 +41,16 @@ class ActorLoginGetCredentialsHelper
 
   url::Origin request_origin_;
   CredentialsOrErrorReply callback_;
-  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
+  raw_ptr<password_manager::PasswordManagerInterface> password_manager_ =
+      nullptr;
+
+  std::unique_ptr<password_manager::FormFetcher> owned_form_fetcher_;
+  // The form fetcher from which credentials will be retrieved. If a
+  // `PasswordFormManager` for a sign-in form already exists, this will be a
+  // non-owning pointer to its `FormFetcher`. Otherwise, this class will own the
+  // `FormFetcher` via `owned_form_fetcher_`.
+  raw_ptr<password_manager::FormFetcher> form_fetcher_ = nullptr;
+  bool immediately_available_to_login_ = false;
 };
 
 }  // namespace actor_login

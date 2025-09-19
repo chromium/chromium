@@ -79,29 +79,6 @@ LoginStatusResult GetFillingResult(bool username_filled, bool password_filled) {
   return LoginStatusResult::kErrorNoFillableFields;
 }
 
-bool IsElementFocusable(autofill::FieldRendererId renderer_id,
-                        const autofill::FormData& form_data) {
-  auto field = std::ranges::find(form_data.fields(), renderer_id,
-                                 &autofill::FormFieldData::renderer_id);
-  CHECK(field != form_data.fields().end());
-  return field->is_focusable();
-}
-
-bool IsLoginForm(const password_manager::PasswordForm& form) {
-  const bool has_focusable_username =
-      form.HasUsernameElement() &&
-      IsElementFocusable(form.username_element_renderer_id, form.form_data);
-  const bool has_focusable_password =
-      form.HasPasswordElement() &&
-      IsElementFocusable(form.password_element_renderer_id, form.form_data);
-  const bool has_focusable_new_password =
-      form.HasNewPasswordElement() &&
-      IsElementFocusable(form.new_password_element_renderer_id, form.form_data);
-
-  return (has_focusable_username || has_focusable_password) &&
-         !has_focusable_new_password;
-}
-
 }  // namespace
 
 ActorLoginCredentialFiller::ActorLoginCredentialFiller(
@@ -141,31 +118,8 @@ void ActorLoginCredentialFiller::AttemptLogin(
   PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
   CHECK(form_cache);
 
-  PasswordFormManager* signin_form_manager = nullptr;
-  for (const auto& manager : form_cache->GetFormManagers()) {
-    if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
-            origin_)) {
-      continue;
-    }
-
-    const PasswordForm* parsed_form = manager->GetParsedObservedForm();
-    if (!parsed_form || !IsLoginForm(*parsed_form)) {
-      continue;
-    }
-
-    // Prefer filling the primary main frame form if one exists, but
-    // also prefer more recently-parsed forms.
-    if (manager->GetDriver()->IsInPrimaryMainFrame()) {
-      signin_form_manager = manager.get();
-    }
-
-    // Otherwise, store this form manager and look to see if there is a primary
-    // main frame form later.
-    if (!signin_form_manager) {
-      signin_form_manager = manager.get();
-    }
-  }
-
+  PasswordFormManager* signin_form_manager =
+      GetSigninFormManager(origin_, form_cache);
   if (!signin_form_manager) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_SIGNIN_FORM);
     std::move(callback_).Run(LoginStatusResult::kErrorNoSigninForm);

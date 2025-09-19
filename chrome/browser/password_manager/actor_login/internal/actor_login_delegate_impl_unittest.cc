@@ -116,12 +116,16 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
   }
 
   void SetUpActorCredentialFillerDeps() {
+    SetUpGetCredentialsDeps();
+    ON_CALL(mock_password_manager_, GetClient())
+        .WillByDefault(Return(&client_));
+  }
+
+  void SetUpGetCredentialsDeps() {
     ON_CALL(mock_driver_, GetPasswordManager())
         .WillByDefault(Return(&mock_password_manager_));
     ON_CALL(mock_password_manager_, GetPasswordFormCache())
         .WillByDefault(Return(&mock_form_cache_));
-    ON_CALL(mock_password_manager_, GetClient())
-        .WillByDefault(Return(&client_));
     ON_CALL(mock_form_cache_, GetFormManagers())
         .WillByDefault(Return(base::span(form_managers_)));
   }
@@ -145,6 +149,9 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
+  SetUpGetCredentialsDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
+
   base::test::TestFuture<CredentialsOrError> future;
   delegate_->GetCredentials(future.GetCallback());
 
@@ -166,6 +173,9 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
+  SetUpGetCredentialsDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
+
   // Start the first request.
   base::test::TestFuture<CredentialsOrError> first_future;
   delegate_->GetCredentials(first_future.GetCallback());
@@ -197,18 +207,10 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
 TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
-  tabs::MockTabInterface mock_tab;
   Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
-  MockPasswordManager mock_password_manager;
-  MockPasswordFormCache mock_form_cache;
-  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
-  EXPECT_CALL(mock_driver_, GetPasswordManager())
-      .WillOnce(Return(&mock_password_manager));
-  EXPECT_CALL(mock_password_manager, GetPasswordFormCache())
-      .WillOnce(Return(&mock_form_cache));
-  EXPECT_CALL(mock_form_cache, GetFormManagers())
-      .WillOnce(Return(base::span(form_managers)));
+  SetUpActorCredentialFillerDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   base::test::TestFuture<LoginStatusResultOrError> future;
   delegate_->AttemptLogin(credential, future.GetCallback());
@@ -223,6 +225,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
   Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
 
   SetUpActorCredentialFillerDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
 
   // Start the first request (`AttemptLogin`).
   base::test::TestFuture<LoginStatusResultOrError> first_future;
@@ -249,6 +252,11 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLoginServiceBusy_FeatureOn) {
 TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kActorLogin);
+  SetUpActorCredentialFillerDeps();
+  // Two calls to GetCredentials and two to AttemptLogin result
+  // in four calls to GetFormManagers.
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(4);
+
   // First `GetCredentials` call.
   base::test::TestFuture<CredentialsOrError> future1;
   delegate_->GetCredentials(future1.GetCallback());
@@ -260,8 +268,6 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   ASSERT_TRUE(future2.Get().has_value());
 
   Credential credential = CreateTestCredential(u"username", GURL(kTestUrl));
-
-  SetUpActorCredentialFillerDeps();
 
   // First `AttemptLogin` call.
   base::test::TestFuture<LoginStatusResultOrError> future3;

@@ -98,8 +98,12 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
     return;
   }
 
+  PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
+  CHECK(driver);
+
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin(), client_,
+      driver->GetPasswordManager(),
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
