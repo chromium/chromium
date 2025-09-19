@@ -147,8 +147,6 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
-  [_backgroundConfigurationMediator saveCurrentTheme];
-
   [_mainViewController dismissViewControllerAnimated:YES completion:nil];
 
   _backgroundConfigurationMediator = nil;
@@ -179,6 +177,14 @@ CGFloat const kSheetCornerRadius = 30;
   [_photoPickerCoordinator stop];
   _photoPickerCoordinator = nil;
 
+  if (_backgroundConfigurationMediator.themeHasChanged) {
+    _backgroundConfigurationMediator.backgroundSelectionOutcome =
+        BackgroundSelectionOutcome::kCanceledAfterSelection;
+  } else {
+    _backgroundConfigurationMediator.backgroundSelectionOutcome =
+        BackgroundSelectionOutcome::kCanceled;
+  }
+
   [self.presentationDelegate cancelBackgroundPicker];
 }
 
@@ -186,6 +192,11 @@ CGFloat const kSheetCornerRadius = 30;
     (HomeCustomizationBackgroundPhotoPickerCoordinator*)coordinator {
   [_photoPickerCoordinator stop];
   _photoPickerCoordinator = nil;
+
+  if (_backgroundConfigurationMediator.themeHasChanged) {
+    _backgroundConfigurationMediator.backgroundSelectionOutcome =
+        BackgroundSelectionOutcome::kApplied;
+  }
 
   [self.presentationDelegate dismissBackgroundPicker];
 }

@@ -131,4 +131,22 @@ enum class HomeCustomizationBackgroundStyle : NSInteger {
   kUserUploaded,
 };
 
+// Records the final outcome of the user's background selection flow.
+// This is logged once the user either applies a background or exits
+// the customization UI.
+enum class BackgroundSelectionOutcome : NSInteger {
+  // User selected and applied a new background.
+  kApplied,
+
+  // User opened the customization UI but closed it without
+  // ever selecting a background.
+  kCanceled,
+
+  // User selected a background, but then canceled instead of applying it.
+  kCanceledAfterSelection,
+
+  // Must be last.
+  kMaxValue = kCanceledAfterSelection,
+};
+
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

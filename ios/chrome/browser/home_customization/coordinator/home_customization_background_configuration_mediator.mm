@@ -232,17 +232,25 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)saveCurrentTheme {
-  if (self.themeHasChanged) {
-    _backgroundCustomizationService->StoreCurrentTheme();
-    self.themeHasChanged = NO;
+  if (!self.themeHasChanged) {
+    return;
   }
+
+  _backgroundCustomizationService->StoreCurrentTheme();
+  self.themeHasChanged = NO;
+  self.backgroundSelectionOutcome = BackgroundSelectionOutcome::kApplied;
 }
 
 - (void)cancelThemeSelection {
-  if (self.themeHasChanged) {
-    _backgroundCustomizationService->RestoreCurrentTheme();
-    self.themeHasChanged = NO;
+  if (!self.themeHasChanged) {
+    self.backgroundSelectionOutcome = BackgroundSelectionOutcome::kCanceled;
+    return;
   }
+
+  _backgroundCustomizationService->RestoreCurrentTheme();
+  self.themeHasChanged = NO;
+  self.backgroundSelectionOutcome =
+      BackgroundSelectionOutcome::kCanceledAfterSelection;
 }
 
 #pragma mark - HomeCustomizationBackgroundConfigurationMutator
