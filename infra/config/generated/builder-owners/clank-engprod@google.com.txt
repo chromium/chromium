@@ -54,6 +54,7 @@ ci/android-x86-code-coverage
 try/3pp-mac-arm64-packager
 try/android-10-arm64-rel
 try/android-10-x86-fyi-rel
+try/android-10-x86-nofieldtrial-rel
 try/android-10-x86-rel
 try/android-12-x64-rel
 try/android-12l-landscape-x64-dbg

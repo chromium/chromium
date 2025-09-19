@@ -111,6 +111,21 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-10-x86-nofieldtrial-rel",
+    mirrors = [
+        "ci/android-10-x86-nofieldtrial-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-10-x86-nofieldtrial-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-11-x86-rel",
     mirrors = [
         "ci/android-11-x86-rel",

@@ -553,6 +553,7 @@
   "tryserver.chromium.android": {
     "android-10-arm64-rel": "try/android-10-arm64-rel/gn-args.json",
     "android-10-x86-fyi-rel": "try/android-10-x86-fyi-rel/gn-args.json",
+    "android-10-x86-nofieldtrial-rel": "try/android-10-x86-nofieldtrial-rel/gn-args.json",
     "android-10-x86-rel": "try/android-10-x86-rel/gn-args.json",
     "android-11-x86-rel": "try/android-11-x86-rel/gn-args.json",
     "android-12-x64-dbg": "try/android-12-x64-dbg/gn-args.json",
