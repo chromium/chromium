@@ -16,6 +16,7 @@
       },
       {
         "module_name": "metrics_python_tests",
+        "module_scheme": "pyunit",
         "name": "metrics_python_tests",
         "script": "metrics_python_tests.py"
       },

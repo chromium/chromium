@@ -1786,6 +1786,7 @@ targets.tests.isolated_script_test(
 targets.tests.script_test(
     name = "metrics_python_tests",
     script = "metrics_python_tests.py",
+    module_scheme = "pyunit",
 )
 
 targets.tests.gtest_test(
