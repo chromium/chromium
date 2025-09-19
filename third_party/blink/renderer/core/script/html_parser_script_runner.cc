@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
@@ -446,6 +447,64 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
 bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
   TRACE_EVENT0("blink",
                "HTMLParserScriptRunner::executeScriptsWaitingForParsing");
+
+  // If the feature is enabled, execute scripts one at a time with event loop
+  // yields between them to prevent long tasks and improve responsiveness.
+  if (RuntimeEnabledFeatures::SeparateDeferModuleScriptTasksEnabled()) {
+    // If we're already executing scripts asynchronously, check if we have more
+    // scripts to process.
+    if (scripts_to_execute_after_parsing_.empty()) {
+      // All scripts completed, allow parsing to complete.
+      return true;
+    }
+
+    DCHECK(!IsExecutingScript());
+    DCHECK(!HasParserBlockingScript());
+    DCHECK(scripts_to_execute_after_parsing_.front()->IsExternalOrModule());
+
+    // <spec step="5.3">Remove the first script element from the list of scripts
+    // that will execute when the document has finished parsing (i.e. shift out
+    // the first entry in the list).</spec>
+    PendingScript* first =
+        TryTakeReadyScriptWaitingForParsing(&scripts_to_execute_after_parsing_);
+    if (!first) {
+      return false;
+    }
+
+    // <spec step="5.2">Execute the script element given by the first script in
+    // the list of scripts that will execute when the document has finished
+    // parsing.</spec>
+    ExecutePendingDeferredScriptAndDispatchEvent(first);
+
+    // FIXME: What is this m_document check for?
+    if (!document_) {
+      return false;
+    }
+
+    // If there are more scripts to execute, post a task to continue execution
+    // in the next iteration of the event loop, yielding control between
+    // scripts. This achieves the goal of separating script execution into
+    // individual tasks.
+    if (!scripts_to_execute_after_parsing_.empty()) {
+      document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
+          ->PostTask(FROM_HERE,
+                     blink::BindOnce(
+                         [](HTMLParserScriptRunner* runner) {
+                           // Continue execution and potentially resume parser
+                           if (runner->ExecuteScriptsWaitingForParsing()) {
+                             // If all scripts are done, need to notify parser
+                             // The parser will be resumed when it tries again
+                             runner->host_->NotifyScriptLoaded();
+                           }
+                         },
+                         WrapPersistent(this)));
+      // Return false to keep the parser paused until all scripts complete
+      return false;
+    }
+
+    // All scripts executed, allow parsing to continue
+    return true;
+  }
 
   // <spec step="5">While the list of scripts that will execute when the
   // document has finished parsing is not empty:</spec>

@@ -4511,6 +4511,14 @@
       base_feature: "none",
     },
     {
+      // Separate defer and module script execution into individual tasks
+      // to comply with HTML spec requirement to "spin the event loop" between
+      // each script execution. This prevents long tasks and improves responsiveness.
+      // https://crbug.com/40894694
+      name: "SeparateDeferModuleScriptTasks",
+      status: "experimental",
+    },
+    {
       name: "Serial",
       status: "stable",
       base_feature: "WebSerialAPI",
