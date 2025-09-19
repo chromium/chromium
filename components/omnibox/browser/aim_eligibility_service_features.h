@@ -6,16 +6,32 @@
 #define COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace omnibox {
 
+// If disabled, AIM is completely turned off (kill switch).
+BASE_DECLARE_FEATURE(kAimEnabled);
+
 // If enabled, uses the server response for AIM eligibility for all locales.
 BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
+
 // If enabled, uses the server response for AIM eligibility for English locales.
 // Has no effect if `kAimServerEligibilityEnabled` is enabled.
 BASE_DECLARE_FEATURE(kAimServerEligibilityEnabledEn);
+
 // If enabled, notifies AIM eligibility changes.
 BASE_DECLARE_FEATURE(kAimServerEligibilityChangedNotification);
+
+// If enabled, makes a server request on service startup.
+BASE_DECLARE_FEATURE(kAimServerRequestOnStartupEnabled);
+
+// If enabled, makes a server request on identity changes.
+BASE_DECLARE_FEATURE(kAimServerRequestOnIdentityChangeEnabled);
+// Parameters that control whether to make a server request on cookie jar or
+// primary account changes. Only one of these should be true.
+extern const base::FeatureParam<bool> kRequestOnCookieJarChanges;
+extern const base::FeatureParam<bool> kRequestOnPrimaryAccountChanges;
 
 }  // namespace omnibox
 

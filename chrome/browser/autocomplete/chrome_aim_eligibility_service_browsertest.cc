@@ -5,6 +5,8 @@
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -75,8 +77,19 @@ class IdentityManagerObserverHelper : public signin::IdentityManager::Observer {
     }
   }
 
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override {
+    if (!primary_account_changed_future_.IsReady()) {
+      primary_account_changed_future_.SetValue();
+    }
+  }
+
   bool WaitForAccountsInCookieUpdated() {
     return accounts_updated_future_.Wait();
+  }
+
+  bool WaitForPrimaryAccountChanged() {
+    return primary_account_changed_future_.Wait();
   }
 
  private:
@@ -84,6 +97,7 @@ class IdentityManagerObserverHelper : public signin::IdentityManager::Observer {
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   base::test::TestFuture<void> accounts_updated_future_;
+  base::test::TestFuture<void> primary_account_changed_future_;
 };
 
 // Friend class to access private members of AimEligibilityService for testing.
@@ -115,21 +129,28 @@ class ChromeAimEligibilityServiceBrowserTest
           is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
         GetParam();
 
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     // Needed for bots with field trial testing configs explicitly disabled.
     enabled_features.push_back(
-        omnibox::kAimServerEligibilityChangedNotification);
-    enabled_features.push_back(omnibox::kAimServerEligibilityEnabledEn);
+        {omnibox::kAimServerEligibilityChangedNotification, {}});
+    enabled_features.push_back({omnibox::kAimServerEligibilityEnabledEn, {}});
+    enabled_features.push_back(
+        {omnibox::kAimServerRequestOnStartupEnabled, {}});
+    enabled_features.push_back(
+        {omnibox::kAimServerRequestOnIdentityChangeEnabled,
+         {{"request_on_cookie_jar_changes", "true"},
+          {"request_on_primary_account_changes", "false"}}});
 
     if (server_eligibility_enabled_all) {
-      enabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
+      enabled_features.push_back({omnibox::kAimServerEligibilityEnabled, {}});
     } else {
       disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
     }
 
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
 
     InProcessBrowserTest::SetUp();
   }
@@ -379,6 +400,7 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
             .AsPrimary(signin::ConsentLevel::kSignin)
             .Build("test@email.com"));
     EXPECT_TRUE(identity_observer.WaitForAccountsInCookieUpdated());
+    EXPECT_TRUE(identity_observer.WaitForPrimaryAccountChanged());
 
     // Wait for the eligibility change callback to be invoked, if applicable.
     if (is_google_dse) {
@@ -402,7 +424,6 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
         expected_eligible &&
         (!server_eligibility_enabled || !is_pdf_upload_eligible);
     EXPECT_EQ(service->IsPdfUploadEligible(), expected_pdf_upload_eligible);
-
     // Verify histograms.
     if (is_google_dse) {
       // CookieChange sliced histograms.

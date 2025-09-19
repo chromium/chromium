@@ -98,7 +98,8 @@ class AimEligibilityService : public KeyedService,
   enum class RequestSource {
     kStartup = 0,
     kCookieChange = 1,
-    kMaxValue = kCookieChange,
+    kPrimaryAccountChange = 2,
+    kMaxValue = kPrimaryAccountChange,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
 
@@ -133,6 +134,8 @@ class AimEligibilityService : public KeyedService,
   void Initialize();
 
   // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
