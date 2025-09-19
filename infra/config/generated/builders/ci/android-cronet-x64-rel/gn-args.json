@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "clang_use_default_sample_profile": false,
     "dcheck_always_on": false,
     "debuggable_apks": false,
     "is_component_build": false,

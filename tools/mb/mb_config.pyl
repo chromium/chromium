@@ -837,19 +837,20 @@
       'gn_args': 'ios_code_signing_identity_description="Apple Development: Google Development"',
     },
 
-    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_android': {
       'mixins': ['cronet_common'],
-      # LINT.IfChange(cronet_android)
-      'gn_args': ('clang_use_default_sample_profile=false '),
-      # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_android)
+      # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+      # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+      # declaration so that the default value for the arg is derived from the
+      # `is_cronet_build` GN arg.
     },
 
-    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_common': {
-      # LINT.IfChange(cronet_common)
+      # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+      # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+      # declaration so that the default value for the arg is derived from the
+      # `is_cronet_build` GN arg.
       'gn_args': ('is_cronet_build=true ')
-      # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_common)
     },
 
     'custom_args': {

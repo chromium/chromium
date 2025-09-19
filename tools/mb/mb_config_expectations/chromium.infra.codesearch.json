@@ -36,7 +36,6 @@
       "android_static_analysis": "off",
       "arm_use_neon": false,
       "clang_use_chrome_plugins": false,
-      "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
       "enable_kythe_annotations": true,
       "is_clang": true,
