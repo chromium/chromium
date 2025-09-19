@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/frame/non_client_frame_view_ash.h",
+  "+ash/frame/frame_view_ash.h",
   "+ash/resources/vector_icons",
   "+ash/shell.h",
   "+chromeos/ui/base/window_properties.h",

@@ -134,7 +134,7 @@ void AppWindowFrameView::SetFrameCornerRadius(int radius) {
   SchedulePaint();
 }
 
-// views::NonClientFrameView implementation.
+// views::FrameView implementation.
 
 gfx::Rect AppWindowFrameView::GetBoundsForClientView() const {
   if (!draw_frame_ || widget_->IsFullscreen())
@@ -247,7 +247,7 @@ gfx::Size AppWindowFrameView::CalculatePreferredSize(
 }
 
 void AppWindowFrameView::Layout(PassKey) {
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<FrameView>(this);
 
   if (!draw_frame_)
     return;

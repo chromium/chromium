@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/checkbox_group.h"
 #include "ash/style/pill_button.h"

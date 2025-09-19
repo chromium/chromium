@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_compat_mode_util.h"
@@ -80,7 +80,7 @@ void CompatModeButtonController::Update(aura::Window* window) {
 
     UpdateArrowIcon(window, /*widget_visibility=*/false);
 
-    auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+    auto* const frame_view = ash::FrameViewAsh::Get(window);
     // Ideally, we want HeaderView to update properties, but as currently
     // the center button is set to FrameHeader, we need to call this explicitly.
     // |frame_view| can be null in unittest.
@@ -143,7 +143,7 @@ CompatModeButtonController::GetButtonState(const aura::Window* window) const {
 
 void CompatModeButtonController::UpdateArrowIcon(aura::Window* window,
                                                  bool widget_visibility) {
-  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  auto* const frame_view = ash::FrameViewAsh::Get(window);
   // |frame_view| can be null in unittest.
   if (!frame_view) {
     return;
@@ -163,7 +163,7 @@ void CompatModeButtonController::ShowResizeToggleMenu(
   DCHECK(ash::IsArcWindow(window))
       << "Cannot display resize toggle menu on a non-ARC window.";
 
-  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
+  auto* frame_view = ash::FrameViewAsh::Get(window);
   DCHECK(frame_view)
       << "Invalid frame view. Unable to display resize toggle menu.";
   resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
@@ -178,12 +178,12 @@ CompatModeButtonController::GetWeakPtr() {
 
 chromeos::FrameHeader* CompatModeButtonController::GetFrameHeader(
     aura::Window* window) {
-  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  auto* const frame_view = ash::FrameViewAsh::Get(window);
   return frame_view->GetHeaderView()->GetFrameHeader();
 }
 
 void CompatModeButtonController::UpdateAshAccelerator(aura::Window* window) {
-  auto* const frame_view = ash::NonClientFrameViewAsh::Get(window);
+  auto* const frame_view = ash::FrameViewAsh::Get(window);
   // |frame_view| can be null in unittest.
   if (!frame_view) {
     return;
@@ -212,7 +212,7 @@ void CompatModeButtonController::ToggleResizeToggleMenu(aura::Window* window) {
   }
   DCHECK(pref_delegate_);
 
-  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
+  auto* frame_view = ash::FrameViewAsh::Get(window);
   DCHECK(frame_view);
   const auto* compat_mode_button =
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();

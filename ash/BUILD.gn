@@ -718,7 +718,6 @@ component("ash") {
     "frame/frame_view_ash.h",
     "frame/multitask_menu_nudge_delegate_ash.cc",
     "frame/multitask_menu_nudge_delegate_ash.h",
-    "frame/non_client_frame_view_ash.h",
     "frame/snap_controller_impl.cc",
     "frame/snap_controller_impl.h",
     "frame/wide_frame_view.cc",

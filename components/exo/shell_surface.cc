@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -58,7 +58,7 @@ gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
   gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
   // Account for popup windows not having a non-client view.
   if (widget->non_client_view()) {
-    return static_cast<ash::NonClientFrameViewAsh*>(
+    return static_cast<ash::FrameViewAsh*>(
                widget->non_client_view()->frame_view())
         ->GetClientBoundsForWindowBounds(window_bounds);
   }
@@ -923,8 +923,8 @@ void ShellSurface::ShowWidget(bool activate) {
   occlusion_observer_->MaybeConfigure(root_surface()->window());
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ShellSurface::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ShellSurface::CreateNonClientFrameView(
+    views::Widget* widget) {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget->GetNativeWindow());
   window_state->SetDelegate(std::make_unique<CustomWindowStateDelegate>(this));

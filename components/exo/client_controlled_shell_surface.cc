@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/ash_constants.h"
@@ -904,7 +904,7 @@ bool ClientControlledShellSurface::CanMaximize() const {
   return can_maximize_;
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   ash::WindowState* window_state = GetWindowState();
   std::unique_ptr<ash::ClientControlledState::Delegate> delegate =
@@ -922,7 +922,7 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   auto frame_view = CreateNonClientFrameViewInternal(widget);
   immersive_fullscreen_controller_ =
       std::make_unique<chromeos::ImmersiveFullscreenController>();
-  static_cast<ash::NonClientFrameViewAsh*>(frame_view.get())
+  static_cast<ash::FrameViewAsh*>(frame_view.get())
       ->InitImmersiveFullscreenControllerForView(
           immersive_fullscreen_controller_.get());
   return frame_view;
@@ -1123,7 +1123,7 @@ gfx::Rect ClientControlledShellSurface::GetVisibleBounds() const {
 
 gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
   gfx::Rect shadow_bounds = ShellSurfaceBase::GetShadowBounds();
-  const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
+  const ash::FrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled() && !shadow_bounds_->IsEmpty() &&
       !geometry_.IsEmpty() && !frame_view->GetFrameOverlapped()) {
     // The client controlled geometry is only for the client
@@ -1150,7 +1150,7 @@ void ClientControlledShellSurface::InitializeWindowState(
       container_ == ash::kShellWindowId_ArcVirtualKeyboardContainer) {
     DisableMovement();
   }
-  ash::NonClientFrameViewAsh* frame_view = GetFrameView();
+  ash::FrameViewAsh* frame_view = GetFrameView();
   frame_view->SetCaptionButtonModel(std::make_unique<CaptionButtonModel>(
       frame_visible_button_mask_, frame_enabled_button_mask_));
   UpdateAutoHideFrame();
@@ -1194,7 +1194,7 @@ float ClientControlledShellSurface::GetScaleFactor() const {
 }
 
 std::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds() const {
-  const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
+  const ash::FrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled() && !frame_view->GetFrameOverlapped()) {
     gfx::Rect visible_bounds = GetVisibleBounds();
     if (widget_->IsMaximized() && frame_type_ == SurfaceFrameType::NORMAL) {
@@ -1531,14 +1531,13 @@ ash::WindowState* ClientControlledShellSurface::GetWindowState() {
   return ash::WindowState::Get(widget_->GetNativeWindow());
 }
 
-ash::NonClientFrameViewAsh* ClientControlledShellSurface::GetFrameView() {
-  return static_cast<ash::NonClientFrameViewAsh*>(
+ash::FrameViewAsh* ClientControlledShellSurface::GetFrameView() {
+  return static_cast<ash::FrameViewAsh*>(
       widget_->non_client_view()->frame_view());
 }
 
-const ash::NonClientFrameViewAsh* ClientControlledShellSurface::GetFrameView()
-    const {
-  return static_cast<const ash::NonClientFrameViewAsh*>(
+const ash::FrameViewAsh* ClientControlledShellSurface::GetFrameView() const {
+  return static_cast<const ash::FrameViewAsh*>(
       widget_->non_client_view()->frame_view());
 }
 

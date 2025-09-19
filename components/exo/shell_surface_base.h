@@ -298,7 +298,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   bool ShouldSaveWindowPlacement() const override;
   bool WidgetHasHitTestMask() const override;
@@ -456,8 +456,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Install custom window targeter. Used to restore window targeter.
   void InstallCustomWindowTargeter();
 
-  // Creates a NonClientFrameView for shell surface.
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameViewInternal(
+  // Creates a FrameView for shell surface.
+  std::unique_ptr<views::FrameView> CreateNonClientFrameViewInternal(
       views::Widget* widget);
 
   virtual void OnPostWidgetCommit();

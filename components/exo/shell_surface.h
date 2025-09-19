@@ -195,7 +195,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                        bool adjusted_by_server) override;
   bool OnPreWidgetCommit() override;
   void ShowWidget(bool activate) override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   void SetRootSurface(Surface* root_surface) override;
 

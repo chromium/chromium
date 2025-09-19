@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_test_util.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -2132,9 +2132,8 @@ TEST_F(ShellSurfaceTest, FrameColors) {
   shell_surface->OnSetFrameColors(SK_ColorRED, SK_ColorTRANSPARENT);
   surface->Commit();
 
-  const ash::NonClientFrameViewAsh* frame =
-      static_cast<const ash::NonClientFrameViewAsh*>(
-          shell_surface->GetWidget()->non_client_view()->frame_view());
+  const ash::FrameViewAsh* frame = static_cast<const ash::FrameViewAsh*>(
+      shell_surface->GetWidget()->non_client_view()->frame_view());
 
   // Test if colors set before initial commit are set.
   EXPECT_EQ(SK_ColorRED, frame->GetActiveFrameColorForTest());

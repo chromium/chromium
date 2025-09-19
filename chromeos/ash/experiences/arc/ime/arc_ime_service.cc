@@ -37,7 +37,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 
 namespace arc {

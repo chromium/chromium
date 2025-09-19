@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
@@ -359,7 +359,7 @@ void ArcSplashScreenDialogView::OnCloseButtonClicked() {
 
 void ArcSplashScreenDialogView::Show(aura::Window* parent,
                                      bool is_for_unresizable) {
-  auto* const frame_view = ash::NonClientFrameViewAsh::Get(parent);
+  auto* const frame_view = ash::FrameViewAsh::Get(parent);
   DCHECK(frame_view);
   auto* const anchor_view =
       frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();

@@ -5,7 +5,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -458,9 +458,8 @@ TEST_F(ClientControlledShellSurfaceTest, Frame) {
       ash::Shell::Get()->display_manager();
 
   views::Widget* widget = shell_surface->GetWidget();
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          widget->non_client_view()->frame_view());
+  ash::FrameViewAsh* frame_view =
+      static_cast<ash::FrameViewAsh*>(widget->non_client_view()->frame_view());
 
   // Normal state.
   widget->LayoutRootViewIfNecessary();
@@ -1446,9 +1445,8 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
       1 << views::CAPTION_BUTTON_ICON_MENU |
       1 << views::CAPTION_BUTTON_ICON_FLOAT;
 
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          shell_surface->GetWidget()->non_client_view()->frame_view());
+  ash::FrameViewAsh* frame_view = static_cast<ash::FrameViewAsh*>(
+      shell_surface->GetWidget()->non_client_view()->frame_view());
   chromeos::FrameCaptionButtonContainerView* container =
       static_cast<chromeos::HeaderView*>(frame_view->GetHeaderView())
           ->caption_button_container();
@@ -1509,9 +1507,8 @@ TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
   auto paint_does_draw_text = [&shell_surface]() {
     TestCanvas canvas;
     shell_surface->OnSetFrame(SurfaceFrameType::NORMAL);
-    ash::NonClientFrameViewAsh* frame_view =
-        static_cast<ash::NonClientFrameViewAsh*>(
-            shell_surface->GetWidget()->non_client_view()->frame_view());
+    ash::FrameViewAsh* frame_view = static_cast<ash::FrameViewAsh*>(
+        shell_surface->GetWidget()->non_client_view()->frame_view());
     frame_view->SetVisible(true);
     // Paint to a layer so we can pass a root PaintInfo.
     frame_view->GetHeaderView()->SetPaintToLayer();
@@ -1930,9 +1927,8 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedInTabletMode) {
   window_state->OnWMEvent(&event);
   EXPECT_EQ(window_state->GetStateType(), WindowStateType::kPrimarySnapped);
 
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          shell_surface->GetWidget()->non_client_view()->frame_view());
+  ash::FrameViewAsh* frame_view = static_cast<ash::FrameViewAsh*>(
+      shell_surface->GetWidget()->non_client_view()->frame_view());
   // Snapped window can also use auto hide.
   surface->SetFrame(SurfaceFrameType::AUTOHIDE);
   surface->Commit();
@@ -2004,9 +2000,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   ASSERT_EQ(2, delegate->bounds_change_count());
 
   // Snapped, in clamshell mode.
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          shell_surface->GetWidget()->non_client_view()->frame_view());
+  ash::FrameViewAsh* frame_view = static_cast<ash::FrameViewAsh*>(
+      shell_surface->GetWidget()->non_client_view()->frame_view());
   surface->SetFrame(SurfaceFrameType::NORMAL);
   surface->Commit();
   shell_surface->OnBoundsChangeEvent(WindowStateType::kMinimized,
@@ -2693,9 +2688,8 @@ TEST_F(ClientControlledShellSurfaceTest, FrameOverlap) {
   auto* surface = shell_surface->root_surface();
   views::Widget* widget = shell_surface->GetWidget();
   aura::Window* window = widget->GetNativeWindow();
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          widget->non_client_view()->frame_view());
+  ash::FrameViewAsh* frame_view =
+      static_cast<ash::FrameViewAsh*>(widget->non_client_view()->frame_view());
 
   // 1) Initial state, no frame (SurfaceFrameType is NONE). ClientView bounds
   // should be the same as the window bounds.

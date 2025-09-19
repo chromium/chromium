@@ -139,14 +139,14 @@ class CustomFrameView : public ash::FrameViewAsh {
     }
   }
 
-  // Overridden from views::NonClientFrameView:
+  // Overridden from views::FrameView:
   gfx::Rect GetBoundsForClientView() const override {
     if (GetFrameEnabled())
       return ash::FrameViewAsh::GetBoundsForClientView();
     return bounds();
   }
 
-  // Overridden from views::NonClientFrameView:
+  // Overridden from views::FrameView:
   void UpdateWindowRoundedCorners() override {
     if (!GetWidget()) {
       return;
@@ -1370,8 +1370,8 @@ views::ClientView* ShellSurfaceBase::CreateClientView(views::Widget* widget) {
   return new CustomClientView(widget, this);
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ShellSurfaceBase::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ShellSurfaceBase::CreateNonClientFrameView(
+    views::Widget* widget) {
   return CreateNonClientFrameViewInternal(widget);
 }
 
@@ -2238,7 +2238,7 @@ void ShellSurfaceBase::InstallCustomWindowTargeter() {
   window->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget) {
   aura::Window* window = widget_->GetNativeWindow();
   // ShellSurfaces always use immersive mode.
