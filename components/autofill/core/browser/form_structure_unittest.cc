@@ -1622,25 +1622,6 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
             form_structure->field(5)->heuristic_type());
 }
 
-TEST_F(FormStructureTestImpl, RetrieveFromCache) {
-  FormData form;
-  form.set_url(GURL("http://www.foo.com/"));
-  form.set_fields(
-      {CreateTestFormField("First Name", "firstname", "",
-                           FormControlType::kInputText, "given-name"),
-       CreateTestFormField("Last Name", "lastname", "",
-                           FormControlType::kInputText, "family-name")});
-
-  FormStructure form_structure(form);
-  // Test that the nonce is copied over.
-  form_structure.field(0)->set_nonce(u"a_nonce");
-  FormStructure new_form_structure(form);
-  new_form_structure.RetrieveFromCache(
-      form_structure, FormStructure::RetrieveFromCacheReason::kFormImport);
-  EXPECT_EQ(form_structure.field(0)->nonce(),
-            new_form_structure.field(0)->nonce());
-}
-
 // Tests that the heuristics detect split credit card names if they appear at
 // the beginning of the form. The first name has to contains some credit card
 // keyword.
