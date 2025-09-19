@@ -760,7 +760,7 @@ BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
 // - If `kRegionCaptureOfOtherTabs` is enabled, the Web application  can crop
 // video-captures of any tab (so long as that other tab collaborates by sending
 // a CropTarget).
-BASE_FEATURE(kRegionCaptureOfOtherTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRegionCaptureOfOtherTabs, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 // RenderDocument:
