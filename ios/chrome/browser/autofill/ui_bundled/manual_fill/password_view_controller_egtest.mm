@@ -155,6 +155,8 @@ void OpenPasswordManualFillView(bool has_suggestions) {
   [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
 
   // Verify the password controller table view is visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      manual_fill::PasswordTableViewMatcher()];
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -336,6 +338,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   NSString* message = l10n_util::GetNSStringF(
       IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE, origin);
 
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_text(message)];
   [[EarlGrey selectElementWithMatcher:grey_text(message)]
       assertWithMatcher:grey_notNil()];
 
@@ -582,12 +585,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the other password list can be dismissed with a swipe down.
 - (void)testClosingOtherPasswordListViaSwipeDown {
-// TODO(crbug.com/435134454): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   [self openOtherPasswords];
 
   [[EarlGrey
