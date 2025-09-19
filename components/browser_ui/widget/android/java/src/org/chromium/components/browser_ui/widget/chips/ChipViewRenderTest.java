@@ -29,7 +29,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -98,18 +98,35 @@ public class ChipViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void renderSuggestions() throws Exception {
+        // All suggestion types are rendered in the same test to minimize the number of render
+        // tests.
         // TODO: crbug.com/385172647 - Figure out why secondary text doesn't have start padding in
         // the RTL layout.
         ChipView singleLineChip =
                 new ChipView(mActivityTestRule.getActivity(), null, 0, R.style.AssistiveChip);
-        singleLineChip.getPrimaryTextView().setText("Primary text");
-        singleLineChip.getSecondaryTextView().setText("Secondary text");
-        singleLineChip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
-        singleLineChip.addRemoveIcon();
-        runOnUiThreadBlocking(
-                () -> {
-                    mContentView.addView(singleLineChip);
-                });
+        ChipView twoLineChip =
+                (ChipView)
+                        mActivityTestRule
+                                .getActivity()
+                                .getLayoutInflater()
+                                .inflate(R.layout.two_line_chip_view_test_item, null);
+
+        List<ChipView> chips = List.of(singleLineChip, twoLineChip);
+
+        for (ChipView chip : chips) {
+            chip.getPrimaryTextView().setText("Primary text");
+            chip.getSecondaryTextView().setText("Secondary text");
+            chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+            chip.addRemoveIcon();
+            runOnUiThreadBlocking(
+                    () -> {
+                        mContentView.addView(
+                                chip,
+                                new LayoutParams(
+                                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                    });
+        }
+
         mRenderTestRule.render(mContentView, "chip_views");
     }
 }

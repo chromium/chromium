@@ -21,6 +21,7 @@ found in the LICENSE file.
     <item type="id" name="app_menu_footer" />
 
     <!-- ChipView -->
+    <item type="id" name="chip_view_text_wrapper" />
     <item type="id" name="chip_view_primary_text" />
     <item type="id" name="chip_view_secondary_text" />
     <item type="id" name="chip_view_start_icon" />

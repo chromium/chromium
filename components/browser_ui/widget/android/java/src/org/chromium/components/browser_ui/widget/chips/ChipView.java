@@ -27,6 +27,8 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
@@ -43,7 +45,9 @@ import org.chromium.ui.widget.ViewRectProvider;
  * <ul>
  *   <li>A primary text to be shown.
  *   <li>An optional start icon that can be rounded as well.
- *   <li>An optional secondary text view that is shown to the right of the primary text view.
+ *   <li>An optional boolean (twoLineChip) that puts the secondary text view below the primary text
+ *       view.
+ *   <li>An optional secondary text view that is shown next to the primary text view.
  *   <li>An optional remove icon at the end, intended for use with input chips.
  *   <li>An optional boolean (solidColorChip) to remove the default chip border.
  *   <li>An optional boolean (allowMultipleLines) to avoid longer text strings to wrap to a second
@@ -58,20 +62,25 @@ public class ChipView extends LinearLayout {
 
     private static final int MAX_LINES = 2;
 
+    private static final int HORIZONTAL_TEXT_ARANGEMENT = 0;
+    private static final int VERTICAL_TEXT_ARANGEMENT = 1;
+
     private final RippleBackgroundHelper mRippleBackgroundHelper;
     private final AppCompatTextView mPrimaryText;
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
     private final @StyleRes int mSecondaryTextAppearanceId;
+    private final boolean mTextAlignStart;
     private final int mEndIconWidth;
     private final int mEndIconHeight;
     private final int mEndIconMarginStart;
     private final int mEndIconMarginEnd;
     private final int mCornerRadius;
 
-    private @Nullable ViewGroup mEndIconWrapper;
-    private @Nullable AppCompatTextView mSecondaryText;
+    private @MonotonicNonNull ViewGroup mEndIconWrapper;
+    private @MonotonicNonNull LinearLayout mTextViewsWrapper;
+    private @MonotonicNonNull AppCompatTextView mSecondaryText;
     private int mMaxWidth = Integer.MAX_VALUE;
 
     /** Constructor for applying a theme overlay. */
@@ -150,6 +159,9 @@ public class ChipView extends LinearLayout {
                         R.styleable.ChipView_iconHeight,
                         getResources().getDimensionPixelSize(R.dimen.chip_icon_size));
         mUseRoundedStartIcon = a.getBoolean(R.styleable.ChipView_useRoundedIcon, false);
+        final boolean alignTextVertically =
+                a.getInteger(R.styleable.ChipView_textArrangement, HORIZONTAL_TEXT_ARANGEMENT)
+                        == VERTICAL_TEXT_ARANGEMENT;
         int primaryTextAppearance =
                 a.getResourceId(
                         R.styleable.ChipView_primaryTextAppearance,
@@ -178,7 +190,7 @@ public class ChipView extends LinearLayout {
                         getResources()
                                 .getDimensionPixelSize(
                                         R.dimen.chip_text_multiline_vertical_padding));
-        boolean textAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
+        mTextAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
         @Px
         int textStartPadding =
                 a.getDimensionPixelSize(
@@ -234,7 +246,7 @@ public class ChipView extends LinearLayout {
                     mPrimaryText.getPaddingEnd(),
                     minMultilineVerticalTextPadding);
         }
-        if (textAlignStart) {
+        if (mTextAlignStart) {
             // Default of 'center' is defined in the ChipTextView style.
             mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
@@ -243,7 +255,14 @@ public class ChipView extends LinearLayout {
                 mPrimaryText.getPaddingTop(),
                 mPrimaryText.getPaddingEnd(),
                 mPrimaryText.getPaddingBottom());
-        addView(mPrimaryText);
+
+        if (alignTextVertically) {
+            mTextViewsWrapper = createTextViewsWrapper();
+            mTextViewsWrapper.addView(mPrimaryText);
+            addView(mTextViewsWrapper);
+        } else {
+            addView(mPrimaryText);
+        }
 
         // Reset icon and background:
         mRippleBackgroundHelper =
@@ -441,7 +460,14 @@ public class ChipView extends LinearLayout {
             // automatically once the view is part of the hierarchy.
             mSecondaryText.setSelected(isSelected());
             mSecondaryText.setEnabled(isEnabled());
-            addView(mSecondaryText);
+            if (isTwoLineChip()) {
+                if (mTextAlignStart) {
+                    mSecondaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+                }
+                mTextViewsWrapper.addView(mSecondaryText);
+            } else {
+                addView(mSecondaryText);
+            }
             updateLayoutDirection();
         }
         return mSecondaryText;
@@ -520,33 +546,70 @@ public class ChipView extends LinearLayout {
         // If the chip width exceeds the maximum allowed size, resize the contents to respect the
         // width constraint.
         if (getMeasuredWidth() > mMaxWidth) {
-            int newPrimaryTextWidth =
+            // Subtract padding and icon width first.
+            int newTextWidth =
                     mMaxWidth
                             - getPaddingLeft()
                             - getPaddingRight()
                             - ((mStartIcon != null && mStartIcon.getVisibility() != GONE)
                                     ? mStartIcon.getMeasuredWidth()
-                                    : 0)
-                            - ((mSecondaryText != null && mSecondaryText.getVisibility() != GONE)
-                                    ? mSecondaryText.getMeasuredWidth()
                                     : 0);
-            // TODO (crbug.com/1376691): The primary text must be at least a few pixels wide, else
-            // only the ellipses will be visible.
-            // If there is space for displaying the {@link mPrimaryText}, adjust it's size, and add
-            // trailing ellipses. If not, check if the secondary text exists. If it does, remove the
-            // primary text, else do not width constrain the chip. The chip should ALWAYS display
-            // some text.
-            if (newPrimaryTextWidth > 0) {
-                mPrimaryText.setMaxWidth(newPrimaryTextWidth);
+
+            if (isSingleLineChip()) {
+                // If the text views are stacked horizontally, reduce the primary text view size.
+                newTextWidth -=
+                        ((mSecondaryText != null && mSecondaryText.getVisibility() != GONE)
+                                ? mSecondaryText.getMeasuredWidth()
+                                : 0);
+            }
+
+            // TODO (crbug.com/1376691): The primary text must be at least a few pixels wide,
+            // else only the ellipses will be visible. If there is space for displaying the
+            // {@link mPrimaryText}, adjust it's size, and add trailing ellipses. If not, check
+            // if the secondary text exists. If it does, remove the primary text, else do not
+            // width constrain the chip. The chip should ALWAYS display some text.
+            if (newTextWidth > 0) {
+                mPrimaryText.setMaxWidth(newTextWidth);
                 mPrimaryText.setEllipsize(TextUtils.TruncateAt.END);
-            } else if (mSecondaryText != null && mSecondaryText.getVisibility() != GONE) {
+                if (isTwoLineChip() && mSecondaryText != null) {
+                    mSecondaryText.setMaxWidth(newTextWidth);
+                    mSecondaryText.setEllipsize(TextUtils.TruncateAt.END);
+                }
+            } else if (isSingleLineChip()
+                    && mSecondaryText != null
+                    && mSecondaryText.getVisibility() != GONE) {
+                // If the text views are stacked horizontally and the second text view is displayed,
+                // hide the primary text view.
                 mPrimaryText.setVisibility(GONE);
             } else {
                 return;
             }
+
             super.onMeasure(
                     MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
+    }
+
+    private LinearLayout createTextViewsWrapper() {
+        // The wrapper layout around the text views is created only if the text views are
+        // stacked vertically. Otherwise, they can be added to the parent layout directly to
+        // avoid crearing nested linear layouts with the same orientation.
+        LinearLayout textViewsWrapper = new LinearLayout(getContext());
+        textViewsWrapper.setId(R.id.chip_view_text_wrapper);
+        textViewsWrapper.setOrientation(LinearLayout.VERTICAL);
+        textViewsWrapper.setLayoutParams(
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        return textViewsWrapper;
+    }
+
+    @EnsuresNonNullIf("mTextViewsWrapper")
+    private boolean isTwoLineChip() {
+        return mTextViewsWrapper != null;
+    }
+
+    @EnsuresNonNullIf(value = "mTextViewsWrapper", result = false)
+    private boolean isSingleLineChip() {
+        return mTextViewsWrapper == null;
     }
 
     private void updateLayoutDirection() {

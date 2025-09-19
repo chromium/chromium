@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -78,6 +79,23 @@ public final class ChipViewTest {
         assertNotNull(secondaryText);
         assertEquals(View.VISIBLE, secondaryText.getVisibility());
         assertEquals("Secondary text", secondaryText.getText());
+    }
+
+    @Test
+    @SmallTest
+    public void setTwoLineChip() {
+        ChipView twoLineChip =
+                (ChipView)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.two_line_chip_view_test_item, null);
+        twoLineChip.getPrimaryTextView().setText("Primary text");
+        twoLineChip.getSecondaryTextView().setText("Secondary text");
+
+        LinearLayout textWrapper = twoLineChip.findViewById(R.id.chip_view_text_wrapper);
+        assertNotNull(textWrapper);
+        assertEquals(LinearLayout.VERTICAL, textWrapper.getOrientation());
+        assertEquals(2, textWrapper.getChildCount());
     }
 
     @Test

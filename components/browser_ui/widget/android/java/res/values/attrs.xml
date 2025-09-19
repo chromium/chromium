@@ -86,6 +86,10 @@ found in the LICENSE file.
 
     <declare-styleable name="ChipView">
         <attr name="allowMultipleLines" format="boolean"/>
+        <attr name="textArrangement" format="enum">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
         <attr name="solidColorChip" format="boolean"/>
         <attr name="textAlignStart" format="boolean"/>
         <attr name="chipColor" format="color"/>

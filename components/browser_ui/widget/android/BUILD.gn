@@ -474,6 +474,7 @@ android_resources("java_test_resources") {
     "test/java/res/layout/rich_radio_button_render_test.xml",
     "test/java/res/layout/touch_tracking_list_view_test.xml",
     "test/java/res/layout/touch_tracking_list_view_test_item.xml",
+    "test/java/res/layout/two_line_chip_view_test_item.xml",
     "test/java/res/values/strings.xml",
   ]
   deps = [
@@ -508,6 +509,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":java_test_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
