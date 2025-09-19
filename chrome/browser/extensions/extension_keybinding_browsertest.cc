@@ -31,10 +31,8 @@ const char kId[] = "pgoakhfeplldmjheffidklpoklkppipp";
 // test extensions use Alt+Shift+F and Alt+Shift+H.
 const char kAltShiftG[] = "Alt+Shift+G";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Named command for media key overwrite test.
 const char kMediaKeyTestCommand[] = "test_mediakeys_update";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Given an |action_type|, returns the corresponding command key.
 const char* GetCommandKeyForActionType(ActionInfo::Type action_type) {
@@ -61,9 +59,6 @@ class ActionCommandsBrowserTest
     : public CommandsBrowserTest,
       public testing::WithParamInterface<ActionInfo::Type> {};
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/404070124): Enable on desktop android. The following tests
-// need test data manifest upgrade.
 // This test validates that the getAll query API function returns registered
 // commands as well as synthesized ones and that inactive commands (like the
 // synthesized ones are in nature) have no shortcuts.
@@ -71,7 +66,6 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, SynthesizedCommand) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("keybinding/synthesized")) << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ShortcutAddedOnUpdate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -172,9 +166,6 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ShortcutChangedOnUpdate) {
   EXPECT_TRUE(accelerator.IsAltDown());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/404070124): Enable on desktop android. The following tests
-// need test data manifest upgrade.
 IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ShortcutRemovedOnUpdate) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
@@ -218,11 +209,10 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest, ShortcutRemovedOnUpdate) {
   // Verify the keybinding gets set to nothing.
   accelerator =
       command_service
-          ->FindCommandByName(kId, manifest_values::kBrowserActionCommandEvent)
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
           .accelerator();
   EXPECT_EQ(ui::VKEY_UNKNOWN, accelerator.key_code());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(CommandsBrowserTest,
                        ShortcutAddedOnUpdateAfterBeingAssignedByUser) {
@@ -333,9 +323,6 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest,
   EXPECT_TRUE(accelerator.IsAltDown());
 }
 
-// TODO(crbug.com/404070124): Enable on desktop android. The following tests
-// need test data manifest upgrade.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that Media keys do not overwrite previous settings.
 IN_PROC_BROWSER_TEST_F(
     CommandsBrowserTest,
@@ -445,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest,
 
   // Simulate the user reassigning the keybinding to Alt+Shift+G.
   command_service->UpdateKeybindingPrefs(
-      kId, manifest_values::kBrowserActionCommandEvent, kAltShiftG);
+      kId, manifest_values::kActionCommandEvent, kAltShiftG);
 
   // Update to version 2 without keybinding assigned.
   EXPECT_TRUE(UpdateExtension(kId, path_v2_unassigned, 0));
@@ -454,14 +441,13 @@ IN_PROC_BROWSER_TEST_F(CommandsBrowserTest,
   // Verify the keybinding is still set.
   accelerator =
       command_service
-          ->FindCommandByName(kId, manifest_values::kBrowserActionCommandEvent)
+          ->FindCommandByName(kId, manifest_values::kActionCommandEvent)
           .accelerator();
   EXPECT_EQ(ui::VKEY_G, accelerator.key_code());
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsShiftDown());
   EXPECT_TRUE(accelerator.IsAltDown());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // This test validates that commands.getAll() returns commands associated with
 // a registered [page/browser] action.
