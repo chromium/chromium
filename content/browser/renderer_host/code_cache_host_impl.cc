@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -23,6 +24,7 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/resource_context.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -43,6 +45,12 @@ namespace content {
 
 namespace {
 
+// The key used for the PersistentCacheCollection when a unique context cannot
+// be determined and strict site isolation is disabled. This groups entries in
+// the same way as with GeneratedCodeCache under the same conditions.
+constexpr const char kSharedContextKeyForRelaxedIsolation[] =
+    "_shared_context_for_relaxed_isolation";
+
 GeneratedCodeCache::CodeCacheType MojoCacheTypeToCodeCacheType(
     blink::mojom::CodeCacheType type) {
   switch (type) {
@@ -53,6 +61,55 @@ GeneratedCodeCache::CodeCacheType MojoCacheTypeToCodeCacheType(
     default:
       NOTREACHED();
   }
+}
+
+// Returns null where there is no usable context key and caching should not be
+// used. Returns the key to an isolated cache for locked processes and the key
+// to a shared cache for unlocked processes when under partial site isolation.
+// `secondary_key` should come from `GetSecondaryKeyForCodeCache` to make sure
+// it conforms with the security checks.
+std::optional<std::string> GetContextKeyForPersistentCacheCollection(
+    const GURL& secondary_key,
+    const net::NetworkIsolationKey& nik,
+    blink::mojom::CodeCacheType cache_type) {
+  std::string context_key = GeneratedCodeCache::GetContextKey(
+      secondary_key, nik, MojoCacheTypeToCodeCacheType(cache_type));
+
+  // Here `context_key` will contain a value for locked processes and an empty
+  // string for unlocked ones. When sites are isolated per process an empty
+  // context key means no access to the cache.
+  if (context_key.empty() &&
+      content::SiteIsolationPolicy::IsSitePerProcessOrStricter()) {
+    return std::nullopt;
+  }
+
+  // Alternatively, Android uses partial Site Isolation (i.e., some sites
+  // require dedicated processes and others do not).
+  //
+  // An empty string is not a valid context key for PersistentCacheCollection so
+  // a shared context key is used instead. This lets all unlocked processes
+  // share a context (and thus a cache) like is achieved when using
+  // GeneratedCodeCache through the implementation of `GetCacheKey()` which will
+  // construct the full cache key using only the resource URL for requests from
+  // unlocked processes.
+  //
+  // The context key returned by this function needs to enforce the "jail" and
+  // "citadel" concepts (see:
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)
+  //
+  // 1) Locked processes are "jailed" since they cannot access shared context
+  // with their non-empty context key which will never equal
+  // `kSharedContextKeyForRelaxedIsolation'.
+  // 2) The "citadel" concept is upheld
+  // because unlocked processes do not have access to data from locked processes
+  // because locked processed store their data using their specific keys and not
+  // the shared context key.
+  if (context_key.empty() &&
+      !content::SiteIsolationPolicy::IsSitePerProcessOrStricter()) {
+    return kSharedContextKeyForRelaxedIsolation;
+  }
+
+  return context_key;
 }
 
 bool CheckSecurityForAccessingCodeCacheData(
@@ -298,15 +355,16 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
 
     std::string resource_key = GeneratedCodeCache::GetResourceKey(
         url, MojoCacheTypeToCodeCacheType(cache_type));
-    std::string context_key = GeneratedCodeCache::GetContextKey(
-        secondary_key.value(), network_isolation_key_,
-        MojoCacheTypeToCodeCacheType(cache_type));
+    std::optional<std::string> context_key =
+        GetContextKeyForPersistentCacheCollection(
+            secondary_key.value(), network_isolation_key_, cache_type);
 
-    // No context key means no way to isolate per context which is not supported
-    // under PersistentCacheForCodeCache.
-    if (!context_key.empty()) {
+    // An empty context key here means the isolation requirements for caching
+    // are not met (see `GetContextKeyForPersistentCacheCollection()` for
+    // details). In this case, we intentionally do not use the cache.
+    if (context_key.has_value()) {
       generated_code_cache_context_->InsertIntoPersistentCacheCollection(
-          context_key, resource_key, std::move(data),
+          context_key.value(), resource_key, std::move(data),
           persistent_cache::EntryMetadata{
               .input_signature =
                   expected_response_time.ToDeltaSinceWindowsEpoch()
@@ -343,20 +401,21 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
 
     std::string resource_key = GeneratedCodeCache::GetResourceKey(
         url, MojoCacheTypeToCodeCacheType(cache_type));
-    std::string context_key = GeneratedCodeCache::GetContextKey(
-        secondary_key.value(), network_isolation_key_,
-        MojoCacheTypeToCodeCacheType(cache_type));
+    std::optional<std::string> context_key =
+        GetContextKeyForPersistentCacheCollection(
+            secondary_key.value(), network_isolation_key_, cache_type);
 
-    // No context key means no way to isolate per context which is not supported
-    // under PersistentCacheForCodeCache.
-    if (context_key.empty()) {
+    // An empty context key here means the isolation requirements for caching
+    // are not met (see `GetContextKeyForPersistentCacheCollection()` for
+    // details). In this case, we intentionally do not use the cache.
+    if (!context_key.has_value()) {
       std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
       return;
     }
 
     std::unique_ptr<persistent_cache::Entry> entry =
         generated_code_cache_context_->FindInPersistentCacheCollection(
-            context_key, resource_key);
+            context_key.value(), resource_key);
 
     if (entry && entry->GetContentSize() > 0) {
       std::move(callback).Run(
