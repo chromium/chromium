@@ -67,7 +67,6 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/442527734")
     public void testEmptyView() {
         RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
         tabSwitcher.selectHistoryPane().expectEmptyState(mIsLLFDevice);
