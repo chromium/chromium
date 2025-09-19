@@ -221,7 +221,29 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setIconId(R.drawable.home_logo)
                         .build();
 
-        return List.of(addressSuggestion, loyaltyCardSuggestion, homeAndWorkSuggestion);
+        AutofillSuggestion autocompleteSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Autocomplete text")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .build();
+
+        AutofillSuggestion generatePasswordEntry =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Generate password")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.GENERATE_PASSWORD_ENTRY)
+                        // Mimic the icon, the original PWM icon is white by default and not visible
+                        // in the generated screenshots.
+                        .setIconId(R.drawable.ic_logo_googleg_24dp)
+                        .build();
+
+        return List.of(
+                addressSuggestion,
+                loyaltyCardSuggestion,
+                homeAndWorkSuggestion,
+                autocompleteSuggestion,
+                generatePasswordEntry);
     }
 
     private void createChipViewFromSuggestion(AutofillSuggestion suggestion) {
