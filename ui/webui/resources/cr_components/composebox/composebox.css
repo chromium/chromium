@@ -12,8 +12,8 @@
 :host {
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
-  --text-input-right-spacing: 80px;
-  --text-input-left-spacing: 16px;
+  --text-input-inline-end-spacing: 80px;
+  --text-input-inline-start-spacing: 16px;
   --expanded-border-radius: 26px;
   --brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
@@ -199,18 +199,15 @@
   width: 100%;
 }
 
-:host-context([dir='rtl']) #inputContainer {
-  padding: 0 var(--text-input-left-spacing) var(--input-bottom-spacing) var(--text-input-right-spacing);
-}
-
 #carousel {
-  padding-inline-start: var(--text-input-left-spacing);
+  padding-inline-start: var(--text-input-inline-start-spacing);
 }
 
 #textContainer {
   display: flex;
   flex-direction: row;
-  padding: 8px 0 0 var(--text-input-left-spacing);
+  padding-block: 8px 0;
+  padding-inline: var(--text-input-inline-start-spacing) 0;
 }
 
 #iconContainer {
@@ -239,7 +236,8 @@
   line-height: 24px;
   min-height: 48px;
   max-height: 190px;
-  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 12px;
+  padding-block: var(--text-input-top-spacing) 0;
+  padding-inline: 12px var(--text-input-inline-end-spacing);
   scrollbar-width: none;
   width: 100%;
 }
@@ -333,7 +331,7 @@ ntp-composebox-dropdown {
 
 #uploadContainer {
   display: flex;
-  padding-inline-start: var(--text-input-left-spacing);
+  padding-inline-start: var(--text-input-inline-start-spacing);
 }
 
 :host([hide-file-inputs_]) #uploadContainer {

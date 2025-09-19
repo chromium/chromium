@@ -89,6 +89,11 @@
   right: 12px;
 }
 
+:host-context([dir='rtl']) #remove {
+  left: 12px;
+  right: unset;
+}
+
 .container:hover #remove,
 :host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
   display: inline-flex;
