@@ -91,6 +91,7 @@ constexpr char kDrivefsAuthName[] = "drivefs_auth";
 constexpr char kNearbyPresenceServerClientName[] =
     "nearby_presence_server_client";
 constexpr char kCryptAuthClientName[] = "crypt_auth_client";
+constexpr char kAmbientModeName[] = "ambient_mode";
 
 }  // namespace
 
@@ -385,6 +386,11 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kCryptAuthClientName,
           /*scopes=*/{GaiaConstants::kCryptAuthOAuth2Scope});
+    case OAuthConsumerId::kAmbientMode:
+      return OAuthConsumer(
+          /*name=*/kAmbientModeName,
+          /*scopes=*/{GaiaConstants::kPhotosOAuth2Scope,
+                      GaiaConstants::kCastBackdropOAuth2Scope});
   }
   NOTREACHED();
 }

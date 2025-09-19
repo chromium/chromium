@@ -74,7 +74,8 @@ enum class OAuthConsumerId {
   kDrivefsAuth = 59,
   kNearbyPresenceServerClient = 60,
   kCryptAuthClient = 61,
-  kMaxValue = kCryptAuthClient,
+  kAmbientMode = 62,
+  kMaxValue = kAmbientMode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

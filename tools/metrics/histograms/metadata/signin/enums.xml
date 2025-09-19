@@ -750,6 +750,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Drivefs Auth"/>
   <int value="60" label="Nearby Presence Server Client"/>
   <int value="61" label="Crypt Auth Client"/>
+  <int value="62" label="Ambient Mode CrOS"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
