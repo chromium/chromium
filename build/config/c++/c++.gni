@@ -101,13 +101,38 @@ if (is_android && export_libcxxabi_from_executables) {
 
 if (use_clang_modules) {
   libcxx_prefix = "${root_build_dir}/gen/third_party/libc++/src"
-  libcxx_modulemap_in =
+  libcxx_modulemap =
       read_file("//third_party/libc++/src/include/module.modulemap.in",
                 "string")
-  libcxx_modulemap_out = string_replace(libcxx_modulemap_in,
-                                        "@LIBCXX_CONFIG_SITE_MODULE_ENTRY@",
-                                        "textual header \"__config_site\"")
-  write_file("${libcxx_prefix}/include/module.modulemap", libcxx_modulemap_out)
+  libcxx_modulemap = string_replace(libcxx_modulemap,
+                                    "@LIBCXX_CONFIG_SITE_MODULE_ENTRY@",
+                                    "textual header \"__config_site\"")
+
+  # vcruntime_exception.h is where std::bad_alloc is declared on windows, for
+  # example. Thus, it needs to be re-exported from the standard library.
+  # Since it's used in multiple places and has #pragma once it can't be textual.
+  # Note: Clang doesn't complain when you attempt to export a nonexistent
+  # module, so this still works fine on non-windows platforms.
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__exception/exception.h\"",
+                     "header \"__exception/exception.h\"" +
+                         " export sys_stage1.vcruntime_exception_h")
+  libcxx_modulemap = string_replace(libcxx_modulemap,
+                                    "header \"__new/align_val_t.h\"",
+                                    "header \"__new/align_val_t.h\"" +
+                                        " export sys_stage1.vcruntime_new_h")
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__new/exceptions.h\"",
+                     "header \"__new/exceptions.h\"" +
+                         " export sys_stage1.vcruntime_exception_h")
+  libcxx_modulemap =
+      string_replace(libcxx_modulemap,
+                     "header \"__new/new_handler.h\"",
+                     "header \"__new/new_handler.h\" export sys_stage1.new_h")
+
+  write_file("${libcxx_prefix}/include/module.modulemap", libcxx_modulemap)
 } else {
   libcxx_prefix = "//third_party/libc++/src"
 }
