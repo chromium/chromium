@@ -13,16 +13,17 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_resizer.h"
+#include "remoting/host/linux/capture_stream_manager.h"
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
-#include "remoting/host/linux/pipewire_capture_stream_manager.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -32,7 +33,7 @@ namespace remoting {
 class GnomeDesktopResizer : public DesktopResizer {
  public:
   GnomeDesktopResizer(
-      base::WeakPtr<PipewireCaptureStreamManager> stream_manager,
+      base::WeakPtr<CaptureStreamManager> stream_manager,
       base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client,
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor);
   GnomeDesktopResizer(const GnomeDesktopResizer&) = delete;
@@ -52,6 +53,8 @@ class GnomeDesktopResizer : public DesktopResizer {
   base::WeakPtr<GnomeDesktopResizer> GetWeakPtr();
 
  private:
+  friend class GnomeDesktopResizerTest;
+
   // TODO: yuweih - There is an open feature request in mutter for changing
   // virtual monitor scales and offsets via PipeWire, which will significantly
   // simplify things. Use that when the feature is ready.
@@ -75,12 +78,19 @@ class GnomeDesktopResizer : public DesktopResizer {
     double scale = 1.0;
   };
 
+  GnomeDesktopResizer(
+      base::WeakPtr<CaptureStreamManager> stream_manager,
+      base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
+      ScopedGObject<GSettings> registry,
+      base::RepeatingCallback<void(const GnomeDisplayConfig&)>
+          apply_monitors_config);
+
   void SetResolutionAndPosition(const ScreenResolution& resolution,
                                 std::optional<webrtc::DesktopVector> position,
                                 webrtc::ScreenId screen_id);
 
   void OnAddStreamResult(const PreferredMonitorConfig& monitor_config,
-                         PipewireCaptureStreamManager::AddStreamResult result);
+                         CaptureStreamManager::AddStreamResult result);
 
   void OnGnomeDisplayConfigReceived(const GnomeDisplayConfig& config);
 
@@ -99,11 +109,11 @@ class GnomeDesktopResizer : public DesktopResizer {
 
   double GetTextScalingFactor() const;
 
-  base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
+  base::WeakPtr<CaptureStreamManager> stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::RepeatingCallback<void(const GnomeDisplayConfig&)>
+      apply_monitors_config_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       monitors_changed_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -163,6 +173,14 @@ class GnomeDesktopResizer : public DesktopResizer {
   // externally, e.g. via the settings app.
   base::RetainingOneShotTimer clear_preferred_config_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Closure to be run when DoApplyPreferredMonitorsConfig() is called. Used for
+  // testing only.
+  base::OnceClosure on_trying_to_apply_preferred_monitors_config_for_testing_;
+
+  // Flag to allow disabling the ignore-fractional-scale behavior for testing.
+  // See comments in DoApplyPreferredMonitorsConfig().
+  bool ignore_fractional_scales_in_multimon_ = true;
 
   // Used to set the text-scaling-factor.
   ScopedGObject<GSettings> registry_;

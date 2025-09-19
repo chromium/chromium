@@ -28,7 +28,7 @@ class PipewireMouseCursorCapturer {
   using Mode = webrtc::MouseCursorMonitor::Mode;
 
   explicit PipewireMouseCursorCapturer(
-      base::WeakPtr<const PipewireCaptureStreamManager> stream_manager);
+      base::WeakPtr<PipewireCaptureStreamManager> stream_manager);
   ~PipewireMouseCursorCapturer();
 
   // Sets a callback and the monitor mode. Pass nullptr to prevent the
@@ -56,7 +56,7 @@ class PipewireMouseCursorCapturer {
       GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::DesktopVector latest_cursor_hotspot_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  base::WeakPtr<const PipewireCaptureStreamManager> stream_manager_
+  base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

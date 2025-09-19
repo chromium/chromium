@@ -89,7 +89,7 @@ void GnomeDisplayConfigDBusClient::GetMonitorsConfig(
 }
 
 void GnomeDisplayConfigDBusClient::ApplyMonitorsConfig(
-    GnomeDisplayConfig config) {
+    const GnomeDisplayConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScopedGVariant parameters = config.BuildMonitorsConfigParameters();
   HOST_LOG << "Applying monitors config: " << VariantToString(parameters.get());

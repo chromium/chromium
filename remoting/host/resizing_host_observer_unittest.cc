@@ -25,16 +25,6 @@ namespace remoting {
 
 using Monitors = std::map<webrtc::ScreenId, ScreenResolution>;
 
-std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution) {
-  return os << resolution.dimensions().width() << "x"
-            << resolution.dimensions().height() << " @ " << resolution.dpi().x()
-            << "x" << resolution.dpi().y();
-}
-
-bool operator==(const ScreenResolution& a, const ScreenResolution& b) {
-  return a.Equals(b);
-}
-
 const int kDefaultDPI = 96;
 
 ScreenResolution MakeResolution(int width, int height) {

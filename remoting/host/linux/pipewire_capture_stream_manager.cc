@@ -76,8 +76,8 @@ void PipewireCaptureStreamManager::Init(
   }
 }
 
-base::WeakPtr<PipewireCaptureStream> PipewireCaptureStreamManager::GetStream(
-    webrtc::ScreenId screen_id) const {
+base::WeakPtr<CaptureStream> PipewireCaptureStreamManager::GetStream(
+    webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto& it = streams_.find(screen_id);
@@ -121,12 +121,12 @@ void PipewireCaptureStreamManager::RemoveStream(webrtc::ScreenId screen_id) {
                      GetWeakPtr(), screen_id));
 }
 
-base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>>
-PipewireCaptureStreamManager::GetActiveStreams() const {
+base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
+PipewireCaptureStreamManager::GetActiveStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>> output;
-  for (const auto& [screen_id, stream_info] : streams_) {
+  base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>> output;
+  for (auto& [screen_id, stream_info] : streams_) {
     output[screen_id] = stream_info.stream->GetWeakPtr();
   }
   return output;

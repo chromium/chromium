@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "remoting/host/linux/capture_stream.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -23,90 +24,44 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/linux/wayland/shared_screencast_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/portal/pipewire_utils.h"
 
 namespace remoting {
 
 // Wraps a PipeWire capture stream representing a logical monitor, such as may
 // be provided by the GNOME, Portal, and similar remote desktop APIs.
-class PipewireCaptureStream {
+class PipewireCaptureStream : public CaptureStream {
  public:
+  // Inherit overloads from the base class.
+  using CaptureStream::SetPipeWireStream;
+
   PipewireCaptureStream();
   PipewireCaptureStream(const PipewireCaptureStream&) = delete;
   PipewireCaptureStream& operator=(const PipewireCaptureStream&) = delete;
-  ~PipewireCaptureStream();
+  ~PipewireCaptureStream() override;
 
-  // Specifies the |pipewire_node| from which to capture and the
-  // |initial_resolution| to negotiate. The node should be configured to provide
-  // the mouse cursor as metadata.
-  //
-  // |mapping_id| is an opaque mapping ID that may be provided by the
-  // higher-level remote desktop API to facilitate matching the monitor to its
-  // corresponding input region. It is stored and made accessible via the
-  // mapping_id() method for convenience, but is otherwise unused and may be an
-  // empty string.
-  //
-  // If specified, |pipewire_fd| is used to communicate with the target PipeWire
-  // instance. Otherwise, connects to the default PipeWire instance.
+  // CaptureStream implementation:
   void SetPipeWireStream(std::uint32_t pipewire_node,
                          const webrtc::DesktopSize& initial_resolution,
-                         std::string mapping_id,
-                         int pipewire_fd = webrtc::kInvalidPipeWireFd);
+                         std::string_view mapping_id,
+                         int pipewire_fd) override;
+  void StartVideoCapture() override;
+  void SetCallback(
+      base::WeakPtr<webrtc::DesktopCapturer::Callback> callback) override;
+  void SetUseDamageRegion(bool use_damage_region) override;
+  void SetResolution(const webrtc::DesktopSize& new_resolution) override;
+  void SetMaxFrameRate(std::uint32_t frame_rate) override;
+  std::unique_ptr<webrtc::MouseCursor> CaptureCursor() override;
+  std::optional<webrtc::DesktopVector> CaptureCursorPosition() override;
+  std::string_view mapping_id() const override;
 
-  // Starts capturing the video stream, which creates the virtual monitor. The
-  // virtual monitor is not created until this method is called. This method can
-  // be called before SetCallback(). See documentation for SetCallback().
-  void StartVideoCapture();
+  const webrtc::DesktopSize& resolution() const override;
 
-  // Sets a callback to be invoked on the current sequence as each new frame is
-  // received. If StartVideoCapture() has been called, the callback will be
-  // immediately called on the current stack frame with the last available
-  // frame.
-  // Passing `nullptr` will stop the previously set callback from being called.
-  void SetCallback(base::WeakPtr<webrtc::DesktopCapturer::Callback> callback);
+  void set_screen_id(webrtc::ScreenId screen_id) override;
 
-  // Sets whether damage region should be used. Mutter may return invalid damage
-  // regions in some cases, where disabling damage region makes sense.
-  // Damage region is enabled by default.
-  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4269
-  void SetUseDamageRegion(bool use_damage_region);
-
-  // Negotiates a new video resolution with PipeWire. If capturing from a
-  // virtual monitor, it will be resized to match.
-  void SetResolution(const webrtc::DesktopSize& new_resolution);
-
-  // Sets the maximum rate at which new frames should be delivered.
-  void SetMaxFrameRate(std::uint32_t frame_rate);
-
-  // Gets the most recent mouse cursor shape, if one has been received since the
-  // last call. Otherwise, returns nullptr. (May only return a value once each
-  // time the cursor actually changes.)
-  std::unique_ptr<webrtc::MouseCursor> CaptureCursor();
-
-  // Returns a copy of the most recent mouse cursor location received from
-  // PipeWire, if any.
-  std::optional<webrtc::DesktopVector> CaptureCursorPosition();
-
-  // Retrieves the mapping ID previously stored by set_mapping_id().
-  std::string_view mapping_id();
-
-  const webrtc::DesktopSize& resolution() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return resolution_;
-  }
-
-  void set_screen_id(webrtc::ScreenId screen_id) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    screen_id_ = screen_id;
-  }
-
-  webrtc::ScreenId screen_id() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return screen_id_;
-  }
+  webrtc::ScreenId screen_id() const override;
 
   // Obtains a weak pointer to this.
-  base::WeakPtr<PipewireCaptureStream> GetWeakPtr();
+  base::WeakPtr<CaptureStream> GetWeakPtr() override;
 
  private:
   class CallbackProxy;

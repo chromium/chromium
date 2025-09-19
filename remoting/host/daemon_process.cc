@@ -37,12 +37,6 @@ namespace {
 // This is used for tagging system event logs.
 const char kApplicationName[] = "chromoting";
 
-std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution) {
-  return os << resolution.dimensions().width() << "x"
-            << resolution.dimensions().height() << " at "
-            << resolution.dpi().x() << "x" << resolution.dpi().y() << " DPI";
-}
-
 }  // namespace
 
 DaemonProcess::~DaemonProcess() {

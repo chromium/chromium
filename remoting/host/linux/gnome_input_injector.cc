@@ -140,7 +140,7 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
       LOG(WARNING) << "PipewireCaptureStreamManager no longer exists.";
     } else {
       webrtc::ScreenId screen_id = event.fractional_coordinate().screen_id();
-      const base::WeakPtr<PipewireCaptureStream> stream =
+      base::WeakPtr<const CaptureStream> stream =
           stream_manager_->GetStream(screen_id);
       if (!stream) {
         LOG(ERROR) << "Unexpected screen ID: " << screen_id;

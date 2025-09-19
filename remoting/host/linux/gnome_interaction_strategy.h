@@ -75,7 +75,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
 
   // PipewireCaptureStreamManager::Observer overrides.
   void OnPipewireCaptureStreamAdded(
-      base::WeakPtr<PipewireCaptureStream> stream) override;
+      base::WeakPtr<CaptureStream> stream) override;
 
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<GnomeRemoteDesktopSession> remote_desktop_session_ GUARDED_BY_CONTEXT(

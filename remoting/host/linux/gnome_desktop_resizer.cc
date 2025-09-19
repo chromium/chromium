@@ -100,17 +100,36 @@ void AddMonitorForLayoutCalculation(GnomeDisplayConfig& config,
   info.modes.push_back(mode);
 }
 
+inline ScopedGObject<GSettings> CreateGsettingsRegistry() {
+  auto registry = ui::GSettingsNew("org.gnome.desktop.interface");
+  CHECK(registry)
+      << "ui::GSettingsNew(\"org.gnome.desktop.interface\") failed.";
+  return registry;
+}
+
 }  // namespace
 
 GnomeDesktopResizer::GnomeDesktopResizer(
-    base::WeakPtr<PipewireCaptureStreamManager> stream_manager,
+    base::WeakPtr<CaptureStreamManager> stream_manager,
     base::WeakPtr<GnomeDisplayConfigDBusClient> display_config_client,
     base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor)
+    : GnomeDesktopResizer(
+          stream_manager,
+          display_config_monitor,
+          CreateGsettingsRegistry(),
+          base::BindRepeating(
+              &GnomeDisplayConfigDBusClient::ApplyMonitorsConfig,
+              display_config_client)) {}
+
+GnomeDesktopResizer::GnomeDesktopResizer(
+    base::WeakPtr<CaptureStreamManager> stream_manager,
+    base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
+    ScopedGObject<GSettings> registry,
+    base::RepeatingCallback<void(const GnomeDisplayConfig&)>
+        apply_monitors_config)
     : stream_manager_(stream_manager),
-      display_config_client_(display_config_client) {
-  registry_ = ui::GSettingsNew("org.gnome.desktop.interface");
-  CHECK(registry_)
-      << "ui::GSettingsNew(\"org.gnome.desktop.interface\") failed.";
+      apply_monitors_config_(apply_monitors_config),
+      registry_(std::move(registry)) {
   if (display_config_monitor) {
     monitors_changed_subscription_ = display_config_monitor->AddCallback(
         base::BindRepeating(&GnomeDesktopResizer::OnGnomeDisplayConfigReceived,
@@ -128,8 +147,7 @@ ScreenResolution GnomeDesktopResizer::GetCurrentResolution(
   if (!stream_manager_) {
     return {};
   }
-  base::WeakPtr<PipewireCaptureStream> stream =
-      stream_manager_->GetStream(screen_id);
+  base::WeakPtr<CaptureStream> stream = stream_manager_->GetStream(screen_id);
   if (!stream) {
     LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << screen_id;
     return {};
@@ -245,6 +263,7 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
                 protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL
             ? scale
             : 1.0;
+
     webrtc::DesktopSize physical_resolution{
         static_cast<int>(track.width() * physical_resolution_multiplier),
         static_cast<int>(track.height() * physical_resolution_multiplier)};
@@ -297,8 +316,7 @@ void GnomeDesktopResizer::SetResolutionAndPosition(
     return;
   }
   // Change the screen resolution.
-  base::WeakPtr<PipewireCaptureStream> stream =
-      stream_manager_->GetStream(screen_id);
+  base::WeakPtr<CaptureStream> stream = stream_manager_->GetStream(screen_id);
   if (!stream) {
     LOG(ERROR) << "Cannot find pipewire stream for screen ID: " << screen_id;
     return;
@@ -343,7 +361,7 @@ void GnomeDesktopResizer::SetResolutionAndPosition(
 
 void GnomeDesktopResizer::OnAddStreamResult(
     const PreferredMonitorConfig& monitor_config,
-    PipewireCaptureStreamManager::AddStreamResult result) {
+    CaptureStreamManager::AddStreamResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.has_value()) {
@@ -403,10 +421,11 @@ void GnomeDesktopResizer::ScheduleApplyPreferredMonitorsConfig() {
 void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!display_config_client_) {
-    return;
-  }
   apply_monitors_config_scheduled_ = false;
+
+  if (on_trying_to_apply_preferred_monitors_config_for_testing_) {
+    std::move(on_trying_to_apply_preferred_monitors_config_for_testing_).Run();
+  }
 
   if (preferred_monitors_config_.empty()) {
     return;
@@ -420,7 +439,8 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   // supported but will fail to be applied when there are multiple virtual
   // monitors, so we ignore fractional scales in that case.
   // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4277
-  bool ignore_fractional_scales = new_config.monitors.size() > 1;
+  bool ignore_fractional_scales =
+      ignore_fractional_scales_in_multimon_ && new_config.monitors.size() > 1;
   bool config_changed = false;
   // Code below will early return if not all expected resolution changes have
   // been reflected in the display config.
@@ -464,7 +484,8 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
     if (monitor.is_primary &&
         !IsSameScale(monitor.scale * GetTextScalingFactor(),
                      preferred_config.scale)) {
-      if (!g_settings_set_double(registry_.get(), "text-scaling-factor",
+      if (registry_ &&
+          !g_settings_set_double(registry_.get(), "text-scaling-factor",
                                  preferred_config.scale / monitor.scale)) {
         LOG(ERROR) << "Failed to set text-scaling-factor";
       }
@@ -510,7 +531,7 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
     // config and make changes whenever necessary, so kTemporary suffices and
     // there is no benefit using kPersistent.
     new_config.method = GnomeDisplayConfig::Method::kTemporary;
-    display_config_client_->ApplyMonitorsConfig(new_config);
+    apply_monitors_config_.Run(new_config);
     // Only start the timer when it's not running, so that the preferred
     // config will be cleared if the display config keeps changing/never
     // stabilizes.
@@ -540,6 +561,9 @@ void GnomeDesktopResizer::MaybeDelayClearPreferredConfig() {
 }
 
 double GnomeDesktopResizer::GetTextScalingFactor() const {
+  if (!registry_) {
+    return 1.0;
+  }
   return g_settings_get_double(registry_.get(), "text-scaling-factor");
 }
 

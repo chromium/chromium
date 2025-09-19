@@ -75,7 +75,7 @@ class GnomeDisplayConfigDBusClient {
   // Requests GNOME to apply a new config. If successful, the change will
   // take immediate effect, but the user may see a popup window and they may
   // choose to revert back to the previous settings.
-  void ApplyMonitorsConfig(GnomeDisplayConfig config);
+  void ApplyMonitorsConfig(const GnomeDisplayConfig& config);
 
   // Subscribes to the MonitorsChanged signal. `on_changed` will be called
   // whenever the screen layout is changed. Discarding the subscription object

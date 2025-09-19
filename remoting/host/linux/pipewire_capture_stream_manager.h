@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/linux/capture_stream_manager.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
@@ -44,59 +45,32 @@ namespace remoting {
 // possibility of race conditions, but virtual or physical monitors that are
 // not managed by this class could potentially still cause issues if they are
 // added during stream creation.
-class PipewireCaptureStreamManager final {
+class PipewireCaptureStreamManager final : public CaptureStreamManager {
  public:
-  using AddStreamResult =
-      base::expected<base::WeakPtr<PipewireCaptureStream>, std::string>;
-  using AddStreamCallback = base::OnceCallback<void(AddStreamResult)>;
-
-  // An interface for observing stream additions and removals.
-  class Observer : public base::CheckedObserver {
-   public:
-    using Subscription = base::ScopedClosureRunner;
-
-    virtual void OnPipewireCaptureStreamAdded(
-        base::WeakPtr<PipewireCaptureStream> stream) {}
-    virtual void OnPipewireCaptureStreamRemoved(webrtc::ScreenId screen_id) {}
-
-   protected:
-    Observer() = default;
-  };
+  // Inherit overloads from the base class.
+  using CaptureStreamManager::GetActiveStreams;
+  using CaptureStreamManager::GetStream;
 
   PipewireCaptureStreamManager();
   PipewireCaptureStreamManager(const PipewireCaptureStreamManager&) = delete;
   PipewireCaptureStreamManager& operator=(const PipewireCaptureStreamManager&) =
       delete;
-  ~PipewireCaptureStreamManager();
+  ~PipewireCaptureStreamManager() override;
 
-  // Adds an observer. Discarding the returned subscription will result in the
-  // removal of the observer.
-  [[nodiscard]] Observer::Subscription AddObserver(Observer* observer);
+  // CaptureStreamManager implementation:
+  [[nodiscard]] Observer::Subscription AddObserver(Observer* observer) override;
+  base::WeakPtr<CaptureStream> GetStream(webrtc::ScreenId screen_id) override;
+  void AddStream(const ScreenResolution& initial_resolution,
+                 AddStreamCallback callback) override;
+  void RemoveStream(webrtc::ScreenId screen_id) override;
+  base::flat_map<webrtc::ScreenId, base::WeakPtr<CaptureStream>>
+  GetActiveStreams() override;
 
   // Initializes the stream manager. Must be call once before calling other
   // methods of this class. `connection` must outlive `this`.
   void Init(GDBusConnectionRef* connection,
             base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
             gvariant::ObjectPath screencast_session_path);
-
-  // Returns the stream associated with `screen_id`. A non-null result will only
-  // be returned if the AddStreamCallback passed to the AddStream() method has
-  // been called.
-  base::WeakPtr<PipewireCaptureStream> GetStream(
-      webrtc::ScreenId screen_id) const;
-
-  // Adds a new PipewireCaptureStream and creates the corresponding virtual
-  // display with the specified initial resolution. `callback` is called once
-  // the stream is successfully added or failed to be added.
-  void AddStream(const ScreenResolution& initial_resolution,
-                 AddStreamCallback callback);
-
-  // Removes a stream and destroys the corresponding virtual display.
-  void RemoveStream(webrtc::ScreenId screen_id);
-
-  // Returns all active streams.
-  base::flat_map<webrtc::ScreenId, base::WeakPtr<PipewireCaptureStream>>
-  GetActiveStreams() const;
 
   // Returns a weak pointer to this object.
   base::WeakPtr<PipewireCaptureStreamManager> GetWeakPtr();

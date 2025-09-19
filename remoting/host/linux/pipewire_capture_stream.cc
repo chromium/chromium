@@ -91,7 +91,8 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
 }
 
 PipewireCaptureStream::PipewireCaptureStream() {
-  callback_proxy_ = std::make_unique<CallbackProxy>(GetWeakPtr());
+  callback_proxy_ =
+      std::make_unique<CallbackProxy>(weak_ptr_factory_.GetWeakPtr());
 }
 
 PipewireCaptureStream::~PipewireCaptureStream() {
@@ -101,12 +102,12 @@ PipewireCaptureStream::~PipewireCaptureStream() {
 void PipewireCaptureStream::SetPipeWireStream(
     std::uint32_t pipewire_node,
     const webrtc::DesktopSize& initial_resolution,
-    std::string mapping_id,
+    std::string_view mapping_id,
     int pipewire_fd) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pipewire_node_ = pipewire_node;
   resolution_ = initial_resolution;
-  mapping_id_ = std::move(mapping_id);
+  mapping_id_ = mapping_id;
   pipewire_fd_ = pipewire_fd;
 }
 
@@ -187,12 +188,27 @@ PipewireCaptureStream::CaptureCursorPosition() {
   return stream_->CaptureCursorPosition();
 }
 
-std::string_view PipewireCaptureStream::mapping_id() {
+std::string_view PipewireCaptureStream::mapping_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return mapping_id_;
 }
 
-base::WeakPtr<PipewireCaptureStream> PipewireCaptureStream::GetWeakPtr() {
+const webrtc::DesktopSize& PipewireCaptureStream::resolution() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resolution_;
+}
+
+void PipewireCaptureStream::set_screen_id(webrtc::ScreenId screen_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  screen_id_ = screen_id;
+}
+
+webrtc::ScreenId PipewireCaptureStream::screen_id() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return screen_id_;
+}
+
+base::WeakPtr<CaptureStream> PipewireCaptureStream::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }

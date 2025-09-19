@@ -8,6 +8,7 @@
 #include <gio/gio.h>
 
 #include <map>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <vector>

@@ -33,10 +33,15 @@ class ScreenResolution {
   // Returns true if the dimensions and DPI of the two resolutions match.
   bool Equals(const ScreenResolution& other) const;
 
+  // Same as Equals().
+  bool operator==(const ScreenResolution& other) const;
+
  private:
   webrtc::DesktopSize dimensions_;
   webrtc::DesktopVector dpi_;
 };
+
+std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution);
 
 }  // namespace remoting
 

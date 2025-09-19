@@ -108,7 +108,7 @@ std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
       base::SequencedTaskRunner::GetCurrentDefault());
   proxy->set_supports_frame_callbacks(
       PipewireDesktopCapturer::kSupportsFrameCallbacks);
-  base::WeakPtr<PipewireCaptureStream> stream =
+  base::WeakPtr<CaptureStream> stream =
       remote_desktop_session_->capture_stream_manager()->GetStream(id);
   if (stream) {
     proxy->set_capturer(std::make_unique<PipewireDesktopCapturer>(stream));
@@ -178,7 +178,7 @@ void GnomeInteractionStrategy::Init(InitCallback callback) {
 }
 
 void GnomeInteractionStrategy::OnPipewireCaptureStreamAdded(
-    base::WeakPtr<PipewireCaptureStream> stream) {
+    base::WeakPtr<CaptureStream> stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!stream) {

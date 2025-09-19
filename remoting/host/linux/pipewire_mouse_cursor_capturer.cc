@@ -20,7 +20,7 @@
 namespace remoting {
 
 PipewireMouseCursorCapturer::PipewireMouseCursorCapturer(
-    base::WeakPtr<const PipewireCaptureStreamManager> stream_manager)
+    base::WeakPtr<PipewireCaptureStreamManager> stream_manager)
     : stream_manager_(std::move(stream_manager)) {}
 
 PipewireMouseCursorCapturer::~PipewireMouseCursorCapturer() {

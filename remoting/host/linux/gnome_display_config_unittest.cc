@@ -8,31 +8,11 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "remoting/host/linux/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
-
-namespace {
-
-GnomeDisplayConfig::MonitorInfo CreateMonitorInfo(int x,
-                                                  int y,
-                                                  int width,
-                                                  int height,
-                                                  double scale) {
-  GnomeDisplayConfig::MonitorInfo info;
-  info.x = x;
-  info.y = y;
-  info.scale = scale;
-  GnomeDisplayConfig::MonitorMode mode;
-  mode.width = width;
-  mode.height = height;
-  mode.is_current = true;
-  info.modes.push_back(mode);
-  return info;
-}
-
-}  // namespace
 
 TEST(GnomeDisplayConfigTest, GetScreenId) {
   ASSERT_EQ(GnomeDisplayConfig::GetScreenId("Meta-0"), 0);
