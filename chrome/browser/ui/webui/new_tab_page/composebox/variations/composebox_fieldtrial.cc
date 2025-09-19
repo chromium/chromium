@@ -166,6 +166,11 @@ const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     "ShowComposeboxTypedSuggest",
     false);
 
+const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
+    &kNtpComposebox,
+    "ShowComposeboxImageSuggestions",
+    false);
+
 const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "ShowContextMenu",
                                                 false);
