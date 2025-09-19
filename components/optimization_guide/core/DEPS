@@ -13,6 +13,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+services/on_device_model/android",
   "+services/on_device_model/ml",
+  "+services/on_device_model/on_device_model_mojom_impl.h",
   "+services/on_device_model/public",
   "+third_party/mediapipe",
   "+third_party/skia",

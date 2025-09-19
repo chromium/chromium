@@ -14,9 +14,13 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "services/on_device_model/android/backend_model_impl_android.h"
 #include "services/on_device_model/android/model_downloader_android.h"
+#include "services/on_device_model/on_device_model_mojom_impl.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace optimization_guide {
@@ -29,7 +33,7 @@ using DownloadFailureReason =
 
 class SolutionImpl : public ModelBrokerImpl::Solution {
  public:
-  SolutionImpl(base::WeakPtr<ModelBrokerAndroid::SolutionFactory> parent,
+  SolutionImpl(base::WeakPtr<ModelBrokerAndroid> parent,
                scoped_refptr<const OnDeviceModelFeatureAdapter> adapter);
   ~SolutionImpl() override;
 
@@ -47,12 +51,12 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
       override;
   void ReportHealthyCompletion() override;
 
-  base::WeakPtr<ModelBrokerAndroid::SolutionFactory> parent_;
+  base::WeakPtr<ModelBrokerAndroid> parent_;
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter_;
 };
 
 SolutionImpl::SolutionImpl(
-    base::WeakPtr<ModelBrokerAndroid::SolutionFactory> parent,
+    base::WeakPtr<ModelBrokerAndroid> parent,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter)
     : parent_(std::move(parent)), adapter_(std::move(adapter)) {}
 SolutionImpl::~SolutionImpl() = default;
@@ -79,7 +83,10 @@ mojom::ModelSolutionConfigPtr SolutionImpl::MakeConfig() const {
 void SolutionImpl::CreateSession(
     mojo::PendingReceiver<on_device_model::mojom::Session> pending,
     on_device_model::mojom::SessionParamsPtr params) {
-  // TODO: crbug.com/441578339 - Implement.
+  if (parent_) {
+    parent_->GetOrCreateModelRemote(adapter_->config().feature())
+        ->StartSession(std::move(pending), std::move(params));
+  }
 }
 
 void SolutionImpl::CreateTextSafetySession(
@@ -92,6 +99,12 @@ void SolutionImpl::ReportHealthyCompletion() {
 }
 
 }  // namespace
+
+ModelBrokerAndroid::ModelService::ModelService() = default;
+ModelBrokerAndroid::ModelService::~ModelService() = default;
+ModelBrokerAndroid::ModelService::ModelService(ModelService&&) = default;
+ModelBrokerAndroid::ModelService& ModelBrokerAndroid::ModelService::operator=(
+    ModelService&&) = default;
 
 // Lazily initialized object that utilizes AiCore.
 class ModelBrokerAndroid::SolutionFactory final
@@ -237,7 +250,7 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
         OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable);
   }
 
-  return std::make_unique<SolutionImpl>(weak_ptr_factory_.GetWeakPtr(),
+  return std::make_unique<SolutionImpl>(parent_->weak_ptr_factory_.GetWeakPtr(),
                                         metadata->adapter());
 }
 
@@ -256,12 +269,37 @@ void ModelBrokerAndroid::BindBroker(
   impl_.BindBroker(std::move(receiver));
 }
 
+mojo::Remote<on_device_model::mojom::OnDeviceModel>&
+ModelBrokerAndroid::GetOrCreateModelRemote(
+    proto::ModelExecutionFeature feature) {
+  if (!model_services_.contains(feature)) {
+    ModelService service;
+    auto backend_model =
+        std::make_unique<on_device_model::BackendModelImplAndroid>(feature);
+    service.impl = std::make_unique<on_device_model::OnDeviceModelMojomImpl>(
+        std::move(backend_model), service.remote.BindNewPipeAndPassReceiver(),
+        base::BindOnce(&ModelBrokerAndroid::OnModelDisconnected,
+                       weak_ptr_factory_.GetWeakPtr(), feature));
+    service.remote.reset_on_disconnect();
+    service.remote.reset_on_idle_timeout(
+        features::GetOnDeviceModelIdleTimeout());
+    model_services_.emplace(feature, std::move(service));
+  }
+  return model_services_.at(feature).remote;
+}
+
 void ModelBrokerAndroid::EnsureSolutionFactory(
     base::OnceClosure done_callback) {
   if (!solution_factory_) {
     solution_factory_ = std::make_unique<SolutionFactory>(*this);
   }
   std::move(done_callback).Run();
+}
+
+void ModelBrokerAndroid::OnModelDisconnected(
+    proto::ModelExecutionFeature feature,
+    base::WeakPtr<on_device_model::mojom::OnDeviceModel> model) {
+  model_services_.erase(feature);
 }
 
 }  // namespace optimization_guide

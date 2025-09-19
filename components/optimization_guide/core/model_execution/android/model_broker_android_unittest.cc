@@ -59,9 +59,7 @@ class ModelBrokerAndroidFeatureList {
 
 class ModelBrokerAndroidTest : public testing::Test {
  public:
-  ModelBrokerAndroidTest() {
-    java_helper_.SetMockAiCoreFactory();
-  }
+  ModelBrokerAndroidTest() { java_helper_.SetMockAiCoreFactory(); }
   ~ModelBrokerAndroidTest() override = default;
 
   ModelBrokerAndroid& EnsureBroker() {
@@ -81,6 +79,22 @@ class ModelBrokerAndroidTest : public testing::Test {
     provider_.UpdateModelImmediatelyForTesting(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
         std::make_unique<ModelInfo>(test_asset_.model_info()));
+  }
+
+  std::unique_ptr<OptimizationGuideModelExecutor::Session>
+  DownloadModelAndCreateSession(ModelBrokerClient& client) {
+    // Requesting the feature we've provided assets for should succeed.
+    base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+    client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
+                         future.GetCallback());
+    base::test::RunUntil([&]() {
+      return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+                 .unavailable_reason() ==
+             mojom::ModelUnavailableReason::kPendingAssets;
+    });
+    java_helper_.TriggerDownloaderOnAvailable(spec_.model_name,
+                                              spec_.model_version);
+    return future.Take();
   }
 
  protected:
@@ -118,24 +132,55 @@ TEST_F(ModelBrokerAndroidTest, PendingClient) {
   EXPECT_TRUE(client.HasSubscriber(mojom::ModelBasedCapabilityKey::kTest));
 }
 
-// Verify that CreateSession works when the download succeeds.
-TEST_F(ModelBrokerAndroidTest, DownloadSuccess) {
+// Verify that CreateSession and ExecuteModel works when the download succeeds.
+TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   InstallTestFeatureConfig();
   ModelBrokerClient client(BindAndPassRemote(),
                            CreateSessionArgs(nullptr, FailOnRemoteFallback()));
 
-  // Requesting the feature we've provided assets for should succeed.
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
-  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
-                       future.GetCallback());
-  base::test::RunUntil([&]() {
-    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
-               .unavailable_reason() ==
-           mojom::ModelUnavailableReason::kPendingAssets;
-  });
-  java_helper_.TriggerDownloaderOnAvailable(spec_.model_name,
-                                            spec_.model_version);
-  EXPECT_NE(future.Get(), nullptr);
+  auto session = DownloadModelAndCreateSession(client);
+  ASSERT_TRUE(session);
+
+  proto::ExampleForTestingRequest context_request;
+  context_request.set_string_value("some context ");
+  session->AddContext(context_request);
+
+  ResponseHolder response;
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("some input");
+  session->ExecuteModel(request, response.GetStreamingCallback());
+
+  ASSERT_TRUE(response.GetFinalStatus());
+  EXPECT_FALSE(response.error().has_value());
+  // MockAiCoreFactory returns the input string as the response.
+  EXPECT_EQ(*response.value(), "some context some input");
+}
+
+// Verify that ExecuteModel succeeds after the model is disconnected.
+TEST_F(ModelBrokerAndroidTest, ExecuteModelAfterModelDisconnected) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(),
+                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+
+  auto session = DownloadModelAndCreateSession(client);
+  ASSERT_TRUE(session);
+
+  // Fast forward time to trigger idle timeout.
+  task_environment_.FastForwardBy(on_device_model::kDefaultModelIdleTimeout +
+                                  base::Seconds(1));
+  task_environment_.RunUntilIdle();
+
+  ResponseHolder response;
+  proto::ExampleForTestingRequest request;
+  request.set_string_value("some input");
+  session->ExecuteModel(request, response.GetStreamingCallback());
+
+  // The execution still succeeds even though the model is disconnected after
+  // the session is created. This is because OnDeviceExecution will clone a
+  // new session from OnDeviceContext, which creates a new session if the old
+  // one was disconnected.
+  ASSERT_TRUE(response.GetFinalStatus());
+  EXPECT_EQ(*response.value(), "some input");
 }
 
 // Verify that when download fails, the client is notified.

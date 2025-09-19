@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -28,7 +29,8 @@ class SessionWrapper;
 
 // The implementation of the OnDeviceModel mojom interface. This is a
 // self-owned object that deletes itself when the model is no longer used.
-class OnDeviceModelMojomImpl : public mojom::OnDeviceModel {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelMojomImpl
+    : public mojom::OnDeviceModel {
  public:
   explicit OnDeviceModelMojomImpl(
       std::unique_ptr<BackendModel> model,

@@ -5,14 +5,23 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ANDROID_MODEL_BROKER_ANDROID_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ANDROID_MODEL_BROKER_ANDROID_H_
 
+#include <map>
 #include <memory>
 
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_impl.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/on_device_model_mojom_impl.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+
+namespace on_device_model {
+class OnDeviceModelMojomImpl;
+}  // namespace on_device_model
 
 namespace optimization_guide {
 
@@ -31,9 +40,26 @@ class ModelBrokerAndroid final {
 
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver);
 
+  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
+      proto::ModelExecutionFeature feature);
+
  private:
+  struct ModelService {
+    ModelService();
+    ~ModelService();
+    ModelService(ModelService&&);
+    ModelService& operator=(ModelService&&);
+
+    std::unique_ptr<on_device_model::OnDeviceModelMojomImpl> impl;
+    mojo::Remote<on_device_model::mojom::OnDeviceModel> remote;
+  };
+
   // Initialize SolutionFactory, if not already initialized.
   void EnsureSolutionFactory(base::OnceClosure done_callback);
+
+  void OnModelDisconnected(
+      proto::ModelExecutionFeature feature,
+      base::WeakPtr<on_device_model::mojom::OnDeviceModel> model);
 
   raw_ref<OptimizationGuideModelProvider> model_provider_;
 
@@ -47,6 +73,10 @@ class ModelBrokerAndroid final {
   // Creating this object may be expensive, so it is lazy-initialized.
   // Must be destroyed before usage_tracker.
   std::unique_ptr<SolutionFactory> solution_factory_;
+
+  // The on-device model services, keyed by feature.
+  absl::flat_hash_map<proto::ModelExecutionFeature, ModelService>
+      model_services_;
 
   base::WeakPtrFactory<ModelBrokerAndroid> weak_ptr_factory_{this};
 };
