@@ -14,8 +14,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
-import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -33,6 +31,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
@@ -71,7 +70,6 @@ public class NtpCustomizationUtils {
         int NUM_ENTRIES = 4;
     }
 
-    private static final String TRUSTED_APPLICATION_CODE_EXTRA = "trusted_application_code_extra";
     @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
     private static final String TAG = "NtpCustomization";
 
@@ -190,22 +188,12 @@ public class NtpCustomizationUtils {
         builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
         Intent intent = builder.build().intent;
         intent.setPackage(context.getPackageName());
-        // Adding trusted extras lets us know that the intent came from Chrome.
-        intent.putExtra(TRUSTED_APPLICATION_CODE_EXTRA, getAuthenticationToken(context));
+        IntentUtils.addTrustedIntentExtras(intent);
         intent.setData(Uri.parse(uri));
         intent.setAction(Intent.ACTION_VIEW);
         intent.setClassName(context, "org.chromium.chrome.browser.customtabs.CustomTabActivity");
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         context.startActivity(intent);
-    }
-
-    // Copied from IntentHandler, which is in chrome_java, so we can't call it directly.
-    public static PendingIntent getAuthenticationToken(Context context) {
-        Intent fakeIntent = new Intent();
-        ComponentName fakeComponentName = new ComponentName(context.getPackageName(), "FakeClass");
-        fakeIntent.setComponent(fakeComponentName);
-        int mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
-        return PendingIntent.getActivity(context, 0, fakeIntent, mutabililtyFlag);
     }
 
     /**
