@@ -414,12 +414,6 @@ TEST_F(ControlledHomeDialogControllerTest,
   EXPECT_TRUE(dialog_controller->ShouldShow());
 
   EXPECT_EQ(u"", dialog_controller->GetActionButtonText());
-
-  std::unique_ptr<ControlledHomeDialogControllerInterface::ExtraViewInfo>
-      extra_view = dialog_controller->GetExtraViewInfo();
-  // Note: Mac vs Win message styling.
-  EXPECT_TRUE(extra_view->text == u"Installed by your administrator" ||
-              extra_view->text == u"Installed by Your Administrator");
-  EXPECT_FALSE(extra_view->is_learn_more);
+  EXPECT_TRUE(dialog_controller->IsPolicyIndicationNeeded());
 }
 #endif

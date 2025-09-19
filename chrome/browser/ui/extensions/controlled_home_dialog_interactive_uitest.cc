@@ -35,9 +35,7 @@ class TestDialogController : public ControlledHomeDialogControllerInterface {
   std::string GetAnchorActionId() override { return action_id_; }
   void OnBubbleShown() override {}
   void OnBubbleClosed(CloseAction action) override {}
-  std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() override {
-    return std::make_unique<ExtraViewInfo>();
-  }
+  bool IsPolicyIndicationNeeded() const override { return false; }
 
  private:
   std::string action_id_;

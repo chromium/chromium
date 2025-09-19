@@ -11,10 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 
-namespace gfx {
-struct VectorIcon;
-}
-
 // The controller for the ControlledHomeDialog. This class is responsible
 // for both providing the display information (ShowParams) as well as handling
 // the result of the dialog.
@@ -25,24 +21,6 @@ class ControlledHomeDialogControllerInterface {
     CLOSE_EXECUTE,
     CLOSE_DISMISS_USER_ACTION,
     CLOSE_DISMISS_DEACTIVATION,
-  };
-
-  // Content populating an optional view, containing an image icon and/or
-  // (linked) text, in the bubble.
-  struct ExtraViewInfo {
-    ExtraViewInfo() : resource(nullptr), is_learn_more(false) {}
-
-    // The resource defining the image icon. If has a value of null, then no
-    // image icon will be added.
-    raw_ptr<const gfx::VectorIcon> resource;
-
-    // Text in the view. If this is an empty string, no text will be added.
-    std::u16string text;
-
-    // If the struct's text is nonempty and this value is true, then a button
-    // with the (?) image is displayed and the text is set as the tooltip. If
-    // this value is false, the text is treated as a label.
-    bool is_learn_more;
   };
 
   virtual ~ControlledHomeDialogControllerInterface() = default;
@@ -75,10 +53,8 @@ class ControlledHomeDialogControllerInterface {
   // Called when the bubble is closed with the type of action the user took.
   virtual void OnBubbleClosed(CloseAction action) = 0;
 
-  // Returns the ExtraViewInfo struct associated with the bubble delegate. If
-  // this returns a nullptr, no extra view (image icon and/or (linked) text) is
-  // added to the bubble.
-  virtual std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() = 0;
+  // Returns true if the bubble should add the policy indicator to the bubble.
+  virtual bool IsPolicyIndicationNeeded() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_CONTROLLED_HOME_DIALOG_CONTROLLER_INTERFACE_H_

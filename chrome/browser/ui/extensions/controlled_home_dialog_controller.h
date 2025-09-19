@@ -48,7 +48,7 @@ class ControlledHomeDialogController
   std::u16string GetBodyText() override;
   std::u16string GetActionButtonText() override;
   std::u16string GetDismissButtonText() override;
-  std::unique_ptr<ExtraViewInfo> GetExtraViewInfo() override;
+  bool IsPolicyIndicationNeeded() const override;
   std::string GetAnchorActionId() override;
   void OnBubbleShown() override;
   void OnBubbleClosed(CloseAction action) override;
@@ -62,9 +62,6 @@ class ControlledHomeDialogController
   static void ClearProfileSetForTesting();
 
  private:
-  // Returns true if we should add the policy indicator to the bubble.
-  bool IsPolicyIndicationNeeded() const;
-
   // Checks whether `extension` corresponds to this bubble's extension and,
   // if so, closes the bubble.
   void HandleExtensionUnloadOrUninstall(const extensions::Extension* extension);

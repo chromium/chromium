@@ -125,7 +125,15 @@ void ShowControlledHomeDialog(
           base::BindOnce(&ControlledHomeDialogDelegate::OnDialogClosed,
                          base::Unretained(dialog_delegate)));
 
-  if (dialog_controller->GetExtraViewInfo()->is_learn_more) {
+  if (dialog_controller->IsPolicyIndicationNeeded()) {
+    dialog_builder.AddMenuItem(
+        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                       ui::kColorIcon, 16),
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN),
+        base::DoNothing(),
+        ui::DialogModelMenuItem::Params().SetIsEnabled(false));
+
+  } else {
     dialog_builder.AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
         IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_LEARN_MORE_LINK,
         ui::DialogModelLabel::CreateLink(
@@ -133,13 +141,6 @@ void ShowControlledHomeDialog(
             base::BindRepeating(
                 &ControlledHomeDialogDelegate::OnLearnMoreClicked,
                 base::Unretained(dialog_delegate)))));
-  } else {
-    dialog_builder.AddMenuItem(
-        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                       ui::kColorIcon, 16),
-        l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN),
-        base::DoNothing(),
-        ui::DialogModelMenuItem::Params().SetIsEnabled(false));
   }
 
   std::u16string ok_button_text = dialog_controller->GetActionButtonText();

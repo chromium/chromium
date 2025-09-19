@@ -232,23 +232,6 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
   // Warning: |this| may be deleted here!
 }
 
-std::unique_ptr<ControlledHomeDialogControllerInterface::ExtraViewInfo>
-ControlledHomeDialogController::GetExtraViewInfo() {
-  auto extra_view_info = std::make_unique<ExtraViewInfo>();
-
-  if (IsPolicyIndicationNeeded()) {
-    extra_view_info->resource = &vector_icons::kBusinessIcon;
-    extra_view_info->text =
-        l10n_util::GetStringUTF16(IDS_EXTENSIONS_INSTALLED_BY_ADMIN);
-    extra_view_info->is_learn_more = false;
-  } else {
-    extra_view_info->text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
-    extra_view_info->is_learn_more = true;
-  }
-
-  return extra_view_info;
-}
-
 bool ControlledHomeDialogController::IsPolicyIndicationNeeded() const {
   return extensions::Manifest::IsPolicyLocation(extension_->location());
 }
