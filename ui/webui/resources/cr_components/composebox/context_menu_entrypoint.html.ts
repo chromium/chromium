@@ -12,14 +12,14 @@ export function getHtml(this: ContextMenuEntrypointElement) {
   <cr-button id="entrypoint"
       @click="${this.onEntrypointClick_}"
       ?disabled="${this.inputsDisabled}"
-      title="$i18n{addContextTitle}">
+      title="${this.i18n('addContextTitle')}">
     <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-    <span id="description">$i18n{addContext}</span>
+    <span id="description">${this.i18n('addContext')}</span>
   </cr-button>
 
-  <cr-action-menu id="menu" role-description="$i18n{menu}">
+  <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
     ${this.tabSuggestions.length > 0 ? html`
-      <h4 id="tabHeader">$i18n{addTab}</h4>
+      <h4 id="tabHeader">${this.i18n('addTab')}</h4>
       ${this.tabSuggestions.map((tab, index) => html`
         <button class="dropdown-item" title="${tab.title}"
             data-index="${index}" @click="${this.addTabContext}">
@@ -33,12 +33,12 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     <button id="imageUpload" class="dropdown-item"
         @click="${this.openImageUpload}">
       <cr-icon icon="composebox:imageUpload"></cr-icon>
-      $i18n{addImage}
+      ${this.i18n('addImage')}
     </button>
     <button id="fileUpload" class="dropdown-item"
         @click="${this.openFileUpload}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
-      $i18n{uploadFile}
+      ${this.i18n('uploadFile')}
     </button>
   </cr-action-menu>
 <!--_html_template_end_-->`;

@@ -5,6 +5,7 @@
 /** @fileoverview Suite of tests for cr-shortcut-input. */
 
 import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
+import 'chrome://extensions/strings.m.js';
 
 import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -17,14 +18,6 @@ suite('CrShortcutInputTest', function() {
   let input: CrShortcutInputElement;
 
   setup(function() {
-    loadTimeData.resetForTesting({
-      shortcutSet: 'set',
-      shortcutNotSet: 'not set',
-      shortcutTypeAShortcut: 'type',
-      shortcutIncludeStartModifier: 'include modifier',
-      shortcutTooManyModifiers: 'too many modifier',
-      shortcutNeedCharacter: 'need character',
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     input = document.createElement('cr-shortcut-input');
     document.body.appendChild(input);

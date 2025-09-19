@@ -15,4 +15,9 @@ build_webui_tests("build") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "chrome://new-tab-page/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir) ]
 }

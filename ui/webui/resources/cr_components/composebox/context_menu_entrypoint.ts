@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -28,7 +29,10 @@ export interface ContextMenuEntrypointElement {
   };
 }
 
-export class ContextMenuEntrypointElement extends CrLitElement {
+const ContextMenuEntrypointElementBase = I18nMixinLit(CrLitElement);
+
+export class ContextMenuEntrypointElement extends
+    ContextMenuEntrypointElementBase {
   static get is() {
     return 'composebox-context-menu-entrypoint';
   }

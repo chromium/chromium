@@ -20,7 +20,7 @@ export function getHtml(this: ComposeboxElement) {
       <cr-button id="dismissErrorButton"
           @click="${this.onDismissErrorButtonClick_}">
         <cr-icon icon="cr:close" slot="prefix-icon"></cr-icon>
-        <div>$i18n{dismissButton}</div>
+        <div>${this.i18n('dismissButton')}</div>
       </cr-button>
     </div>
   `: ''}
@@ -85,7 +85,7 @@ export function getHtml(this: ComposeboxElement) {
               class="upload-icon no-overlap"
               id="imageUploadButton"
               iron-icon="composebox:imageUpload"
-              title="$i18n{composeboxImageUploadButtonTitle}"
+              title="${this.i18n('composeboxImageUploadButtonTitle')}"
               .disabled="${this.inputsDisabled_}"
               @click="${this.openImageUpload_}">
           </cr-icon-button>
@@ -94,7 +94,7 @@ export function getHtml(this: ComposeboxElement) {
               class="upload-icon no-overlap"
               id="fileUploadButton"
               iron-icon="composebox:fileUpload"
-              title="$i18n{composeboxPdfUploadButtonTitle}"
+              title="${this.i18n('composeboxPdfUploadButtonTitle')}"
               .disabled="${this.inputsDisabled_}"
               @click="${this.openFileUpload_}">
           </cr-icon-button>
