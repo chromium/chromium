@@ -1692,6 +1692,7 @@ class BookmarkManagerMediator
         // distinct UI mode.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             if (TextUtils.isEmpty(searchText)) {
+                mSelectionDelegate.clearSelection();
                 refresh();
             } else {
                 setBookmarks(
