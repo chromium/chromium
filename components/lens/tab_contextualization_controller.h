@@ -88,6 +88,13 @@ class TabContextualizationController : public content::WebContentsObserver {
       CaptureScreenshotCallback callback);
 
  private:
+  // Creates the eligibility API if it has not been created.
+  void CreatePageContextEligibilityAPI();
+
+  // Called when the page context eligibility API is loaded.
+  void OnPageContextEligibilityAPILoaded(
+      optimization_guide::PageContextEligibility* page_context_eligibility);
+
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
 
@@ -145,6 +152,9 @@ class TabContextualizationController : public content::WebContentsObserver {
       GetPageContextCallback callback,
       std::unique_ptr<lens::ContextualInputData> data,
       const SkBitmap& screenshot);
+
+  // The page context eligibility API if it has been fetched. Can be nullptr.
+  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
 
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;
