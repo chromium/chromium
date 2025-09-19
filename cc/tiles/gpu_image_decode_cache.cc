@@ -395,43 +395,6 @@ sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
                                      std::move(color_space));
 }
 
-// TODO(ericrk): Replace calls to this with calls to SkImages::TextureFromImage,
-// once that function handles colorspaces. https://crbug.com/834837
-sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
-                                sk_sp<SkImage> source_image,
-                                sk_sp<SkColorSpace> target_color_space,
-                                skgpu::Mipmapped mip_mapped) {
-  GrDirectContext* gr_context = context->GrContext();
-  CHECK(gr_context);
-  SkRecorder* recorder = gr_context->asRecorder();
-  // Step 1: Upload image and generate mips if necessary. If we will be applying
-  // a color-space conversion, don't generate mips yet, instead do it after
-  // conversion, in step 3.
-  bool add_mips_after_color_conversion =
-      (target_color_space && mip_mapped == skgpu::Mipmapped::kYes);
-  sk_sp<SkImage> uploaded_image = SkImages::TextureFromImage(
-      gr_context, source_image,
-      add_mips_after_color_conversion ? skgpu::Mipmapped::kNo : mip_mapped);
-
-  // Step 2: Apply a color-space conversion if necessary.
-  if (uploaded_image && target_color_space) {
-    sk_sp<SkImage> pre_converted_image = uploaded_image;
-    uploaded_image =
-        uploaded_image->makeColorSpace(recorder, target_color_space, {});
-  }
-
-  // Step 3: If we had a colorspace conversion, we couldn't mipmap in step 1, so
-  // add mips here.
-  if (uploaded_image && add_mips_after_color_conversion) {
-    sk_sp<SkImage> pre_mipped_image = uploaded_image;
-    uploaded_image = SkImages::TextureFromImage(gr_context, uploaded_image,
-                                                skgpu::Mipmapped::kYes);
-    DCHECK_NE(pre_mipped_image, uploaded_image);
-  }
-
-  return uploaded_image;
-}
-
 // We use this below, instead of just a std::unique_ptr, so that we can run
 // a Finch experiment to check the impact of not using discardable memory on the
 // GPU decode path.
@@ -2842,14 +2805,13 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
   // Prevent image_data from being deleted while lock is not held.
   scoped_refptr<ImageData> image_data_holder(image_data);
 
+  // Following OOP-R, it is no longer possible to call this method with mode
+  // `kGpu`.
+  // TODO(crbug.com/391648152): Remove the kGpu mode entirely post-verification
+  // that it is no longer used.
+  CHECK(image_data->mode != DecodedDataMode::kGpu);
+
   // RGBX decoding is below.
-  // For kGpu, we upload and color convert (if necessary).
-  if (image_data->mode == DecodedDataMode::kGpu) {
-    DCHECK(!use_transfer_cache_);
-    base::AutoUnlock unlock(lock_);
-    uploaded_image = MakeTextureImage(context_, std::move(uploaded_image),
-                                      color_space, image_needs_mips);
-  }
 
   // At-raster may have decoded this while we were unlocked. If so, ignore our
   // result.
