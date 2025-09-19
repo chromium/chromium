@@ -47,6 +47,10 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+namespace optimization_guide {
+class OptimizationGuideModelExecutor;
+}
+
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -128,6 +132,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillAiManager* GetAutofillAiManager() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
+  optimization_guide::OptimizationGuideModelExecutor*
+  GetOptimizationGuideModelExecutor() final;
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 bool is_manual_fallback,

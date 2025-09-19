@@ -73,6 +73,7 @@ class SmsOtpBackend;
 
 namespace optimization_guide {
 class ModelQualityLogsUploaderService;
+class OptimizationGuideModelExecutor;
 }
 
 namespace optimization_guide::proto {
@@ -373,6 +374,10 @@ class AutofillClient {
   // Returns the per-profile `AutofillAiModelExecutor`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled or the profile is OTR.
   virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
+
+  // Returns the per-profile `OptimizationGuideModelExecutor`.
+  virtual optimization_guide::OptimizationGuideModelExecutor*
+  GetOptimizationGuideModelExecutor();
 
   // Returns nullptr if no identity credential conditional request was made
   // before.

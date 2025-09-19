@@ -39,6 +39,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
@@ -534,6 +535,18 @@ AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return AutofillAiModelExecutorFactory::GetForProfile(profile);
+}
+
+optimization_guide::OptimizationGuideModelExecutor*
+ChromeAutofillClient::GetOptimizationGuideModelExecutor() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  if (!profile || profile->ShutdownStarted()) {
+    return nullptr;
+  }
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return service;
 }
 
 IdentityCredentialDelegate*
