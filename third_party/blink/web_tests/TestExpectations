@@ -9706,3 +9706,6 @@ crbug.com/444433224 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/444405358 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash Failure Pass ]
 
 crbug.com/444150315 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
+
+# Gardener 2025-09-19
+crbug.com/446017690 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Pass Timeout ]
