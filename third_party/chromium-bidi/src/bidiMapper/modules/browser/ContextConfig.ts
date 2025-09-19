@@ -18,6 +18,7 @@
 import type {Protocol} from 'devtools-protocol';
 
 import type {
+  Browser,
   BrowsingContext,
   Emulation,
   Session,
@@ -29,9 +30,10 @@ import type {
  * config. `null` values means the value should be default regardless of the upstream.
  */
 export class ContextConfig {
+  // keep-sorted start block=yes
   acceptInsecureCerts?: boolean;
-  viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
+  downloadBehavior?: Browser.DownloadBehavior | null;
   // Extra headers are kept in CDP format.
   extraHeaders?: Protocol.Network.Headers;
   geolocation?:
@@ -46,6 +48,8 @@ export class ContextConfig {
   timezone?: string | null;
   userAgent?: string | null;
   userPromptHandler?: Session.UserPromptHandler;
+  viewport?: BrowsingContext.Viewport | null;
+  // keep-sorted end
 
   /**
    * Merges multiple `ContextConfig` objects. The configs are merged in the

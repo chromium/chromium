@@ -83,10 +83,17 @@ export class ContextConfigStorage {
    * Calculates the active configuration by merging global, user context, and
    * browsing context settings.
    */
-  getActiveConfig(topLevelBrowsingContextId: string, userContext: string) {
-    return ContextConfig.merge(
+  getActiveConfig(
+    topLevelBrowsingContextId: string | undefined,
+    userContext: string,
+  ) {
+    const userContextConfig = ContextConfig.merge(
       this.#global,
       this.#userContextConfigs.get(userContext),
+    );
+    if (topLevelBrowsingContextId === undefined) return userContextConfig;
+    return ContextConfig.merge(
+      userContextConfig,
       this.#browsingContextConfigs.get(topLevelBrowsingContextId),
     );
   }

@@ -695,14 +695,22 @@ async def iframe_id(websocket, context_id, html, iframe):
 
 
 @pytest_asyncio.fixture
-async def user_context_id(websocket):
-    """Create a new user context and return its id."""
-    result = await execute_command(websocket, {
-        "method": "browser.createUserContext",
-        "params": {}
-    })
+async def create_user_context(websocket):
+    async def create_user_context(params={}):
+        """Create a new user context and return its id."""
+        result = await execute_command(websocket, {
+            "method": "browser.createUserContext",
+            "params": params
+        })
+        return result['userContext']
 
-    return result['userContext']
+    return create_user_context
+
+
+@pytest_asyncio.fixture
+async def user_context_id(create_user_context):
+    """Create a new user context and return its id."""
+    return await create_user_context()
 
 
 @pytest.fixture
