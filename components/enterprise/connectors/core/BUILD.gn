@@ -11,6 +11,8 @@ if (is_android) {
 
 source_set("core") {
   sources = [
+    "analysis_service_settings_base.cc",
+    "analysis_service_settings_base.h",
     "analysis_settings.cc",
     "analysis_settings.h",
     "common.cc",
