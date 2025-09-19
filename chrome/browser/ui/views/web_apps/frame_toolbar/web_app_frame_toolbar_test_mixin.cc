@@ -16,7 +16,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "url/gurl.h"
 
 WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
@@ -42,7 +42,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   navigation_observer.WaitForNavigationFinished();
 
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
   frame_view_ = static_cast<BrowserFrameView*>(frame_view);
 

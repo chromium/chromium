@@ -241,7 +241,7 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // The non standard app frame has a easy resize targetter installed.
-  std::unique_ptr<views::NonClientFrameView> frame(
+  std::unique_ptr<views::FrameView> frame(
       app_window_views()->CreateNonStandardAppFrame());
   {
     // Ensure that the window has an event targeter (there should be an

@@ -12,7 +12,7 @@
 class BrowserView;
 class BrowserWidget;
 
-// PictureInPictureBrowserFrameViewAsh provides the NonClientFrameView for pip
+// PictureInPictureBrowserFrameViewAsh provides the FrameView for pip
 // windows on ChromeOS under classic ash.
 class PictureInPictureBrowserFrameViewAsh
     : public PictureInPictureBrowserFrameView,

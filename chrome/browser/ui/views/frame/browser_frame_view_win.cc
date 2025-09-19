@@ -281,7 +281,7 @@ void BrowserFrameViewWin::PaintAsActiveChanged() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewWin, views::NonClientFrameView implementation:
+// BrowserFrameViewWin, views::FrameView implementation:
 
 gfx::Rect BrowserFrameViewWin::GetBoundsForClientView() const {
   return client_view_bounds_;

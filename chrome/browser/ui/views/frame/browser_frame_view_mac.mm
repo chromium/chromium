@@ -312,7 +312,7 @@ void BrowserFrameViewMac::OnThemeChanged() {
   BrowserFrameView::OnThemeChanged();
 }
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameViewMac, views::NonClientFrameView implementation:
+// BrowserFrameViewMac, views::FrameView implementation:
 
 gfx::Rect BrowserFrameViewMac::GetBoundsForClientView() const {
   return bounds();

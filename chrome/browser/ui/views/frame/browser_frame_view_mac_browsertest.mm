@@ -40,7 +40,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "url/gurl.h"
 
 namespace {
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewMacBrowserTestTitlePrefixed,
 
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
-  views::NonClientFrameView* const frame_view =
+  views::FrameView* const frame_view =
       browser_view->GetWidget()->non_client_view()->frame_view();
   auto* const title =
       static_cast<views::Label*>(frame_view->GetViewByID(VIEW_ID_WINDOW_TITLE));

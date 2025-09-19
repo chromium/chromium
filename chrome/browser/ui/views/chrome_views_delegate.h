@@ -41,7 +41,7 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   ProcessMenuAcceleratorResult ProcessAcceleratorWhileMenuShowing(
       const ui::Accelerator& accelerator) override;
   bool ShouldCloseMenuIfMouseCaptureLost() const override;
-  std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget) override;
 #endif
 

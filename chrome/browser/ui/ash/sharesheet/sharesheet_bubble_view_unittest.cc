@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/memory/raw_ptr.h"
@@ -90,9 +90,9 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
   // views::WidgetDelegateView:
   bool CanActivate() const override { return true; }
 
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
+    return std::make_unique<FrameViewAsh>(widget);
   }
 };
 

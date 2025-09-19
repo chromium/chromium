@@ -101,7 +101,7 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their
@@ -330,7 +330,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     web_app::NavigateViaLinkClickToURLAndWait(app_browser, start_url);
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     // Not all platform configurations use OpaqueBrowserFrameView for their

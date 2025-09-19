@@ -79,7 +79,7 @@ void ChromeNativeAppWindowViewsWin::InitializeDefaultWindow(
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsWin::CreateStandardDesktopAppFrame() {
   auto frame_view = std::make_unique<AppWindowFrameViewWin>(widget());
   frame_view_ = frame_view.get();

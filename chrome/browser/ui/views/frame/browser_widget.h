@@ -95,7 +95,7 @@ class BrowserWidget : public views::Widget,
   // Tells the frame to update the throbber.
   void UpdateThrobber(bool running);
 
-  // Returns the NonClientFrameView of this frame.
+  // Returns the FrameView of this frame.
   BrowserFrameView* GetFrameView() const;
 
   // Returns |true| if we should use the custom frame.
@@ -129,8 +129,7 @@ class BrowserWidget : public views::Widget,
 
   // views::Widget:
   views::internal::RootView* CreateRootView() override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView()
-      override;
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView() override;
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;
@@ -190,7 +189,7 @@ class BrowserWidget : public views::Widget,
   // functions that only exist on BrowserRootView (versus RootView).
   raw_ptr<BrowserRootView> root_view_;
 
-  // A pointer to our NonClientFrameView as a BrowserFrameView.
+  // A pointer to our FrameView as a BrowserFrameView.
   raw_ptr<BrowserFrameView> browser_frame_view_;
 
   // The BrowserView is our ClientView. This is a pointer to it.

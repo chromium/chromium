@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "base/byte_count.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_util.h"
@@ -79,9 +79,8 @@ void LowDiskSpaceDialogView::Show(aura::Window* arc_window,
 
   DVLOG(1) << __func__;
   views::BubbleDialogDelegateView::CreateBubble(
-      new LowDiskSpaceDialogView(ash::NonClientFrameViewAsh::Get(arc_window),
-                                 file_count, required_disk_space,
-                                 std::move(callback)))
+      new LowDiskSpaceDialogView(ash::FrameViewAsh::Get(arc_window), file_count,
+                                 required_disk_space, std::move(callback)))
       ->Show();
 }
 

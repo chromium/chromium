@@ -688,7 +688,7 @@ class BorderlessIsolatedWebAppBrowserTest
       EXPECT_EQ(title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
     }
 
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view()->GetWidget()->non_client_view()->frame_view();
     frame_view_ = static_cast<BrowserFrameView*>(frame_view);
   }
@@ -1586,7 +1586,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
 
   BrowserView* browser_view = helper()->browser_view();
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view->GetWidget()->non_client_view()->frame_view();
 
   // A widget owned by BrowserView is triggered to ensure that a click inside
@@ -1769,7 +1769,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
 
   BrowserView* browser_view = helper()->browser_view();
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view->GetWidget()->non_client_view()->frame_view();
 
   gfx::Point draggable_point(100, 100);

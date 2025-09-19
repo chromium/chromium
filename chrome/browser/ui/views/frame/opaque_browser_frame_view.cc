@@ -310,7 +310,7 @@ void OpaqueBrowserFrameView::OnThemeChanged() {
   BrowserFrameView::OnThemeChanged();
 }
 ///////////////////////////////////////////////////////////////////////////////
-// OpaqueBrowserFrameView, views::NonClientFrameView implementation:
+// OpaqueBrowserFrameView, views::FrameView implementation:
 
 gfx::Rect OpaqueBrowserFrameView::GetBoundsForClientView() const {
   return layout_->client_view_bounds();

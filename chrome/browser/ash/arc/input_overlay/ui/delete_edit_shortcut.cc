@@ -141,8 +141,8 @@ void DeleteEditShortcut::OnDeleteButtonPressed() {
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
-DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateNonClientFrameView(
+    views::Widget* widget) {
   // Create the customized bubble border.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());

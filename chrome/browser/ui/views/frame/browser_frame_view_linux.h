@@ -53,7 +53,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   // ui::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   int NonClientHitTest(const gfx::Point& point) override;
 
   // Gets the radius of the top corners when the window is restored.  The

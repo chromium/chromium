@@ -847,9 +847,9 @@ class BrowserView : public BrowserWindow,
     return web_app_frame_toolbar();
   }
 
-  // This value is used in a common calculation in NonClientFrameView
+  // This value is used in a common calculation in FrameView
   // subclasses. This must be added to the origin of the first painted pixel of
-  // NonClientFrameView to get the correct offset. See
+  // FrameView to get the correct offset. See
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
 

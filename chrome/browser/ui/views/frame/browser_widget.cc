@@ -386,8 +386,7 @@ views::internal::RootView* BrowserWidget::CreateRootView() {
   return root_view_;
 }
 
-std::unique_ptr<views::NonClientFrameView>
-BrowserWidget::CreateNonClientFrameView() {
+std::unique_ptr<views::FrameView> BrowserWidget::CreateNonClientFrameView() {
   auto browser_frame_view = chrome::CreateBrowserFrameView(this, browser_view_);
   browser_frame_view_ = browser_frame_view.get();
   return browser_frame_view;
@@ -677,7 +676,7 @@ void BrowserWidget::SelectNativeTheme() {
 void BrowserWidget::OnTouchUiChanged() {
   client_view()->InvalidateLayout();
 
-  // For standard browser frame, if we do not invalidate the NonClientFrameView
+  // For standard browser frame, if we do not invalidate the FrameView
   // the client window bounds will not be properly updated which could cause
   // visual artifacts. See crbug.com/1035959 for details.
   if (non_client_view()->frame_view()) {

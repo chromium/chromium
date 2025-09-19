@@ -127,7 +127,7 @@ class GradientBubbleFrameView : public views::BubbleFrameView {
 BEGIN_METADATA(GradientBubbleFrameView)
 END_METADATA
 
-std::unique_ptr<views::NonClientFrameView> CreateHandoffButtonFrameView(
+std::unique_ptr<views::FrameView> CreateHandoffButtonFrameView(
     views::Widget* widget) {
   const gfx::Insets content_padding = gfx::Insets::VH(12, 20);
   const gfx::Insets total_insets =

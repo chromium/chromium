@@ -516,7 +516,7 @@ TEST_F(VideoOverlayWindowViewsTest, UpdateNaturalSizeDoesNotMoveWindow) {
 // Tests that the OverlayWindowFrameView does not accept events so they can
 // propagate to the overlay.
 TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
-  // Since the NonClientFrameView is the only non-custom direct descendent of
+  // Since the FrameView is the only non-custom direct descendent of
   // the NonClientView, we can assume that if the frame does not accept the
   // point but the NonClientView does, then it will be handled by one of the
   // custom overlay views.

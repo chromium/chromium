@@ -17,7 +17,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/caption_button_types.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class BrowserView;
 class CaptionButtonPlaceholderContainer;
@@ -70,7 +70,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;

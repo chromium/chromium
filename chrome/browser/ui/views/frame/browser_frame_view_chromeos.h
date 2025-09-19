@@ -67,7 +67,7 @@ class BrowserFrameViewChromeOS
   SkColor GetFrameColor(BrowserFrameActiveState active_state) const override;
   void UpdateMinimumSize() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -166,11 +166,11 @@ class BrowserFrameViewChromeOS
   // in tablet mode.
   bool GetShowCaptionButtonsWhenNotInOverview() const;
 
-  // Distance between the edge of the NonClientFrameView and the web app frame
+  // Distance between the edge of the FrameView and the web app frame
   // toolbar.
   int GetToolbarLeftInset() const;
 
-  // Distance between the edges of the NonClientFrameView and the tab strip.
+  // Distance between the edges of the FrameView and the tab strip.
   int GetTabStripLeftInset() const;
   int GetTabStripRightInset() const;
 

@@ -73,7 +73,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:

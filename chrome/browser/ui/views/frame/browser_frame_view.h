@@ -17,7 +17,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class BrowserView;
 
@@ -124,8 +124,8 @@ struct BrowserLayoutParams {
 // Concrete implementations are provided for each platform (e.g., Windows, Mac,
 // Linux) and are created by the factory function
 // `chrome::CreateBrowserFrameView`.
-class BrowserFrameView : public views::NonClientFrameView {
-  METADATA_HEADER(BrowserFrameView, views::NonClientFrameView)
+class BrowserFrameView : public views::FrameView {
+  METADATA_HEADER(BrowserFrameView, views::FrameView)
 
  public:
   BrowserFrameView(BrowserWidget* frame, BrowserView* browser_view);
@@ -258,7 +258,7 @@ class BrowserFrameView : public views::NonClientFrameView {
   // Sets the bounds of `frame_`.
   virtual void SetFrameBounds(const gfx::Rect& bounds);
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
 
@@ -316,7 +316,7 @@ class BrowserFrameView : public views::NonClientFrameView {
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   int GetSystemMenuY() const override;
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -54,7 +54,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;

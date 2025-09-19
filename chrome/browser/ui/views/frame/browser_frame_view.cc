@@ -321,7 +321,7 @@ BrowserFrameView::BoundsAndMargins BrowserFrameView::GetCaptionButtonBounds()
 bool BrowserFrameView::ShouldPaintAsActiveForState(
     BrowserFrameActiveState active_state) const {
   return (active_state == BrowserFrameActiveState::kUseCurrent)
-             ? NonClientFrameView::ShouldPaintAsActive()
+             ? FrameView::ShouldPaintAsActive()
              : (active_state == BrowserFrameActiveState::kActive);
 }
 
@@ -353,7 +353,7 @@ gfx::ImageSkia BrowserFrameView::GetFrameOverlayImage(
 }
 
 void BrowserFrameView::Layout(PassKey p) {
-  LayoutSuperclass<NonClientFrameView>(this);
+  LayoutSuperclass<FrameView>(this);
   // If the show browser frame view is present, make it fills this entire frame.
   if (auto* view = ShowBrowserFrameRegionsView::Find(*this)) {
     view->SetBoundsRect(GetLocalBounds());
@@ -361,7 +361,7 @@ void BrowserFrameView::Layout(PassKey p) {
 }
 
 views::View::Views BrowserFrameView::GetChildrenInZOrder() {
-  auto views = NonClientFrameView::GetChildrenInZOrder();
+  auto views = FrameView::GetChildrenInZOrder();
   // If the show browser frame view is in the list, move it to the end so it
   // paints over everything.
   if (auto* view = ShowBrowserFrameRegionsView::Find(*this)) {

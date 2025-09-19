@@ -191,8 +191,7 @@ std::unique_ptr<ui::DialogModel> CreatePasswordChangeFailedDialog(
 // Creates a BubbleFrameView to be used as the non-client frame view for the
 // toast widget. This frame view provides rounded corners and a custom
 // background color.
-std::unique_ptr<views::NonClientFrameView> CreateToastFrameView(
-    views::Widget* widget) {
+std::unique_ptr<views::FrameView> CreateToastFrameView(views::Widget* widget) {
   auto frame_view = std::make_unique<views::BubbleFrameView>(
       /*title_margins=*/gfx::Insets(), /*content_margins=*/gfx::Insets());
   auto border = std::make_unique<views::BubbleBorder>(

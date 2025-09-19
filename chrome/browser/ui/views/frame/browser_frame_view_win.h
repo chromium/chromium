@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class BrowserView;
 class BrowserCaptionButtonContainer;
@@ -42,7 +42,7 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   gfx::Size GetMinimumSize() const override;
   void WindowControlsOverlayEnabledChanged() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;

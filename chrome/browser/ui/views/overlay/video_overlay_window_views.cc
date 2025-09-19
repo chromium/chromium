@@ -67,7 +67,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -264,9 +264,9 @@ class GradientBackground : public views::Background {
 
 }  // namespace
 
-// OverlayWindow implementation of NonClientFrameView.
-class OverlayWindowFrameView : public views::NonClientFrameView {
-  METADATA_HEADER(OverlayWindowFrameView, views::NonClientFrameView)
+// OverlayWindow implementation of FrameView.
+class OverlayWindowFrameView : public views::FrameView {
+  METADATA_HEADER(OverlayWindowFrameView, views::FrameView)
 
  public:
   explicit OverlayWindowFrameView(views::Widget* widget) : widget_(widget) {}
@@ -276,7 +276,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
 
   ~OverlayWindowFrameView() override = default;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override { return bounds(); }
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override {
@@ -369,7 +369,7 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
   ~OverlayWindowWidgetDelegate() override = default;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return std::make_unique<OverlayWindowFrameView>(widget);
   }

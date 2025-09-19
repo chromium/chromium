@@ -59,7 +59,7 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
                                       Orientation orientation);
 
   // views::BubbleDialogDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   void Show(const SuggestionDetails& details);

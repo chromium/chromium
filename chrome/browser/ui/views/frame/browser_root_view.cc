@@ -411,7 +411,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
 
   // ToolbarView can't paint its own top stroke because the stroke is drawn just
   // above its bounds, where the active tab can overwrite it to visually join
-  // with the toolbar.  This painting can't be done in the NonClientFrameView
+  // with the toolbar.  This painting can't be done in the FrameView
   // because parts of the BrowserView (such as tabs) would get rendered on top
   // of the stroke.  It can't be done in BrowserView either because that view is
   // offset from the widget by a few DIPs, which is troublesome for computing a

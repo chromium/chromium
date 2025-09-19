@@ -37,7 +37,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL

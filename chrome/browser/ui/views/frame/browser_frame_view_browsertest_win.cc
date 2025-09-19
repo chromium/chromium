@@ -51,7 +51,7 @@ class BrowserFrameViewWinTest : public InProcessBrowserTest {
  protected:
   BrowserFrameViewWin* GetBrowserFrameViewWin() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view->GetWidget()->non_client_view()->frame_view();
 
     if (!views::IsViewClass<BrowserFrameViewWin>(frame_view)) {
@@ -220,7 +220,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     navigation_observer.WaitForNavigationFinished();
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     frame_view_ = static_cast<BrowserFrameViewWin*>(frame_view);
@@ -392,7 +392,7 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     navigation_observer.WaitForNavigationFinished();
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
-    views::NonClientFrameView* frame_view =
+    views::FrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
     frame_view_ = static_cast<BrowserFrameViewWin*>(frame_view);

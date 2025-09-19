@@ -246,8 +246,8 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate:
-std::unique_ptr<views::NonClientFrameView>
-AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> AutoPipSettingView::CreateNonClientFrameView(
+    views::Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<views::BubbleBorder> bubble_border =
       std::make_unique<views::BubbleBorder>(

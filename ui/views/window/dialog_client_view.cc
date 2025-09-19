@@ -200,7 +200,7 @@ void DialogClientView::UpdateWindowRoundedCorners(
   DCHECK(GetWidget());
 
   // ChromeOS has rounded windows. A dialog can use native frame i.e look like
-  // a top-level window. For ChromeOS, dialogs use `NonClientFrameViewAsh`
+  // a top-level window. For ChromeOS, dialogs use `FrameViewAsh`
   // as native frame. The top corners will be rounded by the frame_view and
   // client-view is responsible for rounding the bottom corners.
   const gfx::RoundedCornersF background_radii(0, 0, window_radii.lower_right(),

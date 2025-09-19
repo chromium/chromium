@@ -521,7 +521,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 SharesheetBubbleView::CreateNonClientFrameView(views::Widget* widget) {
   // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =

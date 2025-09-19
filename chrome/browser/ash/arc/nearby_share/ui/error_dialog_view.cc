@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
@@ -41,7 +41,7 @@ ErrorDialogView::~ErrorDialogView() = default;
 void ErrorDialogView::Show(aura::Window* arc_window,
                            base::OnceClosure callback) {
   views::BubbleDialogDelegateView::CreateBubble(
-      new ErrorDialogView(ash::NonClientFrameViewAsh::Get(arc_window),
+      new ErrorDialogView(ash::FrameViewAsh::Get(arc_window),
                           std::move(callback)))
       ->Show();
 }

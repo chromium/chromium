@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -62,8 +62,8 @@
 using extensions::AppWindow;
 namespace {
 
-// NonClientFrameView implementation for frameless chrome apps (i.e apps that do
-// not use ash style NonClientFrameView).
+// FrameView implementation for frameless chrome apps (i.e apps that do
+// not use ash style FrameView).
 class NativeAppWindowFrameView : public apps::AppWindowFrameView,
                                  public aura::WindowObserver {
  public:
@@ -85,7 +85,7 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
 
   ~NativeAppWindowFrameView() override = default;
 
-  // views::NonClientFrameView
+  // views::FrameView
   void UpdateWindowRoundedCorners() override {
     DCHECK(GetWidget());
 
@@ -238,7 +238,7 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   app_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
   auto frame = std::make_unique<NativeAppWindowFrameView>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),
@@ -374,7 +374,7 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
 
 ///////////////////////////////////////////////////////////////////////////////
 // WidgetDelegate implementation:
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
     views::Widget* widget) {
   if (IsFrameless()) {
@@ -383,7 +383,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
 
   window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
 
-  auto custom_frame_view = std::make_unique<ash::NonClientFrameViewAsh>(widget);
+  auto custom_frame_view = std::make_unique<ash::FrameViewAsh>(widget);
 
   custom_frame_view->GetHeaderView()->set_context_menu_controller(this);
 
