@@ -5,6 +5,7 @@
 #include "chrome/common/chrome_switches.h"
 
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -380,6 +381,11 @@ const char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
 // for testing purposes so that the UI tests don't depend on what comes up for
 // http://google.com.
 const char kHomePage[] = "homepage";
+
+#if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
+// Triggers the import of passwords on startup.
+const char kImportPasswords[] = "import-passwords";
+#endif
 
 // Causes the initial browser opened to be in incognito mode. Further browsers
 // may or may not be in incognito mode; see `IncognitoModePrefs`.

@@ -434,6 +434,10 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/signin",
     ]
   }
+
+  if (!is_android && !is_official_build) {
+    deps += [ "//chrome/browser/password_manager:startup_import" ]
+  }
 }
 
 source_set("profile_downloader") {
