@@ -3345,6 +3345,8 @@ public class WebContentsAccessibilityTest {
                         // new SpanRange(new AbsoluteSizeSpan(0), 22, 31),
                         new SpanRange(new AbsoluteSizeSpan(16), 31, 36)));
 
+        testCases.put("Italic text field", List.of(new SpanRange(new StyleSpan(Typeface.ITALIC))));
+
         StringBuilder sb = new StringBuilder();
         sb.append("Simple contenteditable example with bold, italic, and underline text.\n");
         sb.append("Also monospace, big, and red text with yellow background and bold style.");

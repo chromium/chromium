@@ -149,7 +149,8 @@ void PopulateStyleData(const content::BrowserAccessibilityAndroid& node,
     AXStyleData::AddRange(style_data->links, node.GetTargetUrl(), start, end);
   }
 
-  if (node.GetRole() == ax::mojom::Role::kStaticText) {
+  if (node.GetRole() == ax::mojom::Role::kStaticText ||
+      node.IsAtomicTextField()) {
     if (node.HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
       // Zero font size is valid in CSS, which makes the text invisible.
       if (float size = node.GetTextSize(); size >= 0) {
