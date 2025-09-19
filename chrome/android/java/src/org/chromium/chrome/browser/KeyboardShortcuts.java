@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -1059,7 +1060,11 @@ public class KeyboardShortcuts {
                         currentTabModel
                                 .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        TabClosureParams.closeTab(tab)
+                                                .allowUndo(false)
+                                                .tabClosingSource(
+                                                        TabClosingSource.KEYBOARD_SHORTCUT)
+                                                .build(),
                                         /* allowDialog= */ true);
                     }
                     return true;

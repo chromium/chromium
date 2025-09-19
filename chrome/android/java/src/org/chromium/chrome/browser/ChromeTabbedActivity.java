@@ -831,9 +831,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                         public void onFinishingTabClosure(
                                 Tab tab, @TabClosingSource int closingSource) {
                             closeIfNoTabsAndHomepageEnabled(
-                                    false,
-                                    /* shouldRemoveWindowWithZeroTabs= */ closingSource
-                                            == TabClosingSource.TABLET_TAB_STRIP);
+                                    false, shouldRemoveWindowWithZeroTabs(closingSource));
                         }
 
                         @Override
@@ -842,9 +840,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 boolean isAllTabs,
                                 @TabClosingSource int closingSource) {
                             closeIfNoTabsAndHomepageEnabled(
-                                    true,
-                                    /* shouldRemoveWindowWithZeroTabs= */ closingSource
-                                            == TabClosingSource.TABLET_TAB_STRIP);
+                                    true, shouldRemoveWindowWithZeroTabs(closingSource));
                         }
 
                         @Override
@@ -916,6 +912,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeCompositor");
         }
+    }
+
+    private boolean shouldRemoveWindowWithZeroTabs(@TabClosingSource int closingSource) {
+        return closingSource == TabClosingSource.TABLET_TAB_STRIP
+                || closingSource == TabClosingSource.KEYBOARD_SHORTCUT;
     }
 
     private void onNewTabButtonClick(View view) {
