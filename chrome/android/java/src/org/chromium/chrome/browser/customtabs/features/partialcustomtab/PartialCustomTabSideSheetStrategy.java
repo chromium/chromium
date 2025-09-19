@@ -33,6 +33,8 @@ import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -48,6 +50,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * CustomTabHeightStrategy for Partial Custom Tab Side-Sheet implementation. An instance of this
  * class should be owned by the CustomTabActivity.
  */
+@NullMarked
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
     private static final int SIDE_SHEET_UI_DELAY = 20;
     private static final NoAnimator NO_ANIMATOR = new NoAnimator();
@@ -151,6 +154,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
+    @Initializer
     public void onToolbarInitialized(
             View coordinatorView,
             CustomTabToolbar toolbar,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHandleStrategy.FLING_VELOCITY_PIXELS_PER_MS;
 
 import android.view.GestureDetector;
@@ -12,6 +13,8 @@ import android.view.VelocityTracker;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHandleStrategy.DragEventCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -26,6 +29,7 @@ import java.util.function.Supplier;
  * Class responsible for detecting swipe and scroll events on the partial custom tab's content view,
  * and setting the event target appropriately to the tab window or the content view.
  */
+@NullMarked
 class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     static final float MIN_VERTICAL_SCROLL_SLOPE = 2.0f;
 
@@ -42,7 +46,7 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
 
     private final VelocityTracker mVelocityTracker;
     private final DragEventCallback mCallback;
-    private final Supplier<Tab> mTab;
+    private final Supplier<@Nullable Tab> mTab;
     private final BooleanSupplier mIsFullyExpanded;
 
     /**
@@ -53,7 +57,9 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
      * @param isFullyExpanded Supplier of the flag whether the tab is in fully expanded state.
      */
     public ContentGestureListener(
-            Supplier<Tab> tab, DragEventCallback callback, BooleanSupplier isFullyExpanded) {
+            Supplier<@Nullable Tab> tab,
+            DragEventCallback callback,
+            BooleanSupplier isFullyExpanded) {
         mTab = tab;
         mCallback = callback;
         mIsFullyExpanded = isFullyExpanded;
@@ -82,7 +88,8 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     }
 
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    public boolean onScroll(
+            @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (e1 == null) return false;
 
         // Mutable local flags for readability. Needs updating when |mState| changes.
@@ -150,16 +157,18 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
         MotionEvent down = MotionEvent.obtain(e);
         down.setAction(MotionEvent.ACTION_DOWN);
         mState = GestureState.SCROLL_CONTENT;
-        mTab.get().getContentView().onTouchEvent(down);
+        assumeNonNull(assumeNonNull(mTab.get()).getContentView()).onTouchEvent(down);
     }
 
     private boolean isContentScrolledToTop() {
-        WebContents webContents = mTab.get().getWebContents();
+        WebContents webContents = assumeNonNull(mTab.get()).getWebContents();
+        assert webContents != null;
         return RenderCoordinates.fromWebContents(webContents).getScrollYPixInt() == 0;
     }
 
     @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    public boolean onFling(
+            @Nullable MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (e1 == null || mState != GestureState.DRAG_TAB) return false;
 
         // Set the distance to zero not to perform resizing for flinging on web contents area.

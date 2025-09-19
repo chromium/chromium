@@ -11,6 +11,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -26,6 +28,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** The default strategy for setting the height of the custom tab. */
+@NullMarked
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
@@ -48,7 +51,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
-            Supplier<Tab> tab,
+            Supplier<@Nullable Tab> tab,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
             BooleanSupplier isEnteringPip,

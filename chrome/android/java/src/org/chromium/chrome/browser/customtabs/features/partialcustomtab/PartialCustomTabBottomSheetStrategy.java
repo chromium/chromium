@@ -10,6 +10,8 @@ import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STA
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -44,6 +46,10 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -73,6 +79,7 @@ import java.util.function.Supplier;
  * https://docs.google.com/document/d/1YuFXHai2JECqAPE_HgamcKid3VTR05GAvJcyb4jaL6o/edit?usp=sharing}
  * for detailed inner workings and issues addressed along the way.
  */
+@NullMarked
 public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStrategy
         implements ConfigurationChangedObserver,
                 ValueAnimator.AnimatorUpdateListener,
@@ -107,19 +114,19 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     private final @Px int mUnclampedInitialHeight;
     private final boolean mIsFixedHeight;
     private final Supplier<TouchEventProvider> mTouchEventProvider;
-    private final Supplier<Tab> mTab;
+    private final Supplier<@Nullable Tab> mTab;
 
     private CustomTabToolbar.HandleStrategy mHandleStrategy;
-    private GestureDetector mGestureDetector;
-    private ContentGestureListener mGestureHandler;
+    private @Nullable GestureDetector mGestureDetector;
+    private @Nullable ContentGestureListener mGestureHandler;
 
     private final TabAnimator mTabAnimator;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
-    private ImageView mSpinnerView;
-    private CircularProgressDrawable mSpinner;
-    private Runnable mSoftKeyboardRunnable;
+    private @Nullable ImageView mSpinnerView;
+    private @Nullable CircularProgressDrawable mSpinner;
+    private @Nullable Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
     private boolean mRestoreAfterFindPage;
     private final boolean mContentScrollMayResizeTab;
@@ -137,7 +144,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
-            Supplier<Tab> tab,
+            Supplier<@Nullable Tab> tab,
             OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -173,8 +180,8 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
-                        mSpinner.stop();
-                        mSpinnerView.setVisibility(View.GONE);
+                        assumeNonNull(mSpinner).stop();
+                        assumeNonNull(mSpinnerView).setVisibility(View.GONE);
                     }
 
                     @Override
@@ -206,16 +213,16 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
-        assert mContentScrollMayResizeTab;
+        assert mContentScrollMayResizeTab && mGestureHandler != null && mGestureDetector != null;
         mGestureDetector.onTouchEvent(e);
         return mGestureHandler.getState() == GestureState.DRAG_TAB;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        assert mContentScrollMayResizeTab;
+        assert mContentScrollMayResizeTab && mGestureHandler != null && mGestureDetector != null;
         if (mGestureHandler.getState() == GestureState.SCROLL_CONTENT) {
-            mTab.get().getContentView().onTouchEvent(e);
+            assumeNonNull(assumeNonNull(mTab.get()).getContentView()).onTouchEvent(e);
             // Do not return here even if motion events are targeted to the content view.
             // We keep feeding the gesture detector so it can monitor the state changes
             // and can switch the target to PCCT when necessary.
@@ -347,6 +354,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
+    @Initializer
     public void onToolbarInitialized(
             View coordinatorView,
             CustomTabToolbar toolbar,
@@ -669,6 +677,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         }
     }
 
+    @EnsuresNonNullIf("mSpinnerView")
     private boolean isSpinnerVisible() {
         return mSpinnerView != null && mSpinnerView.getVisibility() == View.VISIBLE;
     }
@@ -774,14 +783,14 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         mSpinnerView.setAlpha(0.f);
         mSpinnerView.setVisibility(View.VISIBLE);
         mSpinnerView.animate().alpha(1.f).setDuration(SPINNER_FADEIN_DURATION_MS).setListener(null);
-        mSpinner.start();
+        assumeNonNull(mSpinner).start();
     }
 
     private void centerSpinnerVertically(ViewGroup.LayoutParams lp) {
         int toolbarHeight = mToolbarView.getHeight();
         int cctHeight = mDisplayHeight - mActivity.getWindow().getAttributes().y - toolbarHeight;
         lp.height = cctHeight;
-        mSpinnerView.setLayoutParams(lp);
+        assumeNonNull(mSpinnerView).setLayoutParams(lp);
     }
 
     private void changeVisibilityNavbarButtons(boolean show) {

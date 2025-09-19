@@ -21,6 +21,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
@@ -41,6 +44,7 @@ import java.util.function.Supplier;
  * and handles the supported size strategies for Partial Chrome Custom Tabs based on the intent
  * extras values provided by the embedder, the window size, and the device state.
  */
+@NullMarked
 public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         implements ConfigurationChangedObserver {
     static final int CREATE_STRATEGY_DELAY_CONFIG_CHANGE_MS = 150;
@@ -75,7 +79,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
     private final Supplier<TouchEventProvider> mTouchEventProvider;
-    private final Supplier<Tab> mTab;
+    private final Supplier<@Nullable Tab> mTab;
     private boolean mIsInPip;
     private final BooleanSupplier mIsEnteringPip;
 
@@ -83,7 +87,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
             Activity activity,
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
-            Supplier<Tab> tab,
+            Supplier<@Nullable Tab> tab,
             OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher,
@@ -184,6 +188,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
      *     communicate with the toolbar buttons.
      */
     @Override
+    @Initializer
     public void onToolbarInitialized(
             View coordinatorView,
             CustomTabToolbar toolbar,
@@ -274,7 +279,7 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
             return PartialCustomTabType.BOTTOM_SHEET;
         }
         assert false : "Unreachable";
-        return PartialCustomTabType.FULL_SIZE;
+        return PartialCustomTabType.NONE;
     }
 
     /**
@@ -364,7 +369,14 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
                     mHandleStrategyFactory);
             default -> {
                 assert false : "Partial Custom Tab type not supported: " + type;
-                yield null;
+                yield new PartialCustomTabFullSizeStrategy(
+                        mActivity,
+                        mIntentData,
+                        mOnResizedCallback,
+                        mOnActivityLayoutCallback,
+                        mFullscreenManager,
+                        mIsTablet,
+                        mHandleStrategyFactory);
             }
         };
     }

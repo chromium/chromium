@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
@@ -16,8 +18,9 @@ import java.util.function.Supplier;
  * The factory implementation for creating Partial Custom Tab handle strategies that will be applied
  * to partial custom tabs for which resizing by dragging is supported.
  */
+@NullMarked
 public class PartialCustomTabHandleStrategyFactory {
-    public CustomTabToolbar.HandleStrategy create(
+    public CustomTabToolbar.@Nullable HandleStrategy create(
             @PartialCustomTabType int type,
             Context context,
             BooleanSupplier isFullHeight,

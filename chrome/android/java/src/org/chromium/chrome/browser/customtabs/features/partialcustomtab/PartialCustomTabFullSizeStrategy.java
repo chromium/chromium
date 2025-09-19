@@ -20,6 +20,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsCallback;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
  * CustomTabHeightStrategy for Partial Custom Tab Full-Size implementation. An instance of this
  * class should be owned by the CustomTabActivity.
  */
+@NullMarked
 public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrategy {
     public PartialCustomTabFullSizeStrategy(
             Activity activity,
