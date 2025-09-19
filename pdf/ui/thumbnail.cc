@@ -75,12 +75,11 @@ gfx::Size CalculateBestFitSize(const gfx::SizeF& page_size,
 
   // Return the larger of the unrotated and rotated sizes to over-sample the PDF
   // page so that the thumbnail looks good in different orientations.
-  float scale_portrait =
-      static_cast<float>(kMaxWidthPortraitPx) /
-      std::min(safe_page_size.width(), safe_page_size.height());
+  const std::pair<float, float> minmax =
+      std::minmax(safe_page_size.width(), safe_page_size.height());
+  float scale_portrait = static_cast<float>(kMaxWidthPortraitPx) / minmax.first;
   float scale_landscape =
-      static_cast<float>(kMaxWidthLandscapePx) /
-      std::max(safe_page_size.width(), safe_page_size.height());
+      static_cast<float>(kMaxWidthLandscapePx) / minmax.second;
   float scale = std::max(scale_portrait, scale_landscape) * device_pixel_ratio;
 
   // Using gfx::ToFlooredSize() is fine because `scale` will not yield an

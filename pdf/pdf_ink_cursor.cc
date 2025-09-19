@@ -29,11 +29,9 @@ void CheckCursorDiameterIsInRange(int diameter) {
 
 SkColor GetCursorOutlineColor(SkColor color) {
   // Compute the lightness value as defined by HSL.
-  const uint8_t max =
-      std::max({SkColorGetR(color), SkColorGetG(color), SkColorGetB(color)});
-  const uint8_t min =
-      std::min({SkColorGetR(color), SkColorGetG(color), SkColorGetB(color)});
-  const int lightness = 0.5 * (max + min);
+  const std::pair<uint8_t, uint8_t> minmax =
+      std::minmax({SkColorGetR(color), SkColorGetG(color), SkColorGetB(color)});
+  const int lightness = 0.5 * (minmax.first + minmax.second);
 
   // Use lighter outline for darker `color`.
   constexpr SkColor kDarkOutlineColor = SkColorSetARGB(0xFF, 0x90, 0x90, 0x90);
