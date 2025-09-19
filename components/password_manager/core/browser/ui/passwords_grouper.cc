@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/features.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/safety_checks.h"
 #include "base/strings/escape.h"
