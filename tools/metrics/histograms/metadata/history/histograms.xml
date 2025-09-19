@@ -2859,6 +2859,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.URLRowAddedAsHidden" enum="Boolean"
+    expires_after="2026-09-19">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    Whether a newly added URLRow is hidden. Emitted when a URLRow is added to
+    the History database. Intended to monitor how much the number of hidden rows
+    added increases when saving page visits with HTTP response code 404 to the
+    History database.
+  </summary>
+</histogram>
+
 <histogram name="History.URLTableCount" units="URLs" expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
