@@ -64,6 +64,7 @@ source_set("user_activity_browser_agent") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/intents:intents_generate_source",
+    "//ios/components/webui:url_constants",
     "//ui/base",
     "//url",
   ]
