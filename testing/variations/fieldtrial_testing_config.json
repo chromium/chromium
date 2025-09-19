@@ -2483,12 +2483,7 @@
     "AutofillEnableFlatRateCardBenefitsFromCurinos": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
