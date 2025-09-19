@@ -7,358 +7,358 @@
 
 
 module sys_stage1 [system] [extern_c] {
-  module sysroot_alloca_h {
+  module alloca_h {
     header "$sysroot/alloca.h"
     export *
   }
-  module sysroot_android_api_level_h {
+  module android_api_level_h {
     header "$sysroot/android/api-level.h"
     header "$sysroot/sys/cdefs.h"
     export *
   }
-  module sysroot_android_ndk_version_h {
+  module android_ndk_version_h {
     header "$sysroot/android/ndk-version.h"
     export *
   }
-  module sysroot_android_versioning_h {
+  module android_versioning_h {
     header "$sysroot/android/versioning.h"
     export *
   }
-  module sysroot_asm_generic_bitsperlong_h {
+  module asm_generic_bitsperlong_h {
     header "$sysroot/asm-generic/bitsperlong.h"
     export *
   }
-  module sysroot_asm_generic_errno_base_h {
+  module asm_generic_errno_base_h {
     header "$sysroot/asm-generic/errno-base.h"
     export *
   }
-  module sysroot_asm_generic_errno_h {
+  module asm_generic_errno_h {
     header "$sysroot/asm-generic/errno.h"
     export *
   }
-  module sysroot_asm_generic_int_ll64_h {
+  module asm_generic_int_ll64_h {
     header "$sysroot/asm-generic/int-ll64.h"
     export *
   }
-  module sysroot_asm_generic_ioctl_h {
+  module asm_generic_ioctl_h {
     header "$sysroot/asm-generic/ioctl.h"
     export *
   }
-  module sysroot_asm_generic_ioctls_h {
+  module asm_generic_ioctls_h {
     header "$sysroot/asm-generic/ioctls.h"
     export *
   }
-  module sysroot_asm_generic_siginfo_h {
+  module asm_generic_siginfo_h {
     header "$sysroot/asm-generic/siginfo.h"
     export *
   }
-  module sysroot_asm_generic_signal_defs_h {
+  module asm_generic_signal_defs_h {
     header "$sysroot/asm-generic/signal-defs.h"
     export *
   }
-  module sysroot_asm_generic_termbits_common_h {
+  module asm_generic_termbits_common_h {
     header "$sysroot/asm-generic/termbits-common.h"
     export *
   }
-  module sysroot_asm_generic_termbits_h {
+  module asm_generic_termbits_h {
     header "$sysroot/asm-generic/termbits.h"
     export *
   }
-  module sysroot_asm_generic_termios_h {
+  module asm_generic_termios_h {
     header "$sysroot/asm-generic/termios.h"
     export *
   }
-  module sysroot_asm_generic_types_h {
+  module asm_generic_types_h {
     header "$sysroot/asm-generic/types.h"
     export *
   }
-  module sysroot_asm_bitsperlong_h {
+  module asm_bitsperlong_h {
     header "$sysroot/i686-linux-android/asm/bitsperlong.h"
     export *
   }
-  module sysroot_asm_errno_h {
+  module asm_errno_h {
     header "$sysroot/i686-linux-android/asm/errno.h"
     export *
   }
-  module sysroot_asm_ioctl_h {
+  module asm_ioctl_h {
     header "$sysroot/i686-linux-android/asm/ioctl.h"
     export *
   }
-  module sysroot_asm_ioctls_h {
+  module asm_ioctls_h {
     header "$sysroot/i686-linux-android/asm/ioctls.h"
     export *
   }
-  module sysroot_asm_posix_types_32_h {
+  module asm_posix_types_32_h {
     header "$sysroot/i686-linux-android/asm/posix_types_32.h"
     export *
   }
-  module sysroot_asm_sigcontext_h {
+  module asm_sigcontext_h {
     header "$sysroot/i686-linux-android/asm/sigcontext.h"
     export *
   }
-  module sysroot_asm_siginfo_h {
+  module asm_siginfo_h {
     header "$sysroot/i686-linux-android/asm/siginfo.h"
     export *
   }
-  module sysroot_asm_signal_h {
+  module asm_signal_h {
     header "$sysroot/i686-linux-android/asm/signal.h"
     export *
   }
-  module sysroot_asm_termbits_h {
+  module asm_termbits_h {
     header "$sysroot/i686-linux-android/asm/termbits.h"
     export *
   }
-  module sysroot_asm_termios_h {
+  module asm_termios_h {
     header "$sysroot/i686-linux-android/asm/termios.h"
     export *
   }
-  module sysroot_asm_types_h {
+  module asm_types_h {
     header "$sysroot/i686-linux-android/asm/types.h"
     export *
   }
-  module sysroot_bits_bionic_multibyte_result_h {
+  module bits_bionic_multibyte_result_h {
     header "$sysroot/bits/bionic_multibyte_result.h"
     export *
   }
-  module sysroot_bits_fcntl_h {
+  module bits_fcntl_h {
     header "$sysroot/bits/fcntl.h"
     export *
   }
-  module sysroot_bits_flock64_h {
+  module bits_flock64_h {
     header "$sysroot/bits/flock64.h"
     export *
   }
-  module sysroot_bits_getopt_h {
+  module bits_getopt_h {
     header "$sysroot/bits/getopt.h"
     export *
   }
-  module sysroot_bits_ioctl_h {
+  module bits_ioctl_h {
     header "$sysroot/bits/ioctl.h"
     export *
   }
-  module sysroot_bits_mbstate_t_h {
+  module bits_mbstate_t_h {
     header "$sysroot/bits/mbstate_t.h"
     export *
   }
-  module sysroot_bits_page_size_h {
+  module bits_page_size_h {
     header "$sysroot/bits/page_size.h"
     export *
   }
-  module sysroot_bits_seek_constants_h {
+  module bits_seek_constants_h {
     header "$sysroot/bits/seek_constants.h"
     export *
   }
-  module sysroot_bits_wait_h {
+  module bits_wait_h {
     header "$sysroot/bits/wait.h"
     export *
   }
-  module sysroot_bits_wchar_limits_h {
+  module bits_wchar_limits_h {
     header "$sysroot/bits/wchar_limits.h"
     export *
   }
-  module sysroot_features_h {
+  module features_h {
     header "$sysroot/features.h"
     export *
   }
-  module sysroot_getopt_h {
+  module getopt_h {
     header "$sysroot/getopt.h"
     export *
   }
-  module sysroot_linux_compiler_h {
+  module linux_compiler_h {
     header "$sysroot/linux/compiler.h"
     export *
   }
-  module sysroot_linux_compiler_types_h {
+  module linux_compiler_types_h {
     header "$sysroot/linux/compiler_types.h"
     export *
   }
-  module sysroot_linux_errno_h {
+  module linux_errno_h {
     header "$sysroot/linux/errno.h"
     export *
   }
-  module sysroot_linux_fadvise_h {
+  module linux_fadvise_h {
     header "$sysroot/linux/fadvise.h"
     export *
   }
-  module sysroot_linux_falloc_h {
+  module linux_falloc_h {
     header "$sysroot/linux/falloc.h"
     export *
   }
-  module sysroot_linux_ioctl_h {
+  module linux_ioctl_h {
     header "$sysroot/linux/ioctl.h"
     export *
   }
-  module sysroot_linux_limits_h {
+  module linux_limits_h {
     header "$sysroot/linux/limits.h"
     export *
   }
-  module sysroot_linux_openat2_h {
+  module linux_openat2_h {
     header "$sysroot/linux/openat2.h"
     export *
   }
-  module sysroot_linux_posix_types_h {
+  module linux_posix_types_h {
     header "$sysroot/linux/posix_types.h"
     export *
   }
-  module sysroot_linux_sched_h {
+  module linux_sched_h {
     header "$sysroot/linux/sched.h"
     export *
   }
-  module sysroot_linux_signal_h {
+  module linux_signal_h {
     header "$sysroot/linux/signal.h"
     export *
   }
-  module sysroot_linux_stat_h {
+  module linux_stat_h {
     header "$sysroot/linux/stat.h"
     export *
   }
-  module sysroot_linux_stddef_h {
+  module linux_stddef_h {
     header "$sysroot/linux/stddef.h"
     export *
   }
-  module sysroot_linux_termios_h {
+  module linux_termios_h {
     header "$sysroot/linux/termios.h"
     export *
   }
-  module sysroot_linux_tty_h {
+  module linux_tty_h {
     header "$sysroot/linux/tty.h"
     export *
   }
-  module sysroot_linux_types_h {
+  module linux_types_h {
     header "$sysroot/linux/types.h"
     export *
   }
-  module sysroot_linux_uio_h {
+  module linux_uio_h {
     header "$sysroot/linux/uio.h"
     export *
   }
-  module sysroot_linux_wait_h {
+  module linux_wait_h {
     header "$sysroot/linux/wait.h"
     export *
   }
-  module sysroot_locale_h {
+  module locale_h {
     header "$sysroot/locale.h"
     export *
   }
-  module sysroot_setjmp_h {
+  module setjmp_h {
     header "$sysroot/setjmp.h"
     export *
   }
-  module sysroot_sys_ioctl_h {
+  module sys_ioctl_h {
     header "$sysroot/sys/ioctl.h"
     export *
   }
-  module sysroot_xlocale_h {
+  module xlocale_h {
     header "$sysroot/xlocale.h"
     export *
   }
 }
 
 module sys_stage2 [system] [extern_c] {
-  module sysroot_asm_generic_fcntl_h {
+  module asm_generic_fcntl_h {
     header "$sysroot/asm-generic/fcntl.h"
     export *
   }
-  module sysroot_asm_fcntl_h {
+  module asm_fcntl_h {
     header "$sysroot/i686-linux-android/asm/fcntl.h"
     export *
   }
-  module sysroot_bits_fenv_x86_h {
+  module bits_fenv_x86_h {
     header "$sysroot/bits/fenv_x86.h"
     export *
   }
-  module sysroot_bits_flock_h {
+  module bits_flock_h {
     header "$sysroot/bits/flock.h"
     export *
   }
-  module sysroot_bits_lockf_h {
+  module bits_lockf_h {
     header "$sysroot/bits/lockf.h"
     export *
   }
-  module sysroot_bits_pthread_types_h {
+  module bits_pthread_types_h {
     header "$sysroot/bits/pthread_types.h"
     header "$sysroot/sys/types.h"
     export *
   }
-  module sysroot_bits_signal_types_h {
+  module bits_signal_types_h {
     header "$sysroot/bits/signal_types.h"
     export *
   }
-  module sysroot_bits_strcasecmp_h {
+  module bits_strcasecmp_h {
     header "$sysroot/bits/strcasecmp.h"
     export *
   }
-  module sysroot_bits_timespec_h {
+  module bits_timespec_h {
     header "$sysroot/bits/timespec.h"
     export *
   }
-  module sysroot_fcntl_h {
+  module fcntl_h {
     header "$sysroot/fcntl.h"
     export *
   }
-  module sysroot_linux_fcntl_h {
+  module linux_fcntl_h {
     header "$sysroot/linux/fcntl.h"
     export *
   }
-  module sysroot_linux_time_h {
+  module linux_time_h {
     header "$sysroot/linux/time.h"
     header "$sysroot/linux/time_types.h"
     export *
   }
-  module sysroot_malloc_h {
+  module malloc_h {
     header "$sysroot/malloc.h"
     export *
   }
-  module sysroot_pthread_h {
+  module pthread_h {
     header "$sysroot/pthread.h"
     export *
   }
-  module sysroot_sched_h {
+  module sched_h {
     header "$sysroot/sched.h"
     export *
   }
-  module sysroot_signal_h {
+  module signal_h {
     header "$sysroot/signal.h"
     header "$sysroot/sys/ucontext.h"
     export *
   }
-  module sysroot_stdio_h {
+  module stdio_h {
     header "$sysroot/stdio.h"
     export *
   }
-  module sysroot_stdlib_h {
+  module stdlib_h {
     header "$sysroot/stdlib.h"
     export *
   }
-  module sysroot_strings_h {
+  module strings_h {
     header "$sysroot/strings.h"
     export *
   }
-  module sysroot_sys_select_h {
+  module sys_select_h {
     header "$sysroot/sys/select.h"
     export *
   }
-  module sysroot_sys_time_h {
+  module sys_time_h {
     header "$sysroot/sys/time.h"
     export *
   }
-  module sysroot_sys_user_h {
+  module sys_user_h {
     header "$sysroot/sys/user.h"
     export *
   }
-  module sysroot_threads_h {
+  module threads_h {
     header "$sysroot/threads.h"
     export *
   }
-  module sysroot_time_h {
+  module time_h {
     header "$sysroot/time.h"
     export *
   }
-  module sysroot_unistd_h {
+  module unistd_h {
     header "$sysroot/unistd.h"
     export *
   }
-  module sysroot_wchar_h {
+  module wchar_h {
     header "$sysroot/wchar.h"
     export *
   }

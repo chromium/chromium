@@ -84,8 +84,7 @@ class Header:
 
   @property
   def submodule_name(self):
-    normalized = self.rel.replace('.', '_').replace('/', '_').replace('-', '_')
-    return 'sysroot_' + normalized
+    return self.rel.replace('.', '_').replace('/', '_').replace('-', '_')
 
   @functools.cached_property
   def content(self) -> str:
