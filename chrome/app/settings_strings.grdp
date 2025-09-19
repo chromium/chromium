@@ -891,7 +891,6 @@
 <message name="IDS_SETTINGS_GEMINI_APPS_ACTIVITY" desc="Title for the Gemini Apps Activity section in Other Data.">
     Gemini Apps activity
 </message>
-
   <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for passwords and passkeys stored in Google password manager.">
     Passwords and passkeys
   </message>

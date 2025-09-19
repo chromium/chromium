@@ -367,6 +367,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
 
+#if BUILDFLAG(ENABLE_GLIC)
+  html_source->AddBoolean(
+      "showGeminiPersonalContextLink",
+      base::FeatureList::IsEnabled(features::kGlicPersonalContext));
+#endif  //  BUILDFLAG(ENABLE_GLIC)
+
 #if BUILDFLAG(IS_CHROMEOS)
   const bool download_bubble_controlled_by_pref = false;
 #else

@@ -470,6 +470,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"passwordChangeSettingEncryption",
        IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION},
       {"passwordChangeLearnMore", IDS_SETTINGS_PASSWORD_CHANGE_SUBLABEL},
+
+      // Personalized Context strings
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -687,6 +689,8 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
                          chrome::kMyActivityUrlInClearBrowsingData);
   html_source->AddString("deleteBrowsingDataSearchHistoryUrl",
                          chrome::kSearchHistoryUrlInClearBrowsingData);
+  html_source->AddString("geminiPersonalContextUrl",
+                         chrome::kGeminiPersonalContextUrl);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean("isClearPrimaryAccountAllowed",
@@ -796,6 +800,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1},
       {"glicDefaultTabAccessConsider1LearnMoreLabel",
        IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL},
+      {"glicPersonalContextSettingLabel", IDS_SETTINGS_GLIC_PERSONAL_CONTEXT},
+      {"glicPersonalContextSettingSublabel",
+       IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -130,6 +130,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
             loadTimeData.getBoolean('showGlicDefaultTabContextSetting'),
       },
 
+      showGlicPersonalContextLink_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
+      },
+
       locationSubLabel_: {
         type: String,
         computed: `computeLocationSubLabel_(prefs.${
@@ -211,6 +216,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
+  declare private showGlicPersonalContextLink_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
   declare private microphoneSubLabel_: string;
@@ -396,6 +402,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.metricsBrowserProxy_.recordAction(
         AiPageActions
             .GLIC_SHORTCUTS_DEFAULT_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
+  }
+
+  private onGeminiPersonalContextClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('geminiPersonalContextUrl'));
   }
 
   private disallowedByAdminChanged_(disallowed: boolean) {

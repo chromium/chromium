@@ -384,7 +384,12 @@ inline constexpr char kInsecureDownloadBlockingLearnMoreUrl[] =
 inline constexpr char16_t kMyActivityUrlInClearBrowsingData[] =
     u"https://myactivity.google.com/myactivity?utm_source=chrome_cbd";
 
-// The URL for "Your Gemini Apps Activity" page.
+// The URL for the Gemini Personal Context page.
+inline constexpr char16_t kGeminiPersonalContextUrl[] =
+    u"https://gemini.google.com/corp/saved-info";
+
+// The URL for "Your Gemini Apps Activity" page.inline constexpr char16_t
+// kMyActivityGeminiAppsUrl[] =
 inline constexpr char16_t kMyActivityGeminiAppsUrl[] =
     u"https://myactivity.google.com/product/gemini";
 

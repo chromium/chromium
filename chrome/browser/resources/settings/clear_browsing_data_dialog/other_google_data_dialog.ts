@@ -144,6 +144,11 @@ export class SettingsOtherGoogleDataDialogElement extends
         loadTimeData.getString('myActivityGeminiAppsUrl'));
   }
 
+  private onGeminiPersonalContextClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('geminiPersonalContextUrl'));
+  }
+
   private shouldShowMyActivityLink_() {
     return isSignedIn(this.syncStatus_);
   }

@@ -222,6 +222,12 @@
    <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the 'things to consider' section.">
     Learn more
   </message>
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL" desc="Description for the Gemini personal context linkout.">
+      View and manage your personal context
+  </message>
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context section in Other Data.">
+      Personal context
+  </message>
 
   <!-- Glic button and tab strip context menu -->
   <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">

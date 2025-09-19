@@ -323,6 +323,12 @@
           label="$i18n{glicExtensionsButton}"
           sub-label="$i18n{glicExtensionsButtonSublabel}" external>
       </cr-link-row>
+      <cr-link-row id="geminiPersonalContextLink" class="hr"
+          hidden="[[!showGlicPersonalContextLink_]]"
+          on-click="onGeminiPersonalContextClick_"
+          label="$i18n{glicPersonalContextSettingLabel}"
+          sub-label="$i18n{glicPersonalContextSettingSublabel}" external>
+      </cr-link-row>
     </template>
   </div>
 </settings-subpage>
