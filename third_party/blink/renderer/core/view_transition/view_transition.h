@@ -206,8 +206,6 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
            style_tracker_->IsTransitionElement(*document_->documentElement());
   }
 
-  void RebuildTransitionPseudoLayoutTree() const;
-
   // In physical pixels. See comments on equivalent methods in
   // ViewTransitionStyleTracker for info.
   gfx::Size GetSnapshotRootSize() const;

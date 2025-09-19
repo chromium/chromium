@@ -922,8 +922,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               const StyleRecalcChange,
                                               const StyleRecalcContext&);
 
-  void RebuildTransitionPseudoLayoutTrees();
-
   // We may need to update whitespaces in the layout tree after a flat tree
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();

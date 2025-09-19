@@ -1690,9 +1690,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void UpdateTransitionPseudoElements(const StyleRecalcChange,
                                       const StyleRecalcContext&);
 
-  void RebuildTransitionPseudoLayoutTree(
-      const Vector<AtomicString>& view_transition_names);
-
   // Returns true if the element has the 'inert' attribute, forcing itself and
   // all its subtree to be inert.
   // TODO(crbug.com/1511354): Make this not virtual after the override in
@@ -1942,8 +1939,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void ClearPseudoElement(
       PseudoId,
       const AtomicString& view_transition_name = g_null_atom);
-  void DetachTransitionPseudo();
-  void AttachTransitionPseudo();
 
   bool IsElementNode() const =
       delete;  // This will catch anyone doing an unnecessary check.
@@ -2027,6 +2022,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RebuildPseudoElementLayoutTree(PseudoId, WhitespaceAttacher&);
   void RebuildColumnLayoutTrees(WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
+  void RebuildTransitionLayoutTree(WhitespaceAttacher&);
   void RebuildShadowRootLayoutTree(WhitespaceAttacher&);
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);
@@ -2129,6 +2125,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void AttachColumnPseudoElements(AttachContext& context);
+  void AttachTransitionPseudoElements(AttachContext& context);
 
   void DetachPrecedingPseudoElements(bool performing_reattach) {
     DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
@@ -2152,6 +2149,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void DetachColumnPseudoElements(bool performing_reattach);
+  void DetachTransitionPseudoElements(bool performing_reattach);
 
   void RecomputeDirectionFromParent();
 

@@ -132,7 +132,8 @@ void ForEachSupportedPseudo(const Element* element, Functor& func) {
     if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
       func(pseudo_element);
   }
-  ViewTransitionUtils::ForEachDirectTransitionPseudo(element, func);
+  ViewTransitionUtils::ForEachTransitionPseudo(
+      *element, func, ViewTransitionUtils::Filter::kDirectChildren);
   if (const ColumnPseudoElementsVector* column_pseudo_elements =
       element->GetColumnPseudoElements()) {
     for (const auto& column_pseudo_element : *column_pseudo_elements) {

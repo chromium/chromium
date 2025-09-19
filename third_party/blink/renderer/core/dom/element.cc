@@ -4240,7 +4240,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachSucceedingPseudoElements(children_context);
-  AttachTransitionPseudo();
+  AttachTransitionPseudoElements(children_context);
 
   if (!IsPseudoElement() && layout_object) {
     context.counters_context.LeaveObject(*layout_object);
@@ -4302,9 +4302,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   // https://crbug.com/939769
   if (ChildNeedsReattachLayoutTree() || GetComputedStyle() ||
       (!performing_reattach && IsUserActionElement())) {
-    if (performing_reattach) {
-      DetachTransitionPseudo();
-    }
     if (ShadowRoot* shadow_root = GetShadowRoot()) {
       shadow_root->DetachLayoutTree(performing_reattach);
       Node::DetachLayoutTree(performing_reattach);
@@ -4316,6 +4313,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   }
 
   DetachSucceedingPseudoElements(performing_reattach);
+  DetachTransitionPseudoElements(performing_reattach);
 
   if (!performing_reattach) {
     UpdateCallbackSelectors(GetComputedStyle(), nullptr);
@@ -4336,52 +4334,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   if (context) {
     context->DetachLayoutTree();
   }
-}
-
-void Element::DetachTransitionPseudo() {
-  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    return;
-  }
-
-  auto* transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
-  if (!transition_pseudo || IsDocumentElement()) {
-    return;
-  }
-
-  auto* scope_layout_object = GetLayoutObject();
-  auto* pseudo_layout_object = transition_pseudo->GetLayoutObject();
-  if (!scope_layout_object || !pseudo_layout_object) {
-    return;
-  }
-
-  // Disconnect the pseudo's layout object from the scope's layout object.
-  // This is done so that when the scope runs LayoutObject::Destroy, it does
-  // not recurse into the pseudo tree. Instead the pseudo holds on to its
-  // layout tree until it is reattached in AttachTransitionPseudo.
-  scope_layout_object->RemoveChild(pseudo_layout_object);
-}
-
-void Element::AttachTransitionPseudo() {
-  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
-    return;
-  }
-
-  auto* transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
-  if (!transition_pseudo || IsDocumentElement()) {
-    return;
-  }
-
-  auto* scope_layout_object = GetLayoutObject();
-  auto* pseudo_layout_object = transition_pseudo->GetLayoutObject();
-  if (!scope_layout_object || !pseudo_layout_object) {
-    return;
-  }
-
-  // Reconnect the existing pseudo layout object to the scope parent.
-  // Note: this method only handles the scenario of the scope being reattached
-  // after acquiring transition pseudos. Construction of the transition pseudo
-  // layout objects is handled in RebuildTransitionPseudoLayoutTree.
-  scope_layout_object->AddChild(pseudo_layout_object);
 }
 
 void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
@@ -4788,7 +4740,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraversePseudoElements(*this)) {
-    UpdateTransitionPseudoElements(child_change, child_recalc_context);
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupBefore,
@@ -4879,6 +4830,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
                                      child_recalc_context);
     }
+
+    UpdateTransitionPseudoElements(child_change, child_recalc_context);
   }
 
   ClearChildNeedsStyleRecalc();
@@ -5450,6 +5403,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       child_attacher = &whitespace_attacher;
     }
+    RebuildTransitionLayoutTree(*child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
@@ -5534,6 +5488,44 @@ void Element::RebuildFirstLetterLayoutTree() {
       element->RebuildLayoutTree(whitespace_attacher);
     }
   }
+}
+
+void Element::RebuildTransitionLayoutTree(
+    WhitespaceAttacher& whitespace_attacher) {
+  auto rebuild_pseudo_tree =
+      [&whitespace_attacher](PseudoElement* pseudo_element) {
+        pseudo_element->RebuildLayoutTree(whitespace_attacher);
+      };
+  ViewTransitionUtils::ForEachTransitionPseudo(
+      *this, rebuild_pseudo_tree, ViewTransitionUtils::Filter::kDirectChildren);
+}
+
+void Element::AttachTransitionPseudoElements(AttachContext& context) {
+  // For a document transition, the LayoutObject for the ::view-transition
+  // pseudo-element is wrapped by the anonymous LayoutViewTransitionRoot,
+  // which represents the snapshot containing block.
+  //
+  // The LayoutViewTransitionRoot is a child of the LayoutView, and will be
+  // injected by LayoutView::AddChild.
+  // See LayoutTreeBuilderTraversal::ParentLayoutObject.
+  AttachContext children_context(context);
+  if (context.parent && context.parent->IsDocumentElement()) {
+    children_context.parent = GetDocument().GetLayoutView();
+  }
+
+  auto attach_pseudo = [&](PseudoElement* pseudo_element) {
+    pseudo_element->AttachLayoutTree(children_context);
+  };
+  ViewTransitionUtils::ForEachTransitionPseudo(
+      *this, attach_pseudo, ViewTransitionUtils::Filter::kDirectChildren);
+}
+
+void Element::DetachTransitionPseudoElements(bool performing_reattach) {
+  auto detach_pseudo = [&](PseudoElement* pseudo_element) {
+    pseudo_element->DetachLayoutTree(performing_reattach);
+  };
+  ViewTransitionUtils::ForEachTransitionPseudo(
+      *this, detach_pseudo, ViewTransitionUtils::Filter::kDirectChildren);
 }
 
 void Element::HandleSubtreeModifications() {
@@ -11877,22 +11869,6 @@ void Element::UpdateTransitionPseudoElements(
     default:
       NOTREACHED();
   }
-}
-
-void Element::RebuildTransitionPseudoLayoutTree(
-    const Vector<AtomicString>& view_transition_names) {
-  const bool has_transition = !!ViewTransitionUtils::GetTransition(*this);
-  if (!has_transition) {
-    DCHECK(!GetPseudoElement(kPseudoIdViewTransition));
-    return;
-  }
-
-  WhitespaceAttacher whitespace_attacher;
-  auto rebuild_pseudo_tree =
-      [&whitespace_attacher](PseudoElement* pseudo_element) {
-        pseudo_element->RebuildLayoutTree(whitespace_attacher);
-      };
-  ViewTransitionUtils::ForEachTransitionPseudo(*this, rebuild_pseudo_tree);
 }
 
 bool Element::IsInertRoot() const {
