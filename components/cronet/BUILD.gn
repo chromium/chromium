@@ -99,14 +99,6 @@ if (is_android) {
     deps = [ "//components/cronet/android:cronet_package_android" ]
   }
 } else {
-  config("shared_library_public_config") {
-    if (is_mac && !is_component_build) {
-      # Executable targets that depend on the shared libraries below need to have
-      # the rpath setup in non-component build configurations.
-      ldflags = [ "-Wl,-rpath,@executable_path/" ]
-    }
-  }
-
   _cronet_shared_lib_name = "cronet.$chrome_version_full"
   _cronet_shared_lib_file_name =
       "$shlib_prefix$_cronet_shared_lib_name$shlib_extension"
@@ -122,14 +114,6 @@ if (is_android) {
     ]
 
     sources = [ "cronet_global_state_stubs.cc" ]
-
-    if (is_mac && !is_component_build) {
-      ldflags = [
-        "-install_name",
-        "@executable_path/$_cronet_shared_lib_file_name",
-      ]
-      public_configs = [ ":shared_library_public_config" ]
-    }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
