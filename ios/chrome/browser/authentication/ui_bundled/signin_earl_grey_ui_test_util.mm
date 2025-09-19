@@ -151,9 +151,9 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   }
 
   [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];

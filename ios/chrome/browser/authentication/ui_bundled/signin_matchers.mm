@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -29,6 +32,20 @@ id<GREYMatcher> ConsistencySigninSkipButtonMatcher() {
 id<GREYMatcher> ConsistencySigninPrimaryButtonMatcher() {
   return grey_allOf(grey_accessibilityID(
                         kConsistencySigninPrimaryButtonAccessibilityIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> AccountChooserButtonMatcher(id<SystemIdentity> identity) {
+  if (identity) {
+    NSString* accessibility_label = l10n_util::GetNSStringF(
+        IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
+        base::SysNSStringToUTF16(identity.userFullName),
+        base::SysNSStringToUTF16(identity.userEmail));
+    return grey_allOf(grey_accessibilityID(kIdentityButtonControlIdentifier),
+                      grey_accessibilityLabel(accessibility_label),
+                      grey_sufficientlyVisible(), nil);
+  }
+  return grey_allOf(grey_accessibilityID(kIdentityButtonControlIdentifier),
                     grey_sufficientlyVisible(), nil);
 }
 

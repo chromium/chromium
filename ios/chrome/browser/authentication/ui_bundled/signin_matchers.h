@@ -9,6 +9,7 @@
 
 @protocol GREYAction;
 @protocol GREYMatcher;
+@protocol SystemIdentity;
 
 namespace chrome_test_util {
 
@@ -21,6 +22,11 @@ id<GREYMatcher> ConsistencySigninSkipButtonMatcher();
 // Returns a matcher for the primary button in the web sign-in consistency
 // dialog.
 id<GREYMatcher> ConsistencySigninPrimaryButtonMatcher();
+
+// Returns a matcher for the button in the consistency dialog that opens the
+// list of accounts. If the identity is not nil, verifies that the displayed
+// identity is the one given.
+id<GREYMatcher> AccountChooserButtonMatcher(id<SystemIdentity> identity = nil);
 
 // Matcher for the sign-in screens (like history sync opt-in, upgrade promo…).
 id<GREYMatcher> SigninScreenPromoMatcher();

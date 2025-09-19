@@ -37,15 +37,6 @@
 
 namespace {
 
-id<GREYMatcher> IdentityButtonMatcherForIdentity(id<SystemIdentity> identity) {
-  NSString* accessibility_label = l10n_util::GetNSStringF(
-      IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL,
-      base::SysNSStringToUTF16(identity.userFullName),
-      base::SysNSStringToUTF16(identity.userEmail));
-  return grey_allOf(grey_accessibilityID(kIdentityButtonControlIdentifier),
-                    grey_accessibilityLabel(accessibility_label), nil);
-}
-
 // Matcher for "SAVE..." button on Download Manager UI, which is presented
 // instead of the "DOWNLOAD" button when multiple destinations are available for
 // downloads.
@@ -461,7 +452,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       performAction:grey_tap()];
   // Check that the identity button is hidden.
   [[EarlGrey
-      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity1)]
       assertWithMatcher:grey_notVisible()];
   // Select "Drive" as destination.
   [ChromeEarlGrey
@@ -470,19 +462,21 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       performAction:grey_tap()];
   // Check that the selected identity is initially the signed-in identity.
   [[EarlGrey
-      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity1)]
       assertWithMatcher:grey_interactable()];
   // Tap the identity button and select the second account.
   [[EarlGrey
-      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity1)]
-      performAction:grey_tap()];
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity1)] performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
                                    fakeIdentity2.userEmail)]
       performAction:grey_tap()];
   // Check that the second identity is now selected.
   [[EarlGrey
-      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity2)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity2)]
       assertWithMatcher:grey_interactable()];
   // Tap "Save".
   [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
@@ -501,7 +495,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       performAction:grey_tap()];
   // Check that the second identity is now selected by default.
   [[EarlGrey
-      selectElementWithMatcher:IdentityButtonMatcherForIdentity(fakeIdentity2)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity2)]
       assertWithMatcher:grey_interactable()];
 }
 

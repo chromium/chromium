@@ -344,9 +344,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
   // Waits until the UI is fully presented before opening an URL.
   [ChromeEarlGreyUI waitForAppToIdle];
 
@@ -359,18 +359,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kIdentityButtonControlIdentifier),
-                                          grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)]
       assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
@@ -497,9 +496,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Open the identity chooser.
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
   [ChromeEarlGrey
       waitForMatcher:IdentityCellMatcherForEmail(fakeIdentity.userEmail)];
 
@@ -521,9 +520,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
 
   // Open Add Account screen.
   id<GREYMatcher> add_account_matcher =
@@ -542,18 +541,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];
 
   // Verifies that the Chrome sign-in view is visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kIdentityButtonControlIdentifier),
-                                          grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)]
       assertWithMatcher:grey_notNil()];
 
   // Close sign-in screen and Settings.
@@ -574,9 +572,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [self openSigninFromView:OpenSigninMethodFromSettings];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity)] performAction:grey_tap()];
 
   // Invalidate account after menu generation. If the underlying code does not
   // handle the race condition of removing an identity while showing menu is in

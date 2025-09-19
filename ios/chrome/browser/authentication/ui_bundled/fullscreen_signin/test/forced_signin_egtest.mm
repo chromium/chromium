@@ -372,9 +372,9 @@ void CompleteSigninFlow() {
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
   // Tap on the account switcher.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
+                                   fakeIdentity1)] performAction:grey_tap()];
 
   // Check that `fakeIdentity2` is displayed.
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
