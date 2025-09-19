@@ -115,7 +115,7 @@ static const char kAllTracingCategories[] = "*";
 @synthesize toolbarBackgroundView = _toolbarBackgroundView;
 @synthesize toolbarContentView = _toolbarContentView;
 @synthesize tracingHandler = _tracingHandler;
-std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
+std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
 
 + (UIColor*)backgroundColorDefault {
   return [UIColor colorWithRed:66.0 / 255.0
@@ -159,9 +159,9 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext*)context
        withAnimationCoordinator:(UIFocusAnimationCoordinator*)coordinator {
   if (_shell) {
-    const UIView* native_web_contents_view =
+    const UIView* nativeWebContentsView =
         _shell->web_contents()->GetContentNativeView().Get();
-    if (context.nextFocusedView == native_web_contents_view) {
+    if (context.nextFocusedView == nativeWebContentsView) {
       _toolbarContentView.userInteractionEnabled = NO;
       _shell->web_contents()->Focus();
     }
@@ -255,7 +255,7 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 
   // Enable Accessibility if VoiceOver is already running.
   if (UIAccessibilityIsVoiceOverRunning()) {
-    _scoped_accessibility_mode =
+    _scopedAccessibilityMode =
         content::BrowserAccessibilityState::GetInstance()
             ->CreateScopedModeForProcess(ui::kAXModeComplete |
                                          ui::AXMode::kFromPlatform);
@@ -268,8 +268,8 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
              name:UIAccessibilityVoiceOverStatusDidChangeNotification
            object:nil];
 
-  UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
-  [_contentView addSubview:web_contents_view];
+  UIView* webContentsView = _shell->web_contents()->GetNativeView().Get();
+  [_contentView addSubview:webContentsView];
 
   if (@available(ios 17.0, *)) {
     NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.self ];
@@ -390,15 +390,15 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 
   __weak ContentShellWindowDelegate* weakSelf = self;
 
-  bool jit_enabled = content::ShellContentBrowserClient::Get()->IsJITEnabled();
-  NSString* jit_label = jit_enabled ? @"Disable JIT" : @"Enable JIT";
+  bool jitEnabled = content::ShellContentBrowserClient::Get()->IsJITEnabled();
+  NSString* jit_label = jitEnabled ? @"Disable JIT" : @"Enable JIT";
   [alertController
       addAction:[UIAlertAction
                     actionWithTitle:jit_label
                               style:UIAlertActionStyleDefault
                             handler:^(UIAlertAction* action) {
                               content::ShellContentBrowserClient::Get()
-                                  ->SetJITEnabled(!jit_enabled);
+                                  ->SetJITEnabled(!jitEnabled);
                             }]];
 
   if ([_tracingHandler isTracing]) {
@@ -474,12 +474,12 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {
-  std::string field_value = base::SysNSStringToUTF8(field.text);
-  GURL url(field_value);
+  std::string fieldValue = base::SysNSStringToUTF8(field.text);
+  GURL url(fieldValue);
   if (!url.has_scheme()) {
     // TODOD(dtapuska): Fix this to URL encode the query.
-    std::string search_url = "https://www.google.com/search?q=" + field_value;
-    url = GURL(search_url);
+    std::string searchUrl = "https://www.google.com/search?q=" + fieldValue;
+    url = GURL(searchUrl);
   }
   [_urlField resignFirstResponder];
   _shell->LoadURL(url);
@@ -507,12 +507,11 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
   content::BrowserAccessibilityState* accessibility_state =
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
-    _scoped_accessibility_mode =
-        accessibility_state->CreateScopedModeForProcess(
-            ui::kAXModeComplete | ui::AXMode::kFromPlatform |
-            ui::AXMode::kScreenReader);
+    _scopedAccessibilityMode = accessibility_state->CreateScopedModeForProcess(
+        ui::kAXModeComplete | ui::AXMode::kFromPlatform |
+        ui::AXMode::kScreenReader);
   } else {
-    _scoped_accessibility_mode.reset();
+    _scopedAccessibilityMode.reset();
   }
 }
 @end
@@ -547,16 +546,16 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 
   NSLog(@"Will trace to file: %@", filename);
 
-  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+  perfetto::TraceConfig perfettoConfig = tracing::GetDefaultPerfettoConfig(
       base::trace_event::TraceConfig(categories, ""),
       /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/true);
 
-  perfetto_config.set_write_into_file(true);
+  perfettoConfig.set_write_into_file(true);
   _tracingSession =
       perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
 
-  _tracingSession->Setup(perfetto_config, [_traceFileHandle fileDescriptor]);
+  _tracingSession->Setup(perfettoConfig, [_traceFileHandle fileDescriptor]);
 
   __weak TracingHandler* weakSelf = self;
   auto runner = base::SequencedTaskRunner::GetCurrentDefault();
