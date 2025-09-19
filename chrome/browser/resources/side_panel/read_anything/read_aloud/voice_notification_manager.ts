@@ -59,9 +59,10 @@ export class VoiceNotificationManager {
   }
 
   onNoEngineConnection() {
-    this.listeners_.forEach(
-        listener =>
-            listener.notify(NotificationType.GOOGLE_VOICES_UNAVAILABLE));
+    const type = window.navigator.onLine ?
+        NotificationType.GOOGLE_VOICES_UNAVAILABLE :
+        NotificationType.NO_INTERNET;
+    this.listeners_.forEach(listener => listener.notify(type));
   }
 
   static getInstance(): VoiceNotificationManager {
