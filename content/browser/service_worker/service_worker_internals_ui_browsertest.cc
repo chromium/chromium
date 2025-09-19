@@ -423,7 +423,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     static constexpr char kScript[] = R"(
       const button = document.body.querySelector('#serviceworker-list \
           .serviceworker-registration[data-registration-id=\'%d\'] \
-          button[data-command=\'%s\']');
+          cr-button[data-command=\'%s\']');
       button.click();
     )";
     EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),

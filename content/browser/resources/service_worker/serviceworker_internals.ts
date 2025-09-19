@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
 
 interface Options {
   debug_on_start: boolean;
@@ -123,30 +128,31 @@ function getVersionHtml(version: Version, partitionId: number) {
       `)}
       <div>
         <div>Log:</div>
-        <textarea class="serviceworker-log" rows="3" cols="120" readonly
+        <textarea class="serviceworker-log" rows="3" readonly
             .value="${getLogsForversion(partitionId, version)}"></textarea>
       </div>
       <div class="worker-controls">
         ${version.running_status === 'RUNNING' ? html`
-          <button data-command="stop"
+          <cr-button data-command="stop"
               @click="${onButtonClick.bind(null, {
                 partition_id: partitionId,
                 version_id: version.version_id,
               })}">
             Stop
-          </button>
-          <button data-command="inspect"
+          </cr-button>
+          <cr-button data-command="inspect"
               @click="${onButtonClick.bind(null, {
                 process_host_id: version.process_host_id,
                 devtools_agent_route_id: version.devtools_agent_route_id,
               })}">
             Inspect
-          </button>
+          </cr-button>
         ` : ''}
       </div>
     </div>`;
   // clang-format on
 }
+
 
 function getRegistrationHtml(registration: Registration, partitionId: number) {
   // clang-format off
@@ -214,29 +220,30 @@ function getRegistrationHtml(registration: Registration, partitionId: number) {
 
       ${!registration.unregistered ? html`
         <div class="registration-controls">
-          <button data-command="unregister"
+          <cr-button data-command="unregister"
               @click="${onButtonClick.bind(null, {
                 partition_id: partitionId,
                 scope: registration.scope,
                 storage_key: registration.storage_key,
               })}">
             Unregister
-          </button>
+          </cr-button>
           ${registration.active?.running_status !== 'RUNNING' ? html`
-            <button data-command="start"
+            <cr-button data-command="start"
                 @click="${onButtonClick.bind(null, {
                   partition_id: partitionId,
                   scope: registration.scope,
                   storage_key: registration.storage_key,
                 })}">
               Start
-            </button>
+            </cr-button>
           ` : ''}
         </div>
       ` : ''}
     </div>`;
   // clang-format on
 }
+
 
 function getServiceWorkerListHtml(data: PartitionDataProcessed) {
   if (data.storedRegistrations.length + data.unregisteredRegistrations.length +
@@ -277,32 +284,31 @@ function getServiceWorkerListHtml(data: PartitionDataProcessed) {
   // clang-format on
 }
 
+
 function getServiceWorkerOptionsHtml(options: Options) {
   // clang-format off
   return html`
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" ?checked="${options.debug_on_start}"
-            @change="${onDebugOnStartChange}">
-          <span>
-            Open DevTools window and pause JavaScript execution on Service Worker startup for debugging.
-          </span>
-      </label>
-    </div>
-  </div>`;
+    <cr-checkbox ?checked="${options.debug_on_start}"
+        @change="${onDebugOnStartChange}">
+      Open DevTools window and pause JavaScript execution on Service Worker
+      startup for debugging.
+    </cr-checkbox>`;
   // clang-format on
 }
+
 
 function onDebugOnStartChange(e: Event) {
   const input = e.target as HTMLInputElement;
   chrome.send('SetOption', ['debug_on_start', input.checked]);
 }
 
+
 function onOptions(options: Options) {
   render(
       getServiceWorkerOptionsHtml(options),
       getRequiredElement('serviceworker-options'));
 }
+
 
 async function onButtonClick(cmdArgs: Record<string, any>, e: Event) {
   const command = (e.target as HTMLElement).dataset['command'];
@@ -312,6 +318,7 @@ async function onButtonClick(cmdArgs: Record<string, any>, e: Event) {
   update();
 }
 
+
 function getLogsForversion(partitionId: number, version: Version): string {
   const logMessages = allLogMessages.get(partitionId) || null;
   if (logMessages === null) {
@@ -320,6 +327,7 @@ function getLogsForversion(partitionId: number, version: Version): string {
 
   return logMessages.get(version.version_id) || '';
 }
+
 
 function addLogForversion(
     partitionId: number, versionId: string, message: string) {
@@ -371,6 +379,7 @@ function getUnregisteredWorkers(
   });
 }
 
+
 // Fired once per partition from the backend.
 function onPartitionData(
     registrations: PartitionData, partitionId: number, partitionPath: string) {
@@ -380,6 +389,7 @@ function onPartitionData(
   // Trigger re-rendering of corresponding DOM subtree.
   renderPartitionData(partitionId);
 }
+
 
 function renderPartitionData(partitionId: number) {
   const entry = partitionsData.get(partitionId) || null;
@@ -419,6 +429,7 @@ function renderPartitionData(partitionId: number) {
       partitionDiv);
 }
 
+
 function onErrorReported(
     partitionId: number, versionId: string, errorInfo: any) {
   // Update data model.
@@ -428,6 +439,7 @@ function onErrorReported(
   // Trigger re-rendering of corresponding DOM subtree.
   renderPartitionData(partitionId);
 }
+
 
 function onConsoleMessageReported(
     partitionId: number, versionId: string, message: any) {
@@ -444,6 +456,7 @@ const COMMANDS: string[] = ['stop', 'inspect', 'unregister', 'start'];
 const allLogMessages = new Map<number, Map<string, string>>();
 const partitionsData: Map<number, PartitionsDataEntry> = new Map();
 
+
 function initialize() {
   addWebUiListener('partition-data', onPartitionData);
   addWebUiListener('running-state-changed', update);
@@ -456,9 +469,11 @@ function initialize() {
   update();
 }
 
+
 function update() {
   sendWithPromise('GetOptions').then(onOptions);
   chrome.send('getAllRegistrations');
 }
+
 
 document.addEventListener('DOMContentLoaded', initialize);

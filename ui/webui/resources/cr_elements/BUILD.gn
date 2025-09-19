@@ -17,6 +17,8 @@ build_webui("build") {
   ts_files = [
     "cr_button/cr_button.html.ts",
     "cr_button/cr_button.ts",
+    "cr_checkbox/cr_checkbox.html.ts",
+    "cr_checkbox/cr_checkbox.ts",
     "cr_ripple/cr_ripple_mixin.ts",
     "cr_ripple/cr_ripple.ts",
     "cr_splitter/cr_splitter.ts",
@@ -27,6 +29,7 @@ build_webui("build") {
 
   css_files = [
     "cr_button/cr_button.css",
+    "cr_checkbox/cr_checkbox.css",
     "cr_hidden_style_lit.css",
     "cr_ripple/cr_ripple.css",
     "cr_shared_vars.css",
@@ -51,8 +54,6 @@ build_webui("build") {
       #  - have a checked-in *.html.ts wrapper file instead of auto-generated
       "cr_action_menu/cr_action_menu.html.ts",
       "cr_action_menu/cr_action_menu.ts",
-      "cr_checkbox/cr_checkbox.html.ts",
-      "cr_checkbox/cr_checkbox.ts",
       "cr_collapse/cr_collapse.html.ts",
       "cr_collapse/cr_collapse.ts",
       "cr_dialog/cr_dialog.html.ts",
@@ -106,7 +107,6 @@ build_webui("build") {
       "action_link_lit.css",
       "cr_action_menu/cr_action_menu.css",
       "cr_actionable_row_style_lit.css",
-      "cr_checkbox/cr_checkbox.css",
       "cr_collapse/cr_collapse.css",
       "cr_dialog/cr_dialog.css",
       "cr_drawer/cr_drawer.css",
