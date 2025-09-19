@@ -1041,6 +1041,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Abort: signed out during interception"/>
   <int value="21"
       label="Abort: not the first account but there is no primary account."/>
+  <int value="22" label="Abort: management disclaimer service in progress"/>
 </enum>
 
 <enum name="SigninInterceptionDismissReason">

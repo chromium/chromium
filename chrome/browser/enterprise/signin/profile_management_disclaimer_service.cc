@@ -69,9 +69,13 @@ ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
 
-  MaybeShowEnterpriseManagementDisclaimer(
-      GetPrimaryAccountInfo().account_id,
-      signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ProfileManagementDisclaimerService::
+                                    MaybeShowEnterpriseManagementDisclaimer,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                GetPrimaryAccountInfo().account_id,
+                                signin_metrics::AccessPoint::
+                                    kEnterpriseManagementDisclaimerAtStartup));
 }
 
 ProfileManagementDisclaimerService::~ProfileManagementDisclaimerService() =
@@ -102,12 +106,24 @@ void ProfileManagementDisclaimerService::EnsureManagedProfileForAccount(
     base::OnceCallback<void(Profile*, bool)> callback) {
   CHECK(state_->account_id.empty() || state_->account_id == account_id);
   state_->callbacks.AddUnsafe(std::move(callback));
+  state_->cancelable = false;
   MaybeShowEnterpriseManagementDisclaimer(account_id, access_point);
 }
 
 const CoreAccountId& ProfileManagementDisclaimerService::
     GetAccountBeingConsideredForManagementIfAny() const {
   return state_->account_id;
+}
+
+bool ProfileManagementDisclaimerService::StopCurrentProcessIfPossible() {
+  if (state_->profile_creation_controller) {
+    return false;
+  }
+  if (!state_->cancelable) {
+    return false;
+  }
+  Reset();
+  return true;
 }
 
 signin::IdentityManager*
@@ -247,6 +263,10 @@ void ProfileManagementDisclaimerService::
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
     bool is_from_cached_registration_result,
     bool is_managed_account) {
+  if (!enable_management_disclaimer_) {
+    Reset();
+    return;
+  }
   GaiaId gaia_id = GetExtendedAccountInfo(state_->account_id).gaia;
   // If the account has been removed in the meantime, reset the state.
   if (gaia_id.empty()) {

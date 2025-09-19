@@ -408,6 +408,8 @@ class DiceWebSigninInterceptor : public KeyedService,
     // no value is set, then we have not yet received the policy value.
     std::optional<policy::ProfileSeparationPolicies>
         intercepted_account_profile_separation_policies_;
+
+    base::ScopedClosureRunner disable_management_disclaimer_until_reset_;
   };
 
   const raw_ptr<Profile> profile_;

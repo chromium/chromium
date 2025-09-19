@@ -65,6 +65,11 @@ class ProfileManagementDisclaimerService
   // Returns an empty `CoreAccountId` if no profile creation is in progress.
   const CoreAccountId& GetAccountBeingConsideredForManagementIfAny() const;
 
+  // Stop the current process if possible. Returns true if the process was
+  // stopped. The process can be stopped if there is no dialog shown and if
+  // the current process was not started by `EnsureManagedProfileForAccount`.
+  bool StopCurrentProcessIfPossible();
+
   void SetProfileSeparationPoliciesForTesting(
       std::optional<policy::ProfileSeparationPolicies> value) {
     profile_separation_policies_for_testing_ = std::move(value);
@@ -95,6 +100,7 @@ class ProfileManagementDisclaimerService
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
+    bool cancelable = true;
 
     // Callbacks to be executed the user chooses which profile to be managed and
     // whether management is required by policy. The first parameter is the

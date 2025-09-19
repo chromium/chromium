@@ -23,6 +23,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
@@ -963,6 +965,21 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       ShouldEnforceEnterpriseProfileSeparation(info);
   bool reauth = !state_->new_account_interception_;
   bool show_link_data_option = false;
+
+  // If the profile_management_disclaimer_service` is handling an account and
+  // cannot be cancelled, we need to reset the interception, otherwise prevent
+  // it from being shown until the reset.
+  auto* profile_management_disclaimer_service =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(profile_);
+  if (!profile_management_disclaimer_service->StopCurrentProcessIfPossible()) {
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortDisclaimerServiceInProgress);
+    Reset();
+    return;
+  }
+  state_->disable_management_disclaimer_until_reset_ =
+      profile_management_disclaimer_service
+          ->DisableManagementDisclaimerUntilReset();
 
   if (force_profile_separation) {
     bool email_allowed = IsUsernameAllowedForInterceptionByPattern(info.email);
