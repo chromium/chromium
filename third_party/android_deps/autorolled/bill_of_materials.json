@@ -1402,7 +1402,7 @@
     {
         "name": "firebase-common",
         "group": "com.google.firebase",
-        "version": "22.0.1"
+        "version": "22.0.0"
     },
     {
         "name": "firebase-components",
@@ -1452,7 +1452,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "25.0.1"
+        "version": "25.0.0"
     },
     {
         "name": "failureaccess",

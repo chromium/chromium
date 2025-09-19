@@ -1,7 +1,7 @@
 Name: firebase-messaging
 Short Name: firebase-messaging
 URL: https://firebase.google.com
-Version: 25.0.1
+Version: 25.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

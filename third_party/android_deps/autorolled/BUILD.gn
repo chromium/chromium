@@ -552,7 +552,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_messaging_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-25.0.1.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging-25.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
         enable_bytecode_checks = false
         deps = [
@@ -1111,7 +1111,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_common_java") {
-        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common/firebase-common-22.0.1.aar"
+        aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common/firebase-common-22.0.0.aar"
         info_path = "autorolled/committed/libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
         enable_bytecode_checks = false
 
