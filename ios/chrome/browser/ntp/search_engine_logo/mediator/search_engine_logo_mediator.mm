@@ -154,7 +154,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
   _usesMonochromeLogo = usesMonochromeLogo;
-  [self setContainerMonochromeLogoIfAllowed];
+  [self setContainerLogoIfAllowed];
 }
 
 #pragma mark - Accessors
@@ -197,7 +197,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
   _logoState = logoState;
-  [self setContainerMonochromeLogoIfAllowed];
+  [self setContainerLogoIfAllowed];
 }
 
 #pragma mark - SearchEngineLogoContainerViewDelegate
@@ -250,11 +250,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 #pragma mark - Private
 
 // Sets the container view's logo to monochrome if state allows for it.
-- (void)setContainerMonochromeLogoIfAllowed {
-  if (!self.usesMonochromeLogo) {
-    return;
-  }
-
+- (void)setContainerLogoIfAllowed {
   // Doodle supercedes monochrome logo.
   if (self.logoState == SearchEngineLogoState::kDoodle) {
     return;
