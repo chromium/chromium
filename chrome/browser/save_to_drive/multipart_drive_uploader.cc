@@ -13,11 +13,11 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/drive_uploader.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "google_apis/common/base_requests.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/mime_util.h"
 #include "net/base/url_util.h"
@@ -42,67 +42,6 @@ constexpr char kUploadContentLengthKey[] =
     "X-Goog-Upload-Header-Content-Length";
 constexpr char kUploadProtocolKey[] = "X-Goog-Upload-Protocol";
 constexpr char kUploadTypeQueryParameterKey[] = "uploadType";
-
-constexpr std::string_view kErrorReasonQuotaExceeded = "quotaExceeded";
-constexpr std::string_view kErrorStorageQuotaExceeded = "storageQuotaExceeded";
-
-SaveToDriveProgress CreateSuccessProgress(
-    const endpoint_fetcher::EndpointResponse& endpoint_response,
-    size_t file_size,
-    std::string_view parent_folder_name) {
-  SaveToDriveProgress progress;
-  // The upload is not considered successful until the response is parsed.
-  progress.status = SaveToDriveStatus::kUploadFailed;
-  progress.error_type = SaveToDriveErrorType::kUnknownError;
-
-  if (endpoint_response.response.empty()) {
-    return progress;
-  }
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(endpoint_response.response);
-  if (!dict) {
-    return progress;
-  }
-  const std::string* file_id = dict->FindString("id");
-  if (!file_id) {
-    return progress;
-  }
-  const std::string* name = dict->FindString("name");
-  if (!name) {
-    return progress;
-  }
-  progress.status = SaveToDriveStatus::kUploadCompleted;
-  progress.error_type = SaveToDriveErrorType::kNoError;
-  progress.drive_item_id = *file_id;
-  progress.file_size_bytes = file_size;
-  progress.uploaded_bytes = file_size;
-  progress.file_name = *name;
-  progress.parent_folder_name = parent_folder_name;
-  return progress;
-}
-
-// See https://developers.google.com/drive/handle-errors for error handling.
-SaveToDriveProgress CreateErrorProgress(
-    const endpoint_fetcher::EndpointResponse& endpoint_response) {
-  SaveToDriveProgress progress;
-  progress.status = SaveToDriveStatus::kUploadFailed;
-  progress.error_type = SaveToDriveErrorType::kUnknownError;
-
-  if (endpoint_response.http_status_code == net::HTTP_UNAUTHORIZED) {
-    progress.error_type = SaveToDriveErrorType::kOauthError;
-    return progress;
-  }
-
-  const std::optional<std::string> reason =
-      google_apis::MapJsonErrorToReason(endpoint_response.response);
-  // Public documentation recommends checking for `storageQuotaExceeded` but for
-  // some cases it returns `quotaExceeded'.
-  if (reason && (*reason == kErrorReasonQuotaExceeded ||
-                 *reason == kErrorStorageQuotaExceeded)) {
-    progress.error_type = SaveToDriveErrorType::kQuotaExceeded;
-  }
-  return progress;
-}
 
 }  // namespace
 
@@ -138,10 +77,7 @@ void MultipartDriveUploader::OnContentRead(mojo_base::BigBuffer buffer) {
     error_type = SaveToDriveErrorType::kUnknownError;
   }
   if (error_type != SaveToDriveErrorType::kNoError) {
-    SaveToDriveProgress progress;
-    progress.status = SaveToDriveStatus::kUploadFailed;
-    progress.error_type = error_type;
-    progress_callback_.Run(std::move(progress));
+    NotifyError(error_type);
     return;
   }
   const GURL url = net::AppendOrReplaceQueryParameter(
@@ -189,13 +125,12 @@ void MultipartDriveUploader::OnUploadProgress(uint64_t current_bytes,
 
 void MultipartDriveUploader::HandleUploadResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
-  bool is_success = response->http_status_code == net::HTTP_OK ||
-                    response->http_status_code == net::HTTP_CREATED;
-  size_t file_size = content_reader_->GetSize();
-  progress_callback_.Run(
-      is_success
-          ? CreateSuccessProgress(*response, file_size, parent_folder_->name)
-          : CreateErrorProgress(*response));
+  if (response->http_status_code == net::HTTP_OK ||
+      response->http_status_code == net::HTTP_CREATED) {
+    NotifyUploadSuccess(std::move(response));
+    return;
+  }
+  NotifyUploadFailure(std::move(response));
 }
 
 }  // namespace save_to_drive

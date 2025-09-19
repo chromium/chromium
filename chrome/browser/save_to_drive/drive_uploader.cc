@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/drive/drive_api_util.h"
@@ -25,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/common/base_requests.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
@@ -87,6 +89,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
 
 constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
 
+constexpr std::string_view kErrorReasonQuotaExceeded = "quotaExceeded";
+constexpr std::string_view kErrorStorageQuotaExceeded = "storageQuotaExceeded";
+
 std::optional<DriveUploader::Item> ParseClientFolderResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> endpoint_response) {
   if (!endpoint_response || endpoint_response->response.empty() ||
@@ -107,6 +112,63 @@ std::optional<DriveUploader::Item> ParseClientFolderResponse(
     return std::nullopt;
   }
   return DriveUploader::Item{*file_id, *file_name};
+}
+
+SaveToDriveProgress CreateSuccessProgress(
+    const endpoint_fetcher::EndpointResponse& endpoint_response,
+    size_t file_size,
+    std::string_view parent_folder_name) {
+  SaveToDriveProgress progress;
+  // The upload is not considered successful until the response is parsed.
+  progress.status = SaveToDriveStatus::kUploadFailed;
+  progress.error_type = SaveToDriveErrorType::kUnknownError;
+
+  if (endpoint_response.response.empty()) {
+    return progress;
+  }
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(endpoint_response.response);
+  if (!dict) {
+    return progress;
+  }
+  const std::string* file_id = dict->FindString("id");
+  if (!file_id) {
+    return progress;
+  }
+  const std::string* name = dict->FindString("name");
+  if (!name) {
+    return progress;
+  }
+  progress.status = SaveToDriveStatus::kUploadCompleted;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  progress.drive_item_id = *file_id;
+  progress.file_size_bytes = file_size;
+  progress.uploaded_bytes = file_size;
+  progress.file_name = *name;
+  progress.parent_folder_name = parent_folder_name;
+  return progress;
+}
+
+// See https://developers.google.com/drive/handle-errors for error handling.
+SaveToDriveErrorType GetErrorType(
+    const endpoint_fetcher::EndpointResponse& endpoint_response) {
+  if (endpoint_response.error_type &&
+      *endpoint_response.error_type ==
+          endpoint_fetcher::FetchErrorType::kNetError) {
+    return SaveToDriveErrorType::kOffline;
+  }
+  if (endpoint_response.http_status_code == net::HTTP_UNAUTHORIZED) {
+    return SaveToDriveErrorType::kOauthError;
+  }
+  const std::optional<std::string> reason =
+      google_apis::MapJsonErrorToReason(endpoint_response.response);
+  // Public documentation recommends checking for `storageQuotaExceeded` but for
+  // some cases it returns `quotaExceeded'.
+  if (reason && (*reason == kErrorReasonQuotaExceeded ||
+                 *reason == kErrorStorageQuotaExceeded)) {
+    return SaveToDriveErrorType::kQuotaExceeded;
+  }
+  return SaveToDriveErrorType::kUnknownError;
 }
 
 }  // namespace
@@ -135,10 +197,7 @@ void DriveUploader::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!identity_manager_->HasAccountWithRefreshToken(
           account_info_.account_id)) {
-    SaveToDriveProgress progress;
-    progress.status = SaveToDriveStatus::kUploadFailed;
-    progress.error_type = SaveToDriveErrorType::kOauthError;
-    progress_callback_.Run(std::move(progress));
+    NotifyError(SaveToDriveErrorType::kOauthError);
     return;
   }
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
@@ -152,10 +211,7 @@ void DriveUploader::OnFetchAccessToken(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
-    SaveToDriveProgress progress;
-    progress.status = SaveToDriveStatus::kUploadFailed;
-    progress.error_type = SaveToDriveErrorType::kOauthError;
-    progress_callback_.Run(std::move(progress));
+    NotifyError(SaveToDriveErrorType::kOauthError);
     return;
   }
 
@@ -192,9 +248,7 @@ void DriveUploader::OnFetchParentFolder(
   parent_folder_ = ParseClientFolderResponse(std::move(response));
   SaveToDriveProgress progress;
   if (!parent_folder_) {
-    progress.status = SaveToDriveStatus::kUploadFailed;
-    progress.error_type = SaveToDriveErrorType::kParentFolderSelectionFailed;
-    progress_callback_.Run(std::move(progress));
+    NotifyError(SaveToDriveErrorType::kParentFolderSelectionFailed);
     return;
   }
 
@@ -244,6 +298,24 @@ void DriveUploader::set_oauth_headers_for_testing(
 
 const std::vector<std::string>& DriveUploader::oauth_headers() const {
   return oauth_headers_;
+}
+
+void DriveUploader::NotifyUploadSuccess(
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  progress_callback_.Run(CreateSuccessProgress(
+      *response, content_reader_->GetSize(), parent_folder_->name));
+}
+
+void DriveUploader::NotifyUploadFailure(
+    std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  NotifyError(GetErrorType(*response));
+}
+
+void DriveUploader::NotifyError(SaveToDriveErrorType error_type) {
+  SaveToDriveProgress progress;
+  progress.status = SaveToDriveStatus::kUploadFailed;
+  progress.error_type = error_type;
+  progress_callback_.Run(std::move(progress));
 }
 
 }  // namespace save_to_drive

@@ -28,6 +28,7 @@ using UploadProgressCallback =
 }  // namespace endpoint_fetcher
 
 namespace extensions::api::pdf_viewer_private {
+enum class SaveToDriveErrorType;
 struct SaveToDriveProgress;
 }  // namespace extensions::api::pdf_viewer_private
 
@@ -113,6 +114,22 @@ class DriveUploader {
   // Handles the response from the Drive API when fetching the parent folder.
   void OnFetchParentFolder(
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
+  // Notifies through `progress_callback_` that the upload succeeded.
+  // `response` is the response from the Drive API that contains the uploaded
+  // file metadata.
+  void NotifyUploadSuccess(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
+  // Notifies through `progress_callback_` that the upload failed.
+  // `response` is the response from the Drive API that contains the error
+  // information.
+  void NotifyUploadFailure(
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
+  // Notifies through `progress_callback_` that an error has occurred.
+  void NotifyError(
+      extensions::api::pdf_viewer_private::SaveToDriveErrorType error_type);
 
   const std::vector<std::string>& oauth_headers() const;
 

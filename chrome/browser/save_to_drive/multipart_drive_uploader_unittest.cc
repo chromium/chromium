@@ -40,7 +40,6 @@ using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 using testing::_;
 using testing::AllOf;
 using testing::Field;
-using testing::Invoke;
 using testing::Return;
 
 constexpr std::string_view kMultipartUploadUrl =
@@ -140,10 +139,10 @@ class MultipartDriveUploaderTest : public testing::Test {
     EXPECT_CALL(mock_content_reader_, GetSize())
         .WillRepeatedly(Return(kTestContent.size()));
     EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
-        .WillOnce(Invoke([&](uint32_t, uint32_t, ContentReadCallback callback) {
+        .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
           std::move(callback).Run(
               mojo_base::BigBuffer(base::as_byte_span(kTestContent)));
-        }));
+        });
 
     const content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
@@ -182,10 +181,10 @@ TEST_F(MultipartDriveUploaderTest, UploadSuccess) {
   EXPECT_CALL(mock_content_reader_, GetSize())
       .WillRepeatedly(Return(kTestContent.size()));
   EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
-      .WillOnce(Invoke([&](uint32_t, uint32_t, ContentReadCallback callback) {
+      .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
         std::move(callback).Run(
             mojo_base::BigBuffer(base::as_bytes(base::span(kTestContent))));
-      }));
+      });
 
   auto account_info = test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
@@ -238,9 +237,9 @@ TEST_F(MultipartDriveUploaderTest, UploadFailsContentReadError) {
   EXPECT_CALL(mock_content_reader_, GetSize())
       .WillRepeatedly(Return(kTestContent.size()));
   EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
-      .WillOnce(Invoke([&](uint32_t, uint32_t, ContentReadCallback callback) {
+      .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
         std::move(callback).Run(mojo_base::BigBuffer());
-      }));
+      });
 
   auto account_info = test_env()->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
@@ -249,6 +248,26 @@ TEST_F(MultipartDriveUploaderTest, UploadFailsContentReadError) {
                               SaveToDriveStatus::kUploadFailed),
                         Field(&SaveToDriveProgress::error_type,
                               SaveToDriveErrorType::kUnknownError))));
+
+  uploader_->UploadFile();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(MultipartDriveUploaderTest, UploadFailsNetError) {
+  EXPECT_CALL(mock_content_reader_, GetSize())
+      .WillRepeatedly(Return(kTestContent.size()));
+  EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
+      .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
+        std::move(callback).Run(
+            mojo_base::BigBuffer(base::as_byte_span(kTestContent)));
+      });
+  // No URLLoaderInterceptor is set up, so the request will fail with a net
+  // error.
+  EXPECT_CALL(progress_callback_,
+              Run(AllOf(Field(&SaveToDriveProgress::status,
+                              SaveToDriveStatus::kUploadFailed),
+                        Field(&SaveToDriveProgress::error_type,
+                              SaveToDriveErrorType::kOffline))));
 
   uploader_->UploadFile();
   task_environment_.RunUntilIdle();
@@ -308,10 +327,10 @@ TEST_F(MultipartDriveUploaderTest, UploadFailsNoOAuthToken) {
   EXPECT_CALL(mock_content_reader_, GetSize())
       .WillRepeatedly(Return(kTestContent.size()));
   EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
-      .WillOnce(Invoke([&](uint32_t, uint32_t, ContentReadCallback callback) {
+      .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
         std::move(callback).Run(
             mojo_base::BigBuffer(base::as_bytes(base::span(kTestContent))));
-      }));
+      });
   EXPECT_CALL(progress_callback_,
               Run(AllOf(Field(&SaveToDriveProgress::status,
                               SaveToDriveStatus::kUploadFailed),
@@ -326,10 +345,10 @@ TEST_F(MultipartDriveUploaderTest, UploadFailsNoParentFolder) {
   EXPECT_CALL(mock_content_reader_, GetSize())
       .WillRepeatedly(Return(kTestContent.size()));
   EXPECT_CALL(mock_content_reader_, Read(0, kTestContent.size(), _))
-      .WillOnce(Invoke([&](uint32_t, uint32_t, ContentReadCallback callback) {
+      .WillOnce([&](uint32_t, uint32_t, ContentReadCallback callback) {
         std::move(callback).Run(
             mojo_base::BigBuffer(base::as_bytes(base::span(kTestContent))));
-      }));
+      });
   EXPECT_CALL(
       progress_callback_,
       Run(AllOf(
