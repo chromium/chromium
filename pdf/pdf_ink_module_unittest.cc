@@ -1653,13 +1653,13 @@ TEST_P(PdfInkModuleStrokeTest, BasicLayoutInvalidationsFromStroke) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // The default brush param size is 3.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaFinishedStroke(7, 12, 27, 9);
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(7, 12, 27, 9);
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -1682,13 +1682,13 @@ TEST_P(PdfInkModuleStrokeTest, TransformedLayoutInvalidationsFromStroke) {
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // The default brush param size is 3.0.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
-  const gfx::Rect kInvalidationAreaFinishedStroke(6, 11, 29, 11);
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
+  constexpr gfx::Rect kInvalidationAreaFinishedStroke(6, 11, 29, 11);
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -2625,17 +2625,17 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsBasic) {
 
   // The default brush param size is 3.0.  Invalidation areas are in screen
   // coordinates.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7, 12),
-                                                gfx::Size(27, 9));
+  constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(7, 12),
+                                                    gfx::Size(27, 9));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
@@ -2665,17 +2665,17 @@ TEST_P(PdfInkModuleUndoRedoTest, UndoRedoInvalidationsScaledRotated90) {
 
   // The default brush param size is 3.0.  Invalidation areas are in screen
   // coordinates.
-  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(4.0f, 4.0f));
-  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8.0f, 13.0f),
-                                             gfx::Size(14.0f, 14.0f));
-  const gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18.0f, 15.0f),
-                                           gfx::Size(14.0f, 12.0f));
+  constexpr gfx::Rect kInvalidationAreaMouseDown(gfx::Point(8, 13),
+                                                 gfx::Size(4, 4));
+  constexpr gfx::Rect kInvalidationAreaMouseMove(gfx::Point(8, 13),
+                                                 gfx::Size(14, 14));
+  constexpr gfx::Rect kInvalidationAreaMouseUp(gfx::Point(18, 15),
+                                               gfx::Size(14, 12));
   // This size is smaller than the area of the merged invalidation constants
   // above because InkStrokeModeler modeled the "V" shaped input into an input
   // with a much gentler line slope.
-  const gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(6, 11),
-                                                gfx::Size(29, 11));
+  constexpr gfx::Rect kInvalidationAreaEntireStroke(gfx::Point(6, 11),
+                                                    gfx::Size(29, 11));
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove,
