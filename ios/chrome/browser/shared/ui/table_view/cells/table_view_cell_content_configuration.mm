@@ -10,6 +10,16 @@
 
 @implementation TableViewCellContentConfiguration
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _titleNumberOfLines = 0;
+    _subtitleNumberOfLines = 0;
+    _trailingTextNumberOfLines = 1;
+  }
+  return self;
+}
+
 #pragma mark - Public
 
 + (void)registerCellForTableView:(UITableView*)tableView {
@@ -50,13 +60,20 @@
 
 - (id)copyWithZone:(NSZone*)zone {
   TableViewCellContentConfiguration* copy =
-      [[TableViewCellContentConfiguration alloc] init];
+      [[TableViewCellContentConfiguration allocWithZone:zone] init];
+  // The updates to properties must be reflected in the copy method.
+  // LINT.IfChange(Copy)
   copy.title = self.title;
   copy.titleColor = self.titleColor;
+  copy.titleNumberOfLines = self.titleNumberOfLines;
+  copy.leadingConfiguration = [self.leadingConfiguration copyWithZone:zone];
   copy.subtitle = self.subtitle;
   copy.subtitleColor = self.subtitleColor;
+  copy.subtitleNumberOfLines = self.subtitleNumberOfLines;
   copy.trailingText = self.trailingText;
   copy.trailingTextColor = self.trailingTextColor;
+  copy.trailingTextNumberOfLines = self.trailingTextNumberOfLines;
+  // LINT.ThenChange(table_view_cell_content_configuration.h:Copy)
   return copy;
 }
 

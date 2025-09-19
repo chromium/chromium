@@ -24,8 +24,10 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -153,25 +155,27 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 #pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
+  UITableView* tableView = self.tableView;
+
   __weak __typeof(self) weakSelf = self;
   _dataSource = [[UITableViewDiffableDataSource alloc]
-      initWithTableView:self.tableView
-           cellProvider:^UITableViewCell*(UITableView* tableView,
+      initWithTableView:tableView
+           cellProvider:^UITableViewCell*(UITableView* innerTableView,
                                           NSIndexPath* indexPath,
                                           NSNumber* itemIdentifier) {
              return
-                 [weakSelf cellForTableView:tableView
+                 [weakSelf cellForTableView:innerTableView
                                   indexPath:indexPath
                              itemIdentifier:static_cast<ItemIdentifier>(
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
-  RegisterTableViewCell<TableViewSwitchCell>(self.tableView);
-  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
-  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
+  RegisterTableViewCell<TableViewSwitchCell>(tableView);
+  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(
-      self.tableView);
+      tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
@@ -299,15 +303,27 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierSecurity: {
-      TableViewDetailIconCell* cell =
-          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      cell.textLabel.text =
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title =
           l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CONNECTION);
-      cell.detailText = self.pageInfoSecurityDescription.status;
-      [cell setIconImage:self.pageInfoSecurityDescription.iconImage
-                tintColor:UIColor.whiteColor
-          backgroundColor:self.pageInfoSecurityDescription.iconBackgroundColor
-             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+      configuration.trailingText = self.pageInfoSecurityDescription.status;
+      configuration.subtitleNumberOfLines =
+          kAboutThisSiteDetailTextNumberOfLines;
+
+      ColorfulSymbolContentConfiguration* iconConfiguration =
+          [[ColorfulSymbolContentConfiguration alloc] init];
+      iconConfiguration.symbolImage =
+          self.pageInfoSecurityDescription.iconImage;
+      iconConfiguration.symbolBackgroundColor =
+          self.pageInfoSecurityDescription.iconBackgroundColor;
+      iconConfiguration.symbolTintColor = UIColor.whiteColor;
+
+      configuration.leadingConfiguration = iconConfiguration;
+
+      TableViewCell* cell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      cell.contentConfiguration = configuration;
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
       return cell;
@@ -365,14 +381,16 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       return cell;
     }
     case ItemIdentifierAboutThisSite: {
-      TableViewDetailIconCell* cell =
-          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      cell.textLabel.text =
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title =
           l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
-      cell.detailText = _aboutThisSiteInfo.summary;
-      cell.detailTextNumberOfLines = kAboutThisSiteDetailTextNumberOfLines;
-      cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+      configuration.subtitle = _aboutThisSiteInfo.summary;
+      configuration.subtitleNumberOfLines =
+          kAboutThisSiteDetailTextNumberOfLines;
 
+      ColorfulSymbolContentConfiguration* iconConfiguration =
+          [[ColorfulSymbolContentConfiguration alloc] init];
       UIImage* icon =
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
           CustomSymbolTemplateWithPointSize(kPageInsightsSymbol,
@@ -381,11 +399,16 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
           DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
                                              kPageInfoSymbolPointSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS),
+      iconConfiguration.symbolImage = icon;
+      iconConfiguration.symbolBackgroundColor =
+          [UIColor colorNamed:kPurple500Color];
+      iconConfiguration.symbolTintColor = UIColor.whiteColor;
 
-      [cell setIconImage:icon
-                tintColor:UIColor.whiteColor
-          backgroundColor:[UIColor colorNamed:kPurple500Color]
-             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+      configuration.leadingConfiguration = iconConfiguration;
+
+      TableViewCell* cell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      cell.contentConfiguration = configuration;
 
       cell.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
@@ -394,17 +417,26 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       return cell;
     }
     case ItemIdentifierLastVisited: {
-      TableViewDetailIconCell* cell =
-          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      cell.textLabel.text = l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY);
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title = l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY);
+      configuration.subtitle = _lastVisitedTimestamp;
+      configuration.subtitleNumberOfLines =
+          kAboutThisSiteDetailTextNumberOfLines;
 
-      cell.detailText = _lastVisitedTimestamp;
-      cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-      [cell setIconImage:DefaultSymbolTemplateWithPointSize(
-                             kClockSymbol, kPageInfoSymbolPointSize)
-                tintColor:UIColor.whiteColor
-          backgroundColor:[UIColor colorNamed:kBlue500Color]
-             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+      ColorfulSymbolContentConfiguration* iconConfiguration =
+          [[ColorfulSymbolContentConfiguration alloc] init];
+      iconConfiguration.symbolImage = DefaultSymbolTemplateWithPointSize(
+          kClockSymbol, kPageInfoSymbolPointSize);
+      iconConfiguration.symbolBackgroundColor =
+          [UIColor colorNamed:kBlue500Color];
+      iconConfiguration.symbolTintColor = UIColor.whiteColor;
+
+      configuration.leadingConfiguration = iconConfiguration;
+
+      TableViewCell* cell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      cell.contentConfiguration = configuration;
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
       return cell;

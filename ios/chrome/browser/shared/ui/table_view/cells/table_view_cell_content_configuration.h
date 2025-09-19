@@ -21,17 +21,31 @@
 // +---------------------------------------------+
 @interface TableViewCellContentConfiguration : NSObject <UIContentConfiguration>
 
+// The updates to properties must be reflected in the copy method.
+// LINT.IfChange(Copy)
+
 // The title of the cell.
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, strong) UIColor* titleColor;
+// Defaults to 0 (unlimited).
+@property(nonatomic, assign) NSInteger titleNumberOfLines;
+
+// The leading content configuration for the cell.
+@property(nonatomic, copy) id<UIContentConfiguration> leadingConfiguration;
 
 // The subtitle of the cell.
 @property(nonatomic, copy) NSString* subtitle;
 @property(nonatomic, strong) UIColor* subtitleColor;
+// Defaults to 0 (unlimited).
+@property(nonatomic, assign) NSInteger subtitleNumberOfLines;
 
 // The trailing details of the cell.
 @property(nonatomic, copy) NSString* trailingText;
 @property(nonatomic, strong) UIColor* trailingTextColor;
+// Defaults to 1.
+@property(nonatomic, assign) NSInteger trailingTextNumberOfLines;
+
+// LINT.ThenChange(table_view_cell_content_configuration.mm:Copy)
 
 // Registers/Dequeues a TableViewCell for this content configuration. This
 // ensures that the pool of cells that will be used for this content

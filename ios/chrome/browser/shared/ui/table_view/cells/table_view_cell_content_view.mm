@@ -70,6 +70,11 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 @implementation TableViewCellContentView {
   TableViewCellContentConfiguration* _configuration;
 
+  // The leading content view.
+  UIView<UIContentView>* _leadingContentView;
+  // The container for the leading content view.
+  UIView* _leadingContentViewContainer;
+
   // The labels.
   UILabel* _title;
   UILabel* _subtitle;
@@ -134,20 +139,58 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 // Updates the elements based on a new configuration.
 - (void)applyConfiguration {
+  BOOL isLeadingImageContentViewCompatible =
+      [_leadingContentView
+          respondsToSelector:@selector(supportsConfiguration:)] &&
+      [_leadingContentView
+          supportsConfiguration:_configuration.leadingConfiguration];
+  if (!isLeadingImageContentViewCompatible) {
+    [_leadingContentView removeFromSuperview];
+    _leadingContentView = nil;
+  }
+  _leadingContentViewContainer.hidden = YES;
+
+  if (_configuration.leadingConfiguration) {
+    _leadingContentViewContainer.hidden = NO;
+    if (_leadingContentView) {
+      _leadingContentView.configuration = _configuration.leadingConfiguration;
+    } else {
+      _leadingContentView =
+          [_configuration.leadingConfiguration makeContentView];
+      _leadingContentView.translatesAutoresizingMaskIntoConstraints = NO;
+      [_leadingContentViewContainer addSubview:_leadingContentView];
+      [NSLayoutConstraint activateConstraints:@[
+        [_leadingContentView.leadingAnchor
+            constraintEqualToAnchor:_leadingContentViewContainer.leadingAnchor],
+        [_leadingContentView.trailingAnchor
+            constraintEqualToAnchor:_leadingContentViewContainer
+                                        .trailingAnchor],
+        [_leadingContentView.centerYAnchor
+            constraintEqualToAnchor:_leadingContentViewContainer.centerYAnchor],
+        [_leadingContentViewContainer.heightAnchor
+            constraintGreaterThanOrEqualToAnchor:_leadingContentView
+                                                     .heightAnchor],
+      ]];
+    }
+  }
+
   _title.hidden = !_configuration.title;
   _title.text = _configuration.title;
   _title.textColor =
       _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
+  _title.numberOfLines = _configuration.titleNumberOfLines;
 
   _subtitle.hidden = !_configuration.subtitle;
   _subtitle.text = _configuration.subtitle;
   _subtitle.textColor =
       _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
+  _subtitle.numberOfLines = _configuration.subtitleNumberOfLines;
 
   _trailingLabel.hidden = !_configuration.trailingText;
   _trailingLabel.text = _configuration.trailingText;
   _trailingLabel.textColor = _configuration.trailingTextColor
                                  ?: [UIColor colorNamed:kTextSecondaryColor];
+  _trailingLabel.numberOfLines = _configuration.trailingTextNumberOfLines;
 }
 
 // Updates the elements based on a change in the content size.
@@ -167,12 +210,15 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
                 UIUserInterfaceLayoutDirectionLeftToRight
             ? NSTextAlignmentRight
             : NSTextAlignmentLeft;
-    _trailingLabel.numberOfLines = 1;
+    _trailingLabel.numberOfLines = _configuration.trailingTextNumberOfLines;
   }
 }
 
 // Setups the views.
 - (void)setupViews {
+  _leadingContentViewContainer = [[UIView alloc] init];
+  _leadingContentViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
   _title = [self createTitleLabel];
   _subtitle = [self createSubtitleLabel];
   _trailingLabel = [self createTrailingLabel];
@@ -186,8 +232,12 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
   // The stack view forces the view to have their leading/trailing anchor equal
   // with a priority of required.
+  [_allTextStack addArrangedSubview:_leadingContentViewContainer];
   [_allTextStack addArrangedSubview:_titleSubtitleContainer];
   [_allTextStack addArrangedSubview:_trailingLabel];
+
+  [_allTextStack setCustomSpacing:kTableViewImagePadding
+                        afterView:_leadingContentViewContainer];
 
   [self addSubview:_allTextStack];
 
@@ -268,6 +318,7 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 // label.
 - (UIStackView*)createMainTextStack {
   UIStackView* stack = [[UIStackView alloc] init];
+  stack.alignment = UIStackViewAlignmentCenter;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   return stack;
 }
