@@ -6,7 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

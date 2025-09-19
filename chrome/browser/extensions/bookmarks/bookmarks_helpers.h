@@ -11,6 +11,9 @@
 #include <vector>
 
 #include "chrome/common/extensions/api/bookmarks.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace bookmarks {
 class BookmarkModel;

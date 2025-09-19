@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/bookmarks/bookmarks_features.h"
 
 #include "base/feature_list.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::bookmarks_errors {
 
 const char kNoNodeError[] = "Can't find bookmark for id.";

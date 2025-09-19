@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,6 +21,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
