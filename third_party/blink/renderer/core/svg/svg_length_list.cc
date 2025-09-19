@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"

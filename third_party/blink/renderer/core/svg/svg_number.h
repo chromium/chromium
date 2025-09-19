@@ -75,7 +75,7 @@ class SVGNumber : public SVGListablePropertyBase {
 
  protected:
   template <typename CharType>
-  SVGParsingError Parse(const CharType* ptr, const CharType* end);
+  SVGParsingError Parse(base::span<const CharType> span);
 
   float value_;
 };

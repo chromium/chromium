@@ -24,8 +24,6 @@
 
 #include <limits>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -174,28 +172,6 @@ static bool GenericParseNumber(base::span<const CharType>& result_span,
   }
 
   return true;
-}
-
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  // SAFETY: Simply wrap the parameters into span.
-  UNSAFE_BUFFERS(base::span result(ptr, end));
-  bool success = ParseNumber(result, number, mode);
-  ptr = result.empty() ? end : result.data();
-  return success;
-}
-
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
-                 float& number,
-                 WhitespaceMode mode) {
-  // SAFETY: Simply wrap the parameters into span.
-  UNSAFE_BUFFERS(base::span result(ptr, end));
-  bool success = ParseNumber(result, number, mode);
-  ptr = result.empty() ? end : result.data();
-  return success;
 }
 
 bool ParseNumber(base::span<const LChar>& span,

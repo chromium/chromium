@@ -22,7 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 
@@ -36,20 +35,7 @@ enum WhitespaceMode {
       kAllowLeadingWhitespace | kAllowTrailingWhitespace
 };
 
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-bool ParseNumber(const LChar*& ptr,
-                 const LChar* end,
-                 float& number,
-                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumber(base::span<const LChar>& span,
-                 float& number,
-                 WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
-
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-bool ParseNumber(const UChar*& ptr,
-                 const UChar* end,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumber(base::span<const UChar>& span,
@@ -57,16 +43,6 @@ bool ParseNumber(base::span<const UChar>& span,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
-
-// DEPRECATED: Use the following `base::span` variant to avoid unsafe buffer
-// usage.
-template <typename CharType>
-inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {
-  while (ptr < end && IsHTMLSpace<CharType>(*ptr)) {
-    UNSAFE_TODO(ptr++);
-  }
-  return ptr < end;
-}
 
 template <typename CharType>
 inline bool SkipOptionalSVGSpaces(const base::span<const CharType> chars,
