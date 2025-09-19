@@ -178,16 +178,14 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
                                         constant:kContentVerticalMargin],
     ]];
 
-    if (@available(iOS 17, *)) {
-      UITraitChangeHandler traitChangeHandler =
-          ^(id<UITraitEnvironment> traitEnvironment,
-            UITraitCollection* previousCollection) {
-            [weakSelf updateFontOnTraitChange:previousCollection];
-          };
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                      withHandler:traitChangeHandler];
-    }
+    UITraitChangeHandler traitChangeHandler =
+        ^(id<UITraitEnvironment> traitEnvironment,
+          UITraitCollection* previousCollection) {
+          [weakSelf updateFontOnTraitChange:previousCollection];
+        };
+    [self
+    registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                withHandler:traitChangeHandler];
 
     UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc]
         initWithTarget:self
@@ -198,17 +196,6 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 }
 
 #pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateFontOnTraitChange:previousTraitCollection];
-}
-#endif
 
 - (CGSize)intrinsicContentSize {
   // Promo should be the same height as the toolbar.

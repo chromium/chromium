@@ -22,40 +22,15 @@
 + (UITraitCollection*)changeTraitCollection:(UITraitCollection*)traitCollection
                           forViewController:(UIViewController*)viewController {
   // Change the orientation or the trait collection.
-  if (@available(iOS 17, *)) {
-    for (UIViewController* child in viewController.childViewControllers) {
-      child.traitOverrides.horizontalSizeClass =
-          UIUserInterfaceSizeClassCompact;
-    }
-
-    return [UITraitCollection
-        traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
-          mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-        }];
-    ;
+  for (UIViewController* child in viewController.childViewControllers) {
+    child.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
   }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-  else {
-    UITraitCollection* secondTraitCollection = nil;
-    // Simulate a multitasking by overriding the trait collections of the view
-    // controllers.
-    UITraitCollection* horizontalCompact = [UITraitCollection
-        traitCollectionWithHorizontalSizeClass:UIUserInterfaceSizeClassCompact];
-    secondTraitCollection =
-        [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-          traitCollection, horizontalCompact
-        ]];
 
-    for (UIViewController* child in viewController.childViewControllers) {
-      [viewController setOverrideTraitCollection:secondTraitCollection
-                          forChildViewController:child];
-    }
-
-    return secondTraitCollection;
-  }
-#else
-  return nil;
-#endif
+  return [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
+        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
+      }];
+  ;
 }
 
 @end

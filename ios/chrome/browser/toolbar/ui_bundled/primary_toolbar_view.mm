@@ -205,14 +205,10 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   [self setUpBannerPromo];
 
   [self setUpConstraints];
-
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[
-      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
-    ]
-                       withAction:@selector(updateViews:
-                                      previousTraitCollection:)];
-  }
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(updateViews:previousTraitCollection:)];
 }
 
 - (void)setHidden:(BOOL)hidden {
@@ -395,18 +391,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   // superview's layout context.
   [self updateTabGroupIndicatorAvailability];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  // iOS 17 and later introduce a new way to handle trait changes. If the OS
-  // version is iOS 17 or later, skip the old way of updating views.
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  [self updateViews:self previousTraitCollection:previousTraitCollection];
-}
-#endif
 
 #pragma mark - Setup
 
