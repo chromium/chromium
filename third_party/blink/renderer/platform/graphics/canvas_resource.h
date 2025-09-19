@@ -255,11 +255,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     bool is_lost = false;
   };
 
-  static void OnBitmapImageDestroyed(
-      scoped_refptr<CanvasResourceSharedImage> resource,
-      const gpu::SyncToken& sync_token,
-      bool is_lost);
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
   void VerifySyncToken() override;

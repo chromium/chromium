@@ -443,18 +443,6 @@ void CanvasResourceSharedImage::WillDraw() {
   owning_thread_data().mailbox_needs_new_sync_token = true;
 }
 
-// static
-void CanvasResourceSharedImage::OnBitmapImageDestroyed(
-    scoped_refptr<CanvasResourceSharedImage> resource,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  DCHECK(!resource->is_cross_thread());
-
-  auto weak_provider = resource->WeakProvider();
-  ReleaseFrameResources(std::move(weak_provider), std::move(resource),
-                        sync_token, is_lost);
-}
-
 void CanvasResourceSharedImage::Transfer() {
   if (is_cross_thread() || !ContextProviderWrapper())
     return;
@@ -501,8 +489,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
-  auto release_callback = base::BindOnce(
-      &OnBitmapImageDestroyed, scoped_refptr<CanvasResourceSharedImage>(this));
+  auto release_callback =
+      base::BindOnce(&ReleaseFrameResources, WeakProvider(),
+                     scoped_refptr<CanvasResourceSharedImage>(this));
 
   scoped_refptr<StaticBitmapImage> image;
   const auto& client_shared_image = GetClientSharedImage();
