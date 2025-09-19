@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace private_inference {
+namespace legion {
 
 using ::testing::_;
 using ::testing::Eq;
@@ -126,4 +126,4 @@ TEST_F(SecureClientTest, SendRequestAuthenticationFailed) {
   EXPECT_FALSE(future.Get<1>().has_value());
 }
 
-}  // namespace private_inference
+}  // namespace legion

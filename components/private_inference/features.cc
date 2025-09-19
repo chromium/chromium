@@ -4,14 +4,12 @@
 
 #include "components/private_inference/features.h"
 
-namespace private_inference {
+namespace legion {
 
-BASE_FEATURE(kPrivateInference, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kPrivateInferenceApiKey{
-    &kPrivateInference, "api-key", ""};
+const base::FeatureParam<std::string> kLegionApiKey{&kLegion, "api-key", ""};
 
-const base::FeatureParam<std::string> kPrivateInferenceUrl{&kPrivateInference,
-                                                           "url", ""};
+const base::FeatureParam<std::string> kLegionUrl{&kLegion, "url", ""};
 
-}  // namespace private_inference
+}  // namespace legion

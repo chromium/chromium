@@ -12,7 +12,7 @@
 
 #include "base/functional/callback.h"
 
-namespace private_inference {
+namespace legion {
 
 // Placeholder for the request data structure. Likely a serialized proto.
 using Request = std::vector<uint8_t>;
@@ -46,6 +46,6 @@ class SecureChannelClient {
   virtual void Write(Request request, OnWriteCompletedCallback callback) = 0;
 };
 
-}  // namespace private_inference
+}  // namespace legion
 
 #endif  // COMPONENTS_PRIVATE_INFERENCE_SECURE_CHANNEL_CLIENT_H_

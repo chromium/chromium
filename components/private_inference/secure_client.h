@@ -6,13 +6,13 @@
 #define COMPONENTS_PRIVATE_INFERENCE_SECURE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "components/private_inference/secure_channel_client.h"
-#include <optional>
 
-namespace private_inference {
+namespace legion {
 
 // Client for the secure channel.
 class SecureClient {
@@ -50,6 +50,6 @@ class SecureClient {
   const std::string api_key_;
 };
 
-}  // namespace private_inference
+}  // namespace legion
 
 #endif  // COMPONENTS_PRIVATE_INFERENCE_SECURE_CLIENT_H_

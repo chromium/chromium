@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include <optional>
 
-namespace private_inference {
+namespace legion {
 
 SecureClient::SecureClient(
     std::unique_ptr<SecureChannelClient> secure_channel_client,
@@ -69,4 +69,4 @@ void SecureClient::SendRequest(
           std::move(callback)));
 }
 
-}  // namespace private_inference
+}  // namespace legion

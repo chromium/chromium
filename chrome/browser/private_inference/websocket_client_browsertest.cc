@@ -17,26 +17,25 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using private_inference::WebSocketClient;
+using legion::WebSocketClient;
 
-// This class allows manual testing of the Private Inference Service.
-class PrivateInferenceWebSocketClientBrowserTest : public InProcessBrowserTest {
+// This class allows manual testing of the Legion Service.
+class LegionWebSocketClientBrowserTest : public InProcessBrowserTest {
  public:
-  PrivateInferenceWebSocketClientBrowserTest() {
+  LegionWebSocketClientBrowserTest() {
     SetAllowNetworkAccessToHostResolutions();
   }
 
   GURL url() {
-    return GURL(base::StrCat(
-        {"wss://" + private_inference::kPrivateInferenceUrl.Get() + "?key=",
-         private_inference::kPrivateInferenceApiKey.Get()}));
+    return GURL(base::StrCat({"wss://" + legion::kLegionUrl.Get() + "?key=",
+                              legion::kLegionApiKey.Get()}));
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivateInferenceWebSocketClientBrowserTest,
+IN_PROC_BROWSER_TEST_F(LegionWebSocketClientBrowserTest,
                        MANUAL_WriteTestRequest) {
   base::test::TestFuture<WebSocketClient::SocketStatus, std::vector<uint8_t>>
       future;

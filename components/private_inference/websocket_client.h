@@ -25,7 +25,7 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
-namespace private_inference {
+namespace legion {
 
 class WebSocketClient : public network::mojom::WebSocketHandshakeClient,
                         public network::mojom::WebSocketClient {
@@ -117,6 +117,6 @@ class WebSocketClient : public network::mojom::WebSocketHandshakeClient,
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace private_inference
+}  // namespace legion
 
 #endif  // COMPONENTS_PRIVATE_INFERENCE_WEBSOCKET_CLIENT_H_

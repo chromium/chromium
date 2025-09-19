@@ -14,7 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace private_inference {
+namespace legion {
 namespace {
 
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
@@ -22,14 +22,15 @@ constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("private_inference_client", R"(
         semantics {
-          sender: "Private Inference Client"
+          sender: "Legion Client"
           description:
-            "Chrome can use a remote service to perform private inference "
-            "on user data. This traffic creates an encrypted session with the "
-            "inference service and carries the request and response over that "
-            "session."
+            "This traffic creates an encrypted session with the "
+            "legion service and carries the request and response over that "
+            "session. "
+            "The feature is under development and behind a feature flag."
           trigger:
-            "A feature that uses the private inference component is triggered."
+            "A feature that uses the legion component is triggered. "
+            "The feature determines which data to send."
           user_data {
             type: PROFILE_DATA
           }
@@ -134,8 +135,8 @@ void WebSocketClient::OnFailure(const std::string& message,
                                 int net_error,
                                 int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(ERROR) << "Private inference service connection failed " << message
-             << ", " << net_error << ", " << response_code;
+  LOG(ERROR) << "Legion service connection failed " << message << ", "
+             << net_error << ", " << response_code;
 
   ClosePipe(SocketStatus::kError);
 }
@@ -293,4 +294,4 @@ void WebSocketClient::OnMojoPipeDisconnect() {
   ClosePipe(SocketStatus::kSocketClosed);
 }
 
-}  // namespace private_inference
+}  // namespace legion
