@@ -32,6 +32,9 @@ extern const base::FeatureParam<base::TimeDelta>
 // created per browser context.
 extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 
+// Enables the translateStreaming API by splitting the input into sentences.
+BASE_DECLARE_FEATURE(kTranslateStreamingBySentence);
+
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 
 base::FilePath GetTranslateKitBinaryPathFromCommandLine();

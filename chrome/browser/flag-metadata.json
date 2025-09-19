@@ -10035,6 +10035,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "translation-api-streaming-by-sentence",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "trees-in-viz",
     "owners": [
       "zmo@chromium.org",

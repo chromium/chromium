@@ -2675,6 +2675,7 @@ static_library("browser") {
   if (is_win || is_mac || is_linux) {
     deps += [
       "//chrome/browser/ui/views/session_restore_infobar",
+      "//components/services/on_device_translation/public/cpp",
       "//components/themes:policy",
     ]
   }

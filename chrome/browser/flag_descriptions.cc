@@ -4194,6 +4194,11 @@ const char kTranslationAPIName[] = "Experimental translation API";
 const char kTranslationAPIDescription[] =
     "Enables the on-device language translation API. "
     "See https://github.com/WICG/translation-api/blob/main/README.md";
+
+const char kTranslationAPIStreamingBySentenceName[] =
+    "Translation API streaming split by sentence";
+const char kTranslationAPIStreamingBySentenceDescription[] =
+    "Enables sentence-split streaming for on-device translation API.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

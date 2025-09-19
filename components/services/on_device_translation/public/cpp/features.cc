@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -35,6 +36,8 @@ const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
 
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
     &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
+
+BASE_FEATURE(kTranslateStreamingBySentence, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {

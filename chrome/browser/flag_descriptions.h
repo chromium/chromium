@@ -2410,6 +2410,9 @@ extern const char kTouchTextEditingRedesignDescription[];
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kTranslationAPIName[];
 extern const char kTranslationAPIDescription[];
+
+extern const char kTranslationAPIStreamingBySentenceName[];
+extern const char kTranslationAPIStreamingBySentenceDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)

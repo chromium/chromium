@@ -8627,6 +8627,7 @@ from previous Chrome versions.
   <int value="-1982633436"
       label="SupervisedUserInterstitialWithoutApprovals:enabled"/>
   <int value="-1982080540" label="DurableClientHintsCache:disabled"/>
+  <int value="-1981776791" label="TranslateStreamingBySentence:enabled"/>
   <int value="-1981692093"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
   <int value="-1980946777"
@@ -15604,6 +15605,7 @@ from previous Chrome versions.
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
   <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
+  <int value="534306691" label="TranslateStreamingBySentence:disabled"/>
   <int value="534614617" label="QuickAnswersMaterialNextUI:disabled"/>
   <int value="534825129" label="ReducedWifiPollingInterval:disabled"/>
   <int value="535038105" label="SavePasswordsContextualUi:enabled"/>

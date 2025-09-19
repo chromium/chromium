@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -26,11 +27,6 @@
 namespace on_device_translation {
 
 namespace {
-
-// Define a feature flag to implement sentence split for translateStreaming.
-BASE_FEATURE(kTranslateStreamingBySentence,
-             "TranslateStreamingBySentence",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTranslatableCharacter(char character) {
   return !base::IsAsciiWhitespace(character) &&
