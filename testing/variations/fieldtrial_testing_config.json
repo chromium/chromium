@@ -14094,6 +14094,28 @@
                     "enable_features": [
                         "InputOnViz"
                     ]
+                },
+                {
+                    "name": "InputOnVizPredictionAtDeadlineEnabled",
+                    "params": {
+                        "mode": "UseScrollPredictorForDeadline"
+                    },
+                    "enable_features": [
+                        "InputOnViz",
+                        "WaitForLateScrollEvents"
+                    ]
+                },
+                {
+                    "name": "InputOnVizDisabledPredictionAtDeadlineEnabled",
+                    "params": {
+                        "mode": "UseScrollPredictorForDeadline"
+                    },
+                    "enable_features": [
+                        "WaitForLateScrollEvents"
+                    ],
+                    "disable_features": [
+                        "InputOnViz"
+                    ]
                 }
             ]
         }
@@ -26529,28 +26551,6 @@
                     "name": "VulkanV2",
                     "enable_features": [
                         "VulkanV2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WaitForLateScrollEvents": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PredictAtDeadline",
-                    "params": {
-                        "mode": "UseScrollPredictorForDeadline"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
                     ]
                 }
             ]
