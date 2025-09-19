@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_VALIDATION_PAYMENT_LINK_VALIDATOR_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_VALIDATION_PAYMENT_LINK_VALIDATOR_H_
 
-#include <vector>
-
 #include "url/gurl.h"
 
 namespace payments::facilitated {
@@ -35,9 +33,6 @@ class PaymentLinkValidator {
   // Sanitizes a GURL by removing components that are not needed for payment app
   // retrieval.
   static GURL SanitizeForPaymentAppRetrieval(const GURL& payment_link_url);
-
- private:
-  const std::vector<std::string> valid_prefixes_;
 };
 
 }  // namespace payments::facilitated

@@ -5,23 +5,27 @@
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
 
 #include <algorithm>
-
-#include "base/strings/string_util.h"
+#include <array>
+#include <string_view>
 
 namespace payments::facilitated {
 
-PaymentLinkValidator::PaymentLinkValidator()
-    : valid_prefixes_{
-          // NOTE: The valid prefixes list may change over time. This list is
-          // expected to be finalized and aligned with the requirements of the
-          // eWallet push payment project and A2A payment project.
-          // When the list is being updated, please also update the payment link
-          // spec at https://github.com/WICG/paymentlink/blob/main/index.bs, and
-          // the public design at https://bit.ly/html-payment-link-dd.
-          "duitnow://paynet.com.my", "shopeepay://shopeepay.com.my",
-          "tngd://tngdigital.com.my",
-          "https://www.itmx.co.th/facilitated-payment/prompt-pay",
-          "momo://app?"} {}
+// NOTE: The valid prefixes list may change over time. This list is
+// expected to be finalized and aligned with the requirements of the
+// eWallet push payment project and A2A payment project.
+// When the list is being updated, please also update the payment link
+// spec at https://github.com/WICG/paymentlink/blob/main/index.bs, and
+// the public design at https://bit.ly/html-payment-link-dd.
+static constexpr std::array kValidPrefixes = std::to_array<std::string_view>({
+    "duitnow://paynet.com.my",
+    "shopeepay://shopeepay.com.my",
+    "tngd://tngdigital.com.my",
+    "https://www.itmx.co.th/facilitated-payment/prompt-pay",
+    "momo://app?",
+
+});
+
+PaymentLinkValidator::PaymentLinkValidator() = default;
 
 PaymentLinkValidator::~PaymentLinkValidator() = default;
 
@@ -30,29 +34,29 @@ PaymentLinkValidator::Scheme PaymentLinkValidator::GetScheme(
   if (!payment_link_url.is_valid()) {
     return Scheme::kInvalid;
   }
-  if (!std::any_of(valid_prefixes_.begin(), valid_prefixes_.end(),
-                   [&payment_link_url](const std::string& prefix) {
-                     return payment_link_url.spec().find(prefix) == 0;
-                   })) {
+
+  std::string_view spec = payment_link_url.spec();
+  if (std::ranges::none_of(kValidPrefixes, [&spec](std::string_view prefix) {
+        return spec.starts_with(prefix);
+      })) {
     return Scheme::kInvalid;
   }
 
-  if (payment_link_url.scheme() == "duitnow") {
+  if (payment_link_url.SchemeIs("duitnow")) {
     return Scheme::kDuitNow;
   }
-  if (payment_link_url.scheme() == "shopeepay") {
+  if (payment_link_url.SchemeIs("shopeepay")) {
     return Scheme::kShopeePay;
   }
-  if (payment_link_url.scheme() == "tngd") {
+  if (payment_link_url.SchemeIs("tngd")) {
     return Scheme::kTngd;
   }
-  if (payment_link_url.scheme() == "momo") {
+  if (payment_link_url.SchemeIs("momo")) {
     return Scheme::kMomo;
   }
-  if (payment_link_url.path() == "/facilitated-payment/prompt-pay" &&
-      base::StartsWith(payment_link_url.spec(),
-                       "https://www.itmx.co.th/facilitated-payment/prompt-pay",
-                       base::CompareCase::SENSITIVE)) {
+  if (payment_link_url.path_piece() == "/facilitated-payment/prompt-pay" &&
+      spec.starts_with(
+          "https://www.itmx.co.th/facilitated-payment/prompt-pay")) {
     return Scheme::kPromptPay;
   }
   return Scheme::kInvalid;
