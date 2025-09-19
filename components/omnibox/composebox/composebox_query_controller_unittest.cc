@@ -499,6 +499,9 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
             kTestSearchSessionId);
   EXPECT_FALSE(
       controller().suggest_inputs().has_contextual_visual_input_type());
+  EXPECT_TRUE(controller()
+                  .suggest_inputs()
+                  .send_gsession_vsrid_for_contextual_suggest());
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
@@ -1608,12 +1611,16 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
   // Check that file is in cache.
   EXPECT_TRUE(controller().GetFileInfo(file_token));
 
+  EXPECT_EQ(controller().suggest_inputs().search_session_id(),
+            kTestSearchSessionId);
+
   // Delete file.
   const bool deleted = controller().DeleteFile(file_token);
 
   // Check that file is no longer in cache.
   EXPECT_TRUE(deleted);
   EXPECT_FALSE(controller().GetFileInfo(file_token));
+  EXPECT_EQ(controller().suggest_inputs().search_session_id(), "");
 }
 
 TEST_F(ComposeboxQueryControllerTest, DeleteFile_Failed) {

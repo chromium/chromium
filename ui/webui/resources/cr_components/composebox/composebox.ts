@@ -247,6 +247,13 @@ export class ComposeboxElement extends I18nMixinLit
                 this.files_.set(token, file);
 
                 if (status === FileUploadStatus.kUploadSuccessful) {
+                  // Query autocomplete to get contextual suggestions for file.
+                  if (this.showZps) {
+                    this.clearAutocompleteMatches_();
+                    this.lastQueriedInput_ = this.$.input.value;
+                    this.searchboxHandler_.queryAutocomplete(
+                        stringToMojoString16(this.$.input.value), false);
+                  }
                   const announcer = getAnnouncerInstance();
                   announcer.announce(
                       this.i18n('composeboxFileUploadCompleteText'));
@@ -401,6 +408,9 @@ export class ComposeboxElement extends I18nMixinLit
         ([uuid, _]) => uuid !== e.detail.uuid));
     this.pageHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
+    this.clearAutocompleteMatches_();
+    this.searchboxHandler_.queryAutocomplete(
+        stringToMojoString16(this.$.input.value), false);
   }
 
   protected onDismissErrorButtonClick_() {
@@ -502,6 +512,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.pageHandler_.clearFiles();
       this.$.input.focus();
       this.$.matches.unselect();
+      this.clearAutocompleteMatches_();
       this.searchboxHandler_.queryAutocomplete(
           stringToMojoString16(this.$.input.value), false);
     } else {
@@ -520,7 +531,7 @@ export class ComposeboxElement extends I18nMixinLit
     // zero-suggest requests to be made while the ACController is not
     // done.
     if (this.lastQueriedInput_ === '') {
-      this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
+      this.clearAutocompleteMatches_();
     }
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
