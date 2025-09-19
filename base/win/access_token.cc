@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/access_control_list.h"
+#include "base/win/win_util.h"
 
 namespace base::win {
 
@@ -39,7 +40,7 @@ typedef struct _TOKEN_SECURITY_ATTRIBUTE_V1 {
   USHORT Reserved;
   ULONG Flags;
   ULONG ValueCount;
-  PLONG64 pInt64;
+  PUNICODE_STRING pString;
 } TOKEN_SECURITY_ATTRIBUTE_V1, *PTOKEN_SECURITY_ATTRIBUTE_V1;
 
 #define TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
@@ -84,9 +85,9 @@ typedef struct _TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION {
 } TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION,
     *PTOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION;
 
-#define TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64 0x01
-static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64 ==
-              AUTHZ_SECURITY_ATTRIBUTE_TYPE_INT64);
+#define TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING 0x03
+static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ==
+              AUTHZ_SECURITY_ATTRIBUTE_TYPE_STRING);
 
 #define TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE 0x0001
 static_assert(TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE ==
@@ -286,15 +287,25 @@ std::optional<DWORD> AdjustPrivilege(const ScopedHandle& token,
   return attributes;
 }
 
-inline std::optional<std::wstring> UnicodeStringToWString(
-    const UNICODE_STRING& us) {
-  if (!us.Buffer || !us.Length) {
+std::optional<PTOKEN_SECURITY_ATTRIBUTE_V1> FindSecurityAttribute(
+    std::optional<std::vector<char>>& buffer,
+    std::wstring_view name) {
+  if (!buffer) {
     return std::nullopt;
   }
 
-  const size_t length = us.Length / sizeof(wchar_t);
+  const auto* info = GetType<TOKEN_SECURITY_ATTRIBUTES_INFORMATION>(buffer);
+  if (info->Version != TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1) {
+    return std::nullopt;
+  }
 
-  return std::wstring(us.Buffer, us.Buffer + length);
+  for (ULONG i = 0; i < info->AttributeCount; ++i) {
+    if (UnicodeStringToView(info->pAttributeV1[i].Name) == name) {
+      return &info->pAttributeV1[i];
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -743,7 +754,9 @@ bool AccessToken::RemoveAllPrivileges() {
       /*PreviousState=*/nullptr, /*ReturnLength=*/nullptr);
 }
 
-bool AccessToken::AddSecurityAttribute(const std::wstring& name, bool inherit) {
+bool AccessToken::AddSecurityAttribute(std::wstring_view name,
+                                       bool inherit,
+                                       std::wstring_view value) {
   TOKEN_SECURITY_ATTRIBUTE_V1 attr = {};
 
   attr.Flags = TOKEN_SECURITY_ATTRIBUTE_MANDATORY;
@@ -751,11 +764,17 @@ bool AccessToken::AddSecurityAttribute(const std::wstring& name, bool inherit) {
     attr.Flags |= TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE;
   }
 
-  ::RtlInitUnicodeString(&attr.Name, name.c_str());
-  LONG64 value = 0;
+  if (!ViewToUnicodeString(name, attr.Name)) {
+    return false;
+  }
+
+  UNICODE_STRING ustr_value = {};
+  if (!ViewToUnicodeString(value, ustr_value)) {
+    return false;
+  }
   attr.ValueCount = 1;
-  attr.ValueType = TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64;
-  attr.pInt64 = &value;
+  attr.ValueType = TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING;
+  attr.pString = &ustr_value;
 
   TOKEN_SECURITY_ATTRIBUTES_INFORMATION attrs = {};
   attrs.Version = TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1;
@@ -773,30 +792,32 @@ bool AccessToken::AddSecurityAttribute(const std::wstring& name, bool inherit) {
 }
 
 std::optional<bool> AccessToken::HasSecurityAttribute(
-    const std::wstring& name) const {
+    std::wstring_view name) const {
   std::optional<std::vector<char>> buffer =
       GetTokenInfo(token_.get(), TokenSecurityAttributes);
-  if (!buffer) {
+  const auto attr = FindSecurityAttribute(buffer, name);
+  if (!attr) {
+    return std::nullopt;
+  }
+  return *attr != nullptr;
+}
+
+std::optional<std::wstring> AccessToken::GetSecurityAttributeString(
+    std::wstring_view name) const {
+  std::optional<std::vector<char>> buffer =
+      GetTokenInfo(token_.get(), TokenSecurityAttributes);
+  const auto attr = FindSecurityAttribute(buffer, name);
+  if (!attr) {
+    return std::nullopt;
+  }
+  PTOKEN_SECURITY_ATTRIBUTE_V1 attr_val = *attr;
+  if (attr_val == nullptr ||
+      attr_val->ValueType != TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING ||
+      attr_val->ValueCount < 1) {
     return std::nullopt;
   }
 
-  const auto* info = GetType<TOKEN_SECURITY_ATTRIBUTES_INFORMATION>(buffer);
-
-  if (info->Version != TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1) {
-    return std::nullopt;
-  }
-
-  for (ULONG i = 0; i < info->AttributeCount; ++i) {
-    const auto attr_name = UnicodeStringToWString(info->pAttributeV1[i].Name);
-    if (!attr_name) {
-      return false;
-    }
-    if (*attr_name == name) {
-      return true;
-    }
-  }
-
-  return false;
+  return std::wstring(UnicodeStringToView(*attr_val->pString));
 }
 
 bool AccessToken::is_valid() const {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -319,17 +320,23 @@ class BASE_EXPORT AccessToken {
 
   // Add a security attribute by name to the token.
   // |name| the name of the attribute to add.
-  // The security attribute is added with a single 64-bit integer value. The
-  // purpose of this is to add a marker attribute for the purposes of access
-  // checking rather than for general use.
+  // |inherit| whether the attribute can be inherited by child processes.
+  // |value| the value of the attribute as a string.
   // The token must be opened with TOKEN_ADJUST_DEFAULT access. The caller must
   // have SeTcbPrivilege enabled to successfully add the attribute.
-  bool AddSecurityAttribute(const std::wstring& name, bool inherit);
+  bool AddSecurityAttribute(std::wstring_view name,
+                            bool inherit,
+                            std::wstring_view value);
 
   // Returns whether or not the token has the specified security attribute. The
   // value of the security attribute is ignored. Returns std::nullopt if the
   // token's security attributes could not be queried.
-  std::optional<bool> HasSecurityAttribute(const std::wstring& name) const;
+  std::optional<bool> HasSecurityAttribute(std::wstring_view name) const;
+
+  // Returns a string value from a security attribute. Returns std::nullopt if
+  // the attribute doesn't exist or does not contain a string value.
+  std::optional<std::wstring> GetSecurityAttributeString(
+      std::wstring_view name) const;
 
   // Indicates if the AccessToken object is valid.
   bool is_valid() const;
