@@ -27,6 +27,10 @@ const CGFloat kLabelFontSize = 13.0;
 const CGFloat kPreviewImageSize = 28.0;
 // The preview image top and bottom padding.
 const CGFloat kPreviewImageTopBottomPadding = 4.0;
+/// The fade view width.
+const CGFloat kFadeViewWidth = 20.0f;
+/// The title to button padding.
+const CGFloat kTitleCloseButtonPadding = 6.0;
 }  // namespace
 
 @interface AimInputItemView ()
@@ -43,6 +47,8 @@ const CGFloat kPreviewImageTopBottomPadding = 4.0;
   UIImageView* _previewImageView;
   // The title label for file/tab type of items.
   UILabel* _titleLabel;
+  // The fade view for the title label.
+  UIView* _fadeView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -52,6 +58,12 @@ const CGFloat kPreviewImageTopBottomPadding = 4.0;
     [self setupConstraints];
   }
   return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updateFadeViewVisibility];
+  _fadeView.layer.sublayers.firstObject.frame = _fadeView.bounds;
 }
 
 - (void)configureWithItem:(AIMInputItem*)item {
@@ -71,6 +83,15 @@ const CGFloat kPreviewImageTopBottomPadding = 4.0;
       _leadingIconImageView.image = item.leadingIconImage;
     }
     _titleLabel.text = item.title;
+  }
+  [self updateFadeViewVisibility];
+}
+
+- (void)updateFadeViewVisibility {
+  if (_titleLabel.intrinsicContentSize.width > _titleLabel.bounds.size.width) {
+    _fadeView.hidden = NO;
+  } else {
+    _fadeView.hidden = YES;
   }
 }
 
@@ -97,10 +118,27 @@ const CGFloat kPreviewImageTopBottomPadding = 4.0;
   _titleLabel.font = PreferredFontForTextStyle(
       UIFontTextStyleFootnote, UIFontWeightRegular, kLabelFontSize);
   _titleLabel.textColor = UIColor.blackColor;
+  _titleLabel.lineBreakMode = NSLineBreakByClipping;
   [_titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
   [self addSubview:_titleLabel];
+
+  // Fade view
+  _fadeView = [[UIView alloc] init];
+  _fadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _fadeView.hidden = YES;
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.colors = @[
+    (id)[[UIColor colorNamed:kSecondaryBackgroundColor]
+        colorWithAlphaComponent:0.0]
+        .CGColor,
+    (id)[UIColor colorNamed:kSecondaryBackgroundColor].CGColor
+  ];
+  gradientLayer.startPoint = CGPointMake(0.0, 0.5);
+  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+  [_fadeView.layer insertSublayer:gradientLayer atIndex:0];
+  [self addSubview:_fadeView];
 
   // Leading Image View
   _previewImageView = [[UIImageView alloc] init];
@@ -155,8 +193,15 @@ const CGFloat kPreviewImageTopBottomPadding = 4.0;
                        constant:kPadding],
     [_titleLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
-                                 constant:-kPadding],
+                                 constant:-kTitleCloseButtonPadding],
     [_titleLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+
+    // Fade view
+    [_fadeView.trailingAnchor
+        constraintEqualToAnchor:_titleLabel.trailingAnchor],
+    [_fadeView.topAnchor constraintEqualToAnchor:_titleLabel.topAnchor],
+    [_fadeView.bottomAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor],
+    [_fadeView.widthAnchor constraintEqualToConstant:kFadeViewWidth],
 
     // Leading Image View
     [_previewImageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
