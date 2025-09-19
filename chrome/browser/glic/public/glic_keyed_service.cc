@@ -491,7 +491,7 @@ void GlicKeyedService::PerformActions(
         "Act Failed",
         actor::JournalDetailsBuilder()
             .AddError("Failed to convert proto::Actions to ToolRequest")
-            .Add("error_code", requests.error())
+            .Add("failed_action_index", requests.error())
             .Build());
     optimization_guide::proto::ActionsResult response =
         actor::BuildErrorActionsResult(
