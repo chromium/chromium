@@ -32,6 +32,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
@@ -142,7 +143,7 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                                 R.string.signin_server_error_dialog_description,
                                 TEST_RP_ETLD_PLUS_ONE));
 
-        private final String appendExtraDescription(String code, GURL url, boolean clickableText) {
+        private String appendExtraDescription(String code, GURL url, boolean clickableText) {
             String initialDescription = mCodeToDescription.get(code);
             if (AccountSelectionViewBinder.GENERIC.equals(code)) {
                 if (mTestEmptyErrorUrl.equals(url) || !clickableText) {
@@ -634,5 +635,34 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         return new PropertyModel.Builder(IdpSignInProperties.ALL_KEYS)
                 .with(IdpSignInProperties.IDP_FOR_DISPLAY, idpEtldPlusOne)
                 .build();
+    }
+
+    @Test
+    public void testIframeDisplayed() {
+        mModel.set(
+                ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "rp.com")
+                        .with(HeaderProperties.IFRAME_FOR_DISPLAY, "iframe.com")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.com")
+                        .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
+                        .with(HeaderProperties.RP_MODE, mRpMode)
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        TextView title = mContentView.findViewById(R.id.header_title);
+        TextView subtitle = mContentView.findViewById(R.id.header_subtitle);
+
+        String expectedTitle =
+                mResources.getString(
+                        R.string.account_selection_sheet_title_explicit_signin,
+                        "iframe.com",
+                        "idp.com");
+
+        assertEquals("Incorrect title", expectedTitle, title.getText().toString());
+        assertEquals(
+                "Incorrect subtitle",
+                "rp.com embeds content from iframe.com",
+                subtitle.getText().toString());
     }
 }

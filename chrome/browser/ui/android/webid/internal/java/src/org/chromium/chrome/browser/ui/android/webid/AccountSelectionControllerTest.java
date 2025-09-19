@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IFRAME_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTIPLE_IDPS;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
@@ -153,6 +154,34 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         testAccount(
                 mSheetAccountItems.get(1).model,
                 mBobAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ false);
+    }
+
+    @Test
+    public void testIframeInSignInHeader() {
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne,
+                        /* iframeForDisplay= */ mTestEtldPlusOne1,
+                        /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
+        assertEquals(mTestEtldPlusOne1, headerModel.get(IFRAME_FOR_DISPLAY));
+        assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
+        assertNotNull(headerModel.get(HEADER_ICON));
+        assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
+        assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mAnaAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ false);
     }

@@ -375,6 +375,7 @@ class AccountSelectionMediator {
     private PropertyModel createHeaderItem(
             HeaderType headerType,
             String rpForDisplay,
+            String iframeForDisplay,
             String idpForDisplay,
             @RpContext.EnumType int rpContext,
             Boolean isMultipleIdps) {
@@ -397,6 +398,7 @@ class AccountSelectionMediator {
                 .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                 .with(HeaderProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .with(HeaderProperties.RP_FOR_DISPLAY, rpForDisplay)
+                .with(HeaderProperties.IFRAME_FOR_DISPLAY, iframeForDisplay)
                 .with(HeaderProperties.TYPE, headerType)
                 .with(HeaderProperties.RP_CONTEXT, rpContext)
                 .with(HeaderProperties.RP_MODE, mRpMode)
@@ -1053,10 +1055,17 @@ class AccountSelectionMediator {
         mHeaderIcon = isValidBrandIcon(headerIcon, shouldCircleCrop) ? headerIcon : null;
         mRpBrandIcon =
                 isValidBrandIcon(rpBrandIcon, /* shouldCircleCrop= */ true) ? rpBrandIcon : null;
+        String rpForDisplay = "";
+        String iframeForDisplay = "";
+        if (!mRpData.getDisplayStringsMayChange()) {
+            rpForDisplay = mRpData.getRpForDisplay();
+            iframeForDisplay = mRpData.getIframeForDisplay();
+        }
         PropertyModel headerModel =
                 createHeaderItem(
                         mHeaderType,
-                        mRpData.getRpForDisplay(),
+                        rpForDisplay,
+                        iframeForDisplay,
                         mIdpForDisplay,
                         mRpContext,
                         mIsMultipleIdps);
