@@ -127,6 +127,8 @@
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
+#include "components/wallet/content/renderer/image_extractor.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
@@ -781,6 +783,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
     new wallet::BoardingPassExtractor(render_frame, registry);
   }
 #endif
+
+  if (base::FeatureList::IsEnabled(wallet::kWalletablePassDetection) &&
+      render_frame->IsMainFrame()) {
+    wallet::ImageExtractor::Create(render_frame, registry);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebium)) {

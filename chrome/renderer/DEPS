@@ -86,6 +86,8 @@ include_rules = [
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+components/version_info",
   "+components/visitedlink/renderer",
+  "+components/wallet/content/renderer",
+  "+components/wallet/core/common",
   "+components/webapps/renderer",
   "+components/web_cache/public",
   "+components/web_cache/renderer",
