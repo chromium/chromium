@@ -853,8 +853,7 @@
     'cronet_common': {
       # LINT.IfChange(cronet_common)
       'gn_args': ('include_transport_security_state_preload_list=false '
-                  'is_cronet_build=true '
-                  'use_platform_icu_alternatives=true ')
+                  'is_cronet_build=true ')
       # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_common)
     },
 

@@ -485,7 +485,6 @@ gn_args.config(
         # LINT.IfChange(cronet_common)
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
-        "use_platform_icu_alternatives": True,
         # LINT.ThenChange(//tools/mb/mb_config.pyl:cronet_common)
     },
 )
