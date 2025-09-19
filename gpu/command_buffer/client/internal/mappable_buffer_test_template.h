@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -91,7 +92,7 @@ class MappableBufferTest : public testing::Test {
 #if BUILDFLAG(IS_MAC)
       case gfx::IO_SURFACE_BUFFER:
         return MappableBufferIOSurface::CreateFromHandleForTesting(
-            std::move(handle), size, format, usage);
+            std::move(handle), size, viz::GetSharedImageFormat(format), usage);
 #endif
 #if BUILDFLAG(IS_OZONE)
       case gfx::NATIVE_PIXMAP:

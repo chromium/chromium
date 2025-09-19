@@ -311,7 +311,7 @@ ClientSharedImage::CreateMappableBufferFromHandle(
           si_usage.Has(SHARED_IMAGE_USAGE_CPU_READ) &&
           !si_usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
       return MappableBufferIOSurface::CreateFromHandle(
-          std::move(handle), size, buffer_format, is_read_only_cpu_usage);
+          std::move(handle), size, format, is_read_only_cpu_usage);
     }
 #endif
 #if BUILDFLAG(IS_OZONE)

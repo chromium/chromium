@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
@@ -46,7 +47,7 @@ uint32_t LockFlags(gfx::BufferUsage usage) {
 
 MappableBufferIOSurface::MappableBufferIOSurface(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::GpuMemoryBufferHandle handle,
     uint32_t lock_flags)
     : size_(size),
@@ -75,7 +76,7 @@ std::unique_ptr<MappableBufferIOSurface>
 MappableBufferIOSurface::CreateFromHandleForTesting(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   return CreateFromHandleImpl(std::move(handle), size, format,
                               LockFlags(usage));
@@ -97,7 +98,7 @@ std::unique_ptr<MappableBufferIOSurface>
 MappableBufferIOSurface::CreateFromHandle(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     bool is_read_only_cpu_usage) {
   uint32_t lock_flags = is_read_only_cpu_usage ? kIOSurfaceLockReadOnly : 0;
   return CreateFromHandleImpl(std::move(handle), size, format, lock_flags);
@@ -108,7 +109,7 @@ std::unique_ptr<MappableBufferIOSurface>
 MappableBufferIOSurface::CreateFromHandleImpl(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     int32_t lock_flags) {
   // The maximum number of times to dump before throttling (to avoid sending
   // thousands of crash dumps).
@@ -172,7 +173,7 @@ bool MappableBufferIOSurface::Map() {
 
 void* MappableBufferIOSurface::memory(size_t plane) {
   AssertMapped();
-  CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+  CHECK_LT(base::checked_cast<int>(plane), format_.NumberOfPlanes());
 #if BUILDFLAG(IS_IOS)
   // SAFETY: We trust the GPU process to allocate the IOSurface and initialize
   // the shared memory region from it correctly and we assert that below too.
@@ -203,7 +204,7 @@ void MappableBufferIOSurface::Unmap() {
 }
 
 int MappableBufferIOSurface::stride(size_t plane) const {
-  CHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
+  CHECK_LT(base::checked_cast<int>(plane), format_.NumberOfPlanes());
 #if BUILDFLAG(IS_IOS)
   CHECK_LT(plane, gfx::kMaxIOSurfacePlanes);
   return handle_.io_surface_plane_stride(plane);

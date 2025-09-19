@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
@@ -35,7 +36,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferIOSurface
   static std::unique_ptr<MappableBufferIOSurface> CreateFromHandleForTesting(
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage);
 
   static base::OnceClosure AllocateForTesting(
@@ -60,24 +61,24 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferIOSurface
   static std::unique_ptr<MappableBufferIOSurface> CreateFromHandle(
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       bool is_read_only_cpu_usage);
 
   static std::unique_ptr<MappableBufferIOSurface> CreateFromHandleImpl(
       const gfx::GpuMemoryBufferHandle& handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       int32_t lock_flags);
 
   MappableBufferIOSurface(const gfx::Size& size,
-                          gfx::BufferFormat format,
+                          viz::SharedImageFormat format,
                           gfx::GpuMemoryBufferHandle handle,
                           uint32_t lock_flags);
 
   void AssertMapped();
 
   const gfx::Size size_;
-  const gfx::BufferFormat format_;
+  const viz::SharedImageFormat format_;
   gfx::GpuMemoryBufferHandle handle_;
   [[maybe_unused]] const uint32_t lock_flags_;
 
