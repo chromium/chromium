@@ -5585,6 +5585,14 @@
     "expiry_milestone": 146
   },
   {
+    "name": "glic-side-panel",
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-z-order-changes",
     "owners": [
       "andreaxg@google.com",

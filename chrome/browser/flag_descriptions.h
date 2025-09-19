@@ -723,6 +723,8 @@ extern const char kGlicActorName[];
 extern const char kGlicActorDescription[];
 extern const char kGlicDetachedName[];
 extern const char kGlicDetachedDescription[];
+extern const char kGlicSidePanelName[];
+extern const char kGlicSidePanelDescription[];
 extern const char kGlicPanelResetTopChromeButtonName[];
 extern const char kGlicPanelResetTopChromeButtonDescription[];
 extern const char kGlicPanelResetOnStartName[];

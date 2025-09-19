@@ -1331,8 +1331,9 @@ const char kGlicActorName[] = "Glic actor";
 const char kGlicActorDescription[] = "Enables the Glic actor.";
 const char kGlicDetachedName[] = "Glic detached-only mode";
 const char kGlicDetachedDescription[] =
-    "Detach only mode prevents any UI which drags along with an underlying "
-    "window.";
+    "Detach only mode forces the Glic UI to always be floating";
+const char kGlicSidePanelName[] = "Glic side panel";
+const char kGlicSidePanelDescription[] = "Enable mulitple side panels for Glic";
 const char kGlicPanelResetTopChromeButtonName[] =
     "Glic Panel Reset With Top Chrome Button";
 const char kGlicPanelResetTopChromeButtonDescription[] =
