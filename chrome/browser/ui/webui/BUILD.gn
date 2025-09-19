@@ -30,6 +30,7 @@ source_set("configs") {
 
   if (!is_android) {
     public_deps = [
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui/tabs/tab_group_home",
       "//chrome/browser/ui/webui/commerce",
     ]

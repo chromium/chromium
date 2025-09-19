@@ -18,6 +18,28 @@ source_set("contextual_tasks") {
   public_deps = [ "//chrome/browser/profiles:profile" ]
 }
 
+if (!is_android) {
+  source_set("ui") {
+    sources = [
+      "contextual_tasks_ui.cc",
+      "contextual_tasks_ui.h",
+    ]
+
+    public_deps = [
+      "//content/public/browser",
+      "//content/public/common",
+      "//ui/webui",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/resources/contextual_tasks:resources",
+      "//chrome/browser/ui/webui",
+      "//components/contextual_tasks/public:feature_list",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
 

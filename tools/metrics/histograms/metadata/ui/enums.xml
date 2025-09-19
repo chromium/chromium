@@ -829,6 +829,7 @@ chromium-metrics-reviews@google.com.
   <int value="634002171" label="chrome://projector-selfie-cam/"/>
   <int value="634165583" label="chrome://app-service-internals/"/>
   <int value="646837226" label="chrome://crashes/"/>
+  <int value="654460550" label="chrome://contextual-tasks/"/>
   <int value="659389881" label="chrome://gpu/"/>
   <int value="662045902" label="chrome://smb-share-dialog/"/>
   <int value="689991895" label="chrome://supervised-user-internals/"/>
