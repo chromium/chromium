@@ -84,16 +84,6 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   pref_change_registrar_.Add(prefs::kNTPCustomBackgroundEnabledByPolicy,
                              callback);
 
-  // If the theme color is managed by an enterprise policy, this takes
-  // precedence over any user-selected theme. The background is set to the
-  // policy-defined color.
-  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
-    SetBackgroundColor(
-        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor),
-        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
-    return;
-  }
-
   LoadCurrentTheme();
 
   const base::Value::List& recently_used_backgrounds_list =
@@ -191,8 +181,18 @@ HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
 
 std::optional<sync_pb::UserColorTheme>
 HomeBackgroundCustomizationService::GetCurrentColorTheme() {
+  // If policy theme is managed, just return that and bypass all local data.
+  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
+    sync_pb::UserColorTheme theme;
+    theme.set_color(
+        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor));
+    theme.set_browser_color_variant(
+        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    return theme;
+  }
+
   // If customization is disabled by policy, no color theme is available.
-  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
     return std::nullopt;
   }
 
@@ -249,7 +249,7 @@ void HomeBackgroundCustomizationService::SetBackgroundColor(
     return;
   }
 
-  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
     return;
   }
 
@@ -569,22 +569,7 @@ void HomeBackgroundCustomizationService::OnPolicyPrefsChanged(
   CHECK(themes::prefs::kPolicyThemeColor == name ||
         prefs::kNTPCustomBackgroundEnabledByPolicy == name);
 
-  // If the policy to enable custom backgrounds is set to false, clear any
-  // existing background and disable further customization.
-  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
-    ClearCurrentBackground();
-    return;
-  }
-
-  // If a theme color is enforced by policy, set the background to that color.
-  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
-    SetBackgroundColor(
-        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor),
-        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
-    return;
-  }
-
-  // If policies are removed, restore the user's previously selected theme.
-  RestoreCurrentTheme();
+  // When policy changes, background may change, so make sure observers are
+  // updated.
   NotifyObserversOfBackgroundChange();
 }
