@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -26,6 +27,7 @@
 #include "base/types/expected.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace update_client {
@@ -198,6 +200,11 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::Put(
   }
   if (!base::Move(file, dest)) {
     return base::unexpected(UnpackerError::kFailedToAddToCache);
+  }
+  LOG_IF(ERROR, !base::IsDirectoryEmpty(file.DirName()))
+      << "Unexpected, directory not empty: " << file.DirName();
+  if (!DeleteEmptyDirectory(file.DirName())) {
+    PLOG(ERROR) << "Error deleting directory: " << file.DirName();
   }
 
   // Update metadata.

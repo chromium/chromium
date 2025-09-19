@@ -24,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -67,7 +68,7 @@ bool IsHttpServerError(int status_code) {
 }
 
 bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath) {
-  if (!base::DeleteFile(filepath)) {
+  if (!RetryFileOperation(&base::DeleteFile, filepath)) {
     return false;
   }
 
@@ -79,7 +80,7 @@ bool DeleteEmptyDirectory(const base::FilePath& dir_path) {
     return true;
   }
 
-  return base::DeleteFile(dir_path);
+  return RetryFileOperation(&base::DeleteFile, dir_path);
 }
 
 std::string GetCrxComponentID(const CrxComponent& component) {
@@ -191,18 +192,15 @@ std::string GetArchitecture() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-bool RetryDeletePathRecursively(const base::FilePath& path) {
-  return RetryDeletePathRecursivelyCustom(
-      path, /*tries=*/5,
-      /*time_between_tries=*/base::Seconds(1));
-}
-
-bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
-                                      size_t tries,
-                                      base::TimeDelta time_between_tries) {
+bool RetryFileOperation(
+    base::FunctionRef<bool(const base::FilePath&)> file_operation,
+    const base::FilePath& path,
+    size_t tries,
+    base::TimeDelta time_between_tries) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  while (!base::DeletePathRecursively(path) && --tries) {
+
+  while (!file_operation(path) && --tries) {
     base::PlatformThread::Sleep(time_between_tries);
   }
   return tries;

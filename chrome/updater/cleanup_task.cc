@@ -84,8 +84,8 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
         // Recursively delete the directory in case uninstall fails with
         // retries, in cases where a file cannot be deleted because it is
         // locked by another process.
-        const bool success = update_client::RetryDeletePathRecursivelyCustom(
-            item, /*tries=*/5,
+        const bool success = update_client::RetryFileOperation(
+            &base::DeletePathRecursively, item, /*tries=*/5,
             /*time_between_tries=*/base::Seconds(30));
         VLOG_IF(1, !success) << "Failed to delete " << item;
       });

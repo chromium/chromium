@@ -1926,6 +1926,14 @@ TEST_F(IntegrationTest, InstallUpdaterAndApp) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
 
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/445972566): call `ExpectCleanUpdateClientTempDirectories`
+  // from `ExpectClean` for all integration tests once the older updater
+  // versions are revised to a version higher than `142.0.7420.0`.
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectCleanUpdateClientTempDirectories(GetUpdaterScopeForTesting()));
+#endif  // BUILDFLAG(IS_WIN)
+
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

@@ -34,6 +34,7 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 #include "third_party/puffin/src/include/puffin/puffpatch.h"
 
 namespace update_client {
@@ -141,8 +142,12 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
              const CrxInstaller::Result& result) {
             base::ThreadPool::PostTaskAndReply(
                 FROM_HERE, kTaskTraits,
-                base::BindOnce(IgnoreResult(&base::DeletePathRecursively),
-                               unpack_path),
+                base::BindOnce(
+                    [](const base::FilePath& unpack_path) {
+                      RetryFileOperation(&base::DeletePathRecursively,
+                                         unpack_path);
+                    },
+                    unpack_path),
                 base::BindOnce(std::move(callback), result));
           },
           std::move(callback), result.unpack_path),

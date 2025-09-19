@@ -162,7 +162,7 @@ void Unpacker::StoreVerifiedContentsInExtensionDir(
 void Unpacker::EndUnpacking(UnpackerError error, int extended_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error != UnpackerError::kNone && !unpack_path_.empty()) {
-    RetryDeletePathRecursively(unpack_path_);
+    RetryFileOperation(&base::DeletePathRecursively, unpack_path_);
   }
 
   Result result;

@@ -909,7 +909,7 @@ void BackgroundDownloader::CleanupStaleDownloads() {
         base::File::Info info;
         if (base::GetFileInfo(dir, &info) &&
             info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
-          RetryDeletePathRecursively(dir);
+          RetryFileOperation(&base::DeletePathRecursively, dir);
         }
       });
 }

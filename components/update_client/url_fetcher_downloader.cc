@@ -138,8 +138,11 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   if (error && !download_dir_.empty()) {
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&RetryDeletePathRecursively),
-                       download_dir_));
+        base::BindOnce(
+            [](const base::FilePath& download_dir) {
+              RetryFileOperation(&base::DeletePathRecursively, download_dir);
+            },
+            download_dir_));
   }
 
   main_task_runner()->PostTask(

@@ -145,6 +145,11 @@ void PrintLog(UpdaterScope scope);
 // the test left the updater in an installed or partially installed state.
 void Clean(UpdaterScope scope);
 
+#if BUILDFLAG(IS_WIN)
+// Expects that the no temporary directories created by `update_client` remain.
+void ExpectCleanUpdateClientTempDirectories(UpdaterScope scope);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Expects that the system is in a clean state, i.e. no updater is installed and
 // no traces of an updater exist. Should be run at the start and end of each
 // test.

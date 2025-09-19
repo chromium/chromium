@@ -202,10 +202,10 @@ base::FilePath CopyCmdExe(const base::FilePath& under_dir) {
 #endif  // BUILDFLAG(IS_WIN)
 }  // namespace
 
-TEST(UpdateClientUtils, RetryDeletePathRecursively) {
+TEST(UpdateClientUtils, RetryFileOperation) {
   base::FilePath tempdir;
   ASSERT_TRUE(base::CreateNewTempDirectory(
-      FILE_PATH_LITERAL("Test_RetryDeletePathRecursively"), &tempdir));
+      FILE_PATH_LITERAL("Test_RetryFileOperation"), &tempdir));
 
 #if BUILDFLAG(IS_WIN)
   // Launch a process that runs for 3 seconds.
@@ -216,11 +216,12 @@ TEST(UpdateClientUtils, RetryDeletePathRecursively) {
 
   // Trying to delete once fails, because the process is running within
   // `tempdir`.
-  ASSERT_FALSE(RetryDeletePathRecursivelyCustom(tempdir, 1, base::Seconds(1)));
+  ASSERT_FALSE(RetryFileOperation(&base::DeletePathRecursively, tempdir, 1,
+                                  base::Seconds(1)));
 #endif  // BUILDFLAG(IS_WIN)
 
   // Deleting with retries works.
-  ASSERT_TRUE(RetryDeletePathRecursively(tempdir));
+  ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, tempdir));
 }
 
 }  // namespace update_client

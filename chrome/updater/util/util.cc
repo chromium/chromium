@@ -339,8 +339,8 @@ bool DeleteExcept(std::optional<base::FilePath> except) {
       .ForEach([&](const base::FilePath& item) {
         if (item != *except) {
           VLOG(2) << "DeleteExcept deleting: " << item;
-          const bool success = update_client::RetryDeletePathRecursivelyCustom(
-              item, /*tries=*/2,
+          const bool success = update_client::RetryFileOperation(
+              &base::DeletePathRecursively, item, /*tries=*/2,
               /*time_between_tries=*/base::Milliseconds(100));
           VPLOG_IF(1, !success) << "DeleteExcept failed to delete: " << item;
         }

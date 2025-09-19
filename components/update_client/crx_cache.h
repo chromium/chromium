@@ -67,8 +67,9 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
           callback) const;
 
   // Adds `file` to the cache. Any entries with the same `app_id` are first
-  // evicted. The file is moved into the cache, and the new path to the
-  // file is returned. Hashes should be in ASCII. O(N) time.
+  // evicted. The `file` is moved into the cache, `file`'s parent directory (now
+  // expected to be empty) is deleted, and the new path to the file is returned.
+  // Hashes should be in ASCII. O(N) time.
   void Put(
       const base::FilePath& file,
       const std::string& app_id,
