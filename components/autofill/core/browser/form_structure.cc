@@ -761,7 +761,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     const AutofillField* field = form.field(i);
     const std::u16string& name = [&]() -> const std::u16string& {
       if (auto it = parseable_names.find(field->global_id());
-          it != parseable_labels.end()) {
+          it != parseable_names.end()) {
         return it->second;
       }
       return field->name();
