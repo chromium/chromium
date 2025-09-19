@@ -73,7 +73,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       const ScrollbarTrackExtraParams& extra_params) const override;
 
  private:
-  friend class NativeThemeAuraTest;
   friend class base::NoDestructor<NativeThemeAura>;
 };
 

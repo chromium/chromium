@@ -245,7 +245,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                   SkColor color) const;
 
  private:
-  friend class NativeThemeAuraTest;
   friend class NativeThemeBaseTest;
 
   static constexpr auto kBorderColors =

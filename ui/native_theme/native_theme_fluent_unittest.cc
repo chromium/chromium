@@ -5,16 +5,18 @@
 #include "ui/native_theme/native_theme_fluent.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <memory>
+#include <string_view>
+#include <utility>
 
+#include "base/strings/strcat.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
-#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -30,54 +32,31 @@ class NativeThemeFluentTest : public ::testing::Test,
  protected:
   const NativeThemeFluent& theme() const { return theme_; }
 
-  void VerifyArrowRectCommonDimensions(const gfx::RectF& arrow_rect) const {
-    EXPECT_FALSE(arrow_rect.IsEmpty());
-    EXPECT_EQ(arrow_rect.width(), arrow_rect.height());
-    EXPECT_EQ(arrow_rect.width(), std::floor(arrow_rect.width()));
-  }
-
-  void VerifyArrowRectIsCentered(const gfx::RectF& button_rect,
-                                 const gfx::RectF& arrow_rect,
-                                 NativeTheme::Part part) const {
-    const gfx::PointF button_center = button_rect.CenterPoint();
-    const gfx::PointF arrow_center = arrow_rect.CenterPoint();
-    // Due to the offset the arrow rect is shifted from the center.
-    float expected_shift = ScaleFromDIP() * 2;
-    if (part == NativeTheme::kScrollbarUpArrow ||
-        part == NativeTheme::kScrollbarDownArrow) {
-      EXPECT_EQ(button_center.x(), arrow_center.x());
-      EXPECT_NEAR(button_center.y(), arrow_center.y(), expected_shift);
-    } else {
-      EXPECT_NEAR(button_center.x(), arrow_center.x(), expected_shift);
-      EXPECT_EQ(button_center.y(), arrow_center.y());
-    }
-  }
-
-  void VerifyArrowRectIsIntRect(const gfx::RectF& arrow_rect) const {
-    EXPECT_TRUE(gfx::IsNearestRectWithinDistance(arrow_rect, 0.01f));
-  }
-
-  void VerifyArrowRectLengthRatio(const gfx::RectF& button_rect,
-                                  const gfx::RectF& arrow_rect,
-                                  NativeTheme::State state) const {
-    const float thickness = std::min(button_rect.width(), button_rect.height());
-    const float arrow_side = arrow_rect.width();  // The arrow is square.
-    if (state == NativeTheme::kNormal) {
-      // Default state arrows are slightly bigger than the half of the button's
-      // smaller side (track thickness).
-      EXPECT_GT(arrow_side, thickness / 2.0f);
-      EXPECT_LT(arrow_side, thickness);
-    } else {
-      EXPECT_GT(arrow_side, thickness / 3.0f);
-      EXPECT_LT(arrow_side, thickness / 1.5f);
-    }
+  // Mocks the availability of the font for drawing arrow icons.
+  void SetArrowIconsAvailable(bool available) {
+    theme_.SetArrowIconsAvailableForTesting(available);
+    EXPECT_EQ(theme().GetArrowIconsAvailable(), available);
   }
 
   void VerifyArrowRect() const {
-    for (auto const& part :
-         {NativeTheme::kScrollbarUpArrow, NativeTheme::kScrollbarLeftArrow}) {
-      const gfx::RectF button_rect(ButtonRect(part));
-      for (auto const& state : {NativeTheme::kNormal, NativeTheme::kPressed}) {
+    SCOPED_TRACE(::testing::Message() << "Scale: " << ScaleFromDIP());
+    for (const auto& parts_elem :
+         std::to_array<std::pair<NativeTheme::Part, std::string_view>>(
+             {{NativeTheme::kScrollbarDownArrow, "down"},
+              {NativeTheme::kScrollbarLeftArrow, "left"},
+              {NativeTheme::kScrollbarRightArrow, "right"},
+              {NativeTheme::kScrollbarUpArrow, "up"}})) {
+      const NativeTheme::Part part = parts_elem.first;
+      SCOPED_TRACE(base::StrCat({"Arrow direction: ", parts_elem.second}));
+      const gfx::RectF button_rect = ButtonRect(part);
+      for (const auto& states_elem :
+           std::to_array<std::pair<NativeTheme::State, std::string_view>>(
+               {{NativeTheme::kDisabled, "disabled"},
+                {NativeTheme::kHovered, "hovered"},
+                {NativeTheme::kNormal, "normal"},
+                {NativeTheme::kPressed, "pressed"}})) {
+        const NativeTheme::State state = states_elem.first;
+        SCOPED_TRACE(base::StrCat({"Arrow state: ", states_elem.second}));
         const gfx::RectF arrow_rect =
             theme().GetArrowRect(gfx::ToNearestRect(button_rect), part, state);
         VerifyArrowRectCommonDimensions(arrow_rect);
@@ -90,6 +69,66 @@ class NativeThemeFluentTest : public ::testing::Test,
     }
   }
 
+  void PaintScrollbarThumb(cc::PaintCanvas* canvas) const {
+    ColorProvider color_provider;
+    theme_.PaintScrollbarThumb(canvas, &color_provider,
+                               NativeTheme::kScrollbarVerticalThumb,
+                               NativeTheme::kNormal, gfx::Rect(15, 100), {});
+  }
+
+ private:
+  static float ScaleFromDIP() { return GetParam(); }
+
+  static void VerifyArrowRectCommonDimensions(const gfx::RectF& arrow_rect) {
+    EXPECT_FALSE(arrow_rect.IsEmpty());
+    EXPECT_EQ(arrow_rect.width(), arrow_rect.height());
+    EXPECT_EQ(arrow_rect.width(), std::floor(arrow_rect.width()));
+  }
+
+  void VerifyArrowRectIsCentered(const gfx::RectF& button_rect,
+                                 const gfx::RectF& arrow_rect,
+                                 NativeTheme::Part part) const {
+    const gfx::PointF button_center = button_rect.CenterPoint();
+    const gfx::PointF arrow_center = arrow_rect.CenterPoint();
+    // The arrow is shifted away from center along the length axis by one dp,
+    // rounded to integral px.
+    float expected_shift = std::round(ScaleFromDIP());
+    if (!theme().GetArrowIconsAvailable()) {
+      // For triangular arrows, rect coordinates are snapped to integers, which
+      // may introduce an additional half pixel shift.
+      expected_shift += 0.5f;
+    }
+    if (part == NativeTheme::kScrollbarUpArrow ||
+        part == NativeTheme::kScrollbarDownArrow) {
+      EXPECT_EQ(button_center.x(), arrow_center.x());
+      EXPECT_NEAR(button_center.y(), arrow_center.y(), expected_shift);
+    } else {
+      EXPECT_NEAR(button_center.x(), arrow_center.x(), expected_shift);
+      EXPECT_EQ(button_center.y(), arrow_center.y());
+    }
+  }
+
+  static void VerifyArrowRectIsIntRect(const gfx::RectF& arrow_rect) {
+    EXPECT_TRUE(gfx::IsNearestRectWithinDistance(arrow_rect, 0.01f));
+  }
+
+  static void VerifyArrowRectLengthRatio(const gfx::RectF& button_rect,
+                                         const gfx::RectF& arrow_rect,
+                                         NativeTheme::State state) {
+    const float thickness = std::min(button_rect.width(), button_rect.height());
+    const float arrow_side = arrow_rect.width();  // The arrow is square.
+    if (state == NativeTheme::kPressed) {
+      // Pressed icons are ~0.5 times as thick as the button (precise value
+      // depends on zoom and whether arrow icons are available).
+      EXPECT_GT(arrow_side, thickness / 3.0f);
+      EXPECT_LT(arrow_side, thickness / 1.5f);
+    } else {
+      // Non-pressed arrows are ~0.6 times as thick as the button.
+      EXPECT_GT(arrow_side, thickness / 2.0f);
+      EXPECT_LT(arrow_side, thickness);
+    }
+  }
+
   gfx::RectF ButtonRect(NativeTheme::Part part) const {
     gfx::Rect rect({}, theme().GetVerticalScrollbarButtonSize());
     if (part == NativeTheme::kScrollbarLeftArrow ||
@@ -97,21 +136,6 @@ class NativeThemeFluentTest : public ::testing::Test,
       rect.Transpose();
     }
     return gfx::RectF(gfx::ScaleToEnclosedRect(rect, ScaleFromDIP()));
-  }
-
-  void PaintScrollbarThumb(cc::PaintCanvas* canvas) const {
-    ColorProvider color_provider;
-    theme().PaintScrollbarThumb(canvas, &color_provider,
-                                NativeTheme::kScrollbarVerticalThumb,
-                                NativeTheme::kNormal, gfx::Rect(15, 100), {});
-  }
-
-  static float ScaleFromDIP() { return GetParam(); }
-
-  // Mocks the availability of the font for drawing arrow icons.
-  void SetArrowIconsAvailable(bool available) {
-    theme_.SetArrowIconsAvailableForTesting(available);
-    EXPECT_EQ(theme().GetArrowIconsAvailable(), available);
   }
 
  private:

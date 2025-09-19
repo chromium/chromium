@@ -160,8 +160,4 @@ test("native_theme_unittests") {
   if (is_win) {
     sources += [ "caption_style_win_unittest.cc" ]
   }
-
-  if (use_aura) {
-    sources += [ "native_theme_aura_unittest.cc" ]
-  }
 }
