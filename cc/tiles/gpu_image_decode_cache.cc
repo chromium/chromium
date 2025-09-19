@@ -395,26 +395,6 @@ sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
                                      std::move(color_space));
 }
 
-// Immediately deletes an SkImage, preventing caching of that image. Must be
-// called while holding the context lock.
-void DeleteSkImageAndPreventCaching(viz::RasterContextProvider* context,
-                                    sk_sp<SkImage>&& image) {
-  // No need to do anything for a non-texture-backed images.
-  if (!image->isTextureBacked())
-    return;
-
-  sk_sp<SkImage> image_owned =
-      TakeOwnershipOfSkImageBacking(context->GrContext(), std::move(image));
-  // If context is lost, we may get a null image here.
-  if (image_owned) {
-    // Delete |original_image_owned| as Skia will not clean it up. We are
-    // holding the context lock here, so we can delete immediately.
-    uint32_t texture_id =
-        GpuImageDecodeCache::GlIdFromSkImage(image_owned.get());
-    context->RasterInterface()->DeleteGpuRasterTexture(texture_id);
-  }
-}
-
 // TODO(ericrk): Replace calls to this with calls to SkImages::TextureFromImage,
 // once that function handles colorspaces. https://crbug.com/834837
 sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
@@ -438,9 +418,6 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
     sk_sp<SkImage> pre_converted_image = uploaded_image;
     uploaded_image =
         uploaded_image->makeColorSpace(recorder, target_color_space, {});
-
-    if (uploaded_image != pre_converted_image)
-      DeleteSkImageAndPreventCaching(context, std::move(pre_converted_image));
   }
 
   // Step 3: If we had a colorspace conversion, we couldn't mipmap in step 1, so
@@ -450,7 +427,6 @@ sk_sp<SkImage> MakeTextureImage(viz::RasterContextProvider* context,
     uploaded_image = SkImages::TextureFromImage(gr_context, uploaded_image,
                                                 skgpu::Mipmapped::kYes);
     DCHECK_NE(pre_mipped_image, uploaded_image);
-    DeleteSkImageAndPreventCaching(context, std::move(pre_mipped_image));
   }
 
   return uploaded_image;
@@ -2815,12 +2791,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
       DCHECK(uploaded_y_image);
       DCHECK(uploaded_u_image);
       DCHECK(uploaded_v_image);
-      // We do not call DeleteSkImageAndPreventCaching for |uploaded_image|
-      // because calls to GetBackendTextureFromImage will flatten the YUV planes
-      // to an RGB texture only to immediately delete it.
-      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_y_image));
-      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_u_image));
-      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_v_image));
     }
     return;
   }
@@ -2884,8 +2854,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
   // At-raster may have decoded this while we were unlocked. If so, ignore our
   // result.
   if (image_data->upload.image()) {
-    if (uploaded_image)
-      DeleteSkImageAndPreventCaching(context_, std::move(uploaded_image));
     return;
   }
 
