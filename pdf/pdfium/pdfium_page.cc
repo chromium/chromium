@@ -1508,10 +1508,13 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
       if (text_runs_iter != marked_content_id_text_run_info_map.end()) {
         std::vector<raw_ptr<AccessibilityTextRunInfo>>& text_runs =
             text_runs_iter->second;
+        const std::string tag_type =
+            base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+                base::BindRepeating(&FPDF_StructElement_GetType,
+                                    current_element),
+                /*check_expected_size=*/true));
         for (raw_ptr<AccessibilityTextRunInfo>& text_run : text_runs) {
-          text_run->tag_type = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
-              base::BindRepeating(&FPDF_StructElement_GetType, current_element),
-              /*check_expected_size=*/true));
+          text_run->tag_type = tag_type;
         }
       }
     }
