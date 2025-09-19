@@ -4,7 +4,6 @@
     "clang_use_default_sample_profile": false,
     "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
     "debuggable_apks": false,
-    "enable_resource_allowlist_generation": false,
     "is_component_build": false,
     "is_cronet_build": true,
     "is_debug": true,

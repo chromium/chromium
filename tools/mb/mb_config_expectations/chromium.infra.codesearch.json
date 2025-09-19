@@ -39,7 +39,6 @@
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
       "enable_kythe_annotations": true,
-      "enable_resource_allowlist_generation": false,
       "is_clang": true,
       "is_component_build": false,
       "is_cronet_build": true,

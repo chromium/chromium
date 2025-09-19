@@ -841,8 +841,7 @@
     'cronet_android': {
       'mixins': ['cronet_common'],
       # LINT.IfChange(cronet_android)
-      'gn_args': ('clang_use_default_sample_profile=false '
-                  'enable_resource_allowlist_generation=false '),
+      'gn_args': ('clang_use_default_sample_profile=false '),
       # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_android)
     },
 

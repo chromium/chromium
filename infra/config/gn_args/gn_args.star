@@ -460,7 +460,6 @@ gn_args.config(
         # should be empty.
         # LINT.IfChange(cronet_android)
         "clang_use_default_sample_profile": False,
-        "enable_resource_allowlist_generation": False,
         # LINT.ThenChange(//tools/mb/mb_config.pyl:cronet_android)
     },
     configs = [

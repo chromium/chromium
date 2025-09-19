@@ -3,7 +3,6 @@
     "android_static_analysis": "on",
     "clang_use_default_sample_profile": false,
     "debuggable_apks": false,
-    "enable_resource_allowlist_generation": false,
     "is_component_build": false,
     "is_cronet_build": true,
     "is_debug": true,

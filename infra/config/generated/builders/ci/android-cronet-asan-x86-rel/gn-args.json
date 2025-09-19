@@ -4,7 +4,6 @@
     "clang_use_default_sample_profile": false,
     "dcheck_always_on": false,
     "debuggable_apks": false,
-    "enable_resource_allowlist_generation": false,
     "ffmpeg_branding": "Chrome",
     "is_asan": true,
     "is_clang": true,

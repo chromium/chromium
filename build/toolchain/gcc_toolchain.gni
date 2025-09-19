@@ -5,6 +5,7 @@
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
@@ -20,7 +21,10 @@ declare_args() {
   enable_resource_allowlist_generation =
       is_official_build &&
       # Don't enable for Android-on-Chrome OS.
-      (target_os == "android" || target_os == "win")
+      (target_os == "android" || target_os == "win") &&
+      # TODO(https://crbug.com/445896263): Consider whether Cronet should enable
+      # this.
+      !is_cronet_build
 
   # Use -MD instead of -MMD for compiler commands. This is useful for tracking
   # the comprehensive set of dependencies.  It's also required when building
