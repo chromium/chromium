@@ -171,10 +171,16 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private showPriceEmailNotificationsToggle_(): boolean {
+    if (!loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') ||
+        !this.syncStatus) {
+      return false;
+    }
     // Only show the toggle when the user signed in.
-    return loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') &&
-        !!this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SYNCING;
+    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return true;
+    }
+    return this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
   private getPriceEmailNotificationsPrefDesc_(): string {
