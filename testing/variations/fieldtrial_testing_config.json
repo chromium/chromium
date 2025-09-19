@@ -8680,6 +8680,21 @@
             ]
         }
     ],
+    "DesktopUAOnConnectedDisplays": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DesktopUAOnConnectedDisplays"
+                    ]
+                }
+            ]
+        }
+    ],
     "DestroySystemProfiles": [
         {
             "platforms": [
