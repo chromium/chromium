@@ -1177,10 +1177,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(GetPrefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 
-  // Only payments is selected for implicitly signed-in users.
-  ASSERT_EQ(
-      GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  // Only payments is selected for implicitly signed-in users, till the
+  // kReplaceSyncPromosWithSignInPromos flag is enabled.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    ASSERT_EQ(
+        GetSyncService()->GetUserSettings()->GetSelectedTypes(),
+        syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  }
 
   ASSERT_TRUE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
@@ -1209,14 +1213,13 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
 
   // This should enable additional user selected types.
-  ASSERT_EQ(GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-            syncer::UserSelectableTypeSet({
-                syncer::UserSelectableType::kPayments,
-                syncer::UserSelectableType::kPreferences,
-                syncer::UserSelectableType::kThemes,
-                syncer::UserSelectableType::kPasswords,
-                syncer::UserSelectableType::kAutofill,
-            }));
+  ASSERT_TRUE(GetSyncService()->GetUserSettings()->GetSelectedTypes().HasAll({
+      syncer::UserSelectableType::kPayments,
+      syncer::UserSelectableType::kPreferences,
+      syncer::UserSelectableType::kThemes,
+      syncer::UserSelectableType::kPasswords,
+      syncer::UserSelectableType::kAutofill,
+  }));
 
   // The prefs are saved for backup.
   const base::Value* value = GetPrefs()->GetUserPrefValue(kDiceMigrationBackup);
@@ -1246,10 +1249,14 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 
   // Only payments is selected for implicitly signed-in users. None of the other
-  // user selectable types are selected.
-  EXPECT_EQ(
-      GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  // user selectable types are selected, unless the
+  // kReplaceSyncPromosWithSignInPromos flag is enabled.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_EQ(
+        GetSyncService()->GetUserSettings()->GetSelectedTypes(),
+        syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  }
 
   // The timer is not running, the dialog is not shown.
   EXPECT_FALSE(
@@ -1284,10 +1291,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(GetPrefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 
-  // Only payments is selected for implicitly signed-in users.
-  ASSERT_EQ(
-      GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  // Only payments is selected for implicitly signed-in users, unless
+  // kReplaceSyncPromosWithSignInPromos flag is enabled.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    ASSERT_EQ(
+        GetSyncService()->GetUserSettings()->GetSelectedTypes(),
+        syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPayments}));
+  }
 
   ASSERT_TRUE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
@@ -1316,14 +1327,13 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
 
   // This should enable additional user selected types.
-  ASSERT_EQ(GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-            syncer::UserSelectableTypeSet({
-                syncer::UserSelectableType::kPayments,
-                syncer::UserSelectableType::kPreferences,
-                syncer::UserSelectableType::kThemes,
-                syncer::UserSelectableType::kPasswords,
-                syncer::UserSelectableType::kAutofill,
-            }));
+  ASSERT_TRUE(GetSyncService()->GetUserSettings()->GetSelectedTypes().HasAll({
+      syncer::UserSelectableType::kPayments,
+      syncer::UserSelectableType::kPreferences,
+      syncer::UserSelectableType::kThemes,
+      syncer::UserSelectableType::kPasswords,
+      syncer::UserSelectableType::kAutofill,
+  }));
 
   // The prefs are saved for backup.
   const base::Value* value = GetPrefs()->GetUserPrefValue(kDiceMigrationBackup);
@@ -1354,14 +1364,13 @@ IN_PROC_BROWSER_TEST_F(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 
   // The user selected types are unchanged.
-  EXPECT_EQ(GetSyncService()->GetUserSettings()->GetSelectedTypes(),
-            syncer::UserSelectableTypeSet({
-                syncer::UserSelectableType::kPayments,
-                syncer::UserSelectableType::kPreferences,
-                syncer::UserSelectableType::kThemes,
-                syncer::UserSelectableType::kPasswords,
-                syncer::UserSelectableType::kAutofill,
-            }));
+  EXPECT_TRUE(GetSyncService()->GetUserSettings()->GetSelectedTypes().HasAll({
+      syncer::UserSelectableType::kPayments,
+      syncer::UserSelectableType::kPreferences,
+      syncer::UserSelectableType::kThemes,
+      syncer::UserSelectableType::kPasswords,
+      syncer::UserSelectableType::kAutofill,
+  }));
 
   // The timer is not running, the dialog is not shown.
   ASSERT_FALSE(
