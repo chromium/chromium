@@ -223,7 +223,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider)
     : is_accelerated_(false),
-      use_oop_rasterization_(false),
       alpha_type_(alpha_type),
       provider_(std::move(provider)) {
   if (!shared_image_interface_provider) {
@@ -274,14 +273,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
-      use_oop_rasterization_(is_accelerated &&
-                             context_provider_wrapper_->ContextProvider()
-                                 .GetCapabilities()
-                                 .gpu_rasterization),
       alpha_type_(alpha_type),
       provider_(std::move(provider)) {
-  CHECK(use_oop_rasterization_ || !is_accelerated_);
-
   auto* shared_image_interface =
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(shared_image_interface);

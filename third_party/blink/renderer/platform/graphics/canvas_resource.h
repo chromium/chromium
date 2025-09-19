@@ -306,7 +306,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   // Accessed on any thread.
   const bool is_accelerated_;
-  const bool use_oop_rasterization_;
   const SkAlphaType alpha_type_;
   OwningThreadData owning_thread_data_;
   base::WeakPtr<CanvasResourceProviderSharedImage> provider_;
