@@ -6614,10 +6614,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         More options
       </message>
       <message name="IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME" desc="Accessible string for the the context menu button of an extensions menu item.">
-        Select to see more options
+        See more options for <ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>
       </message>
        <message name="IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_PINNED_ACCESSIBLE_NAME" desc="Accessible string for the the context menu button of an extensions menu item when the extension is pinned.">
-        Extension is pinned. Select to see more options
+        <ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph> is pinned. See more options.
       </message>
       <message name="IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE" desc="Text of the site permissions button when extension doesn't have site access to the site">
         No access needed

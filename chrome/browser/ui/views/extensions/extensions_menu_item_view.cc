@@ -80,12 +80,14 @@ std::u16string GetPinButtonAccessibleName(
   return l10n_util::GetStringFUTF16(tooltip_id, extension_name);
 }
 
-std::u16string GetContextMenuAccessibleName(bool is_pinned) {
+std::u16string GetContextMenuAccessibleName(
+    bool is_pinned,
+    const std::u16string& extension_name) {
   int tooltip_id =
       is_pinned
           ? IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_PINNED_ACCESSIBLE_NAME
           : IDS_EXTENSIONS_MENU_EXTENSION_CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME;
-  return l10n_util::GetStringUTF16(tooltip_id);
+  return l10n_util::GetStringFUTF16(tooltip_id, extension_name);
 }
 
 std::u16string GetPinButtonPressedAccText(bool is_pinned) {
@@ -509,7 +511,8 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
                                       three_dot_icon);
   context_menu_button_->GetViewAccessibility().SetName(
-      GetContextMenuAccessibleName(is_action_pinned));
+      GetContextMenuAccessibleName(is_action_pinned,
+                                   controller_->GetActionName()));
 }
 
 void ExtensionMenuItemView::SetupContextMenuButton() {
