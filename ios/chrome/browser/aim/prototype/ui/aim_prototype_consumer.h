@@ -22,6 +22,9 @@
 // Updates the mic button visibility.
 - (void)hideMicButton:(BOOL)hidden;
 
+// Sets whether the "Attach current tab" action is enabled.
+- (void)setCanAttachTabAction:(BOOL)canAttachTabAction;
+
 // Sets whether AI mode is enabled.
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled;
 

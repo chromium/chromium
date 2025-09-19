@@ -118,6 +118,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIView* _carouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
+  /// Wether or not the current tab is attachable.
+  BOOL _canAttachCurrentTab;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
   /// Container for the omnibox popup.
@@ -327,11 +329,13 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                 [weakSelf.mutator attachCurrentTabContent];
               }];
 
-  plusButton.menu = [UIMenu
-      menuWithTitle:@""
-           children:@[
-             fileAction, galleryAction, cameraAction, attachCurrentTabAction
-           ]];
+  NSMutableArray* menuItems = [NSMutableArray
+      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
+  if (_canAttachCurrentTab) {
+    [menuItems addObject:attachCurrentTabAction];
+  }
+
+  plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
 
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -473,6 +477,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                   completion:^{
                     [weakSelf updateInputPlateLayout];
                   }];
+}
+
+- (void)setCanAttachTabAction:(BOOL)canAttachTabAction {
+  _canAttachCurrentTab = canAttachTabAction;
 }
 
 - (void)updateState:(AIMInputItemState)state
