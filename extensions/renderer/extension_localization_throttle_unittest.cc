@@ -503,7 +503,7 @@ TEST_F(ExtensionLocalizationThrottleTest,
   EXPECT_EQ(net::OK, destination_loader_client->completion_status().error_code);
 }
 
-// A renderer is required to be able to use RendererExtensionRegistry.
+// A renderer thread is required to be able to use RendererExtensionRegistry.
 class ExtensionLocalizationThrottleTestWithRendererThread
     : public ExtensionLocalizationThrottleTest {
  public:
@@ -514,6 +514,23 @@ class ExtensionLocalizationThrottleTestWithRendererThread
   }
 
  protected:
+  // Return an extension when provided with a valid json manifest.
+  scoped_refptr<const Extension> GetExtension(
+      const std::string& manifest_json) {
+    std::string error;
+    base::Value::Dict manifest_dict;
+    auto manifest_value =
+        base::JSONReader::ReadDict(manifest_json, base::JSON_PARSE_RFC);
+    EXPECT_TRUE(manifest_value.has_value());
+    manifest_dict = std::move(*manifest_value);
+    scoped_refptr<const Extension> extension = Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
+        manifest_dict, Extension::NO_FLAGS, &error);
+    EXPECT_TRUE(extension) << error;
+    return extension;
+  }
+
+ private:
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ExtensionsRendererClient> renderer_client_;
 };
@@ -532,23 +549,8 @@ TEST_F(ExtensionLocalizationThrottleTestWithRendererThread,
     }]
   })";
 
-  std::string error;
-  base::Value::Dict manifest_dict;
-
-  // The base::JSONReader will parse the string into a dictionary.
-  auto manifest_value =
-      base::JSONReader::ReadDict(manifest_json, base::JSON_PARSE_RFC);
-
-  // The manifest must be a dictionary.
-  ASSERT_TRUE(manifest_value.has_value());
-  manifest_dict = std::move(*manifest_value);
-
-  scoped_refptr<const Extension> extension = Extension::Create(
-      base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
-      manifest_dict, Extension::NO_FLAGS, &error);
-
-  // Assert that the extension was created without an error.
-  ASSERT_TRUE(extension) << error;
+  auto extension = GetExtension(manifest_json);
+  ASSERT_TRUE(extension);
 
   RendererExtensionRegistry::Get()->Insert(extension);
 
