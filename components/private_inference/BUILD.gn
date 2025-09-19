@@ -2,10 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 source_set("private_inference") {
   sources = [
     "features.cc",
     "features.h",
+    "secure_client.cc",
+    "secure_client.h",
+    "secure_channel_client.h",
     "websocket_client.cc",
     "websocket_client.h",
   ]
@@ -15,5 +20,17 @@ source_set("private_inference") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "secure_client_unittest.cc" ]
+  deps = [
+    ":private_inference",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

@@ -307,6 +307,7 @@ test("components_unittests") {
     "//components/power_metrics:unit_tests",
     "//components/prefs:unit_tests",
     "//components/privacy_sandbox:unit_tests",
+    "//components/private_inference:unit_tests",
     "//components/profile_metrics:unit_tests",
     "//components/proto_extras:unit_tests",
     "//components/proxy_config:unit_tests",
