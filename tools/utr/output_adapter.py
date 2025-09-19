@@ -30,7 +30,7 @@ class StoringLogger(logging.Logger):
     if self.isEnabledFor(level):
       super().log(level, msg, *args, **kwargs)
     elif self.__class__._storage is not None:
-      self.__class__._storage.append((self, msg % args))
+      self.__class__._storage.append((self, msg % args if args else msg))
 
 
 logging.setLoggerClass(StoringLogger)
