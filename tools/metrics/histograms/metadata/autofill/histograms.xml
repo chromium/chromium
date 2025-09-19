@@ -5271,7 +5271,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.ProfileImport.HomeAndWorkAffectedType"
+<histogram name="Autofill.ProfileImport.HomeAndWorkSupersetAffectedType"
     enum="AutofillSettingsVisibleTypes" expires_after="2026-05-01">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
