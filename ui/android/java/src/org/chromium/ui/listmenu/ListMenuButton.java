@@ -5,12 +5,15 @@
 package org.chromium.ui.listmenu;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -151,6 +154,17 @@ public class ListMenuButton extends ChromeImageButton {
         dismiss();
         mIsAttachedToWindow = false;
         super.onDetachedFromWindow();
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        // Treat secondary clicks as long clicks.
+        if (MotionEventUtils.isSecondaryClick(event.getButtonState())
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && hasOnLongClickListeners()) {
+            return performLongClick();
+        }
+        return super.onGenericMotionEvent(event);
     }
 
     public void setAttachedToWindowForTesting() {
