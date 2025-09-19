@@ -47,6 +47,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -236,6 +237,7 @@ class FakeExtensionGCMAppHandler : public ExtensionGCMAppHandler {
 class ExtensionGCMAppHandlerTest : public testing::Test {
  public:
   static std::unique_ptr<KeyedService> BuildGCMProfileService(
+      os_crypt_async::OSCryptAsync* os_crypt,
       content::BrowserContext* context) {
 #if BUILDFLAG(IS_ANDROID)
     return gcm::FakeGCMProfileService::Build(context);
@@ -258,12 +260,14 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
         gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
         IdentityManagerFactory::GetForProfile(profile),
         base::WrapUnique(new gcm::FakeGCMClientFactory(ui_thread, io_thread)),
-        ui_thread, io_thread, blocking_task_runner);
+        ui_thread, io_thread, blocking_task_runner, os_crypt);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
   ExtensionGCMAppHandlerTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
+        os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {
     // Allow unpacked extensions without developer mode for testing.
     scoped_feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionDisableUnsupportedDeveloper);
@@ -305,8 +309,9 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
     // Create GCMProfileService that talks with fake GCMClient.
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating(
-                       &ExtensionGCMAppHandlerTest::BuildGCMProfileService));
+        profile(),
+        base::BindRepeating(&ExtensionGCMAppHandlerTest::BuildGCMProfileService,
+                            os_crypt_.get()));
 
     // Create a fake version of ExtensionGCMAppHandler.
     gcm_app_handler_ =
@@ -438,6 +443,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;
   std::unique_ptr<TestingProfile> profile_;

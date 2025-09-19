@@ -80,5 +80,6 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       GetProductCategoryForSubtypes(),
       IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<gcm::GCMClientFactory>(), web::GetUIThreadTaskRunner({}),
-      web::GetIOThreadTaskRunner({}), blocking_task_runner);
+      web::GetIOThreadTaskRunner({}), blocking_task_runner,
+      GetApplicationContext()->GetOSCryptAsync());
 }

@@ -743,7 +743,7 @@ void ApplicationContextImpl::CreateGCMDriver() {
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
       web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
-      blocking_task_runner);
+      blocking_task_runner, GetApplicationContext()->GetOSCryptAsync());
 }
 
 void ApplicationContextImpl::RequestProxyResolvingSocketFactory(

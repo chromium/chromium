@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/gcm_driver/gcm_profile_service.h"
+
 #include <memory>
 #include <vector>
 
@@ -24,7 +26,7 @@
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
-#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -72,6 +74,7 @@ void RequestProxyResolvingSocketFactory(
 }
 
 std::unique_ptr<KeyedService> BuildGCMProfileService(
+    os_crypt_async::OSCryptAsync* os_crypt,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
@@ -86,11 +89,11 @@ std::unique_ptr<KeyedService> BuildGCMProfileService(
       chrome::GetChannel(),
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
-      std::unique_ptr<gcm::GCMClientFactory>(
-          new gcm::FakeGCMClientFactory(content::GetUIThreadTaskRunner({}),
-                                        content::GetIOThreadTaskRunner({}))),
+      std::make_unique<gcm::FakeGCMClientFactory>(
+          content::GetUIThreadTaskRunner({}),
+          content::GetIOThreadTaskRunner({})),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
-      blocking_task_runner);
+      blocking_task_runner, os_crypt);
 }
 
 }  // namespace
@@ -136,6 +139,7 @@ class GCMProfileServiceTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<GCMProfileService, DanglingUntriaged> gcm_profile_service_;
   std::unique_ptr<FakeGCMAppHandler> gcm_app_handler_;
@@ -148,7 +152,9 @@ class GCMProfileServiceTest : public testing::Test {
 };
 
 GCMProfileServiceTest::GCMProfileServiceTest()
-    : gcm_profile_service_(nullptr),
+    : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+          /*is_sync_for_unittests=*/true)),
+      gcm_profile_service_(nullptr),
       gcm_app_handler_(new FakeGCMAppHandler),
       registration_result_(GCMClient::UNKNOWN_ERROR),
       send_result_(GCMClient::UNKNOWN_ERROR) {}
@@ -179,7 +185,8 @@ void GCMProfileServiceTest::TearDown() {
 void GCMProfileServiceTest::CreateGCMProfileService() {
   gcm_profile_service_ = static_cast<GCMProfileService*>(
       GCMProfileServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          profile_.get(), base::BindRepeating(&BuildGCMProfileService)));
+          profile_.get(),
+          base::BindRepeating(&BuildGCMProfileService, os_crypt_.get())));
   gcm_profile_service_->driver()->AddAppHandler(
       kTestAppID, gcm_app_handler_.get());
 }

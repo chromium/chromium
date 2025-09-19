@@ -1335,86 +1335,19 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   // ensure the persistent storage of current max SessionId.
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-  // browser_policy_connector() is created very early because local_state()
-  // needs policy to be initialized with the managed preference values.
-  // However, policy fetches from the network and loading of disk caches
-  // requires that threads are running; this Init() call lets the connector
-  // resume its initialization now that the loops are spinning and the
-  // system request context is available for the fetchers.
-  browser_policy_connector()->Init(
-      local_state(),
-      system_network_context_manager()->GetSharedURLLoaderFactory());
-
-  if (local_state_->IsManagedPreference(prefs::kDefaultBrowserSettingEnabled))
-    ApplyDefaultBrowserPolicy();
-
-  ApplyMetricsReportingPolicy();
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  content::PluginService::GetInstance()->SetFilter(
-      ChromePluginServiceFilter::GetInstance());
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-#if !BUILDFLAG(IS_ANDROID)
-  ChromeJsErrorReportProcessor::Create();
-  storage_monitor::StorageMonitor::Create();
-#endif
-
-  platform_part_->PreMainMessageLoopRun();
-
-  CreateNetworkTimeTracker();
-
-  CreateNetworkQualityObserver();
-
-#if BUILDFLAG(IS_ANDROID)
-  // This needs to be here so that SecurityStateClient is non-null when
-  // SecurityStateModel code is called.
-  security_state::SetSecurityStateClient(new ChromeSecurityStateClient());
-#endif
-
-// Create the global SodaInstaller instance.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-  screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
-#endif
-
-  base::FilePath user_data_dir;
-  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(result);
-  if (breadcrumbs::MaybeEnableBasedOnChannel(local_state_.get(),
-                                             chrome::GetChannel())) {
-    // Start crash reporter listening for breadcrumb events. Collected
-    // breadcrumbs will be attached to crash reports.
-    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
-
-    application_breadcrumbs_logger_ =
-        std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
-            user_data_dir, base::BindRepeating([] {
-              return ChromeMetricsServiceAccessor::
-                  IsMetricsAndCrashReportingEnabled();
-            }));
-  } else {
-    breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
-  }
-
-  // OSCryptAsync provider configuration. If empty, this delegates all
-  // encryption operations to OSCrypt.
+  // OSCryptAsync provider configuration. This must run before
+  // `browser_policy_connector_` initialization since implementations like
+  // BrowserPolicyConnectorAsh require an OSCryptAsync. If empty, this delegates
+  // all encryption operations to OSCrypt.
   std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
       providers;
 
   if (additional_provider_for_test_) {
     // Explicitly move the KeyProvider but leave the std::optional holding the
     // pair, this ensures it can only be set once in testing.
-    providers.push_back(
-        std::make_pair(std::get<0>(*additional_provider_for_test_),
-                       std::move(std::get<1>(*additional_provider_for_test_))));
+    providers.emplace_back(
+        std::get<0>(*additional_provider_for_test_),
+        std::move(std::get<1>(*additional_provider_for_test_)));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1478,6 +1411,76 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
                                 base::TimeTicks::Now() - start_time);
       },
       base::TimeTicks::Now()));
+
+  // browser_policy_connector() is created very early because local_state()
+  // needs policy to be initialized with the managed preference values.
+  // However, policy fetches from the network and loading of disk caches
+  // requires that threads are running; this Init() call lets the connector
+  // resume its initialization now that the loops are spinning and the
+  // system request context is available for the fetchers.
+  browser_policy_connector()->Init(
+      local_state(),
+      system_network_context_manager()->GetSharedURLLoaderFactory());
+
+  if (local_state_->IsManagedPreference(prefs::kDefaultBrowserSettingEnabled)) {
+    ApplyDefaultBrowserPolicy();
+  }
+
+  ApplyMetricsReportingPolicy();
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  content::PluginService::GetInstance()->SetFilter(
+      ChromePluginServiceFilter::GetInstance());
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  ChromeJsErrorReportProcessor::Create();
+  storage_monitor::StorageMonitor::Create();
+#endif
+
+  platform_part_->PreMainMessageLoopRun();
+
+  CreateNetworkTimeTracker();
+
+  CreateNetworkQualityObserver();
+
+#if BUILDFLAG(IS_ANDROID)
+  // This needs to be here so that SecurityStateClient is non-null when
+  // SecurityStateModel code is called.
+  security_state::SetSecurityStateClient(new ChromeSecurityStateClient());
+#endif
+
+// Create the global SodaInstaller instance.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
+#endif
+
+  base::FilePath user_data_dir;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  DCHECK(result);
+  if (breadcrumbs::MaybeEnableBasedOnChannel(local_state_.get(),
+                                             chrome::GetChannel())) {
+    // Start crash reporter listening for breadcrumb events. Collected
+    // breadcrumbs will be attached to crash reports.
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
+
+    application_breadcrumbs_logger_ =
+        std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
+            user_data_dir, base::BindRepeating([] {
+              return ChromeMetricsServiceAccessor::
+                  IsMetricsAndCrashReportingEnabled();
+            }));
+  } else {
+    breadcrumbs::DeleteBreadcrumbFiles(user_data_dir);
+  }
 }
 
 void BrowserProcessImpl::CreateIconManager() {
@@ -1615,7 +1618,7 @@ void BrowserProcessImpl::CreateGCMDriver() {
       content::GetNetworkConnectionTracker(), chrome::GetChannel(),
       gcm::GetProductCategoryForSubtypes(local_state()),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
-      blocking_task_runner);
+      blocking_task_runner, os_crypt_async());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

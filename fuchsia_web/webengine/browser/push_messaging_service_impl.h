@@ -18,10 +18,15 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler {
  public:
-  PushMessagingServiceImpl(content::BrowserContext&);
+  PushMessagingServiceImpl(content::BrowserContext&,
+                           os_crypt_async::OSCryptAsync*);
   ~PushMessagingServiceImpl() override;
 
   // PushMessagingService implementations.
@@ -84,6 +89,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   // Outlive this instance.
   content::BrowserContext& parent_context_;
+  raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -19,6 +19,7 @@
 #include "components/gcm_driver/fake_gcm_client_factory.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_driver_desktop.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/keypair.h"
@@ -91,6 +92,7 @@ class GCMDriverBaseTest : public testing::Test {
   void UnregisterCompleted(GCMClient::Result result);
 
  private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple prefs_;
   base::test::TaskEnvironment task_environment_{
@@ -111,7 +113,10 @@ class GCMDriverBaseTest : public testing::Test {
   std::string decrypted_message_;
 };
 
-GCMDriverBaseTest::GCMDriverBaseTest() : io_thread_("IOThread") {}
+GCMDriverBaseTest::GCMDriverBaseTest()
+    : os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+          /*is_sync_for_unittests=*/true)),
+      io_thread_("IOThread") {}
 
 GCMDriverBaseTest::~GCMDriverBaseTest() = default;
 
@@ -156,7 +161,8 @@ void GCMDriverBaseTest::CreateDriver() {
           &test_url_loader_factory_),
       network::TestNetworkConnectionTracker::GetInstance(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
-      io_thread_.task_runner(), task_environment_.GetMainThreadTaskRunner());
+      io_thread_.task_runner(), task_environment_.GetMainThreadTaskRunner(),
+      os_crypt_.get());
 }
 
 void GCMDriverBaseTest::ShutdownDriver() {

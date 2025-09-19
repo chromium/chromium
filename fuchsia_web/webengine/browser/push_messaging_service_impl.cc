@@ -25,8 +25,9 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 PushMessagingServiceImpl::PushMessagingServiceImpl(
-    content::BrowserContext& parent_context)
-    : parent_context_(parent_context) {}
+    content::BrowserContext& parent_context,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : parent_context_(parent_context), os_crypt_async_(os_crypt_async) {}
 
 PushMessagingServiceImpl::~PushMessagingServiceImpl() = default;
 
@@ -114,7 +115,7 @@ gcm::GCMDriver& PushMessagingServiceImpl::GetGCMDriver() {
             content::BrowserThread::ID::UI),
         content::BrowserThread::GetTaskRunnerForThread(
             content::BrowserThread::ID::IO),
-        blocking_task_runner);
+        blocking_task_runner, os_crypt_async_);
   }
   DCHECK(gcm_driver_);
   return *gcm_driver_.get();

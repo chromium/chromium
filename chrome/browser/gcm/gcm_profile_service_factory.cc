@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -180,7 +181,8 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
       gcm::GetProductCategoryForSubtypes(profile->GetPrefs()),
       IdentityManagerFactory::GetForProfile(profile),
       std::make_unique<GCMClientFactory>(), content::GetUIThreadTaskRunner({}),
-      GetNetworkThreadTaskRunner(), blocking_task_runner);
+      GetNetworkThreadTaskRunner(), blocking_task_runner,
+      g_browser_process->os_crypt_async());
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // TODO(crbug.com/40260641): Removing image fetcher references here breaks

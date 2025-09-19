@@ -23,6 +23,10 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace gcm {
 
 class GCMDriver;
@@ -41,7 +45,8 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     const std::string& product_category_for_subtypes,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt_async);
 
 }  // namespace gcm
 
