@@ -279,6 +279,7 @@ static_library("ui") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/autofill",
+    "//chrome/browser/banners",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",

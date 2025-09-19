@@ -274,6 +274,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/apps/link_capturing",
     "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/banners",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/metrics/structured:test_support",

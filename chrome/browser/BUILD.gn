@@ -1895,6 +1895,8 @@ static_library("browser") {
     "//chrome/browser/background_fetch:impl",
     "//chrome/browser/background_sync",
     "//chrome/browser/background_sync:impl",
+    "//chrome/browser/banners",
+    "//chrome/browser/banners:impl",
     "//chrome/browser/battery",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bluetooth",
@@ -3003,8 +3005,6 @@ static_library("browser") {
       "android/webapps/web_app_launch_handler.cc",
       "android/webapps/webapp_registry.cc",
       "android/webapps/webapp_registry.h",
-      "banners/android/chrome_app_banner_manager_android.cc",
-      "banners/android/chrome_app_banner_manager_android.h",
       "browser_process_platform_part_android.cc",
       "browser_process_platform_part_android.h",
       "browsing_data/counters/tabs_counter.cc",
@@ -3669,6 +3669,11 @@ static_library("browser") {
       # - c/b/android/android_theme_resources.h
       # - c/b/android/resource_mapper.h
       "//chrome/browser/send_tab_to_self:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the following
+      # headers get componentized:
+      # - c/b/flags/android/chrome_feature_list.h
+      "//chrome/browser/banners:impl",
     ]
 
     if (safe_browsing_mode == 2) {
@@ -3717,8 +3722,6 @@ static_library("browser") {
       "accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
-      "banners/app_banner_manager_desktop.cc",
-      "banners/app_banner_manager_desktop.h",
       "bookmarks/bookmark_expanded_state_tracker.cc",
       "bookmarks/bookmark_expanded_state_tracker.h",
       "bookmarks/bookmark_expanded_state_tracker_factory.cc",

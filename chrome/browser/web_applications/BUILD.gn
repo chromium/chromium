@@ -1185,6 +1185,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/banners:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools:test_support",

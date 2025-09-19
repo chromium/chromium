@@ -813,6 +813,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging:test_support",
+      "//chrome/browser/banners:test_support",
       "//chrome/browser/task_manager",
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
@@ -840,8 +841,6 @@ static_library("test_support") {
     }
 
     sources += [
-      "../browser/banners/test_app_banner_manager_desktop.cc",
-      "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
       "../browser/lookalikes/lookalike_test_helper.cc",
@@ -1368,8 +1367,6 @@ source_set("platform_browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "../browser/banners/app_banner_manager_browsertest_base.cc",
-    "../browser/banners/app_banner_manager_browsertest_base.h",
     "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
     "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
     "../browser/fingerprinting_protection/fingerprinting_protection_filter_browsertest.cc",
@@ -1815,8 +1812,6 @@ if (is_android) {
       "../browser/android/webapk/webapk_installer_browsertest.cc",
       "../browser/android/webapk/webapk_restore_task_browsertest.cc",
       "../browser/android/webview_renderer_extension_browsertest.cc",
-      "../browser/banners/android/ambient_badge_manager_browsertest.cc",
-      "../browser/banners/app_banner_manager_browsertest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/enterprise/data_controls/android_data_controls_dialog_browsertest.cc",
@@ -1877,6 +1872,7 @@ if (is_android) {
       "//chrome/android:delegate_public_impl_java",
       "//chrome/browser/autofill",
       "//chrome/browser/auxiliary_search:browser_tests",
+      "//chrome/browser/banners:android_browsertests",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/enterprise/data_controls",
@@ -2365,6 +2361,8 @@ if (!is_android) {
       "//chrome/browser/background_fetch:browser_tests",
       "//chrome/browser/background_sync:browser_tests",
       "//chrome/browser/badging",
+      "//chrome/browser/banners:browser_tests",
+      "//chrome/browser/banners:test_support",
       "//chrome/browser/battery",
       "//chrome/browser/bitmap_fetcher:browser_tests",
       "//chrome/browser/bluetooth:browser_tests",
@@ -3200,8 +3198,6 @@ if (!is_android) {
       "../browser/ai/ai_data_keyed_service_browsertest.cc",
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
-      "../browser/banners/app_banner_manager_browsertest.cc",
-      "../browser/banners/app_banner_manager_desktop_browsertest.cc",
       "../browser/battery/battery_metrics_browsertest.cc",
       "../browser/browser_encoding_browsertest.cc",
       "../browser/browsing_data/browsing_data_model_browsertest.cc",
@@ -10855,6 +10851,7 @@ if (!is_android) {
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
+      "//chrome/browser/banners:test_support",
       "//chrome/browser/devtools",
       "//chrome/browser/history",
       "//chrome/browser/lifetime:termination_notification",
@@ -11753,6 +11750,7 @@ if (!is_android && !is_chromeos_device) {
 
       deps += [
         "//chrome/app/vector_icons",
+        "//chrome/browser/banners:test_support",
         "//chrome/browser/commerce",
         "//chrome/browser/content_settings",
         "//chrome/browser/image_fetcher",
