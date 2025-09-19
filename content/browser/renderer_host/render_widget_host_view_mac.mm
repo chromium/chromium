@@ -591,6 +591,20 @@ void RenderWidgetHostViewMac::Focus() {
 
   base::AutoReset<bool> is_getting_focus_bit(&is_getting_focus_, true);
   ns_view_->MakeFirstResponder();
+
+  // Check if running with no associated NSWindow and force focus change
+  // propagation. This occurs while running headless and causes problems with
+  // RenderDocument. See more details here: http://crbug.com/444244102.
+  // Here notification callback is invoked asynchronously because focus and
+  // activation notifications are nested so synchronous invocation does not
+  // always result in the correct state.
+  if (IsHeadless()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RenderWidgetHostViewMac::OnFirstResponderChanged,
+                       weak_factory_.GetWeakPtr(),
+                       /*is_first_responder=*/true));
+  }
 }
 
 bool RenderWidgetHostViewMac::HasFocus() {
