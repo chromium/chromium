@@ -184,7 +184,7 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
 
 base::HeapArray<uint8_t> AAC::CreateAdtsFromEsds(
     base::span<const uint8_t> buffer,
-    int* adts_header_size) const {
+    size_t* adts_header_size) const {
   *adts_header_size = 0;
   if (!fits_in_adts()) {
     return {};

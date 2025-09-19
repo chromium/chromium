@@ -185,7 +185,9 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
     int bytes_read = 0;
     bool parsed_metadata = true;
     if ((start_code & start_code_mask_) == start_code_mask_) {
-      bytes_read = ParseFrame(data, data_size, &buffers);
+      bytes_read = ParseFrame(
+          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(data_size))),
+          &buffers);
 
       // Only allow the current segment to end if a full frame has been parsed.
       end_of_segment = bytes_read > 0;
@@ -244,34 +246,35 @@ void MPEGAudioStreamParserBase::ChangeState(State state) {
   state_ = state;
 }
 
-int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
-                                          int size,
+int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
                                           BufferQueue* buffers) {
-  DVLOG(2) << __func__ << "(" << size << ")";
+  DVLOG(2) << __func__ << "(" << data.size() << ")";
 
-  int sample_rate;
+  size_t sample_rate;
   ChannelLayout channel_layout;
-  int frame_size;
-  int sample_count;
+  size_t frame_size;
+  size_t sample_count;
   bool metadata_frame = false;
   std::vector<uint8_t> extra_data;
   int bytes_read =
-      ParseFrameHeader(data, size, &frame_size, &sample_rate, &channel_layout,
+      ParseFrameHeader(data, &frame_size, &sample_rate, &channel_layout,
                        &sample_count, &metadata_frame, &extra_data);
 
   if (bytes_read <= 0)
     return bytes_read;
 
   // Make sure data contains the entire frame.
-  if (size < frame_size)
+  if (data.size() < frame_size) {
     return 0;
+  }
 
   DVLOG(2) << " sample_rate " << sample_rate << " channel_layout "
            << channel_layout << " frame_size " << frame_size << " sample_count "
            << sample_count;
 
-  if (config_.IsValidConfig() && (config_.samples_per_second() != sample_rate ||
-                                  config_.channel_layout() != channel_layout)) {
+  if (config_.IsValidConfig() &&
+      (config_.samples_per_second() != base::checked_cast<int>(sample_rate) ||
+       config_.channel_layout() != channel_layout)) {
     // Clear config data so that a config change is initiated.
     config_ = AudioDecoderConfig();
 
@@ -317,10 +320,8 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple audio tracks, if applicable. See
   // https://crbug.com/341581.
-  auto data_span =
-      UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(frame_size)));
   scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-      data_span, true, DemuxerStream::AUDIO, kMpegAudioTrackId);
+      data.first(frame_size), true, DemuxerStream::AUDIO, kMpegAudioTrackId);
   buffer->set_timestamp(timestamp_helper_->GetTimestamp());
   buffer->set_duration(timestamp_helper_->GetFrameDuration(sample_count));
   buffers->push_back(buffer);
@@ -436,9 +437,10 @@ int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
     // the probability of false positives.
     for (int i = 0; i < 3; ++i) {
       int sync_size = end - sync;
-      int frame_size;
-      int sync_bytes = ParseFrameHeader(sync, sync_size, &frame_size, nullptr,
-                                        nullptr, nullptr, nullptr, nullptr);
+      size_t frame_size;
+      int sync_bytes = ParseFrameHeader(
+          UNSAFE_TODO(base::span(sync, base::checked_cast<size_t>(sync_size))),
+          &frame_size, nullptr, nullptr, nullptr, nullptr, nullptr);
 
       if (sync_bytes == 0)
         return 0;

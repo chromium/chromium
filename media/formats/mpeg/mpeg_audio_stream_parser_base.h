@@ -83,12 +83,11 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   // > 0 : The number of bytes parsed.
   //   0 : If more data is needed to parse the entire frame header.
   // < 0 : An error was encountered during parsing.
-  virtual int ParseFrameHeader(const uint8_t* data,
-                               int size,
-                               int* frame_size,
-                               int* sample_rate,
+  virtual int ParseFrameHeader(base::span<const uint8_t> data,
+                               size_t* frame_size,
+                               size_t* sample_rate,
                                ChannelLayout* channel_layout,
-                               int* sample_count,
+                               size_t* sample_count,
                                bool* metadata_frame,
                                std::vector<uint8_t>* extra_data) = 0;
 
@@ -110,7 +109,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   // > 0 : The number of bytes parsed.
   //   0 : If more data is needed to parse the entire element.
   // < 0 : An error was encountered during parsing.
-  int ParseFrame(const uint8_t* data, int size, BufferQueue* buffers);
+  int ParseFrame(base::span<const uint8_t> data, BufferQueue* buffers);
   int ParseIcecastHeader(const uint8_t* data, int size);
   int ParseID3v1(const uint8_t* data, int size);
   int ParseID3v2(const uint8_t* data, int size);

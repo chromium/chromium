@@ -63,7 +63,7 @@ class MEDIA_EXPORT AAC {
   // header. The size of the returned array is `buffer.size` +
   // `adts_header_size`. Returns an empty HeapArray<uint8_t> on failure.
   base::HeapArray<uint8_t> CreateAdtsFromEsds(base::span<const uint8_t> buffer,
-                                              int* adts_header_size) const;
+                                              size_t* adts_header_size) const;
 
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;

@@ -78,9 +78,9 @@ constexpr int kCodecDelay = 529;
 // static
 bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
                                          size_t* media_log_limit,
-                                         const uint8_t* data,
+                                         base::span<const uint8_t> data,
                                          Header* header) {
-  BitReader reader(data, kHeaderSize);
+  BitReader reader(data.first<kHeaderSize>());
   uint16_t sync;
   uint8_t version;
   uint8_t layer;
@@ -209,20 +209,19 @@ MPEG1AudioStreamParser::MPEG1AudioStreamParser()
 
 MPEG1AudioStreamParser::~MPEG1AudioStreamParser() = default;
 
-int MPEG1AudioStreamParser::ParseFrameHeader(const uint8_t* data,
-                                             int size,
-                                             int* frame_size,
-                                             int* sample_rate,
+int MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
+                                             size_t* frame_size,
+                                             size_t* sample_rate,
                                              ChannelLayout* channel_layout,
-                                             int* sample_count,
+                                             size_t* sample_count,
                                              bool* metadata_frame,
                                              std::vector<uint8_t>* extra_data) {
-  DCHECK(data);
-  DCHECK_GE(size, 0);
+  DCHECK(!data.empty());
   DCHECK(frame_size);
 
-  if (size < kHeaderSize)
+  if (data.size() < kHeaderSize) {
     return 0;
+  }
 
   Header header;
   if (!ParseHeader(media_log(), &mp3_parse_error_limit_, data, &header))
@@ -238,7 +237,7 @@ int MPEG1AudioStreamParser::ParseFrameHeader(const uint8_t* data,
   if (metadata_frame)
     *metadata_frame = false;
 
-  const int header_bytes_read = kHeaderSize;
+  const size_t header_bytes_read = kHeaderSize;
   if (header.layer != kLayer3)
     return header_bytes_read;
 
@@ -256,8 +255,7 @@ int MPEG1AudioStreamParser::ParseFrameHeader(const uint8_t* data,
 
   // If we don't have enough data available to check, return 0 so frame parsing
   // will be retried once more data is available.
-  BitReader reader(UNSAFE_TODO(data + header_bytes_read),
-                   size - header_bytes_read);
+  BitReader reader(data.subspan(header_bytes_read));
   if (!reader.SkipBits(xing_header_index * 8) ||
       !reader.ReadBits(sizeof(tag) * 8, &tag)) {
     return 0;

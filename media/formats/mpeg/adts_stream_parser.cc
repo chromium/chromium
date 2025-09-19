@@ -20,21 +20,19 @@ ADTSStreamParser::ADTSStreamParser()
 
 ADTSStreamParser::~ADTSStreamParser() = default;
 
-int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
-                                       int size,
-                                       int* frame_size,
-                                       int* sample_rate,
+int ADTSStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
+                                       size_t* frame_size,
+                                       size_t* sample_rate,
                                        ChannelLayout* channel_layout,
-                                       int* sample_count,
+                                       size_t* sample_count,
                                        bool* metadata_frame,
                                        std::vector<uint8_t>* extra_data) {
-  DCHECK(data);
-  DCHECK_GE(size, 0);
-
-  if (size < kADTSHeaderMinSize)
+  DCHECK(!data.empty());
+  if (data.size() < kADTSHeaderMinSize) {
     return 0;
+  }
 
-  BitReader reader(data, size);
+  BitReader reader(data);
   uint16_t sync;
   uint8_t version;
   uint8_t layer;

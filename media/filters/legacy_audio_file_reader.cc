@@ -228,15 +228,14 @@ bool LegacyAudioFileReader::ReadPacket(AVPacket* output_packet) {
 
     // MP3 packets may be zero-padded according to ffmpeg, so trim until we
     // have the packet.
-    uint8_t* packet_end =
-        UNSAFE_TODO(output_packet->data + output_packet->size);
-    uint8_t* header_start = output_packet->data;
-    while (header_start < packet_end && !*header_start) {
-      UNSAFE_TODO(++header_start);
-    }
+    base::span<const uint8_t> packet_span = AVPacketData(*output_packet);
+    auto iter =
+        std::ranges::find_if(packet_span, [](uint8_t v) { return v != 0; });
+    packet_span = packet_span.subspan(
+        static_cast<size_t>(std::distance(packet_span.begin(), iter)));
 
-    if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
-        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, header_start,
+    if (packet_span.size() < MPEG1AudioStreamParser::kHeaderSize ||
+        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, packet_span,
                                              nullptr)) {
       av_packet_unref(output_packet);
       continue;

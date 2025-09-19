@@ -437,7 +437,7 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (format == AudioEncoder::AacOutputFormat::ADTS) {
-      int adts_header_size = 0;
+      size_t adts_header_size = 0;
       packet_buffer = aac_config_parser_.CreateAdtsFromEsds(temp_output_buf_,
                                                             &adts_header_size);
       adts_conversion_ok = !packet_buffer.empty();

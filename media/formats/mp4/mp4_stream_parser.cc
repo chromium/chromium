@@ -80,7 +80,7 @@ base::HeapArray<uint8_t> PrepareAACBuffer(
   base::HeapArray<uint8_t> output_buffer;
 
   // Append an ADTS header to every audio sample if possible.
-  int adts_header_size = 0;
+  size_t adts_header_size = 0;
   if (aac_config.fits_in_adts()) {
     output_buffer = aac_config.CreateAdtsFromEsds(frame_buf, &adts_header_size);
   } else {

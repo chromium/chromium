@@ -739,7 +739,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
 
   mp4::writable_boxes::ElementaryStreamDescriptor esds;
   constexpr uint32_t kBitRate = 341000u;
-  constexpr int32_t kSampleFrequency = 48000;
+  constexpr size_t kSampleFrequency = 48000;
 
   esds.aac_codec_description.push_back(0x11);
   esds.aac_codec_description.push_back(0x90);
@@ -784,28 +784,28 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   EXPECT_EQ(AudioCodecProfile::kUnknown, profile);
 
   int aac_frequency = aac.GetOutputSamplesPerSecond(false);
-  EXPECT_EQ(kSampleFrequency, aac_frequency);
+  EXPECT_EQ(kSampleFrequency, base::checked_cast<size_t>(aac_frequency));
 
   ChannelLayout channel_layout = aac.GetChannelLayout(false);
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
 
-  int adts_header_size;
+  size_t adts_header_size;
   auto buffer = aac.CreateAdtsFromEsds({}, &adts_header_size);
   EXPECT_FALSE(buffer.empty());
 
   ADTSStreamParser adts_parser;
 
-  int frame_size = 0, sample_rate = 0, sample_count = 0;
+  size_t frame_size = 0, sample_rate = 0, sample_count = 0;
   ChannelLayout adts_channel_layout;
   bool metadata_frame;
-  EXPECT_NE(adts_parser.ParseFrameHeader(
-                buffer.data(), adts_header_size, &frame_size, &sample_rate,
-                &adts_channel_layout, &sample_count, &metadata_frame, nullptr),
+  EXPECT_NE(adts_parser.ParseFrameHeader(buffer, &frame_size, &sample_rate,
+                                         &adts_channel_layout, &sample_count,
+                                         &metadata_frame, nullptr),
             -1);
   EXPECT_EQ(adts_header_size, frame_size);
   EXPECT_EQ(kSampleFrequency, sample_rate);
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, adts_channel_layout);
-  EXPECT_EQ(1024, sample_count);
+  EXPECT_EQ(1024u, sample_count);
   EXPECT_FALSE(metadata_frame);
 }
 #endif
