@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -700,10 +701,18 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     @Override
     public @Nullable Integer getSheetBackgroundColor() {
-        if (mBottomSheet == null
-                || getCurrentSheetContent() == null
-                || !getCurrentSheetContent().hasSolidBackgroundColor()) {
+        if (mBottomSheet == null) {
             return null;
+        }
+
+        BottomSheetContent content = getCurrentSheetContent();
+        if (content == null || !content.hasSolidBackgroundColor()) {
+            return null;
+        }
+
+        @ColorInt Integer overrideColor = content.getSheetBackgroundColorOverride();
+        if (overrideColor != null) {
+            return overrideColor;
         }
         return mBottomSheet.getSheetBackgroundColor();
     }
