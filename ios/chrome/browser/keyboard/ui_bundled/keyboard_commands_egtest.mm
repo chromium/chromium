@@ -91,12 +91,6 @@ using chrome_test_util::SettingsDoneButton;
 // Tests that keyboard commands are registered when the BVC is showing in
 // MultiWindow mode.
 - (void)testKeyboardCommandsRegistered_MultiWindow {
-  // TODO(crbug.com/427699033): Re-enable on device.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26 device.");
-  }
-#endif
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
