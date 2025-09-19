@@ -15,7 +15,6 @@ Tool::~Tool() = default;
 
 mojom::ActionResultPtr Tool::TimeOfUseValidation(
     const optimization_guide::proto::AnnotatedPageContent* last_observation) {
-  // TODO(crbug.com/411462297): This should be made pure-virtual.
   return MakeOkResult();
 }
 

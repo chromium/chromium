@@ -39,19 +39,6 @@ class ToolRequest;
 // The mime type used for screenshots.
 inline constexpr std::string kMimeTypeJpeg = "image/jpeg";
 
-// Build a ToolRequest from the provided optimization_guide Action proto. If the
-// action proto doesn't provide a tab_id, and the fallback_tab parameter is
-// provided (non-null), the fallback_tab will be used as the acting tab.
-// However, this parameter will eventually be phased out and clients will be
-// expected to always provide a tab id on each Action. Returns nullptr if the
-// action is invalid.
-// TODO(https://crbug.com/411462297): The client should eventually always
-// provide a tab id for actions where one is needed. Remove this parameter when
-// that's done.
-std::unique_ptr<ToolRequest> CreateToolRequest(
-    const optimization_guide::proto::Action& action,
-    tabs::TabInterface* deprecated_fallback_tab);
-
 // Input type used for ActorKeyedService acting APIs, created from
 // BuildToolRequest functions below. Aliased for convenience.
 using ToolRequestList = std::vector<std::unique_ptr<ToolRequest>>;

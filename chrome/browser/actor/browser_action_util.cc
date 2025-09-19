@@ -91,14 +91,12 @@ struct PageScopedParams {
 };
 
 template <class T>
-TabHandle GetTabHandle(const T& action, TabInterface* deprecated_fallback_tab) {
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
+TabHandle GetTabHandle(const T& action) {
+  if (!action.has_tab_id()) {
+    return TabHandle::Null();
   }
-  return tab_handle;
+
+  return TabHandle(action.tab_id());
 }
 
 std::optional<PageTarget> ToPageTarget(
@@ -118,10 +116,8 @@ std::optional<PageTarget> ToPageTarget(
                     target.document_identifier().serialized_token()});
   }
 }
-std::unique_ptr<ToolRequest> CreateClickRequest(
-    const ClickAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+std::unique_ptr<ToolRequest> CreateClickRequest(const ClickAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
 
   if (!action.has_target() || !action.has_click_count() ||
       !action.has_click_type() || tab_handle == TabHandle::Null()) {
@@ -173,12 +169,10 @@ std::unique_ptr<ToolRequest> CreateClickRequest(
                                             count);
 }
 
-std::unique_ptr<ToolRequest> CreateTypeRequest(
-    const TypeAction& action,
-    TabInterface* deprecated_fallback_tab) {
+std::unique_ptr<ToolRequest> CreateTypeRequest(const TypeAction& action) {
   using TypeMode = TypeToolRequest::Mode;
 
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action);
 
   if (!action.has_target() || !action.has_text() || !action.has_mode() ||
       !action.has_follow_by_enter() || tab_handle == TabHandle::Null()) {
@@ -215,12 +209,10 @@ std::unique_ptr<ToolRequest> CreateTypeRequest(
                                            action.follow_by_enter(), mode);
 }
 
-std::unique_ptr<ToolRequest> CreateScrollRequest(
-    const ScrollAction& action,
-    TabInterface* deprecated_fallback_tab) {
+std::unique_ptr<ToolRequest> CreateScrollRequest(const ScrollAction& action) {
   using Direction = ScrollToolRequest::Direction;
 
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+  TabHandle tab_handle = GetTabHandle(action);
 
   if (!action.has_direction() || !action.has_distance() ||
       tab_handle == TabHandle::Null()) {
@@ -279,9 +271,8 @@ std::unique_ptr<ToolRequest> CreateScrollRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateMoveMouseRequest(
-    const MoveMouseAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+    const MoveMouseAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
   if (!action.has_target() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
@@ -295,9 +286,8 @@ std::unique_ptr<ToolRequest> CreateMoveMouseRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateScrollToRequest(
-    const ScrollToAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+    const ScrollToAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
   if (!action.has_target() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
@@ -311,9 +301,8 @@ std::unique_ptr<ToolRequest> CreateScrollToRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateDragAndReleaseRequest(
-    const DragAndReleaseAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+    const DragAndReleaseAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
 
   if (!action.has_from_target() || !action.has_to_target() ||
       tab_handle == TabHandle::Null()) {
@@ -334,10 +323,8 @@ std::unique_ptr<ToolRequest> CreateDragAndReleaseRequest(
       tab_handle, from_target.value(), to_target.value());
 }
 
-std::unique_ptr<ToolRequest> CreateSelectRequest(
-    const SelectAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+std::unique_ptr<ToolRequest> CreateSelectRequest(const SelectAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
   if (!action.has_value() || !action.has_target() ||
       tab_handle == TabHandle::Null()) {
     return nullptr;
@@ -353,9 +340,8 @@ std::unique_ptr<ToolRequest> CreateSelectRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateNavigateRequest(
-    const NavigateAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  TabHandle tab_handle = GetTabHandle(action, deprecated_fallback_tab);
+    const NavigateAction& action) {
+  TabHandle tab_handle = GetTabHandle(action);
   if (!action.has_url() || tab_handle == TabHandle::Null()) {
     return nullptr;
   }
@@ -382,32 +368,20 @@ std::unique_ptr<ToolRequest> CreateCreateTabRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateActivateTabRequest(
-    const ActivateTabAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = tabs::TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  } else {
+    const ActivateTabAction& action) {
+  tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-
   return std::make_unique<ActivateTabToolRequest>(tab_handle);
 }
 
 std::unique_ptr<ToolRequest> CreateCloseTabRequest(
-    const CloseTabAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = tabs::TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  } else {
+    const CloseTabAction& action) {
+  tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-
   return std::make_unique<CloseTabToolRequest>(tab_handle);
 }
 
@@ -435,33 +409,21 @@ std::unique_ptr<ToolRequest> CreateActivateWindowRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateBackRequest(
-    const HistoryBackAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = tabs::TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  } else {
+    const HistoryBackAction& action) {
+  tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-
   return std::make_unique<HistoryToolRequest>(
       tab_handle, HistoryToolRequest::Direction::kBack);
 }
 
 std::unique_ptr<ToolRequest> CreateForwardRequest(
-    const HistoryForwardAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  tabs::TabHandle tab_handle;
-  if (action.has_tab_id()) {
-    tab_handle = tabs::TabHandle(action.tab_id());
-  } else if (deprecated_fallback_tab) {
-    tab_handle = deprecated_fallback_tab->GetHandle();
-  } else {
+    const HistoryForwardAction& action) {
+  tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
-
   return std::make_unique<HistoryToolRequest>(
       tab_handle, HistoryToolRequest::Direction::kForward);
 }
@@ -474,10 +436,8 @@ std::unique_ptr<ToolRequest> CreateWaitRequest(const WaitAction& action) {
 }
 
 std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
-    const AttemptLoginAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  const tabs::TabHandle tab_handle =
-      GetTabHandle(action, deprecated_fallback_tab);
+    const AttemptLoginAction& action) {
+  const tabs::TabHandle tab_handle = GetTabHandle(action);
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
@@ -486,10 +446,8 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
 }
 
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(
-    const ScriptToolAction& action,
-    TabInterface* deprecated_fallback_tab) {
-  const tabs::TabHandle tab_handle =
-      GetTabHandle(action, deprecated_fallback_tab);
+    const ScriptToolAction& action) {
+  const tabs::TabHandle tab_handle = GetTabHandle(action);
   if (tab_handle == TabHandle::Null()) {
     return nullptr;
   }
@@ -559,49 +517,46 @@ class ActorJournalFetchPageProgressListener
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> apc_entry_;
 };
 
-}  // namespace
-
 std::unique_ptr<ToolRequest> CreateToolRequest(
-    const optimization_guide::proto::Action& action,
-    TabInterface* deprecated_fallback_tab) {
+    const optimization_guide::proto::Action& action) {
   TRACE_EVENT1("actor", "CreateToolRequest", "action_type",
                static_cast<int>(action.action_case()));
   switch (action.action_case()) {
     case optimization_guide::proto::Action::kClick: {
       const ClickAction& click_action = action.click();
-      return CreateClickRequest(click_action, deprecated_fallback_tab);
+      return CreateClickRequest(click_action);
     }
     case optimization_guide::proto::Action::kType: {
       const TypeAction& type_action = action.type();
-      return CreateTypeRequest(type_action, deprecated_fallback_tab);
+      return CreateTypeRequest(type_action);
     }
     case optimization_guide::proto::Action::kScroll: {
       const ScrollAction& scroll_action = action.scroll();
-      return CreateScrollRequest(scroll_action, deprecated_fallback_tab);
+      return CreateScrollRequest(scroll_action);
     }
     case optimization_guide::proto::Action::kMoveMouse: {
       const MoveMouseAction& move_mouse_action = action.move_mouse();
-      return CreateMoveMouseRequest(move_mouse_action, deprecated_fallback_tab);
+      return CreateMoveMouseRequest(move_mouse_action);
     }
     case optimization_guide::proto::Action::kDragAndRelease: {
       const DragAndReleaseAction& drag_action = action.drag_and_release();
-      return CreateDragAndReleaseRequest(drag_action, deprecated_fallback_tab);
+      return CreateDragAndReleaseRequest(drag_action);
     }
     case optimization_guide::proto::Action::kSelect: {
       const SelectAction& select_action = action.select();
-      return CreateSelectRequest(select_action, deprecated_fallback_tab);
+      return CreateSelectRequest(select_action);
     }
     case optimization_guide::proto::Action::kNavigate: {
       const NavigateAction& navigate_action = action.navigate();
-      return CreateNavigateRequest(navigate_action, deprecated_fallback_tab);
+      return CreateNavigateRequest(navigate_action);
     }
     case optimization_guide::proto::Action::kBack: {
       const HistoryBackAction& back_action = action.back();
-      return CreateBackRequest(back_action, deprecated_fallback_tab);
+      return CreateBackRequest(back_action);
     }
     case optimization_guide::proto::Action::kForward: {
       const HistoryForwardAction& forward_action = action.forward();
-      return CreateForwardRequest(forward_action, deprecated_fallback_tab);
+      return CreateForwardRequest(forward_action);
     }
     case optimization_guide::proto::Action::kWait: {
       const WaitAction& wait_action = action.wait();
@@ -613,26 +568,23 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
     }
     case optimization_guide::proto::Action::kCloseTab: {
       const CloseTabAction& close_tab_action = action.close_tab();
-      return CreateCloseTabRequest(close_tab_action, deprecated_fallback_tab);
+      return CreateCloseTabRequest(close_tab_action);
     }
     case optimization_guide::proto::Action::kActivateTab: {
       const ActivateTabAction& activate_tab_action = action.activate_tab();
-      return CreateActivateTabRequest(activate_tab_action,
-                                      deprecated_fallback_tab);
+      return CreateActivateTabRequest(activate_tab_action);
     }
     case optimization_guide::proto::Action::kAttemptLogin: {
       const AttemptLoginAction& attempt_login_action = action.attempt_login();
-      return CreateAttemptLoginRequest(attempt_login_action,
-                                       deprecated_fallback_tab);
+      return CreateAttemptLoginRequest(attempt_login_action);
     }
     case optimization_guide::proto::Action::kScriptTool: {
       const ScriptToolAction& script_tool_action = action.script_tool();
-      return CreateScriptToolRequest(script_tool_action,
-                                     deprecated_fallback_tab);
+      return CreateScriptToolRequest(script_tool_action);
     }
     case optimization_guide::proto::Action::kScrollTo: {
       const ScrollToAction& scroll_to_action = action.scroll_to();
-      return CreateScrollToRequest(scroll_to_action, deprecated_fallback_tab);
+      return CreateScrollToRequest(scroll_to_action);
     }
     case optimization_guide::proto::Action::kCreateWindow: {
       const CreateWindowAction& create_window_action = action.create_window();
@@ -661,14 +613,16 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
   return nullptr;
 }
 
+}  // namespace
+
 base::expected<std::vector<std::unique_ptr<ToolRequest>>, size_t>
 BuildToolRequest(const optimization_guide::proto::Actions& actions) {
   TRACE_EVENT0("actor", "BuildToolRequest");
   std::vector<std::unique_ptr<ToolRequest>> requests;
   requests.reserve(actions.actions_size());
   for (int i = 0; i < actions.actions_size(); ++i) {
-    std::unique_ptr<actor::ToolRequest> request = actor::CreateToolRequest(
-        actions.actions().at(i), /*deprecated_fallback_tab=*/nullptr);
+    std::unique_ptr<ToolRequest> request =
+        CreateToolRequest(actions.actions().at(i));
     if (request) {
       requests.push_back(std::move(request));
     } else {

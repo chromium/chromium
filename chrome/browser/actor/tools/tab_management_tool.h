@@ -20,7 +20,7 @@ class ObservationDelayController;
 
 // A tool to manage the tabs in a browser window, e.g. create, close,
 // activate, etc.
-// TODO(crbug.com/411462297): Implement actions other than create.
+// TODO(crbug.com/445993857): Implement actions other than create.
 class TabManagementTool : public Tool,
                           public TabStripModelObserver,
                           public BrowserListObserver {

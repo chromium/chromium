@@ -484,7 +484,6 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
         JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
   }
 
-  // TODO(crbug.com/411462297): Populate observation.
   PostTaskForActCallback(std::move(act_callback_), std::move(result),
                          action_index, std::move(action_results_));
 
