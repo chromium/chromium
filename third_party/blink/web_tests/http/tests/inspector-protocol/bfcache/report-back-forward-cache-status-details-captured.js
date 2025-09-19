@@ -3,13 +3,10 @@
       `Test that back/forward navigations report the bfcache status`);
 
   await dp.Page.enable();
-  await dp.Runtime.enable();
 
   // Navigate to Page A.
   await page.navigate(
     'https://devtools.test:8443/inspector-protocol/bfcache/resources/page-with-blocking-feature.html');
-  await dp.Runtime.onceConsoleAPICalled(
-      e => e.params.args[0]?.value === 'WebLockHeld');
 
   // Navigate to Page B.
   await page.navigate('resources/empty.html');
