@@ -723,6 +723,11 @@ gfx::PointF RenderWidgetHostViewBase::TransformPointToRootCoordSpaceF(
   return RenderWidgetHostViewInput::TransformPointToRootCoordSpaceF(point);
 }
 
+gfx::PointF RenderWidgetHostViewBase::TransformRootPointToViewCoordSpace(
+    const gfx::PointF& point) {
+  return RenderWidgetHostViewInput::TransformRootPointToViewCoordSpace(point);
+}
+
 bool RenderWidgetHostViewBase::IsRenderWidgetHostViewChildFrame() const {
   return false;
 }

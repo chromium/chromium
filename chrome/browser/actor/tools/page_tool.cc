@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace actor {
 
@@ -350,7 +351,18 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = request_->ToMojoToolAction();
-  invocation->target = ToMojo(request_->GetTarget());
+
+  // Transform coordinate target from viewport space to widget space for use
+  // within renderer.
+  if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    PageTarget transformed_target =
+        gfx::ToRoundedPoint(frame.GetView()->TransformRootPointToViewCoordSpace(
+            gfx::PointF(std::get<gfx::Point>(request_->GetTarget()))));
+    invocation->target = ToMojo(transformed_target);
+  } else {
+    invocation->target = ToMojo(request_->GetTarget());
+  }
+
   invocation->observed_target = std::move(observed_target_);
 
   invocation->task_id = task_id().value();

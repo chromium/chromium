@@ -101,6 +101,13 @@ class CONTENT_EXPORT RenderWidgetHostView {
         TransformPointToRootCoordSpaceF(gfx::PointF(point)));
   }
 
+  // Coordinate points received from root frame need to be transformed
+  // to the renderer frame's coordinate space. For same site renderer frame this
+  // is a no-op; however, coordinate in an out-of-process iframe renderer
+  // process require transformation.
+  virtual gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) = 0;
+
   // Retrieves the native view used to contain plugins and identify the
   // renderer in IPC messages.
   virtual gfx::NativeView GetNativeView() = 0;

@@ -216,6 +216,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) const override;
 
+  // This only needs to be overridden by RenderWidgetHostViewBase subclasses
+  // that handle content embedded within other RenderWidgetHostViews.
+  gfx::PointF TransformRootPointToViewCoordSpace(
+      const gfx::PointF& point) override;
+
   // Returns the value for whether the auto-resize has been enabled or not.
   bool IsAutoResizeEnabled();
 

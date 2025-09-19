@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -152,6 +153,42 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*subframe, button_id.value());
 
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // Ensure the button's event handler was invoked.
+  EXPECT_EQ(true, EvalJs(subframe, "button_clicked"));
+}
+
+// Basic test to ensure sending a click to a coordinate in cross origin subframe
+// works.
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       InvokeToolCrossSiteSubframeWithCoordinateTarget) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "/actor/positioned_iframe_no_scroll.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL cross_origin_iframe_url = embedded_https_test_server().GetURL(
+      "foo.com", "/actor/page_with_clickable_element.html");
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents(), "iframe", cross_origin_iframe_url));
+
+  content::RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  // Addressing flaky test due to layout shift on the iframe
+  ASSERT_TRUE(content::ExecJs(web_contents(), "wait()"));
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+  ASSERT_EQ(EvalJs(subframe, "button_clicked"), false);
+  gfx::Point click_point = gfx::ToFlooredPoint(
+      GetCenterCoordinatesOfElementWithId(subframe, "clickable"));
+  gfx::RectF subframe_rect = GetBoundingClientRect(*main_frame(), "#iframe");
+  gfx::Point transformed_point = gfx::Point(
+      subframe_rect.x() + click_point.x(), subframe_rect.y() + click_point.y());
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*active_tab(), transformed_point);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
