@@ -116,4 +116,18 @@ template("define_override_androidx_targets") {
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     ]
   }
+
+  android_library("chromium_espresso_overrides_java") {
+    testonly = true
+    sources = [ "local_modifications/espresso/java/androidx/test/espresso/base/ViewHierarchyExceptionHandler.java" ]
+    deps = [
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_services_storage_java",
+      "//third_party/hamcrest:hamcrest_java",
+      "//third_party/junit",
+    ]
+  }
 }

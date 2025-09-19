@@ -15,6 +15,9 @@ template("_androidx_prebuilt") {
       # https://crbug.com/989505
       jar_excluded_patterns = [ "META-INF/proguard/*" ]
       proguard_configs = [ "androidx_annotations.flags" ]
+    } else if (target_name == "androidx_test_espresso_espresso_core_java") {
+      jar_excluded_patterns =
+          [ "androidx/test/espresso/base/ViewHierarchyExceptionHandler*" ]
     } else if (target_name == "androidx_benchmark_benchmark_common_java") {
       ignore_native_libraries = true
     } else if (target_name == "androidx_benchmark_benchmark_macro_java") {
