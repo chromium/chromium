@@ -35,13 +35,13 @@ enum class VerifierResult {
   ERROR_REQUIRED_PROOF_MISSING,           // RequireKeyProof was unsatisfied.
 };
 
-// Verify the file at |crx_path| as a valid Crx of |format|. The Crx must be
-// well-formed, contain no invalid proofs, match the |required_file_hash| (if
-// non-empty), and contain a proof with each of the |required_key_hashes|.
+// Verify the file at `crx_path` as a valid Crx of `format`. The Crx must be
+// well-formed, contain no invalid proofs, match the `required_file_hash` (if
+// non-empty), and contain a proof with each of the `required_key_hashes`.
 // If and only if this function returns OK_FULL or OK_DELTA, and only if
-// |public_key| / |crx_id| are non-null, they will be updated to contain the
+// `public_key` / `crx_id` are non-null, they will be updated to contain the
 // public key (PEM format, without the header/footer) and crx id (encoded in
-// base16 using the characters [a-p]). |compressed_verified_contents| will be
+// base16 using the characters [a-p]). `compressed_verified_contents` will be
 // updated if it is non-null and if the verified contents are present in the
 // unsigned section of the header.
 VerifierResult Verify(

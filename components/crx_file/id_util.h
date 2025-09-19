@@ -30,8 +30,8 @@ std::string GenerateId(std::string_view input);
 // the same output ID.
 std::string GenerateIdFromHex(const std::string& input);
 
-// Generates an ID from the first |kIdSize| bytes of a SHA256 hash.
-// |span| must be at least |kIdSize| bytes.
+// Generates an ID from the first `kIdSize` bytes of a SHA256 hash.
+// `span` must be at least `kIdSize` bytes.
 std::string GenerateIdFromHash(base::span<const uint8_t> hash);
 
 // Generates an ID for an extension in the given path.
@@ -45,7 +45,7 @@ std::string HashedIdInHex(const std::string& id);
 // sure the drive letter is uppercase.
 base::FilePath MaybeNormalizePath(const base::FilePath& path);
 
-// Checks if |id| is a valid extension-id. Extension-ids are used for anything
+// Checks if `id` is a valid extension-id. Extension-ids are used for anything
 // that comes in a CRX file, including apps, extensions, and components.
 bool IdIsValid(std::string_view id);
 
