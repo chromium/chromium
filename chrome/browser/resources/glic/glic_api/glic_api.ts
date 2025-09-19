@@ -2017,6 +2017,8 @@ export enum HostCapability {
   // The glic host's getModelQualityClientId() is enabled and can be called
   // safely.
   GET_MODEL_QUALITY_CLIENT_ID = 2,
+  // Glic is in multi-instance mode.
+  MULTI_INSTANCE = 3,
 }
 
 

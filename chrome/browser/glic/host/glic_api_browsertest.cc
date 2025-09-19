@@ -1898,6 +1898,8 @@ class GlicGetHostCapabilityApiTest
   GlicGetHostCapabilityApiTest() {
     const bool enable_features = GetParam();
     if (enable_features) {
+      // TODO(b/444002499) - add features::kGlicMultiInstance when test support
+      //  enabled.
       std::vector<base::test::FeatureRefAndParams> enabled_features = {
           {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}},
           {features::kGlicPanelResetSizeAndLocationOnOpen, {}}};

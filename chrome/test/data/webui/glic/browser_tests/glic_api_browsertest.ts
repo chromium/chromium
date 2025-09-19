@@ -1738,6 +1738,8 @@ class ApiTests extends ApiTestFixtureBase {
         return 'RESET_SIZE_AND_LOCATION_ON_OPEN';
       case HostCapability.GET_MODEL_QUALITY_CLIENT_ID:
         return 'GET_MODEL_QUALITY_CLIENT_ID';
+      case HostCapability.MULTI_INSTANCE:
+        return 'MULTI_INSTANCE';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

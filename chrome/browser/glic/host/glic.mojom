@@ -1228,6 +1228,8 @@ enum HostCapability {
   // The glic host's getModelQualityClientId() is enabled and can be called
   // safely.
   kGetModelQualityClientId = 2,
+  // Glic is in multi-instance mode.
+  kMultiInstance= 3,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

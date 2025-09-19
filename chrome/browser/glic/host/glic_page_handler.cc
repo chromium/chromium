@@ -773,6 +773,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kResetSizeAndLocationOnOpen);
     }
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
+    }
     state->enable_get_page_metadata =
         base::FeatureList::IsEnabled(blink::features::kFrameMetadataObserver);
     state->enable_api_activation_gating =
