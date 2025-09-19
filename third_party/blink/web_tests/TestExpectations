@@ -1419,6 +1419,7 @@ crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animati
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/animation-trigger/animation-trigger-timeline-subject-removed.tentative.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/css/scroll-timeline-multi-pass.tentative.html [ Failure ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/css/scroll-timeline-paused-animations.html [ Failure ]
+crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/effect-updateTiming.html [ Failure ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-fill-modes.tentative.html [ Failure ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure ]
