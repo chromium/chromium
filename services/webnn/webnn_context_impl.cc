@@ -121,8 +121,8 @@ void WebNNContextImpl::CreateTensor(
       return;
     }
 
-    if (!properties_.data_type_limits.constant.Has(
-            validated_descriptor->data_type())) {
+    if (!properties_.data_type_limits.constant.Supports(
+            validated_descriptor.value())) {
       GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
       return;
     }
@@ -456,6 +456,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)});
   backend_context_properties.data_type_limits.gru_bias.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.gru_output_sequence.IntersectWith(
+      {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.gru_cell_input.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
   backend_context_properties.data_type_limits.gru_cell_bias.IntersectWith(
@@ -480,6 +482,9 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)});
   backend_context_properties.data_type_limits.lstm_bias.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
+  backend_context_properties.data_type_limits.lstm_output_sequence
+      .IntersectWith(
+          {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)});
   backend_context_properties.data_type_limits.lstm_cell_input.IntersectWith(
       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)});
   backend_context_properties.data_type_limits.lstm_cell_bias.IntersectWith(

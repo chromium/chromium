@@ -41,6 +41,8 @@ struct SupportedRanks {
     }
   }
 
+  bool Supports(uint32_t rank) const { return min <= rank && rank <= max; }
+
   friend bool operator==(const SupportedRanks& lhs, const SupportedRanks& rhs);
 };
 
@@ -59,7 +61,7 @@ struct SupportedTensors {
   bool Supports(const OperandDescriptor& operand_descriptor) const {
     uint32_t rank = operand_descriptor.Rank();
     return data_types.Has(operand_descriptor.data_type()) &&
-           ranks.min <= rank && rank <= ranks.max;
+           ranks.Supports(rank);
   }
 
   bool SupportsAll(

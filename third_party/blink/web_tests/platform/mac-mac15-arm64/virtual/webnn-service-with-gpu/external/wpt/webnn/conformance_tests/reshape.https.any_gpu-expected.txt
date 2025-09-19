@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [required] reshape (unsqueeze) float32 5D tensor by adding 4th dimension
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for reshape. It should be between 0 to 5."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reshape' on 'MLGraphBuilder': Unsupported rank 6 for output, must be in range [0, 5]."
 [FAIL] [required] reshape (unsqueeze) float16 5D tensor by adding 4th dimension
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for reshape. It should be between 0 to 5."
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reshape' on 'MLGraphBuilder': Unsupported rank 6 for output, must be in range [0, 5]."
 Harness: the test ran to completion.
 
