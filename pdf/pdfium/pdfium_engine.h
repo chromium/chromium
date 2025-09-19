@@ -474,7 +474,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   virtual gfx::Transform GetCanonicalToPdfTransform(int page_index);
 
   // Returns all current text selection rects in PDF coordinates, indexed by
-  // their page indices. Virtual to support testing.
+  // their page indices. The rects have tighter bounds than normal, so they can
+  // be used with Ink Strokes to generate less highlight overlap.
+  // Virtual to support testing.
   virtual std::map<int, std::vector<PdfRect>> GetSelectionRectMap();
 
   // Returns whether `point` is within a selectable text area or within a link

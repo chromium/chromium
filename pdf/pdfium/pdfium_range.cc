@@ -31,7 +31,12 @@ void AdjustForBackwardsRange(int& index, int& count) {
 
 // Struct with only the text run info needed for PDFiumRange::GetRects().
 struct PdfRectTextRunInfo {
+  // Default loose bounds.
   PdfRect pdf_rect;
+
+  // Tight bounds. Only used with certain `PdfBoundsTightness` values.
+  PdfRect tight_pdf_rect;
+
   size_t char_count;
 };
 
@@ -54,6 +59,8 @@ float GetVerticalOverlap(const PdfRect& rect1, const PdfRect& rect2) {
 }
 
 // Returns true if there is sufficient horizontal and vertical overlap.
+// Only considers `PdfRectTextRunInfo::pdf_rect`, so the merging decision is
+// consistent, regardless of the `PDFiumRange::PdfBoundsTightness` value.
 bool ShouldMergeHorizontalRects(const PdfRectTextRunInfo& text_run1,
                                 const PdfRectTextRunInfo& text_run2) {
   static constexpr float kVerticalOverlapThreshold = 0.8f;
@@ -78,24 +85,30 @@ bool ShouldMergeHorizontalRects(const PdfRectTextRunInfo& text_run1,
 // Since PDFiumPage::GetTextRunInfo() can end a text run for a variety of
 // reasons, post-process the collected text run data and merge rectangles.
 std::vector<PdfRect> MergeAdjacentRects(
-    base::span<PdfRectTextRunInfo> text_runs) {
+    base::span<PdfRectTextRunInfo> text_runs,
+    PDFiumRange::PdfBoundsTightness tightness) {
   std::vector<PdfRect> results;
   const PdfRectTextRunInfo* previous_text_run = nullptr;
   PdfRect current_pdf_rect;
   for (const auto& text_run : text_runs) {
+    PdfRect effective_rect = text_run.pdf_rect;
+    if (tightness == PDFiumRange::PdfBoundsTightness::kTightVertical) {
+      *effective_rect.writable_bottom() = text_run.tight_pdf_rect.bottom();
+      *effective_rect.writable_top() = text_run.tight_pdf_rect.top();
+    }
     if (previous_text_run) {
       // TODO(crbug.com/40448046): Improve vertical text handling.
       // For now, treat all text as horizontal, as that is the majority of the
       // text. Also, PDFiumPage::GetTextPage() has bugs in its heuristics where
       // it mistakenly reports horizontal text as vertical.
       if (ShouldMergeHorizontalRects(*previous_text_run, text_run)) {
-        current_pdf_rect.Union(text_run.pdf_rect);
+        current_pdf_rect.Union(effective_rect);
       } else {
         results.push_back(current_pdf_rect);
-        current_pdf_rect = text_run.pdf_rect;
+        current_pdf_rect = effective_rect;
       }
     } else {
-      current_pdf_rect = text_run.pdf_rect;
+      current_pdf_rect = effective_rect;
     }
     previous_text_run = &text_run;
   }
@@ -195,6 +208,11 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
 }
 
 std::vector<PdfRect> PDFiumRange::GetRects() const {
+  return GetRectsWithTightness(PdfBoundsTightness::kLoose);
+}
+
+std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
+    PdfBoundsTightness tightness) const {
   if (char_count_ == 0) {
     return {};
   }
@@ -234,6 +252,7 @@ std::vector<PdfRect> PDFiumRange::GetRects() const {
     // Do not use the bounds from `text_run_info`, as those are in the wrong
     // coordinate system. Calculate it here instead.
     PdfRect text_run_rect;
+    PdfRect tight_text_run_rect;
     for (int i = char_index; i < next_char_index; ++i) {
       // Use the loose rectangle, which gives the selection a bit more padding.
       // In comparison, the rectangle from FPDFText_GetCharBox() surrounds the
@@ -246,15 +265,23 @@ std::vector<PdfRect> PDFiumRange::GetRects() const {
           FPDFText_GetLooseCharBox(text_page, i, &FsRectFFromPdfRect(rect));
       CHECK(got_rect);
       text_run_rect.Union(rect);
+
+      if (tightness == PdfBoundsTightness::kTightVertical) {
+        // GetTextRunInfo() should not fail for the same reason as the
+        // FPDFText_GetLooseCharBox() call above.
+        tight_text_run_rect.Union(GetTextCharBox(text_page, i).value());
+      }
     }
     if (!text_run_rect.IsEmpty()) {
-      text_runs.emplace_back(text_run_rect, next_char_index - char_index);
+      text_runs.emplace_back(/*pdf_rect=*/text_run_rect,
+                             /*tight_pdf_rect=*/tight_text_run_rect,
+                             /*char_count=*/next_char_index - char_index);
     }
 
     char_index = next_char_index;
   }
 
-  return MergeAdjacentRects(text_runs);
+  return MergeAdjacentRects(text_runs, tightness);
 }
 
 std::u16string PDFiumRange::GetText() const {

@@ -30,6 +30,17 @@ bool IsIgnorableCharacter(char16_t c);
 // Describes location of a string of characters.
 class PDFiumRange {
  public:
+  // Specifies the tightness of the bounding box for GetRectsWithTightness().
+  enum class PdfBoundsTightness {
+    // All character bounds that form the results are loose, which gives the
+    // selection a bit more padding.
+    kLoose,
+
+    // The character bounds surrounds character glyphs tightly on the top and
+    // bottom. Left and right are the same as `kLoose`.
+    kTightVertical,
+  };
+
   // Shorthand for the 3-params ctor, with `char_index` set to 0 and
   // `char_count` set to the number of characters in `page`.
   static PDFiumRange AllTextOnPage(PDFiumPage* page);
@@ -61,7 +72,8 @@ class PDFiumRange {
   int char_count() const { return char_count_; }
 
   // Gets bounding rectangles of this range in screen coordinates, based on the
-  // input params.
+  // input params. This uses `PdfBoundsTightness::kLoose` so the selection
+  // better matches text selection in Blink and in other applications.
   const std::vector<gfx::Rect>& GetScreenRects(
       const gfx::Point& point,
       double zoom,
@@ -69,6 +81,8 @@ class PDFiumRange {
 
   // Gets bounding rectangles of this range in PDF coordinates.
   std::vector<PdfRect> GetRects() const;
+  std::vector<PdfRect> GetRectsWithTightness(
+      PdfBoundsTightness tightness) const;
 
   // Gets the string of characters in this range.
   std::u16string GetText() const;
