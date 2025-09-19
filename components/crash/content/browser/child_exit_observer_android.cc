@@ -37,6 +37,8 @@ void PopulateTerminationInfo(
   info->renderer_was_subframe = content_info.renderer_was_subframe;
   info->is_spare_renderer = content_info.is_spare_renderer;
   info->has_spare_renderer = content_info.has_spare_renderer;
+  info->last_spare_renderer_creation_info =
+      content_info.last_spare_renderer_creation_info;
 }
 
 }  // namespace

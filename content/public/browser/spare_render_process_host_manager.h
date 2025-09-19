@@ -14,6 +14,13 @@ namespace content {
 class RenderProcessHost;
 class BrowserContext;
 
+// Information about the last spare renderer creation event.
+// This is used for metrics reporting.
+struct LastSpareRendererCreationInfo {
+  base::TimeTicks creation_time;
+  int available_memory_mb;
+};
+
 // This class manages spare RenderProcessHosts.
 //
 // There is a singleton instance of this class which manages a single spare
@@ -74,6 +81,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManager {
 
   // Gracefully remove and cleanup all existing spare RenderProcessHosts.
   virtual void CleanupSparesForTesting() = 0;
+
+  // Returns the creation info of the last spare renderer.
+  virtual const std::optional<LastSpareRendererCreationInfo>&
+  GetLastSpareRendererCreationInfo() const = 0;
 
  protected:
   virtual ~SpareRenderProcessHostManager() = default;

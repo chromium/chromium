@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -64,6 +65,11 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // True if there is any spare renderer process when the process is killed.
   // Always true if the killed process itself is the spare renderer.
   bool has_spare_renderer = false;
+
+  // Information about the last spare renderer creation.
+  // This is populated when a renderer or GPU process terminates.
+  std::optional<LastSpareRendererCreationInfo>
+      last_spare_renderer_creation_info;
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 
@@ -99,6 +100,11 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     // in the browser when the process is killed. Always true if the killed
     // process is a spare renderer.
     bool has_spare_renderer = false;
+
+    // Information about the last spare renderer creation.
+    // This is populated when a renderer or GPU process terminates.
+    std::optional<content::LastSpareRendererCreationInfo>
+        last_spare_renderer_creation_info;
   };
 
   // ChildExitObserver client interface.

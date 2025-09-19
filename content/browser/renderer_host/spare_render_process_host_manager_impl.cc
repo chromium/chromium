@@ -421,6 +421,11 @@ void SpareRenderProcessHostManagerImpl::CleanupSparesForTesting() {
   CleanupSpares(std::nullopt);
 }
 
+const std::optional<LastSpareRendererCreationInfo>&
+SpareRenderProcessHostManagerImpl::GetLastSpareRendererCreationInfo() const {
+  return last_spare_renderer_creation_info_;
+}
+
 RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> timeout) {
@@ -510,6 +515,9 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   base::UmaHistogramMemoryLargeMB(
       "BrowserRenderProcessHost.AvailableMemoryBeforeCreation.SpareRenderer",
       meminfo.available);
+  last_spare_renderer_creation_info_ = LastSpareRendererCreationInfo{
+      .creation_time = base::TimeTicks::Now(),
+      .available_memory_mb = static_cast<int>(meminfo.available.InMiB())};
 #endif
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();

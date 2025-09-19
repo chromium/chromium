@@ -459,6 +459,9 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
 #if BUILDFLAG(IS_ANDROID)
     info.has_spare_renderer =
         SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
+    info.last_spare_renderer_creation_info =
+        SpareRenderProcessHostManagerImpl::Get()
+            .GetLastSpareRendererCreationInfo();
     exited_abnormally_ = true;
     // Do not treat clean_exit, ie when child process exited due to quitting
     // its main loop, as a crash.
@@ -622,6 +625,9 @@ void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 #if BUILDFLAG(IS_ANDROID)
   info.has_spare_renderer =
       SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
+  info.last_spare_renderer_creation_info =
+      SpareRenderProcessHostManagerImpl::Get()
+          .GetLastSpareRendererCreationInfo();
 #endif
   DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
 

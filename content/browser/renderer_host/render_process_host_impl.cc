@@ -4350,6 +4350,9 @@ void RenderProcessHostImpl::PopulateTerminationInfoRendererFields(
   info->renderer_was_subframe = GetFrameDepth() > 0;
   info->has_spare_renderer =
       SpareRenderProcessHostManagerImpl::Get().HasSpareRenderer();
+  info->last_spare_renderer_creation_info =
+      SpareRenderProcessHostManagerImpl::Get()
+          .GetLastSpareRendererCreationInfo();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

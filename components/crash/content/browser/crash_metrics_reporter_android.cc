@@ -80,6 +80,45 @@ void RecordSpareRendererAvailability(bool is_oom_kill,
   base::UmaHistogramEnumeration(target_uma_name, availability);
 }
 
+void RecordProcessKillSinceSpareCreation(
+    const ChildExitObserver::TerminationInfo& info) {
+  if (!info.last_spare_renderer_creation_info) {
+    return;
+  }
+  base::TimeDelta time_since_creation =
+      base::TimeTicks::Now() -
+      info.last_spare_renderer_creation_info->creation_time;
+  int available_memory =
+      info.last_spare_renderer_creation_info->available_memory_mb;
+  std::string_view suffix;
+  if (info.process_type == content::PROCESS_TYPE_GPU) {
+    suffix = "Gpu";
+  } else if (info.process_type == content::PROCESS_TYPE_RENDERER &&
+             info.renderer_has_visible_clients) {
+    suffix = "Visible";
+  } else if (info.process_type == content::PROCESS_TYPE_RENDERER &&
+             info.binding_state == base::android::ChildBindingState::WAIVED) {
+    suffix = "Waived";
+  }
+
+  if (suffix.empty()) {
+    return;
+  }
+
+  if (time_since_creation < base::Seconds(1)) {
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({"BrowserRenderProcessHost.AvailableMemory.SpareRenderer.",
+                      suffix, "ProcessKillWithin1s"}),
+        available_memory);
+  }
+  if (time_since_creation < base::Seconds(5)) {
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({"BrowserRenderProcessHost.AvailableMemory.SpareRenderer.",
+                      suffix, "ProcessKillWithin5s"}),
+        available_memory);
+  }
+}
+
 }  // namespace
 
 //  static
@@ -129,6 +168,7 @@ void CrashMetricsReporter::ChildProcessExited(
   RecordSpareRendererAvailability(android_oom_kill, intentional_kill,
                                   info.is_spare_renderer,
                                   info.has_spare_renderer);
+  RecordProcessKillSinceSpareCreation(info);
 
   if (app_foreground && android_oom_kill) {
     if (info.process_type == content::PROCESS_TYPE_GPU) {

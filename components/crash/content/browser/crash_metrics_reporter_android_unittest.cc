@@ -355,4 +355,134 @@ TEST_F(CrashMetricsReporterTest, SpareRendererAvailabilityHistograms) {
   }
 }
 
+TEST_F(CrashMetricsReporterTest, ProcessKillSinceSpareCreationHistograms) {
+  constexpr char kProcessKillWithin1s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "VisibleProcessKillWithin1s";
+  constexpr char kProcessKillWithin5s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "VisibleProcessKillWithin5s";
+  constexpr char kGpuProcessKillWithin1s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "GpuProcessKillWithin1s";
+  constexpr char kGpuProcessKillWithin5s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "GpuProcessKillWithin5s";
+  constexpr char kWaivedProcessKillWithin1s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "WaivedProcessKillWithin1s";
+  constexpr char kWaivedProcessKillWithin5s[] =
+      "BrowserRenderProcessHost.AvailableMemory.SpareRenderer."
+      "WaivedProcessKillWithin5s";
+
+  // No UMA if last_spare_renderer_creation_info is not set.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectTotalCount(kProcessKillWithin1s, 0);
+    histogram_tester.ExpectTotalCount(kProcessKillWithin5s, 0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Visible renderer killed within 1s.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.process_type = content::PROCESS_TYPE_RENDERER;
+    term_info.renderer_has_visible_clients = true;
+    term_info.last_spare_renderer_creation_info =
+        content::LastSpareRendererCreationInfo{
+            .creation_time = base::TimeTicks::Now() - base::Milliseconds(500),
+            .available_memory_mb = 123};
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectUniqueSample(kProcessKillWithin1s, 123, 1);
+    histogram_tester.ExpectUniqueSample(kProcessKillWithin5s, 123, 1);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Waived renderer killed between 1s and 5s.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.process_type = content::PROCESS_TYPE_RENDERER;
+    term_info.binding_state = base::android::ChildBindingState::WAIVED;
+    term_info.last_spare_renderer_creation_info =
+        content::LastSpareRendererCreationInfo{
+            .creation_time = base::TimeTicks::Now() - base::Seconds(3),
+            .available_memory_mb = 456};
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectTotalCount(kWaivedProcessKillWithin1s, 0);
+    histogram_tester.ExpectUniqueSample(kWaivedProcessKillWithin5s, 456, 1);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // GPU process killed within 1s.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.process_type = content::PROCESS_TYPE_GPU;
+    term_info.last_spare_renderer_creation_info =
+        content::LastSpareRendererCreationInfo{
+            .creation_time = base::TimeTicks::Now() - base::Milliseconds(200),
+            .available_memory_mb = 999};
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectUniqueSample(kGpuProcessKillWithin1s, 999, 1);
+    histogram_tester.ExpectUniqueSample(kGpuProcessKillWithin5s, 999, 1);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // GPU process killed after 5s.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.process_type = content::PROCESS_TYPE_GPU;
+    term_info.last_spare_renderer_creation_info =
+        content::LastSpareRendererCreationInfo{
+            .creation_time = base::TimeTicks::Now() - base::Seconds(10),
+            .available_memory_mb = 789};
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectTotalCount(kGpuProcessKillWithin1s, 0);
+    histogram_tester.ExpectTotalCount(kGpuProcessKillWithin5s, 0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Other process type.
+  {
+    base::HistogramTester histogram_tester;
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.process_type = content::PROCESS_TYPE_UTILITY;
+    term_info.last_spare_renderer_creation_info =
+        content::LastSpareRendererCreationInfo{
+            .creation_time = base::TimeTicks::Now(),
+            .available_memory_mb = 1024};
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectTotalCount(kProcessKillWithin1s, 0);
+    histogram_tester.ExpectTotalCount(kProcessKillWithin5s, 0);
+    histogram_tester.ExpectTotalCount(kGpuProcessKillWithin1s, 0);
+    histogram_tester.ExpectTotalCount(kGpuProcessKillWithin5s, 0);
+    histogram_tester.ExpectTotalCount(kWaivedProcessKillWithin1s, 0);
+    histogram_tester.ExpectTotalCount(kWaivedProcessKillWithin5s, 0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+}
+
 }  // namespace crash_reporter

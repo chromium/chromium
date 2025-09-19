@@ -90,6 +90,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   const std::vector<RenderProcessHost*>& GetSpares() override;
   std::vector<ChildProcessId> GetSpareIds() override;
   void CleanupSparesForTesting() override;
+  const std::optional<LastSpareRendererCreationInfo>&
+  GetLastSpareRendererCreationInfo() const override;
 
   // Start a spare renderer immediately, only if there is none.
   // If the timeout is given, the spare render process will not be created
@@ -255,6 +257,9 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   bool is_browser_idle_ = true;
 
   base::RepeatingTimer metrics_heartbeat_timer_;
+
+  std::optional<LastSpareRendererCreationInfo>
+      last_spare_renderer_creation_info_;
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
