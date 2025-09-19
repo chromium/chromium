@@ -315,6 +315,28 @@ class Host : public GlicSharingManagerProvider {
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
 };
 
+// A Host::Delegate which does nothing. For chrome://glic tabs or inactive
+// embedders.
+class DummyHostDelegate : public Host::Delegate {
+ public:
+  ~DummyHostDelegate() override = default;
+  const mojom::PanelState& GetPanelState() const override;
+  void Resize(const gfx::Size& size,
+              base::TimeDelta duration,
+              base::OnceClosure callback) override;
+  void SetDraggableAreas(
+      const std::vector<gfx::Rect>& draggable_areas) override {}
+  void EnableDragResize(bool enabled) override {}
+  void Attach() override {}
+  void Detach() override {}
+  void SetMinimumWidgetSize(const gfx::Size& size) override {}
+  bool IsShowing() const override;
+
+ private:
+  mojom::PanelState panel_state_ =
+      mojom::PanelState(mojom::PanelState_Kind::kDetached, std::nullopt);
+};
+
 // Manages hosts. Note, this is a stopgap that will be replaced by something
 // else soon.
 class HostManager {
@@ -346,8 +368,6 @@ class HostManager {
 
  private:
   std::vector<Host*> GetPrimaryHosts();
-
-  class DummyHostDelegate;
   raw_ptr<Profile> profile_;
   base::WeakPtr<GlicWindowController> window_controller_;
   std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;

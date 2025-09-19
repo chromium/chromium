@@ -259,6 +259,9 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   CHECK(it != embedders_.end());
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
   active_embedder_key_.reset();
+  // Avoids use-after-free bugs. This is a temporary fix until swapping
+  // delegates is properly supported (crbug.com/446219126).
+  host_->Initialize(it->second.embedder.get()->GetHostDelegate());
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(

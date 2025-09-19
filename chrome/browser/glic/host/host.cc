@@ -27,30 +27,18 @@
 
 namespace glic {
 
-// A Host::Delegate which does nothing. For chrome://glic tabs.
-class HostManager::DummyHostDelegate : public Host::Delegate {
- public:
-  ~DummyHostDelegate() override = default;
-  const mojom::PanelState& GetPanelState() const override {
-    return panel_state_;
-  }
-  void Resize(const gfx::Size& size,
-              base::TimeDelta duration,
-              base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-  void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override {}
-  void EnableDragResize(bool enabled) override {}
-  void Attach() override {}
-  void Detach() override {}
-  void SetMinimumWidgetSize(const gfx::Size& size) override {}
-  bool IsShowing() const override { return true; }
+const mojom::PanelState& DummyHostDelegate::GetPanelState() const {
+  return panel_state_;
+}
+bool DummyHostDelegate::IsShowing() const {
+  return true;
+}
 
- private:
-  mojom::PanelState panel_state_ =
-      mojom::PanelState(mojom::PanelState_Kind::kDetached, std::nullopt);
-};
+void DummyHostDelegate::Resize(const gfx::Size& size,
+                               base::TimeDelta duration,
+                               base::OnceClosure callback) {
+  std::move(callback).Run();
+}
 
 Host::PageHandlerInfo::PageHandlerInfo() = default;
 Host::PageHandlerInfo::~PageHandlerInfo() = default;

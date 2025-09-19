@@ -17,11 +17,12 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
   return base::WrapUnique(new GlicInactiveSidePanelUi());
 }
 
-GlicInactiveSidePanelUi::GlicInactiveSidePanelUi() = default;
+GlicInactiveSidePanelUi::GlicInactiveSidePanelUi()
+    : dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {}
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 
 Host::Delegate* GlicInactiveSidePanelUi::GetHostDelegate() {
-  return nullptr;
+  return dummy_host_delegate_.get();
 }
 
 void GlicInactiveSidePanelUi::Show() {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
 
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
+#include "chrome/browser/glic/host/host.h"
 
 namespace glic {
 
@@ -29,6 +30,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
 
  private:
   GlicInactiveSidePanelUi();
+  std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
 };
 
 }  // namespace glic
