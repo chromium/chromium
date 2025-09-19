@@ -31,8 +31,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
  * Integration tests for the AllPasswordsBottomSheet check that the calls to the
  * AllPasswordsBottomSheet controller end up rendering a View and triggers the right native calls.
  */
-@Batch(Batch.UNIT_TESTS)
+@DoNotBatch(reason = "Batching causes tests to be flaky.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AllPasswordsBottomSheetIntegrationTest {
