@@ -91,7 +91,7 @@ bool FFmpegH264ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
   av_packet_unref(packet);
 
   // Finally, replace the values in the input packet.
-  UNSAFE_TODO(memcpy(packet, &dest_packet, sizeof(*packet)));
+  *packet = dest_packet;
   return true;
 }
 

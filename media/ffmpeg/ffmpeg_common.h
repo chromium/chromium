@@ -84,7 +84,7 @@ inline void ScopedPtrAVFreeFrame::operator()(void* x) const {
 
 // Returns the data from `packet` as a `base::span`. `packet` must be a valid
 // `AVPacket` returned from ffmpeg.
-inline base::span<const uint8_t> AVPacketData(const AVPacket& packet) {
+inline base::span<uint8_t> AVPacketData(const AVPacket& packet) {
   // SAFETY: Once initialized by ffmpeg, an `AVPacket` will describe a valid
   // buffer. We assume that callers do not create uninitialized `AVPacket`s on
   // the stack, as ffmpeg's documentation says to only create `AVPacket`s with
