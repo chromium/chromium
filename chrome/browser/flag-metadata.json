@@ -3286,11 +3286,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-debug-for-secure-payment-confirmation",
-    "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-debug-for-store-billing",
     "owners": [ "web-payments-team@google.com" ],
     // This flag is to allow developers to develop their app-billing capable

@@ -3833,13 +3833,6 @@ const char kSecurePaymentConfirmationBrowserBoundKeysDescription[] =
     "This flag enables an additional browser-bound signature in secure payment "
     "confirmation in PaymentRequest and for WebAuthn payment credentials.";
 
-const char kSecurePaymentConfirmationDebugName[] =
-    "Secure Payment Confirmation Debug Mode";
-const char kSecurePaymentConfirmationDebugDescription[] =
-    "This flag removes the restriction that PaymentCredential in WebAuthn and "
-    "secure payment confirmation in PaymentRequest API must use user verifying "
-    "platform authenticators.";
-
 const char kSecurePaymentConfirmationFallbackName[] =
     "Secure Payment Confirmation Fallback UX";
 const char kSecurePaymentConfirmationFallbackDescription[] =

@@ -2184,9 +2184,6 @@ extern const char kSecurePaymentConfirmationAvailabilityAPIDescription[];
 extern const char kSecurePaymentConfirmationBrowserBoundKeysName[];
 extern const char kSecurePaymentConfirmationBrowserBoundKeysDescription[];
 
-extern const char kSecurePaymentConfirmationDebugName[];
-extern const char kSecurePaymentConfirmationDebugDescription[];
-
 extern const char kSecurePaymentConfirmationFallbackName[];
 extern const char kSecurePaymentConfirmationFallbackDescription[];
 
