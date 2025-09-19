@@ -7,13 +7,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, ContentType, HIGHLIGHTED_LINK_CLASS, LOG_EMPTY_DELAY_MS, MIN_MS_TO_READ, NodeStore, previousReadHighlightClass, ReadAloudNode, SpeechBrowserProxyImpl, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ContentListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics} from './common.js';
+import {mockMetrics, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -26,6 +26,7 @@ suite('ContentController', () => {
   let metrics: TestMetricsBrowserProxy;
   let listener: ContentListener;
   let receivedContentStateChange: boolean;
+  let receivedNewPageDrawn: boolean;
 
   setup(() => {
     // Clearing the DOM should always be done first.
@@ -42,9 +43,13 @@ suite('ContentController', () => {
     contentController = new ContentController();
 
     receivedContentStateChange = false;
+    receivedNewPageDrawn = false;
     listener = {
       onContentStateChange() {
         receivedContentStateChange = true;
+      },
+      onNewPageDrawn() {
+        receivedNewPageDrawn = true;
       },
     };
     contentController.addListener(listener);
@@ -191,16 +196,123 @@ suite('ContentController', () => {
     assertTrue(contentController.isEmpty());
   });
 
-  suite('buildSubtree', () => {
-    const nodeId = 29;
+  suite('updateContent', () => {
+    const rootId = 29;
+    let node: HTMLElement;
+
+    setup(() => {
+      node = document.createElement('p');
+      const text = document.createTextNode('One swing ahead of the sword');
+      node.appendChild(text);
+      document.body.appendChild(node);
+      chrome.readingMode.rootId = rootId;
+    });
+
+    test('logs speech stop if called while speech active', async () => {
+      speechController.onPlayPauseToggle(null, node);
+
+      contentController.updateContent();
+
+      assertEquals(
+          chrome.readingMode.unexpectedUpdateContentStopSource,
+          await metrics.whenCalled('recordSpeechStopSource'));
+    });
+
+    test('does not crash with no root', () => {
+      chrome.readingMode.rootId = 0;
+      assertFalse(!!contentController.updateContent());
+    });
+
+    test('hides loading page', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'but I bite';
+      contentController.setState(ContentType.LOADING);
+
+      const root = contentController.updateContent();
+
+      assertTrue(!!root);
+      assertTrue(contentController.hasContent());
+      assertFalse(contentController.isEmpty());
+    });
+
+    test('sets empty if no content', () => {
+      contentController.setState(ContentType.LOADING);
+
+      const root = contentController.updateContent();
+
+      assertFalse(!!root);
+      assertFalse(contentController.hasContent());
+      assertTrue(contentController.isEmpty());
+    });
+
+    test('logs new page with new tree', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'okay like I know I ramble';
+
+      contentController.updateContent();
+      contentController.updateContent();
+      assertEquals(1, metrics.getCallCount('recordNewPage'));
+
+      chrome.readingMode.rootId = rootId + 1;
+      contentController.updateContent();
+
+      assertEquals(2, metrics.getCallCount('recordNewPage'));
+    });
+
+    test('loads images with flag enabled', () => {
+      const imgId1 = 89;
+      const imgId2 = 88;
+      readingMode.imagesFeatureEnabled = true;
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'okay like I know I ramble';
+
+      readingMode.imagesEnabled = true;
+      nodeStore.addImageToFetch(imgId1);
+      contentController.updateContent();
+
+      readingMode.imagesEnabled = false;
+      nodeStore.addImageToFetch(imgId2);
+      contentController.updateContent();
+
+      assertArrayEquals([imgId1, imgId2], readingMode.fetchedImages);
+    });
+
+    test('notifies listeners of new page drawn', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'I go Rambo';
+      stubAnimationFrame();
+
+      contentController.updateContent();
+
+      assertTrue(receivedNewPageDrawn);
+    });
+
+    test('estimates words seen after draw', () => {
+      readingMode.getHtmlTag = () => '';
+      readingMode.getTextContent = () => 'full of venom';
+      stubAnimationFrame();
+      const mockTimer = new MockTimer();
+      mockTimer.install();
+      let sentWordsSeen = false;
+      readingMode.updateWordsSeen = () => {
+        sentWordsSeen = true;
+      };
+
+      contentController.updateContent();
+      mockTimer.tick(MIN_MS_TO_READ);
+      mockTimer.uninstall();
+
+      assertTrue(sentWordsSeen);
+    });
 
     test('builds a simple text node', () => {
       const text = 'Knockin you out like a lullaby';
       readingMode.getHtmlTag = () => '';
       readingMode.getTextContent = () => text;
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
+      assertTrue(!!root);
       assertEquals(Node.TEXT_NODE, root.nodeType);
       assertEquals(text, root.textContent);
     });
@@ -211,8 +323,9 @@ suite('ContentController', () => {
       readingMode.getTextContent = () => text;
       readingMode.shouldBold = () => true;
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
+      assertTrue(!!root);
       assertEquals('B', root.nodeName);
       assertEquals(text, root.textContent);
     });
@@ -223,7 +336,7 @@ suite('ContentController', () => {
       readingMode.getTextContent = () => text;
       readingMode.isOverline = () => true;
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLSpanElement);
       assertEquals(text, root.textContent);
@@ -244,56 +357,56 @@ suite('ContentController', () => {
       readingMode.getTextContent = (id) => {
         return id === childId ? text : '';
       };
+      chrome.readingMode.rootId = parentId;
 
-      const root = contentController.buildSubtree(parentId);
+      const root = contentController.updateContent();
 
+      assertTrue(!!root);
       assertEquals('P', root.nodeName);
       assertTrue(!!root.firstChild);
       assertEquals(text, root.textContent);
     });
 
     test('builds a link as an <a> tag when links are shown', () => {
+      const childId = 65;
       const url = 'https://www.google.com/';
       chrome.readingMode.linksEnabled = true;
-      readingMode.getHtmlTag = () => 'a';
+      readingMode.getHtmlTag = (id) => {
+        return id === childId ? '' : 'a';
+      };
       readingMode.getUrl = () => url;
+      readingMode.getTextContent = () => url;
       let clicked = false;
       readingMode.onLinkClicked = () => {
         clicked = true;
       };
+      readingMode.getChildren = (id) => {
+        return id === childId ? [] : [childId];
+      };
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
-      assertTrue(root instanceof HTMLAnchorElement);
+      assertTrue(root instanceof HTMLAnchorElement, 'instance');
       assertEquals(url, root.href);
-      assertTrue(!!root.onclick);
+      assertTrue(!!root.onclick, 'onclick');
       root.onclick(new MouseEvent('type'));
-      assertTrue(clicked);
+      assertTrue(clicked, 'clicked');
     });
 
     test('builds a link as a <span> tag when links are hidden', () => {
+      const childId = 71;
       const url = 'https://www.relsilicon.com/';
       chrome.readingMode.linksEnabled = false;
-      readingMode.getHtmlTag = () => 'a';
+      readingMode.getHtmlTag = (id) => {
+        return id === childId ? '' : 'a';
+      };
       readingMode.getUrl = () => url;
+      readingMode.getTextContent = () => url;
+      readingMode.getChildren = (id) => {
+        return id === childId ? [] : [childId];
+      };
 
-      const root = contentController.buildSubtree(nodeId);
-
-      assertTrue(root instanceof HTMLSpanElement);
-      assertEquals(url, root.dataset['link']);
-      assertFalse(!!root.getAttribute('href'));
-    });
-
-    test('builds a link as a <span> tag when speech is playing', () => {
-      const url = 'https://www.usecheeky.com/';
-      chrome.readingMode.linksEnabled = true;
-      const element = document.createElement('p');
-      element.textContent = 'Cause I\'m gonna show you';
-      speechController.onPlayPauseToggle(null, element);
-      readingMode.getHtmlTag = () => 'a';
-      readingMode.getUrl = () => url;
-
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLSpanElement);
       assertEquals(url, root.dataset['link']);
@@ -306,14 +419,14 @@ suite('ContentController', () => {
       readingMode.getHtmlTag = () => 'img';
       readingMode.getAltText = () => altText;
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
       assertTrue(nodeStore.hasImagesToFetch());
       nodeStore.fetchImages();
-      assertArrayEquals([nodeId], readingMode.fetchedImages);
+      assertArrayEquals([rootId], readingMode.fetchedImages);
     });
 
     test('builds a video as a <canvas> tag', () => {
@@ -322,39 +435,62 @@ suite('ContentController', () => {
       readingMode.getHtmlTag = () => 'video';
       readingMode.getAltText = () => altText;
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLCanvasElement);
       assertEquals(altText, root.getAttribute('alt'));
       assertEquals('', root.style.display);
       assertTrue(nodeStore.hasImagesToFetch());
       nodeStore.fetchImages();
-      assertArrayEquals([nodeId], readingMode.fetchedImages);
+      assertArrayEquals([rootId], readingMode.fetchedImages);
     });
 
     test('sets text direction', () => {
-      readingMode.getHtmlTag = () => 'p';
+      const childId = 70;
+      readingMode.getHtmlTag = (id) => {
+        return id === childId ? '' : 'p';
+      };
       readingMode.getTextDirection = () => 'rtl';
+      readingMode.getTextContent = () => 'spittin facts';
+      readingMode.getChildren = (id) => {
+        return id === childId ? [] : [childId];
+      };
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLParagraphElement);
       assertEquals('rtl', root.getAttribute('dir'));
     });
 
     test('sets the language', () => {
-      readingMode.getHtmlTag = () => 'p';
+      const childId = 70;
+      readingMode.getHtmlTag = (id) => {
+        return id === childId ? '' : 'p';
+      };
       readingMode.getLanguage = () => 'ko';
+      readingMode.getTextContent = () => 'you know that\'s';
+      readingMode.getChildren = (id) => {
+        return id === childId ? [] : [childId];
+      };
 
-      const root = contentController.buildSubtree(nodeId);
+      const root = contentController.updateContent();
 
       assertTrue(root instanceof HTMLParagraphElement);
       assertEquals('ko', root.getAttribute('lang'));
     });
 
     test('builds details as a div', () => {
-      readingMode.getHtmlTag = () => 'details';
-      const root = contentController.buildSubtree(nodeId);
+      const childId = 67;
+      readingMode.getHtmlTag = (id) => {
+        return id === childId ? '' : 'details';
+      };
+      readingMode.getChildren = (id) => {
+        return id === childId ? [] : [childId];
+      };
+      readingMode.getTextContent = () => 'I don\'t talk';
+
+      const root = contentController.updateContent();
+
       assertTrue(root instanceof HTMLDivElement);
     });
   });

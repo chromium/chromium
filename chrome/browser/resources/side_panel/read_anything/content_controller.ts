@@ -8,6 +8,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {LOG_EMPTY_DELAY_MS} from './common.js';
 import {NodeStore} from './node_store.js';
 import {previousReadHighlightClass} from './read_aloud/movement.js';
+import {getReadAloudModel} from './read_aloud/read_aloud_model_browser_proxy.js';
+import {ReadAloudNode} from './read_aloud/read_aloud_types.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
 
@@ -43,6 +45,7 @@ const TAG_TO_RM_TAG: Map<string, string> = new Map([
 
 export interface ContentListener {
   onContentStateChange(): void;
+  onNewPageDrawn(): void;
 }
 
 export enum ContentType {
@@ -107,6 +110,7 @@ export class ContentController {
 
   private readonly listeners_: ContentListener[] = [];
   private currentState_: ContentState = CONTENT_STATES[ContentType.NO_CONTENT];
+  private previousRootId_?: number;
 
   getState(): ContentState {
     return this.currentState_;
@@ -167,7 +171,93 @@ export class ContentController {
     }
   }
 
-  buildSubtree(nodeId: number): Node {
+  updateContent(shadowRoot?: ShadowRoot): Node|null {
+    // This shouldn't happen. If it does, there is likely a bug, so log it so
+    // we can monitor it.
+    if (this.speechController_.isSpeechActive()) {
+      console.error(
+          'updateContent called while speech is active. ',
+          'There may be a bug.');
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.unexpectedUpdateContentStopSource);
+    }
+
+    const isReadAloudEnabled = chrome.readingMode.isReadAloudEnabled;
+    if (isReadAloudEnabled) {
+      this.speechController_.saveReadAloudState();
+      this.speechController_.resetForNewContent();
+    }
+
+    this.nodeStore_.clearDomNodes();
+
+    // Construct a dom subtree starting with the display root. The display root
+    // may be invalid if there are no content nodes and no selection. This does
+    // not use Lit's templating abstraction, which would create a shadow node
+    // element representing each AXNode, because experimentation (with Polymer)
+    // found the shadow node creation to be ~8-10x slower than constructing and
+    // appending nodes directly to the container element.
+    const rootId = chrome.readingMode.rootId;
+    if (!rootId) {
+      return null;
+    }
+
+    const node = this.buildSubtree_(rootId);
+    // If there is no text or images in the tree, do not proceed. The empty
+    // state container will show instead.
+    if (!node.textContent && !this.nodeStore_.hasImagesToFetch()) {
+      // Sometimes the controller thinks there will be content and redraws
+      // without showing the empty page, but we end up not actually having any
+      // content and also not showing the empty page sometimes. In this case,
+      // send that info back to the controller.
+      if (this.hasContent()) {
+        this.setEmpty();
+        chrome.readingMode.onNoTextContent();
+      } else if (!this.isEmpty()) {
+        // This is possible when the AXTree returns bad selection data and
+        // reading mode believes it has selected content to distll but
+        // nothing valid is selected. This can cause the loading screen
+        // to never switch to the empty state.
+        this.setEmpty();
+      }
+      return null;
+    }
+
+    if (this.previousRootId_ !== rootId) {
+      this.previousRootId_ = rootId;
+      this.logger_.logNewPage(/*speechPlayed=*/ false);
+    }
+
+    // Always load images even if they are disabled to ensure a fast response
+    // when toggling.
+    this.loadImages();
+    this.setState(ContentType.HAS_CONTENT);
+    this.updateImages(shadowRoot);
+
+    // If the previous reading position still exists and we haven't reached the
+    // end of speech, keep that spot.
+    const setPreviousReadingPosition = isReadAloudEnabled &&
+        this.speechController_.setPreviousReadingPositionIfExists();
+    requestAnimationFrame(() => {
+      // Count this as a new page as long as there's no reading position to keep
+      // from before.
+      if (!setPreviousReadingPosition) {
+        this.listeners_.forEach(l => l.onNewPageDrawn());
+      }
+      this.nodeStore_.estimateWordsSeenWithDelay();
+      // Initialize the speech tree with the new content.
+      if (chrome.readingMode.isTsTextSegmentationEnabled) {
+        const contextNode = ReadAloudNode.create(node);
+        if (contextNode) {
+          // Don't initialize until after drawing otherwise, the DOM nodes might
+          // not yet exist in the tree.
+          getReadAloudModel().init(contextNode);
+        }
+      }
+    });
+    return node;
+  }
+
+  private buildSubtree_(nodeId: number): Node {
     let htmlTag = chrome.readingMode.getHtmlTag(nodeId);
     const dataAttributes = new Map<string, string>();
 
@@ -226,7 +316,7 @@ export class ContentController {
 
   private appendChildSubtrees_(node: Node, nodeId: number) {
     for (const childNodeId of chrome.readingMode.getChildren(nodeId)) {
-      const childNode = this.buildSubtree(childNodeId);
+      const childNode = this.buildSubtree_(childNodeId);
       node.appendChild(childNode);
     }
   }

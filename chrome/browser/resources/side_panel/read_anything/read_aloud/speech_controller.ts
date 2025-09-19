@@ -51,6 +51,15 @@ export class SpeechController {
     this.isSpeechActiveChanged_(this.isSpeechActive());
   }
 
+  resetForNewContent() {
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      // Reset the read aloud model because there's new content.
+      this.readAloudModel_.resetModel?.();
+    }
+
+    this.clearReadAloudState();
+  }
+
   addListener(listener: SpeechListener) {
     this.listeners_.push(listener);
   }

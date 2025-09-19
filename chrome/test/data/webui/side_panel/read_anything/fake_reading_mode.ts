@@ -61,6 +61,7 @@ export class FakeReadingMode {
 
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
+  imagesFeatureEnabled: boolean = false;
 
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;

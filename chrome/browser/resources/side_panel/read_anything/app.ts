@@ -23,8 +23,6 @@ import {ContentController, ContentType} from './content_controller.js';
 import type {ContentListener, ContentState} from './content_controller.js';
 import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
-import {getReadAloudModel} from './read_aloud/read_aloud_model_browser_proxy.js';
-import {ReadAloudNode} from './read_aloud/read_aloud_types.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {TextSegmenter} from './read_aloud/text_segmenter.js';
@@ -82,8 +80,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   private constructorTime: number;
 
   protected accessor contentState_: ContentState;
-
-  private previousRootId_?: number;
 
   private isReadAloudEnabled_: boolean;
   protected isDocsLoadMoreButtonVisible_: boolean = false;
@@ -292,126 +288,30 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   showLoading() {
     this.contentController_.setState(ContentType.LOADING);
-    this.resetForNewContent();
+    if (this.isReadAloudEnabled_) {
+      this.speechController_.resetForNewContent();
+    }
   }
 
   // TODO: crbug.com/40927698 - Handle focus changes for speech, including
   // updating speech state.
   updateContent() {
-    // This shouldn't happen. If it does, there is likely a bug, so log it so
-    // we can monitor it.
-    if (this.speechController_.isSpeechActive()) {
-      console.error(
-          'updateContent called while speech is active. ',
-          'There may be a bug.');
-      this.logger_.logSpeechStopSource(
-          chrome.readingMode.unexpectedUpdateContentStopSource);
-    }
-
-    if (this.isReadAloudEnabled_) {
-      this.speechController_.saveReadAloudState();
-      this.resetForNewContent();
-    }
-    const container = this.$.container;
-
-    // Remove all children from container. Use `replaceChildren` rather than
-    // setting `innerHTML = ''` in order to remove all listeners, too.
-    container.replaceChildren();
-    this.nodeStore_.clearDomNodes();
-
-    // Construct a dom subtree starting with the display root and append it to
-    // the container. The display root may be invalid if there are no content
-    // nodes and no selection.
-    // This does not use Lit's templating abstraction, which would create a
-    // shadow node element representing each AXNode, because experimentation
-    // (with Polymer) found the shadow node creation to be ~8-10x slower than
-    // constructing and appending nodes directly to the container element.
-    const rootId = chrome.readingMode.rootId;
-    if (!rootId) {
-      return;
-    }
-
     this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
-    const node = this.contentController_.buildSubtree(rootId);
-    // If there is no text or images in the tree, do not proceed. The empty
-    // state container will show instead.
-    if (!node.textContent && !this.nodeStore_.hasImagesToFetch()) {
-      // Sometimes the controller thinks there will be content and redraws
-      // without showing the empty page, but we end up not actually having any
-      // content and also not showing the empty page sometimes. In this case,
-      // send that info back to the controller.
-      if (this.contentController_.hasContent()) {
-        this.contentController_.setEmpty();
-        chrome.readingMode.onNoTextContent();
-      } else if (!this.contentController_.isEmpty()) {
-        // This is possible when the AXTree returns bad selection data and
-        // reading mode believes it has selected content to distll but
-        // nothing valid is selected. This can cause the loading screen
-        // to never switch to the empty state.
-        this.contentController_.setEmpty();
-      }
-      return;
-    }
-
-    if (this.previousRootId_ !== rootId) {
-      this.previousRootId_ = rootId;
-      this.logger_.logNewPage(/*speechPlayed=*/ false);
-    }
-
-    // Always load images even if they are disabled to ensure a fast response
-    // when toggling.
-    this.contentController_.loadImages();
-
     this.isDocsLoadMoreButtonVisible_ =
         chrome.readingMode.isDocsLoadMoreButtonVisible;
 
-    this.contentController_.setState(ContentType.HAS_CONTENT);
-    container.appendChild(node);
-    this.updateImages_();
-
-    // If the previous reading position still exists and we haven't reached the
-    // end of speech, keep that spot.
-    let setPreviousReadingPosition = false;
-    if (this.isReadAloudEnabled_) {
-      setPreviousReadingPosition =
-          this.speechController_.setPreviousReadingPositionIfExists();
+    // Remove all children from container. Use `replaceChildren` rather than
+    // setting `innerHTML = ''` in order to remove all listeners, too.
+    this.$.container.replaceChildren();
+    const newRoot = this.contentController_.updateContent();
+    if (newRoot) {
+      this.$.container.appendChild(newRoot);
     }
-
-    requestAnimationFrame(() => {
-      // Scroll back to the top after we've drawn as long as we aren't keeping
-      // the reading position from before.
-      if (!setPreviousReadingPosition) {
-        this.$.containerScroller.scrollTop = 0;
-      }
-      this.nodeStore_.estimateWordsSeenWithDelay();
-      // Initialize the speech tree with the new content.
-      if (chrome.readingMode.isTsTextSegmentationEnabled) {
-        const contextNode = ReadAloudNode.create(container);
-        if (contextNode) {
-          // Don't initialize until after we've drawn- otherwise, the DOM
-          // nodes might not yet exist in the tree.
-          getReadAloudModel().init(contextNode);
-        }
-      }
-    });
   }
 
   getSelection(): Selection|null {
     assert(this.shadowRoot, 'no shadow root');
     return this.shadowRoot.getSelection();
-  }
-
-  protected resetForNewContent() {
-    if (!this.isReadAloudEnabled_) {
-      return;
-    }
-
-    if (chrome.readingMode.isTsTextSegmentationEnabled) {
-      // Reset the read aloud model because there's new content.
-      getReadAloudModel().resetModel?.();
-    }
-
-    this.speechController_.clearReadAloudState();
   }
 
   protected updateLinks_() {
@@ -461,6 +361,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   onContentStateChange(): void {
     this.contentState_ = this.contentController_.getState();
+  }
+
+  onNewPageDrawn(): void {
+    this.$.containerScroller.scrollTop = 0;
   }
 
   onIsSpeechActiveChange(): void {

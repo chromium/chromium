@@ -3,23 +3,20 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy, ContentController, MIN_MS_TO_READ, SpeechBrowserProxyImpl, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, SpeechBrowserProxyImpl, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, mockMetrics, setupBasicSpeech, stubAnimationFrame} from './common.js';
+import {setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeTreeBuilder} from './fake_tree_builder.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
-import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('UpdateContent', () => {
   let app: AppElement;
   let readingMode: FakeReadingMode;
-  let metrics: TestMetricsBrowserProxy;
 
   const textNodeIds = [3, 5, 7, 9];
   const texts = [
@@ -39,7 +36,6 @@ suite('UpdateContent', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     ContentController.setInstance(new ContentController());
     VoiceLanguageController.setInstance(new VoiceLanguageController());
-    metrics = mockMetrics();
 
     // Don't use await createApp() when using a FakeTree, as it seems to cause
     // flakiness.
@@ -76,27 +72,6 @@ suite('UpdateContent', () => {
     assertFalse(app.$.toolbar.isReadAloudPlayable);
   });
 
-  test('logs speech stop if called while speech active', async () => {
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    app.updateContent();
-    await microtasksFinished();
-
-    assertEquals(
-        chrome.readingMode.unexpectedUpdateContentStopSource,
-        await metrics.whenCalled('recordSpeechStopSource'));
-  });
-
-  test('hides loading page', async () => {
-    app.updateContent();
-    await microtasksFinished();
-
-    assertTrue(!!app.shadowRoot);
-    const emptyState =
-        app.shadowRoot.querySelector<HTMLElement>('#empty-state-container');
-    assertTrue(!!emptyState);
-    assertTrue(emptyState.hidden);
-  });
-
   test(
       'container clears old content when it receives new content', async () => {
         const expected1 = 'Gotta keep one jump ahead of the breadline.';
@@ -121,24 +96,4 @@ suite('UpdateContent', () => {
         // have the new content.
         assertEquals(expected2, app.$.container.textContent);
       });
-
-  test('estimates words seen after draw', () => {
-    stubAnimationFrame();
-    const node = document.createElement('p');
-    const text = document.createTextNode('One swing ahead of the sword');
-    node.appendChild(text);
-    app.appendChild(node);
-    const mockTimer = new MockTimer();
-    mockTimer.install();
-    let sentWordsSeen = false;
-    readingMode.updateWordsSeen = () => {
-      sentWordsSeen = true;
-    };
-
-    app.updateContent();
-    mockTimer.tick(MIN_MS_TO_READ);
-    mockTimer.uninstall();
-
-    assertTrue(sentWordsSeen);
-  });
 });
