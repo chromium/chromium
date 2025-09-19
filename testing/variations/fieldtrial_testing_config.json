@@ -6679,6 +6679,23 @@
                         "CommitAvailableMemoryPressureThresholds",
                         "PageAllocatorRetryOnCommitFailure",
                         "TerminationTargetPolicy"
+                    ],
+                    "disable_features": [
+                        "CompressParkableStrings"
+                    ]
+                },
+                {
+                    "name": "All_ExceptParkableStrings",
+                    "params": {
+                        "CommitAvailableCriticalThresholdMB": "1000",
+                        "CommitAvailableModerateThresholdMB": "2000"
+                    },
+                    "enable_features": [
+                        "BoostClosingTabs",
+                        "CommitAvailableMemoryPressureThresholds",
+                        "CompressParkableStrings",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
                     ]
                 },
                 {
@@ -6688,7 +6705,8 @@
                         "CommitAvailableModerateThresholdMB": "2000"
                     },
                     "enable_features": [
-                        "CommitAvailableMemoryPressureThresholds"
+                        "CommitAvailableMemoryPressureThresholds",
+                        "CompressParkableStrings"
                     ],
                     "disable_features": [
                         "BoostClosingTabs",
@@ -6699,7 +6717,8 @@
                 {
                     "name": "BoostClosingTab",
                     "enable_features": [
-                        "BoostClosingTabs"
+                        "BoostClosingTabs",
+                        "CompressParkableStrings"
                     ],
                     "disable_features": [
                         "CommitAvailableMemoryPressureThresholds",
@@ -6710,12 +6729,25 @@
                 {
                     "name": "TerminateRendererOnCommitExhaustion",
                     "enable_features": [
+                        "CompressParkableStrings",
                         "PageAllocatorRetryOnCommitFailure",
                         "TerminationTargetPolicy"
                     ],
                     "disable_features": [
                         "BoostClosingTabs",
                         "CommitAvailableMemoryPressureThresholds"
+                    ]
+                },
+                {
+                    "name": "DisableParkableStrings",
+                    "enable_features": [
+                        "BoostClosingTabs",
+                        "CommitAvailableMemoryPressureThresholds",
+                        "PageAllocatorRetryOnCommitFailure",
+                        "TerminationTargetPolicy"
+                    ],
+                    "disable_features": [
+                        "CompressParkableStrings"
                     ]
                 }
             ]
@@ -8933,25 +8965,6 @@
                         "DisableBruschettaInstallChecks"
                     ],
                     "min_os_version": "131.0.6740.0"
-                }
-            ]
-        }
-    ],
-    "DisableCompressParkableStrings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "CompressParkableStrings"
-                    ]
                 }
             ]
         }
