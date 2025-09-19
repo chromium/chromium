@@ -4,7 +4,6 @@
     "clang_use_default_sample_profile": false,
     "dcheck_always_on": false,
     "debuggable_apks": false,
-    "default_min_sdk_version": 23,
     "enable_resource_allowlist_generation": false,
     "is_component_build": false,
     "is_cronet_build": true,

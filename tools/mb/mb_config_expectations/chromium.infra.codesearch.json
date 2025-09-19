@@ -38,7 +38,6 @@
       "clang_use_chrome_plugins": false,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
-      "default_min_sdk_version": 23,
       "enable_kythe_annotations": true,
       "enable_resource_allowlist_generation": false,
       "is_clang": true,
