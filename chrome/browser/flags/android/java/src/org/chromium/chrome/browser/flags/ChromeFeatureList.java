@@ -902,11 +902,6 @@ public abstract class ChromeFeatureList {
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sDisableInstanceLimit =
-            newCachedFlag(
-                    DISABLE_INSTANCE_LIMIT,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sDisplayEdgeToEdgeFullscreen =
             newCachedFlag(DISPLAY_EDGE_TO_EDGE_FULLSCREEN, false, true);
     public static final CachedFlag sDrawChromePagesEdgeToEdge =
@@ -1180,7 +1175,6 @@ public abstract class ChromeFeatureList {
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
                     sDesktopUAOnConnectedDisplay,
-                    sDisableInstanceLimit,
                     sDisplayEdgeToEdgeFullscreen,
                     sDrawChromePagesEdgeToEdge,
                     sEdgeToEdgeBottomChin,
@@ -1321,6 +1315,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(CLEAR_BROWSING_DATA_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
+    public static final MutableFlagWithSafeDefault sDisableInstanceLimit =
+            newMutableFlagWithSafeDefault(DISABLE_INSTANCE_LIMIT, false);
     // Defaulted to true in native, but since it is being used as a kill switch set the default
     // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
     public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
@@ -1561,12 +1557,6 @@ public abstract class ChromeFeatureList {
                     "max_legacy_tab_state_files_cleaned_up_per_session",
                     100);
 
-    public static final IntCachedFeatureParam sDisableInstanceLimitMemoryThresholdMb =
-            newIntCachedFeatureParam(
-                    DISABLE_INSTANCE_LIMIT, "max_instance_limit_memory_threshold_mb", 6500);
-    public static final IntCachedFeatureParam sDisableInstanceLimitMaxCount =
-            newIntCachedFeatureParam(DISABLE_INSTANCE_LIMIT, "max_instance_limit", 20);
-
     /**
      * Cached param whether we disable animations for color changes to the edge-to-edge bottom chin.
      */
@@ -1796,8 +1786,6 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
                     sCleanupLegacyTabStateBatchSize,
-                    sDisableInstanceLimitMaxCount,
-                    sDisableInstanceLimitMemoryThresholdMb,
                     sEdgeToEdgeBottomChinOemList,
                     sEdgeToEdgeBottomChinOemMinVersions,
                     sEdgeToEdgeEverywhereOemList,
@@ -1851,6 +1839,10 @@ public abstract class ChromeFeatureList {
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(
                             "android_tab_declutter_auto_delete_time_delta_hours", 90 * 24);
+    public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMemoryThresholdMb =
+            sDisableInstanceLimit.newIntParam("max_instance_limit_memory_threshold_mb", 6500);
+    public static final MutableIntParamWithSafeDefault sDisableInstanceLimitMaxCount =
+            sDisableInstanceLimit.newIntParam("max_instance_limit", 20);
 
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeletePromoTest =
             sAndroidTabDeclutterAutoDelete.newBooleanParam(
