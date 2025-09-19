@@ -55,8 +55,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
     kDisabledAccent,
     kHoveredAccent,
     kPressedAccent,
-    kBackground,
-    kDisabledBackground,
+    kCheckboxBackground,
+    kDisabledCheckboxBackground,
     kFill,
     kDisabledFill,
     kHoveredFill,
@@ -251,8 +251,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       std::to_array({kDisabledBorder, kHoveredBorder, kBorder, kPressedBorder});
   static constexpr auto kAccentColors =
       std::to_array({kDisabledAccent, kHoveredAccent, kAccent, kPressedAccent});
-  static constexpr auto kBackgroundColors = std::to_array(
-      {kDisabledBackground, kBackground, kBackground, kBackground});
+  static constexpr auto kCheckboxBackgroundColors =
+      std::to_array({kDisabledCheckboxBackground, kCheckboxBackground,
+                     kCheckboxBackground, kCheckboxBackground});
   static constexpr auto kFillColors =
       std::to_array({kDisabledFill, kHoveredFill, kFill, kPressedFill});
   static constexpr auto kSliderColors =

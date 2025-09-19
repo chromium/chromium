@@ -69,9 +69,9 @@ SkColor NativeThemeMobile::GetControlColor(
     case kPressedAccent:
       return dark_mode ? SkColorSetRGB(0x61, 0xA9, 0xFF)
                        : SkColorSetRGB(0x37, 0x93, 0xFF);
-    case kBackground:
+    case kCheckboxBackground:
       return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B) : SK_ColorWHITE;
-    case kDisabledBackground:
+    case kDisabledCheckboxBackground:
       return dark_mode ? SkColorSetRGB(0x3B, 0x3B, 0x3B)
                        : SkColorSetA(SK_ColorWHITE, 0x99);
     case kFill:

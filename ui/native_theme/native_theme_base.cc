@@ -304,8 +304,9 @@ SkColor NativeThemeBase::GetControlColor(
        {kDisabledAccent, kColorWebNativeControlAccentDisabled},
        {kHoveredAccent, kColorWebNativeControlAccentHovered},
        {kPressedAccent, kColorWebNativeControlAccentPressed},
-       {kBackground, kColorWebNativeControlBackground},
-       {kDisabledBackground, kColorWebNativeControlBackgroundDisabled},
+       {kCheckboxBackground, kColorWebNativeControlCheckboxBackground},
+       {kDisabledCheckboxBackground,
+        kColorWebNativeControlCheckboxBackgroundDisabled},
        {kFill, kColorWebNativeControlFill},
        {kDisabledFill, kColorWebNativeControlFillDisabled},
        {kHoveredFill, kColorWebNativeControlFillHovered},
@@ -622,8 +623,8 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
                                                    color_provider));
     canvas->drawRoundRect(skrect, radius, radius, flags);
   }
-  flags.setColor(GetControlColorForState(kBackgroundColors, state, dark_mode,
-                                         contrast, color_provider));
+  flags.setColor(GetControlColorForState(kCheckboxBackgroundColors, state,
+                                         dark_mode, contrast, color_provider));
   if (extra_params.indeterminate) {
     // Paint the dash.
     static constexpr gfx::Size kDashSize(8, 2);
@@ -876,7 +877,7 @@ void NativeThemeBase::PaintButton(cc::PaintCanvas* canvas,
   flags.setColor(GetControlColorForState(kButtonFillColors, state, dark_mode,
                                          contrast, color_provider));
 
-  // If the button is too small, fall back to drawing a solid color rect.
+  // If the button is too small, fallback to drawing a solid color rect.
   if (rect.width() < 5 || rect.height() < 5) {
     canvas->drawRect(skrect, flags);
     return;
@@ -1026,12 +1027,40 @@ void NativeThemeBase::PaintTextField(cc::PaintCanvas* canvas,
   // Paint the background.
   const bool paint_autocomplete_background =
       extra_params.auto_complete_active && state != kDisabled;
-  if (extra_params.background_color != 0) {
+  if (paint_autocomplete_background ||
+      SkColorGetA(extra_params.background_color)) {
     PaintLightenLayer(canvas, color_provider, bounds, state, radius, dark_mode,
                       contrast);
     cc::PaintFlags bg_flags;
-    SkColor default_bg_color = GetControlColorForState(
-        kBackgroundColors, state, dark_mode, contrast, color_provider);
+    // TODO(crbug.com/446078854): The current background color seems wrong; it
+    // was done in
+    // https://crrev.com/c/1792578/5..7/ui/native_theme/native_theme_aura.cc
+    // ...due to feedback that the previous version of that patch, which used
+    // CSS to add a white hover effect, was causing interop problems.
+    // Unfortunately the new version discarded the passed-in background color
+    // entirely, likely due to oversight, and affected far more than just the
+    // hover state.
+    //
+    // The disabled branch here contains what pkasting thinks is the correct
+    // code; however, this may have significant visual effect and possible web
+    // compat ramifications, and may need to be discussed with Blink forms/a11y
+    // folks. This might require Blink-side changes and/or WPT updates in
+    // addition to simple rebaselines.
+    SkColor default_bg_color;
+    if constexpr (false) {
+      // Proposed behavior
+      default_bg_color = GetAccentOrControlColorForState(
+          extra_params.background_color,
+          kFillColors /* Doesn't matter, won't be used */,
+          // Not certain of the correct disabled state behavior
+          (state == kDisabled) ? kNormal : state, dark_mode, contrast,
+          color_provider);
+    } else {
+      // Status quo behavior
+      default_bg_color =
+          GetControlColorForState(kCheckboxBackgroundColors, state, dark_mode,
+                                  contrast, color_provider);
+    }
     bg_flags.setColor(paint_autocomplete_background
                           ? GetControlColor(kAutoCompleteBackground, dark_mode,
                                             contrast, color_provider)
@@ -1089,8 +1118,8 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   PaintLightenLayer(canvas, color_provider, background_rect, state,
                     border_radius, dark_mode, contrast);
   flags.setAntiAlias(true);
-  flags.setColor(GetControlColorForState(kBackgroundColors, state, dark_mode,
-                                         contrast, color_provider));
+  flags.setColor(GetControlColorForState(kCheckboxBackgroundColors, state,
+                                         dark_mode, contrast, color_provider));
   canvas->drawRoundRect(background_rect, border_radius, border_radius, flags);
 
   // Paint the border.

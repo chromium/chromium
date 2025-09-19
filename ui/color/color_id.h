@@ -546,8 +546,6 @@
   E_CPONLY(kColorWebNativeControlAccentHovered) \
   E_CPONLY(kColorWebNativeControlAccentPressed) \
   E_CPONLY(kColorWebNativeControlAutoCompleteBackground) \
-  E_CPONLY(kColorWebNativeControlBackground) \
-  E_CPONLY(kColorWebNativeControlBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlBorder) \
   E_CPONLY(kColorWebNativeControlBorderDisabled) \
   E_CPONLY(kColorWebNativeControlBorderHovered) \
@@ -560,6 +558,8 @@
   E_CPONLY(kColorWebNativeControlButtonFillDisabled) \
   E_CPONLY(kColorWebNativeControlButtonFillHovered) \
   E_CPONLY(kColorWebNativeControlButtonFillPressed) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackground) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlFill) \
   E_CPONLY(kColorWebNativeControlFillDisabled) \
   E_CPONLY(kColorWebNativeControlFillHovered) \

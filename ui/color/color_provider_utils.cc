@@ -66,10 +66,10 @@ constexpr RendererColorIdTable kRendererColorIdMap[] = {
      kColorWebNativeControlAccentPressed},
     {RendererColorId::kColorWebNativeControlAutoCompleteBackground,
      kColorWebNativeControlAutoCompleteBackground},
-    {RendererColorId::kColorWebNativeControlBackground,
-     kColorWebNativeControlBackground},
-    {RendererColorId::kColorWebNativeControlBackgroundDisabled,
-     kColorWebNativeControlBackgroundDisabled},
+    {RendererColorId::kColorWebNativeControlCheckboxBackground,
+     kColorWebNativeControlCheckboxBackground},
+    {RendererColorId::kColorWebNativeControlCheckboxBackgroundDisabled,
+     kColorWebNativeControlCheckboxBackgroundDisabled},
     {RendererColorId::kColorWebNativeControlBorder,
      kColorWebNativeControlBorder},
     {RendererColorId::kColorWebNativeControlBorderDisabled,
@@ -403,8 +403,6 @@ CreateEmulatedForcedColorsColorProviderForTest() {
   mixer[kColorWebNativeControlAccentHovered] = {SK_ColorCYAN};
   mixer[kColorWebNativeControlAccentPressed] = {SK_ColorCYAN};
   mixer[kColorWebNativeControlAutoCompleteBackground] = {SK_ColorBLACK};
-  mixer[kColorWebNativeControlBackground] = {SK_ColorBLACK};
-  mixer[kColorWebNativeControlBackgroundDisabled] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlBorder] = {SK_ColorWHITE};
   mixer[kColorWebNativeControlBorderDisabled] = {SK_ColorGREEN};
   mixer[kColorWebNativeControlBorderHovered] = {SK_ColorWHITE};
@@ -417,6 +415,8 @@ CreateEmulatedForcedColorsColorProviderForTest() {
   mixer[kColorWebNativeControlButtonFillDisabled] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlButtonFillHovered] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlButtonFillPressed] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlCheckboxBackground] = {SK_ColorBLACK};
+  mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlFill] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlFillDisabled] = {SK_ColorBLACK};
   mixer[kColorWebNativeControlFillHovered] = {SK_ColorBLACK};
@@ -500,8 +500,6 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlAccentHovered] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlAccentPressed] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlAutoCompleteBackground] = {kColorCssSystemWindow};
-  mixer[kColorWebNativeControlBackground] = {kColorCssSystemWindow};
-  mixer[kColorWebNativeControlBackgroundDisabled] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlBorder] = {kColorCssSystemBtnText};
   mixer[kColorWebNativeControlBorderDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlBorderHovered] = {kColorCssSystemBtnText};
@@ -514,6 +512,9 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlButtonFillDisabled] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlButtonFillHovered] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlButtonFillPressed] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlCheckboxBackground] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {
+      kColorCssSystemWindow};
   mixer[kColorWebNativeControlFill] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlFillDisabled] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlFillHovered] = {kColorCssSystemWindow};
@@ -588,9 +589,6 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x61, 0xA9, 0xFF)};
     mixer[kColorWebNativeControlAutoCompleteBackground] = {
         SkColorSetARGB(0x66, 0x46, 0x5a, 0x7E)};
-    mixer[kColorWebNativeControlBackground] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
-    mixer[kColorWebNativeControlBackgroundDisabled] = {
-        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlBorder] = {SkColorSetRGB(0x85, 0x85, 0x85)};
     mixer[kColorWebNativeControlBorderDisabled] = {
         SkColorSetRGB(0x62, 0x62, 0x62)};
@@ -613,6 +611,10 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x7B, 0x7B, 0x7B)};
     mixer[kColorWebNativeControlButtonFillPressed] = {
         SkColorSetRGB(0x61, 0x61, 0x61)};
+    mixer[kColorWebNativeControlCheckboxBackground] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {
+        SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
     mixer[kColorWebNativeControlFillDisabled] = {
         SkColorSetRGB(0x36, 0x36, 0x36)};
@@ -669,9 +671,6 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0x37, 0x93, 0xFF)};
     mixer[kColorWebNativeControlAutoCompleteBackground] = {
         SkColorSetRGB(0xE8, 0xF0, 0xFE)};
-    mixer[kColorWebNativeControlBackground] = {SK_ColorWHITE};
-    mixer[kColorWebNativeControlBackgroundDisabled] = {
-        SkColorSetA(SK_ColorWHITE, 0x99)};
     mixer[kColorWebNativeControlBorder] = {SkColorSetRGB(0x76, 0x76, 0x76)};
     mixer[kColorWebNativeControlBorderDisabled] = {
         SkColorSetARGB(0x4D, 0x76, 0x76, 0x76)};
@@ -694,6 +693,9 @@ void COMPONENT_EXPORT(COLOR)
         SkColorSetRGB(0xE5, 0xE5, 0xE5)};
     mixer[kColorWebNativeControlButtonFillPressed] = {
         SkColorSetRGB(0xF5, 0xF5, 0xF5)};
+    mixer[kColorWebNativeControlCheckboxBackground] = {SK_ColorWHITE};
+    mixer[kColorWebNativeControlCheckboxBackgroundDisabled] = {
+        SkColorSetA(SK_ColorWHITE, 0x99)};
     mixer[kColorWebNativeControlFill] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorWebNativeControlFillDisabled] = {
         SkColorSetARGB(0x4D, 0xEF, 0xEF, 0xEF)};

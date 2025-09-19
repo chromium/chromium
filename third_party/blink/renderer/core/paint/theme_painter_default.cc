@@ -102,10 +102,11 @@ SkColor GetContrastingColorFor(const Element& element,
   switch (part) {
     case WebThemeEngine::kPartCheckbox:
     case WebThemeEngine::kPartRadio:
-      return is_disabled ? color_provider->GetColor(
-                               ui::kColorWebNativeControlBackgroundDisabled)
-                         : color_provider->GetColor(
-                               ui::kColorWebNativeControlBackground);
+      return is_disabled
+                 ? color_provider->GetColor(
+                       ui::kColorWebNativeControlCheckboxBackgroundDisabled)
+                 : color_provider->GetColor(
+                       ui::kColorWebNativeControlCheckboxBackground);
     case WebThemeEngine::kPartSliderTrack:
     case WebThemeEngine::kPartSliderThumb:
     case WebThemeEngine::kPartProgressBar:
