@@ -1343,7 +1343,7 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   bool thread_safe_manager = true;
   owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
       thread_safe_manager, display_context_on_another_thread,
-      gpu_memory_buffer_factory());
+      gpu_memory_buffer_factory_.get());
 #if BUILDFLAG(IS_OZONE)
   owned_shared_image_manager_->SetSupportsOverlays(supports_overlays);
 #endif

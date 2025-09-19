@@ -234,10 +234,9 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
         std::make_unique<OutputSurfaceProviderImpl>(gpu_service, headless);
 
     // Create video frame pool context provider that will enable the frame sink
-    // manager to create GMB-backed video frames.
+    // manager to create video frames backed by mappable SharedImages.
     gmb_video_frame_pool_context_provider_ =
-        std::make_unique<GmbVideoFramePoolContextProviderImpl>(
-            gpu_service, gpu_service->gpu_memory_buffer_factory());
+        std::make_unique<GmbVideoFramePoolContextProviderImpl>(gpu_service);
   } else {
     // Create OutputSurfaceProvider usable for software compositing only.
     output_surface_provider_ =

@@ -297,10 +297,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return compositor_gpu_thread_.get();
   }
 
-  gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
-    return gpu_memory_buffer_factory_.get();
-  }
-
   gpu::SharedImageManager* shared_image_manager() {
     return gpu_channel_manager_->shared_image_manager();
   }

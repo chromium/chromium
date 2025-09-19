@@ -18,7 +18,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 
 namespace viz {
 
@@ -28,10 +27,8 @@ class GmbVideoFramePoolContext
  public:
   explicit GmbVideoFramePoolContext(
       GpuServiceImpl* gpu_service,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       base::OnceClosure on_context_lost)
       : gpu_service_(gpu_service),
-        gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
         on_context_lost_(
             base::BindPostTaskToCurrentDefault(std::move(on_context_lost))) {
     DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
@@ -150,7 +147,6 @@ class GmbVideoFramePoolContext
   }
 
   const raw_ptr<GpuServiceImpl> gpu_service_;
-  const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   // Closure that we need to call when context loss happens.
   base::OnceClosure on_context_lost_;
@@ -167,10 +163,8 @@ class GmbVideoFramePoolContext
 };
 
 GmbVideoFramePoolContextProviderImpl::GmbVideoFramePoolContextProviderImpl(
-    GpuServiceImpl* gpu_service,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
-    : gpu_service_(gpu_service),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {}
+    GpuServiceImpl* gpu_service)
+    : gpu_service_(gpu_service) {}
 
 GmbVideoFramePoolContextProviderImpl::~GmbVideoFramePoolContextProviderImpl() =
     default;
@@ -178,8 +172,8 @@ GmbVideoFramePoolContextProviderImpl::~GmbVideoFramePoolContextProviderImpl() =
 std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool::Context>
 GmbVideoFramePoolContextProviderImpl::CreateContext(
     base::OnceClosure on_context_lost) {
-  return std::make_unique<GmbVideoFramePoolContext>(
-      gpu_service_, gpu_memory_buffer_factory_, std::move(on_context_lost));
+  return std::make_unique<GmbVideoFramePoolContext>(gpu_service_,
+                                                    std::move(on_context_lost));
 }
 
 }  // namespace viz
