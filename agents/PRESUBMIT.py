@@ -11,7 +11,9 @@ PRESUBMIT_VERSION = '2.0.0'
 
 # Extra paths that should be added to PYTHONPATH when running pylint, i.e.
 # dependencies on other Chromium Python code.
-PYLINT_EXTRA_PATHS_COMPONENTS = []
+PYLINT_EXTRA_PATHS_COMPONENTS = [
+    ('build', 'util'),
+]
 
 
 def _GetChromiumSrcPath(input_api):

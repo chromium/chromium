@@ -19,6 +19,10 @@ import time
 
 CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
 
+sys.path.insert(0, str(CHROMIUM_SRC / 'build' / 'util'))
+from lib.results import result_sink
+from lib.results import result_types
+
 EXTENSIONS_TO_INSTALL = [
     'build_information',
     'depot_tools',
@@ -55,7 +59,9 @@ class PromptfooInstallation(abc.ABC):
             pass
 
     @abc.abstractmethod
-    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
+    def run(self,
+            cmd: list[str],
+            cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
         """Runs a promptfoo command.
 
         Args:
@@ -63,7 +69,7 @@ class PromptfooInstallation(abc.ABC):
             cwd: The working directory from which the command should be run
 
         Returns:
-            The returncode of the command.
+            The CompletedProcess of the command that was run.
         """
 
 
@@ -86,11 +92,15 @@ class FromNpmPromptfooInstallation(PromptfooInstallation):
     def installed(self) -> bool:
         return self._executable.exists()
 
-    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
-        proc = subprocess.run([str(self._executable), *cmd],
+    def run(self,
+            cmd: list[str],
+            cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
+        return subprocess.run([str(self._executable), *cmd],
                               cwd=cwd,
-                              check=False)
-        return proc.returncode
+                              check=False,
+                              text=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT)
 
     @property
     def _executable(self) -> pathlib.Path:
@@ -136,12 +146,18 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
     def installed(self) -> bool:
         return (self._directory / '.git').is_dir()
 
-    def run(self, cmd: list[str], cwd: os.PathLike | None = None) -> int:
+    def run(self,
+            cmd: list[str],
+            cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
         node_cmd = [
             str(self._directory / 'dist' / 'src' / 'main.js'),
         ]
-        proc = subprocess.run(node_cmd + cmd, cwd=cwd, check=False)
-        return proc.returncode
+        return subprocess.run(node_cmd + cmd,
+                              cwd=cwd,
+                              check=False,
+                              text=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT)
 
 
 def _setup_promptfoo(promptfoo_dir: pathlib.Path,
@@ -471,6 +487,28 @@ def _fetch_sandbox_image() -> bool:
             return False
 
 
+def _report_result(result_sink_client: result_sink.ResultSinkClient,
+                   success: bool, test_log: str, test_path: pathlib.Path,
+                   duration: float) -> None:
+    """Reports a test result to ResultDB if possible.
+
+    Args:
+        result_sink_client: A ResultSinkClient to use for reporting.
+        success: Whether the test successfully passed.
+        test_log: The stdout/stderr output by the test.
+        test_path: The path to the test config file on disk.
+        duration: How long the test took to run in seconds.
+    """
+    relative_path = test_path.relative_to(CHROMIUM_SRC)
+    posix_path = relative_path.as_posix()
+    result_sink_client.Post(
+        test_id=str(posix_path),
+        status=result_types.PASS if success else result_types.FAIL,
+        duration=duration * 1000,
+        test_log=test_log,
+        test_file=f'//{str(posix_path)}')
+
+
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """Performs all the necessary steps to run prompt evaluation tests.
 
@@ -484,7 +522,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                        args.filter)
     if len(configs_to_run) == 0:
         logging.info('No tests to run after filtering and sharding')
-        return 0
+        return 1
 
     _perform_chromium_setup(force=args.force, build=not args.no_build)
 
@@ -499,6 +537,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     console_width = shutil.get_terminal_size().columns
     root_path = _get_gclient_root()
     is_btrfs = _check_btrfs(root_path)
+    result_sink_client = result_sink.TryInitClient()
     for config in configs_to_run:
         with WorkDir('workdir', root_path, not args.no_clean, args.verbose,
                      args.force, is_btrfs) as workdir:
@@ -507,6 +546,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                 '-j',
                 '1',
                 '--no-cache',
+                # Not useful since we're running one test per eval and the
+                # tables don't render properly in captured logs.
+                '--no-table',
                 '-c',
                 str(config),
                 '--var',
@@ -516,9 +558,29 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                 command.extend(['--var', 'sandbox=True'])
             if args.verbose:
                 command.extend(['--var', 'verbose=True'])
+
             logging.info('Running test: %s', str(config))
-            rc = promptfoo.run(command, cwd=workdir.path / 'src')
+            start_time = time.time()
+            proc = promptfoo.run(command, cwd=workdir.path / 'src')
+            duration = time.time() - start_time
+
+            rc = proc.returncode
             returncode = returncode or rc
+            success = not rc
+            if not success or args.print_output_on_success:
+                sys.stdout.write(proc.stdout)
+            if success:
+                logging.info('Test passed in %.2f seconds: %s', duration,
+                             str(config))
+            else:
+                logging.warning('Test failed in %.2f seconds: %s', duration,
+                                str(config))
+            if result_sink_client:
+                _report_result(result_sink_client=result_sink_client,
+                               success=success,
+                               test_log=proc.stdout,
+                               test_path=config,
+                               duration=duration)
 
     return returncode
 
@@ -549,6 +611,11 @@ def _parse_args() -> argparse.Namespace:
                         '-v',
                         action='store_true',
                         help='Print debug information.')
+    parser.add_argument(
+        '--print-output-on-success',
+        action='store_true',
+        help=('Print test output even when a test succeeds. By default, '
+              'output is only surfaced when a test fails.'))
     parser.add_argument('--filter',
                         help='Only run configs that contain this substring.')
     parser.add_argument(

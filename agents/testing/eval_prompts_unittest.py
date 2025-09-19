@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Tests for eval_prompts."""
 
+import io
 import os
 import pathlib
 import subprocess
@@ -65,7 +66,10 @@ class FromNpmPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
         mock_run.assert_called_once_with(
             [str(pathlib.Path(executable)), 'eval', '-c', 'config.yaml'],
             cwd='/tmp/test',
-            check=False)
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
 
     def test_cleanup(self):
         """Tests that cleanup removes the installation directory."""
@@ -133,7 +137,10 @@ class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
         mock_run.assert_called_once_with(
             [str(pathlib.Path(main_js)), 'eval', '-c', 'config.yaml'],
             cwd='/tmp/test',
-            check=False)
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
 
     def test_cleanup(self):
         """Tests that cleanup removes the installation directory."""
@@ -848,6 +855,47 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'))
 
 
+@mock.patch('eval_prompts.CHROMIUM_SRC', pathlib.Path('/chromium/src'))
+@mock.patch('eval_prompts.result_types')
+class ReportResultUnittest(unittest.TestCase):
+    """Unit tests for the `_report_result` function."""
+
+    def setUp(self):
+        self.result_sink_client = mock.Mock()
+
+    def test_report_result_success(self, mock_result_types):
+        """Tests that a passing result is reported correctly."""
+        mock_result_types.PASS = 'PASS'
+        eval_prompts._report_result(
+            result_sink_client=self.result_sink_client,
+            success=True,
+            test_log='Success',
+            test_path=pathlib.Path('/chromium/src/test/a.yaml'),
+            duration=1.23)
+        self.result_sink_client.Post.assert_called_once_with(
+            test_id='test/a.yaml',
+            status='PASS',
+            duration=1230.0,
+            test_log='Success',
+            test_file='//test/a.yaml')
+
+    def test_report_result_failure(self, mock_result_types):
+        """Tests that a failing result is reported correctly."""
+        mock_result_types.FAIL = 'FAIL'
+        eval_prompts._report_result(
+            result_sink_client=self.result_sink_client,
+            success=False,
+            test_log='Failure',
+            test_path=pathlib.Path('/chromium/src/test/b.yaml'),
+            duration=4.56)
+        self.result_sink_client.Post.assert_called_once_with(
+            test_id='test/b.yaml',
+            status='FAIL',
+            duration=4560.0,
+            test_log='Failure',
+            test_file='//test/b.yaml')
+
+
 class RunPromptEvalTestsUnittest(unittest.TestCase):
     """Unit tests for the `_run_prompt_eval_tests` function."""
 
@@ -863,14 +911,17 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.no_clean = False
         self.args.verbose = False
         self.args.sandbox = False
+        self.args.print_output_on_success = False
 
     @mock.patch('eval_prompts._get_tests_to_run')
     def test_run_prompt_eval_tests_no_tests(self, mock_get_tests_to_run):
-        """Tests that the function returns 0 if there are no tests to run."""
+        """Tests that the function returns 1 if there are no tests to run."""
         mock_get_tests_to_run.return_value = []
         returncode = eval_prompts._run_prompt_eval_tests(self.args)
-        self.assertEqual(returncode, 0)
+        self.assertEqual(returncode, 1)
 
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
     @mock.patch('eval_prompts.WorkDir')
     @mock.patch('eval_prompts._setup_promptfoo')
     @mock.patch('eval_prompts._perform_chromium_setup')
@@ -881,15 +932,18 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
     def test_run_prompt_eval_tests_one_test_pass(
             self, mock_get_terminal_size, mock_check_btrfs,
             mock_get_gclient_root, mock_get_tests_to_run,
-            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir):
+            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client, mock_stdout):
         """Tests running a single passing test."""
         mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = True
         mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_try_init_client.return_value = None
 
         mock_promptfoo_instance = mock.Mock()
-        mock_promptfoo_instance.run.return_value = 0
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
         mock_setup_promptfoo.return_value = mock_promptfoo_instance
 
         mock_workdir_instance = mock.Mock()
@@ -905,7 +959,10 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
                                              True, False, False, True)
         mock_promptfoo_instance.run.assert_called_once()
         self.assertEqual(returncode, 0)
+        self.assertEqual(mock_stdout.getvalue(), '')
 
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
     @mock.patch('eval_prompts.WorkDir')
     @mock.patch('eval_prompts._setup_promptfoo')
     @mock.patch('eval_prompts._perform_chromium_setup')
@@ -916,15 +973,18 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
     def test_run_prompt_eval_tests_one_test_fail(
             self, mock_get_terminal_size, mock_check_btrfs,
             mock_get_gclient_root, mock_get_tests_to_run,
-            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir):
+            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client, mock_stdout):
         """Tests running a single failing test."""
         mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = False
         mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_try_init_client.return_value = None
 
         mock_promptfoo_instance = mock.Mock()
-        mock_promptfoo_instance.run.return_value = 1
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=1, stdout='Failure')
         mock_setup_promptfoo.return_value = mock_promptfoo_instance
 
         mock_workdir_instance = mock.Mock()
@@ -945,7 +1005,9 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertIn('verbose=True',
                       mock_promptfoo_instance.run.call_args[0][0])
         self.assertEqual(returncode, 1)
+        self.assertEqual(mock_stdout.getvalue(), 'Failure')
 
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
     @mock.patch('eval_prompts.WorkDir')
     @mock.patch('eval_prompts._setup_promptfoo')
     @mock.patch('eval_prompts._perform_chromium_setup')
@@ -956,7 +1018,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
     def test_run_prompt_eval_tests_multiple_tests_one_fail(
             self, mock_get_terminal_size, mock_check_btrfs,
             mock_get_gclient_root, mock_get_tests_to_run,
-            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir):
+            mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client):
         """Tests running multiple tests where one fails."""
         mock_get_tests_to_run.return_value = [
             pathlib.Path('/test/a.yaml'),
@@ -966,9 +1029,14 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = True
         mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_try_init_client.return_value = None
 
         mock_promptfoo_instance = mock.Mock()
-        mock_promptfoo_instance.run.side_effect = [0, 1, 0]
+        mock_promptfoo_instance.run.side_effect = [
+            subprocess.CompletedProcess(args=[], returncode=0, stdout=''),
+            subprocess.CompletedProcess(args=[], returncode=1, stdout=''),
+            subprocess.CompletedProcess(args=[], returncode=0, stdout=''),
+        ]
         mock_setup_promptfoo.return_value = mock_promptfoo_instance
 
         mock_workdir_instance = mock.Mock()
@@ -1008,6 +1076,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self.assertIn('Failed to pre-fetch sandbox image', cm.output[0])
 
     @mock.patch('subprocess.run')
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
     @mock.patch('eval_prompts.WorkDir')
     @mock.patch('eval_prompts._setup_promptfoo')
     @mock.patch('eval_prompts._perform_chromium_setup')
@@ -1019,11 +1088,17 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self, _mock_get_terminal_size, _mock_check_btrfs,
             _mock_get_gclient_root, mock_get_tests_to_run,
             _mock_perform_chromium_setup, mock_setup_promptfoo, _mock_workdir,
-            mock_subprocess_run):
+            mock_try_init_client, mock_subprocess_run):
         """Tests that _run_prompt_eval_tests calls pre-fetch and passes sandbox
         var when enabled."""
         mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        mock_try_init_client.return_value = None
         self.args.sandbox = True
+
+        mock_promptfoo_instance = mock.Mock()
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
+        mock_setup_promptfoo.return_value = mock_promptfoo_instance
 
         eval_prompts._run_prompt_eval_tests(self.args)
 
@@ -1042,6 +1117,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertIn('sandbox=True', command)
 
     @mock.patch('subprocess.run')
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
     @mock.patch('eval_prompts.WorkDir')
     @mock.patch('eval_prompts._setup_promptfoo')
     @mock.patch('eval_prompts._perform_chromium_setup')
@@ -1053,11 +1129,17 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self, _mock_get_terminal_size, _mock_check_btrfs,
             _mock_get_gclient_root, mock_get_tests_to_run,
             _mock_perform_chromium_setup, mock_setup_promptfoo, _mock_workdir,
-            mock_subprocess_run):
+            mock_try_init_client, mock_subprocess_run):
         """Tests that _run_prompt_eval_tests does not call pre-fetch or pass
         sandbox var when disabled."""
         mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        mock_try_init_client.return_value = None
         self.args.sandbox = False
+
+        mock_promptfoo_instance = mock.Mock()
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
+        mock_setup_promptfoo.return_value = mock_promptfoo_instance
 
         eval_prompts._run_prompt_eval_tests(self.args)
 
@@ -1067,6 +1149,119 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         command = mock_promptfoo_instance.run.call_args[0][0]
         for arg in command:
             self.assertNotIn('sandbox', arg)
+
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_print_output_on_success(
+            self, mock_get_terminal_size, mock_check_btrfs,
+            mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client, mock_stdout):
+        """Tests that output is printed on success with the right arg."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        mock_get_gclient_root.return_value = pathlib.Path('/root')
+        mock_check_btrfs.return_value = True
+        mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_try_init_client.return_value = None
+
+        mock_promptfoo_instance = mock.Mock()
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
+        mock_setup_promptfoo.return_value = mock_promptfoo_instance
+
+        mock_workdir_instance = mock.Mock()
+        mock_workdir_instance.path = pathlib.Path('/workdir')
+        mock_workdir.return_value.__enter__.return_value = mock_workdir_instance
+
+        self.args.print_output_on_success = True
+        returncode = eval_prompts._run_prompt_eval_tests(self.args)
+
+        self.assertEqual(returncode, 0)
+        self.assertEqual(mock_stdout.getvalue(), 'Success')
+
+    @mock.patch('eval_prompts._report_result')
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_with_result_sink_client(
+            self, mock_get_terminal_size, mock_check_btrfs,
+            mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client, mock_stdout, mock_report_result):
+        """Tests that results are reported when a client is available."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        mock_get_gclient_root.return_value = pathlib.Path('/root')
+        mock_check_btrfs.return_value = True
+        mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_client = mock.Mock()
+        mock_try_init_client.return_value = mock_client
+
+        mock_promptfoo_instance = mock.Mock()
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
+        mock_setup_promptfoo.return_value = mock_promptfoo_instance
+
+        mock_workdir_instance = mock.Mock()
+        mock_workdir_instance.path = pathlib.Path('/workdir')
+        mock_workdir.return_value.__enter__.return_value = mock_workdir_instance
+
+        self.args.print_output_on_success = True
+        returncode = eval_prompts._run_prompt_eval_tests(self.args)
+
+        self.assertEqual(returncode, 0)
+        self.assertEqual(mock_stdout.getvalue(), 'Success')
+        mock_report_result.assert_called_once()
+
+    @mock.patch('eval_prompts._report_result')
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    @mock.patch('eval_prompts.result_sink.TryInitClient')
+    @mock.patch('eval_prompts.WorkDir')
+    @mock.patch('eval_prompts._setup_promptfoo')
+    @mock.patch('eval_prompts._perform_chromium_setup')
+    @mock.patch('eval_prompts._get_tests_to_run')
+    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('eval_prompts._check_btrfs')
+    @mock.patch('shutil.get_terminal_size')
+    def test_run_prompt_eval_tests_no_result_sink_client(
+            self, mock_get_terminal_size, mock_check_btrfs,
+            mock_get_gclient_root, mock_get_tests_to_run,
+            _mock_perform_chromium_setup, mock_setup_promptfoo, mock_workdir,
+            mock_try_init_client, mock_stdout, mock_report_result):
+        """Tests that results are not reported when no client is available."""
+        mock_get_tests_to_run.return_value = [pathlib.Path('/test/a.yaml')]
+        mock_get_gclient_root.return_value = pathlib.Path('/root')
+        mock_check_btrfs.return_value = True
+        mock_get_terminal_size.return_value = os.terminal_size((80, 24))
+        mock_try_init_client.return_value = None
+
+        mock_promptfoo_instance = mock.Mock()
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='Success')
+        mock_setup_promptfoo.return_value = mock_promptfoo_instance
+
+        mock_workdir_instance = mock.Mock()
+        mock_workdir_instance.path = pathlib.Path('/workdir')
+        mock_workdir.return_value.__enter__.return_value = mock_workdir_instance
+
+        self.args.print_output_on_success = True
+        returncode = eval_prompts._run_prompt_eval_tests(self.args)
+
+        self.assertEqual(returncode, 0)
+        self.assertEqual(mock_stdout.getvalue(), 'Success')
+        mock_report_result.assert_not_called()
 
 
 if __name__ == '__main__':
