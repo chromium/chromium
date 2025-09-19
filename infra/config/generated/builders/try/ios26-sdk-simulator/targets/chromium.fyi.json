@@ -39,7 +39,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -93,7 +93,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -147,7 +147,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -201,7 +201,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -252,7 +252,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -302,7 +302,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
@@ -352,7 +352,7 @@
           ],
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15.5"
+            "os": "Mac-15"
           },
           "named_caches": [
             {
