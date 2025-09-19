@@ -64,6 +64,8 @@ class EntityDataManagerTest : public testing::Test {
         {});
   }
 
+  void TearDown() override { sync_service_.Shutdown(); }
+
   AutofillWebDataServiceTestHelper& helper() { return helper_; }
 
   TestAutofillClient& client() { return client_; }
@@ -107,12 +109,7 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
 // on profile startup.
 // TODO(crbug.com/445879337): Fix Linux MSan Test failure and re-enable the
 // test.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OptInMetric DISABLED_OptInMetric
-#else
-#define MAYBE_OptInMetric OptInMetric
-#endif
-TEST_F(EntityDataManagerTest, MAYBE_OptInMetric) {
+TEST_F(EntityDataManagerTest, OptInMetric) {
   ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
   base::HistogramTester histogram_tester;
   client().set_entity_data_manager(std::make_unique<EntityDataManager>(
