@@ -67,13 +67,6 @@ try_.builder(
     name = "android-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "android_builder",
             "android_with_static_analysis",
@@ -90,13 +83,6 @@ try_.builder(
     name = "fuchsia-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "release_try_builder",
             "remoteexec",
@@ -111,13 +97,6 @@ try_.builder(
     name = "linux-chromeos-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "chromeos_with_codecs",
             "release_try_builder",
@@ -134,13 +113,6 @@ try_.builder(
     name = "linux-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "release_try_builder",
             "remoteexec",
@@ -157,13 +129,6 @@ try_.builder(
     name = "mac-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "release_try_builder",
             "remoteexec",
@@ -185,13 +150,6 @@ try_.builder(
     name = "win10-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(
-        args = {
-            # clang tidy builders have compile errors when clang modules is
-            # enabled.
-            # TODO(https://crbug.com/443228626): Remove this when
-            # tricium_clang_tidy_script.py can handle clang modules build
-            "use_clang_modules": False,
-        },
         configs = [
             "release_try_builder",
             "remoteexec",

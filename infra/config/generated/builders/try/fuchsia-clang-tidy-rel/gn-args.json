@@ -6,7 +6,6 @@
     "symbol_level": 0,
     "target_cpu": "x64",
     "target_os": "fuchsia",
-    "use_clang_modules": false,
     "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
