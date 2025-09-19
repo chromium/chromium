@@ -29,11 +29,6 @@ export function getHtml(this: ComposeboxElement) {
       @focusin=${this.handleComposeboxFocusIn_}
       @focusout=${this.handleComposeboxFocusOut_}>
     <div id="inputContainer">
-      <ntp-composebox-file-carousel
-          id="carousel"
-          .files=${Array.from(this.files_.values())}
-          @delete-file=${this.onDeleteFile_}>
-      </ntp-composebox-file-carousel>
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
           <cr-icon id="aimIcon" icon="composebox:searchSpark"></cr-icon>
@@ -56,6 +51,11 @@ export function getHtml(this: ComposeboxElement) {
           `: ''}
         </div>
       </div>
+      <ntp-composebox-file-carousel
+          id="carousel"
+          .files=${Array.from(this.files_.values())}
+          @delete-file=${this.onDeleteFile_}>
+      </ntp-composebox-file-carousel>
       <ntp-composebox-dropdown
           id="matches"
           role="listbox"
