@@ -137,7 +137,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,
     &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kSmartSuggestionForLargeDownloads,
-    &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kAndroidAnimatedProgressBarInViz,

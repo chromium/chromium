@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import android.app.Activity;
 
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -79,7 +78,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final WindowAndroid mWindowAndroid;
-    private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
@@ -109,7 +107,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<@Nullable Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WindowAndroid windowAndroid,
-            JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
@@ -137,7 +134,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mCurrentTabSupplier = currentTabSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mWindowAndroid = windowAndroid;
-        mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -209,7 +205,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mTabModelSelectorSupplier.get(),
                             mShareDelegateSupplier,
                             mWindowAndroid,
-                            mJankTracker,
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
                             mTabContentManagerSupplier,

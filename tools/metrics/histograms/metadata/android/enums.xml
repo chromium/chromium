@@ -1073,11 +1073,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Font family"/>
 </enum>
 
-<enum name="FrameJankStatus">
-  <int value="0" label="Janky"/>
-  <int value="1" label="NonJanky"/>
-</enum>
-
 <enum name="GmsShortVersionCode">
   <summary>
     Special buckets for the cases when GMS Core version can't be obtained or is

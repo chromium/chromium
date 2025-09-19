@@ -45,7 +45,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -510,7 +509,6 @@ public class FeedSurfaceCoordinatorTest {
                 mActivity,
                 mSnackbarManager,
                 mWindowAndroid,
-                new PlaceholderJankTracker(),
                 mSnapHelper,
                 null,
                 0,

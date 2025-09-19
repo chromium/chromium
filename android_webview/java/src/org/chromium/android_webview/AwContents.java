@@ -513,8 +513,6 @@ public class AwContents implements SmartClipProvider {
     private final AwDisplayModeController mDisplayModeController;
     private final Rect mCachedSafeAreaRect = new Rect();
 
-    private AwFrameMetricsListener mAwFrameMetricsListener;
-
     private AwDarkMode mAwDarkMode;
     private AwWebContentsMetricsRecorder mAwWebContentsMetricsRecorder;
 
@@ -842,10 +840,6 @@ public class AwContents implements SmartClipProvider {
                 mZoomControls.setAutoDismissed(false);
             }
             mZoomControls.invokeZoomPicker();
-            if (mAwFrameMetricsListener != null) {
-                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
-                        /* isScrolling= */ true, mId);
-            }
             if (AwFeatureMap.isEnabled(
                     AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU)) {
                 mScrollAccessibilityHelper.setIsInAScroll(true);
@@ -859,10 +853,6 @@ public class AwContents implements SmartClipProvider {
                 // A call to invoke is required so that a delayed hide task can be posted by
                 // android.
                 mZoomControls.invokeZoomPicker();
-            }
-            if (mAwFrameMetricsListener != null) {
-                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
-                        /* isScrolling= */ false, mId);
             }
             if (AwFeatureMap.isEnabled(
                     AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU)) {
@@ -3339,14 +3329,6 @@ public class AwContents implements SmartClipProvider {
         mIsWindowVisible = visible;
         if (!isDestroyed(NO_WARN)) {
             AwContentsJni.get().setWindowVisibility(mNativeAwContents, mIsWindowVisible);
-
-            if (mAwFrameMetricsListener != null) {
-                if (mIsWindowVisible) {
-                    mAwFrameMetricsListener.onWebViewVisible();
-                } else {
-                    mAwFrameMetricsListener.onWebViewHidden();
-                }
-            }
         }
         // Using TimeUtils to allow it being overridden in tests.
         mLastWindowVisibleTime = visible ? CURRENTLY_VISIBLE : TimeUtils.uptimeMillis();
@@ -4560,10 +4542,6 @@ public class AwContents implements SmartClipProvider {
                 StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
             }
 
-            mAwFrameMetricsListener =
-                    AwFrameMetricsListener.maybeCreate(
-                            mContainerView, mWindowAndroid.getWindowAndroid());
-
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
 
             mAwWindowCoverageTracker =
@@ -4609,12 +4587,6 @@ public class AwContents implements SmartClipProvider {
 
             mScrollAccessibilityHelper.removePostedCallbacks();
             mZoomControls.dismissZoomPicker();
-
-            mAwFrameMetricsListener =
-                    AwFrameMetricsListener.maybeClear(
-                            mAwFrameMetricsListener,
-                            mContainerView,
-                            mWindowAndroid.getWindowAndroid());
 
             if (mDisplayCutoutController != null) {
                 mDisplayCutoutController.onDetachedFromWindow();

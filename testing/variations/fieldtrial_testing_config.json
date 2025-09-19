@@ -6451,36 +6451,6 @@
             ]
         }
     ],
-    "CollectAndroidFrameTimelineMetricsStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230926",
-                    "enable_features": [
-                        "CollectAndroidFrameTimelineMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CollectAndroidFrameTimelineMetricsWebviewStudy": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240320",
-                    "enable_features": [
-                        "CollectAndroidFrameTimelineMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "Collections": [
         {
             "platforms": [

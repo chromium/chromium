@@ -358,8 +358,6 @@ public abstract class ChromeFeatureList {
             "ClearBrowsingDataAndroidSurvey";
     public static final String CLEAR_INSTANCE_INFO_WHEN_CLOSED_INTENTIONALLY =
             "ClearInstanceInfoWhenClosedIntentionally";
-    public static final String COLLECT_ANDROID_FRAME_TIMELINE_METRICS =
-            "CollectAndroidFrameTimelineMetrics";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
@@ -885,11 +883,6 @@ public abstract class ChromeFeatureList {
                     CLEANUP_LEGACY_TABSTATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
-            newCachedFlag(
-                    COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCommandLineOnNonRooted =
             newCachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sContextMenuPictureInPictureAndroid =
@@ -1181,7 +1174,6 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScaling,
                     sClankStartupLatencyInjection,
                     sCleanupLegacyTabState,
-                    sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,
                     sContextMenuPictureInPictureAndroid,
                     sCpaSpecUpdate,
@@ -1557,19 +1549,6 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     CLANK_STARTUP_LATENCY_INJECTION, "latency_injection_amount_millis", 0);
 
-    /**
-     * The parameter to control how quickly the JankTracker should be enabled. Some JankTracker
-     * implementations can be quite heavy (including thread creation and the link). To avoid
-     * impacting start up we support delaying the construction of the JankTracker.
-     *
-     * <p>3000ms is enough to push us past the median start up time without losing to much of feed
-     * interactions.
-     */
-    public static final IntCachedFeatureParam
-            sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs =
-                    newIntCachedFeatureParam(
-                            COLLECT_ANDROID_FRAME_TIMELINE_METRICS, "delayed_start_ms", 3000);
-
     /** Batch size for number of legacy TabState files that should be deleted in a batch. */
     public static final IntCachedFeatureParam sCleanupLegacyTabStateBatchSize =
             newIntCachedFeatureParam(
@@ -1817,7 +1796,6 @@ public abstract class ChromeFeatureList {
                     sClampAutomotiveScalingMaxScalingPercentage,
                     sClankStartupLatencyInjectionAmountMs,
                     sCleanupLegacyTabStateBatchSize,
-                    sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs,
                     sDisableInstanceLimitMaxCount,
                     sDisableInstanceLimitMemoryThresholdMb,
                     sEdgeToEdgeBottomChinOemList,

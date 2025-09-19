@@ -51,24 +51,6 @@ chromium-metrics-reviews@google.com.
   <variant name="vr" summary="Virtual Reality Module"/>
 </variants>
 
-<variants name="AndroidFrameTimelineJankScenario">
-  <variant name=".FeedScrolling" summary=""/>
-  <variant name=".NewTabPage" summary=""/>
-  <variant name=".OmniboxFocus" summary=""/>
-  <variant name=".OpenLinkInNewTab" summary=""/>
-  <variant name=".StartSurfaceHomepage" summary=""/>
-  <variant name=".StartSurfaceTabSwitcher" summary=""/>
-  <variant name=".Startup" summary=""/>
-  <variant name=".TabSwitcher" summary=""/>
-  <variant name=".Total" summary=""/>
-  <variant name=".WebviewScrolling"
-      summary="In case of multiple webviews being scrolled in a window, we
-               emit this histogram just once. From Android perspective there
-               is just a single frame being produced and it reports back
-               metrics for that one frame which could potentially have
-               updates from multiple webviews."/>
-</variants>
-
 <variants name="AndroidNavigationOrSuggestionPrefetch">
   <variant name="NavigationPrefetch"
       summary="Recorded for prefetches where Chrome is relatively confident
@@ -215,16 +197,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:MessageIdentifier) -->
-
-<variants name="ScrollScenarios">
-  <variant name="FeedScrolling" summary="feed scroll."/>
-  <variant name="WebviewScrolling"
-      summary="webview scroll. In case of multiple webviews being scrolled in
-               a window, the overlapping parts of scrolls will share the
-               metrics reported from Android. A janky frame during multiple
-               scrolls scenario will be reported in all the scrolls and vice
-               a versa."/>
-</variants>
 
 <!-- LINT.IfChange(IntentOriginVariants) -->
 
@@ -380,23 +352,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!--  LINT.ThenChange(//android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumAwInit.java:WebViewChromiumStartupMode) -->
-
-<variants name="WVScrollJankOperator">
-  <variant name="Max"
-      summary="maximum number of vsyncs a frame was delayed by"/>
-  <variant name="Sum" summary="sum of missed vsyncs across all frames"/>
-</variants>
-
-<variants name="WVScrollLength">
-  <variant name="" summary="all scrolls"/>
-  <variant name=".Large"
-      summary="large scrolls - number of presented frames more than 64"/>
-  <variant name=".Medium"
-      summary="medium length scrolls - number of presented frames between
-               [17,64]"/>
-  <variant name=".Small"
-      summary="small scrolls - number of presented frames between [1,16]"/>
-</variants>
 
 <histogram name="Android.ActivityStop.NumberOfTabsUsed" units="count"
     expires_after="2026-01-18">
@@ -2255,100 +2210,6 @@ chromium-metrics-reviews@google.com.
     Records the time taken to respond to a request from the renderer to fetch a
     specific font file from the GMS Core Android downloadable font provider.
   </summary>
-</histogram>
-
-<histogram name="Android.FrameTimelineJank.Duration{JankScenario}" units="ms"
-    expires_after="2025-05-11">
-  <owner>oksamyt@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Amount of time it takes to draw Android UI frames as measured by Android's
-    FrameMetrics API. Each frame's draw duration is stored individually.
-
-    The samples for this metric (along with
-    Android.FrameTimelineJank.JankyFrames) are manually passed from Java to C++
-    to be recorded. This is done instead of recording in real time from Java due
-    to the large number of generated samples (potentially ~60 per second).
-    Recording them directly from Java would result in a JNI call for each sample
-    which could cause performance issues.
-
-    FrameMetrics only reports frames with Android UI updates. An idle input
-    field would report only 2 frames per second due to the cursor blink
-    animation. Scrolling through a web page may record no frames if no Android
-    UI (like the address bar) updates.
-
-    {JankScenario}
-  </summary>
-  <token key="JankScenario" variants="AndroidFrameTimelineJankScenario"/>
-</histogram>
-
-<histogram name="Android.FrameTimelineJank.FrameJankStatus{JankScenario}"
-    enum="FrameJankStatus" expires_after="2025-05-11">
-  <owner>kartarsingh@chromium.org</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Note: This metric doesn't capture web contents scrolling quality on chrome,
-    it is only emitted on Webview. For scroll jank metrics in chrome please
-    check Event.ScrollJank.DelayedFramesPercentage* and
-    Event.ScrollJank.MissedVsyncs* histograms.
-
-    This metric measures jankiness of frames during scrolls according to the
-    Android's FrameMetrics API. Samples are recorded into the Janky bucket for
-    frames for which their total duration exceeded the given deadline and into
-    the NonJanky bucket for all other frames. This metric is recorded at the
-    same time as Android.Jank.FrameDuration histogram.
-
-    {JankScenario}
-
-    Known caveats of this metric: 1) During a staggered scroll where finger
-    could be stationary for some time, any janks during the period when finger
-    was stationary would still be marked as scroll janks even when we wouldn't
-    have been producing frames during that time.
-  </summary>
-  <token key="JankScenario" variants="AndroidFrameTimelineJankScenario"/>
-</histogram>
-
-<histogram
-    name="Android.FrameTimelineJank.{Scenario}.DelayedFramesPercentage.PerScroll{Length}"
-    units="%" expires_after="2025-03-09">
-  <owner>kartarsingh@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <summary>
-    Percentage of janky frames in a {Scenario}
-
-    This metric is computed based on Android FrameMetrics. A frame is deemed
-    janky if time taken to render frame(FrameMetrics.TOTAL_DURATION) exceeds the
-    time available to app(FrameMetrics.DEADLINE). The metric is reported for
-    {Length}, at the end of scroll.
-
-    Note: For similar metric in chrome for web contents scrolling please check
-    Event.ScrollJank.DelayedFramesPercentage.PerScroll*
-  </summary>
-  <token key="Length" variants="WVScrollLength"/>
-  <token key="Scenario" variants="ScrollScenarios"/>
-</histogram>
-
-<histogram
-    name="Android.FrameTimelineJank.{Scenario}.MissedVsyncs{Operator}.PerScroll{Length}"
-    units="counts" expires_after="2025-05-11">
-  <owner>kartarsingh@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <summary>
-    This metric reports the {Operator} in {Scenario}
-
-    This metric is computed based on Android FrameMetrics. Missed vsyncs of
-    janky frame is estimated as `ceil((total_duration -
-    deadline)/vsync_interval)`, where total_duration is time taken to render
-    frame(FrameMetrics.TOTAL_DURATION) and deadline is time available to
-    app(FrameMetrics.DEADLINE). The metric is reported for {Length}, at the end
-    of scroll.
-
-    Note: For similar metric in chrome for web contents scrolling please check
-    Event.ScrollJank.MissedVsyncs*.PerScroll*
-  </summary>
-  <token key="Length" variants="WVScrollLength"/>
-  <token key="Operator" variants="WVScrollJankOperator"/>
-  <token key="Scenario" variants="ScrollScenarios"/>
 </histogram>
 
 <histogram

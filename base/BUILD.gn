@@ -1182,8 +1182,6 @@ component("base") {
       "android/important_file_writer_android.cc",
       "android/input_hint_checker.cc",
       "android/input_hint_checker.h",
-      "android/jank_metric_uma_recorder.cc",
-      "android/jank_metric_uma_recorder.h",
       "android/java_handler_thread.cc",
       "android/java_handler_thread.h",
       "android/java_heap_dump_generator.cc",
@@ -1277,7 +1275,6 @@ component("base") {
       ":content_uri_utils_jni",
       ":features_jni",
       ":file_utils_jni",
-      ":jank_tracker_jni",
       ":jni_android_jni",
       ":memory_jni",
       ":metrics_jni",
@@ -4008,7 +4005,6 @@ test("base_unittests") {
       "android/application_status_listener_unittest.cc",
       "android/child_process_unittest.cc",
       "android/content_uri_utils_unittest.cc",
-      "android/jank_metric_uma_recorder_unittest.cc",
       "android/java_handler_thread_unittest.cc",
       "android/jni_android_unittest.cc",
       "android/jni_array_unittest.cc",
@@ -4696,7 +4692,6 @@ if (is_android) {
       ":features_java",
       ":file_provider_utils_java",
       ":file_utils_java",
-      ":jank_tracker_java",
       ":jni_android_java",
       ":jni_utils_java",
       ":library_loader_java",
@@ -4861,38 +4856,6 @@ if (is_android) {
     public_deps = [
       ":metrics_ScopedSysTraceEvent_java",
       ":metrics_jni_java",
-    ]
-  }
-
-  generate_jni("jank_tracker_jni") {
-    sources = [ "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java" ]
-  }
-
-  android_library("jank_tracker_java") {
-    srcjar_deps = [ ":jank_tracker_jni" ]
-    sources = [
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java",
-      "android/java/src/org/chromium/base/jank_tracker/FrameMetricsStore.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankActivityTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankEndScenarioTime.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetricUMARecorder.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankMetrics.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingRunnable.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankReportingScheduler.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankScenario.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTracker.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java",
-      "android/java/src/org/chromium/base/jank_tracker/JankTrackerStateController.java",
-      "android/java/src/org/chromium/base/jank_tracker/PlaceholderJankTracker.java",
-    ]
-    deps = [
-      ":activity_state_java",
-      ":lifetime_java",
-      ":log_java",
-      ":tasks_java",
-      ":time_utils_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -5425,7 +5388,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
       "android/javatests/src/org/chromium/base/VirtualDocumentPathTest.java",
-      "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
       "android/javatests/src/org/chromium/base/metrics/ScopedSysTraceEventTest.java",
@@ -5685,12 +5647,6 @@ if (is_android) {
       "android/junit/src/org/chromium/base/UnownedUserDataHostTest.java",
       "android/junit/src/org/chromium/base/UnownedUserDataKeyTest.java",
       "android/junit/src/org/chromium/base/ValueChangedCallbackTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsListenerTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/FrameMetricsStoreTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankActivityTrackerTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankMetricUMARecorderTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankReportingRunnableTest.java",
-      "android/junit/src/org/chromium/base/jank_tracker/JankReportingSchedulerTest.java",
       "android/junit/src/org/chromium/base/library_loader/LinkerTest.java",
       "android/junit/src/org/chromium/base/lifetime/LifetimeAssertUnitTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",

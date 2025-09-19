@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -89,7 +88,6 @@ public class TabUmaTest {
                 cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(),
                 cta.getWindowAndroid(),
-                new PlaceholderJankTracker(),
                 rootUiCoordinator.getToolbarManager()::getToolbar,
                 null,
                 null,

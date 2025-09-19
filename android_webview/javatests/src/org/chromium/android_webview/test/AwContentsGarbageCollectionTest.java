@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,7 +38,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -115,15 +113,6 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
         public void setAwContentsStrongRef(AwContents awContents) {
             mAwContentsStrongRef = awContents;
         }
-    }
-
-    @Test
-    @DisableHardwareAcceleration
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
-    public void testCreateWithMetricsCollectionAndGcOneTime() throws Throwable {
-        testCreateAndGcOneTime();
     }
 
     @Test

@@ -490,7 +490,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/AwDevToolsServer.java",
       "java/src/org/chromium/android_webview/AwDisplayCutoutController.java",
       "java/src/org/chromium/android_webview/AwDisplayModeController.java",
-      "java/src/org/chromium/android_webview/AwFrameMetricsListener.java",
       "java/src/org/chromium/android_webview/AwGeolocationPermissions.java",
       "java/src/org/chromium/android_webview/AwHistogramRecorder.java",
       "java/src/org/chromium/android_webview/AwHttpAuthHandler.java",

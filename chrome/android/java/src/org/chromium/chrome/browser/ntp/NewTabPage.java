@@ -35,8 +35,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -155,7 +153,6 @@ public class NewTabPage
 
     private final String mTitle;
     private final Point mLastTouchPosition = new Point(-1, -1);
-    private final JankTracker mJankTracker;
     private final Context mContext;
     private final int mBackgroundColor;
     protected final NewTabPageManagerImpl mNewTabPageManager;
@@ -494,7 +491,6 @@ public class NewTabPage
      * @param bottomSheetController The controller for bottom sheets, used by the feed.
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
      * @param windowAndroid The containing window of this page.
-     * @param jankTracker {@link JankTracker} object to measure jankiness while NTP is visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param homeSurfaceTracker Used to decide whether we are the home surface.
      * @param tabContentManagerSupplier Used to create tab thumbnails.
@@ -519,7 +515,6 @@ public class NewTabPage
             BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
-            JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
@@ -535,7 +530,6 @@ public class NewTabPage
         mActivityTabProvider = activityTabProvider;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
-        mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mMostVisitedTileClickObservers = new ObserverList<>();
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -585,19 +579,6 @@ public class NewTabPage
                                 && (mHomeSurfaceTracker == null
                                         || !mHomeSurfaceTracker.canShowHomeSurface(mTab))) {
                             mSingleTabSwitcherCoordinator.hide();
-                        }
-                    }
-
-                    @Override
-                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
-                        // We start/stop tracking based on InteractabilityChanged in addition to
-                        // Shown/Hidden because those events don't trigger for switching to tab
-                        // switcher, we don't rely solely on this event because it doesn't
-                        // trigger when the user navigates to a website.
-                        if (isInteractable) {
-                            mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
-                        } else {
-                            mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
                         }
                     }
                 };
@@ -738,7 +719,6 @@ public class NewTabPage
                         activity,
                         snackbarManager,
                         windowAndroid,
-                        mJankTracker,
                         new SnapScrollHelperImpl(mNewTabPageManager, mNewTabPageLayout),
                         mNewTabPageLayout,
                         mBrowserControlsStateProvider.getTopControlsHeight(),
@@ -1065,13 +1045,11 @@ public class NewTabPage
     private void recordNtpShown() {
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
-        mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
         SuggestionsMetrics.recordSurfaceVisible();
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */
     private void recordNtpHidden() {
-        mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
         RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "NewTabPage.TimeSpent",
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);

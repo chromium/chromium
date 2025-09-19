@@ -55,7 +55,6 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
@@ -1831,31 +1830,6 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
-    }
-
-    // Disables hardware acceleration and ensures that there is no crash in the code that adds and
-    // removes frame metrics listener. This code should do nothing when hardware acceleration is
-    // disabled.
-    @Test
-    @DisableHardwareAcceleration
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
-    public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Frame metrics listener is detached when AwContents becomes invisible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
-                });
-
-        Assert.assertFalse(testView.isBackedByHardwareView());
     }
 
     @Test

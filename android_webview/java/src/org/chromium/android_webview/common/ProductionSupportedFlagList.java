@@ -598,9 +598,6 @@ public final class ProductionSupportedFlagList {
                 "Enables throttling OnBeginFrame for video frame sinks"
                         + "with a preferred framerate defined."),
         Flag.baseFeature(
-                BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
-                "Report frame metrics to Google, if metrics reporting has been enabled."),
-        Flag.baseFeature(
                 PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT,
                 "This flag won't block MIDI by default in WebView. In fact "
                         + "it makes sure the changes made to do so in "

@@ -51,9 +51,6 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankTracker;
-import org.chromium.base.jank_tracker.JankTrackerImpl;
-import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -584,9 +581,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     // This is the cached value of IntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
-
-    // Listens to FrameMetrics and records janks.
-    private JankTracker mJankTracker;
 
     // Whether the activity is staring from a resumption. False if the activity is starting from
     // onCreate(), a cold startup.
@@ -2850,22 +2844,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             startupLatencyInjector.maybeInjectLatency();
         }
 
-        // Android FrameMetrics allow tracking of java views and their deadline misses (frame
-        // drops/janks).
-        if (ChromeFeatureList.sCollectAndroidFrameTimelineMetrics.isEnabled()) {
-            // We delay initialization because we have noticed a impact on started up, but this
-            // metric collection isn't critical. Delaying gets us past start up and lets Chrome's
-            // scheduler decide its priority.
-            mJankTracker =
-                    new JankTrackerImpl(
-                            this,
-                            ChromeFeatureList
-                                    .sCollectAndroidFrameTimelineMetricsJankTrackerDelayedStartMs
-                                    .getValue());
-        } else {
-            mJankTracker = new PlaceholderJankTracker();
-        }
-
         // Decide whether to record startup UMA histograms. This is done early in the main
         // Activity.onCreate() to avoid recording navigation delays when they require user input to
         // proceed. Having an uninitialized native library has been taken as a sign of starting
@@ -3426,7 +3404,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getActivityTabProvider(),
                             getLifecycleDispatcher(),
                             getWindowAndroid(),
-                            mJankTracker,
                             getToolbarManager()::getToolbar,
                             mHomeSurfaceTracker,
                             getTabContentManagerSupplier(),
@@ -4347,11 +4324,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
-        }
-
-        if (mJankTracker != null) {
-            mJankTracker.destroy();
-            mJankTracker = null;
         }
 
         if (mTabModelSelectorTabObserver != null) {
