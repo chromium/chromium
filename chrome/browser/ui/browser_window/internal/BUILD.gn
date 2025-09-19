@@ -154,6 +154,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/IdSequencer.java",
     ]
     deps = [
       "//base:log_java",

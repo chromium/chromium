@@ -50,6 +50,23 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void createPendingTask_createsAndStoresPendingTask() {
+        // Arrange.
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+
+        // Act.
+        var task = mChromeAndroidTaskTracker.createPendingTask(mockParams);
+
+        // Assert.
+        assertNotNull(task);
+        assertFalse(task.getPendingId().isEmpty());
+        assertTrue(task.getId().isEmpty());
+        assertEquals(mockParams.getProfile(), task.getProfile());
+        assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
+    }
+
+    @Test
     public void obtainTask_activityWindowAndroidBelongsToNewTask_createsNewTask() {
         // Arrange.
         var activityWindowAndroid =

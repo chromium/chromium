@@ -46,6 +46,16 @@ public interface ChromeAndroidTaskTracker {
             TabModel tabModel);
 
     /**
+     * Creates a pending {@link ChromeAndroidTask} that is not yet associated with an {@code
+     * Activity}.
+     *
+     * @param createParams The {@link AndroidBrowserWindowCreateParams} that will determine the
+     *     newly created {@link Activity}'s startup state.
+     * @return The pending {@link ChromeAndroidTask}.
+     */
+    ChromeAndroidTask createPendingTask(AndroidBrowserWindowCreateParams createParams);
+
+    /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.
      *
      * @param taskId Same as defined by {@link android.app.TaskInfo#taskId}.

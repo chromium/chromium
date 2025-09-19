@@ -129,18 +129,19 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void constructor_withCreateParams_pendingStateAndInvalidId() {
+    public void constructor_withCreateParams_pendingState() {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
 
         // Act.
-        var task = new ChromeAndroidTaskImpl(mockParams);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
 
         // Assert.
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
         assertEquals(mockParams.getProfile(), task.getProfile());
         assertEquals(State.PENDING, task.getState());
+        assertEquals(1, task.getPendingId().getAsInt());
         assertTrue(task.getId().isEmpty());
         assertNull(task.getActivityWindowAndroidForTesting());
     }
@@ -221,7 +222,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Arrange.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(mockParams);
+        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
         int taskId = 2;
         var activityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
@@ -231,6 +232,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertEquals(taskId, task.getId().getAsInt());
+        assertTrue(task.getPendingId().isEmpty());
         assertEquals(activityWindowAndroid, task.getActivityWindowAndroid());
     }
 

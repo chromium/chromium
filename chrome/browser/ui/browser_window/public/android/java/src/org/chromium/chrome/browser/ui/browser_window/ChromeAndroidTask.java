@@ -58,6 +58,13 @@ public interface ChromeAndroidTask {
     OptionalInt getId();
 
     /**
+     * Returns an {@link OptionalInt} holding the the pending task ID of this {@link
+     * ChromeAndroidTask}. The {@link OptionalInt} will be empty for a {@link ChromeAndroidTask}
+     * that is not in a {@code State.PENDING} state.
+     */
+    OptionalInt getPendingId();
+
+    /**
      * Returns the browser window type of this {@link ChromeAndroidTask}.
      *
      * <p>The types are defined in the native {@code BrowserWindowInterface::Type} enum.

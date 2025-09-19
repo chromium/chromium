@@ -85,6 +85,7 @@ final class ChromeAndroidTaskImpl
     private final @BrowserWindowType int mBrowserWindowType;
 
     private OptionalInt mId;
+    private OptionalInt mPendingId;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
     private final Profile mInitialProfile;
@@ -194,6 +195,7 @@ final class ChromeAndroidTaskImpl
             TabModel tabModel) {
         mBrowserWindowType = browserWindowType;
         mId = OptionalInt.of(getActivity(activityWindowAndroid).getTaskId());
+        mPendingId = OptionalInt.empty();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         assert tabModel.getProfile() != null
                 : "ChromeAndroidTask must be initialized with a non-null profile";
@@ -202,9 +204,10 @@ final class ChromeAndroidTaskImpl
         setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
     }
 
-    ChromeAndroidTaskImpl(AndroidBrowserWindowCreateParams createParams) {
+    ChromeAndroidTaskImpl(int pendingId, AndroidBrowserWindowCreateParams createParams) {
         mBrowserWindowType = createParams.getWindowType();
         mId = OptionalInt.empty();
+        mPendingId = OptionalInt.of(pendingId);
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
         mInitialProfile = createParams.getProfile();
         mState.set(State.PENDING);
@@ -213,6 +216,11 @@ final class ChromeAndroidTaskImpl
     @Override
     public OptionalInt getId() {
         return mId;
+    }
+
+    @Override
+    public OptionalInt getPendingId() {
+        return mPendingId;
     }
 
     @Override
@@ -586,8 +594,10 @@ final class ChromeAndroidTaskImpl
             switch (getState()) {
                 case PENDING:
                     assert mId.isEmpty();
+                    assert mPendingId.isPresent();
                     break;
                 case ALIVE:
+                    assert mPendingId.isEmpty();
                     assert mId.isPresent();
                     assert mId.getAsInt() == getActivity(activityWindowAndroid).getTaskId()
                             : "The new ActivityWindowAndroid doesn't belong to this Task.";
@@ -614,6 +624,7 @@ final class ChromeAndroidTaskImpl
             // Transition from PENDING to ALIVE.
             if (mState.get() == State.PENDING) {
                 mId = OptionalInt.of(getActivity(activityWindowAndroid).getTaskId());
+                mPendingId = OptionalInt.empty();
                 mState.set(State.ALIVE);
                 // TODO (crbug.com/444745184): Dispatch pending actions.
             }

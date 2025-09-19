@@ -70,6 +70,17 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     @Override
+    public ChromeAndroidTask createPendingTask(AndroidBrowserWindowCreateParams createParams) {
+        synchronized (mTasksLock) {
+            int taskId = IdSequencer.next();
+            var pendingTask = new ChromeAndroidTaskImpl(taskId, createParams);
+            // TODO (crbug.com/444744966): Update mPendingTasks.
+            // TODO (crbug.com/444744510): Launch an activity based on createParams.
+            return pendingTask;
+        }
+    }
+
+    @Override
     @Nullable
     public ChromeAndroidTask get(int taskId) {
         synchronized (mTasksLock) {
