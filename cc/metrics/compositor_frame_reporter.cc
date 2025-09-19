@@ -1002,7 +1002,12 @@ void CompositorFrameReporter::SetTreesInVizBranchTime(
 
 void CompositorFrameReporter::StartStageUpdateDisplayTree(
     SubmitInfo& submit_info) {
-  DCHECK(impl_frame_finish_time() < submit_info.time);
+  // TODO(crbug.com/445970842):
+  // If main the main frame has been aborted, the impl_frame_finish_time() might
+  // be after the UpdateLayerTree has already been sent over.
+  if (!main_frame_abort_time_.has_value()) {
+    DCHECK(impl_frame_finish_time() < submit_info.time);
+  }
   StartStage(StageType::kEndActivateToSubmitUpdateDisplayTree,
              impl_frame_finish_time());
   SetTreesInVizBranchTime(submit_info.time);
@@ -1037,6 +1042,8 @@ void CompositorFrameReporter::OnFinishImplFrame(base::TimeTicks timestamp,
   waiting_for_main_ = waiting_for_main;
 }
 
+// TODO(crbug.com/445970842): If impl_frame_finish_time_ is set, do not
+// override it.
 void CompositorFrameReporter::OnAbortBeginMainFrame(base::TimeTicks timestamp) {
   DCHECK(!main_frame_abort_time_.has_value());
   main_frame_abort_time_ = timestamp;

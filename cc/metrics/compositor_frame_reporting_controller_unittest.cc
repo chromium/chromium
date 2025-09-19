@@ -1049,6 +1049,26 @@ class TreesInVizClientCompositorFrameReportingControllerTest
 };
 
 TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
+       ValidateTreesInVizAbortedFrame) {
+  // base::HistogramTester histogram_tester;
+  reporting_controller_.WillBeginImplFrame(args_, /*will_throttle_main=*/false);
+  reporting_controller_.WillBeginMainFrame(args_);
+
+  // Pretend that we submitted the UpdateDisplayTree.
+  SubmitInfo submit_info = {1u, AdvanceNowByMs(10)};
+  submit_info.trees_in_viz_submit_time = AdvanceNowByMs(13);
+
+  // Abort the main frame. This sets the impl_frame_finish_time.
+  reporting_controller_.BeginMainFrameAborted(
+      current_id_, CommitEarlyOutReason::kFinishedNoUpdates);
+
+  // We ge some feedbacks at some later time because we ended up using the
+  // update tree to produce a frame. Should run without crashing.
+  reporting_controller_.DidSubmitCompositorFrame(submit_info, current_id_,
+                                                 last_activated_id_);
+}
+
+TEST_F(TreesInVizClientCompositorFrameReportingControllerTest,
        ValidateTreesInVizBreakdown) {
   base::HistogramTester histogram_tester;
 
