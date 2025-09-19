@@ -310,13 +310,13 @@
     padding-inline-start: var(--text-input-left-spacing);
   }
 
-  #composebox::part(smart-compose) {
-    display: none;
+  #composebox::part(input)::placeholder {
+    color: revert;
   }
 
   #composebox::part(action-icon) {
     --cr-icon-button-size: 48px;
-    --cr-icon-button-icon-size: 24px
+    --cr-icon-button-icon-size: 24px;
     --cr-icon-button-hover-background-color:
       var(--color-new-tab-page-composebox-hover);
   }

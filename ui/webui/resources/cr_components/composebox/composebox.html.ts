@@ -31,7 +31,7 @@ export function getHtml(this: ComposeboxElement) {
     <div id="inputContainer">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
-          <cr-icon id="aimIcon" icon="composebox:searchSpark"></cr-icon>
+          <div id="aimIcon"></div>
         </div>
         <div id="inputWrapper">
           <textarea autocomplete="off" id="input"
@@ -39,9 +39,10 @@ export function getHtml(this: ComposeboxElement) {
             placeholder="${this.inputPlaceholder_}"
             part="input"
             @input=${this.handleInput_}
-            @scroll="${this.handleScroll_}"></textarea>
+            @scroll="${this.handleScroll_}"
+            @focusin="${this.handleInputFocusIn_}"></textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`
-            <div id="smartCompose" part="smart-compose">
+            <div id="smartCompose">
               <!-- Comments in between spans to eliminate spacing between
                    spans -->
               <span id="invisibleText">${this.input_}</span><!--
@@ -70,7 +71,7 @@ export function getHtml(this: ComposeboxElement) {
       </ntp-composebox-dropdown>
     ${this.contextMenuEnabled_ ? html`
       <composebox-context-menu-entrypoint id="contextEntrypoint"
-          class="icon-fade upload-icon no-overlap"
+          class="upload-icon no-overlap"
           .tabSuggestions="${this.tabSuggestions_}"
           @open-image-upload="${this.openImageUpload_}"
           @open-file-upload="${this.openFileUpload_}"
@@ -118,7 +119,8 @@ export function getHtml(this: ComposeboxElement) {
         part="action-icon"
         title="${this.i18n('composeboxSubmitButtonTitle')}"
         @click="${this.submitQuery_}"
-        ?disabled="${!this.submitEnabled_}">
+        ?disabled="${!this.submitEnabled_}"
+        @focusin="${this.handleSubmitFocusIn_}">
       </cr-icon-button>
     </div>
   </div>
