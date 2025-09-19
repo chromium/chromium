@@ -31,7 +31,7 @@ bool IsXmlElementNamed(const base::Value& element, const std::string& name) {
     return false;
   const std::string* tag_text =
       element.GetDict().FindString(mojom::XmlParser::kTagKey);
-  return tag_text ? *tag_text == name : false;
+  return tag_text && *tag_text == name;
 }
 
 bool IsXmlElementOfType(const base::Value& element, const std::string& type) {
@@ -39,7 +39,7 @@ bool IsXmlElementOfType(const base::Value& element, const std::string& type) {
     return false;
   const std::string* type_text =
       element.GetDict().FindString(mojom::XmlParser::kTypeKey);
-  return type_text ? *type_text == type : false;
+  return type_text && *type_text == type;
 }
 
 bool GetXmlElementTagName(const base::Value& element, std::string* tag_name) {
