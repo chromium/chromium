@@ -1468,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   CheckCurrentScreen(FjordTouchControllerScreenView::kScreenId);
 
-  wizard_controller->ExitFjordTouchControllerScreen();
+  EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
   CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
 }
 
@@ -1495,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 
   // Expect that Exit has no affect since TC setup screen is not showing.
-  wizard_controller->ExitFjordTouchControllerScreen();
+  EXPECT_FALSE(wizard_controller->ExitFjordTouchControllerScreen());
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 }
 
