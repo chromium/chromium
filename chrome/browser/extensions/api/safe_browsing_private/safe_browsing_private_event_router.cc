@@ -10,21 +10,13 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/json/values_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
-#include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/enterprise/connectors/core/reporting_service_settings.h"
-#include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -39,13 +31,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#else
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#endif
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #endif
 
 namespace extensions {
@@ -95,31 +80,11 @@ SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
   event_router_ = EventRouter::Get(context_);
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  reporting_client_ =
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          context);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  identity_manager_ = IdentityManagerFactory::GetForProfile(
+      Profile::FromBrowserContext(context_));
 }
 
 SafeBrowsingPrivateEventRouter::~SafeBrowsingPrivateEventRouter() = default;
-
-// static
-std::string SafeBrowsingPrivateEventRouter::GetFileName(
-    const std::string& filename,
-    const bool include_full_path) {
-  base::FilePath::StringType os_filename;
-#if BUILDFLAG(IS_WIN)
-  os_filename = base::UTF8ToWide(filename);
-#else
-  os_filename = filename;
-#endif
-
-  return include_full_path
-             ? filename
-             : base::FilePath(os_filename).BaseName().AsUTF8Unsafe();
-}
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
     const GURL& url,
@@ -174,7 +139,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
   params.url = url.spec();
   params.file_name = file_name;
   params.download_digest_sha256 = download_digest_sha256;
-  params.user_name = reporting_client_->GetProfileUserName();
+  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -199,7 +164,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   if (net_error_code < 0) {
     params.net_error_code = base::NumberToString(net_error_code);
   }
-  params.user_name = reporting_client_->GetProfileUserName();
+  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -224,7 +189,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   if (net_error_code < 0) {
     params.net_error_code = base::NumberToString(net_error_code);
   }
-  params.user_name = reporting_client_->GetProfileUserName();
+  params.user_name = enterprise_connectors::GetProfileEmail(identity_manager_);
 
   // |event_router_| can be null in tests.
   if (event_router_) {
@@ -237,6 +202,11 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
         std::move(event_value));
     event_router_->BroadcastEvent(std::move(extension_event));
   }
+}
+
+void SafeBrowsingPrivateEventRouter::SetIdentityManagerForTesting(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_ = identity_manager;
 }
 
 }  // namespace extensions
