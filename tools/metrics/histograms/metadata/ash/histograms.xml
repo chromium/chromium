@@ -804,27 +804,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Ash.Assistant.AnimationSmoothness{AshAssistantAnimationSmoothness}"
-    units="%" expires_after="2021-11-21">
-  <owner>cowmoo@chromium.org</owner>
-  <owner>xiaohuic@chromium.org</owner>
-  <summary>
-    Relative smoothness of assistant related animations. 100% represents ideally
-    smooth 60 frames per second. {AshAssistantAnimationSmoothness}
-  </summary>
-  <token key="AshAssistantAnimationSmoothness">
-    <variant name=".CardElement"
-        summary="Animation for showing and hiding card responses"/>
-    <variant name=".ResizeAssistantPageView"
-        summary="Expand assistant from launcher"/>
-    <variant name=".SuggestionChip"
-        summary="Animation for showing and hiding suggestion chips"/>
-    <variant name=".TextElement"
-        summary="Animation for showing and hiding text response"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Auth.ActiveSessionAuthClosedDuringAuth" enum="Boolean"
     expires_after="2026-02-22">
   <owner>iscsi@google.com</owner>
