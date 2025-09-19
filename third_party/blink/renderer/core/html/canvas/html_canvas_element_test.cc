@@ -12,6 +12,8 @@
 #include "build/buildflag.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
+#include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -24,6 +26,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
@@ -55,6 +59,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(HTMLCanvasElementTest);
 void HTMLCanvasElementTest::TearDown() {
   RenderingTest::TearDown();
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+  SharedGpuContext::Reset();
 }
 
 TEST_P(HTMLCanvasElementTest, CleanCanvasResizeDoesntClearFrameBuffer) {
@@ -145,6 +150,90 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
                    ->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation());
+}
+
+TEST_P(HTMLCanvasElementTest, CanvasMemoryUsage) {
+  // Enable script so that the canvas will create a LayoutHTMLCanvas.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
+  auto* canvas = To<HTMLCanvasElement>(
+      GetDocument().getElementById(AtomicString("canvas")));
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+
+  auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 10, 10);
+  )JS");
+  GetDocument().body()->appendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(10u * 10u * /* Buffer Count */ 1u * /* Bytes per pixel */ 4u,
+            canvas->GetMemoryUsage());
+
+  canvas->NotifyGpuContextLost();
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+}
+
+TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
+  // Enable script so that the canvas will create a LayoutHTMLCanvas.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  auto raster_context_provider = viz::TestContextProvider::CreateRaster();
+  raster_context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(
+      true);
+  InitializeSharedGpuContextRaster(raster_context_provider.get());
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>
+      accelerated_platform;
+  GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
+
+  SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
+  auto* canvas = To<HTMLCanvasElement>(
+      GetDocument().getElementById(AtomicString("canvas")));
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+
+  auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 10, 10);
+  )JS");
+  GetDocument().body()->appendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(10u * 10u * /* Buffer Count */ 3u * /* Bytes per pixel */ 4u,
+            canvas->GetMemoryUsage());
+
+  canvas->NotifyGpuContextLost();
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+}
+
+TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageInvalidContext) {
+  // Enable script so that the canvas will create a LayoutHTMLCanvas.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
+  auto* canvas = To<HTMLCanvasElement>(
+      GetDocument().getElementById(AtomicString("canvas")));
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+
+  // Create a canvas that too big to allocate, causing invalid context.
+  auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setTextContent(R"JS(
+    var canvas = document.getElementById('canvas');
+    canvas.width = 1000000;
+    canvas.height = 1000000;
+    var ctx = canvas.getContext('%s');
+    ctx.fillStyle = 'green';
+    ctx.fillRect(0, 0, 10, 10);
+  )JS");
+  GetDocument().body()->appendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(canvas->RenderingContext() == nullptr ||
+              canvas->RenderingContext()->isContextLost());
+  EXPECT_EQ(0u, canvas->GetMemoryUsage());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {

@@ -617,7 +617,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   void Trace(Visitor*) const override;
 
   // Returns approximate gpu memory allocated per pixel.
-  int AllocatedBufferCountPerPixel() override;
+  int AllocatedBufferCountPerPixel() const override;
 
   // Returns the drawing buffer size after it is, probably, has scaled down
   // to the maximum supported canvas size.

@@ -241,7 +241,7 @@ class CORE_EXPORT OffscreenCanvas final
   };
 
  private:
-  int32_t memory_usage_ = 0;
+  intptr_t memory_usage_ = 0;
 
   friend class OffscreenCanvasTest;
   using ContextFactoryVector =

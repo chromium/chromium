@@ -3526,7 +3526,7 @@ gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
   return gfx::ColorSpace::CreateSRGB();
 }
 
-int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() {
+int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() const {
   // Front and back buffers.
   // TODO(413078308): Add support configuring MSAA and depth-stencil.
   // Note: If/once this class creates a CanvasResourceProvider it should track

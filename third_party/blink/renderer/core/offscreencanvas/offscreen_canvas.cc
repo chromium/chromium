@@ -89,7 +89,6 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
   }
 
   CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
-  UpdateMemoryUsage();
 }
 
 OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
@@ -639,36 +638,23 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
 }
 
 void OffscreenCanvas::UpdateMemoryUsage() {
-  // NOTE: All formats used by canvas are either 8-bit or 16-bit.
-  int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;
+  intptr_t externally_allocated_memory =
+      context_ ? context_->AllocatedBufferSize() : 0;
 
-  base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
-  memory_usage_checked *= Size().width();
-  memory_usage_checked *= Size().height();
-  int32_t new_memory_usage =
-      memory_usage_checked.ValueOrDefault(std::numeric_limits<int32_t>::max());
+  // Subtracting two intptr_t that are known to be positive will never
+  // underflow.
+  intptr_t delta_bytes = externally_allocated_memory - memory_usage_;
 
   // TODO(junov): We assume that it is impossible to be inside a FastAPICall
   // from a host interface other than the rendering context.  This assumption
   // may need to be revisited in the future depending on how the usage of
   // [NoAllocDirectCall] evolves.
-  intptr_t delta_bytes = new_memory_usage - memory_usage_;
-  if (delta_bytes) {
-    // Here we check "IsAllocationAllowed", but it is actually garbage
-    // collection that is not allowed, and allocations can trigger GC.
-    // AdjustAmountOfExternalAllocatedMemory is not an allocation but it
-    // can trigger GC, So we use "IsAllocationAllowed" as a proxy for
-    // "is GC allowed". When garbage collection is already in progress,
-    // allocations are not allowed, but calling
-    // AdjustAmountOfExternalAllocatedMemory is safe, hence the
-    // 'diposing_' condition in the DCHECK below.
-    // Since ThreadState::Current() might be nullptr at test shutdown,
-    // `disposing_` must be evaluated before `IsAllocationAllowed()`.
-    // See crbug.com/438132028 for the detail.
-    DCHECK(disposing_ || ThreadState::Current()->IsAllocationAllowed());
-    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
-    memory_usage_ = new_memory_usage;
-  }
+
+  // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
+  // which is not allowed when `IsAllocationAllowed() == false`.
+  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
+  memory_usage_ = externally_allocated_memory;
 }
 
 size_t OffscreenCanvas::GetMemoryUsage() const {

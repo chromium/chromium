@@ -1280,7 +1280,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   SkAlphaType GetAlphaType() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
   gfx::ColorSpace GetColorSpace() const override;
-  int AllocatedBufferCountPerPixel() override;
+  int AllocatedBufferCountPerPixel() const override;
   bool isContextLost() const override;
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;

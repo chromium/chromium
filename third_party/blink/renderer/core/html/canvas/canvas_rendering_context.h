@@ -303,13 +303,20 @@ class CORE_EXPORT CanvasRenderingContext
   GetRGBAUnacceleratedStaticBitmapImage(SourceDrawingBuffer source_buffer) {
     NOTREACHED();
   }
-  virtual gfx::Size DrawingBufferSize() const { NOTREACHED(); }
 
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
   virtual void Reshape(int width, int height) {}
 
-  virtual int AllocatedBufferCountPerPixel() { NOTREACHED(); }
+  intptr_t AllocatedBufferSize() const;
+  virtual int AllocatedBufferCountPerPixel() const { return 1; }
+  virtual gfx::Size DrawingBufferSize() const {
+    const CanvasRenderingContextHost* host = Host();
+    if (host == nullptr) [[unlikely]] {
+      return gfx::Size();
+    }
+    return Host()->Size();
+  }
 
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }

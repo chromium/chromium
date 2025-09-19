@@ -186,11 +186,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       FlushReason reason) override;
   bool IsCanvas2DResourceProviderValid() override;
   const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
-  int AllocatedBufferCountPerPixel() override {
-    if (!Host()) {
-      return 0;
-    }
-
+  int AllocatedBufferCountPerPixel() const override {
     int buffer_count = 0;
     auto* provider = GetResourceProvider();
     if (provider) {

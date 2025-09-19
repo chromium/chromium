@@ -168,10 +168,6 @@ constexpr int kDefaultCanvasHeight = 150;
 constexpr int kUndefinedQualityValue = -1.0;
 constexpr int kMinimumAccelerated2dCanvasSize = 128 * 129;
 
-// A default size used for canvas memory allocation when canvas size is greater
-// than 2^20.
-constexpr uint32_t kMaximumCanvasSize = 2 << 20;
-
 // Tracks whether canvases should start out with acceleration disabled.
 class DisabledAccelerationCounterSupplement final
     : public GarbageCollected<DisabledAccelerationCounterSupplement>,
@@ -971,6 +967,7 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
 
   if ((IsWebGL() && old_size != Size()) || IsWebGPU()) {
     context_->Reshape(width(), height());
+    UpdateMemoryUsage();
   }
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
@@ -2054,24 +2051,9 @@ UniqueFontSelector* HTMLCanvasElement::GetFontSelector() {
 }
 
 void HTMLCanvasElement::UpdateMemoryUsage() {
-  if (!IsRenderingContext2D() && !IsWebGL())
-    return;
-
-  int buffer_count = context_->AllocatedBufferCountPerPixel();
-
-  // NOTE: All formats used by canvas are either 8-bit or 16-bit.
-  const int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;
-
-  uint32_t canvas_width = std::min(kMaximumCanvasSize, width());
-  uint32_t canvas_height = std::min(kMaximumCanvasSize, height());
-
-  // Recomputation of externally memory usage computation is carried out
-  // in all cases.
-  base::CheckedNumeric<intptr_t> checked_usage = buffer_count * bytes_per_pixel;
-  checked_usage *= canvas_width;
-  checked_usage *= canvas_height;
   intptr_t externally_allocated_memory =
-      checked_usage.ValueOrDefault(std::numeric_limits<intptr_t>::max());
+      context_ ? context_->AllocatedBufferSize() : 0;
+
   // Subtracting two intptr_t that are known to be positive will never
   // underflow.
   intptr_t delta_bytes =
@@ -2081,19 +2063,12 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
   // from a host interface other than the rendering context.  This assumption
   // may need to be revisited in the future depending on how the usage of
   // [NoAllocDirectCall] evolves.
-  if (delta_bytes) {
-    // Here we check "IsAllocationAllowed", but it is actually garbage
-    // collection that is not allowed, and allocations can trigger GC.
-    // AdjustAmountOfExternalAllocatedMemory is not an allocation but it
-    // can trigger GC, So we use "IsAllocationAllowed" as a proxy for
-    // "is GC allowed". When garbage collection is already in progress,
-    // allocations are not allowed, but calling
-    // AdjustAmountOfExternalAllocatedMemory is safe, hence the
-    // 'diposing_' condition in the DCHECK below.
-    DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
-    externally_allocated_memory_ = externally_allocated_memory;
-  }
+
+  // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
+  // which is not allowed when `IsAllocationAllowed() == false`.
+  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
+  externally_allocated_memory_ = externally_allocated_memory;
 }
 
 size_t HTMLCanvasElement::GetMemoryUsage() const {
