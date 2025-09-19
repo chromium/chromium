@@ -40,6 +40,12 @@ namespace {
 constexpr char kUser1Email[] = "user1@geolocation";
 constexpr char kUser2Email[] = "user2@geolocation";
 
+// Caveat: This test is probably not 100% correct, as the sunrise/sunset
+// compucation depend not only on the longtigude and latitude but also on the
+// timezone. However, updating timezone using
+// `base::test::ScopedRestoreDefaultTimezone` has issue with chrome library
+// code, so this test is left as is, at least for now.
+
 // Sets of test longitudes/latitude and the corresponding sunrise/sunset times
 // for testing. They all assume the clock's current time is `kTestNow`.
 constexpr std::string_view kTestNow = "23 Dec 2021 12:00:00";
