@@ -304,6 +304,22 @@ public final class ChromePreferenceKeys {
     public static final String EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS =
             "Chrome.NTPExploreOfflineCard.HasExploreOfflineContent";
 
+    /** Indicates whether the NTP page URL has been overridden by an extension. */
+    public static final String EXTENSIONS_NTP_URL_OVERRIDE_ENABLED =
+            "Extensions.UrlOverrides.Page.NTP";
+
+    /** Indicates whether the history page URL has been overridden by an extension. */
+    public static final String EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED =
+            "Extensions.UrlOverrides.Page.History";
+
+    /** Indicates whether the bookmarks page URL has been overridden by an extension. */
+    public static final String EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED =
+            "Extensions.UrlOverrides.Page.Bookmarks";
+
+    /** Indicates whether extensions can override pages in incognito mode. */
+    public static final String EXTENSIONS_INCOGNITO_URL_OVERRIDES_ENABLED =
+            "Extensions.UrlOverrides.IncognitoEnabled";
+
     public static final String FIRST_RUN_FLOW_COMPLETE = "first_run_flow";
     // BACKUP_FLOW_SIGNIN_ACCOUNT_NAME used to be employed for the FRE too, thus the "first_run_"
     // prefix. The string should NOT be changed without some sort of migration.
