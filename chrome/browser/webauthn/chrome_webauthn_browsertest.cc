@@ -940,10 +940,6 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
     }
 
     // ChromeAuthenticatorRequestDelegate::TestObserver:
-    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
-      delegate_ = delegate;
-    }
-
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
@@ -972,8 +968,6 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
       }
     }
 
-    raw_ptr<ChromeAuthenticatorRequestDelegate, AcrossTasksDanglingUntriaged>
-        delegate_ = nullptr;
     std::vector<std::string> accounts_;
 
    private:
