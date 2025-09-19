@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
+#include <map>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,6 +12,7 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -243,6 +245,10 @@ void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Iterate through the tab strip model, getting the data for each tab
   auto* tab_strip_model = browser_window_interface->GetTabStripModel();
+  UMA_HISTOGRAM_COUNTS_1000(
+      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen",
+      tab_strip_model->count());
+
   for (int i = 0; i < tab_strip_model->count(); i++) {
     auto* web_contents = tab_strip_model->GetWebContentsAt(i);
     tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
@@ -264,6 +270,21 @@ void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
                  web_contents->GetLastInteractionTimeTicks());
     tabs.push_back(std::move(tab_data));
   }
+
+  // Count duplicate tab titles to record in an UMA histogram.
+  // For example, If 2 tabs with title "Wikipedia" and 3 tabs with title
+  // "Weather" are open, this histogram will record 2.
+  std::map<std::string, int> title_counts;
+  for (const auto& tab : tabs) {
+    title_counts[tab->title]++;
+  }
+  int duplicate_count =
+      std::count_if(title_counts.begin(), title_counts.end(),
+                    [](const std::pair<const std::string, int>& pair) {
+                      return pair.second > 1;
+                    });
+  UMA_HISTOGRAM_COUNTS_100000(
+      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", duplicate_count);
 
   // Sort the tabs by last active time, and truncate to the maximum number of
   // tabs to return.

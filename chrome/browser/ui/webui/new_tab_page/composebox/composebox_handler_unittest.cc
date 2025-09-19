@@ -597,6 +597,50 @@ TEST_F(ComposeboxHandlerTabsTest, GetRecentTabs) {
   EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
 }
 
+TEST_F(ComposeboxHandlerTabsTest, DuplicateTabsShownMetric) {
+  // Add tabs with duplicate titles.
+  AddTab(GURL("https://a1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+      ->SetTitle(u"Title B");
+  AddTab(GURL("https://a2.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(2))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://c1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(3))
+      ->SetTitle(u"Title C");
+  AddTab(GURL("https://a3.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(4))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b2.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(5))
+      ->SetTitle(u"Title B");
+
+  base::test::TestFuture<std::vector<composebox::mojom::TabInfoPtr>>
+      tab_info_future;
+  handler().GetRecentTabs(tab_info_future.GetCallback());
+  auto tabs = tab_info_future.Take();
+
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", 2, 1);
+}
+
+TEST_F(ComposeboxHandlerTabsTest, ActiveTabsCountMetric) {
+  AddTab(GURL("https://a1.com"));
+  AddTab(GURL("https://b1.com"));
+  AddTab(GURL("https://a2.com"));
+
+  base::test::TestFuture<std::vector<composebox::mojom::TabInfoPtr>>
+      tab_info_future;
+  handler().GetRecentTabs(tab_info_future.GetCallback());
+  auto tabs = tab_info_future.Take();
+
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
+}
+
 class ComposeboxHandlerFileUploadStatusTest
     : public ComposeboxHandlerTest,
       public testing::WithParamInterface<
