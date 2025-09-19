@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <set>
+#include <string>
 
 #include "base/memory/raw_ref.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
@@ -66,6 +67,9 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
   viz::mojom::AnimationTimelinePtr MaybeSerializeAnimationTimeline(
       AnimationTimeline& timeline);
 
+  void OnMojoConnectionError(uint32_t custom_reason,
+                             const std::string& description);
+
   const raw_ref<LayerTreeHostImpl> host_impl_;
 
   mojo::AssociatedReceiver<viz::mojom::LayerContextClient> client_receiver_{
@@ -82,6 +86,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
   bool needs_full_sync_ = true;
 
   PropertyTrees last_committed_property_trees_{*host_impl_};
+
+  base::WeakPtrFactory<VizLayerContext> weak_factory_{this};
 };
 
 }  // namespace mojo_embedder

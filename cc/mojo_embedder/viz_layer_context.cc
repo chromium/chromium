@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <unordered_set>
 #include <utility>
@@ -1236,6 +1237,8 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
   auto context = viz::mojom::PendingLayerContext::New();
   context->receiver = service_.BindNewEndpointAndPassReceiver();
   context->client = client_receiver_.BindNewEndpointAndPassRemote();
+  client_receiver_.set_disconnect_with_reason_handler(base::BindOnce(
+      &VizLayerContext::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
   auto settings = viz::mojom::LayerContextSettings::New();
   settings->draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
   settings->enable_edge_anti_aliasing =
@@ -1513,6 +1516,20 @@ VizLayerContext::MaybeSerializeAnimationTimeline(
   wire->new_animations = std::move(new_animations);
   wire->removed_animations = std::move(removed_animations);
   return wire;
+}
+
+void VizLayerContext::OnMojoConnectionError(uint32_t custom_reason,
+                                            const std::string& description) {
+  if (!custom_reason) {
+    // When LayerContextImpl drops the connection on its destruction, we will
+    // receive a connection error here with no custom reason. In this case there
+    // is no action necessary. In all cases where action is necessary on this
+    // side, LayerContextImpl will give a reason for the connection error.
+    return;
+  }
+
+  DLOG(ERROR) << description;
+  host_impl_->DidLoseLayerTreeFrameSink();
 }
 
 }  // namespace cc::mojo_embedder

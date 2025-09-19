@@ -1612,8 +1612,8 @@ void LayerContextImpl::SubmitCompositorFrame(CompositorFrame frame,
       host_impl_->GetCurrentLocalSurfaceId(), std::move(frame),
       std::move(hit_test_region_list), 0);
   if (result != SubmitResult::ACCEPTED) {
-    HandleBadMojoMessage(
-        "MaybeSubmitCompositorFrame",
+    client_->ResetWithReason(
+        static_cast<uint32_t>(result),
         CompositorFrameSinkSupport::GetSubmitResultAsString(result));
     return;
   }
