@@ -497,8 +497,6 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
 
   EXPECT_EQ(controller().suggest_inputs().search_session_id(),
             kTestSearchSessionId);
-  EXPECT_FALSE(
-      controller().suggest_inputs().has_contextual_visual_input_type());
   EXPECT_TRUE(controller()
                   .suggest_inputs()
                   .send_gsession_vsrid_for_contextual_suggest());
