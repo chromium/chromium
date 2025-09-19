@@ -25,6 +25,7 @@ build_webui("build") {
   css_files = [
     "searchbox_compose_button.css",
     "searchbox_dropdown_shared_style.css",
+    "searchbox_icon.css",
   ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/searchbox"

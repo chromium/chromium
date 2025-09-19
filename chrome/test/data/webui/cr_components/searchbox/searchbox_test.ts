@@ -16,7 +16,7 @@ import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/b
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, createAutocompleteMatch, createAutocompleteResult} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
@@ -124,14 +124,15 @@ suite('NewTabPageRealboxTest', () => {
 
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
-  suiteSetup(() => {
+  setup(() => {
     loadTimeData.overrideValues({
+      isLensSearchbox: false,
+      queryAutocompleteOnEmptyInput: false,
+      searchboxDefaultIcon: 'search.svg',
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
     });
-  });
 
-  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     // Set up Realbox's browser proxy.
@@ -181,6 +182,7 @@ suite('NewTabPageRealboxTest', () => {
     // Force a synchronous render.
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(realbox);
+    await microtasksFinished();
     return window.getComputedStyle(realbox.$.matches).display !== 'none';
   }
 
@@ -216,9 +218,6 @@ suite('NewTabPageRealboxTest', () => {
     const voiceSearchButton =
         realbox.shadowRoot!.querySelector<HTMLElement>('#voiceSearchButton');
     assertFalse(!!voiceSearchButton);
-
-    // Restore
-    loadTimeData.overrideValues({searchboxVoiceSearch: true});
   });
 
   test('clicking voice search button send voice search event', async () => {
@@ -268,11 +267,6 @@ suite('NewTabPageRealboxTest', () => {
         realbox.$.icon.$.icon, 'background-image',
         `url("chrome://resources/cr_components/searchbox/icons/google_g.svg")`);
     assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
-
-    // Restore.
-    loadTimeData.overrideValues({
-      searchboxDefaultIcon: 'search.svg',
-    });
   });
 
   const webkitTestCases = [
@@ -1125,10 +1119,6 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(3, testProxy.handler.getCallCount('queryAutocomplete'));
-    // Restore.
-    loadTimeData.overrideValues({
-      queryAutocompleteOnEmptyInput: false,
-    });
   });
 
   test('autocomplete result change does not impact focus', async () => {
@@ -1346,6 +1336,7 @@ suite('NewTabPageRealboxTest', () => {
           cancelable: true,
           composed: true,  // So it propagates across shadow DOM boundary.
         }));
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1384,6 +1375,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         realbox.$.input.dispatchEvent(shiftEnter);
         assertTrue(shiftEnter.defaultPrevented);
+        await microtasksFinished();
 
         // Navigates to the first match.
         const args =
@@ -1457,6 +1449,7 @@ suite('NewTabPageRealboxTest', () => {
           cancelable: true,
           composed: true,  // So it propagates across shadow DOM boundary.
         }));
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -1494,6 +1487,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         realbox.$.input.dispatchEvent(shiftEnter);
         assertFalse(shiftEnter.defaultPrevented);
+        await microtasksFinished();
 
         // Did not navigate to the first match since it's not selected.
         assertEquals(
@@ -2137,6 +2131,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the first match.
         let arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2148,6 +2143,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the second match.
         arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // Second match is selected.
         assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
@@ -2166,6 +2162,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         realbox.$.input.dispatchEvent(escapeEvent);
         assertTrue(escapeEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2199,6 +2196,7 @@ suite('NewTabPageRealboxTest', () => {
         const cutEvent = createClipboardEvent('cut');
         realbox.$.input.dispatchEvent(cutEvent);
         assertTrue(cutEvent.defaultPrevented);
+        await microtasksFinished();
 
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');
       });
@@ -2236,6 +2234,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the first match.
         let arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2248,6 +2247,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the second match.
         arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // Second match is selected.
         assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
@@ -2267,6 +2267,7 @@ suite('NewTabPageRealboxTest', () => {
         // Mock image finishing loading, which should remove the temporary
         // background color.
         matchEls[1]!.$.icon.$.image.dispatchEvent(new Event('load'));
+        await microtasksFinished();
         assertStyle(containerEl, 'background-color', 'rgba(0, 0, 0, 0)');
         // Realbox icon is not updated as the input does not feature images.
         assertIconMaskImageUrl(realbox.$.icon, 'search.svg');  // Default icon.
@@ -2281,6 +2282,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         realbox.$.input.dispatchEvent(escapeEvent);
         assertTrue(escapeEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2322,7 +2324,7 @@ suite('NewTabPageRealboxTest', () => {
         }
 
         // Helper function to assert and dispatch load event.
-        function assertAndLoadIcon(
+        async function assertAndLoadIcon(
             element: SearchboxElement|SearchboxMatchElement|undefined,
             hasEntityImage: boolean, expectedSrc: string|null) {
           // Before load: icon image hidden.
@@ -2330,6 +2332,7 @@ suite('NewTabPageRealboxTest', () => {
               element, hasEntityImage, /*expectUseIconImg=*/ false,
               expectedSrc);
           element!.$.icon.$.iconImg.dispatchEvent(new Event('load'));
+          await microtasksFinished();
           // After load: icon image visible.
           assertIconState(
               element, hasEntityImage, /*expectUseIconImg=*/ true, expectedSrc);
@@ -2376,6 +2379,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the first match.
         let arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2389,11 +2393,11 @@ suite('NewTabPageRealboxTest', () => {
 
         // Mock icon image finishing loading for the first match and the realbox
         // itself. The icon image should be used icon.
-        assertAndLoadIcon(
+        await assertAndLoadIcon(
             matchEls[0], /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
                 matches[0]!.iconUrl.url}`);
-        assertAndLoadIcon(
+        await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
                 matches[0]!.iconUrl.url}`);
@@ -2401,6 +2405,7 @@ suite('NewTabPageRealboxTest', () => {
         // Select the second match.
         arrowDownEvent = arrowDown(realbox);
         assertTrue(arrowDownEvent.defaultPrevented);
+        await microtasksFinished();
 
         // Second match is selected.
         assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
@@ -2413,11 +2418,11 @@ suite('NewTabPageRealboxTest', () => {
                 matches[1]!.iconUrl.url}`);
         // Mock icon image finishing loading for the second match and the
         // realbox itself. The icon image should be used.
-        assertAndLoadIcon(
+        await assertAndLoadIcon(
             matchEls[1], /*hasEntityImage=*/ true,
             `//image?staticEncode=true&encodeType=webp&url=${
                 matches[1]!.iconUrl.url}`);
-        assertAndLoadIcon(
+        await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
                 matches[1]!.iconUrl.url}`);
@@ -2431,6 +2436,7 @@ suite('NewTabPageRealboxTest', () => {
         });
         realbox.$.input.dispatchEvent(escapeEvent);
         assertTrue(escapeEvent.defaultPrevented);
+        await microtasksFinished();
 
         // First match is selected.
         assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2443,7 +2449,7 @@ suite('NewTabPageRealboxTest', () => {
                 matches[0]!.iconUrl.url}`);
         // Mock icon image finishing loading for the realbox (now showing the
         // first match's icon image again).
-        assertAndLoadIcon(
+        await assertAndLoadIcon(
             realbox, /*hasEntityImage=*/ false,
             `//image?staticEncode=true&encodeType=webp&url=${
                 matches[0]!.iconUrl.url}`);
@@ -2498,6 +2504,7 @@ suite('NewTabPageRealboxTest', () => {
     // Select the first match.
     let arrowDownEvent = arrowDown(realbox);
     assertTrue(arrowDownEvent.defaultPrevented);
+    await microtasksFinished();
 
     // First match is selected.
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
@@ -2514,6 +2521,7 @@ suite('NewTabPageRealboxTest', () => {
     // Select the second match.
     arrowDownEvent = arrowDown(realbox);
     assertTrue(arrowDownEvent.defaultPrevented);
+    await microtasksFinished();
 
     // Second match is selected.
     assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
@@ -2530,6 +2538,7 @@ suite('NewTabPageRealboxTest', () => {
     // Mock icon image finishing loading for the the realbox
     // itself. The icon image should be used and the logo should be hidden.
     realbox.$.icon.$.iconImg.dispatchEvent(new Event('load'));
+    await microtasksFinished();
     assertTrue(realbox.$.icon.$.icon.hidden);
     assertFalse(realbox.$.icon.$.iconImg.hidden);
   });
@@ -2572,11 +2581,6 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     // Icon is still default while match is selected.
     assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');
-    // Restore.
-    loadTimeData.overrideValues({
-      searchboxDefaultIcon: 'search.svg',
-      isLensSearchbox: false,
-    });
   });
 
   //============================================================================
