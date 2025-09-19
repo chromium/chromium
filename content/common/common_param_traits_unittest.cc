@@ -12,11 +12,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/pickle.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/common/content_param_traits.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
@@ -36,7 +36,7 @@ TEST(IPCMessageTest, Pair) {
   typedef std::pair<std::string, std::string> TestPair;
 
   TestPair input("foo", "bar");
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<TestPair>::Write(&msg, input);
 
   TestPair output;
@@ -53,7 +53,7 @@ TEST(IPCMessageTest, Bitmap) {
   bitmap.allocN32Pixels(10, 5);
   UNSAFE_TODO(memset(bitmap.getPixels(), 'A', bitmap.computeByteSize()));
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<SkBitmap>::Write(&msg, bitmap);
 
   SkBitmap output;
@@ -71,7 +71,7 @@ TEST(IPCMessageTest, Bitmap) {
 
   // Also test the corrupt case.
 
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle bad_msg;
 
   // Copy the first message block over to |bad_msg|.
   const char* fixed_data;
@@ -110,7 +110,7 @@ TEST(IPCMessageTest, ValueDict) {
 
   input.Set("dict", std::move(subdict));
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   base::Value::Dict output;
@@ -120,7 +120,7 @@ TEST(IPCMessageTest, ValueDict) {
   EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle bad_msg;
   bad_msg.WriteInt(99);
   iter = base::PickleIterator(bad_msg);
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
@@ -166,7 +166,7 @@ TEST(IPCMessageTest, SSLInfo) {
   in.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::REVOKED;
 
   // Now serialize and deserialize.
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<net::SSLInfo>::Write(&msg, in);
 
   net::SSLInfo out;
@@ -218,7 +218,7 @@ TEST(IPCMessageTest, SSLInfo) {
 static constexpr viz::FrameSinkId kArbitraryFrameSinkId(1, 1);
 
 TEST(IPCMessageTest, SurfaceInfo) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   const viz::SurfaceId kArbitrarySurfaceId(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(3, base::UnguessableToken::Create()));
