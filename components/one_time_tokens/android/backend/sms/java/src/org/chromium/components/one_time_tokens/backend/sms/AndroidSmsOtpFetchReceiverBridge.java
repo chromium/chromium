@@ -5,6 +5,7 @@
 package org.chromium.components.one_time_tokens.backend.sms;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -37,11 +38,15 @@ class AndroidSmsOtpFetchReceiverBridge {
                 .onOtpValueRetrieved(mNativeReceiverBridge, otpValue);
     }
 
-    void onOtpValueRetrievalError(ApiException exception) {
+    void onOtpValueRetrievalError(Exception exception) {
         if (mNativeReceiverBridge == 0) return;
 
+        int errorCode = CommonStatusCodes.ERROR;
+        if (exception instanceof ApiException) {
+            errorCode = ((ApiException) exception).getStatusCode();
+        }
         AndroidSmsOtpFetchReceiverBridgeJni.get()
-                .onOtpValueRetrievalError(mNativeReceiverBridge, exception.getStatusCode());
+                .onOtpValueRetrievalError(mNativeReceiverBridge, errorCode);
     }
 
     @CalledByNative

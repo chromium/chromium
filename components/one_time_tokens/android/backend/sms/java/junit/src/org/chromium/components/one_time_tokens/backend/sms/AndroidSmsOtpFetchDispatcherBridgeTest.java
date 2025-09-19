@@ -66,7 +66,7 @@ public class AndroidSmsOtpFetchDispatcherBridgeTest {
     @Test
     public void testRetrieveSmsOtpCallsReceiverBridgeOnFailure() {
         mDispatcherBridge.retrieveSmsOtp();
-        ArgumentCaptor<Callback<ApiException>> failureCallback =
+        ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mSmsOtpFetcherMock).retrieveSmsOtp(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());

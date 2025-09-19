@@ -11,9 +11,15 @@ namespace one_time_tokens {
 // This list might be extended in the future if there are other commonly
 // returned error codes worth labeling nicely in metrics enums.
 enum class SmsOtpRetrievalApiErrorCode {
+  // CommonStatusCodes.ERROR
+  kError = 13,
+  // timeout
   kTimeout = 15,
+  // SmsCodeAutofillClient not supported for platforms before Android P
   kPlatformNotSupported = 36500,
+  // calling application is not eligible to use SmsCodeAutofillClient
   kApiNotAvailable = 36501,
+  // permission denied by the user
   kUserPermissionRequired = 36502
 };
 

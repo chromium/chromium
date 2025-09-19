@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.components.one_time_tokens.backend.sms;
 
-import com.google.android.gms.common.api.ApiException;
-
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 
@@ -17,5 +15,5 @@ public interface AndroidSmsOtpFetcher {
      * @param otpValueCallback Callback that is called on success with the fetched OTP value string.
      * @param failureCallback A callback that is called on failure for any reason.
      */
-    void retrieveSmsOtp(Callback<String> otpValueCallback, Callback<ApiException> failureCallback);
+    void retrieveSmsOtp(Callback<String> otpValueCallback, Callback<Exception> failureCallback);
 }
