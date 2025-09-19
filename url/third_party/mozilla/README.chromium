@@ -4,6 +4,7 @@ Update Mechanism: Manual
 URL: https://hg.mozilla.org/mozilla-central/file/tip/netwerk/base/nsURLParsers.cpp
 License: MPL-2
 License File: LICENSE.txt
+Update Mechanism: Static (https://crbug.com/419415029)
 Shipped: yes
 Security Critical: yes
 CPEPrefix: unknown
