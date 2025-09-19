@@ -95,6 +95,9 @@ void PressInfoButtonForCell(NSString* cellId) {
   AppLaunchConfiguration config;
   // TODO (crbug.com/1285974) Remove when bug is resolved.
   config.features_disabled.push_back(kNewOverflowMenu);
+  // TODO: crbug.com/336547987 - Remove when this is fully deployed.
+  config.features_disabled.push_back(
+      safe_browsing::kExtendedReportingRemovePrefDependencyIos);
   return config;
 }
 
