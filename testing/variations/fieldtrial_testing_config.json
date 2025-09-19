@@ -16543,12 +16543,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "HideAimHintTextOnNtpOpen": "true"
+                    },
                     "enable_features": [
-                        "AiModeOmniboxEntryPoint",
-                        "AllowAiModeMatches",
-                        "OmniboxHideAimEntrypointOnUserInput",
-                        "OmniboxToolbelt",
-                        "OpenLensActionUITweaks"
+                        "AiModeOmniboxEntryPoint"
                     ]
                 }
             ]
