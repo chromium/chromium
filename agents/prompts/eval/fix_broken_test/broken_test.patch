@@ -1,0 +1,19 @@
+diff --git a/third_party/blink/renderer/core/css/css_math_expression_node_test.cc b/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
+index 69556a728e3c9..9e3d8bc524869 100644
+--- a/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
++++ b/third_party/blink/renderer/core/css/css_math_expression_node_test.cc
+@@ -825,6 +825,14 @@ TEST(CSSMathExpressionNode, CSSMathTypeComplex) {
+   EXPECT_EQ(((length + length) * (number + number)).Category(), kCalcLength);
+ }
+
++TEST(CSSCalculationValue, DummyTest) {
++  CSSLengthArray expectation, actual;
++  EXPECT_EQ(expectation.values, SetLengthArray("0", actual).values);
++
++  expectation.values.at(CSSPrimitiveValue::kUnitTypePixels) = 20;
++  EXPECT_EQ(expectation.values, SetLengthArray("30px", actual).values);
++}
++
+ }  // anonymous namespace
+
+ }  // namespace blink
