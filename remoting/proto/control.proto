@@ -28,6 +28,7 @@ message ClientResolution {
 
   // Horizontal and vertical DPI of the screen. If either of these is zero or
   // unset, the corresponding DPI should be assumed to be 96 (Windows' default)
+  // TODO(yuweih): Deprecate `y_dpi` and rename `x_dpi` to just `dpi`.
   optional int32 x_dpi = 5;
   optional int32 y_dpi = 6;
 
@@ -87,6 +88,11 @@ message CursorShapeInfo {
 
   // Cursor pixmap data in 32-bit BGRA format.
   optional bytes data = 5;
+
+  // DPI of the cursor. This may be absent, which means the active display's DPI
+  // will be used. It is recommended to set this field, since the cursor shape
+  // may not come from the active display.
+  optional int32 dpi = 6;
 }
 
 message Capabilities {
@@ -159,6 +165,7 @@ message VideoTrackLayout {
   optional int32 height = 5;
 
   // DPI of the screen.
+  // TODO(yuweih): Deprecate `y_dpi` and rename `x_dpi` to just `dpi`.
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
 

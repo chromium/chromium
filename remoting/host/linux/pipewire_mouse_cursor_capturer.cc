@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -20,8 +22,17 @@
 namespace remoting {
 
 PipewireMouseCursorCapturer::PipewireMouseCursorCapturer(
+    base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
     base::WeakPtr<PipewireCaptureStreamManager> stream_manager)
-    : stream_manager_(std::move(stream_manager)) {}
+    : stream_manager_(std::move(stream_manager)) {
+  if (display_config_monitor) {
+    // Display config is used to calculate monitor DPIs.
+    display_config_subscription_ = display_config_monitor->AddCallback(
+        base::BindRepeating(&PipewireMouseCursorCapturer::OnDisplayConfig,
+                            GetWeakPtr()),
+        /*call_with_current_config=*/true);
+  }
+}
 
 PipewireMouseCursorCapturer::~PipewireMouseCursorCapturer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -71,8 +82,12 @@ void PipewireMouseCursorCapturer::Capture() {
         latest_cursor_frame_ =
             webrtc::SharedDesktopFrame::Wrap(base::WrapUnique(
                 webrtc::BasicDesktopFrame::CopyOf(*cursor->image())));
+        auto dpi_it = monitor_dpis_.find(screen_id);
+        if (dpi_it != monitor_dpis_.end()) {
+          latest_cursor_frame_->set_dpi({dpi_it->second, dpi_it->second});
+        }
         latest_cursor_hotspot_ = cursor->hotspot();
-        callback_->OnMouseCursor(cursor.release());
+        callback_->OnMouseCursor(ShareLatestCursor().release());
         need_cursor = false;
       }
     }
@@ -83,9 +98,7 @@ void PipewireMouseCursorCapturer::Capture() {
   }
 
   if (need_cursor && want_latest_cursor_ && latest_cursor_frame_) {
-    auto latest_cursor = std::make_unique<webrtc::MouseCursor>(
-        latest_cursor_frame_->Share().release(), latest_cursor_hotspot_);
-    callback_->OnMouseCursor(latest_cursor.release());
+    callback_->OnMouseCursor(ShareLatestCursor().release());
   }
   want_latest_cursor_ = false;
 }
@@ -93,6 +106,26 @@ void PipewireMouseCursorCapturer::Capture() {
 base::WeakPtr<PipewireMouseCursorCapturer>
 PipewireMouseCursorCapturer::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PipewireMouseCursorCapturer::OnDisplayConfig(
+    const GnomeDisplayConfig& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  monitor_dpis_.clear();
+  for (const auto& [name, monitor] : config.monitors) {
+    monitor_dpis_[GnomeDisplayConfig::GetScreenId(name)] =
+        kDefaultDpi * monitor.scale;
+  }
+}
+
+std::unique_ptr<webrtc::MouseCursor>
+PipewireMouseCursorCapturer::ShareLatestCursor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(latest_cursor_frame_);
+
+  return std::make_unique<webrtc::MouseCursor>(
+      latest_cursor_frame_->Share().release(), latest_cursor_hotspot_);
 }
 
 }  // namespace remoting

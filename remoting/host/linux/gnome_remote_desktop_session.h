@@ -133,7 +133,8 @@ class GnomeRemoteDesktopSession {
   PipewireCaptureStreamManager capture_stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
   PipewireMouseCursorCapturer mouse_cursor_capturer_ GUARDED_BY_CONTEXT(
-      sequence_checker_){capture_stream_manager_.GetWeakPtr()};
+      sequence_checker_){display_config_monitor_.GetWeakPtr(),
+                         capture_stream_manager_.GetWeakPtr()};
   GnomeDesktopResizer desktop_resizer_ GUARDED_BY_CONTEXT(sequence_checker_){
       capture_stream_manager_.GetWeakPtr(), display_config_client_.GetWeakPtr(),
       display_config_monitor_.GetWeakPtr()};

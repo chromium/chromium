@@ -51,8 +51,9 @@ class GnomeDisplayConfigMonitor {
   // If `call_with_current_config` is true and the current config exists,
   // `callback` will immediately be called with the current config by posting a
   // task to the current sequence (not on the current task frame).
-  std::unique_ptr<Subscription> AddCallback(Callback callback,
-                                            bool call_with_current_config);
+  [[nodiscard]] std::unique_ptr<Subscription> AddCallback(
+      Callback callback,
+      bool call_with_current_config);
 
   // Returns the current config, or nullopt if no display config has been
   // received yet.
