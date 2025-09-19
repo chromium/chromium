@@ -1,6 +1,6 @@
 Name: etc1
 Version: N/A
-Update Mechanism: Manual
+Update Mechanism: Static.HardFork (https://crbug.com/419414843)
 URL: This is the canonical public repository
 License: Apache-2.0
 License File: LICENSE
