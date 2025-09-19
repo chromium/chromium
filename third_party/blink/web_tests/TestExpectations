@@ -9696,3 +9696,5 @@ crbug.com/444445518 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/444450168 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?gpu [ Crash Failure Pass ]
 crbug.com/444433224 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?gpu [ Crash Failure Pass ]
 crbug.com/444405358 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash Failure Pass ]
+
+crbug.com/444150315 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
