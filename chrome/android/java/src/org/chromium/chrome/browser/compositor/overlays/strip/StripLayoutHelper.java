@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -2302,16 +2303,16 @@ public class StripLayoutHelper
     private void showTabContextMenu(List<Integer> tabIds, StripLayoutTab anchorTab) {
         if (mModel == null || mTabGroupModelFilter == null) return;
         if (mTabContextMenuCoordinator == null) {
+            TabGroupCreationCallback tabGroupCreationCallback =
+                    (newTabGroupId) ->
+                            showTabGroupContextMenu(
+                                    findGroupTitle(newTabGroupId), /* shouldWaitForUpdate= */ true);
             if (mTabGroupListBottomSheetCoordinator == null) {
                 mTabGroupListBottomSheetCoordinator =
                         mTabGroupListBottomSheetCoordinatorFactory.create(
                                 mContext,
                                 assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile()),
-                                (newTabGroupId) -> {
-                                    showTabGroupContextMenu(
-                                            findGroupTitle(newTabGroupId),
-                                            /* shouldWaitForUpdate= */ true);
-                                },
+                                tabGroupCreationCallback,
                                 /* tabMovedCallback= */ null,
                                 mTabGroupModelFilter,
                                 mBottomSheetController,
@@ -2323,6 +2324,7 @@ public class StripLayoutHelper
                             () -> mModel,
                             mTabGroupModelFilter,
                             mTabGroupListBottomSheetCoordinator,
+                            tabGroupCreationCallback,
                             mMultiInstanceManager,
                             mShareDelegateSupplier,
                             mWindowAndroid,

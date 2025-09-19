@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -173,6 +175,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private Profile mProfile;
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
+    @Mock private TabGroupCreationCallback mTabGroupCreationCallback;
     @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private TabCreator mTabCreator;
@@ -271,6 +274,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         () -> mTabModel,
                         mTabGroupModelFilter,
                         mBottomSheetCoordinator,
+                        mTabGroupCreationCallback,
                         mMultiInstanceManager,
                         () -> mShareDelegate,
                         mWindowAndroid,
@@ -346,6 +350,32 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_submenuCreateNewTabGroup() {
+        ModelList modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, Collections.singletonList(TAB_ID));
+
+        // Add to group submenu
+        ListItem addToGroupItem = modelList.get(0);
+        List<ListItem> subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
+        assertNotNull("Submenu should be present", subMenu);
+        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        // Add to new group
+        ListItem addToNewGroupItem = modelList.get(1);
+        assertEquals(
+                "Expected 2nd submenu item to be New Group",
+                R.string.create_new_group_row_title,
+                addToNewGroupItem.model.get(TITLE_ID));
+        addToNewGroupItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        // Verify
+        verify(mTabGroupCreationCallback).onTabGroupCreated(any());
     }
 
     @Test

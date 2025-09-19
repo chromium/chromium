@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -99,6 +100,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
     private final Supplier<TabModel> mTabModelSupplier;
 
     private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
 
@@ -106,6 +108,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
@@ -127,6 +130,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                 context);
         mTabModelSupplier = tabModelSupplier;
         mTabGroupModelFilter = tabGroupModelFilter;
+        mTabGroupCreationCallback = tabGroupCreationCallback;
         mWindowAndroid = windowAndroid;
         mContext = context;
     }
@@ -138,6 +142,8 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
      * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
+     * @param tabGroupCreationCallback The {@link TabGroupCreationCallback} to run after creating a
+     *     new tab group for the interacting tab(s) through the submenu.
      * @param multiInstanceManager The {@link MultiInstanceManager} that will be used to move tabs
      *     from one window to another.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate} that will be used to share
@@ -148,6 +154,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
+            TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
@@ -164,6 +171,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                 tabModelSupplier,
                 tabGroupModelFilter,
                 tabGroupListBottomSheetCoordinator,
+                tabGroupCreationCallback,
                 multiInstanceManager,
                 shareDelegateSupplier,
                 windowAndroid,
@@ -331,7 +339,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<List<I
                                                     tabs,
                                                     mTabGroupModelFilter,
                                                     /* tabMovedCallback= */ null,
-                                                    /* tabGroupCreationCallback= */ null);
+                                                    mTabGroupCreationCallback);
                                         })
                                 .build()));
         // Available tab groups.
