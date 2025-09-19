@@ -8203,6 +8203,8 @@ from previous Chrome versions.
   <int value="-2120052328" label="WebXRHandInput:disabled"/>
   <int value="-2119958901" label="WebXRAnchors:disabled"/>
   <int value="-2119827860" label="ash-disable-maximize-mode-window-backdrop"/>
+  <int value="-2119567976"
+      label="AutofillEnableAiBasedAmountExtraction:enabled"/>
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
   <int value="-2119493239" label="enable-app-info-dialog-mac"/>
   <int value="-2118893353" label="WebRtcRemoteEventLog:enabled"/>
@@ -16710,6 +16712,8 @@ from previous Chrome versions.
   <int value="928991555" label="DefaultViewportIsDeviceWidth:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
   <int value="929599043" label="PeripheralNotification:enabled"/>
+  <int value="929794283"
+      label="AutofillEnableAiBasedAmountExtraction:disabled"/>
   <int value="930187600" label="WebAssemblyExperimentalJSPI:enabled"/>
   <int value="930422511" label="NewTabPageCustomizationForMvt:enabled"/>
   <int value="930830185" label="EnableNearbyBleV2:enabled"/>

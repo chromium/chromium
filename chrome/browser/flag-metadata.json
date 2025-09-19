@@ -792,6 +792,11 @@
     "expiry_milestone": 141
   },
   {
+    "name": "autofill-enable-ai-based-amount-extraction",
+    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "autofill-enable-allowlist-for-bmo-card-category-benefits",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 145

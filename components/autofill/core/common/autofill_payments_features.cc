@@ -12,6 +12,15 @@ namespace autofill::features {
 BASE_FEATURE(kAutofillCreditCardScannerIos, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+// When enabled, Chrome will extract the checkout amount from the checkout
+// page using server-side AI.
+BASE_FEATURE(kAutofillEnableAiBasedAmountExtraction,
+             "AutofillEnableAiBasedAmountExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // When enabled, card category benefits offered by BMO will be shown in Autofill
 // suggestions on the allowlisted merchant websites.
 BASE_FEATURE(kAutofillEnableAllowlistForBmoCardCategoryBenefits,
