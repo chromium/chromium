@@ -14,6 +14,7 @@ source_set("model") {
     "ios_passkey_model_factory.h",
   ]
   deps = [
+    ":credential_exchange_types",
     ":credential_export_manager_swift",
     ":credential_import_manager_swift",
     "//base",
@@ -29,6 +30,15 @@ source_set("model") {
   ]
 }
 
+source_set("credential_exchange_types") {
+  sources = [
+    "credential_exchange_passkey.h",
+    "credential_exchange_passkey.mm",
+    "credential_exchange_password.h",
+    "credential_exchange_password.mm",
+  ]
+}
+
 swift_source_set("credential_export_manager_swift") {
   sources = [ "credential_export_manager.swift" ]
   frameworks = [
@@ -38,7 +48,9 @@ swift_source_set("credential_export_manager_swift") {
 }
 
 swift_source_set("credential_import_manager_swift") {
+  bridge_header = "credential_import_manager_swift_bridge.h"
   sources = [ "credential_import_manager.swift" ]
+  deps = [ ":credential_exchange_types" ]
   frameworks = [
     "AuthenticationServices.framework",
     "Foundation.framework",
