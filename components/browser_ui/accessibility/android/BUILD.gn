@@ -88,6 +88,7 @@ android_library("page_zoom_utils_java") {
     ":constants_java",
     "//base:base_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
   ]

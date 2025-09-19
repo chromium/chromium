@@ -83,6 +83,7 @@ generate_jni("content_main_dex_jni") {
   sources = [
     "java/src/org/chromium/content/browser/BrowserStartupControllerImpl.java",
     "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
+    "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
   ]
 }
 generate_jni("content_app_jni") {
@@ -105,6 +106,9 @@ android_library("content_main_dex_java") {
     "//base:process_launcher_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
+    "//components/cached_flags:java",
+    "//content/common:common_java",
+    "//content/public/common:common_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -139,6 +143,8 @@ android_library("content_main_dex_java") {
     "java/src/org/chromium/content_public/app/ZygotePreload.java",
     "java/src/org/chromium/content_public/browser/BrowserStartupController.java",
     "java/src/org/chromium/content_public/browser/ChildProcessCreationParams.java",
+    "java/src/org/chromium/content_public/browser/ContentFeatureList.java",
+    "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
     "java/src/org/chromium/content_public/browser/DeviceUtils.java",
     "java/src/org/chromium/content_public/browser/TracingControllerAndroid.java",
     "java/src/org/chromium/content_public/common/ContentProcessInfo.java",
@@ -379,8 +385,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/ContactsPicker.java",
     "java/src/org/chromium/content_public/browser/ContactsPickerDelegate.java",
     "java/src/org/chromium/content_public/browser/ContactsPickerListener.java",
-    "java/src/org/chromium/content_public/browser/ContentFeatureList.java",
-    "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
     "java/src/org/chromium/content_public/browser/ContentViewStatics.java",
     "java/src/org/chromium/content_public/browser/ContentWebFeatureUsageUtils.java",
     "java/src/org/chromium/content_public/browser/GestureListenerManager.java",
@@ -543,7 +547,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/sms/SmsProviderGms.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
-    "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
     "java/src/org/chromium/content_public/browser/ContentWebFeatureUsageUtils.java",
     "java/src/org/chromium/content_public/browser/InputTransferHandler.java",
     "java/src/org/chromium/content_public/browser/LoadCommittedDetails.java",

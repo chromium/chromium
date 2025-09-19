@@ -361,6 +361,11 @@ BASE_FEATURE(kEarlyEstablishGpuChannel, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables canvas 2d methods BeginLayer and EndLayer.
 BASE_FEATURE(kEnableCanvas2DLayers, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables javaless renderers.
+BASE_FEATURE(kEnableJavalessRenderers,
+             "JavalessRenderers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables service workers on chrome-untrusted:// urls.
 BASE_FEATURE(kEnableServiceWorkersForChromeUntrusted,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -12,6 +12,7 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ContentFeatureList;
 
 /** Implementation of the interface {@link ChildProcessCreationParams}. */
 @NullMarked
@@ -98,7 +99,9 @@ public class ChildProcessCreationParamsImpl {
     }
 
     public static String getSandboxedServicesName() {
-        if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE && Build.VERSION.SDK_INT >= 35) {
+        if (BuildConfig.JAVALESS_RENDERERS_AVAILABLE
+                && Build.VERSION.SDK_INT >= 35
+                && ContentFeatureList.sJavalessRenderers.isEnabled()) {
             return NATIVE_SANDBOXED_SERVICES_NAME;
         }
         return SANDBOXED_SERVICES_NAME;

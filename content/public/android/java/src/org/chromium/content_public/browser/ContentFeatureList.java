@@ -7,8 +7,11 @@ package org.chromium.content_public.browser;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.common.ContentFeatures;
+
+import java.util.List;
 
 /** Convenience static methods to access {@link ContentFeatureMap}. */
 @NullMarked
@@ -43,6 +46,8 @@ public class ContentFeatureList {
     public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
+
+    public static final String JAVALESS_RENDERERS = "JavalessRenderers";
 
     public static final String INPUT_ON_VIZ = "InputOnViz";
 
@@ -100,4 +105,11 @@ public class ContentFeatureList {
     // Skip the timeout when removing the VISIBLE and STRONG binding for the spare renderer.
     public static final MutableBooleanParamWithSafeDefault sSpareRendererRemoveBindingNoTimeout =
             sSpareRendererProcessPriority.newBooleanParam("remove-binding-no-timeout", false);
+
+    // Use a CachedFlag as this is often checked before native is loaded, and must stay consistent
+    // once decided upon.
+    public static final CachedFlag sJavalessRenderers =
+            new CachedFlag(ContentFeatureMap.getInstance(), JAVALESS_RENDERERS, false, false);
+
+    public static final List<CachedFlag> sCachedFlags = List.of(sJavalessRenderers);
 }
