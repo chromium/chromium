@@ -777,9 +777,11 @@ void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
   swap_buffers_->DiscardCurrentSwapBuffer();
 
   // DiscardCurrentSwapBuffer() will call OnTextureTransferred() which should
-  // have destroyed the previous textures.
-  CHECK(!texture_);
-  CHECK(!swap_texture_);
+  // have destroyed the previous textures, except when we failed to create the
+  // swap buffer in the first place in which case `texture_` and `swap_texture_`
+  // are both "error" textures.
+  texture_ = nullptr;
+  swap_texture_ = nullptr;
 
   if (destroy_swap_buffers) {
     // Tell any previous swapbuffers that it will no longer be used and can
