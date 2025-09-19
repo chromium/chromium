@@ -42,16 +42,19 @@ using GetMatchingCredentialIdsCallback = base::RepeatingCallback<void(
 using RelyingPartyToBkkMetadata =
     base::flat_map<std::string, std::vector<BrowserBoundKeyMetadata>>;
 
-// Returns the callback matching `handle` and erases it from the `handlers` map.
-template <typename CallbackType>
-static CallbackType RemoveHandler(
-    std::map<WebDataServiceBase::Handle, CallbackType>& handlers,
-    WebDataServiceBase::Handle handle) {
-  auto callback_iterator = handlers.find(handle);
-  CHECK(callback_iterator != handlers.end());
-  CallbackType callback = std::move(callback_iterator->second);
-  handlers.erase(callback_iterator);
-  return callback;
+// Converts a generic `result` of unique_ptr<WDTypedResult> to a vector of
+// uint8_t, representing a BrowserBoundKey.
+static std::vector<uint8_t> ConvertWDTypedResultToBrowserBoundKey(
+    WebDataServiceBase::Handle handle,
+    std::unique_ptr<WDTypedResult> result) {
+  if (result) {
+    CHECK(result->GetType() == BROWSER_BOUND_KEY);
+    return static_cast<WDResult<std::optional<std::vector<uint8_t>>>*>(
+               result.get())
+        ->GetValue()
+        .value_or(std::vector<uint8_t>());
+  }
+  return {};
 }
 
 // Converts a generic `result` of unique_ptr<WDTypedResult> to
@@ -206,18 +209,21 @@ void PasskeyBrowserBinder::BindKey(UnboundKey key,
                                    const std::vector<uint8_t>& credential_id,
                                    const std::string& relying_party,
                                    std::optional<base::Time> last_used) {
-  WebDataServiceBase::Handle handle = web_data_service_->SetBrowserBoundKey(
-      credential_id, relying_party, key.browser_bound_key_id_,
+  // Copy `key.browser_bound_key_id_`, as it must be passed to
+  // `GetBrowserBoundKey` but `key` is also moved into the callback chain.
+  std::vector<uint8_t> browser_bound_key_id_copy = key.browser_bound_key_id_;
+  web_data_service_->SetBrowserBoundKey(
+      credential_id, relying_party, browser_bound_key_id_copy,
       std::move(last_used),
-      /*consumer=*/this);
-  set_browser_bound_key_handlers_[handle] = base::BindOnce(
-      [](UnboundKey key, bool success) {
-        if (success) {
-          key.MarkKeyBoundAndReset();
-          // Do not call methods on key past this point.
-        }
-      },
-      std::move(key));
+      base::BindOnce(&ConvertWDTypedResultToBool)
+          .Then(base::BindOnce(
+              [](UnboundKey key, bool success) {
+                if (success) {
+                  key.MarkKeyBoundAndReset();
+                  // Do not call methods on key past this point.
+                }
+              },
+              std::move(key))));
 }
 
 void PasskeyBrowserBinder::UpdateKeyLastUsedToNow(
@@ -261,11 +267,12 @@ void PasskeyBrowserBinder::GetBoundKeyForPasskey(
     std::vector<uint8_t> credential_id,
     std::string relying_party,
     base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)> callback) {
-  auto handle = web_data_service_->GetBrowserBoundKey(
-      std::move(credential_id), std::move(relying_party), /*consumer=*/this);
-  get_browser_bound_key_handlers_[handle] =
-      base::BindOnce(&PasskeyBrowserBinder::GetBrowserBoundKey,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  web_data_service_->GetBrowserBoundKey(
+      std::move(credential_id), std::move(relying_party),
+      base::BindOnce(&ConvertWDTypedResultToBrowserBoundKey)
+          .Then(base::BindOnce(&PasskeyBrowserBinder::GetBrowserBoundKey,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback))));
 }
 
 void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
@@ -274,41 +281,18 @@ void PasskeyBrowserBinder::GetOrCreateBoundKeyForPasskey(
     const BrowserBoundKeyStore::CredentialInfoList& allowed_algorithms,
     std::optional<base::Time> last_used,
     base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)> callback) {
-  auto handle = web_data_service_->GetBrowserBoundKey(
-      credential_id, relying_party, /*consumer=*/this);
-  // The call back must not strongly reference this to avoid strong reference
-  // cycles.
-  get_browser_bound_key_handlers_[handle] =
-      base::BindOnce(&PasskeyBrowserBinder::GetOrCreateBrowserBoundKey,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(credential_id),
-                     std::move(relying_party), std::move(allowed_algorithms),
-                     std::move(last_used), std::move(callback));
-}
-
-void PasskeyBrowserBinder::OnWebDataServiceRequestDone(
-    WebDataServiceBase::Handle handle,
-    std::unique_ptr<WDTypedResult> result) {
-  switch (result->GetType()) {
-    case WDResultType::BOOL_RESULT:
-      RemoveHandler(set_browser_bound_key_handlers_, handle)
-          .Run(result ? static_cast<WDResult<bool>*>(result.get())->GetValue()
-                      : false);
-      break;
-    case WDResultType::BROWSER_BOUND_KEY: {
-      std::optional<std::vector<uint8_t>> result_value;
-      if (result) {
-        result_value =
-            static_cast<WDResult<std::optional<std::vector<uint8_t>>>*>(
-                result.get())
-                ->GetValue();
-      }
-      RemoveHandler(get_browser_bound_key_handlers_, handle)
-          .Run(result_value.value_or(std::vector<uint8_t>()));
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
+  // Copy `credential_id` and `relying_party`, as they must be passed to
+  // `GetBrowserBoundKey` and also moved into the callback chain.
+  std::vector<uint8_t> credential_id_copy = credential_id;
+  std::string relying_party_copy = relying_party;
+  web_data_service_->GetBrowserBoundKey(
+      std::move(credential_id_copy), std::move(relying_party_copy),
+      base::BindOnce(&ConvertWDTypedResultToBrowserBoundKey)
+          .Then(base::BindOnce(
+              &PasskeyBrowserBinder::GetOrCreateBrowserBoundKey,
+              weak_ptr_factory_.GetWeakPtr(), std::move(credential_id),
+              std::move(relying_party), std::move(allowed_algorithms),
+              std::move(last_used), std::move(callback))));
 }
 
 void PasskeyBrowserBinder::SetRandomBytesAsVectorCallbackForTesting(

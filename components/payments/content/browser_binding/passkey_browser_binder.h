@@ -73,7 +73,7 @@ struct BrowserBoundKeyMetadata;
 // This class depends on an implementation of BrowserBoundKeyStore and the
 // payment manifest web data service for storing the BBK and passkey
 // identifiers.
-class PasskeyBrowserBinder : public WebDataServiceConsumer {
+class PasskeyBrowserBinder {
  public:
   // `key_store` and `web_data_service` are required and must be set.
   PasskeyBrowserBinder(
@@ -81,7 +81,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       scoped_refptr<WebPaymentsWebDataService> web_data_service);
   PasskeyBrowserBinder(const PasskeyBrowserBinder&) = delete;
   PasskeyBrowserBinder& operator=(const PasskeyBrowserBinder&) = delete;
-  ~PasskeyBrowserBinder() override;
+  ~PasskeyBrowserBinder();
 
   // Represents a browser bound key that has not yet been associated. If
   // BindKey() is not called when this class goes out of scope, the wrapped
@@ -187,11 +187,6 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
           get_matching_credential_ids_callback,
       base::OnceClosure callback);
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
-
   // Injects the random bytes function for testing.
   void SetRandomBytesAsVectorCallbackForTesting(
       base::RepeatingCallback<std::vector<uint8_t>(size_t length)>);
@@ -231,11 +226,6 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
 
   scoped_refptr<BrowserBoundKeyStore> key_store_;
   scoped_refptr<WebPaymentsWebDataService> web_data_service_;
-  std::map<WebDataServiceBase::Handle, base::OnceCallback<void(bool)>>
-      set_browser_bound_key_handlers_;
-  std::map<WebDataServiceBase::Handle,
-           base::OnceCallback<void(std::vector<uint8_t>)>>
-      get_browser_bound_key_handlers_;
   base::RepeatingCallback<std::vector<uint8_t>(size_t)>
       random_bytes_as_vector_callback_;
   base::WeakPtrFactory<PasskeyBrowserBinder> weak_ptr_factory_{this};

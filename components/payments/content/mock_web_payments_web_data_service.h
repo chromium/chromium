@@ -23,7 +23,7 @@ class MockWebPaymentsWebDataService : public WebPaymentsWebDataService {
               GetSecurePaymentConfirmationCredentials,
               (std::vector<std::vector<uint8_t>> credential_ids,
                const std::string& relying_party_id,
-               WebDataServiceConsumer* consumer),
+               WebDataServiceRequestCallback callback),
               (override));
   MOCK_METHOD(void,
               ClearSecurePaymentConfirmationCredentials,
@@ -35,13 +35,13 @@ class MockWebPaymentsWebDataService : public WebPaymentsWebDataService {
                std::string relying_party_id,
                std::vector<uint8_t> browser_bound_key_id,
                std::optional<base::Time> last_used,
-               WebDataServiceConsumer* consumer),
+               WebDataServiceRequestCallback callback),
               (override));
   MOCK_METHOD(WebDataServiceBase::Handle,
               GetBrowserBoundKey,
               (std::vector<uint8_t> credential_id,
                std::string relying_party_id,
-               WebDataServiceConsumer* consumer),
+               WebDataServiceRequestCallback callback),
               (override));
   MOCK_METHOD(WebDataServiceBase::Handle,
               GetAllBrowserBoundKeys,

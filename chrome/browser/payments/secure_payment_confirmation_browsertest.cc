@@ -29,6 +29,7 @@
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
+#include "components/webdata/common/web_data_results.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -52,6 +53,8 @@ SecurePaymentConfirmationTest::SecurePaymentConfirmationTest() {
           features::kSecurePaymentConfirmationUseCredentialStoreAPIs,
           blink::features::kSecurePaymentConfirmationUxRefresh});
 }
+
+SecurePaymentConfirmationTest::~SecurePaymentConfirmationTest() = default;
 
 void SecurePaymentConfirmationTest::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -136,7 +139,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_TransactionUX) {
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -230,7 +235,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
   // a.com, which doesn't match the stored credential's relying-party.example,
@@ -268,7 +275,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // canMakePayment does not check for a valid icon, so should return true.
   EXPECT_EQ("true",
@@ -432,7 +441,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // The first call to show() without a user gesture succeeds.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -472,7 +483,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // The first call to show() without a user gesture succeeds.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -512,7 +525,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -589,7 +604,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "relying-party.example",
                   std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(
+                  &SecurePaymentConfirmationTest::OnWebDataServiceRequestDone,
+                  weak_ptr_factory_.GetWeakPtr()));
 
   // getSecurePaymentConfirmationStatus creates a SPC credential with RP ID
   // a.com, which doesn't match the stored credential's relying-party.example,

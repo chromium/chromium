@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/webdata/common/web_data_service_consumer.h"
+#include "components/webdata/common/web_data_service_base.h"
+
+class WDTypedResult;
 
 namespace url {
 class Origin;
@@ -26,11 +28,10 @@ struct SecurePaymentConfirmationCredential;
 
 // Wraps retrieval and matching of SPC credentials, from either the user profile
 // database or OS-level APIs.
-class SecurePaymentConfirmationCredentialFinder
-    : public WebDataServiceConsumer {
+class SecurePaymentConfirmationCredentialFinder {
  public:
   SecurePaymentConfirmationCredentialFinder();
-  ~SecurePaymentConfirmationCredentialFinder() override;
+  virtual ~SecurePaymentConfirmationCredentialFinder();
 
   using SecurePaymentConfirmationCredentialFinderCallback =
       base::OnceCallback<void(
@@ -53,15 +54,18 @@ class SecurePaymentConfirmationCredentialFinder
       scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
       SecurePaymentConfirmationCredentialFinderCallback result_callback);
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle handle,
-      std::unique_ptr<WDTypedResult> result) override;
-
  private:
-  // On platforms where we have credential-store level support for retrieving
-  // credentials (i.e., rather than using the user profile database), this
-  // callback will be called with the retrieved and matching credential ids.
+  // On platforms where Chrome uses the user profile database to store
+  // credentials for SPC, this callback will be called with the retrieved and
+  // matching credential ids.
+  void OnGetMatchingCredentialsFromWebDataService(
+      SecurePaymentConfirmationCredentialFinderCallback callback,
+      WebDataServiceBase::Handle handle,
+      std::unique_ptr<WDTypedResult> result);
+
+  // On platforms where there is credential-store level support for retrieving
+  // credentials for SPC this callback will be called with the retrieved and
+  // matching credential ids.
   //
   // |relying_party_id| and |matching_credentials| are always std::move'd in,
   // and so are not const-ref.
@@ -71,11 +75,9 @@ class SecurePaymentConfirmationCredentialFinder
       std::vector<std::vector<uint8_t>> matching_credentials);
 
   // On platforms where we are using the user profile database, this map holds
-  // in-progress requests to the database mapped to the callback which should be
-  // called with the result.
+  // in-progress requests to the database.
   std::map<WebDataServiceBase::Handle,
-           std::pair<SecurePaymentConfirmationCredentialFinderCallback,
-                     scoped_refptr<payments::WebPaymentsWebDataService>>>
+           scoped_refptr<payments::WebPaymentsWebDataService>>
       requests_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationCredentialFinder>

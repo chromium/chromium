@@ -78,29 +78,6 @@ class WebPaymentsWebDataServiceTest : public ::testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
   scoped_refptr<WebPaymentsWebDataService> web_payments_web_data_service_;
 
-  std::unique_ptr<WDTypedResult> RunAndWaitForConsumer(
-      base::OnceCallback<WebDataServiceBase::Handle(
-          WebDataServiceConsumer* consumer)> action) {
-    MockWebDataServiceConsumer mock_web_data_service_consumer;
-    base::RepeatingClosure quit_closure = task_environment_.QuitClosure();
-    WebDataServiceBase::Handle actual_handle;
-    std::unique_ptr<WDTypedResult> actual_result;
-    EXPECT_CALL(mock_web_data_service_consumer,
-                OnWebDataServiceRequestDone(_, _))
-        .WillRepeatedly([&actual_handle, &actual_result, &quit_closure](
-                            WebDataServiceBase::Handle handle,
-                            std::unique_ptr<WDTypedResult> result) {
-          actual_handle = handle;
-          actual_result = std::move(result);
-          quit_closure.Run();
-        });
-    WebDataServiceBase::Handle handle =
-        std::move(action).Run(&mock_web_data_service_consumer);
-    task_environment_.RunUntilQuit();
-    EXPECT_EQ(actual_handle, handle);
-    return actual_result;
-  }
-
   std::unique_ptr<WDTypedResult> RunAndWaitForCallback(
       base::OnceCallback<
           WebDataServiceBase::Handle(WebDataServiceRequestCallback)> action) {
@@ -136,21 +113,21 @@ TEST_F(WebPaymentsWebDataServiceTest, BrowserBoundKey) {
   MockWebDataServiceConsumer mock_web_data_service_consumer;
   base::test::ScopedRunLoopTimeout scoped_timeout(
       FROM_HERE, TestTimeouts::action_max_timeout());
-  std::unique_ptr<WDTypedResult> set_bbk_result = RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  std::unique_ptr<WDTypedResult> set_bbk_result = RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id, relying_party_id, browser_bound_key_id,
-            /*last_used=*/std::nullopt, consumer);
+            /*last_used=*/std::nullopt, std::move(callback));
       }));
   ASSERT_TRUE(set_bbk_result);
   ASSERT_EQ(set_bbk_result->GetType(), WDResultType::BOOL_RESULT);
   EXPECT_TRUE(static_cast<WDResult<bool>*>(set_bbk_result.get())->GetValue());
 
   // Retrieve the browser bound key id.
-  std::unique_ptr<WDTypedResult> get_bbk_result = RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  std::unique_ptr<WDTypedResult> get_bbk_result = RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->GetBrowserBoundKey(
-            credential_id, relying_party_id, consumer);
+            credential_id, relying_party_id, std::move(callback));
       }));
 
   ASSERT_TRUE(get_bbk_result);
@@ -171,17 +148,17 @@ TEST_F(WebPaymentsWebDataServiceTest, GetAllBrowserBoundKey) {
   base::Time last_used;
   ASSERT_TRUE(base::Time::FromUTCString("24 Oct 2025 10:30", &last_used));
 
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
-            /*last_used=*/std::nullopt, consumer);
+            /*last_used=*/std::nullopt, std::move(callback));
       }));
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
-            last_used, consumer);
+            last_used, std::move(callback));
       }));
 
   std::unique_ptr<WDTypedResult> result =
@@ -210,11 +187,11 @@ TEST_F(WebPaymentsWebDataServiceTest, UpdateBrowserBoundKeyLastUsed) {
   base::Time initial_last_used;
   ASSERT_TRUE(
       base::Time::FromUTCString("24 Oct 2025 10:30", &initial_last_used));
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id, relying_party_id, browser_bound_key_id,
-            initial_last_used, consumer);
+            initial_last_used, std::move(callback));
       }));
 
   base::Time updated_last_used;
@@ -289,23 +266,23 @@ TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
   const std::vector<uint8_t> credential_id_3({0x41, 0x42, 0x43, 0x44});
   const std::string relying_party_id_3("yet-another-relying-party.example");
   const std::vector<uint8_t> browser_bound_key_id_3({0x51, 0x52, 0x53, 0x54});
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
-            /*last_used=*/std::nullopt, consumer);
+            /*last_used=*/std::nullopt, std::move(callback));
       }));
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
-            /*last_used=*/std::nullopt, consumer);
+            /*last_used=*/std::nullopt, std::move(callback));
       }));
-  RunAndWaitForConsumer(
-      base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
+  RunAndWaitForCallback(
+      base::BindLambdaForTesting([&](WebDataServiceRequestCallback callback) {
         return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_3, relying_party_id_3, browser_bound_key_id_3,
-            /*last_used=*/std::nullopt, consumer);
+            /*last_used=*/std::nullopt, std::move(callback));
       }));
   base::MockCallback<base::OnceClosure> mock_callback;
 

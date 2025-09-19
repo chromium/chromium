@@ -37,8 +37,7 @@ class WebPaymentsWebDataService;
 // which provides SPC-related functionality that is not tied to a specific
 // PaymentRequest invocation.
 class SecurePaymentConfirmationService
-    : public content::DocumentService<mojom::SecurePaymentConfirmationService>,
-      public WebDataServiceConsumer {
+    : public content::DocumentService<mojom::SecurePaymentConfirmationService> {
  public:
   SecurePaymentConfirmationService(
       content::RenderFrameHost& render_frame_host,
@@ -92,10 +91,10 @@ class SecurePaymentConfirmationService
   // valid Idle state.
   enum class State { kIdle, kStoringCredential };
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  // Called when a payment credential has been stored (or failed to be stored)
+  // in the underlying database.
+  void OnStorePaymentCredential(WebDataServiceBase::Handle h,
+                                std::unique_ptr<WDTypedResult> result);
 
   // MakeCredentialCallback:
   void OnAuthenticatorMakeCredential(

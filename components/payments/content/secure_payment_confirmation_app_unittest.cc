@@ -374,12 +374,12 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       browser_bound_key_id, public_key_as_cose_key, signature,
       GetParam().algorithm_identifier, client_data_json,
       /*is_new=*/GetParam().is_new_bbk));
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   EXPECT_CALL(*mock_service, GetBrowserBoundKey(Eq(credential_id),
                                                 Eq("effective_rp.example"), _))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback,
+                                    web_data_service_handle));
 
   EXPECT_CALL(
       *mock_authenticator,
@@ -394,14 +394,14 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   // Simulate the retrieval of an existing browser bound key.
-  ASSERT_TRUE(web_data_service_consumer);
+  ASSERT_FALSE(web_data_service_callback.is_null());
   auto metadata_result =
       std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
           WDResultType::BROWSER_BOUND_KEY, GetParam().is_new_bbk
                                                ? std::vector<uint8_t>()
                                                : browser_bound_key_id);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle, std::move(metadata_result));
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle, std::move(metadata_result));
 
   ASSERT_TRUE(on_instrument_details_ready_called_);
   mojom::PaymentResponsePtr payment_response =

@@ -194,21 +194,21 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKey) {
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
   EXPECT_CALL(
       *mock_web_data_service_,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         Eq(fake_last_used_), /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
-                      Return(web_data_service_handle)));
+                         Eq(fake_last_used_), /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<4>(&web_data_service_callback,
+                                    web_data_service_handle));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
                   fake_relying_party_, fake_last_used_);
-  ASSERT_TRUE(web_data_service_consumer_);
-  web_data_service_consumer_->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
 
   key.reset();
   EXPECT_TRUE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
@@ -221,21 +221,22 @@ TEST_F(PasskeyBrowserBinderTest, BindsBrowserBoundKeyWithoutLastUsedTimestamp) {
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
   EXPECT_CALL(
       *mock_web_data_service_,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         /*last_used=*/Eq(std::nullopt), /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
-                      Return(web_data_service_handle)));
+                         /*last_used=*/Eq(std::nullopt),
+                         /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<4>(&web_data_service_callback,
+                                    web_data_service_handle));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
                   fake_relying_party_, /*last_used=*/std::nullopt);
-  ASSERT_TRUE(web_data_service_consumer_);
-  web_data_service_consumer_->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
 
   key.reset();
   EXPECT_TRUE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
@@ -248,21 +249,21 @@ TEST_F(PasskeyBrowserBinderTest, DeletesBrowserBoundKeyIfBindingFails) {
           device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                                 kCoseEs256}});
 
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
-  WebDataServiceConsumer* web_data_service_consumer_ = nullptr;
   EXPECT_CALL(
       *mock_web_data_service_,
       SetBrowserBoundKey(fake_credential_id_, fake_relying_party_, fake_bbk_id_,
-                         Eq(fake_last_used_), /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<4>(&web_data_service_consumer_),
-                      Return(web_data_service_handle)));
+                         Eq(fake_last_used_), /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<4>(&web_data_service_callback,
+                                    web_data_service_handle));
 
   binder->BindKey(std::move(key.value()), fake_credential_id_,
                   fake_relying_party_, fake_last_used_);
-  ASSERT_TRUE(web_data_service_consumer_);
-  web_data_service_consumer_->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, false));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, false));
 
   key.reset();
   EXPECT_FALSE(fake_browser_bound_key_store_->ContainsFakeKey(fake_bbk_id_));
@@ -273,7 +274,7 @@ TEST_F(PasskeyBrowserBinderTest,
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder =
       CreatePasskeyBrowserBinder(/*is_new_bbk=*/false);
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   base::MockCallback<
       base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
@@ -281,9 +282,9 @@ TEST_F(PasskeyBrowserBinderTest,
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback,
+                                    web_data_service_handle));
   EXPECT_CALL(*mock_web_data_service_, SetBrowserBoundKey).Times(0);
   EXPECT_CALL(mock_callback,
               Run(
@@ -297,11 +298,11 @@ TEST_F(PasskeyBrowserBinderTest,
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       fake_last_used_, mock_callback.Get());
-  ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, fake_bbk_id_));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, fake_bbk_id_));
   histograms.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve",
       SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
@@ -313,16 +314,16 @@ TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyRetrievesExistingKey) {
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder =
       CreatePasskeyBrowserBinder(/*is_new_bbk=*/false);
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback,
+                                    web_data_service_handle));
   EXPECT_CALL(*mock_web_data_service_, SetBrowserBoundKey).Times(0);
   EXPECT_CALL(mock_callback,
               Run(AllOf(NotNull(), Pointee(Property(
@@ -331,11 +332,11 @@ TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyRetrievesExistingKey) {
 
   binder->GetBoundKeyForPasskey(fake_credential_id_, fake_relying_party_,
                                 mock_callback.Get());
-  ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, fake_bbk_id_));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, fake_bbk_id_));
   histograms.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve",
       SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
@@ -347,9 +348,9 @@ TEST_F(PasskeyBrowserBinderTest,
        GetOrCreateBoundKeyForPasskeyRecreatesWhenEmpty) {
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
-  WebDataServiceConsumer* get_consumer = nullptr;
+  WebDataServiceRequestCallback get_callback;
   WebDataServiceBase::Handle get_handle = 1234;
-  WebDataServiceConsumer* set_consumer = nullptr;
+  WebDataServiceRequestCallback set_callback;
   WebDataServiceBase::Handle set_handle = 5678;
   base::MockCallback<
       base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
@@ -357,13 +358,13 @@ TEST_F(PasskeyBrowserBinderTest,
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&get_consumer), Return(get_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&get_callback, get_handle));
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
                                  fake_bbk_id_, Eq(fake_last_used_),
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<4>(&set_consumer), Return(set_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<4>(&set_callback, set_handle));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -376,15 +377,15 @@ TEST_F(PasskeyBrowserBinderTest,
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       fake_last_used_, mock_callback.Get());
-  ASSERT_TRUE(get_consumer);
-  get_consumer->OnWebDataServiceRequestDone(
-      get_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, std::vector<uint8_t>()));
-  ASSERT_TRUE(set_consumer);
-  set_consumer->OnWebDataServiceRequestDone(
-      set_handle,
-      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
+  ASSERT_FALSE(get_callback.is_null());
+  std::move(get_callback)
+      .Run(get_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, std::vector<uint8_t>()));
+  ASSERT_FALSE(set_callback.is_null());
+  std::move(set_callback)
+      .Run(set_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, true));
   histograms.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate",
       SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
@@ -397,9 +398,9 @@ TEST_F(PasskeyBrowserBinderTest,
        GetOrCreateBoundKeyForPasskeyDeletestBrowserBoundKeyWhenBindingFails) {
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
-  WebDataServiceConsumer* get_consumer = nullptr;
+  WebDataServiceRequestCallback get_callback;
   WebDataServiceBase::Handle get_handle = 1234;
-  WebDataServiceConsumer* set_consumer = nullptr;
+  WebDataServiceRequestCallback set_callback;
   WebDataServiceBase::Handle set_handle = 5678;
   base::MockCallback<
       base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
@@ -407,13 +408,13 @@ TEST_F(PasskeyBrowserBinderTest,
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&get_consumer), Return(get_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&get_callback, get_handle));
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
                                  fake_bbk_id_, Eq(fake_last_used_),
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<4>(&set_consumer), Return(set_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<4>(&set_callback, set_handle));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -426,15 +427,15 @@ TEST_F(PasskeyBrowserBinderTest,
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       fake_last_used_, mock_callback.Get());
-  ASSERT_TRUE(get_consumer);
-  get_consumer->OnWebDataServiceRequestDone(
-      get_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, std::vector<uint8_t>()));
-  ASSERT_TRUE(set_consumer);
-  set_consumer->OnWebDataServiceRequestDone(
-      set_handle,
-      std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, false));
+  ASSERT_FALSE(get_callback.is_null());
+  std::move(get_callback)
+      .Run(get_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, std::vector<uint8_t>()));
+  ASSERT_FALSE(set_callback.is_null());
+  std::move(set_callback)
+      .Run(set_handle,
+           std::make_unique<WDResult<bool>>(WDResultType::BOOL_RESULT, false));
   histograms.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate",
       SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
@@ -447,21 +448,21 @@ TEST_F(PasskeyBrowserBinderTest,
        GetOrCreateBoundKeyForPasskeyRecreatesWhenNullopt) {
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback get_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
+  WebDataServiceRequestCallback set_callback;
   base::MockCallback<
       base::OnceCallback<void(bool, std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&get_callback, web_data_service_handle));
   EXPECT_CALL(*mock_web_data_service_,
               SetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
                                  fake_bbk_id_, Eq(fake_last_used_),
-                                 /*consumer=*/NotNull()));
+                                 /*callback=*/_));
   EXPECT_CALL(mock_callback,
               Run(
                   /*is_new=*/true,
@@ -474,11 +475,11 @@ TEST_F(PasskeyBrowserBinderTest,
       {device::PublicKeyCredentialParams::CredentialInfo{.algorithm =
                                                              kCoseEs256}},
       fake_last_used_, mock_callback.Get());
-  ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, std::nullopt));
+  ASSERT_FALSE(get_callback.is_null());
+  std::move(get_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, std::nullopt));
   histograms.ExpectUniqueSample(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate",
       SecurePaymentConfirmationBrowserBoundKeyDeviceResult::
@@ -489,25 +490,25 @@ TEST_F(PasskeyBrowserBinderTest,
 TEST_F(PasskeyBrowserBinderTest, GetBoundKeyForPasskeyReturnsNullWhenNullOpt) {
   base::HistogramTester histograms;
   std::unique_ptr<PasskeyBrowserBinder> binder = CreatePasskeyBrowserBinder();
-  WebDataServiceConsumer* web_data_service_consumer = nullptr;
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle web_data_service_handle = 1234;
   base::MockCallback<base::OnceCallback<void(std::unique_ptr<BrowserBoundKey>)>>
       mock_callback;
 
   EXPECT_CALL(*mock_web_data_service_,
               GetBrowserBoundKey(fake_credential_id_, fake_relying_party_,
-                                 /*consumer=*/_))
-      .WillOnce(DoAll(SaveArg<2>(&web_data_service_consumer),
-                      Return(web_data_service_handle)));
+                                 /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback,
+                                    web_data_service_handle));
   EXPECT_CALL(mock_callback, Run(IsNull()));
 
   binder->GetBoundKeyForPasskey(fake_credential_id_, fake_relying_party_,
                                 mock_callback.Get());
-  ASSERT_TRUE(web_data_service_consumer);
-  web_data_service_consumer->OnWebDataServiceRequestDone(
-      web_data_service_handle,
-      std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
-          WDResultType::BROWSER_BOUND_KEY, std::nullopt));
+  ASSERT_FALSE(web_data_service_callback.is_null());
+  std::move(web_data_service_callback)
+      .Run(web_data_service_handle,
+           std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+               WDResultType::BROWSER_BOUND_KEY, std::nullopt));
   histograms.ExpectTotalCount(
       "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve",
       /*expected_count=*/0);

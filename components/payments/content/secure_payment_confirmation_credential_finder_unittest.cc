@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/payments/content/mock_web_payments_web_data_service.h"
@@ -81,10 +82,12 @@ class SecurePaymentConfirmationCredentialFinderUserDatabaseTest
 // credentials are propagated to the callback.
 TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
        ReturnsCredentialsOnSuccess) {
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle handle = 1234;
-  EXPECT_CALL(*mock_service_, GetSecurePaymentConfirmationCredentials(
-                                  Eq(kInputCredentialIds), kRelyingPartyId, _))
-      .WillOnce(Return(handle));
+  EXPECT_CALL(*mock_service_,
+              GetSecurePaymentConfirmationCredentials(
+                  Eq(kInputCredentialIds), kRelyingPartyId, /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback, handle));
 
   std::optional<
       std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
@@ -101,6 +104,7 @@ TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
       /*authenticator=*/nullptr, mock_service_, std::move(callback));
 
   // Simulate the web data service returning the credentials.
+  ASSERT_FALSE(web_data_service_callback.is_null());
   std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
   credentials.emplace_back(
       std::make_unique<SecurePaymentConfirmationCredential>(
@@ -109,7 +113,7 @@ TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
   auto result = std::make_unique<WDResult<
       std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>>(
       SECURE_PAYMENT_CONFIRMATION, std::move(credentials));
-  credential_finder_.OnWebDataServiceRequestDone(handle, std::move(result));
+  std::move(web_data_service_callback).Run(handle, std::move(result));
 
   // The credential finder should have received the credentials and sent them
   // back to the callback.
@@ -124,10 +128,12 @@ TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
 // return a std::nullopt.
 TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
        ReturnsNulloptOnFailure) {
+  WebDataServiceRequestCallback web_data_service_callback;
   WebDataServiceBase::Handle handle = 1234;
-  EXPECT_CALL(*mock_service_, GetSecurePaymentConfirmationCredentials(
-                                  Eq(kInputCredentialIds), kRelyingPartyId, _))
-      .WillOnce(Return(handle));
+  EXPECT_CALL(*mock_service_,
+              GetSecurePaymentConfirmationCredentials(
+                  Eq(kInputCredentialIds), kRelyingPartyId, /*callback=*/_))
+      .WillOnce(MoveArgAndReturn<2>(&web_data_service_callback, handle));
 
   base::MockCallback<SecurePaymentConfirmationCredentialFinder::
                          SecurePaymentConfirmationCredentialFinderCallback>
@@ -139,10 +145,12 @@ TEST_F(SecurePaymentConfirmationCredentialFinderUserDatabaseTest,
       kInputCredentialIds, kRelyingPartyId, caller_origin,
       /*authenticator=*/nullptr, mock_service_, mock_callback.Get());
 
-  // Simulate the web data service returning a non-SPC result; this should not
-  // generally happen, but the finder should handle it and return std::nullopt.
+  // Simulate the web data service returning a non-SPC result; this should
+  // not generally happen, but the finder should handle it and return
+  // std::nullopt.
+  ASSERT_FALSE(web_data_service_callback.is_null());
   auto result = std::make_unique<WDResult<int>>(AUTOFILL_PROFILES_RESULT, 0);
-  credential_finder_.OnWebDataServiceRequestDone(handle, std::move(result));
+  std::move(web_data_service_callback).Run(handle, std::move(result));
 }
 
 // Tests for the credential store APIs path.

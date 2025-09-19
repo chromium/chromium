@@ -132,7 +132,9 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
       web_data_service_->AddSecurePaymentConfirmationCredential(
           std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
                                                                 rp_id, user_id),
-          /*consumer=*/this);
+          base::BindOnce(
+              &SecurePaymentConfirmationService::OnStorePaymentCredential,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SecurePaymentConfirmationService::MakePaymentCredential(
@@ -188,7 +190,7 @@ void SecurePaymentConfirmationService::SetPasskeyBrowserBinderForTesting(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void SecurePaymentConfirmationService::OnWebDataServiceRequestDone(
+void SecurePaymentConfirmationService::OnStorePaymentCredential(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
   if (state_ != State::kStoringCredential || !IsCurrentStateValid() ||

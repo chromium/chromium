@@ -25,7 +25,7 @@ namespace payments {
 
 // Android wrapper of the WebPaymentsWebDataService which provides access
 // from the Java layer.
-class WebPaymentsWebDataServiceAndroid : public WebDataServiceConsumer {
+class WebPaymentsWebDataServiceAndroid {
  public:
   WebPaymentsWebDataServiceAndroid(JNIEnv* env,
                                    const jni_zero::JavaRef<jobject>& obj,
@@ -36,12 +36,7 @@ class WebPaymentsWebDataServiceAndroid : public WebDataServiceConsumer {
   WebPaymentsWebDataServiceAndroid& operator=(
       const WebPaymentsWebDataServiceAndroid&) = delete;
 
-  ~WebPaymentsWebDataServiceAndroid() override;
-
-  // Override WebDataServiceConsumer interface.
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  ~WebPaymentsWebDataServiceAndroid();
 
   // Destroys this object.
   void Destroy(JNIEnv* env);
@@ -74,6 +69,8 @@ class WebPaymentsWebDataServiceAndroid : public WebDataServiceConsumer {
       const base::android::JavaParamRef<jobject>& jcallback);
 
  private:
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
+                                   std::unique_ptr<WDTypedResult> result);
   void OnWebAppManifestRequestDone(JNIEnv* env,
                                    WebDataServiceBase::Handle h,
                                    std::unique_ptr<WDTypedResult> result);
@@ -92,6 +89,9 @@ class WebPaymentsWebDataServiceAndroid : public WebDataServiceConsumer {
   std::map<WebDataServiceBase::Handle,
            std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>>
       web_data_service_requests_;
+
+  base::WeakPtrFactory<WebPaymentsWebDataServiceAndroid> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments

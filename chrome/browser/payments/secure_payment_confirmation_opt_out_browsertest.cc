@@ -33,7 +33,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out enabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -72,7 +74,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out enabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -109,7 +113,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out disabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -148,7 +154,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, without specifying a value for showOptOut.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -334,7 +342,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutDisabledTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out enabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -383,7 +393,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out enabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -420,7 +432,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out disabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -459,7 +473,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, without specifying a value for showOptOut.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
@@ -623,7 +639,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutDisabledUxRefreshTest,
           ->AddSecurePaymentConfirmationCredential(
               std::make_unique<SecurePaymentConfirmationCredential>(
                   std::move(credential_id), "a.com", std::move(user_id)),
-              /*consumer=*/this);
+              base::BindOnce(&SecurePaymentConfirmationOptOutTest::
+                                 OnWebDataServiceRequestDone,
+                             weak_ptr_factory_.GetWeakPtr()));
 
   // Initiate SPC, with opt-out enabled.
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);

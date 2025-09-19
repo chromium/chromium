@@ -30,8 +30,7 @@ struct SecurePaymentConfirmationCredential;
 
 // Web data service to read/write data in WebAppManifestSectionTable and
 // WebPaymentsTable.
-class WebPaymentsWebDataService : public WebDataServiceBase,
-                                  public WebDataServiceConsumer {
+class WebPaymentsWebDataService : public WebDataServiceBase {
  public:
   WebPaymentsWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
@@ -48,33 +47,29 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
   void AddPaymentMethodManifest(const std::string& payment_method,
                                 std::vector<std::string> app_package_names);
 
-  // Gets the `web_app`'s manifest and  returns it to the `consumer`, which must
-  // outlive the DB operation, because DB tasks cannot be cancelled.
+  // Gets the `web_app`'s manifest and  returns it to the `callback`.
   WebDataServiceBase::Handle GetPaymentWebAppManifest(
       const std::string& web_app,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
-  // Gets the `payment_method`'s manifest and returns it the `consumer`, which
-  // must outlive the DB operation, because DB tasks cannot be cancelled.
+  // Gets the `payment_method`'s manifest and returns it the `callback`.
   WebDataServiceBase::Handle GetPaymentMethodManifest(
       const std::string& payment_method,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
   // Adds the secure payment confirmation `credential` and returns a boolean
-  // status to the `consumer`, which must outlive the DB operation, because DB
-  // tasks cannot be cancelled. The `credential` should not be null.
+  // status to the `callback`. The `credential` should not be null.
   WebDataServiceBase::Handle AddSecurePaymentConfirmationCredential(
       std::unique_ptr<SecurePaymentConfirmationCredential> credential,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
   // Gets the secure payment confirmation credential information for the given
-  // `credential_ids` and returns it to the `consumer`, which must outlive the
-  // DB operation, because DB tasks cannot be cancelled. Please use
-  // `std::move()` for `credential_ids` parameter to avoid extra copies.
+  // `credential_ids` and returns it to the `callback`. Please use `std::move()`
+  // for `credential_ids` parameter to avoid extra copies.
   virtual WebDataServiceBase::Handle GetSecurePaymentConfirmationCredentials(
       std::vector<std::vector<uint8_t>> credential_ids,
       const std::string& relying_party_id,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
   // Clears all of the the secure payment confirmation credential information
   // created in the given time range `begin` and `end`, and invokes `callback`
@@ -85,8 +80,7 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
       base::OnceClosure callback);
 
   // Set the `browser_bound_key_id` for the given `credential_id` and
-  // `relying_party_id`, and returns a boolean status to the `consumer`, which
-  // must outlive the DB operation, because DB tasks cannot be cancelled.
+  // `relying_party_id`, and returns a boolean status to the `callback`.
   // An optional `last_used` timestamp can be provided to record when the
   // browser bound key was last used.
   virtual WebDataServiceBase::Handle SetBrowserBoundKey(
@@ -94,15 +88,14 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
       std::string relying_party_id,
       std::vector<uint8_t> browser_bound_key_id,
       std::optional<base::Time> last_used,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
   // Get the browser bound key id given the `credential_id` and
-  // `relying_party_id`. Returns the key id or nullopt to the `consumer`, which
-  // must outlive the DB operation, because DB tasks cannot be cancelled.
+  // `relying_party_id`. Returns the key id or nullopt to the `callback`.
   virtual WebDataServiceBase::Handle GetBrowserBoundKey(
       const std::vector<uint8_t> credential_id,
       std::string relying_party_id,
-      WebDataServiceConsumer* consumer);
+      WebDataServiceRequestCallback callback);
 
   // Get all browser bound keys. Returns the BrowserBoundKeyMetadata structs in
   // a vector to the `callback`.
@@ -125,11 +118,6 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
       std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
           passkeys,
       base::OnceClosure callback);
-
-  // Override WebDataServiceConsumer interface.
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
 
  protected:
   ~WebPaymentsWebDataService() override;
@@ -184,9 +172,6 @@ class WebPaymentsWebDataService : public WebDataServiceBase,
           passkeys,
       base::OnceClosure callback,
       WebDatabase* db);
-
-  std::map<WebDataServiceBase::Handle, base::OnceClosure>
-      clearing_credentials_requests_;
 };
 
 }  // namespace payments
