@@ -22,8 +22,7 @@
       {
         "args": [
           "setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
-          "shard_method=hash"
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
         ],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
@@ -57,8 +56,7 @@
       {
         "args": [
           "setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
-          "shard_method=hash"
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
         ],
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
@@ -93,8 +91,7 @@
       {
         "args": [
           "setup.FieldTrialConfig=enable",
-          "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
-          "shard_method=hash"
+          "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
         ],
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
