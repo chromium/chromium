@@ -682,6 +682,11 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
   if (icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
     return kGoogleLensMonochromeLogoIcon;
   }
+  if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
+    // TODO(crbug.com/445750712): Temporarily use the non-monochrome agentspace
+    //  logo.
+    return kGoogleAgentspaceIconResourceName;
+  }
 #endif
   if (icon.name == omnibox::kIncognitoIcon.name ||
       icon.name == omnibox::kIncognitoCr2023Icon.name) {
