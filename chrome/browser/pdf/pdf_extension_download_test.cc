@@ -229,35 +229,10 @@ class PDFExtensionSaveInBlocksTest
  public:
   PDFExtensionSaveInBlocksTest() = default;
 
-  bool IsPdfOopifEnabled() const { return get<0>(GetParam()); }
+  // PDFExtensionTestBase:
+  bool UseOopif() const override { return get<0>(GetParam()); }
+
   bool IsPdfUseShowSaveFilePickerEnabled() const { return get<1>(GetParam()); }
-
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      const override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back({chrome_pdf::features::kPdfGetSaveDataInBlocks, {}});
-    if (IsPdfOopifEnabled()) {
-      enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
-    }
-    if (IsPdfUseShowSaveFilePickerEnabled()) {
-      enabled.push_back({chrome_pdf::features::kPdfUseShowSaveFilePicker, {}});
-    }
-    return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled =
-        PDFExtensionTestBase::GetDisabledFeatures();
-    if (!IsPdfOopifEnabled()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    if (!IsPdfUseShowSaveFilePickerEnabled()) {
-      disabled.push_back(chrome_pdf::features::kPdfUseShowSaveFilePicker);
-    }
-
-    return disabled;
-  }
 
   // PDFExtensionTestBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -267,7 +242,7 @@ class PDFExtensionSaveInBlocksTest
       SetUpPolicyProvider();
       SetPolicy();
     }
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    PDFExtensionTestBase::SetUpInProcessBrowserTestFixture();
   }
 
   // PDFExtensionTestBase:
@@ -277,6 +252,28 @@ class PDFExtensionSaveInBlocksTest
       test_options_.reset();
     }
     PDFExtensionTestBase::TearDownOnMainThread();
+  }
+
+  // PDFExtensionTestBase:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfGetSaveDataInBlocks, {}});
+    if (IsPdfUseShowSaveFilePickerEnabled()) {
+      enabled.push_back({chrome_pdf::features::kPdfUseShowSaveFilePicker, {}});
+    }
+    return enabled;
+  }
+
+  // PDFExtensionTestBase:
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
+    if (!IsPdfUseShowSaveFilePickerEnabled()) {
+      disabled.push_back(chrome_pdf::features::kPdfUseShowSaveFilePicker);
+    }
+    return disabled;
   }
 
   void SetUpPolicyProvider() {
