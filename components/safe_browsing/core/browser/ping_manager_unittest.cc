@@ -267,6 +267,9 @@ void PingManagerTest::RunReportThreatDetailsTest(
         /*sample=*/200,
         /*expected_bucket_count=*/1);
   }
+  histogram_tester.ExpectTotalCount(
+      /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
+      /*expected_count=*/0);
 }
 
 TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
@@ -446,6 +449,36 @@ TEST_F(PingManagerTest, TestReportThreatDetails_EmptyReport) {
   PingManager::ReportThreatDetailsResult result =
       ping_manager()->ReportThreatDetails(std::move(report));
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::EMPTY_REPORT);
+}
+
+TEST_F(PingManagerTest, TestReportThreatDetails_BadRequestLog) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.AddResponse(
+      "https://safebrowsing.google.com/safebrowsing/clientreport/"
+      "malware?client=unittest&appver=1.0&pver=4.0" +
+          key_param_,
+      "", net::HTTP_BAD_REQUEST);
+  ping_manager()->SetURLLoaderFactoryForTesting(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory));
+
+  base::RunLoop run_loop;
+  ping_manager()->SetOnURLLoaderCompleteCallbackForTesting(
+      run_loop.QuitClosure());
+  PingManager::ReportThreatDetailsResult result =
+      ping_manager()->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
+      /*sample=*/ClientSafeBrowsingReportRequest::URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PingManagerTest, TestSanitizeThreatDetailsReport) {

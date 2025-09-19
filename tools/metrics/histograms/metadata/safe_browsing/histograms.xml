@@ -534,6 +534,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType"
+    enum="ClientSafeBrowsingReportType" expires_after="2026-03-19">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the report type of client safe browsing reports that failed due to
+    HTTP error 400: BAD_REQUEST. Logged each time the response is received once
+    a report has been sent.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.DownloadReportSize"
     units="bytes" expires_after="2026-02-22">
   <owner>chlily@chromium.org</owner>
