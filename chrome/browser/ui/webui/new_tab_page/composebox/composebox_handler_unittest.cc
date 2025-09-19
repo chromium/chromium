@@ -644,6 +644,33 @@ TEST_F(ComposeboxHandlerTabsTest, ActiveTabsCountMetric) {
       "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
 }
 
+TEST_F(ComposeboxHandlerTabsTest, TabContextAddedMetric) {
+  // Add a tab.
+  tabs::TabInterface* tab = AddTab(GURL("https://example.com"));
+  const int tab_id = tab->GetHandle().raw_value();
+
+  // Mock the call to AddTabContext.
+  MockTabContextualizationController* controller =
+      static_cast<MockTabContextualizationController*>(
+          tab->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  handler().AddTabContext(tab_id, callback.Get());
+
+  // Check that the histogram was recorded.
+  histogram_tester().ExpectUniqueSample("NewTabPage.Composebox.TabContextAdded",
+                                        true, 1);
+}
+
 TEST_F(ComposeboxHandlerTabsTest, TabWithDuplicateTitleClickedMetric) {
   // Add tabs with duplicate titles.
   tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
