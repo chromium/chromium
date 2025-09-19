@@ -37,6 +37,8 @@ extern const base::FeatureParam<bool> kShowComposeboxTypedSuggest;
 extern const base::FeatureParam<bool> kShowContextMenu;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
+// The maximum number of file attachments to upload.
+extern const base::FeatureParam<int> kMaxNumFiles;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
