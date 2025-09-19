@@ -245,7 +245,7 @@ void DemuxerStreamReader::OnReadBuffer(
 
   StarboardSampleInfo sample_info = {};
   sample_info.type = type;
-  sample_info.buffer = buffer->data();
+  sample_info.buffer = base::span(*buffer).data();
   sample_info.buffer_size = buffer->size();
   sample_info.timestamp = buffer->timestamp().InMicroseconds();
   sample_info.side_data = base::span<const StarboardSampleSideData>();

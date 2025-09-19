@@ -489,7 +489,7 @@ TEST_F(StarboardPlayerManagerTest,
   video_buffer->set_timestamp(kVideoBufferTs);
   const StarboardSampleInfo expected_video_info = {
       .type = 1,
-      .buffer = video_buffer->data(),
+      .buffer = base::span(*video_buffer).data(),
       .buffer_size = static_cast<int>(video_buffer->size()),
       .timestamp = kVideoBufferTs.InMicroseconds(),
       .side_data = base::span<const StarboardSampleSideData>(),
@@ -512,7 +512,7 @@ TEST_F(StarboardPlayerManagerTest,
   audio_buffer->set_timestamp(kAudioBufferTs);
   const StarboardSampleInfo expected_audio_info = {
       .type = 0,
-      .buffer = audio_buffer->data(),
+      .buffer = base::span(*audio_buffer).data(),
       .buffer_size = static_cast<int>(audio_buffer->size()),
       .timestamp = kAudioBufferTs.InMicroseconds(),
       .side_data = base::span<const StarboardSampleSideData>(),
@@ -596,7 +596,7 @@ TEST_F(StarboardPlayerManagerTest,
   video_buffer->set_timestamp(kVideoBufferTs);
   const StarboardSampleInfo expected_video_info = {
       .type = 1,
-      .buffer = video_buffer->data(),
+      .buffer = base::span(*video_buffer).data(),
       .buffer_size = static_cast<int>(video_buffer->size()),
       .timestamp = kVideoBufferTs.InMicroseconds(),
       .side_data = base::span<const StarboardSampleSideData>(),
@@ -673,7 +673,7 @@ TEST_F(StarboardPlayerManagerTest,
   audio_buffer->set_timestamp(kAudioBufferTs);
   const StarboardSampleInfo expected_audio_info = {
       .type = 0,
-      .buffer = audio_buffer->data(),
+      .buffer = base::span(*audio_buffer).data(),
       .buffer_size = static_cast<int>(audio_buffer->size()),
       .timestamp = kAudioBufferTs.InMicroseconds(),
       .side_data = base::span<const StarboardSampleSideData>(),

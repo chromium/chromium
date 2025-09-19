@@ -407,7 +407,7 @@ TEST_F(DemuxerStreamReaderTest, ReadsAudioBufferAndConvertsPcmToS16) {
   // DemuxerStreamReader. That info needs to be match the info in the starboard
   // structs, so that the data passed to starboard has its lifetime managed
   // properly.
-  expected_info.buffer = captured_buffer->data();
+  expected_info.buffer = base::span(*captured_buffer).data();
   expected_info.buffer_size = captured_buffer->size();
   EXPECT_THAT(captured_sample_info, MatchesStarboardSampleInfo(expected_info));
 }

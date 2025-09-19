@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cast_starboard_api_adapter_impl.h"
+#include "chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.h"
 
 #include "base/at_exit.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
 // TODO(b/333961720): remove all the macros in this file and split the impl into
 // two different classes: one for SB 15+, one for older versions of starboard.
@@ -22,12 +23,17 @@ namespace chromecast {
 namespace {
 
 CastStarboardApiAdapterImpl* g_instance = nullptr;
-base::Lock g_instance_mutex;
+
+// Returns a lock for accessing g_instance.
+base::Lock& GetGInstanceLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
 }  // namespace
 
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
-  base::AutoLock lock(g_instance_mutex);
+  base::AutoLock lock(GetGInstanceLock());
   if (!g_instance) {
     // The instance is assigned by the class's constructor.
     new CastStarboardApiAdapterImpl();
@@ -159,7 +165,7 @@ void CastStarboardApiAdapterImpl::Release() {
            "released.";
   }
 
-  base::AutoLock lock(g_instance_mutex);
+  base::AutoLock lock(GetGInstanceLock());
   LOG(INFO) << "Destroying CastStarboardApiAdapterImpl instance.";
   delete g_instance;
   g_instance = nullptr;
