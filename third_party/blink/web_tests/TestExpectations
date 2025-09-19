@@ -8384,6 +8384,7 @@ crbug.com/40912755 [ Mac14-arm64 ] http/tests/devtools/a11y-axe-core/sources/sco
 crbug.com/41493566 [ Mac14-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-top-navigation-after-postMessage.html [ Failure Pass ]
 
 crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Failure Timeout ]
+crbug.com/446116790 [ Linux ] external/wpt/pointerevents/persistentDeviceId/get-persistendeviceid-from-pointer-event.tentative.html [ Failure Pass ]
 
 # Mac15/arm64 - Flaky tests
 [ Mac15 ] external/wpt/css/css-content/quotes-020.html [ Failure ]  # Reftest image failure
