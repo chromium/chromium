@@ -47,10 +47,10 @@ std::vector<mojom::TabsEventPtr> Transform(
 }
 
 void EventBroadcaster::Broadcast(
-    const std::vector<observation::TabStripApiObserver*>& observers,
+    const base::ObserverList<observation::TabStripApiObserver>& observers,
     const std::vector<events::Event>& events) {
-  for (auto* observer : observers) {
-    observer->OnTabEvents(Transform(events));
+  for (auto& observer : observers) {
+    observer.OnTabEvents(Transform(events));
   }
 }
 

@@ -375,12 +375,12 @@ TabStripServiceImpl::UpdateTabGroupVisual(
 
 void TabStripServiceImpl::AddObserver(
     observation::TabStripApiObserver* observer) {
-  observers_.push_back(observer);
+  observers_.AddObserver(observer);
 }
 
 void TabStripServiceImpl::RemoveObserver(
     observation::TabStripApiObserver* observer) {
-  observers_.erase(std::remove(observers_.begin(), observers_.end(), observer));
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace tabs_api

@@ -85,7 +85,6 @@ class TabStripServiceMojoHandler
  private:
   std::unique_ptr<tabs_api::TabStripService> tab_strip_service_;
 
-  // Mojo plumbing.
   mojo::ReceiverSet<tabs_api::mojom::TabStripService> clients_;
   mojo::ReceiverSet<tabs_api::mojom::TabStripExperimentService>
       experiment_clients_;

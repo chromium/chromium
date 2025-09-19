@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_IMPL_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_IMPL_H_
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
@@ -83,8 +84,7 @@ class TabStripServiceImpl : public TabStripService {
   std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
 
   std::unique_ptr<SessionController> session_controller_;
-  // TODO(crbug.com/441256673): use observation list or something like that.
-  std::vector<observation::TabStripApiObserver*> observers_;
+  base::ObserverList<observation::TabStripApiObserver> observers_;
 };
 
 }  // namespace tabs_api
