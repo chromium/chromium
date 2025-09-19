@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
 
 namespace web_app {
 class WebApps;
@@ -27,22 +28,19 @@ class PluginVmApps;
 class ExtensionApps;
 #endif
 
-// PublisherHost saves publishers created by AppServiceProxy.
-class PublisherHost {
+// PublisherHostImpl saves publishers created by AppServiceProxy.
+class PublisherHostImpl : public PublisherHost {
  public:
-  explicit PublisherHost(AppServiceProxy* proxy);
-  PublisherHost(const PublisherHost&) = delete;
-  PublisherHost& operator=(const PublisherHost&) = delete;
-  ~PublisherHost();
+  explicit PublisherHostImpl(AppServiceProxy* proxy);
+  PublisherHostImpl(const PublisherHostImpl&) = delete;
+  PublisherHostImpl& operator=(const PublisherHostImpl&) = delete;
+  ~PublisherHostImpl() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void SetArcIsRegistered();
-
-  void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
-
-  void RegisterPublishersForTesting();
-
-  void Shutdown();
+  void SetArcIsRegistered() override;
+  void Shutdown() override;
+  void ReInitializeCrostiniForTesting() override;
+  void RegisterPublishersForTesting() override;
 #endif
 
  private:

@@ -33,6 +33,7 @@ source_set("app_service") {
     "policy_util.cc",
     "policy_util.h",
     "publisher.h",
+    "publisher_host.h",
     "publisher_host_impl.cc",
     "publisher_host_impl.h",
     "publishers/app_publisher.cc",

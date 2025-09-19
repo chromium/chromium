@@ -20,7 +20,7 @@ void AppServiceProxy::Initialize() {
 
   AppServiceProxyBase::Initialize();
 
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  publisher_host_ = std::make_unique<PublisherHostImpl>(this);
 }
 
 bool AppServiceProxy::MaybeShowLaunchPreventionDialog(

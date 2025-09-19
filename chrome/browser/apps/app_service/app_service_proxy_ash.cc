@@ -141,7 +141,7 @@ void AppServiceProxyAsh::Initialize() {
     app_registry_cache_observer_.Observe(cache);
   }
 
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  publisher_host_ = std::make_unique<PublisherHostImpl>(this);
 
   if (!profile_->AsTestingProfile() &&
       (!::ash::features::IsShimlessRMA3pDiagnosticsEnabled() ||
@@ -385,7 +385,7 @@ base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
 
 void AppServiceProxyAsh::ReInitializeCrostiniForTesting() {
   if (publisher_host_) {
-    publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST
+    publisher_host_->ReInitializeCrostiniForTesting();  // IN-TEST
   }
 }
 

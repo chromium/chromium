@@ -23,8 +23,6 @@
 
 namespace apps {
 
-class PublisherHost;
-
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
 class BorealisApps
@@ -38,9 +36,10 @@ class BorealisApps
   BorealisApps(const BorealisApps&) = delete;
   BorealisApps& operator=(const BorealisApps&) = delete;
 
- private:
-  friend class PublisherHost;
+  // GuestOsApps overrides.
+  void Initialize() override;
 
+ private:
   // Helper method for dispatching to the provided |callback| once we
   // have queried whether borealis is allowed not installed.
   void CallWithBorealisAllowed(base::OnceCallback<void(bool)> callback);
@@ -62,7 +61,6 @@ class BorealisApps
   bool CouldBeAllowed() const override;
   apps::AppType AppType() const override;
   guest_os::VmType VmType() const override;
-  void Initialize() override;
   void CreateAppOverrides(
       const guest_os::GuestOsRegistryService::Registration& registration,
       App* app) override;

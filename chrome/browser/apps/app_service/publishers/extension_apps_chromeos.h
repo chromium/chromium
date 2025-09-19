@@ -43,8 +43,6 @@ class NotificationDisplayService;
 
 namespace apps {
 
-class PublisherHost;
-
 // An app publisher (in the App Service sense) of extension-backed apps for
 // ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
 // hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
@@ -68,12 +66,10 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   void ObserveArc();
 
- private:
-  friend class PublisherHost;
-
   // ExtensionAppsBase overrides.
   void Initialize() override;
 
+ private:
   // Requests a compressed icon data for an app identified by `app_id`. The icon
   // is identified by `size_in_dip` and `scale_factor`. Calls `callback` with
   // the result.

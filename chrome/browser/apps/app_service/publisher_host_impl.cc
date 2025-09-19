@@ -37,24 +37,23 @@ bool IsKioskSessionProfile(Profile* profile) {
 
 }  // anonymous namespace
 
-PublisherHost::PublisherHost(AppServiceProxy* proxy) : proxy_(proxy) {
+PublisherHostImpl::PublisherHostImpl(AppServiceProxy* proxy) : proxy_(proxy) {
   DCHECK(proxy);
   Initialize();
 }
 
-PublisherHost::~PublisherHost() = default;
+PublisherHostImpl::~PublisherHostImpl() = default;
 
 #if BUILDFLAG(IS_CHROMEOS)
-void PublisherHost::SetArcIsRegistered() {
+void PublisherHostImpl::SetArcIsRegistered() {
   chrome_apps_->ObserveArc();
 }
 
-void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
-  DCHECK(proxy);
+void PublisherHostImpl::ReInitializeCrostiniForTesting() {
   crostini_apps_->Initialize();
 }
 
-void PublisherHost::RegisterPublishersForTesting() {
+void PublisherHostImpl::RegisterPublishersForTesting() {
   DCHECK(proxy_);
   if (crostini_apps_) {
     proxy_->RegisterPublisher(AppType::kCrostini, crostini_apps_.get());
@@ -76,7 +75,7 @@ void PublisherHost::RegisterPublishersForTesting() {
   }
 }
 
-void PublisherHost::Shutdown() {
+void PublisherHostImpl::Shutdown() {
   chrome_apps_->Shutdown();
   if (extension_apps_) {
     extension_apps_->Shutdown();
@@ -88,7 +87,7 @@ void PublisherHost::Shutdown() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void PublisherHost::Initialize() {
+void PublisherHostImpl::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* profile = proxy_->profile();
   // GuestOS and PluginVm apps are not available in kiosk mode.
