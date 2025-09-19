@@ -234,6 +234,11 @@ void DiceTabHelper::UpdateSyncCallback(
   state_->enable_sync_callback = std::move(enable_sync_callback);
 }
 
+void DiceTabHelper::UpdateHistorySyncOptinCallback(
+    EnableHistorySyncOptinCallback history_sync_optin_callback) {
+  state_->history_sync_optin_callback = std::move(history_sync_optin_callback);
+}
+
 void DiceTabHelper::UpdateSigninErrorCallback(
     ShowSigninErrorCallback show_signin_error_callback) {
   state_->show_signin_error_callback = std::move(show_signin_error_callback);

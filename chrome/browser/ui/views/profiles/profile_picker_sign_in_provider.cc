@@ -442,11 +442,11 @@ void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
       // recovery in crbug.com/29524688).
       helper.UpdateSyncCallback(
           DiceTabHelper::GetEnableSyncCallbackForBrowser());
+      helper.UpdateHistorySyncOptinCallback(
+          DiceTabHelper::GetHistorySyncOptinCallbackForBrowser());
       helper.UpdateSigninErrorCallback(
           DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
       helper.UpdateRedirectUrl(GURL(chrome::kChromeUINewTabURL));
-      /* TODO(crbug.com/418139693): Update the history_sync_optin_callback once
-         this entry point is supported for history sync. */
       return;
   }
 }

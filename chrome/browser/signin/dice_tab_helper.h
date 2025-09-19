@@ -136,6 +136,8 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   // Updates the callbacks used by the tab helper.
   void UpdateSyncCallback(EnableSyncCallback enable_sync_callback);
+  void UpdateHistorySyncOptinCallback(
+      EnableHistorySyncOptinCallback history_sync_optin_callback);
   void UpdateSigninErrorCallback(
       ShowSigninErrorCallback show_signin_error_callback);
   // Updates the redirection url, that is used used after enabling Sync or
