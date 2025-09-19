@@ -9,15 +9,8 @@ found in the LICENSE file.
     <!-- The following styles may be used to style views provided by a CustomViewBinder or attached
          to the app menu as headers or footers. -->
 
-    <!-- Base theme overlay for app menu icon buttons. -->
-    <style name="AppMenuTopRowIconButtonsStyleOverlay" parent="">
-        <item name="overflowMenuButtonStyle">@style/OverflowMenuButton</item>
-        <item name="overflowMenuActionBarBgDrawable">@drawable/menu_action_bar_bg</item>
-        <item name="appMenuIconRowPadding">0dp</item>
-    </style>
-
     <!-- Styling for an icon in an app menu icon row. -->
-    <style name="OverflowMenuButton" parent="Widget.Material3.Button.IconButton">
+    <style name="OverflowMenuButton" parent="Widget.Material3Expressive.Button.IconButton.Standard">
         <!-- Perfect square. -->
         <item name="android:layout_width">?android:attr/listPreferredItemHeightSmall</item>
         <item name="android:layout_height">?android:attr/listPreferredItemHeightSmall</item>

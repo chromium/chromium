@@ -13,7 +13,7 @@ found in the LICENSE file.
     <!-- Scan card -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/scan_card_button"
-        style="@style/Widget.Material3.Button.TonalButton.Icon"
+        style="@style/Widget.Material3Expressive.Button.IconButton.Tonal"
         android:layout_width="match_parent"
         android:layout_height="@dimen/local_card_scanner_height"
         android:text="@string/autofill_scan_credit_card_button"

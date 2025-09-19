@@ -8,7 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- AlertDialog styles -->
     <!-- |Theme.BrowserUI.AlertDialog.NoActionBar| should have all the attributes this has. -->
-    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.Material3.Dialog.Alert">
+    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.Material3Expressive.Dialog.Alert">
         <item name="android:textColorPrimary">@macro/default_text_color</item>
         <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>

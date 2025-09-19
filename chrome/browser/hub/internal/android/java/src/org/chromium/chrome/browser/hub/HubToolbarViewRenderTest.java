@@ -81,9 +81,7 @@ public class HubToolbarViewRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        if (ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
-            mActivity.getTheme().applyStyle(R.style.HubToolbarActionButtonStyleOverlay_Fill, true);
-        } else {
+        if (!ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()) {
             mActivity
                     .getTheme()
                     .applyStyle(R.style.HubToolbarActionButtonStyleOverlay_Baseline, true);

@@ -13,7 +13,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
     <!-- Light themes -->
     <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge and
          Theme.BrowserUI.AlertDialog.NoActionBar. -->
-    <style name="Theme.BrowserUI.Light" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.BrowserUI.Light" parent="Theme.Material3Expressive.Light.NoActionBar">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
         {% macro color_palette_light_attributes() %}
@@ -132,6 +132,16 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
 
         <item name="android:forceDarkAllowed">false</item>
+
+        <!-- TODO(crbug.com/419879223): Clean up these with ThemeModule code. -->
+        <!-- Baseline app menu styles. -->
+        <item name="overflowMenuButtonStyle">@style/OverflowMenuButton</item>
+        <item name="overflowMenuActionBarBgDrawable">@drawable/menu_action_bar_bg</item>
+        <item name="appMenuIconRowPadding">0dp</item>
+
+        <!-- Tab switcher button styles. -->
+        <item name="newTabButtonStyle">@style/NewTabButtonStyle</item>
+        <item name="colorPickerButtonStyle">@style/ColorPickerButtonStyle</item>
         {% endmacro %}
         {{ misc_attributes() }}
 
@@ -186,7 +196,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
     <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI.Light" />
 
     <!-- Colors should be mirrored by Theme.BrowserUI -->
-    <style name="Theme.BrowserUI.Light.DialogWhenLarge" parent="Theme.Material3.Light.DialogWhenLarge">
+    <style name="Theme.BrowserUI.Light.DialogWhenLarge" parent="Theme.Material3Expressive.Light.DialogWhenLarge">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
         {{ color_palette_light_attributes() }}
@@ -200,7 +210,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
          an activity theme on its own. In addition to mirroring |Theme.BrowserUI|, this should
          include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
          -->
-    <style name="Theme.BrowserUI.Light.AlertDialog.NoActionBar" parent="Theme.Material3.Light.Dialog.Alert">
+    <style name="Theme.BrowserUI.Light.AlertDialog.NoActionBar" parent="Theme.Material3Expressive.Light.Dialog.Alert">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
         {{ color_palette_light_attributes() }}
@@ -229,7 +239,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
     <style name="Theme.BrowserUI.DayNight.AlertDialog.NoActionBar" parent="Theme.BrowserUI.Light.AlertDialog.NoActionBar"/>
 
     <!-- Dark themes -->
-    <style name="Theme.BrowserUI.Dark" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Theme.BrowserUI.Dark" parent="Theme.Material3Expressive.Dark.NoActionBar">
         {% macro color_palette_dark_attributes() %}
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_80</item>
@@ -263,14 +273,14 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ full_window_attributes() }}
     </style>
 
-    <style name="Theme.BrowserUI.Dark.DialogWhenLarge" parent="Theme.Material3.Dark.DialogWhenLarge">
+    <style name="Theme.BrowserUI.Dark.DialogWhenLarge" parent="Theme.Material3Expressive.Dark.DialogWhenLarge">
         {{ color_palette_dark_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
         {{ adaptive_density_attributes() }}
     </style>
 
-    <style name="Theme.BrowserUI.Dark.AlertDialog.NoActionBar" parent="Theme.Material3.Dark.Dialog.Alert">
+    <style name="Theme.BrowserUI.Dark.AlertDialog.NoActionBar" parent="Theme.Material3Expressive.Dark.Dialog.Alert">
         {{ color_palette_dark_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
