@@ -322,6 +322,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.showMessageToast.bind(this)),
       this.browserProxy.callbackRouter.aimResultsChanged.addListener(
           this.onAimResultsChanged.bind(this)),
+      this.browserProxy.callbackRouter.focusResultsFrame.addListener(
+          this.focusResultsFrame.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -595,6 +597,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onAimResultsChanged(onAim: boolean) {
     this.isOnAimResults = onAim;
+  }
+
+  private focusResultsFrame() {
+    this.getResults().focus();
   }
 
   private async showToast(toast: CrToastElement, message?: string) {

@@ -88,6 +88,11 @@ void LensComposeboxController::IssueComposeboxQuery(
   lens_search_controller_->lens_overlay_side_panel_coordinator()
       ->SendClientMessageToAim(serialized_message);
 
+  // Focus the iframe in the side panel. This moves screen reader focus to the
+  // results frame so the loading of AIM results are properly announced.
+  lens_search_controller_->lens_overlay_side_panel_coordinator()
+      ->FocusResultsFrame();
+
   // Record that a query was issued.
   GetSessionMetricsLogger()->OnAimQueryIssued();
 }

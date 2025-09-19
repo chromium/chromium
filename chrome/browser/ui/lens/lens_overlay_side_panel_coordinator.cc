@@ -733,6 +733,12 @@ void LensOverlaySidePanelCoordinator::AimResultsChanged(bool on_aim) {
   }
 }
 
+void LensOverlaySidePanelCoordinator::FocusResultsFrame() {
+  if (side_panel_page_) {
+    side_panel_page_->FocusResultsFrame();
+  }
+}
+
 void LensOverlaySidePanelCoordinator::SuppressGhostLoader() {
   if (side_panel_page_) {
     side_panel_page_->SuppressGhostLoader();

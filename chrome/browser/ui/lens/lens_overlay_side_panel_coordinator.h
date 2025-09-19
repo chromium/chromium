@@ -273,6 +273,9 @@ class LensOverlaySidePanelCoordinator
   // UI. `on_aim` is true if the results are now in the AIM UI.
   virtual void AimResultsChanged(bool on_aim);
 
+  // Focuses the results iframe in the side panel.
+  virtual void FocusResultsFrame();
+
  private:
   // Data class for constructing the side panel and storing side panel state for
   // kSuspended state.

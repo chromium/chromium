@@ -108,4 +108,7 @@ interface LensSidePanelPage {
   // Notifies the side panel that the results have moved to/from the AIM UI.
   // `on_aim` is true if the results are now in the AIM UI.
   AimResultsChanged(bool on_aim);
+
+  // Focuses the results iframe.
+  FocusResultsFrame();
 };
