@@ -152,7 +152,12 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
   const std::pair<float, float> minmax_y = std::minmax(p1.y(), p2.y());
   float w = 1 + minmax_x.second - minmax_x.first;
   float h = 1 + minmax_y.second - minmax_y.first;
-  return gfx::ToEnclosingRect(gfx::RectF(minmax_x.first, minmax_y.first, w, h));
+  gfx::Rect result =
+      gfx::ToEnclosingRect(gfx::RectF(minmax_x.first, minmax_y.first, w, h));
+  // Expand the invalidation rect a bit more to account for any other rounding
+  // errors that may have occurred.
+  result.Outset(1);
+  return result;
 }
 
 gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,

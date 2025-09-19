@@ -454,7 +454,7 @@ TEST(PdfInkTransformTest, ThumbnailTransformRotateAndZoom) {
 }
 
 TEST(PdfInkTransformTest, CanonicalInkEnvelopeToInvalidationScreenRect) {
-  static constexpr gfx::Rect kExpectedScreenRect(21, 41, 80, 142);
+  static constexpr gfx::Rect kExpectedScreenRect(20, 40, 82, 144);
   ink::Envelope envelope(ink::Point(10.5f, 20.6f));
   envelope.Add(ink::Point(50.0f, 90.9f));
 
