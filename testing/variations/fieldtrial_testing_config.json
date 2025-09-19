@@ -24337,31 +24337,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_empty",
+                    "name": "Enabled_HangWatcher",
                     "params": {
-                        "suppress_memory_listeners_mask": ""
+                        "suppress_memory_listeners_mask": "0200000000000000000000000000000000000000000000000",
+                        "suppress_memory_monitor_mask": "0200000000000000000000000000000000000000000000000"
                     },
                     "enable_features": [
-                        "SuppressMemoryListeners"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SuppressMemoryMonitor": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_empty",
-                    "params": {
-                        "suppress_memory_monitor_mask": ""
-                    },
-                    "enable_features": [
+                        "SuppressMemoryListeners",
                         "SuppressMemoryMonitor"
                     ]
                 }
