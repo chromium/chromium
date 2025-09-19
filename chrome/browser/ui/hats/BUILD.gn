@@ -103,7 +103,10 @@ source_set("impl") {
     "//chrome/browser/ui",
   ]
   if (is_android) {
-    deps += [ "//chrome/browser/ui/android/hats" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/ui/android/hats",
+    ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

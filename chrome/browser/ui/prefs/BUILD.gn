@@ -54,7 +54,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    deps += [ "//components/browser_ui/accessibility/android" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//components/browser_ui/accessibility/android",
+    ]
   } else {
     deps += [ "//chrome/browser/themes" ]
   }

@@ -7,6 +7,8 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+assert(is_android)
+
 source_set("auxiliary_search") {
   sources = [
     "auxiliary_search_provider.h",
@@ -33,6 +35,7 @@ source_set("impl") {
     ":jni_headers",
     "//base",
     "//chrome/browser/auxiliary_search/proto",
+    "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//components/ntp_tiles",
     "//components/visited_url_ranking/public",

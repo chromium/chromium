@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
@@ -40,6 +41,7 @@ generate_jni("jni_headers") {
 
 static_library("flags_android") {
   sources = [
+    "android/chrome_feature_list.h",
     "android/chrome_session_state.cc",
     "android/chrome_session_state.h",
   ]
@@ -50,7 +52,82 @@ static_library("flags_android") {
     "//components/prefs",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/buildflags",
   ]
+}
+
+static_library("flags_android_impl") {
+  sources = [ "android/chrome_feature_list.cc" ]
+  deps = [
+    ":chrome_browser_flags_enums_srcjar",
+    ":flags_android",
+    ":jni_headers",
+    "//base",
+    "//build:android_buildflags",
+    "//chrome/browser/android/webapk:webapk_sources",
+    "//chrome/browser/notifications/chime/android",
+    "//chrome/browser/task_manager/common",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:chrome_features",
+    "//components/autofill/core/common:features",
+    "//components/browser_sync:switches",
+    "//components/browser_ui/photo_picker/android",
+    "//components/browsing_data/core",
+    "//components/collaboration/public:features",
+    "//components/commerce/core:feature_list",
+    "//components/content_settings/core/common:features",
+    "//components/contextual_search/core/browser",
+    "//components/credential_management/android:features",
+    "//components/data_sharing/public:features",
+    "//components/download/public/common:public",
+    "//components/embedder_support/android:util",
+    "//components/enterprise/data_controls/core/browser:features",
+    "//components/facilitated_payments/core/features",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/feed:feature_list",
+    "//components/history/core/browser:features",
+    "//components/history_clusters/core",
+    "//components/language/core/common",
+    "//components/ntp_tiles",
+    "//components/offline_pages/core:switches",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core:features",
+    "//components/page_info/core",
+    "//components/paint_preview/features",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:features",
+    "//components/permissions:permissions_common",
+    "//components/plus_addresses/core/common:features",
+    "//components/policy/core/common",
+    "//components/privacy_sandbox:features",
+    "//components/push_messaging",
+    "//components/regional_capabilities",
+    "//components/safe_browsing/core/common:features",
+    "//components/safety_check:features",
+    "//components/saved_tab_groups/public:features",
+    "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
+    "//components/sensitive_content:features",
+    "//components/shared_highlighting/core/common",
+    "//components/signin/public/base",
+    "//components/subresource_filter/core/browser",
+    "//components/supervised_user/core/common:features",
+    "//components/sync/base:features",
+    "//components/sync_sessions",
+    "//components/visited_url_ranking/public",
+    "//components/viz/common",
+    "//components/webapps/browser",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//media",
+    "//services/device/public/cpp:device_features",
+    "//services/network/public/cpp:flags_and_switches",
+    "//third_party/blink/public/common:headers",
+    "//ui/base:features",
+  ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common:extension_features" ]
+  }
 }
 
 java_cpp_strings("chrome_android_java_switches_srcjar") {

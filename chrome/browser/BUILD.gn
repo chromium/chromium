@@ -3129,8 +3129,6 @@ static_library("browser") {
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
-      "flags/android/chrome_feature_list.cc",
-      "flags/android/chrome_feature_list.h",
       "geolocation/geolocation_permission_context_delegate_android.cc",
       "geolocation/geolocation_permission_context_delegate_android.h",
       "gesturenav/android/tab_on_back_gesture_handler.cc",
@@ -3422,6 +3420,7 @@ static_library("browser") {
       "//chrome/browser/feedback/android",
       "//chrome/browser/feedback/android:jni_headers",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/flags:flags_android_impl",
       "//chrome/browser/gesturenav/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/language/android:jni_headers",
@@ -3648,7 +3647,7 @@ static_library("browser") {
       "//chrome/browser/bookmarks/android:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
-      # //c/b/translate/chrome_translate_client gets modularized.
+      # c/b/net/qwac_web_contents_observer.h gets modularized.
       "//chrome/browser/android:tabs_impl",
 
       "//chrome/browser/ui/android/hats:impl",
@@ -3677,6 +3676,13 @@ static_library("browser") {
       # headers get componentized:
       # - c/b/flags/android/chrome_feature_list.h
       "//chrome/browser/banners:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the following
+      # headers get componentized:
+      # - c/b/predictors/predictors_features.h
+      # - c/b/contextmenu/context_menu_features.h
+      # - c/b/browser_features.h
+      "//chrome/browser/flags:flags_android_impl",
     ]
 
     if (safe_browsing_mode == 2) {

@@ -30,7 +30,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    deps += [ "//base" ]
+    deps += [
+      "//base",
+      "//chrome/browser/flags:flags_android",
+    ]
   }
 }
 

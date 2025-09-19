@@ -246,6 +246,8 @@ source_set("impl") {
     if (enable_rlz) {
       deps += [ "//components/rlz" ]
     }
+  } else {
+    deps += [ "//chrome/browser/flags:flags_android" ]
   }
 
   if (toolkit_views) {

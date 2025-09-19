@@ -165,7 +165,10 @@ source_set("content_settings_factory_impl") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/browser/notifications:notifications_java_enum_srcjar" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/notifications:notifications_java_enum_srcjar",
+    ]
   }
 }
 

@@ -35,6 +35,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/segmentation_platform",
       "//chrome/common:chrome_features",
       "//components/site_engagement/content",
