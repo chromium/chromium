@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
@@ -70,60 +71,136 @@ class HistorySignInStateWatcherSyncToSigninTest
       : HistorySignInStateWatcherTestBase(/*replace_sync_with_signin=*/true) {}
 };
 
-TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesAboutStateChanges) {
-  StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
+// Signing in to web only, should change the state and trigger a notification.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnWebOnlySignIn) {
+  base::test::TestFuture<void> callback;
   HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, callback.Get());
+                                    &sync_service_,
+                                    callback.GetRepeatingCallback());
   ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
-
-  // Signing in to web only, should change the state and trigger a notification.
   identity_test_env_.MakeAccountAvailable("test@email.com",
                                           {.set_cookie = true});
-  EXPECT_CALL(callback, Run());
-  // TODO: crbug.com/418144047 - This should be replaced by an IdentityManager
-  // (instead of a SyncService) notification once the watcher observes it.
-  sync_service_.FireStateChanged();
+  ASSERT_TRUE(callback.Wait());
   EXPECT_EQ(HistorySignInState::kWebOnlySignedIn, watcher.GetSignInState());
+}
 
-  // Signing in to Chrome, but without history and tabs, should change the state
-  // and trigger a notification.
-  EXPECT_CALL(callback, Run());
-  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+// Signing in to Chrome, but without history and tabs, should change the state
+// and trigger a notification.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest,
+       NotifiesOnChromeSignInWithoutHistoryAndTabsSync) {
+  base::test::TestFuture<void> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_,
+                                    callback.GetRepeatingCallback());
+  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, false);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
-  sync_service_.FireStateChanged();
+  ASSERT_TRUE(callback.Wait());
   EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
             watcher.GetSignInState());
+}
 
-  // Opting in to history should not change the state and trigger a
-  // notification.
+// Opting in to history should not change the state and trigger a notification.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest,
+       DoesNotNotifyOnEnablingHistorySync) {
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, false);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+
+  StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, callback.Get());
+  ASSERT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
+            watcher.GetSignInState());
+
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
   sync_service_.FireStateChanged();
   EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
             watcher.GetSignInState());
+}
 
-  // Opting in to tabs should change the state and trigger a notification.
+// Opting in to tabs should change the state and trigger a notification.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnEnablingTabsSync) {
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+
+  StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, callback.Get());
+  ASSERT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
+            watcher.GetSignInState());
+
+  EXPECT_CALL(callback, Run());
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, true);
-  EXPECT_CALL(callback, Run());
   sync_service_.FireStateChanged();
   EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+}
+
+// Users with pending sign-in should be treated as signed-in.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, SignInPendingMapsToSignedIn) {
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, false);
+  identity_test_env_.SetInvalidRefreshTokenForPrimaryAccount();
+
+  StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_, callback.Get());
+  EXPECT_EQ(HistorySignInState::kSignedInNotSyncingTabs,
+            watcher.GetSignInState());
+
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
+  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
+}
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  // Signing out again should once again change the state and trigger a
-  // notification.
+// Signing out again should once again change the state and trigger a
+// notification.
+TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnSignOut) {
+  const CoreAccountInfo account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@example.com", signin::ConsentLevel::kSignin);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  sync_service_.GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
+  base::test::TestFuture<void> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_,
+                                    callback.GetRepeatingCallback());
+  ASSERT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
   identity_test_env_.ClearPrimaryAccount();
   sync_service_.SetSignedOut();
-  EXPECT_CALL(callback, Run());
-  sync_service_.FireStateChanged();
+  ASSERT_TRUE(callback.Wait());
   EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class HistorySignInStateWatcherWithoutSyncToSigninTest
     : public HistorySignInStateWatcherTestBase {
@@ -132,39 +209,22 @@ class HistorySignInStateWatcherWithoutSyncToSigninTest
       : HistorySignInStateWatcherTestBase(/*replace_sync_with_signin=*/false) {}
 };
 
+// Enabling Sync should change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
-       NotifiesAboutStateChanges) {
-  StrictMock<base::MockCallback<base::RepeatingClosure>> callback;
-  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
-                                    &sync_service_, callback.Get());
-  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
-
-  // Just signing in (without enabling Sync) should *not* change the state, nor
-  // trigger a notification.
+       NotifiesOnEnablingSync) {
   CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
-
-  // Enabling Sync should change the state and trigger a notification.
+  base::test::TestFuture<void> callback;
+  HistorySignInStateWatcher watcher(identity_test_env_.identity_manager(),
+                                    &sync_service_,
+                                    callback.GetRepeatingCallback());
+  ASSERT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
   account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSync);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
-  EXPECT_CALL(callback, Run());
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs,
-            watcher.GetSignInState());
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Signing out and disabling Sync again should once again change the state and
-  // trigger a notification.
-  sync_service_.SetSignedOut();
-  identity_test_env_.ClearPrimaryAccount();
-  EXPECT_CALL(callback, Run());
-  sync_service_.FireStateChanged();
-  EXPECT_EQ(HistorySignInState::kSignedOut, watcher.GetSignInState());
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(callback.Wait());
+  EXPECT_EQ(HistorySignInState::kSignedInSyncingTabs, watcher.GetSignInState());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

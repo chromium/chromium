@@ -61,11 +61,35 @@ HistorySignInStateWatcher::HistorySignInStateWatcher(
   if (sync_service_) {
     sync_observation_.Observe(sync_service_);
   }
+
+  if (identity_manager_) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 }
 
 HistorySignInStateWatcher::~HistorySignInStateWatcher() = default;
 
 void HistorySignInStateWatcher::OnStateChanged(syncer::SyncService* sync) {
+  UpdateSignInState();
+}
+
+void HistorySignInStateWatcher::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  UpdateSignInState();
+}
+
+void HistorySignInStateWatcher::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  UpdateSignInState();
+}
+
+void HistorySignInStateWatcher::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  UpdateSignInState();
+}
+
+void HistorySignInStateWatcher::UpdateSignInState() {
   HistorySignInState signin_state = GetSignInState();
   if (signin_state == cached_signin_state_) {
     return;
@@ -73,6 +97,11 @@ void HistorySignInStateWatcher::OnStateChanged(syncer::SyncService* sync) {
 
   cached_signin_state_ = signin_state;
   RunCallback();
+}
+
+void HistorySignInStateWatcher::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
 }
 
 void HistorySignInStateWatcher::OnSyncShutdown(syncer::SyncService* sync) {
