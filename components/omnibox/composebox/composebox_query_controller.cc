@@ -725,18 +725,28 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         // Pass ownership of the viewport screenshot bytes to the callback.
         std::move(contextual_input_data->viewport_screenshot_bytes.value()),
         std::move(image_options),
-        base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
-                       weak_ptr_factory_.GetWeakPtr(), file_token,
-                       file_info->num_outstanding_network_requests_++));
+        base::BindOnce(
+            &ComposeboxQueryController::
+                AddPageIndexToImageUploadRequestAndContinue,
+            weak_ptr_factory_.GetWeakPtr(),
+            std::move(contextual_input_data->pdf_current_page),
+            base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
+                           weak_ptr_factory_.GetWeakPtr(), file_token,
+                           file_info->num_outstanding_network_requests_++)));
   }
 #else
   if (contextual_input_data->viewport_screenshot.has_value()) {
     CHECK(image_options.has_value());
     ProcessDecodedImageAndContinue(
         *file_info->request_id_, image_options.value(),
-        base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
-                       weak_ptr_factory_.GetWeakPtr(), file_token,
-                       file_info->num_outstanding_network_requests_++),
+        base::BindOnce(
+            &ComposeboxQueryController::
+                AddPageIndexToImageUploadRequestAndContinue,
+            weak_ptr_factory_.GetWeakPtr(),
+            std::move(contextual_input_data->pdf_current_page),
+            base::BindOnce(&ComposeboxQueryController::OnUploadRequestBodyReady,
+                           weak_ptr_factory_.GetWeakPtr(), file_token,
+                           file_info->num_outstanding_network_requests_++)),
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
@@ -787,6 +797,20 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                              FileUploadErrorType::kBrowserProcessingError);
       break;
   }
+}
+
+void ComposeboxQueryController::AddPageIndexToImageUploadRequestAndContinue(
+    std::optional<size_t> pdf_page_index,
+    RequestBodyProtoCreatedCallback callback,
+    lens::LensOverlayServerRequest request,
+    std::optional<FileUploadErrorType> error_type) {
+  if (!error_type.has_value() && pdf_page_index.has_value()) {
+    request.mutable_objects_request()
+        ->mutable_viewport_request_context()
+        ->set_pdf_page_number(pdf_page_index.value());
+  }
+
+  std::move(callback).Run(request, error_type);
 }
 
 void ComposeboxQueryController::OnUploadRequestBodyReady(
