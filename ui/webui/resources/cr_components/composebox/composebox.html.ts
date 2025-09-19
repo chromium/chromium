@@ -112,7 +112,7 @@ export function getHtml(this: ComposeboxElement) {
         class="action-icon icon-arrow-upward"
         id="submitIcon"
         part="action-icon"
-        title="$i18n{composeboxSubmitButtonTitle}"
+        title="${this.i18n('composeboxSubmitButtonTitle')}"
         @click="${this.submitQuery_}"
         ?disabled="${!this.submitEnabled_}">
       </cr-icon-button>
