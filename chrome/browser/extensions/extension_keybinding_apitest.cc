@@ -660,9 +660,14 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
       EventRouter::Get(incognito_browser->profile()));
 
   // Activate the browser action shortcut (Ctrl+Shift+F).
+  ExtensionTestMessageListener action_listener("basics browser action");
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(incognito_browser, ui::VKEY_F,
                                               true, true, false, false));
-  base::RunLoop().RunUntilIdle();
+  if (is_incognito_enabled) {
+    EXPECT_TRUE(action_listener.WaitUntilSatisfied());
+  } else {
+    base::RunLoop().RunUntilIdle();
+  }
   EXPECT_EQ(
       is_incognito_enabled,
       base::Contains(test_observer.dispatched_events(), "action.onClicked"));
@@ -670,8 +675,14 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
   test_observer.ClearEvents();
 
   // Activate the command shortcut (Ctrl+Shift+Y).
+  ExtensionTestMessageListener command_listener("toggle-feature");
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(incognito_browser, ui::VKEY_Y,
                                               true, true, false, false));
+  if (is_incognito_enabled) {
+    EXPECT_TRUE(action_listener.WaitUntilSatisfied());
+  } else {
+    base::RunLoop().RunUntilIdle();
+  }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       is_incognito_enabled,
