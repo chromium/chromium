@@ -1270,6 +1270,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5956112131836209882">Ներդիրների խմբի ներդիր։ Ներդիր <ph name="TAB_INDEX_IN_GROUP" />՝ <ph name="NUMBER_OF_TABS_IN_GROUP" />-ից։</translation>
 <translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
+<translation id="5968400720580217226">ԱԲ ռեժիմ</translation>
 <translation id="5971459446352190251">Սկանավորել QR կոդը</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 էջանիշ ջնջվեց}one{{count} էջանիշ ջնջվեց}other{{count} էջանիշ ջնջվեց}}</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>

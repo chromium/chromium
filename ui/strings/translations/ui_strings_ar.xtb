@@ -10,7 +10,7 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1253734725326687145">تم نقل مساحة اللمس إلى أعلى يمين الشاشة. يُرجى النقر هنا.</translation>
-<translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" /></translation>
+<translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">يُرجى تجربة مشاركة النص في مجموعات أصغر.</translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -18,7 +18,7 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1398853756734560583">تكبير</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{قبل دقيقة واحدة}zero{قبل # دقيقة}two{قبل دقيقتَين}few{قبل # دقائق}many{قبل # دقيقة}other{قبل # دقيقة}}</translation>
-<translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" /></translation>
+<translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1523230076022876491">{MONTHS,plural, =1{قبل شهر واحد}zero{قبل # شهر}two{قبل شهرين}few{قبل # أشهر}many{قبل # شهرًا}other{قبل # شهر}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{دقيقة واحدة و }zero{# من الدقائق و }two{دقيقتان (#) و }few{# دقائق و }many{# دقيقة و }other{# من الدقائق و }}</translation>
 <translation id="1643823602425662293">الإشعار</translation>
@@ -35,7 +35,7 @@
 <translation id="1860796786778352021">إغلاق الإشعار</translation>
 <translation id="186476001994626254">‏محتوى Web Smart Paste</translation>
 <translation id="1871244248791675517">‏مفتاح Ins</translation>
-<translation id="1901303067676059328">تحديد &amp;الكل</translation>
+<translation id="1901303067676059328">تح&amp;ديد الكلّ</translation>
 <translation id="19085484004813472">هذه ميزة جديدة</translation>
 <translation id="2006524834898217237">عليك التأكّد من اتصال الجهاز بالإنترنت.</translation>
 <translation id="208586643495776849">يُرجى إعادة المحاولة</translation>
@@ -45,15 +45,15 @@
 <translation id="2168039046890040389">صفحة  إلى أعلى</translation>
 <translation id="2190355936436201913">(فارغ)</translation>
 <translation id="2192232475740621500">استخدام كثافة منخفضة</translation>
-<translation id="2267918077332197517">حظر جميع الإشعارات القادمة من هذا الموقع</translation>
+<translation id="2267918077332197517">حظر جميع الإشعارات الواردة من هذا الموقع</translation>
 <translation id="2283117145434822734">F6</translation>
-<translation id="2289052229480071835">انقر على مساحات اللمس على شاشتك.</translation>
+<translation id="2289052229480071835">انقر على أهداف اللمس على شاشتك.</translation>
 <translation id="2295140143284145483">الاستطلاع</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> تيرابايت/ثانية</translation>
 <translation id="2312704192806647271">{COUNT,plural, =1{لا يمكن تحديد مكان الإضافة التي تتضمّن المعرّف: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}zero{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}two{لا يمكن تحديد مكان الإضافتَين اللتَين تتضمّنَان المعرّفَين: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}few{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}many{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}other{لا يمكن تحديد مكان الإضافات التي تتضمّن المعرّفات: <ph name="BEGIN_LIST" /><ph name="END_LIST" /> يُرجى التواصل مع المشرف.}}</translation>
 <translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
 <translation id="2359808026110333948">متابعة</translation>
-<translation id="2388990488038464401">هل المطلوب الاتصال بهذا الرقم من هاتفك؟</translation>
+<translation id="2388990488038464401">هل تريد الاتصال بهذا الرقم من هاتفك؟</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="24452542372838207">توسيع الإشعار</translation>
 <translation id="2445449901874883781">استخدام كثافة عالية</translation>
@@ -87,7 +87,7 @@
 <translation id="3295886253693811851">إجراء اتصال باستخدام</translation>
 <translation id="3306688585798492231">عرض مُضمَّن</translation>
 <translation id="335581015389089642">الحديث</translation>
-<translation id="3372635229069101468">يمكنك النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
+<translation id="3372635229069101468">النقر على <ph name="BEGIN_BOLD" />التفاصيل<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">النص كبير جدًا</translation>
 <translation id="3406306243914553062">‏محتوى HTML</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{يتبقى يوم واحد}zero{يتبقى عدد # من الأيام}two{يتبقى يومان (#)}few{يتبقى # أيام}many{يتبقى # يومًا}other{يتبقى # من الأيام}}</translation>
@@ -95,14 +95,14 @@
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">البحث عن "<ph name="LOOKUP_STRING" />"</translation>
 <translation id="3622035490309591977">سجلّ الحافظة</translation>
-<translation id="364720409959344976">اختيار مجلد لتحميله</translation>
+<translation id="364720409959344976">حدد مجلدًا للتحميل</translation>
 <translation id="3660179305079774227">مفتاح سهم متّجه للأعلى</translation>
 <translation id="3740362395218339114"><ph name="QUANTITY" /> غيغابايت/ثانية</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> غيغابايت</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
 <translation id="3889424535448813030">مفتاح سهم إلى اليمين</translation>
 <translation id="3897092660631435901">قائمة</translation>
-<translation id="3909791450649380159">اقتصاص</translation>
+<translation id="3909791450649380159">&amp;قص</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">الحافة اليسرى</translation>
 <translation id="3994749195054421561">العمود <ph name="COLUMN_NAME" /> مرتَّب تصاعديًا.</translation>
@@ -121,19 +121,19 @@
 <translation id="4729257764711776855">الرقم</translation>
 <translation id="4746179598275229723">تمت إزالة تثبيت الإضافة.</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{يتبقى شهر واحد}zero{يتبقى # شهر}two{يتبقى شهرين (#)}few{يتبقى # أشهر}many{يتبقى # شهرًا}other{يتبقى # شهر}}</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام "وضع التصفّح المتخفي"}}</translation>
-<translation id="482932175346970750">‏اكتب <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}}</translation>
+<translation id="482932175346970750">‏كتابة <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
 <translation id="4888938634149558681">إجراء مكالمة</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ثانية واحدة}zero{# من الثواني}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
 <translation id="4971687151119236543">المقطع الصوتي السابق للوسائط</translation>
-<translation id="5046499563572181734">يُرجى النقر هنا</translation>
-<translation id="5076340679995252485">&amp;لصق</translation>
+<translation id="5046499563572181734">انقر هنا</translation>
+<translation id="5076340679995252485">ل&amp;صق</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
 <translation id="5278860589123563674">تعذّر الإرسال</translation>
 <translation id="5283101102242354279">لتفعيل إضافة في وضع التصفّح المتخفي، يُرجى اتّباع الخطوات الآتية:</translation>
-<translation id="528468243742722775">إنهاء</translation>
-<translation id="5329858601952122676">حذف</translation>
+<translation id="528468243742722775">‏مفتاح End</translation>
+<translation id="5329858601952122676">&amp;حذف</translation>
 <translation id="5361107212971249203">النص</translation>
 <translation id="5463830097259460683">رموز الإيموجي والرموز</translation>
 <translation id="5505748296268090374">إزالة <ph name="ITEM_TEXT" /></translation>
@@ -145,7 +145,7 @@
 <translation id="5633029987065897167">فارغة</translation>
 <translation id="5651438382973553530">تم نقل مساحة اللمس إلى أسفل يسار الشاشة. يُرجى النقر هنا.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{دقيقة واحدة}zero{# من الدقائق}two{دقيقتان (#)}few{# دقائق}many{# دقيقة}other{# من الدقائق}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{نشط اليوم}=1{نشط قبل يوم واحد}two{نشِط قبل يومَين}few{نشِط قبل # أيام}many{نشِط قبل # يومًا}other{نشِط قبل # يوم}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{نشط اليوم}=1{نشط قبل يوم واحد}two{نشط قبل يومين (#)}few{نشط قبل # أيام}many{نشط قبل # يومًا}other{نشط قبل # يوم}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{يوم واحد و }zero{# من الأيام و }two{يومان (#) و }few{# أيام و }many{# يومًا و }other{# من الأيام و }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">صورة</translation>
@@ -164,7 +164,7 @@
 <translation id="6237461503717005873">تمّ اختيار <ph name="ROW_NAME" />.</translation>
 <translation id="6264365405983206840">تحديد &amp;الكل</translation>
 <translation id="6346952829206698721">لصق من الحافظة</translation>
-<translation id="6364916375976753737">التمرير إلى اليسار</translation>
+<translation id="6364916375976753737">التمرير إلى اليمين</translation>
 <translation id="63712816010840859">‏في حال لم تكُن الشاشة الحالية تعمل باللمس، يُرجى الضغط على مفتاح Esc.</translation>
 <translation id="6394627529324717982">فاصلة</translation>
 <translation id="6397363302884558537">إيقاف التحدث</translation>
@@ -174,7 +174,7 @@
 <translation id="6503257047630241175">‏محتوى RTF</translation>
 <translation id="6539092367496845964">حدث خطأ. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="654149438358937226">حظر جميع الإشعارات</translation>
-<translation id="6612467943526193239">‏للخروج من المعايرة، يجب الضغط على Esc.</translation>
+<translation id="6612467943526193239">‏للخروج من المعايرة، اضغط على Esc.</translation>
 <translation id="6620110761915583480">حفظ الملف</translation>
 <translation id="6699343763173986273">المقطع الصوتي التالي للوسائط</translation>
 <translation id="6738856801552481343">‏في حال لم تكُن هذه الشاشة تعمل باللمس، يُرجى الضغط على مفتاح Esc.</translation>
@@ -215,7 +215,7 @@
 <translation id="8131263257437993507">{SECONDS,plural, =1{يتبقى ثانية واحدة}zero{يتبقى # من الثواني}two{يتبقى ثانيتان (#)}few{يتبقى # ثوانٍ}many{يتبقى # ثانية}other{يتبقى # من الثواني}}</translation>
 <translation id="8134065097954893699">إعادة تحميل هذه الصفحة</translation>
 <translation id="813785873406874127">لم يتم ترتيب العمود "<ph name="COLUMN_NAME" />"</translation>
-<translation id="815598010540052116">التمرير إلى الأسفل</translation>
+<translation id="815598010540052116">التمرير إلى أسفل</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">صفحة  إلى أسفل</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
@@ -239,10 +239,10 @@
 <translation id="8876215549894133151">التنسيق:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> كيلوبايت</translation>
 <translation id="8927924178504495502">{HOURS,plural, =1{قبل ساعة واحدة}zero{قبل # ساعة}two{قبل ساعتَين}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
-<translation id="8996630695507351249">عليك التأكّد من أنّ الجهاز "<ph name="TARGET_DEVICE_NAME" />" متصل بالإنترنت.</translation>
+<translation id="8996630695507351249">عليك التأكّد أن الجهاز <ph name="TARGET_DEVICE_NAME" /> متصل بالإنترنت.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{ثانية واحدة}zero{# ثانية}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
-<translation id="9170848237812810038">ترا&amp;جع</translation>
+<translation id="9170848237812810038">&amp;إلغاء</translation>
 <translation id="9195990613383871904">غدًا</translation>
 <translation id="928628199082367701">‏مفتاح Super</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>

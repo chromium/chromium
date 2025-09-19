@@ -1270,6 +1270,7 @@
 <translation id="5956112131836209882">Група вкладок "Вкладка". <ph name="TAB_INDEX_IN_GROUP" /> з <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пошук через сервіс <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не вдається створити посилання на виділений текст.</translation>
+<translation id="5968400720580217226">Режим ШІ</translation>
 <translation id="5971459446352190251">Шукати за QR-кодом</translation>
 <translation id="5971872012779224351">{count,plural, =1{Видалено 1 закладку}one{Видалено {count} закладку}few{Видалено {count} закладки}many{Видалено {count} закладок}other{Видалено {count} закладки}}</translation>
 <translation id="5972844218283131174">Не вибирати нічого</translation>

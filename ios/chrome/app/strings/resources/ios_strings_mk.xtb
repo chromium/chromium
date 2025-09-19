@@ -1270,6 +1270,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5956112131836209882">Картичка од група картички. <ph name="TAB_INDEX_IN_GROUP" /> од <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
+<translation id="5968400720580217226">AI-режим</translation>
 <translation id="5971459446352190251">Пребарување QR-кодови</translation>
 <translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5972844218283131174">Поништи го изборот на сите</translation>

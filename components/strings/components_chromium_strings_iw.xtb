@@ -8,7 +8,7 @@
 <translation id="358997566136285270">‏לוגו של Chromium</translation>
 <translation id="4050599136622776556">‏Chromium מנסה לערוך את אמצעי התשלום.</translation>
 <translation id="4365115785552740256">‏Chromium קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" /> Chromium‏<ph name="END_LINK_CHROMIUM" /> ו<ph name="BEGIN_LINK_OSS" />תוכנות קוד פתוח<ph name="END_LINK_OSS" /> אחרות.</translation>
-<translation id="4559775032954821361">‏לוחצים על
+<translation id="4559775032954821361">‏יש לעבור אל
           תפריט Chromium‏ &gt;
           <ph name="SETTINGS_TITLE" />
           ‏&gt;
@@ -17,14 +17,14 @@
           <ph name="PROXIES_TITLE" />
           ‏&gt;
           הגדרות LAN
-          ומבטלים את הבחירה באפשרות "שימוש בשרת proxy עבור רשת LAN‏".</translation>
+          ולבטל את הבחירה באפשרות "שימוש בשרת proxy עבור רשת LAN‏".</translation>
 <translation id="4622039161600275920">‏הדף הזה נחסם על ידי Chromium</translation>
 <translation id="48558539577516920">‏שינוי הגדרות חומת האש או האנטי-וירוס כדי לאפשר ל-Chromium
           לגשת לרשת.</translation>
-<translation id="4949828774841497663">‏נכנסים ל-"אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
-          הרשת הפעילה. לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy
+<translation id="4949828774841497663">‏עוברים אל "אפליקציות" &gt; "הגדרות המערכת" &gt; "רשת", ובוחרים את
+          הרשת הפעילה, לוחצים על הכפתור "פרטים…" ומבטלים את הבחירה בכל שרתי ה-proxy
           שנבחרו.</translation>
-<translation id="580822234363523061">‏צריך לעבור אל
+<translation id="580822234363523061">‏יש לעבור אל
           תפריט Chromium‏ &gt;
           <ph name="SETTINGS_TITLE" />
           ‏&gt;
@@ -34,13 +34,18 @@
           ולבדוק שהתצורה שלך מוגדרת לאפשרות "ללא שרת proxy‏" או "ישיר".</translation>
 <translation id="648062525172759633">‏הדפים האלה מיועדים למפתחי Chromium. יכול להיות שהם לא מתוחזקים או נבדקים באופן פעיל. כדי להפעיל אותם, עוברים לכתובת <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, לוחצים על הכפתור כדי להפעיל את מצב ניפוי הבאגים בדפים, ואז מנווטים בחזרה לדף הזה.</translation>
 <translation id="6549378540556750549">‏Chromium קיים גם הודות ל<ph name="BEGIN_LINK_OSS" />תוכנת קוד פתוח<ph name="END_LINK_OSS" /> אחרת.</translation>
-<translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתתבצע הפעלה מחדש את Chromium‏.</translation>
+<translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתפעיל מחדש את Chromium‏.</translation>
 <translation id="691026815377248078">‏ל-Chromium נדרשת גישה ל-Bluetooth כדי להמשיך 
  את ההתאמה. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">‏Chromium קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
-<translation id="7861509383340276692">‏יש לפתוח את תפריט Chromium &gt; <ph name="SETTINGS_TITLE" />&gt;<ph name="ADVANCED_TITLE" /> ולבטל את הבחירה ב-"<ph name="NO_PREFETCH_DESCRIPTION" />".
-
- אם הפעולה הזו לא פותרת את הבעיה, מומלץ לבחור שוב באפשרות הזו כדי לשפר את הביצועים.</translation>
+<translation id="7861509383340276692">‏יש להיכנס אל
+        תפריט Chromium &gt;
+        <ph name="SETTINGS_TITLE" />
+        &gt;
+        <ph name="ADVANCED_TITLE" />
+        ולבטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
+        אם פעולה זו אינה פותרת את הבעיה, מומלץ לבחור שוב באפשרות זו
+        לקבלת ביצועים משופרים.</translation>
 <translation id="8597726643333341451">‏זהו דף מאובטח של Chrome for Testing</translation>
 <translation id="8684913864886094367">‏כיבוי Chromium לא בוצע כהלכה.</translation>
 </translationbundle>

@@ -9,7 +9,7 @@
 <translation id="1588438908519853928">عادي</translation>
 <translation id="1591562245178063882">هذا الشهر</translation>
 <translation id="1637811476055996098">اختيار الملفات</translation>
-<translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحقل فارغًا.</translation>
+<translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
 <translation id="1921819250265091946">يوم</translation>
 <translation id="1938124657309484470">يجب أن تكون القيمة <ph name="MAXIMUM_DATE_OR_TIME" /> أو قبل ذلك.</translation>
@@ -21,11 +21,11 @@
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
 <translation id="2507943997699731163">يُرجى ملء هذا الحقل.</translation>
-<translation id="2613802280814924224">الرجاء إدخال قيمة صالحة. أقرب قيمة صالحة هي <ph name="VALID_VALUE" />.</translation>
+<translation id="2613802280814924224">يُرجى إدخال قيمة صالحة. علمًا بأن أقرب قيمة صالحة هي <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
-<translation id="2908441821576996758">يُرجى إدخال قائمة قيم مفصولة بفاصلة بعناوين البريد الإلكتروني</translation>
+<translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
 <translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
 <translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
@@ -34,10 +34,10 @@
 <translation id="3732799496749320381">شهر</translation>
 <translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> غيغابايت</translation>
-<translation id="3822383571486410024">يُرجى إطالة هذا النص بحيث يصبح عدد الأحرف <ph name="MIN_CHARACTERS" /> على الأقلّ (عدد الأحرف الحالي هو <ph name="CURRENT_LENGTH" />).</translation>
+<translation id="3822383571486410024">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت تستخدم حاليًا <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="383465348367842624">الجزء المتبوع بالعلامة "<ph name="ATSIGN" />" يجب ألا يشتمل على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
-<translation id="4360991593054037559">يرجى إدخال قيمة صالحة. علمًا بأن أقرب قيمتين صالحتين هما <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">التفاصيل</translation>
 <translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4703271465972936359">المقاطع الصوتية</translation>
@@ -45,7 +45,7 @@
 <translation id="4812940957355064477">يُرجى إدخال عدد.</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
 <translation id="4992066212339426712">إعادة الصوت</translation>
-<translation id="49969490063480558">يُرجى إدخال الجزء الذي يلي العلامة "<ph name="ATSIGN" />" لأنَّ "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
+<translation id="49969490063480558">يُرجى إدخال الجزء الذي يلي العلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
 <translation id="5164977714490026579">يجب أن تكون القيمة أكبر من أو تساوي <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
@@ -57,7 +57,7 @@
 <translation id="5514612371225420585">الملف على جهازك</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">بث</translation>
-<translation id="5630795885300617244">يرجى النقر مرّتين جهة اليمين أو اليسار لتخطي 10 ثوانٍ.</translation>
+<translation id="5630795885300617244">انقر مرّتين جهة اليمين أو اليسار لتخطي 10 ثوانٍ.</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5868587040512539609">مقاطع الفيديو</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
@@ -76,7 +76,7 @@
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6820355525329141109">تعذر تحميل المكوّن الإضافي.</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6989848892321993519">الحد الأدنى لعدد الأحرف في النص: <ph name="MIN_CHARACTERS" /> (يتم حاليًا استخدام حرف واحد).</translation>
+<translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
 <translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>
 <translation id="7364796246159120393">اختيار ملفّ</translation>

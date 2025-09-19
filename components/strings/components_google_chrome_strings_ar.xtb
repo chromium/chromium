@@ -10,30 +10,30 @@
 <translation id="2447485272386224171">‏أصبح Chrome الآن متاحًا بفضل المشروع المفتوح المصدر <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> و<ph name="BEGIN_LINK_OSS" />برامج أخرى مفتوحة المصدر<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">‏شعار Chrome</translation>
 <translation id="3444832043240812445">تعرض هذه الصفحة فقط معلومات عن الأعطال الحديثة إذا <ph name="BEGIN_LINK" />فعّلت الإبلاغ عن الأعطال<ph name="END_LINK" />.</translation>
-<translation id="3512634283363927263">‏هذه الصفحات مخصّصة لمطوّري Chrome، وقد لا تتم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
-<translation id="3875312571075912821">‏يمكنك السماح لمتصفح Chrome بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
+<translation id="3512634283363927263">‏هذه الصفحات مخصّصة لمطوّري Chrome، وقد لا تم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
+<translation id="3875312571075912821">‏اسمح لمتصفح Chrome بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
         برنامج مكافحة الفيروسات.</translation>
 <translation id="4949828774841497663">‏يُرجى الانتقال إلى "التطبيقات" (Applications) &gt; "إعدادات النظام" (System Settings) &gt; "الشبكة" (Network)، ثم اختيار
           الشبكة النشطة، والنقر على زر "التفاصيل…" (Details…‎) وإلغاء اختيار أي خوادم وكيلة
           سبق اختيارها.</translation>
 <translation id="5005121315113832363">‏تم حظر هذه الصفحة بواسطة متصفّح Chrome.</translation>
-<translation id="6011049234605203654">‏الانتقال إلى
-          "قائمة Chrome" &gt;
-          "<ph name="SETTINGS_TITLE" />"
+<translation id="6011049234605203654">‏انتقل إلى
+          قائمة Chrome &gt;
+          <ph name="SETTINGS_TITLE" />
           &gt;
-          "<ph name="ADVANCED_TITLE" />"
+          <ph name="ADVANCED_TITLE" />
           &gt;
-          "<ph name="PROXIES_TITLE" />"
-          والتأكَّد من ضبط الخيار على "بلا خادم وكيل" أو "مباشر"</translation>
-<translation id="6341737370356890233">‏الانتقال إلى
+          <ph name="PROXIES_TITLE" />
+          وتأكد من ضبط الإعداد على "بلا خادم وكيل" أو "مباشر."</translation>
+<translation id="6341737370356890233">‏انتقل إلى
         قائمة Chrome &gt;
         <ph name="SETTINGS_TITLE" />
         &gt;
         <ph name="ADVANCED_TITLE" />
-        وإلغاء اختيار "<ph name="NO_PREFETCH_DESCRIPTION" />."
-        في حال لم يتم حلّ المشكلة، نوصي بتحديد هذا الخيار
-        مرة أخرى لتحسين الأداء.</translation>
-<translation id="6855094794438142393">‏يجب النقر على
+        وألغ تحديد <ph name="NO_PREFETCH_DESCRIPTION" />
+        إذا لم يعمل ذلك على حل المشكلة، نوصي بتحديد هذا الخيار
+        مرة من أجل أداء أفضل.</translation>
+<translation id="6855094794438142393">‏انتقل إلى
           قائمة Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -41,9 +41,9 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          إعدادات LAN
-          وإلغاء اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
-<translation id="7230956101631259640">‏يتم الآن عرض صفحة آمنة من Chrome.</translation>
+          إعدادات الشبكة المحلية
+          وألغ اختيار "استخدام خادم وكيل لشبكة الاتصال المحلية".</translation>
+<translation id="7230956101631259640">‏أنت تعرض صفحة Chrome آمنة.</translation>
 <translation id="8232971017369963250">‏أصبح Chrome متاحًا من خلال مشروع <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> المفتوح المصدر.</translation>
 <translation id="8279509328145658601">‏أصبح Chrome متاحًا أيضًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">‏يحاول Google Chrome تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>

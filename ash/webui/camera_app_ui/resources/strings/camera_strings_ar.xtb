@@ -11,22 +11,22 @@
 <translation id="1467231725790366244">تم فصل كاميرا <ph name="CAMERA" /> عن الجهاز.</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
 <translation id="148783771699678004">جارٍ نقل زاوية المستند في اتجاه أعلى اليمين</translation>
-<translation id="1545749641540134597">مسح رمز الاستجابة السريعة ضوئيًا</translation>
+<translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
 <translation id="1560052704389894104">GIF</translation>
 <translation id="1588438908519853928">عادي</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1644345013557678440">‏دقة عالية (720p)</translation>
 <translation id="1664224225747386870">لم يتمّ تسجيل أيّ بيانات.</translation>
-<translation id="1838104802459806957">الإمالة إلى أعلى</translation>
+<translation id="1838104802459806957">إمالة إلى أعلى</translation>
 <translation id="1843105061469674856">مسح صفحة إضافية ضوئيًا</translation>
 <translation id="1851616744363735765">متوقف مؤقتًا</translation>
 <translation id="1899697626337024495">درجة دقة الصورة</translation>
-<translation id="1925845977604399247">الانتقال إلى "المعرض"</translation>
+<translation id="1925845977604399247">الانتقال إلى المعرض</translation>
 <translation id="199526504800285197">توقَّف التسجيل</translation>
 <translation id="1995951722691075581">توقَّف التسجيل بسبب انخفاض مساحة التخزين على الجهاز. لتسجيل المزيد من الفيديوهات، عليك إخلاء مساحة على جهازك.</translation>
 <translation id="2036868001356139588">مدة المؤقِّت</translation>
-<translation id="2064538373111010176">جهاز <ph name="CAMERA" /> نشط</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> نشطة</translation>
 <translation id="2134029355740465625">إعدادات الفيديو</translation>
 <translation id="2144806332417375165">مَعلمات الفيديوهات المخصّصة</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
@@ -39,9 +39,9 @@
 <translation id="2486151619109781620">تصغير مربّع الحوار وبدء المسح الضوئي</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2501853267655415902">تم إيقاف التسجيل</translation>
-<translation id="2517472476991765520">المسح ضوئيًا</translation>
+<translation id="2517472476991765520">فحص</translation>
 <translation id="2549985041256363841">بدء التسجيل</translation>
-<translation id="2577915835281444458">سيتوقف التسجيل قريبًا. يمكنك الانتقال إلى إعدادات مساحة التخزين في الجهاز لإخلاء بعض المساحة.</translation>
+<translation id="2577915835281444458">سيتوقف التسجيل قريبًا. انتقِل إلى إعدادات مساحة التخزين في الجهاز لإخلاء بعض المساحة.</translation>
 <translation id="2599796128805996109">الكاميرا الخلفية</translation>
 <translation id="2654491636277477479">نسخ النص الذي تم رصده</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ثانية</translation>
@@ -77,7 +77,7 @@
 <translation id="4445542136948522167">إيقاف التقاط الصورة</translation>
 <translation id="4570032796877367747">الكاميرا الأمامية</translation>
 <translation id="4598556348158889687">إدارة مساحة التخزين</translation>
-<translation id="4620818268515773682">زر إعادة صوت الميكروفون. تمت إعادة صوت الميكروفون</translation>
+<translation id="4620818268515773682">زر كتم الميكروفون. تم إلغاء كتم الميكروفون.</translation>
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4649291346448517080">تعذّر حفظ الملف</translation>
 <translation id="4695379108709712600">جارٍ نقل زاوية المستند في اتجاه الأعلى</translation>
@@ -89,7 +89,7 @@
 <translation id="4984613436295737187">‏دقة Quad HD ‏(1440p)</translation>
 <translation id="5034763830503483128">نسبة العرض إلى الارتفاع في الصورة</translation>
 <translation id="5057360777601936059">الكاميرا غير مُتاحة حاليًا.
-        يُرجى التأكّد من أن الكاميرا متّصلة بشكلٍ صحيح.</translation>
+        يُرجى التحقُّق من اتصال الكاميرا بشكلٍ صحيح.</translation>
 <translation id="5157591164390831335">‏تم رصد عنوان URL.</translation>
 <translation id="5163387177077603948">جارٍ نقل زاوية المستند في اتجاه اليمين</translation>
 <translation id="5235304959032763950">16 إلى 9</translation>
@@ -101,7 +101,7 @@
 <translation id="5662366948659129155">جارٍ مسح الصفحة <ph name="COUNT" /> ضوئيًا</translation>
 <translation id="5671277269877808209">وضع المربّع</translation>
 <translation id="574392208103952083">متوسط</translation>
-<translation id="5746169159649715125">‏الحفظ بتنسيق PDF</translation>
+<translation id="5746169159649715125">‏حفظ بتنسيق ملف PDF</translation>
 <translation id="5753488212459587150">تفعيل الوضع المختصّ</translation>
 <translation id="5759254179196327752">مسح المستند ضوئيًا</translation>
 <translation id="5775960006311140197">الوضع المختصّ</translation>
@@ -118,16 +118,16 @@
 <translation id="6353688143752491039">نشكرك على تقديم التعليقات حول تطبيق "الكاميرا".
 
 
-إذا كان تعليقك يخص جودة صورة أو فيديو، يُرجى إرفاق نموذج لصورة أو فيديو ووصف المشكلة. (على سبيل المثال، الصورة داكنة للغاية أو لا يتم التركيز على الهدف.)</translation>
+إذا كان تعليقك بخصوص جودة صورة أو فيديو، يُرجى إرفاق نموذج لصورة أو فيديو ووصف المشكلة. على سبيل المثال، الصورة داكنة للغاية أو لا يتم التركيز على الهدف.</translation>
 <translation id="6519884562954018934">الانضمام إلى "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="659539649712855529">تم نسخ "<ph name="CONTENT" />"</translation>
 <translation id="6617916774429601017">عرض كل درجات الدقة</translation>
 <translation id="6631515515009660915">المرآة غير مفعلّة</translation>
-<translation id="6652737148136672975">عليك تحريك موضع الزاوية باستخدام مفاتيح الأسهم.</translation>
+<translation id="6652737148136672975">حرِّك موضع الزاوية باستخدام مفاتيح الأسهم.</translation>
 <translation id="667999046851023355">مستند</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
-<translation id="6692092766759105707">نسخ المحتوى لإثبات صحته.</translation>
+<translation id="6692092766759105707">انسخ المحتوى لإثبات صحته.</translation>
 <translation id="6778482348691154169">تعذّر التقاط الصورة</translation>
 <translation id="6888362557094394345">جارٍ نقل زاوية المستند في اتجاه الأسفل</translation>
 <translation id="695140971690006676">إعادة ضبط الكل</translation>
@@ -142,7 +142,7 @@
 <translation id="7488619942230388918">‏تسجيل فيديو بتنسيق GIF</translation>
 <translation id="7527714402753141485">يتم عرض النص وزر للنسخ</translation>
 <translation id="7557677699350329807">التبديل إلى الكاميرا التالية</translation>
-<translation id="7607002721634913082">متوقف مؤقتًا</translation>
+<translation id="7607002721634913082">تعليق التحميل</translation>
 <translation id="7608223098072244877">4 × 4</translation>
 <translation id="761421184377987513">جارٍ نقل زاوية المستند في اتجاه أسفل اليسار</translation>
 <translation id="7649070708921625228">مساعدة</translation>
@@ -169,7 +169,7 @@
 <translation id="8730621377337864115">تم</translation>
 <translation id="8732462232047530626">معاينة البيانات الوصفية</translation>
 <translation id="874854738381978209">‏تم رصد شبكة Wi-Fi.</translation>
-<translation id="8815966864175525708">التبديل لالتقاط صورة أشخاص</translation>
+<translation id="8815966864175525708">التبديل لالتقاط صورة بورتريه</translation>
 <translation id="8828441885228359828">استئناف التسجيل</translation>
 <translation id="8870695351537079478">يتعذّر بدء التسجيل</translation>
 <translation id="8880167521484863515">4 إلى 3</translation>
