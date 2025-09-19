@@ -15,6 +15,7 @@ unmodularized_bookmarks_java_files = [
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkPromoHeader.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerProperties.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediator.java",
+  "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarIphController.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinator.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowViewBinder.java",
   "//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandler.java",

@@ -221,6 +221,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarIphControllerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
     "junit/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarMediatorTest.java",

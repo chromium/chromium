@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarIphController;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
@@ -279,6 +280,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
+    private @Nullable BookmarkBarIphController mBookmarkBarIphController;
     private @Nullable BookmarkBarVisibilityProvider mBookmarkBarVisibilityProvider;
     private @Nullable BookmarkBarVisibilityObserver mBookmarkBarVisibilityObserver;
     private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
@@ -721,6 +723,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mAdvancedProtectionCoordinator != null) {
             mAdvancedProtectionCoordinator.destroy();
             mAdvancedProtectionCoordinator = null;
+        }
+
+        if (mBookmarkBarIphController != null) {
+            mBookmarkBarIphController.destroy();
+            mBookmarkBarIphController = null;
         }
 
         super.onDestroy();
@@ -1290,6 +1297,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mToolbarManager.getMenuButtonView());
                 mPageZoomIphController.showColdStartIph();
             }
+        }
+
+        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
+            mBookmarkBarIphController =
+                    new BookmarkBarIphController(
+                            mActivity,
+                            profile,
+                            mAppMenuCoordinator.getAppMenuHandler(),
+                            mToolbarManager.getMenuButtonView(),
+                            mBookmarkModelSupplier.get());
         }
     }
 
