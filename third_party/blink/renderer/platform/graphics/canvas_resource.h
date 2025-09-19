@@ -223,10 +223,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void NotifyResourceLost() final;
   GrBackendTexture CreateGrTexture() const;
 
-  GLuint GetTextureIdForWriteAccess() const {
-    return owning_thread_data().texture_id_for_write_access;
-  }
-
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
 
@@ -257,14 +253,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
     bool is_lost = false;
-
-    // We need to create 2 representations if canvas is operating in single
-    // buffered mode to allow concurrent scopes for read and write access,
-    // because the Begin/EndSharedImageAccessDirectCHROMIUM APIs allow only one
-    // active access mode for a representation.
-    // In non single buffered mode, the 2 texture ids are the same.
-    GLuint texture_id_for_read_access = 0u;
-    GLuint texture_id_for_write_access = 0u;
   };
 
   static void OnBitmapImageDestroyed(

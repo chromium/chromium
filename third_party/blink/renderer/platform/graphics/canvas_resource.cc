@@ -392,7 +392,7 @@ GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   scoped_refptr<gpu::ClientSharedImage> client_si = GetClientSharedImage();
 
   GrGLTextureInfo texture_info = {};
-  texture_info.fID = GetTextureIdForWriteAccess();
+  texture_info.fID = 0u;
   texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider().GetGrGLTextureFormat(
@@ -428,22 +428,7 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
       owning_thread_data().client_shared_image->UpdateDestructionSyncToken(
           shared_image_sync_token);
     }
-    if (raster_interface) {
-      if (owning_thread_data().texture_id_for_read_access) {
-        raster_interface->DeleteGpuRasterTexture(
-            owning_thread_data().texture_id_for_read_access);
-      }
-      if (owning_thread_data().texture_id_for_write_access &&
-          owning_thread_data().texture_id_for_write_access !=
-              owning_thread_data().texture_id_for_read_access) {
-        raster_interface->DeleteGpuRasterTexture(
-            owning_thread_data().texture_id_for_write_access);
-      }
-    }
   }
-
-  owning_thread_data().texture_id_for_read_access = 0u;
-  owning_thread_data().texture_id_for_write_access = 0u;
 }
 
 void CanvasResourceSharedImage::WillDraw() {
