@@ -64,38 +64,26 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) CallMethodError {
 template <typename... Rets>
 using CallMethodResult = base::expected<std::tuple<Rets...>, CallMethodError>;
 
-// This is similar to dbus::ObjectProxy::CallMethod, except the MethodCall,
-// MessageWriter, and MessageReader logic is contained within. The method
-// arguments and reply type are specified in `args` and `callback`,
-// respectively. This is intended to be used on Linux where a C++ bindings
-// generator is not available, to allow a more declarative style of calling
-// D-Bus methods. The first argument to `callback` is a status code, and the
-// remaining arguments are deserialized from the reply, or default-constructed
-// if they could not be deserialized. Two template arguments are required:
-// `ArgsSignature` and `RetsSignature`, which are C string literals that
-// must match the D-Bus signature of the method arguments and reply.
-template <internal::StringLiteral ArgsSignature,
-          internal::StringLiteral RetsSignature,
-          typename... Args,
-          typename... Rets>
-void CallMethod(dbus::ObjectProxy* proxy,
-                const std::string& interface,
-                const std::string& method,
-                base::TimeDelta timeout,
-                base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
-                const Args&... args)
-  requires((internal::IsSupportedDBusType<Args> && ...) &&
-           (internal::IsSupportedDBusType<Rets> && ...) &&
-           (internal::StrJoin(
-                (internal::DBusSignature<std::decay_t<Args>>::kValue)...) ==
-            ArgsSignature.value) &&
-           (internal::StrJoin(
-                (internal::DBusSignature<std::decay_t<Rets>>::kValue)...) ==
-            RetsSignature.value))
-{
+// Like CallMethodResult, but the return types are specified via a signature.
+template <internal::StringLiteral RetsSignature>
+using CallMethodResultSig =
+    base::expected<internal::ParseDBusSignaturePack<RetsSignature>,
+                   CallMethodError>;
+
+namespace internal {
+
+template <typename ArgsTuple, typename... Rets, std::size_t... Is>
+void CallMethodImpl(
+    dbus::ObjectProxy* proxy,
+    const std::string& interface,
+    const std::string& method,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
+    std::index_sequence<Is...>,
+    const std::tuple_element_t<Is, ArgsTuple>&... args) {
   dbus::MethodCall dbus_call(interface, method);
   dbus::MessageWriter writer(&dbus_call);
-  (internal::WriteValue(writer, args), ...);
+  (WriteValue<std::tuple_element_t<Is, ArgsTuple>>(writer, args), ...);
 
   base::ClampedNumeric<int32_t> timeout_ms = timeout.InMilliseconds();
   proxy->CallMethodWithErrorResponse(
@@ -111,8 +99,9 @@ void CallMethod(dbus::ObjectProxy* proxy,
                     auto read_and_assign = [&](auto& member) {
                       using OptionalType =
                           std::remove_cvref_t<decltype(member)>;
-                      if (auto result = internal::ReadValue<
-                              typename OptionalType::value_type>(reader)) {
+                      if (auto result =
+                              ReadValue<typename OptionalType::value_type>(
+                                  reader)) {
                         member = std::move(*result);
                         return true;
                       }
@@ -123,14 +112,12 @@ void CallMethod(dbus::ObjectProxy* proxy,
                   rets);
               if (!success) {
                 std::move(cb).Run(base::unexpected(CallMethodError(
-                    CallMethodErrorStatus::kInvalidResponseFormat,
-                    nullptr)));
+                    CallMethodErrorStatus::kInvalidResponseFormat, nullptr)));
               } else if (reader.HasMoreData()) {
-                std::move(cb).Run(base::unexpected(
-                    CallMethodError(CallMethodErrorStatus::kExtraDataInResponse,
-                                    nullptr)));
+                std::move(cb).Run(base::unexpected(CallMethodError(
+                    CallMethodErrorStatus::kExtraDataInResponse, nullptr)));
               } else {
-                std::move(cb).Run(internal::Unwrap(std::move(rets)));
+                std::move(cb).Run(Unwrap(std::move(rets)));
               }
             } else if (error_response) {
               std::move(cb).Run(base::unexpected(CallMethodError(
@@ -143,21 +130,47 @@ void CallMethod(dbus::ObjectProxy* proxy,
           std::move(callback)));
 }
 
+}  // namespace internal
+
+// This is similar to dbus::ObjectProxy::CallMethod, except the MethodCall,
+// MessageWriter, and MessageReader logic is contained within. The method
+// arguments and reply type are specified in `ArgsSignature` and
+// `RetsSignature`. This is intended to be used on Linux where a C++ bindings
+// generator is not available, to allow a more declarative style of calling
+// D-Bus methods. `callback` takes a `CallMethodResult`, which contains either a
+// tuple of the return types, or a `CallMethodError`. Two template arguments are
+// required: `ArgsSignature` and `RetsSignature`, which are C string literals
+// that must match the D-Bus signature of the method arguments and reply.
+template <internal::StringLiteral ArgsSignature,
+          internal::StringLiteral RetsSignature,
+          typename... Rets>
+void CallMethod(dbus::ObjectProxy* proxy,
+                const std::string& interface,
+                const std::string& method,
+                base::TimeDelta timeout,
+                base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
+                const auto&... args)
+  requires((internal::IsSupportedDBusType<Rets> && ...) &&
+           (internal::StrJoin(
+                (internal::DBusSignature<std::decay_t<Rets>>::kValue)...) ==
+            RetsSignature.value))
+{
+  using ArgsTupleType = internal::ParseDBusSignaturePack<ArgsSignature>;
+  internal::CallMethodImpl<ArgsTupleType, Rets...>(
+      proxy, interface, method, timeout, std::move(callback),
+      std::make_index_sequence<std::tuple_size_v<ArgsTupleType>>{}, args...);
+}
+
 // This is a convenience overload of CallMethod that uses the default timeout.
 template <internal::StringLiteral ArgsSignature,
           internal::StringLiteral RetsSignature,
-          typename... Args,
           typename... Rets>
 void CallMethod(dbus::ObjectProxy* proxy,
                 const std::string& interface,
                 const std::string& method,
                 base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
-                const Args&... args)
-  requires((internal::IsSupportedDBusType<Args> && ...) &&
-           (internal::IsSupportedDBusType<Rets> && ...) &&
-           (internal::StrJoin(
-                (internal::DBusSignature<std::decay_t<Args>>::kValue)...) ==
-            ArgsSignature.value) &&
+                const auto&... args)
+  requires((internal::IsSupportedDBusType<Rets> && ...) &&
            (internal::StrJoin(
                 (internal::DBusSignature<std::decay_t<Rets>>::kValue)...) ==
             RetsSignature.value))

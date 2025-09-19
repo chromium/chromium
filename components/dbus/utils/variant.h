@@ -39,12 +39,9 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Variant {
   // must match the D-Bus signature of `value`. This is intended to prevent
   // ambiguity if `value` is a literal like "42", so an explicit type is
   // required.
-  template <internal::StringLiteral Signature, typename T>
-    requires internal::IsSupportedDBusType<typename std::decay_t<T>> &&
-             (internal::DBusSignature<std::decay_t<T>>::kValue ==
-              Signature.value)
-  static Variant Wrap(T&& value) {
-    return WrapImpl(std::forward<T>(value));
+  template <internal::StringLiteral Signature>
+  static Variant Wrap(internal::ParseDBusSignature<Signature> value) {
+    return WrapImpl(std::move(value));
   }
 
   // Extract the contained value from this variant. Returns std::nullopt if the
@@ -146,7 +143,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Variant {
 
     if constexpr (std::is_same_v<DecayedT, Variant>) {
       v.state_.emplace<NestedVariant>(
-          std::make_unique<Variant>(std::forward<T>(value)));
+          std::make_unique<Variant>(std::move(value)));
     } else if constexpr (internal::IsSupportedMap<DecayedT>::value) {
       Dictionary dict;
       dict.reserve(value.size());
@@ -171,7 +168,7 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Variant {
       }
       v.state_.emplace<Sequence>(std::move(seq));
     } else {
-      v.state_.emplace<DecayedT>(std::forward<T>(value));
+      v.state_.emplace<DecayedT>(std::move(value));
     }
     return v;
   }

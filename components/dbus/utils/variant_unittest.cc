@@ -272,5 +272,19 @@ TEST(DBusVariantTest, VariantIsEmptyAfterFailedTake) {
   EXPECT_TRUE(variant.signature().empty());
 }
 
+TEST(DBusVariantTest, ConstructorConvertsTypes) {
+  auto variant = Variant::Wrap<"i">(123);
+  EXPECT_EQ(variant.signature(), "i");
+  EXPECT_EQ(std::move(variant).Take<int32_t>(), 123);
+
+  variant = Variant::Wrap<"n">(123);
+  EXPECT_EQ(variant.signature(), "n");
+  EXPECT_EQ(std::move(variant).Take<int16_t>(), 123);
+
+  variant = Variant::Wrap<"y">(123);
+  EXPECT_EQ(variant.signature(), "y");
+  EXPECT_EQ(std::move(variant).Take<uint8_t>(), 123);
+}
+
 }  // namespace
 }  // namespace dbus_utils

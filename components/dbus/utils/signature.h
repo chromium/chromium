@@ -32,21 +32,21 @@ struct DBusSignature {
   template <>                                                \
   struct DBusSignature<type> {                               \
     static constexpr auto kValue = std::to_array(signature); \
-  };
+  }
 
-DEFINE_SIMPLE_SIGNATURE(int16_t, DBUS_TYPE_INT16_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(uint16_t, DBUS_TYPE_UINT16_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(int32_t, DBUS_TYPE_INT32_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(uint32_t, DBUS_TYPE_UINT32_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(int64_t, DBUS_TYPE_INT64_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(uint64_t, DBUS_TYPE_UINT64_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(bool, DBUS_TYPE_BOOLEAN_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(double, DBUS_TYPE_DOUBLE_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(uint8_t, DBUS_TYPE_BYTE_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(std::string, DBUS_TYPE_STRING_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(dbus::ObjectPath, DBUS_TYPE_OBJECT_PATH_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(Variant, DBUS_TYPE_VARIANT_AS_STRING)
-DEFINE_SIMPLE_SIGNATURE(base::ScopedFD, DBUS_TYPE_UNIX_FD_AS_STRING)
+DEFINE_SIMPLE_SIGNATURE(int16_t, DBUS_TYPE_INT16_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(uint16_t, DBUS_TYPE_UINT16_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(int32_t, DBUS_TYPE_INT32_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(uint32_t, DBUS_TYPE_UINT32_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(int64_t, DBUS_TYPE_INT64_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(uint64_t, DBUS_TYPE_UINT64_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(bool, DBUS_TYPE_BOOLEAN_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(double, DBUS_TYPE_DOUBLE_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(uint8_t, DBUS_TYPE_BYTE_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(std::string, DBUS_TYPE_STRING_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(dbus::ObjectPath, DBUS_TYPE_OBJECT_PATH_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(Variant, DBUS_TYPE_VARIANT_AS_STRING);
+DEFINE_SIMPLE_SIGNATURE(base::ScopedFD, DBUS_TYPE_UNIX_FD_AS_STRING);
 
 #undef DEFINE_SIMPLE_SIGNATURE
 
@@ -124,8 +124,121 @@ struct StringLiteral {
     std::copy_n(str, N, value.data());
   }
 
+  constexpr explicit StringLiteral(const std::array<char, N>& arr)
+      : value(arr) {}
+
+  template <size_t K>
+    requires(K <= N)
+  constexpr StringLiteral<N - K> Substring() const {
+    std::array<char, N - K> result{};
+    std::copy_n(&value[K], N - K, result.data());
+    return StringLiteral<N - K>(result);
+  }
+
   std::array<char, N> value;
 };
+
+template <StringLiteral signature>
+struct ParseLeadingOneType;
+
+template <StringLiteral signature, typename... Ts>
+struct ParseLeadingTypeList {
+  using Type = std::tuple<Ts...>;
+  static constexpr inline auto kRemaining = signature;
+};
+
+template <StringLiteral signature, typename... Ts>
+  requires(signature.value[0] != '\0' &&
+           signature.value[0] != DBUS_STRUCT_END_CHAR &&
+           signature.value[0] != DBUS_DICT_ENTRY_END_CHAR)
+struct ParseLeadingTypeList<signature, Ts...>
+    : ParseLeadingTypeList<ParseLeadingOneType<signature>::kRemaining,
+                           Ts...,
+                           typename ParseLeadingOneType<signature>::Type> {};
+
+#define DEFINE_SIMPLE_SIGNATURE_PARSER(type, sig) \
+  template <StringLiteral signature>              \
+    requires(signature.value[0] == sig)           \
+  struct ParseLeadingOneType<signature> {         \
+    using Type = type;                            \
+    static constexpr inline auto kRemaining =     \
+        signature.template Substring<1>();        \
+  }
+
+DEFINE_SIMPLE_SIGNATURE_PARSER(int16_t, DBUS_TYPE_INT16);
+DEFINE_SIMPLE_SIGNATURE_PARSER(uint16_t, DBUS_TYPE_UINT16);
+DEFINE_SIMPLE_SIGNATURE_PARSER(int32_t, DBUS_TYPE_INT32);
+DEFINE_SIMPLE_SIGNATURE_PARSER(uint32_t, DBUS_TYPE_UINT32);
+DEFINE_SIMPLE_SIGNATURE_PARSER(int64_t, DBUS_TYPE_INT64);
+DEFINE_SIMPLE_SIGNATURE_PARSER(uint64_t, DBUS_TYPE_UINT64);
+DEFINE_SIMPLE_SIGNATURE_PARSER(bool, DBUS_TYPE_BOOLEAN);
+DEFINE_SIMPLE_SIGNATURE_PARSER(double, DBUS_TYPE_DOUBLE);
+DEFINE_SIMPLE_SIGNATURE_PARSER(uint8_t, DBUS_TYPE_BYTE);
+DEFINE_SIMPLE_SIGNATURE_PARSER(std::string, DBUS_TYPE_STRING);
+DEFINE_SIMPLE_SIGNATURE_PARSER(dbus::ObjectPath, DBUS_TYPE_OBJECT_PATH);
+DEFINE_SIMPLE_SIGNATURE_PARSER(Variant, DBUS_TYPE_VARIANT);
+DEFINE_SIMPLE_SIGNATURE_PARSER(base::ScopedFD, DBUS_TYPE_UNIX_FD);
+
+#undef DEFINE_SIMPLE_SIGNATURE_PARSER
+
+template <StringLiteral signature>
+  requires(signature.value[0] == DBUS_TYPE_ARRAY &&
+           signature.value[1] != DBUS_DICT_ENTRY_BEGIN_CHAR)
+struct ParseLeadingOneType<signature> {
+  using Element = ParseLeadingOneType<signature.template Substring<1>()>;
+  using Type = std::vector<typename Element::Type>;
+  static constexpr inline auto kRemaining = Element::kRemaining;
+};
+
+template <StringLiteral signature>
+  requires(signature.value[0] == DBUS_TYPE_ARRAY &&
+           signature.value[1] == DBUS_DICT_ENTRY_BEGIN_CHAR)
+struct ParseLeadingOneType<signature> {
+  using Key = ParseLeadingOneType<signature.template Substring<2>()>;
+  using Value = ParseLeadingOneType<Key::kRemaining>;
+  using Type = std::map<typename Key::Type, typename Value::Type>;
+  static_assert(Value::kRemaining.value[0] == DBUS_DICT_ENTRY_END_CHAR);
+  static constexpr inline auto kRemaining =
+      Value::kRemaining.template Substring<1>();
+};
+
+template <StringLiteral signature>
+  requires(signature.value[0] == DBUS_STRUCT_BEGIN_CHAR)
+struct ParseLeadingOneType<signature> {
+  using Elements = ParseLeadingTypeList<signature.template Substring<1>()>;
+  using Type = typename Elements::Type;
+  static_assert(Elements::kRemaining.value[0] == DBUS_STRUCT_END_CHAR);
+  static constexpr inline auto kRemaining =
+      Elements::kRemaining.template Substring<1>();
+};
+
+template <StringLiteral signature>
+struct ParseDBusSignatureInternal {
+  using Parsed = ParseLeadingOneType<signature>;
+  static_assert(Parsed::kRemaining.value[0] == '\0');
+  using Type = typename Parsed::Type;
+};
+
+template <internal::StringLiteral Signature>
+struct ParseDBusSignaturePackInternal {
+  using ParsedList = internal::ParseLeadingTypeList<Signature>;
+  static_assert(ParsedList::kRemaining.value[0] == '\0');
+  using Type = typename ParsedList::Type;
+};
+
+// Parses a single D-Bus type signature into the corresponding C++ type.
+// The signature must represent exactly one type, e.g. "s", "a{si}", "(is)".
+// It is a compile-time error to use this with a signature that represents
+// zero or more than one type, or invalid signatures.
+template <StringLiteral signature>
+using ParseDBusSignature = ParseDBusSignatureInternal<signature>::Type;
+
+// Parses a D-Bus type signature representing a sequence of types into the
+// corresponding C++ types in a std::tuple. The signature may represent one
+// or more types, e.g. "si", "a{si}(is)". This is intended to be used to parse
+// method argument lists.
+template <StringLiteral signature>
+using ParseDBusSignaturePack = ParseDBusSignaturePackInternal<signature>::Type;
 
 }  // namespace internal
 }  // namespace dbus_utils
