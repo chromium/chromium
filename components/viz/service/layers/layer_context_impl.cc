@@ -71,9 +71,28 @@ cc::LayerTreeSettings GetDisplayTreeSettings(
   settings.use_layer_lists = true;
   settings.trees_in_viz_in_viz_process = true;
   settings.display_tree_draw_mode_is_gpu = remote_settings->draw_mode_is_gpu;
+  settings.enable_early_damage_check =
+      remote_settings->enable_early_damage_check;
+  settings.damaged_frame_limit = remote_settings->damaged_frame_limit;
+  settings.scrollbar_animator = remote_settings->scrollbar_animator;
+  settings.scrollbar_fade_delay = remote_settings->scrollbar_fade_delay;
+  settings.scrollbar_fade_duration = remote_settings->scrollbar_fade_duration;
+  settings.scrollbar_thinning_duration =
+      remote_settings->scrollbar_thinning_duration;
+  settings.idle_thickness_scale = remote_settings->idle_thickness_scale;
+  settings.top_controls_show_threshold =
+      remote_settings->top_controls_show_threshold;
+  settings.top_controls_hide_threshold =
+      remote_settings->top_controls_hide_threshold;
+  settings.minimum_occlusion_tracking_size =
+      remote_settings->minimum_occlusion_tracking_size;
   settings.enable_edge_anti_aliasing =
       remote_settings->enable_edge_anti_aliasing;
+  settings.enable_backface_visibility_interop =
+      remote_settings->enable_backface_visibility_interop;
   settings.enable_fluent_scrollbar = remote_settings->enable_fluent_scrollbar;
+  settings.enable_fluent_overlay_scrollbar =
+      remote_settings->enable_fluent_overlay_scrollbar;
   return settings;
 }
 

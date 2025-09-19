@@ -145,6 +145,7 @@ mojom("mojom_layer_trees") {
     "missing_tile_reason.mojom",
     "paint_flags.mojom",
     "render_surface_reason.mojom",
+    "scrollbar_animator.mojom",
     "synced_scroll_offset.mojom",
     "ui_resource_id.mojom",
   ]
@@ -192,6 +193,15 @@ mojom("mojom_layer_trees") {
         },
       ]
       traits_headers = [ "render_surface_reason_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "cc.mojom.ScrollbarAnimator"
+          cpp = "::cc::LayerTreeSettings::ScrollbarAnimator"
+        },
+      ]
+      traits_headers = [ "scrollbar_animator_mojom_traits.h" ]
     },
     {
       types = [

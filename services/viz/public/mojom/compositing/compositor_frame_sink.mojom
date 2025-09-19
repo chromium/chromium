@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "cc/mojom/scrollbar_animator.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
@@ -14,14 +15,27 @@ import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
 import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 struct LayerContextSettings {
   bool draw_mode_is_gpu;
 
   // The following fields are part of LayerTreeSettings.
   // See cc/trees/layer_tree_settings.h for each field's usage.
+  bool enable_early_damage_check;
+  int32 damaged_frame_limit;
+  cc.mojom.ScrollbarAnimator scrollbar_animator;
+  mojo_base.mojom.TimeDelta scrollbar_fade_delay;
+  mojo_base.mojom.TimeDelta scrollbar_fade_duration;
+  mojo_base.mojom.TimeDelta scrollbar_thinning_duration;
+  float idle_thickness_scale;
+  float top_controls_show_threshold;
+  float top_controls_hide_threshold;
+  gfx.mojom.Size minimum_occlusion_tracking_size;
   bool enable_edge_anti_aliasing;
+  bool enable_backface_visibility_interop;
   bool enable_fluent_scrollbar;
+  bool enable_fluent_overlay_scrollbar;
 };
 
 struct CompositorFrameSinkParams {

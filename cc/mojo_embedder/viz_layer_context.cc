@@ -1241,10 +1241,30 @@ VizLayerContext::VizLayerContext(viz::mojom::CompositorFrameSink& frame_sink,
       &VizLayerContext::OnMojoConnectionError, weak_factory_.GetWeakPtr()));
   auto settings = viz::mojom::LayerContextSettings::New();
   settings->draw_mode_is_gpu = host_impl.GetDrawMode() == DRAW_MODE_HARDWARE;
+  settings->enable_early_damage_check =
+      host_impl.settings().enable_early_damage_check;
+  settings->damaged_frame_limit = host_impl.settings().damaged_frame_limit;
+  settings->scrollbar_animator = host_impl.settings().scrollbar_animator;
+  settings->scrollbar_fade_delay = host_impl.settings().scrollbar_fade_delay;
+  settings->scrollbar_fade_duration =
+      host_impl.settings().scrollbar_fade_duration;
+  settings->scrollbar_thinning_duration =
+      host_impl.settings().scrollbar_thinning_duration;
+  settings->idle_thickness_scale = host_impl.settings().idle_thickness_scale;
+  settings->top_controls_show_threshold =
+      host_impl.settings().top_controls_show_threshold;
+  settings->top_controls_hide_threshold =
+      host_impl.settings().top_controls_hide_threshold;
+  settings->minimum_occlusion_tracking_size =
+      host_impl.settings().minimum_occlusion_tracking_size;
   settings->enable_edge_anti_aliasing =
       host_impl.settings().enable_edge_anti_aliasing;
+  settings->enable_backface_visibility_interop =
+      host_impl.settings().enable_backface_visibility_interop;
   settings->enable_fluent_scrollbar =
       host_impl.settings().enable_fluent_scrollbar;
+  settings->enable_fluent_overlay_scrollbar =
+      host_impl.settings().enable_fluent_overlay_scrollbar;
   frame_sink.BindLayerContext(std::move(context), std::move(settings));
 }
 
