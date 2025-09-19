@@ -915,36 +915,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.BackGesture.EndScenarioType"
-    enum="BackGestureEndScenarioType" expires_after="2023-10-22">
-  <owner>minch@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>
-    End scenario type while swiping back from the left side of the window in
-    tablet mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BackGesture.StartScenarioType"
-    enum="BackGestureStartScenarioType" expires_after="2023-10-22">
-  <owner>minch@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>
-    Start scenario type while swiping back from the left side of the window in
-    tablet mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.BackGesture.UnderneathWindowType"
-    enum="BackGestureUnderneathWindowType" expires_after="2023-12-24">
-  <owner>minch@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>
-    Underneath window type while swiping back from the left side of the window
-    in tablet mode.
-  </summary>
-</histogram>
-
 <histogram name="Ash.BatterySaver.BatteryPercent{BatteryPercentWhen}" units="%"
     expires_after="2026-03-08">
   <owner>cwd@google.com</owner>

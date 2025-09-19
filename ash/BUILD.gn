@@ -2951,8 +2951,6 @@ component("ash") {
     "wm/gestures/back_gesture/back_gesture_contextual_nudge_controller_impl.h",
     "wm/gestures/back_gesture/back_gesture_event_handler.cc",
     "wm/gestures/back_gesture/back_gesture_event_handler.h",
-    "wm/gestures/back_gesture/back_gesture_metrics.cc",
-    "wm/gestures/back_gesture/back_gesture_metrics.h",
     "wm/gestures/back_gesture/back_gesture_util.cc",
     "wm/gestures/back_gesture/back_gesture_util.h",
     "wm/gestures/wm_fling_handler.cc",
