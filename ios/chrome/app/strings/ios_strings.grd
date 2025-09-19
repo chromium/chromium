@@ -2923,13 +2923,13 @@ See your search engine’s instructions for deleting your search history, if app
         Save
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick a solid background color.">
-        Select Color
+        Colors
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PHOTO_LIBRARY_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick an image from their camera roll.">
         Camera Roll
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESET_GALLERY_TITLE" desc="Title of an option in the background customization action sheet that opens a preset background gallery.">
-        Browse Gallery
+        Themes
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_CONTEXT_MENU_DELETE_RECENT_BACKGROUND_TITLE" desc="Title of the context menu option to delete a background from the recently used list in background customization.">
         Delete Background
