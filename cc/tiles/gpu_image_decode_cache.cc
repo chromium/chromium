@@ -2778,19 +2778,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
   image_data->upload.SetYuvImage(std::move(uploaded_y_image),
                                  std::move(uploaded_u_image),
                                  std::move(uploaded_v_image));
-
-  // If we have a new GPU-backed image, initialize it for use in the GPU
-  // discardable system.
-  if (image_data->mode == DecodedDataMode::kGpu) {
-    // Notify the discardable system of the planes so they will count against
-    // budgets.
-    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-        image_data->upload.gl_y_id());
-    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-        image_data->upload.gl_u_id());
-    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-        image_data->upload.gl_v_id());
-  }
 }
 
 void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
