@@ -284,7 +284,7 @@ class CORE_EXPORT PointerEventManager final
   PointerCapturingMap pointer_capture_target_;
   PointerCapturingMap pending_pointer_capture_target_;
 
-  PointerEventFactory pointer_event_factory_;
+  Member<PointerEventFactory> pointer_event_factory_;
   Member<TouchEventManager> touch_event_manager_;
   Member<MouseEventManager> mouse_event_manager_;
 
