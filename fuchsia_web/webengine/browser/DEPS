@@ -10,6 +10,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/on_load_script_injector/browser",
   "+components/network_session_configurator/common/network_switches.h",
+  "+components/os_crypt/async",
   "+components/permissions",
   "+components/profile_metrics",
   "+components/policy/content",

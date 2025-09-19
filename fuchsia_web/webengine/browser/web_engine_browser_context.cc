@@ -64,17 +64,19 @@ std::vector<std::string> GetAcceptLanguages() {
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreatePersistent(
     base::FilePath data_directory,
-    network::NetworkQualityTracker* network_quality_tracker) {
-  return base::WrapUnique(new WebEngineBrowserContext(std::move(data_directory),
-                                                      network_quality_tracker));
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
+  return base::WrapUnique(new WebEngineBrowserContext(
+      std::move(data_directory), network_quality_tracker, os_crypt_async));
 }
 
 // static
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreateIncognito(
-    network::NetworkQualityTracker* network_quality_tracker) {
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   return base::WrapUnique(
-      new WebEngineBrowserContext({}, network_quality_tracker));
+      new WebEngineBrowserContext({}, network_quality_tracker, os_crypt_async));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -191,7 +193,8 @@ base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
 
 WebEngineBrowserContext::WebEngineBrowserContext(
     base::FilePath data_directory,
-    network::NetworkQualityTracker* network_quality_tracker)
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : data_dir_path_(std::move(data_directory)),
       net_log_observer_(CreateNetLogObserver()),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
@@ -201,7 +204,7 @@ WebEngineBrowserContext::WebEngineBrowserContext(
       reduce_accept_language_delegate_(GetAcceptLanguages())
 #ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
       ,
-      push_messaging_service_(*this)
+      push_messaging_service_(*this, os_crypt_async)
 #endif
 {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);

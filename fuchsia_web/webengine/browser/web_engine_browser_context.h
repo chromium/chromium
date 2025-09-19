@@ -21,17 +21,23 @@ namespace network {
 class NetworkQualityTracker;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 class WebEngineBrowserContext final : public content::BrowserContext {
  public:
   // Creates a browser context that persists cookies, LocalStorage, etc, in
   // the specified |data_directory|.
   static std::unique_ptr<WebEngineBrowserContext> CreatePersistent(
       base::FilePath data_directory,
-      network::NetworkQualityTracker* network_quality_tracker);
+      network::NetworkQualityTracker* network_quality_tracker,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   // Creates a browser context with no support for persistent data.
   static std::unique_ptr<WebEngineBrowserContext> CreateIncognito(
-      network::NetworkQualityTracker* network_quality_tracker);
+      network::NetworkQualityTracker* network_quality_tracker,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   ~WebEngineBrowserContext() override;
 
@@ -67,7 +73,8 @@ class WebEngineBrowserContext final : public content::BrowserContext {
  private:
   explicit WebEngineBrowserContext(
       base::FilePath data_dir_path,
-      network::NetworkQualityTracker* network_quality_tracker);
+      network::NetworkQualityTracker* network_quality_tracker,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   const base::FilePath data_dir_path_;
 

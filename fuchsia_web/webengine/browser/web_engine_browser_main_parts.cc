@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -185,6 +186,10 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK_EQ(context_bindings_.size(), 0u);
+
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
 
   // Initialize the |component_inspector_| to allow diagnostics to be published.
   component_inspector_ = std::make_unique<inspect::ComponentInspector>(
@@ -349,11 +354,11 @@ void WebEngineBrowserMainParts::HandleContextRequest(
   std::unique_ptr<WebEngineBrowserContext> browser_context;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito)) {
     browser_context = WebEngineBrowserContext::CreateIncognito(
-        network_quality_tracker_.get());
+        network_quality_tracker_.get(), os_crypt_async_.get());
   } else {
     browser_context = WebEngineBrowserContext::CreatePersistent(
         base::FilePath(base::kPersistedDataDirectoryPath),
-        network_quality_tracker_.get());
+        network_quality_tracker_.get(), os_crypt_async_.get());
   }
 
   auto inspect_node_name =
@@ -390,7 +395,8 @@ void WebEngineBrowserMainParts::HandleFrameHostRequest(
   frame_host_bindings_.AddBinding(
       std::make_unique<FrameHostImpl>(
           component_inspector_->root().CreateChild(inspect_node_name),
-          devtools_controller_.get(), network_quality_tracker_.get()),
+          devtools_controller_.get(), network_quality_tracker_.get(),
+          os_crypt_async_.get()),
       std::move(request));
 }
 

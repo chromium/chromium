@@ -205,6 +205,7 @@ component("web_engine_core") {
     "//components/network_session_configurator/common",
     "//components/on_load_script_injector/browser",
     "//components/on_load_script_injector/renderer",
+    "//components/os_crypt/async/browser",
     "//components/permissions",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/profile_metrics",
