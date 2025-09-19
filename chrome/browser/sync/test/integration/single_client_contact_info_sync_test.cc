@@ -403,12 +403,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
                   .IsEligibleForAddressAccountStorage());
-  EXPECT_TRUE(GetPersonalDataManager()
-                  ->address_data_manager()
-                  .IsAutofillSyncToggleAvailable());
+
+  // The toggle is not available when kReplaceSyncPromosWithSignInPromos is
+  // enabled, and is instead available in the account settings page.
+  const bool is_autofill_sync_toggle_available =
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+  EXPECT_EQ(GetPersonalDataManager()
+                ->address_data_manager()
+                .IsAutofillSyncToggleAvailable(),
+            is_autofill_sync_toggle_available);
 }
 
-// Regression test for https://crbug.com/340194452
+// Regression test for https://crbug.com/340194452.
+// TODO(crbug.com/40943238): Remove when toggle becomes available on the Sync
+// page for non-syncing users.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.
@@ -417,6 +425,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // The toggle is not available when
+    // kReplaceSyncPromosWithSignInPromos is enabled, and is instead
+    // available in the account settings page.
+    EXPECT_FALSE(GetPersonalDataManager()
+                     ->address_data_manager()
+                     .IsAutofillSyncToggleAvailable());
+    return;
+  }
+
   // The toggle is available.
   EXPECT_TRUE(GetPersonalDataManager()
                   ->address_data_manager()
