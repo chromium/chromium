@@ -123,7 +123,8 @@
 }
 
 /// Tests that the entry point displays in full screen in landscape mode.
-- (void)testFullscreenEntryPointLandscapeMode {
+// TODO(crbug.com/446122860): Test is flaky.
+- (void)FLAKY_testFullscreenEntryPointLandscapeMode {
   if (@available(iOS 18.2, *)) {
     /// Verify that NTP logo is visible before rotation.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
