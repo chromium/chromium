@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <optional>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/numerics/safe_conversions.h"
@@ -806,6 +807,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
       FillAV1BuilderSequenceHeader(GetNumTemporalLayers(), profile, input_size_,
                                    tier_level, enabled_features_);
   picture_id_ = -1;
+  current_rate_control_ = rate_control_;
 
   return EncoderStatus::Codes::kOk;
 }
@@ -925,7 +927,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
         request_keyframe ? 0xFF : 1 << (libgav1::kReferenceFrameLast - 1);
   }
 
-  int qindex = AV1QPtoQindex(kAV1MaxQuantizer);
+  std::optional<int> qindex;
   if (software_brc_) {
     aom::AV1FrameParamsRTC frame_params{
         .frame_type = request_keyframe ? aom::kKeyFrame : aom::kInterFrame,
@@ -939,10 +941,32 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
         std::clamp(static_cast<uint8_t>(options.quantizer.value()),
                    kAV1MinQuantizer, kAV1MaxQuantizer));
   }
-  picture_params_.Quantization.BaseQIndex = qindex;
+  const int base_q_idx =
+      std::clamp(qindex.value_or(AV1QPtoQindex(kAV1MaxQuantizer)), 0, 255);
+  picture_params_.Quantization.BaseQIndex = base_q_idx;
   DVLOG(4) << base::StringPrintf(
       "Encoding picture: %d, is_keyframe = %d, QP = %d", picture_id_,
-      request_keyframe, qindex);
+      request_keyframe, base_q_idx);
+
+  if (qindex.has_value()) {
+    CHECK_EQ(input_arguments_.SequenceControlDesc.RateControl.Mode,
+             D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP);
+    current_rate_control_.SetCQP(
+        request_keyframe ? D3D12VideoEncoderRateControl::FrameType::kIntra
+                         : D3D12VideoEncoderRateControl::FrameType::kInterPrev,
+        qindex.value());
+    input_arguments_.SequenceControlDesc.RateControl =
+        current_rate_control_.GetD3D12VideoEncoderRateControl();
+  } else if (rate_control_ != current_rate_control_) {
+    if (rate_control_.GetMode() != current_rate_control_.GetMode()) {
+      CHECK(SupportsRateControlReconfiguration());
+      input_arguments_.SequenceControlDesc.Flags |=
+          D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_RATE_CONTROL_CHANGE;
+    }
+    current_rate_control_ = rate_control_;
+    input_arguments_.SequenceControlDesc.RateControl =
+        current_rate_control_.GetD3D12VideoEncoderRateControl();
+  }
 
   // Enable SCC tools will turn off CDEF, loop filter, etc on I-frame.
   if (!picture_ctrl_.allow_intrabc) {
@@ -962,7 +986,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
       // Keyframes: filt_guess = q * 0.06699 - 1.60817
       // Other frames: filt_guess = q * inter_frame_multiplier + 2.48225
       int filter_level = 0;
-      const int q = kAcQuantizerLookup[qindex];
+      const int q = kAcQuantizerLookup[base_q_idx];
       int inter_frame_multiplier =
           input_size_.Width * input_size_.Height > 352 * 288 ? 12034 : 6017;
       // Convert to fixed point: 0.06699 ≈ 17563/262144, -1.60817 ≈

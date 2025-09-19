@@ -3702,13 +3702,17 @@
     },
     {
       "id": 460,
-      "cr_bugs": [40275246],
+      "cr_bugs": [40275246, 430338349],
       "description": "D3D12 AV1 hardware encoding produces corrupted bitstream on NVidia GPUs.",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
       "multi_gpu_category": "active",
+      "driver_version": {
+          "op": "<",
+          "value": "32.0.15.8129"
+      },
       "features": [
         "disable_d3d12_av1_encoding"
       ]

@@ -127,6 +127,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
+
+  D3D12VideoEncoderRateControl current_rate_control_;
 };
 
 }  // namespace media
