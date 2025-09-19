@@ -25,7 +25,7 @@ suite('SpeechController', () => {
   function onPlayPauseToggle(text: string) {
     const element = document.createElement('p');
     element.textContent = text;
-    speechController.onPlayPauseToggle(null, element);
+    speechController.onPlayPauseToggle(element);
   }
 
   function setDomNodes(axNodeIds: number[]): Node[] {
@@ -48,6 +48,10 @@ suite('SpeechController', () => {
     onEngineStateChange() {},
 
     onPreviewVoicePlaying() {},
+
+    onPlayingFromSelection() {
+
+    },
   };
 
   setup(async () => {
@@ -173,7 +177,7 @@ suite('SpeechController', () => {
     wordBoundaries.updateBoundary(4);
     speechController.onHighlightGranularityChange(
         chrome.readingMode.sentenceHighlighting);
-    speechController.onPlayPauseToggle(null, node as HTMLElement);
+    speechController.onPlayPauseToggle(node as HTMLElement);
     assertTrue(speechController.isSpeechActive());
     assertTrue(wordBoundaries.hasBoundaries());
     assertTrue(highlighter.hasCurrentGranularity());
@@ -205,7 +209,7 @@ suite('SpeechController', () => {
     readAloudModel.setInitialized(true);
     const node = setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
 
-    speechController.onPlayPauseToggle(null, node as HTMLElement);
+    speechController.onPlayPauseToggle(node as HTMLElement);
     const spoken = await speech.whenCalled('speak');
     assertTrue(!!spoken.onstart);
     spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
@@ -220,12 +224,12 @@ suite('SpeechController', () => {
         const textContent = 'And our fame and our faces';
         const node =
             setSimpleNodeStoreWithTextAndModel(textContent, readAloudModel);
-        speechController.onPlayPauseToggle(null, node as HTMLElement);
-        speechController.onPlayPauseToggle(null, node as HTMLElement);
+        speechController.onPlayPauseToggle(node as HTMLElement);
+        speechController.onPlayPauseToggle(node as HTMLElement);
         wordBoundaries.updateBoundary(10);
         speech.reset();
 
-        speechController.onPlayPauseToggle(null, node as HTMLElement);
+        speechController.onPlayPauseToggle(node as HTMLElement);
 
         assertEquals(1, speech.getCallCount('speak'));
         assertEquals(1, speech.getCallCount('cancel'));

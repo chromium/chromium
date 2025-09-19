@@ -7,6 +7,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
+import {SelectionController} from '../selection_controller.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 
@@ -30,6 +31,7 @@ export interface SpeechListener {
   onIsAudioCurrentlyPlayingChange(): void;
   onEngineStateChange(): void;
   onPreviewVoicePlaying(): void;
+  onPlayingFromSelection(): void;
 }
 
 export class SpeechController {
@@ -42,6 +44,8 @@ export class SpeechController {
   private wordBoundaries_: WordBoundaries = WordBoundaries.getInstance();
   private highlighter_: ReadAloudHighlighter =
       ReadAloudHighlighter.getInstance();
+  private selectionController_: SelectionController =
+      SelectionController.getInstance();
   private listeners_: SpeechListener[] = [];
   private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
 
@@ -200,7 +204,7 @@ export class SpeechController {
     // Cancel the queued up Utterance using the old speech settings
     this.stopSpeech_(PauseActionSource.VOICE_SETTINGS_CHANGE);
     if (resumeSpeechOnChange) {
-      this.resumeSpeech_(null);
+      this.resumeSpeech_();
     }
   }
 
@@ -216,20 +220,20 @@ export class SpeechController {
     this.logger_.logHighlightGranularity(newGranularity);
   }
 
-  onPlayPauseToggle(selection: Selection|null, context: HTMLElement|null) {
+  onPlayPauseToggle(context: HTMLElement|null) {
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.BUTTON_CLICK);
     } else {
-      this.playSpeech_(selection, context);
+      this.playSpeech_(context);
       this.model_.setPlaySessionStartTime(Date.now());
     }
   }
 
-  private playSpeech_(selection: Selection|null, context: HTMLElement|null) {
+  private playSpeech_(context: HTMLElement|null) {
     if (this.hasSpeechBeenTriggered() && !this.isSpeechActive()) {
-      this.resumeSpeech_(selection);
+      this.resumeSpeech_();
     } else {
-      this.playSpeechForTheFirstTime_(selection, context);
+      this.playSpeechForTheFirstTime_(context);
     }
   }
 
@@ -272,11 +276,11 @@ export class SpeechController {
     this.readAloudModel_.moveSpeechBackwards();
   }
 
-  private resumeSpeech_(selection: Selection|null) {
+  private resumeSpeech_() {
     let playedFromSelection = false;
-    if (this.hasSelection_(selection)) {
+    if (this.selectionController_.hasSelection()) {
       this.wordBoundaries_.resetToDefaultState();
-      playedFromSelection = this.playFromSelection_(selection);
+      playedFromSelection = this.playFromSelection_();
     }
 
     if (!playedFromSelection) {
@@ -307,8 +311,7 @@ export class SpeechController {
     }
   }
 
-  private playSpeechForTheFirstTime_(
-      selection: Selection|null, context: HTMLElement|null) {
+  private playSpeechForTheFirstTime_(context: HTMLElement|null) {
     if (!context || !context.textContent) {
       return;
     }
@@ -322,7 +325,7 @@ export class SpeechController {
     this.setHasSpeechBeenTriggered(true);
     this.model_.setIsSpeechBeingRepositioned(false);
 
-    const playedFromSelection = this.playFromSelection_(selection);
+    const playedFromSelection = this.playFromSelection_();
     if (playedFromSelection) {
       return;
     }
@@ -340,47 +343,19 @@ export class SpeechController {
     }
   }
 
-  private hasSelection_(selection: Selection|null): boolean {
-    return (selection !== null) &&
-        (selection.anchorNode !== selection.focusNode ||
-         selection.anchorOffset !== selection.focusOffset);
-  }
-
-  private playFromSelection_(selection: Selection|null): boolean {
-    if (!this.isSpeechTreeInitialized() || !selection ||
-        !this.hasSelection_(selection)) {
+  private playFromSelection_(): boolean {
+    if (!this.isSpeechTreeInitialized() ||
+        !this.selectionController_.hasSelection()) {
       return false;
     }
 
-    const anchorNodeId = chrome.readingMode.startNodeId;
-    const anchorOffset = chrome.readingMode.startOffset;
-    const focusNodeId = chrome.readingMode.endNodeId;
-    const focusOffset = chrome.readingMode.endOffset;
-
-    // If only one of the ids is present, use that one.
-    let startingNodeId: number|undefined =
-        anchorNodeId ? anchorNodeId : focusNodeId;
-    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
-    // If both are present, start with the node that is sooner in the page.
-    if (anchorNodeId && focusNodeId) {
-      if (anchorNodeId === focusNodeId) {
-        startingOffset = Math.min(anchorOffset, focusOffset);
-      } else if (selection.anchorNode && selection.focusNode) {
-        const pos =
-            selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
-        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
-        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
-      }
-    }
-
+    const selectionStart = this.selectionController_.getCurrentSelectionStart();
+    const startingNodeId = selectionStart.nodeId;
     if (!startingNodeId) {
       return false;
     }
 
-    // Clear the selection so we don't keep trying to play from the same
-    // selection every time they press play.
-    selection.removeAllRanges();
+    this.listeners_.forEach(l => l.onPlayingFromSelection());
     // Iterate through the page from the beginning until we get to the
     // selection. This is so clicking previous works before the selection and
     // so the previous highlights are properly set.
@@ -397,7 +372,7 @@ export class SpeechController {
       if (!readAloudNode) {
         return;
       }
-      this.movePlaybackToNode_(readAloudNode, startingOffset);
+      this.movePlaybackToNode_(readAloudNode, selectionStart.offset);
       // Play the next granularity, which includes the selection.
       if (!this.highlightAndPlayMessage_()) {
         this.onSpeechFinished_();
@@ -740,7 +715,7 @@ export class SpeechController {
     // the user presses play/pause button.
     if (!this.isSpeechActive() &&
         this.model_.getResumeSpeechOnVoiceMenuClose()) {
-      this.resumeSpeech_(null);
+      this.resumeSpeech_();
     }
   }
 

@@ -113,6 +113,126 @@ suite('SelectionController', () => {
           };
     });
 
+    test('updates hasSelection', () => {
+      const node = getNodeAt(1);
+      nodeStore.setDomNode(node.node, node.id);
+
+      selectionController.onSelectionChange(document.getSelection());
+      assertFalse(selectionController.hasSelection());
+
+      selectNodes(node, 2, node, 10);
+      assertTrue(selectionController.hasSelection());
+
+      selectionController.onSelectionChange(null);
+      assertFalse(selectionController.hasSelection());
+    });
+
+    test('current selection start with only anchor node', () => {
+      const expectedAnchorOffset = 2;
+      const expectedFocusOffset = 10;
+      const node = getNodeAt(1);
+      chrome.readingMode.startNodeId = node.id;
+      chrome.readingMode.startOffset = expectedAnchorOffset;
+      chrome.readingMode.endNodeId = 0;
+      chrome.readingMode.endOffset = expectedFocusOffset;
+      nodeStore.setDomNode(node.node, node.id);
+
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node.id, selectionStart.nodeId);
+      assertEquals(expectedAnchorOffset, selectionStart.offset);
+    });
+
+    test('current selection start with only focus node', () => {
+      const expectedAnchorOffset = 2;
+      const expectedFocusOffset = 10;
+      const node = getNodeAt(1);
+      chrome.readingMode.endNodeId = node.id;
+      chrome.readingMode.endOffset = expectedFocusOffset;
+      chrome.readingMode.startNodeId = 0;
+      chrome.readingMode.startOffset = expectedAnchorOffset;
+      nodeStore.setDomNode(node.node, node.id);
+
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node.id, selectionStart.nodeId);
+      assertEquals(expectedFocusOffset, selectionStart.offset);
+    });
+
+    test('current selection start with forward selection in one node', () => {
+      const expectedAnchorOffset = 2;
+      const expectedFocusOffset = 10;
+      const node = getNodeAt(1);
+      chrome.readingMode.startNodeId = node.id;
+      chrome.readingMode.startOffset = expectedAnchorOffset;
+      chrome.readingMode.endNodeId = node.id;
+      chrome.readingMode.endOffset = expectedFocusOffset;
+      nodeStore.setDomNode(node.node, node.id);
+
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node.id, selectionStart.nodeId);
+      assertEquals(expectedAnchorOffset, selectionStart.offset);
+    });
+
+    test('current selection start with backward selection in one node', () => {
+      const expectedAnchorOffset = 10;
+      const expectedFocusOffset = 2;
+      const node = getNodeAt(1);
+      chrome.readingMode.startNodeId = node.id;
+      chrome.readingMode.startOffset = expectedAnchorOffset;
+      chrome.readingMode.endNodeId = node.id;
+      chrome.readingMode.endOffset = expectedFocusOffset;
+      nodeStore.setDomNode(node.node, node.id);
+
+      selectNodes(node, expectedAnchorOffset, node, expectedFocusOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node.id, selectionStart.nodeId);
+      assertEquals(expectedFocusOffset, selectionStart.offset);
+    });
+
+    test('current selection start with forward selection across nodes', () => {
+      const expectedAnchorOffset = 10;
+      const expectedFocusOffset = 2;
+      const node1 = getNodeAt(0);
+      const node2 = getNodeAt(1);
+      chrome.readingMode.startNodeId = node1.id;
+      chrome.readingMode.startOffset = expectedAnchorOffset;
+      chrome.readingMode.endNodeId = node2.id;
+      chrome.readingMode.endOffset = expectedFocusOffset;
+      nodeStore.setDomNode(node1.node, node1.id);
+      nodeStore.setDomNode(node2.node, node2.id);
+
+      selectNodes(node1, expectedAnchorOffset, node2, expectedFocusOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node1.id, selectionStart.nodeId);
+      assertEquals(expectedAnchorOffset, selectionStart.offset);
+    });
+
+    test('current selection start with backward selection across nodes', () => {
+      const expectedAnchorOffset = 10;
+      const expectedFocusOffset = 2;
+      const node1 = getNodeAt(0);
+      const node2 = getNodeAt(1);
+      chrome.readingMode.startNodeId = node2.id;
+      chrome.readingMode.startOffset = expectedFocusOffset;
+      chrome.readingMode.endNodeId = node1.id;
+      chrome.readingMode.endOffset = expectedAnchorOffset;
+      nodeStore.setDomNode(node1.node, node1.id);
+      nodeStore.setDomNode(node2.node, node2.id);
+
+      selectNodes(node2, expectedFocusOffset, node1, expectedAnchorOffset);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertEquals(node1.id, selectionStart.nodeId);
+      assertEquals(expectedAnchorOffset, selectionStart.offset);
+    });
+
     test('sends node when node exists as is', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 10;

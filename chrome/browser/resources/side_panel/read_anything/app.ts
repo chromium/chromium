@@ -355,8 +355,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onPlayPauseClick_() {
-    this.speechController_.onPlayPauseToggle(
-        this.getSelection(), this.$.container);
+    this.speechController_.onPlayPauseToggle(this.$.container);
   }
 
   onContentStateChange(): void {
@@ -365,6 +364,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   onNewPageDrawn(): void {
     this.$.containerScroller.scrollTop = 0;
+  }
+
+  onPlayingFromSelection(): void {
+    // Clear the selection so we don't keep trying to play from the same
+    // selection every time they press play.
+    this.getSelection()?.removeAllRanges();
   }
 
   onIsSpeechActiveChange(): void {

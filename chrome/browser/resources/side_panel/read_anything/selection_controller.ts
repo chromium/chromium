@@ -10,12 +10,53 @@ interface SelectionWithIds {
   focusOffset: number;
 }
 
+export interface SelectionEndpoint {
+  nodeId?: number;
+  offset: number;
+}
+
 // Handles the business logic for selection in the Reading mode panel.
 export class SelectionController {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private scrollingOnSelection_: boolean = false;
+  private currentSelection_: Selection|null = null;
+
+  hasSelection(): boolean {
+    const selection = this.currentSelection_;
+    return (selection !== null) &&
+        (selection.anchorNode !== selection.focusNode ||
+         selection.anchorOffset !== selection.focusOffset);
+  }
+
+  getCurrentSelectionStart(): SelectionEndpoint {
+    const anchorNodeId = chrome.readingMode.startNodeId;
+    const anchorOffset = chrome.readingMode.startOffset;
+    const focusNodeId = chrome.readingMode.endNodeId;
+    const focusOffset = chrome.readingMode.endOffset;
+
+    // If only one of the ids is present, use that one.
+    let startingNodeId: number|undefined =
+        anchorNodeId ? anchorNodeId : focusNodeId;
+    let startingOffset = anchorNodeId ? anchorOffset : focusOffset;
+    // If both are present, start with the node that is sooner in the page.
+    if (anchorNodeId && focusNodeId) {
+      const selection = this.currentSelection_;
+      if (anchorNodeId === focusNodeId) {
+        startingOffset = Math.min(anchorOffset, focusOffset);
+      } else if (selection && selection.anchorNode && selection.focusNode) {
+        const pos =
+            selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        const focusIsFirst = pos === Node.DOCUMENT_POSITION_PRECEDING;
+        startingNodeId = focusIsFirst ? focusNodeId : anchorNodeId;
+        startingOffset = focusIsFirst ? focusOffset : anchorOffset;
+      }
+    }
+
+    return {nodeId: startingNodeId, offset: startingOffset};
+  }
 
   onSelectionChange(selection: Selection|null) {
+    this.currentSelection_ = selection;
     if ((selection === null) || !selection.anchorNode || !selection.focusNode) {
       // The selection was collapsed by clicking inside the selection.
       chrome.readingMode.onCollapseSelection();

@@ -209,7 +209,7 @@ suite('ContentController', () => {
     });
 
     test('logs speech stop if called while speech active', async () => {
-      speechController.onPlayPauseToggle(null, node);
+      speechController.onPlayPauseToggle(node);
 
       contentController.updateContent();
 

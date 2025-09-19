@@ -1,7 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleTreeWithText} from './common.js';
@@ -23,13 +23,14 @@ suite('SpeechController', () => {
   let highlighter: ReadAloudHighlighter;
   let voiceLanguageController: VoiceLanguageController;
   let readingMode: FakeReadingMode;
+  let selectionController: SelectionController;
 
   // TODO: crbug.com/440400392- Move all tests relying on chrome.readingMode
   // for text segmentation to use TestReadAloudModelBrowserProxy instead.
   function onPlayPauseToggle(text: string) {
     const element = document.createElement('p');
     element.textContent = text;
-    speechController.onPlayPauseToggle(null, element);
+    speechController.onPlayPauseToggle(element);
   }
 
   setup(() => {
@@ -61,6 +62,10 @@ suite('SpeechController', () => {
       onPreviewVoicePlaying() {
         onPreviewVoicePlaying = true;
       },
+
+      onPlayingFromSelection() {
+
+      },
     };
 
     voiceLanguageController = new VoiceLanguageController();
@@ -73,6 +78,8 @@ suite('SpeechController', () => {
     WordBoundaries.setInstance(wordBoundaries);
     highlighter = new ReadAloudHighlighter();
     ReadAloudHighlighter.setInstance(highlighter);
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
     speechController = new SpeechController();
     speechController.addListener(speechListener);
     speech.reset();
