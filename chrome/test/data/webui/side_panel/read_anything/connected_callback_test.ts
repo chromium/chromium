@@ -6,8 +6,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertStringContains} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {ContentController, ContentType, SpeechController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -15,6 +15,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 
 suite('ConnectedCallback', () => {
   let app: AppElement;
+  let contentController: ContentController;
   const speechController = new class extends SpeechController {
     scrollCount: number = 0;
 
@@ -32,6 +33,8 @@ suite('ConnectedCallback', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
+    contentController = new ContentController();
+    ContentController.setInstance(contentController);
     SpeechController.setInstance(speechController);
 
     app = await createApp();
@@ -39,15 +42,7 @@ suite('ConnectedCallback', () => {
   });
 
   test('shows loading page', () => {
-    assertEquals(
-        app.shadowRoot.querySelector<HTMLElement>(
-                          '#empty-state-container')!.hidden,
-        false);
-    const emptyState = app.shadowRoot.querySelector('sp-empty-state')!;
-    assertEquals('Getting ready', emptyState.heading);
-    assertEquals('', emptyState.body);
-    assertStringContains(emptyState.imagePath, 'throbber');
-    assertStringContains(emptyState.darkImagePath, 'throbber');
+    assertEquals(ContentType.LOADING, contentController.getState().type);
   });
 
   test('scroll listener added', () => {

@@ -28,14 +28,20 @@ suite('LoadingScreen', () => {
     SpeechController.setInstance(speechController);
 
     app = await createApp();
-    app.showLoading();
     emptyState =
         app.shadowRoot.querySelector<SpEmptyStateElement>('sp-empty-state')!;
     return microtasksFinished();
   });
 
-  test('shows spinner', () => {
+  test('shows spinner', async () => {
     const spinner = 'throbber';
+    setSimpleTreeWithText('My name is Regina George');
+    app.updateContent();
+    await microtasksFinished();
+
+    app.showLoading();
+    await microtasksFinished();
+
     assertStringContains(emptyState.darkImagePath, spinner);
     assertStringContains(emptyState.imagePath, spinner);
   });
@@ -59,6 +65,9 @@ suite('LoadingScreen', () => {
     const selection = document.getSelection();
     assertTrue(!!selection);
     selection.removeAllRanges();
+
+    app.showLoading();
+    await microtasksFinished();
     selection.addRange(range);
     await microtasksFinished();
 
