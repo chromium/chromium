@@ -19,6 +19,8 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
@@ -1279,6 +1281,155 @@ IN_PROC_BROWSER_TEST_P(
       "SBClientPhishing.ClipboardCopyApi.PayloadLength", 92, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+}
+
+class ClientSideDetectionHostCreditCardFormTest : public InProcessBrowserTest {
+ public:
+  ClientSideDetectionHostCreditCardFormTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kClientSideDetectionCreditCardForm,
+        {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+         {kCsdCreditCardFormSampleRate.name, "1.0"}});
+  }
+
+  ClientSideDetectionHostCreditCardFormTest(
+      const ClientSideDetectionHostCreditCardFormTest&) = delete;
+  ClientSideDetectionHostCreditCardFormTest& operator=(
+      const ClientSideDetectionHostCreditCardFormTest&) = delete;
+  ~ClientSideDetectionHostCreditCardFormTest() override = default;
+
+  void SetUpOnMainThread() override {
+    flatbuffer_model_str_ = set_up_client_side_model();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  std::string client_side_model() { return flatbuffer_model_str_; }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  autofill::AutofillManager* autofill_manager() {
+    autofill::ContentAutofillDriver* driver =
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(
+            GetWebContents()->GetPrimaryMainFrame());
+    return &driver->GetAutofillManager();
+  }
+
+ private:
+  std::string flatbuffer_model_str_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
+                       CreditCardFormTriggersPreclassificationCheck) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
+
+  const GURL url(embedded_test_server()->GetURL(
+      "/autofill/autofill_creditcard_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForRenderFrameReady(
+      GetWebContents()->GetPrimaryMainFrame()));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
+                       CreditCardFormClassificationTriggersCSDPing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL url(embedded_test_server()->GetURL(
+      "/autofill/autofill_creditcard_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForRenderFrameReady(
+      GetWebContents()->GetPrimaryMainFrame()));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
+
+  // Bypass the pre-classification check because it would otherwise return
+  // `PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP`.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::CREDIT_CARD_FORM,
+      /*should_classify=*/true, /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+  std::move(fake_csd_service.saved_callback())
+      .Run(url, true, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 1);
 }
 
 }  // namespace safe_browsing

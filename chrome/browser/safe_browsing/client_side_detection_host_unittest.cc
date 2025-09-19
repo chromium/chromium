@@ -16,12 +16,14 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
@@ -31,6 +33,19 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -74,6 +89,7 @@
 #include "url/gurl.h"
 
 using base::test::RunOnceClosure;
+using base::test::TestFuture;
 using content::BrowserThread;
 using content::RenderFrameHostTester;
 using content::WebContents;
@@ -546,6 +562,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "FullscreenApi";
       case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
         return "ClipboardCopyApi";
+      case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
+        return "CreditCardForm";
     }
   }
 
@@ -2075,6 +2093,263 @@ TEST_F(ClientSideDetectionHostTest,
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
       PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
+}
+
+class ClientSideDetectionHostCreditCardFormTest
+    : public ClientSideDetectionHostTestBase {
+ public:
+  ClientSideDetectionHostCreditCardFormTest()
+      : ClientSideDetectionHostTestBase(false /*is_incognito*/) {}
+
+ protected:
+  autofill::AutofillManager* autofill_manager() {
+    return autofill_manager_injector_[web_contents()->GetPrimaryMainFrame()];
+  }
+
+ private:
+  // All of these are needed in this order to get an AutofillManager that is
+  // properly associated with web_contents().
+  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      autofill_client_injector_;
+  autofill::TestAutofillDriverInjector<autofill::ContentAutofillDriver>
+      autofill_driver_injector_;
+  autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
+      autofill_manager_injector_;
+};
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       NonCreditCardFormDoesNotTriggerPreclassificationChecks) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+       {kCsdCreditCardFormSampleRate.name, "1.0"}});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  csd_host_->RegisterAutofillManager();
+
+  TestFuture<void> future;
+  csd_host_->set_preclassification_started_callback_for_testing(
+      future.GetRepeatingCallback());
+
+  auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
+  autofill_manager()->OnFormsSeen({form_data}, {});
+
+  // Preclassification should not have been triggered by OnFormsSeen.
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       FeatureDisabledDoesNotTriggerPreclassificationChecks) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // CSD pings for credit card forms are not enabled. (ESB is.)
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  // This won't actually register for Autofill events since the
+  // feature is disabled.
+  csd_host_->RegisterAutofillManager();
+
+  TestFuture<void> future;
+  csd_host_->set_preclassification_started_callback_for_testing(
+      future.GetRepeatingCallback());
+
+  auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
+  autofill_manager()->OnFormsSeen({form_data}, {});
+
+  // Preclassification should not have been triggered by OnFormsSeen.
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       ESBDisabledDoesNotTriggerPreclassificationChecks) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 100% HC allowlist acceptance, 100% sample rate,
+  // but ESB is not enabled.
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormHCAcceptanceRate.name, "1.0"},
+       {kCsdCreditCardFormSampleRate.name, "1.0"}});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), false);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  // This won't actually register for Autofill events since ESB is disabled.
+  csd_host_->RegisterAutofillManager();
+
+  TestFuture<void> future;
+  csd_host_->set_preclassification_started_callback_for_testing(
+      future.GetRepeatingCallback());
+
+  auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
+  autofill_manager()->OnFormsSeen({form_data}, {});
+
+  // Preclassification should not have been triggered by OnFormsSeen.
+  EXPECT_FALSE(future.IsReady());
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       CreditCardFormDoesNotProceedWithClassificationOnHCAcceptance) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 100% HC allowlist acceptance, 0% sample rate
+  // (default params):
+  feature_list_.InitAndEnableFeature(kClientSideDetectionCreditCardForm);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitAndCheckPreClassificationChecks();
+
+  // The feature to send CSP pings is enabled, but the host is included in the
+  // HC allowlist, so classification will not occur.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", false, 1);
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       CreditCardFormDoesNotProceedDueToSampling) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 0% HC allowlist acceptance, 0% sample rate:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+       {kCsdCreditCardFormSampleRate.name, "0.0"}});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitAndCheckPreClassificationChecks();
+
+  // The feature to send CSP pings is enabled, but because the sample rate
+  // to send is 0%, classification does not occur.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
+      PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", false, 1);
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       CreditCardFormProceedsWithClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate:
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+       {kCsdCreditCardFormSampleRate.name, "1.0"}});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  NavigateAndCommit(url);
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitAndCheckPreClassificationChecks();
+
+  // Pre-classification should have proceeded to classification.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", false, 1);
 }
 
 class ClientSideDetectionHostNotificationTest

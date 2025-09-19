@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/autofill/content/browser",
+  "+components/autofill/core/browser",
   "+components/back_forward_cache",
   "+components/content_settings/core/common",
   "+components/history/core/browser",

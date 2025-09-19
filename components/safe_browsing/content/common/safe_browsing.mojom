@@ -150,6 +150,8 @@ enum ClientSideDetectionType {
   kPasswordProtection,
   // Clipboard copy API request triggered.
   kClipboardCopyApi,
+  // Credit card form was detected.
+  kCreditCardForm,
 };
 
 // Interface for starting phishing classification. This is scoped to a

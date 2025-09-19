@@ -74,6 +74,8 @@ std::string GetRequestTypeName(
       return "PasswordProtection";
     case safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi:
       return "ClipboardCopyApi";
+    case safe_browsing::mojom::ClientSideDetectionType::kCreditCardForm:
+      return "CreditCardForm";
   }
 }
 

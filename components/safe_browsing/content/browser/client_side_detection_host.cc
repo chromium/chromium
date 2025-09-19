@@ -23,6 +23,8 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
@@ -134,6 +136,8 @@ std::string GetRequestTypeName(
       return "FullscreenApi";
     case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
       return "ClipboardCopyApi";
+    case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
+      return "CreditCardForm";
   }
 }
 
@@ -157,6 +161,8 @@ safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
       return safe_browsing::mojom::ClientSideDetectionType::kFullscreen;
     case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
       return safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi;
+    case safe_browsing::ClientSideDetectionType::CREDIT_CARD_FORM:
+      return safe_browsing::mojom::ClientSideDetectionType::kCreditCardForm;
     case safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
     default:
@@ -478,17 +484,17 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
 
     if (phishing_reason !=
         PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER) {
-      if (phishing_detection_request_type_ ==
-          ClientSideDetectionType::FULLSCREEN_API) {
-        base::UmaHistogramBoolean(
-            "SBClientPhishing.MatchCSDAllowlistOnFullscreenApi",
-            match_allowlist);
-      }
-      if (phishing_detection_request_type_ ==
-          ClientSideDetectionType::CLIPBOARD_COPY_API) {
-        base::UmaHistogramBoolean(
-            "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi",
-            match_allowlist);
+      switch (phishing_detection_request_type_) {
+        case CREDIT_CARD_FORM:
+        case CLIPBOARD_COPY_API:
+        case FULLSCREEN_API:
+          base::UmaHistogramBoolean(
+              "SBClientPhishing.MatchCSDAllowlistOn" +
+                  GetRequestTypeName(phishing_detection_request_type_),
+              match_allowlist);
+          break;
+        default:
+          break;
       }
       // This check is also for logging purposes although the CSD allowlist
       // could be matched or not checked at all. Once it completes,
@@ -550,15 +556,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       return;  // No point in doing anything else.
     }
 
-    // The purpose of triggering preclassification for these APIs is to have
-    // an initial assessment on how often we'll be hitting the allowlist and
-    // triggering the classification. We will not go further than checking
-    // for this metric, unless otherwise specified by feature flags.
-    if (phishing_detection_request_type_ ==
-            ClientSideDetectionType::FULLSCREEN_API ||
-        (phishing_detection_request_type_ ==
-             ClientSideDetectionType::CLIPBOARD_COPY_API &&
-         base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get())) {
+    if (ShouldStopAtPreClassification()) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
     }
@@ -615,6 +613,23 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     }
   }
 
+  bool ShouldStopAtPreClassification() {
+    switch (phishing_detection_request_type_) {
+      case FULLSCREEN_API:
+        return true;
+      case CLIPBOARD_COPY_API:
+        return base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get();
+      case CREDIT_CARD_FORM:
+        if (base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
+          return base::RandDouble() >= kCsdCreditCardFormSampleRate.Get();
+        }
+        break;
+      default:
+        break;
+    }
+    return false;
+  }
+
   bool CanSendSamplePing() {
     return phishing_detection_request_type_ ==
                ClientSideDetectionType::TRIGGER_MODELS &&
@@ -638,9 +653,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
                probability_for_accepting_hc_allowlist_trigger_;
       case ClientSideDetectionType::CLIPBOARD_COPY_API:
         return base::RandDouble() < kCsdClipboardCopyApiHCAcceptanceRate.Get();
+      case ClientSideDetectionType::CREDIT_CARD_FORM:
+        if (base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
+          return base::RandDouble() < kCsdCreditCardFormHCAcceptanceRate.Get();
+        }
+        break;
       default:
-        return false;
+        break;
     }
+    return false;
   }
 
   ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
@@ -738,6 +759,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
 
   RegisterPermissionRequestManager();
   RegisterAsyncCheckTracker();
+  RegisterAutofillManager();
 }
 
 ClientSideDetectionHost::~ClientSideDetectionHost() {
@@ -761,6 +783,19 @@ void ClientSideDetectionHost::RegisterAsyncCheckTracker() {
     CHECK(tracker);
     async_check_observation_.Observe(tracker);
   }
+}
+
+void ClientSideDetectionHost::RegisterAutofillManager() {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
+    return;
+  }
+  autofill_managers_observation_.Observe(
+      autofill::ContentAutofillClient::FromWebContents(web_contents()),
+      autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+          kObservePreexistingManagers);
 }
 
 void ClientSideDetectionHost::MaybeStartPreClassification(
@@ -787,6 +822,10 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
 
   if (!csd_service_) {
     return;
+  }
+
+  if (!preclassification_started_cb_for_testing_.is_null()) {
+    preclassification_started_cb_for_testing_.Run();
   }
 
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
@@ -862,6 +901,29 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckCompleted() {
 
 void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckTrackerDestructed() {
   async_check_observation_.Reset();
+}
+
+// OnFieldTypesDetermined is an Autofill observer callback that triggers a CSD
+// ping when the form is categorized as a credit card form.
+void ClientSideDetectionHost::OnFieldTypesDetermined(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId formId,
+    autofill::AutofillManager::Observer::FieldTypeSource source) {
+  // Early exit if preclassification has already been done for
+  // CREDIT_CARD_FORM and this URL.
+  auto csd_type = ClientSideDetectionType::CREDIT_CARD_FORM;
+  if (HasDonePreclassificationCheckOnSameURL(csd_type)) {
+    return;
+  }
+
+  // If the form is a credit card form, then trigger pre-classification.
+  if (auto it = manager.form_structures().find(formId);
+      it != manager.form_structures().end()) {
+    if (it->second.get()->GetFormTypes().contains(
+            autofill::FormType::kCreditCardForm)) {
+      MaybeStartPreClassification(csd_type);
+    }
+  }
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {

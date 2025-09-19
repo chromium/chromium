@@ -288,6 +288,8 @@ if (safe_browsing_mode != 0) {
       ":client_side_detection_images_cache",
       ":client_side_detection_service",
       "//base",
+      "//components/autofill/content/browser",
+      "//components/autofill/core/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/permissions",
       "//components/prefs",

@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -55,7 +57,8 @@ using HostInnerTextCallback = base::OnceCallback<void(std::string)>;
 class ClientSideDetectionHost
     : public content::WebContentsObserver,
       public permissions::PermissionRequestManager::Observer,
-      public AsyncCheckTracker::Observer {
+      public AsyncCheckTracker::Observer,
+      public autofill::AutofillManager::Observer {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -191,6 +194,14 @@ class ClientSideDetectionHost
 
   void RegisterAsyncCheckTracker();
 
+  // autofill::AutofillManager::Observer method:
+  void OnFieldTypesDetermined(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId formId,
+      autofill::AutofillManager::Observer::FieldTypeSource source) override;
+
+  void RegisterAutofillManager();
+
  protected:
   explicit ClientSideDetectionHost(
       content::WebContents* tab,
@@ -264,6 +275,18 @@ class ClientSideDetectionHost
                            ClipboardApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
                            ClipboardApiClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormTest,
+      NonCreditCardFormDoesNotTriggerPreclassificationChecks);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostCreditCardFormTest,
+      FeatureDisabledDoesNotTriggerPreclassificationChecks);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           ESBDisabledDoesNotTriggerPreclassificationChecks);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           CreditCardFormTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           CreditCardFormClassificationTriggersCSDPing);
 
   // Helper function to create preclassification check once requirements are
   // met.
@@ -374,6 +397,15 @@ class ClientSideDetectionHost
     intelligent_scan_delegate_ = intelligent_scan_delegate;
   }
 
+  // A callback for when preclassification is started.
+  using PreclassificationStarted = base::RepeatingClosure;
+
+  // Sets a callback to be notified when preclassification is started.
+  void set_preclassification_started_callback_for_testing(
+      const PreclassificationStarted& callback) {
+    preclassification_started_cb_for_testing_ = callback;
+  }
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
@@ -387,6 +419,13 @@ class ClientSideDetectionHost
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         std::optional<bool> did_match_high_confidence_allowlist,
                         const std::string& access_token);
+
+  // Returns true if phishing detection should not proceed beyond
+  // preclassification. The purpose of triggering only preclassification is to
+  // have an initial assessment on how often we'll be hitting the allowlist and
+  // triggering the classification. Detection should not go further than
+  // recording metrics.
+  bool ShouldStopAtPreClassification();
 
   // Check if sample ping can be sent to Safe Browsing.
   bool CanSendSamplePing();
@@ -486,6 +525,15 @@ class ClientSideDetectionHost
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};
+
+  // Manages lifetime registration of this instance as an
+  // AutofillManager::Observer.
+  autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
+      this};
+
+  // Callback settable by tests for verifying whether
+  // MaybeStartPreClassification resulted in starting preclassification.
+  PreclassificationStarted preclassification_started_cb_for_testing_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

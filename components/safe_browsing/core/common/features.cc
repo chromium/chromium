@@ -60,6 +60,16 @@ constexpr base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
     &kClientSideDetectionClipboardCopyApi, "MinLength",
     /*default_value=*/0};
 
+BASE_FEATURE(kClientSideDetectionCreditCardForm,
+             "ClientSideDetectionCreditCardForm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate{
+    &kClientSideDetectionCreditCardForm, "HCAcceptanceRate",
+    /*default_value=*/1.0};
+const base::FeatureParam<double> kCsdCreditCardFormSampleRate{
+    &kClientSideDetectionCreditCardForm, "SampleRate",
+    /*default_value=*/0.0};
+
 BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

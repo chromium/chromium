@@ -6291,6 +6291,28 @@
             ]
         }
     ],
+    "ClientSideDetectionCreditCardForm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "HCAcceptanceRate": "1.0",
+                        "SampleRate": "0.0"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionCreditCardForm"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionOnlyExtractVisualFeatures": [
         {
             "platforms": [

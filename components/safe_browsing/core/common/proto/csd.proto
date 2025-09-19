@@ -1322,6 +1322,8 @@ enum ClientSideDetectionType {
   FULLSCREEN_API = 7;
   // Clipboard copy API request triggered.
   CLIPBOARD_COPY_API = 8;
+  // Credit card form detected.
+  CREDIT_CARD_FORM = 9;
 }
 
 message ClientDownloadResponse {
