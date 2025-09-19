@@ -327,7 +327,7 @@ ClientSharedImage::CreateMappableBufferFromHandle(
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
       return MappableBufferDXGI::CreateFromHandle(
-          std::move(handle), size, buffer_format,
+          std::move(handle), size, format,
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)

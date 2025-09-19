@@ -21,6 +21,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
@@ -36,10 +37,11 @@ MappableBufferDXGI::~MappableBufferDXGI() {
 std::unique_ptr<MappableBufferDXGI> MappableBufferDXGI::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle().IsValid());
+  CHECK(viz::HasEquivalentBufferFormat(format));
   return base::WrapUnique(new MappableBufferDXGI(
       size, format, std::move(handle).dxgi_handle(),
       std::move(copy_native_buffer_to_shmem_callback), std::move(pool)));
@@ -144,9 +146,9 @@ std::optional<base::OnceCallback<void(void)>> MappableBufferDXGI::DoMapAsync(
       CHECK(region_mapping_.IsValid());
       premapped_memory_ = region_mapping_.GetMemoryAsSpan<uint8_t>();
 
-      if (premapped_memory_.data() &&
-          premapped_memory_.size() <
-              gfx::BufferSizeForBufferFormat(size_, format_)) {
+      size_t buffer_size =
+          viz::SharedMemorySizeForSharedImageFormat(format_, size_).value();
+      if (premapped_memory_.data() && premapped_memory_.size() < buffer_size) {
         LOG(ERROR) << "MappableBufferDXGI: Premapped memory has "
                       "insufficient size.";
         premapped_memory_ = base::span<uint8_t>();
@@ -163,9 +165,11 @@ std::optional<base::OnceCallback<void(void)>> MappableBufferDXGI::DoMapAsync(
   CHECK(copy_native_buffer_to_shmem_callback_);
   CHECK(shared_memory_pool_);
 
+  size_t buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format_, size_).value();
   if (!shared_memory_handle_) {
-    shared_memory_handle_ = shared_memory_pool_->MaybeAllocateBuffer(
-        gfx::BufferSizeForBufferFormat(size_, format_));
+    shared_memory_handle_ =
+        shared_memory_pool_->MaybeAllocateBuffer(buffer_size);
     if (!shared_memory_handle_) {
       return base::BindOnce(std::move(result_cb), false);
     }
@@ -214,7 +218,7 @@ bool MappableBufferDXGI::AsyncMappingIsNonBlocking() const {
 void* MappableBufferDXGI::memory(size_t plane) {
   AssertMapped();
 
-  if (plane > gfx::NumberOfPlanesForLinearBufferFormat(format_) ||
+  if (static_cast<int>(plane) > format_.NumberOfPlanes() ||
       (!shared_memory_handle_ && !premapped_memory_.data())) {
     return nullptr;
   }
@@ -225,8 +229,9 @@ void* MappableBufferDXGI::memory(size_t plane) {
                                   .GetMemoryAsSpan<uint8_t>()
                                   .data();
   // This is safe, since we already checked that the requested plane is
-  // valid for current buffer format.
-  plane_addr += gfx::BufferOffsetForBufferFormat(size_, format_, plane);
+  // valid for current format.
+  plane_addr +=
+      viz::SharedMemoryOffsetForSharedImageFormat(format_, plane, size_);
   return plane_addr;
 }
 
@@ -244,7 +249,10 @@ void MappableBufferDXGI::Unmap() {
 }
 
 int MappableBufferDXGI::stride(size_t plane) const {
-  return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
+  size_t stride = viz::SharedMemoryRowSizeForSharedImageFormat(format_, plane,
+                                                               size_.width())
+                      .value();
+  return static_cast<int>(stride);
 }
 
 gfx::GpuMemoryBufferType MappableBufferDXGI::GetType() const {
@@ -289,7 +297,7 @@ void MappableBufferDXGI::AssertMapped() {
 
 MappableBufferDXGI::MappableBufferDXGI(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::DXGIHandle dxgi_handle,
     CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool)

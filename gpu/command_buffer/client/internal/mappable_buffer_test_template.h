@@ -102,8 +102,8 @@ class MappableBufferTest : public testing::Test {
 #endif
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE:
-        return MappableBufferDXGI::CreateFromHandleForTesting(std::move(handle),
-                                                              size, format);
+        return MappableBufferDXGI::CreateFromHandleForTesting(
+            std::move(handle), size, viz::GetSharedImageFormat(format));
 #endif
       default:
         NOTREACHED();

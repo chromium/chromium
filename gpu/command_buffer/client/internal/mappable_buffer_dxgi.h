@@ -20,6 +20,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "ui/gfx/color_space.h"
@@ -43,7 +44,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferDXGI
   static std::unique_ptr<MappableBufferDXGI> CreateFromHandleForTesting(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format) {
+      viz::SharedImageFormat format) {
     return CreateFromHandle(std::move(handle), size, format);
   }
 
@@ -84,14 +85,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferDXGI
   static std::unique_ptr<MappableBufferDXGI> CreateFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback =
           CopyNativeBufferToShMemCallback(),
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   MappableBufferDXGI(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::DXGIHandle dxgi_handle,
       CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback,
       scoped_refptr<base::UnsafeSharedMemoryPool> pool);
@@ -104,7 +105,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferDXGI
   void AssertMapped();
 
   const gfx::Size size_;
-  const gfx::BufferFormat format_;
+  const viz::SharedImageFormat format_;
 
   // This is currently always set to false until media capture code is converted
   // to use MappableSI.
