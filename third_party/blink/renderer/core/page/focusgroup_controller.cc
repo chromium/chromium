@@ -52,12 +52,14 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
 // static
 bool FocusgroupController::Advance(Element* initial_element,
                                    FocusgroupDirection direction) {
-  // Only allow grid focusgroup navigation when the focus is on a grid
-  // focusgroup item.
-  Element* grid_root = utils::FindNearestFocusgroupAncestor(
-      initial_element, FocusgroupType::kGrid);
-  if (grid_root && utils::IsGridFocusgroupItem(initial_element))
-    return AdvanceInGrid(initial_element, grid_root, direction);
+  if (RuntimeEnabledFeatures::FocusgroupGridEnabled(
+          initial_element->GetExecutionContext())) {
+    Element* grid_root = utils::FindNearestFocusgroupAncestor(
+        initial_element, FocusgroupType::kGrid);
+    if (grid_root && utils::IsGridFocusgroupItem(initial_element)) {
+      return AdvanceInGrid(initial_element, grid_root, direction);
+    }
+  }
 
   // Only allow linear focusgroup navigation when the focus is on a focusgroup
   // item.

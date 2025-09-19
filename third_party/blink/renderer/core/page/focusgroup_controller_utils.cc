@@ -8,10 +8,12 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -101,6 +103,9 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
     if (ancestor_flags != FocusgroupFlags::kNone) {
       switch (type) {
         case FocusgroupType::kGrid:
+          // Respect the FocusgroupGrid feature gate.
+          CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
+              element->GetExecutionContext()));
           // TODO(bebeaudr): Support grid focusgroups that aren't based on the
           // table layout objects.
           if (ancestor_flags & FocusgroupFlags::kGrid &&
@@ -263,7 +268,9 @@ Element* FocusgroupControllerUtils::AdjustElementOutOfUnrelatedFocusgroup(
 }
 
 bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
-  DCHECK(element);
+  CHECK(element);
+  CHECK(RuntimeEnabledFeatures::FocusgroupGridEnabled(
+      element->GetExecutionContext()));
   if (!element->IsFocusable())
     return false;
 

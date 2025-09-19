@@ -2447,10 +2447,18 @@
       base_feature: "none",
     },
     {
+      // https://open-ui.org/components/scoped-focusgroup.explainer/
       name: "Focusgroup",
       status: "experimental",
-      base_feature: "none",
       origin_trial_feature_name: "Focusgroup",
+    },
+    {
+      // 2-D grid navigation functionality of focusgroup is considered out of
+      // scope for the initial implementation.
+      // crbug.com/445992558
+      name: "FocusgroupGrid",
+      depends_on: ["Focusgroup"],
+      status: "experimental",
     },
     {
       name: "FontAccess",

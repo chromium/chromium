@@ -62,7 +62,9 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       has_inline = true;
     } else if (lowercase_token == "block") {
       has_block = true;
-    } else if (lowercase_token == "grid") {
+    } else if (lowercase_token == "grid" &&
+               RuntimeEnabledFeatures::FocusgroupGridEnabled(
+                   element->GetExecutionContext())) {
       has_grid = true;
     } else if (lowercase_token == "wrap") {
       has_wrap = true;
