@@ -183,7 +183,6 @@ class TestExpectations:
             self._expectations.append(test_expectations)
         if expectation_errors:
             raise ParseError(expectation_errors)
-        self._add_expectations_from_bot()
 
     def set_system_condition_tags(self, tags):
         for test_exps in self._expectations:
@@ -445,20 +444,6 @@ class TestExpectations:
             for test_name in tests
             if result in self.get_expectations(test_name).results
         }
-
-    def _add_expectations_from_bot(self):
-        # FIXME: With mode 'very-flaky' and 'maybe-flaky', this will show
-        # the expectations entry in the flakiness dashboard rows for each
-        # test to be whatever the bot thinks they should be. Is this a
-        # good thing?
-        bot_expectations = self._port.bot_expectations()
-        if bot_expectations:
-            raw_expectations = (
-                '# results: [ Failure Pass Crash Skip Timeout ]\n')
-            for test, results in bot_expectations.items():
-                raw_expectations += typ_types.Expectation(
-                    test=test, results=results).to_string() + '\n'
-            self.merge_raw_expectations(raw_expectations)
 
     def remove_expectations(self, path, exps) -> ExpectationsChange:
         """This method removes Expectation instances from an expectations file.
