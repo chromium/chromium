@@ -82,7 +82,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate,
-                                          AIMInputItemCellDelegate>
+                                          AIMInputItemCellDelegate,
+                                          UICollectionViewDelegate>
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
@@ -114,8 +115,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIView<GlowEffect>* _glowEffectView;
   /// The mic button for voice search.
   UIButton* _micButton;
-  /// The fade view for the carousel.
-  UIView* _carouselFadeView;
+  /// The fade view for the carousel's leading edge.
+  UIView* _leadingCarouselFadeView;
+  /// The fade view for the carousel's trailing edge.
+  UIView* _trailingCarouselFadeView;
   /// The carousel container.
   UIView* _carouselContainer;
   /// Wether or not the current tab is attachable.
@@ -238,6 +241,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
       forCellWithReuseIdentifier:kItemCellReuseIdentifier];
   _dataSource = [self createDataSource];
   _carouselView.dataSource = _dataSource;
+  _carouselView.delegate = self;
   [_carouselView.heightAnchor constraintEqualToConstant:kCarouselHeight]
       .active = YES;
   _carouselView.showsHorizontalScrollIndicator = NO;
@@ -248,31 +252,43 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   [_carouselContainer addSubview:_carouselView];
   AddSameConstraints(_carouselContainer, _carouselView);
 
-  _carouselFadeView = [[UIView alloc] init];
-  _carouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
-  _carouselFadeView.userInteractionEnabled = NO;
-  _carouselFadeView.hidden = YES;
-  [_carouselContainer addSubview:_carouselFadeView];
+  _trailingCarouselFadeView = [[UIView alloc] init];
+  _trailingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _trailingCarouselFadeView.userInteractionEnabled = NO;
+  _trailingCarouselFadeView.hidden = YES;
+  [_carouselContainer addSubview:_trailingCarouselFadeView];
 
-  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
-  gradientLayer.colors = @[
-    (id)[[UIColor colorNamed:kPrimaryBackgroundColor]
-        colorWithAlphaComponent:0.0]
-        .CGColor,
-    (id)[UIColor colorNamed:kPrimaryBackgroundColor].CGColor
-  ];
-  gradientLayer.startPoint = CGPointMake(0.0, 0.5);
-  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
-  [_carouselFadeView.layer insertSublayer:gradientLayer atIndex:0];
+  _leadingCarouselFadeView = [[UIView alloc] init];
+  _leadingCarouselFadeView.translatesAutoresizingMaskIntoConstraints = NO;
+  _leadingCarouselFadeView.userInteractionEnabled = NO;
+  _leadingCarouselFadeView.hidden = YES;
+  [_carouselContainer addSubview:_leadingCarouselFadeView];
+
+  [_trailingCarouselFadeView.layer
+      insertSublayer:[self createGradientLayerForLeading:NO]
+             atIndex:0];
+  [_leadingCarouselFadeView.layer
+      insertSublayer:[self createGradientLayerForLeading:YES]
+             atIndex:0];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_carouselFadeView.trailingAnchor
+    [_trailingCarouselFadeView.trailingAnchor
         constraintEqualToAnchor:_carouselContainer.trailingAnchor],
-    [_carouselFadeView.topAnchor
+    [_trailingCarouselFadeView.topAnchor
         constraintEqualToAnchor:_carouselContainer.topAnchor],
-    [_carouselFadeView.bottomAnchor
+    [_trailingCarouselFadeView.bottomAnchor
         constraintEqualToAnchor:_carouselContainer.bottomAnchor],
-    [_carouselFadeView.widthAnchor constraintEqualToConstant:kFadeViewWidth]
+    [_trailingCarouselFadeView.widthAnchor
+        constraintEqualToConstant:kFadeViewWidth],
+
+    [_leadingCarouselFadeView.leadingAnchor
+        constraintEqualToAnchor:_carouselContainer.leadingAnchor],
+    [_leadingCarouselFadeView.topAnchor
+        constraintEqualToAnchor:_carouselContainer.topAnchor],
+    [_leadingCarouselFadeView.bottomAnchor
+        constraintEqualToAnchor:_carouselContainer.bottomAnchor],
+    [_leadingCarouselFadeView.widthAnchor
+        constraintEqualToConstant:kFadeViewWidth],
   ]];
 
   // Action buttons
@@ -413,8 +429,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   // Update the gradient layer's frame.
-  _carouselFadeView.layer.sublayers.firstObject.frame =
-      _carouselFadeView.bounds;
+  _trailingCarouselFadeView.layer.sublayers.firstObject.frame =
+      _trailingCarouselFadeView.bounds;
+  _leadingCarouselFadeView.layer.sublayers.firstObject.frame =
+      _leadingCarouselFadeView.bounds;
   [self updateInputPlateLayout];
 }
 
@@ -541,15 +559,12 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 - (void)updateInputPlateLayout {
-  // Determine if the fade view should be visible. The fade is shown when the
-  // carousel's content is wider than its bounds, indicating scrollability.
-  BOOL shouldShowFade =
-      _carouselView.contentSize.width > _carouselView.bounds.size.width;
-  _carouselFadeView.hidden = !shouldShowFade;
-
   // Determine if the AIM button should be minimized.
   BOOL shouldMinimize = self.shouldMinimizeAimButton;
-  if (shouldShowFade) {
+
+  BOOL isCarouselScrollable =
+      _carouselView.contentSize.width > _carouselView.bounds.size.width;
+  if (isCarouselScrollable) {
     // If the carousel is scrollable, the button must be minimized.
     shouldMinimize = YES;
   } else {
@@ -579,9 +594,21 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                        }];
     }
   }
+
+  [self updateCarouselFade];
 }
 
 #pragma mark - Private
+
+- (void)updateCarouselFade {
+  CGFloat contentOffsetX = _carouselView.contentOffset.x;
+  CGFloat contentWidth = _carouselView.contentSize.width;
+  CGFloat boundsWidth = _carouselView.bounds.size.width;
+
+  _leadingCarouselFadeView.hidden = contentOffsetX <= 0;
+  _trailingCarouselFadeView.hidden =
+      contentOffsetX + boundsWidth >= contentWidth;
+}
 
 - (void)setAIModeEnabled:(BOOL)AIModeEnabled {
   if (AIModeEnabled == _AIModeEnabled) {
@@ -600,6 +627,31 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                withObject:nil
                afterDelay:kGlowEffectDuration];
   }
+}
+
+#pragma mark - UICollectionViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self updateCarouselFade];
+}
+
+- (CAGradientLayer*)createGradientLayerForLeading:(BOOL)isLeading {
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  UIColor* transparentColor = [[UIColor colorNamed:kPrimaryBackgroundColor]
+      colorWithAlphaComponent:0.0];
+  UIColor* solidColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+
+  if (isLeading) {
+    gradientLayer.colors =
+        @[ (id)solidColor.CGColor, (id)transparentColor.CGColor ];
+  } else {
+    gradientLayer.colors =
+        @[ (id)transparentColor.CGColor, (id)solidColor.CGColor ];
+  }
+
+  gradientLayer.startPoint = CGPointMake(0.0, 0.5);
+  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+  return gradientLayer;
 }
 
 - (UICollectionViewDiffableDataSource<NSString*, AIMInputItem*>*)
