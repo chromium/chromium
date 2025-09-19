@@ -8554,6 +8554,44 @@
             ]
         }
     ],
+    "DesktopNtpModulesTabGroups": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control_20250918",
+                    "disable_features": [
+                        "NtpTabGroupsModule",
+                        "NtpTabGroupsModuleZeroState"
+                    ]
+                },
+                {
+                    "name": "SteadyState_20250918",
+                    "enable_features": [
+                        "NtpTabGroupsModule"
+                    ],
+                    "disable_features": [
+                        "NtpTabGroupsModuleZeroState"
+                    ]
+                },
+                {
+                    "name": "ZeroState_20250918",
+                    "enable_features": [
+                        "NtpTabGroupsModule",
+                        "NtpTabGroupsModuleZeroState"
+                    ]
+                },
+                {
+                    "name": "Default_20250918"
+                }
+            ]
+        }
+    ],
     "DesktopNtpOneGoogleBarAsyncBarParts": [
         {
             "platforms": [
