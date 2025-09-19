@@ -1418,6 +1418,32 @@ TEST_P(PDFiumEngineSelectionTest, ClearTextSelection) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
+TEST_P(PDFiumEngineSelectionTest, StartExtendAndInvalidateSelectionByChar) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Cannot extend selection without starting a selection first.
+  engine->ExtendAndInvalidateSelectionByChar({1, 5});
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_FALSE(engine->IsSelecting());
+
+  engine->StartSelection({0, 21});
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_TRUE(engine->IsSelecting());
+
+  engine->ExtendAndInvalidateSelectionByChar({1, 5});
+  constexpr char kExpectedText[] = "e, world!\nHello";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+  EXPECT_TRUE(engine->IsSelecting());
+
+  // Start another selection while one is active. This should be a no-op.
+  engine->StartSelection({0, 0});
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+  EXPECT_TRUE(engine->IsSelecting());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineSelectionTest, testing::Bool());
 
 using PDFiumEngineDrawSelectionTest = PDFiumDrawSelectionTestBase;

@@ -65,6 +65,13 @@ class MockTestClient : public PdfCaretClient {
   const gfx::Rect& invalidated_rect() const { return invalidated_rect_; }
 
   // PdfCaretClient:
+  MOCK_METHOD(void, ClearTextSelection, (), (override));
+
+  MOCK_METHOD(void,
+              ExtendAndInvalidateSelectionByChar,
+              (const PageCharacterIndex& index),
+              (override));
+
   MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
 
   MOCK_METHOD(std::vector<gfx::Rect>,
@@ -76,12 +83,19 @@ class MockTestClient : public PdfCaretClient {
     invalidated_rect_ = rect;
   }
 
+  MOCK_METHOD(bool, IsSelecting, (), (const override));
+
   MOCK_METHOD(bool,
               IsSynthesizedNewline,
               (const PageCharacterIndex& index),
               (const override));
 
   MOCK_METHOD(bool, PageIndexInBounds, (int index), (const override));
+
+  MOCK_METHOD(void,
+              StartSelection,
+              (const PageCharacterIndex& index),
+              (override));
 
  private:
   gfx::Rect invalidated_rect_;

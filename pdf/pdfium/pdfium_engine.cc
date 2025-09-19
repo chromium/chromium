@@ -964,6 +964,20 @@ void PDFiumEngine::OnDocumentCanceled() {
   }
 }
 
+void PDFiumEngine::ClearTextSelection() {
+  SelectionChangeInvalidator selection_invalidator(this);
+  selection_.clear();
+}
+
+void PDFiumEngine::ExtendAndInvalidateSelectionByChar(
+    const PageCharacterIndex& index) {
+  CHECK(PageIndexInBounds(index.page_index));
+  CHECK_GT(GetCharCount(index.page_index), 0u);
+
+  SelectionChangeInvalidator selection_invalidator(this);
+  ExtendSelectionByChar(index);
+}
+
 uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
   CHECK(PageIndexInBounds(page_index));
   return base::checked_cast<uint32_t>(pages_[page_index]->GetCharCount());
@@ -989,6 +1003,10 @@ void PDFiumEngine::InvalidateRect(const gfx::Rect& rect) {
   client_->Invalidate(rect);
 }
 
+bool PDFiumEngine::IsSelecting() const {
+  return !selection_.empty();
+}
+
 bool PDFiumEngine::IsSynthesizedNewline(const PageCharacterIndex& index) const {
   CHECK(PageIndexInBounds(index.page_index));
   PDFiumPage* page = pages_[index.page_index].get();
@@ -1004,6 +1022,18 @@ bool PDFiumEngine::IsSynthesizedNewline(const PageCharacterIndex& index) const {
 
 bool PDFiumEngine::PageIndexInBounds(int index) const {
   return index >= 0 && index < static_cast<int>(pages_.size());
+}
+
+void PDFiumEngine::StartSelection(const PageCharacterIndex& index) {
+  CHECK(PageIndexInBounds(index.page_index));
+  CHECK_GT(GetCharCount(index.page_index), 0u);
+
+  if (!selection_.empty()) {
+    return;
+  }
+
+  selection_.push_back(
+      PDFiumRange(pages_[index.page_index].get(), index.char_index, 0));
 }
 
 void PDFiumEngine::FinishLoadingDocument() {
@@ -1160,11 +1190,6 @@ void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
 
   // TODO(crbug.com/427778119): Set caret blink interval.
   caret_->SetVisibility(enabled);
-}
-
-void PDFiumEngine::ClearTextSelection() {
-  SelectionChangeInvalidator selection_invalidator(this);
-  selection_.clear();
 }
 
 void PDFiumEngine::ContinueFind(bool case_sensitive) {
@@ -1907,13 +1932,16 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   CHECK(PageIndexInBounds(point_data.page_index));
   CHECK_GE(point_data.char_index, 0);
 
-  const uint32_t page_index = point_data.page_index;
-  const int char_index = GetCharIndexBasedOnPointData(point_data);
+  const uint32_t char_index = GetCharIndexBasedOnPointData(point_data);
+  return ExtendSelectionByChar(
+      {static_cast<uint32_t>(point_data.page_index), char_index});
+}
 
+bool PDFiumEngine::ExtendSelectionByChar(const PageCharacterIndex& index) {
   // Check if the user has decreased their selection area and we need to remove
   // pages from `selection_`.
   for (size_t i = 0; i < selection_.size(); ++i) {
-    if (selection_[i].page_index() == page_index) {
+    if (selection_[i].page_index() == index.page_index) {
       // There should be no other pages after this.
       selection_.erase(selection_.begin() + i + 1, selection_.end());
       break;
@@ -1925,19 +1953,19 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
   const uint32_t last_page_index = selection_.back().page_index();
   const int last_char_index = selection_.back().char_index();
-  if (last_page_index == page_index) {
+  if (last_page_index == index.page_index) {
     // Selecting within a page.
-    int count = char_index - last_char_index;
+    int count = index.char_index - last_char_index;
     if (count >= 0) {
       // Selecting forward.
       selection_.back().SetCharCount(count);
     } else {
       // CreateBackwards() expects a positive count, so flip the negative value.
       count = -count;
-      selection_.back() = PDFiumRange::CreateBackwards(pages_[page_index].get(),
-                                                       char_index, count);
+      selection_.back() = PDFiumRange::CreateBackwards(
+          pages_[index.page_index].get(), index.char_index, count);
     }
-  } else if (last_page_index < page_index) {
+  } else if (last_page_index < index.page_index) {
     // Selecting into the next page.
 
     // Save the current last selection for use below.
@@ -1947,7 +1975,7 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page one but we only get mousemove over page three, we want page two.
-    for (uint32_t i = last_page_index + 1; i < page_index; ++i) {
+    for (uint32_t i = last_page_index + 1; i < index.page_index; ++i) {
       if (pages_[i]->GetCharCount()) {
         selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
       }
@@ -1955,8 +1983,9 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
     int count = pages_[last_page_index]->GetCharCount();
     selection_[last_selection_index].SetCharCount(count - last_char_index);
-    selection_.push_back(PDFiumRange(pages_[page_index].get(), /*char_index=*/0,
-                                     /*char_count=*/char_index));
+    selection_.push_back(PDFiumRange(pages_[index.page_index].get(),
+                                     /*char_index=*/0,
+                                     /*char_count=*/index.char_index));
   } else {
     // Selecting into the previous page.
     // `last_page_index` has already been adjusted previously to either include
@@ -1968,15 +1997,16 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
 
     // First make sure that there are no gaps in selection, i.e. if mousedown on
     // page three but we only get mousemove over page one, we want page two.
-    for (uint32_t i = last_page_index - 1; i > page_index; --i) {
+    for (uint32_t i = last_page_index - 1; i > index.page_index; --i) {
       if (pages_[i]->GetCharCount()) {
         selection_.push_back(PDFiumRange::AllTextOnPage(pages_[i].get()));
       }
     }
 
-    int char_count = pages_[page_index]->GetCharCount() - char_index;
-    selection_.push_back(PDFiumRange::CreateBackwards(pages_[page_index].get(),
-                                                      char_index, char_count));
+    int char_count =
+        pages_[index.page_index]->GetCharCount() - index.char_index;
+    selection_.push_back(PDFiumRange::CreateBackwards(
+        pages_[index.page_index].get(), index.char_index, char_count));
   }
 
   return true;

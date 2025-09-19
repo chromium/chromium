@@ -276,8 +276,6 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   virtual void SelectAll();
 
-  virtual void ClearTextSelection();
-
   // Gets the list of DocumentAttachmentInfo from the document.
   virtual const std::vector<DocumentAttachmentInfo>&
   GetDocumentAttachmentInfoList() const;
@@ -508,12 +506,17 @@ class PDFiumEngine : public DocumentLoader::Client,
   void OnDocumentCanceled() override;
 
   // PdfCaretClient:
+  void ClearTextSelection() override;
+  void ExtendAndInvalidateSelectionByChar(
+      const PageCharacterIndex& index) override;
   uint32_t GetCharCount(uint32_t page_index) const override;
   std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const override;
   void InvalidateRect(const gfx::Rect& rect) override;
+  bool IsSelecting() const override;
   bool IsSynthesizedNewline(const PageCharacterIndex& index) const override;
   bool PageIndexInBounds(int index) const override;
+  void StartSelection(const PageCharacterIndex& index) override;
 
   // `PdfAnnotationAgent::Container`:
   bool FindAndHighlightTextFragments(
@@ -822,6 +825,9 @@ class PDFiumEngine : public DocumentLoader::Client,
                                             int form_type) const;
 
   bool ExtendSelection(const PointData& point_data);
+
+  // Returns whether the text selection was extended to `index`.
+  bool ExtendSelectionByChar(const PageCharacterIndex& index);
 
   std::vector<uint8_t> PrintPagesAsRasterPdf(
       base::span<const int> page_indices,

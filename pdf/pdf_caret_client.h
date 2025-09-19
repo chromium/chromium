@@ -19,6 +19,14 @@ class PdfCaretClient {
  public:
   virtual ~PdfCaretClient() = default;
 
+  // Clears the current text selection.
+  virtual void ClearTextSelection() {}
+
+  // Extends the text selection to `index` and invalidates the updated
+  // selection area. Does nothing if not yet text selecting.
+  virtual void ExtendAndInvalidateSelectionByChar(
+      const PageCharacterIndex& index) {}
+
   // Returns the char count of the given page. `page_index` must be a valid page
   // index, otherwise crashes.
   virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
@@ -34,12 +42,19 @@ class PdfCaretClient {
   // Notifies the client to invalidate `rect` for the caret.
   virtual void InvalidateRect(const gfx::Rect& rect) {}
 
+  // Returns whether the client is selecting text.
+  virtual bool IsSelecting() const = 0;
+
   // Returns whether the char at `index` is a synthesized newline (i.e. '\r' or
   // '\n'). `index` must be a valid char on a page, otherwise crashes.
   virtual bool IsSynthesizedNewline(const PageCharacterIndex& index) const = 0;
 
   // Returns whether `index` is a valid 0-based page index.
   virtual bool PageIndexInBounds(int index) const = 0;
+
+  // Starts a new text selection at `index` without selecting it. Does nothing
+  // if already selecting text.
+  virtual void StartSelection(const PageCharacterIndex& index) {}
 };
 
 }  // namespace chrome_pdf
