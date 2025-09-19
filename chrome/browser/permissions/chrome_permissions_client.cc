@@ -391,7 +391,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    base::OnceCallback<void()> hats_shown_callback) {
+    base::OnceCallback<void()> hats_shown_callback,
+    PromptOptions prompt_options) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::optional<GURL> recorded_gurl =
@@ -410,7 +411,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
               GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
-          recorded_gurl, pepc_prompt_position, initial_permission_status);
+          recorded_gurl, pepc_prompt_position, initial_permission_status,
+          prompt_options);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -547,7 +549,8 @@ void ChromePermissionsClient::OnPromptResolved(
       prompt_disposition, prompt_disposition_reason, gesture_type,
       std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().GetURL(),
-      pepc_prompt_position, initial_permission_status, base::DoNothing());
+      pepc_prompt_position, initial_permission_status, base::DoNothing(),
+      request->prompt_options());
 }
 
 std::optional<bool>

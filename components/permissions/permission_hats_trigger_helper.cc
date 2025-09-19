@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
@@ -26,6 +27,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/pref_names.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -48,6 +50,13 @@ bool StringMatchesFilter(const std::string& string, const std::string& filter) {
              SplitCsvString(filter), [string](std::string_view current_filter) {
                return base::EqualsCaseInsensitiveASCII(string, current_filter);
              });
+}
+
+std::string PromptOptionsToString(PromptOptions prompt_options) {
+  if (auto* v = std::get_if<GeolocationPromptOptions>(&prompt_options)) {
+    return v->selected_precise ? "precise" : "approximate";
+  }
+  return std::string();
 }
 
 std::map<std::string, std::pair<std::string, std::string>>
@@ -100,7 +109,9 @@ GetKeyToValueFilterPairMap(
        {content_settings::ContentSettingToString(
             prompt_parameters.initial_permission_status),
         feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
-            .Get()}}};
+            .Get()}},
+      {kPermissionPromptSurveyPromptOptionsKey,
+       {PromptOptionsToString(prompt_parameters.prompt_options), ""}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -178,7 +189,8 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
     std::optional<GURL> gurl,
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
-    ContentSetting initial_permission_status)
+    ContentSetting initial_permission_status,
+    PromptOptions prompt_options)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -190,7 +202,8 @@ PermissionHatsTriggerHelper::PromptParametersForHats::PromptParametersForHats(
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
       url(gurl.has_value() ? gurl->spec() : ""),
       pepc_prompt_position(pepc_prompt_position),
-      initial_permission_status(initial_permission_status) {}
+      initial_permission_status(initial_permission_status),
+      prompt_options(prompt_options) {}
 
 PermissionHatsTriggerHelper::SurveyParametersForHats::SurveyParametersForHats(
     double trigger_probability,
@@ -240,6 +253,7 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionPromptSurveyPepcPromptPositionKey,
       kPermissionPromptSurveyInitialPermissionStatusKey,
       kPermissionPromptSurveyUrlKey,
+      kPermissionPromptSurveyPromptOptionsKey,
   };
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);

@@ -90,7 +90,8 @@ void PermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position,
     ContentSetting initial_permission_status,
-    base::OnceCallback<void()> hats_shown_callback) {}
+    base::OnceCallback<void()> hats_shown_callback,
+    PromptOptions prompt_options) {}
 
 void PermissionsClient::OnPromptResolved(
     const PermissionRequest* request,

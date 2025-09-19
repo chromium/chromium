@@ -170,7 +170,8 @@ class PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      base::OnceCallback<void()> hats_shown_callback_);
+      base::OnceCallback<void()> hats_shown_callback_,
+      PromptOptions prompt_options);
 
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(

@@ -90,6 +90,11 @@ extern const char kPermissionPromptSurveyPepcPromptPositionKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionPromptSurveyInitialPermissionStatusKey[];
 
+// The key in `Product Specific Strings Data` under which the prompt options
+// (options selected by the user on the prompt) are recorded.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPromptOptionsKey[];
+
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 

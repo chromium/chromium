@@ -15,6 +15,7 @@
 #include "components/messages/android/message_enums.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "constants.h"
 
 namespace user_prefs {
@@ -65,7 +66,8 @@ class PermissionHatsTriggerHelper {
         std::optional<
             permissions::feature_params::PermissionElementPromptPosition>
             pepc_prompt_position,
-        ContentSetting initial_permission_status);
+        ContentSetting initial_permission_status,
+        PromptOptions prompt_options);
     PromptParametersForHats(const PromptParametersForHats& other);
     ~PromptParametersForHats();
 
@@ -82,6 +84,7 @@ class PermissionHatsTriggerHelper {
     std::optional<permissions::feature_params::PermissionElementPromptPosition>
         pepc_prompt_position;
     ContentSetting initial_permission_status;
+    PromptOptions prompt_options;
   };
 
   struct SurveyParametersForHats {

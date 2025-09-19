@@ -19,6 +19,7 @@
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 
@@ -188,6 +189,9 @@ class PermissionRequest {
 
   // Used to store the prompt options for the permission request.
   void SetPromptOptions(PromptOptions prompt_options);
+
+  // Return stored prompt options.
+  PromptOptions prompt_options() const { return data_->prompt_options; }
 
   virtual const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()
       const;

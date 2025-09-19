@@ -254,7 +254,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
           permissions::kPermissionPromptSurveyUrlKey,
           permissions::kPermissionPromptSurveyPepcPromptPositionKey,
-          permissions::kPermissionPromptSurveyInitialPermissionStatusKey});
+          permissions::kPermissionPromptSurveyInitialPermissionStatusKey,
+          permissions::kPermissionPromptSurveyPromptOptionsKey});
 
   // Privacy sandbox always on sentiment survey
   survey_configs.emplace_back(
