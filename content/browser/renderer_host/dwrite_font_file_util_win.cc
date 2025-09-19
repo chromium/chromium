@@ -126,18 +126,11 @@ HRESULT AddFilesForFont(IDWriteFont* font,
     return hr;
   }
 
-  std::u16string file_path_folded =
-      base::i18n::FoldCase(base::WideToUTF16(file_path));
-
-  if (!file_path_folded.size())
+  if (!file_path.size()) {
     return kErrorFontFileUtilEmptyFilePath;
-
-  if (!base::StartsWith(file_path_folded, windows_fonts_path,
-                        base::CompareCase::SENSITIVE)) {
-    path_set->insert(file_path);
-  } else {
-    path_set->insert(file_path);
   }
+
+  path_set->insert(file_path);
   return S_OK;
 }
 
