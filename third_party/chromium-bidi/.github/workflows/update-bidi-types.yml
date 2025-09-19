@@ -104,9 +104,44 @@ jobs:
           name: web-bluetooth-cddl
           path: web-bluetooth/web-bluetooth.cddl
 
+  build_speculation_cddl:
+    name: Build Speculation CDDL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          cargo install cddlconv@0.1.7;
+          npm install parse5
+      - name: Check out the main spec repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
+          ref: ${{ github.event.inputs.source_ref || 'main' }}
+          path: webdriver-bidi
+      - name: Check out WICG/nav-speculation spec repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: WICG/nav-speculation
+          ref: main
+          path: nav-speculation
+      - name: Generate WebDriverBidi CDDL for nav-speculation
+        run: ../webdriver-bidi/scripts/cddl/generate.js ./prefetch.bs && mv all.cddl nav-speculation.cddl
+        working-directory: nav-speculation
+      - name: Upload WebDriverBidi CDDL for nav-speculation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: nav-speculation-cddl
+          path: nav-speculation/nav-speculation.cddl
+
   pr:
     name: Send PR
-    needs: [build_main_spec, build_permissions, build_bluetooth_cddl]
+    needs:
+      [
+        build_main_spec,
+        build_permissions,
+        build_bluetooth_cddl,
+        build_speculation_cddl,
+      ]
     # Run even if some CDDL's are not built.
     if: always()
     runs-on: ubuntu-latest
@@ -150,6 +185,12 @@ jobs:
           name: web-bluetooth-cddl
         # Tolerate missing files.
         continue-on-error: true
+      - name: Download WebDriverBidi CDDL for nav-speculation
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: nav-speculation-cddl
+        # Tolerate missing files.
+        continue-on-error: true
       - name: Generate TypeScript types for the main spec
         run: node tools/generate-bidi-types.mjs --cddl-file all.cddl
         # Tolerate errors during generating types.
@@ -160,6 +201,10 @@ jobs:
         continue-on-error: true
       - name: Generate TypeScript types for web-bluetooth spec
         run: node tools/generate-bidi-types.mjs --cddl-file web-bluetooth.cddl --ts-file src/protocol/generated/webdriver-bidi-bluetooth.ts --zod-file src/protocol-parser/generated/webdriver-bidi-bluetooth.ts
+        # Tolerate errors during generating types.
+        continue-on-error: true
+      - name: Generate TypeScript types for nav-speculation spec
+        run: node tools/generate-bidi-types.mjs --cddl-file nav-speculation.cddl --ts-file src/protocol/generated/webdriver-bidi-nav-speculation.ts --zod-file src/protocol-parser/generated/webdriver-bidi-nav-speculation.ts
         # Tolerate errors during generating types.
         continue-on-error: true
       - run: git diff
