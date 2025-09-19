@@ -41,7 +41,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -64,7 +63,6 @@ import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -238,8 +236,6 @@ public class MostVisitedTilesTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "crbug.com/443045292")
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET)
     public void keyboardNavigation_highlightingPreviousTileUpdatesUrlBarText()
             throws InterruptedException {
         // Skip past the 'what-you-typed' suggestion.
