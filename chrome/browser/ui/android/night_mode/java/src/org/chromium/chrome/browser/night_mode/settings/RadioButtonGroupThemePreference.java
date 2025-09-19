@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,7 @@ import java.util.Collections;
  */
 @NullMarked
 public class RadioButtonGroupThemePreference extends Preference
-        implements RadioGroup.OnCheckedChangeListener {
+        implements RadioGroup.OnCheckedChangeListener, CustomStyledContainer {
     private @ThemeType int mSetting;
     private @MonotonicNonNull RadioButtonWithDescription mSettingRadioButton;
     private @MonotonicNonNull RadioButtonWithDescriptionLayout mGroup;
@@ -162,5 +163,10 @@ public class RadioButtonGroupThemePreference extends Preference
 
     public @Nullable LinearLayout getCheckboxContainerForTesting() {
         return mCheckboxContainer;
+    }
+
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 }

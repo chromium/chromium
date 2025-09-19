@@ -21,6 +21,7 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /** A Chrome switch preference that supports managed preferences. */
 @NullMarked

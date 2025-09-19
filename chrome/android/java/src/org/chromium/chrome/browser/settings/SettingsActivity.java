@@ -292,7 +292,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             SettingsItemBackgroundDecoration itemDecoration =
                                     mItemDecorations.get(fragment);
                             if (itemDecoration == null) {
-                                itemDecoration = new SettingsItemBackgroundDecoration();
+                                itemDecoration = new SettingsItemBackgroundDecoration(controller);
                                 mItemDecorations.put(fragment, itemDecoration);
                                 fragment.getListView().addItemDecoration(itemDecoration);
                             }

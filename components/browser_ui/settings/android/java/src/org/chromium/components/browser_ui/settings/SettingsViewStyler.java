@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** A utility class for applying styles to views in settings. */
 @NullMarked
@@ -70,5 +74,40 @@ class SettingsViewStyler {
                     bottomRadius, bottomRadius
                 });
         return drawable;
+    }
+
+    /**
+     * Traverses the view hierarchy of a root view and applies styling to designated views.
+     *
+     * @param rootView The root view to traverse for styling.
+     * @param controller The {@link SettingsStylingController} to use for generating styles.
+     */
+    static void styleChildViews(View rootView, SettingsStylingController controller) {
+        List<View> views = new ArrayList<>();
+        recursivelyFindStyledViews(rootView, views);
+
+        if (views.isEmpty()) return;
+
+        ArrayList<SettingsContainerStyle> styles = controller.generateViewStyles(views);
+
+        for (int i = 0; i < views.size(); i++) {
+            applyBackgroundStyle(views.get(i), styles.get(i));
+            applyMargins(views.get(i), styles.get(i));
+        }
+    }
+
+    private static void recursivelyFindStyledViews(View current, List<View> list) {
+        // We are looking for views that implement CustomStyledContainer, which are the
+        // user-perceptible items in a preference that need to be individually styled.
+        if (current instanceof CustomStyledContainer && current.getVisibility() == View.VISIBLE) {
+            list.add(current);
+            return;
+        }
+
+        if (current instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                recursivelyFindStyledViews(group.getChildAt(i), list);
+            }
+        }
     }
 }

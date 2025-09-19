@@ -22,6 +22,7 @@ import java.util.ArrayList;
  */
 @NullMarked
 public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoration {
+    private final SettingsStylingController mStylingController;
     private @Nullable ArrayList<SettingsContainerStyle> mPreferenceStyles;
 
     /**
@@ -31,8 +32,13 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      */
     private boolean mUpdateBackgrounds;
 
-    /** Constructor for the item decoration. */
-    public SettingsItemBackgroundDecoration() {
+    /**
+     * Constructor for the item decoration.
+     *
+     * @param stylingController The {@link SettingsStylingController} for styling the child views.
+     */
+    public SettingsItemBackgroundDecoration(SettingsStylingController stylingController) {
+        mStylingController = stylingController;
         mUpdateBackgrounds = true;
     }
 
@@ -77,6 +83,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
                 continue;
             }
             SettingsViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
+            SettingsViewStyler.styleChildViews(childView, mStylingController);
         }
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);

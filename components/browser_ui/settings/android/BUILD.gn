@@ -7,7 +7,6 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
-    "java/src/org/chromium/components/browser_ui/settings/CustomStyledContainer.java",
     "java/src/org/chromium/components/browser_ui/settings/EmbeddableSettingsPage.java",
     "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
@@ -141,6 +140,7 @@ android_library("unit_device_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",

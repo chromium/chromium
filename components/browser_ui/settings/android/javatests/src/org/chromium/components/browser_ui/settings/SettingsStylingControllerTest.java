@@ -8,11 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_MARGIN;
 import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
+import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_MARGIN;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
@@ -25,10 +26,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.settings.CustomStyledContainer.BackgroundStyle;
 import org.chromium.components.browser_ui.settings.test.R;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.BackgroundStyle;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link SettingsStylingController}. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -231,6 +234,66 @@ public class SettingsStylingControllerTest {
                 bottomAndHorizontalMarginsPreferenceStyle.getHorizontalMargin());
     }
 
+    @Test
+    @SmallTest
+    public void testGenerateViewStyles_Layout() {
+        List<View> views = List.of(new View(mContext), new View(mContext), new View(mContext));
+        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+
+        // Top view style
+        SettingsContainerStyle topStyle = viewStyles.get(0);
+        assertEquals(mDefaultRadius, topStyle.getTopRadius(), 0);
+        assertEquals(mInnerRadius, topStyle.getBottomRadius(), 0);
+
+        // Middle view style
+        SettingsContainerStyle middleStyle = viewStyles.get(1);
+        assertEquals(mInnerRadius, middleStyle.getTopRadius(), 0);
+        assertEquals(mInnerRadius, middleStyle.getBottomRadius(), 0);
+
+        // Bottom view style
+        SettingsContainerStyle bottomStyle = viewStyles.get(2);
+        assertEquals(mInnerRadius, bottomStyle.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, bottomStyle.getBottomRadius(), 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testGenerateViewStyles_Standalone() {
+        List<View> views =
+                List.of(
+                        new CustomView(mContext, BackgroundStyle.NONE),
+                        new View(mContext),
+                        new CustomView(mContext, BackgroundStyle.NONE));
+        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+
+        SettingsContainerStyle standaloneStyle = viewStyles.get(1);
+        assertEquals(mDefaultRadius, standaloneStyle.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, standaloneStyle.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin + mSectionBottomMargin, standaloneStyle.getBottomMargin());
+    }
+
+    @Test
+    @SmallTest
+    public void testGenerateViewStyles_CustomNone() {
+        List<View> views = List.of(new CustomView(mContext, BackgroundStyle.NONE));
+        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+
+        assertSame(SettingsContainerStyle.EMPTY, viewStyles.get(0));
+    }
+
+    @Test
+    @SmallTest
+    public void testGenerateViewStyles_CustomCard() {
+        List<View> views = List.of(new CustomView(mContext, BackgroundStyle.CARD));
+        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+
+        SettingsContainerStyle cardStyle = viewStyles.get(0);
+        assertEquals(mDefaultRadius, cardStyle.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, cardStyle.getBottomRadius(), 0);
+        assertEquals(mVerticalMargin, cardStyle.getTopMargin());
+        assertEquals(mVerticalMargin + mSectionBottomMargin, cardStyle.getBottomMargin());
+    }
+
     private ChromeBasePreference createCustomPreference(
             @BackgroundStyle int backgroundStyle,
             int topMargin,
@@ -318,5 +381,19 @@ public class SettingsStylingControllerTest {
         assertNotEquals(
                 "Preference '" + key + "' not found in visible preferences.", -1, preferenceIndex);
         return mPreferenceStyles.get(preferenceIndex);
+    }
+
+    private static class CustomView extends View implements CustomStyledContainer {
+        private final @BackgroundStyle int mStyle;
+
+        CustomView(Context context, @BackgroundStyle int style) {
+            super(context);
+            mStyle = style;
+        }
+
+        @Override
+        public int getCustomBackgroundStyle() {
+            return mStyle;
+        }
     }
 }

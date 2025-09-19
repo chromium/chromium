@@ -17,6 +17,7 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /**
  * A preference that supports some Chrome-specific customizations:

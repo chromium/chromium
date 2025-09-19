@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
 import androidx.annotation.IntDef;
 
@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 /** An interface for container that should have custom background styling applied to them. */
 @NullMarked
 public interface CustomStyledContainer {
+    // TODO (crbug.com/433576895): Rename to ContainmentItem
     int DEFAULT_MARGIN = -1;
     int DEFAULT_COLOR = -1;
     float DEFAULT_RADIUS = -1f;

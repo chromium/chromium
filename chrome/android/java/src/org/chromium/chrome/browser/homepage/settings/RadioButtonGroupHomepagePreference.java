@@ -19,13 +19,13 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.settings.CustomStyledContainer;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText.OnTextChangeListener;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

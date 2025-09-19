@@ -16,8 +16,8 @@ import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.components.browser_ui.settings.CustomStyledContainer;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /** Fragment that allows the user to configure toolbar shorcut preferences. */
 @NullMarked

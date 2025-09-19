@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -61,7 +62,8 @@ import java.util.List;
  * </p>
  */
 @NullMarked
-public class RadioButtonWithDescription extends RelativeLayout implements OnClickListener {
+public class RadioButtonWithDescription extends RelativeLayout
+        implements OnClickListener, CustomStyledContainer {
     /** Interface to listen to radio button changes. */
     public interface ButtonCheckedStateChangedListener {
         /**

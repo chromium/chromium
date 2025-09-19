@@ -4,9 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
-import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_MARGIN;
-import static org.chromium.components.browser_ui.settings.CustomStyledContainer.DEFAULT_RADIUS;
+import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_RADIUS;
 
 import org.chromium.build.annotations.NullMarked;
 
