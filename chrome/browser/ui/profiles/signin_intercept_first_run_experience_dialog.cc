@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -92,7 +93,10 @@ class SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     InterceptTurnSyncOnHelperDelegate(
         base::WeakPtr<SigninInterceptFirstRunExperienceDialog> dialog)
-    : dialog_(std::move(dialog)), browser_(dialog_->browser_->AsWeakPtr()) {}
+    : dialog_(std::move(dialog)), browser_(dialog_->browser_->AsWeakPtr()) {
+  CHECK(!base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos));
+}
 SigninInterceptFirstRunExperienceDialog::InterceptTurnSyncOnHelperDelegate::
     ~InterceptTurnSyncOnHelperDelegate() = default;
 
@@ -284,9 +288,24 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
     case Step::kStart:
       NOTREACHED();
     case Step::kTurnOnSync:
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        // TODO(crbug.com/418143300): Until we implement the proper flow for the
+        // History Sync optin screen, skip entirely the replaced steps
+        // Step::kTurnOnSync and Step::kSyncConfirmation.
+        DoNextStep(Step::kTurnOnSync, Step::kWaitForSyncedTheme);
+        return;
+      }
       DoTurnOnSync();
       return;
     case Step::kSyncConfirmation:
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        // TODO(crbug.com/418143300): Until we implement the proper flow for the
+        // History Sync optin screen, skip entirely the replaced steps
+        // Step::kTurnOnSync and Step::kSyncConfirmation.
+        NOTREACHED();
+      }
       DoSyncConfirmation();
       return;
     case Step::kWaitForSyncedTheme:
