@@ -68,7 +68,7 @@ using signin::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 42;
+constexpr int kCurrentVersionNumber = 43;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 40;
@@ -181,6 +181,7 @@ enum LoginDatabaseTableColumns {
   COLUMN_KEYCHAIN_IDENTIFIER,
   COLUMN_SENDER_PROFILE_IMAGE_URL,
   COLUMN_DATE_LAST_FILLED,
+  COLUMN_ACTOR_LOGIN_APPROVED,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -290,6 +291,7 @@ void BindAddStatement(const PasswordForm& form,
   s->BindBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED,
               form.sharing_notification_displayed);
   s->BindTime(COLUMN_DATE_LAST_FILLED, form.date_last_filled);
+  s->BindBool(COLUMN_ACTOR_LOGIN_APPROVED, form.actor_login_approved);
 }
 
 // Output parameter is the first one because of binding order.
@@ -601,7 +603,12 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("date_last_filled", "INTEGER NOT NULL DEFAULT 0");
   SealVersion(builders, /*expected_version=*/42u);
 
-  static_assert(kCurrentVersionNumber == 42, "Seal the recent version");
+  // Version 43. Introduce actor_login_approved column.
+  builders.logins->AddColumn("actor_login_approved",
+                             "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/43u);
+
+  static_assert(kCurrentVersionNumber == 43, "Seal the recent version");
   CHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -1521,6 +1528,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
                                  ? form.sender_profile_image_url.spec()
                                  : "");
   s.BindTime(next_param++, form.date_last_filled);
+  s.BindBool(next_param++, form.actor_login_approved);
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1771,6 +1779,7 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.date_received = s.ColumnTime(COLUMN_DATE_RECEIVED);
   form.sharing_notification_displayed =
       s.ColumnBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED);
+  form.actor_login_approved = s.ColumnBool(COLUMN_ACTOR_LOGIN_APPROVED);
 
   CHECK(form.primary_key.has_value());
   form.password_issues = GetPasswordIssues(form.primary_key.value());

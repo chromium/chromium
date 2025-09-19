@@ -511,6 +511,9 @@ struct PasswordForm {
   // from another user via the password sharing feature.
   bool sharing_notification_displayed = false;
 
+  // Whether the actor login was approved.
+  bool actor_login_approved = false;
+
   // Returns true if this form is considered to be a login form, i.e. it has
   // a username field, a password field and no new password field. It's based
   // on heuristics and may be inaccurate.

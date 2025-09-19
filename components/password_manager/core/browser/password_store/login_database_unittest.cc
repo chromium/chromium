@@ -134,6 +134,7 @@ PasswordForm GenerateExamplePasswordForm() {
   form.date_last_filled = base::Time::Now();
   form.date_received = base::Time::Now() - base::Hours(1);
   form.sharing_notification_displayed = true;
+  form.actor_login_approved = true;
   return form;
 }
 
@@ -1462,6 +1463,7 @@ TEST_P(LoginDatabaseTest, UpdateLogin) {
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(
       GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
+  form.actor_login_approved = true;
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);

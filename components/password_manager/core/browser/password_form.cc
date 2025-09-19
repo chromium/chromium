@@ -236,6 +236,7 @@ void PasswordFormToJSON(const PasswordForm& form, base::Value::Dict& target) {
   target.Set("date_received", base::TimeToValue(form.date_received));
   target.Set("sharing_notification_displayed",
              form.sharing_notification_displayed);
+  target.Set("actor_login_approved", form.actor_login_approved);
 }
 
 // Returns the note with a specified |unique_display_name|.
