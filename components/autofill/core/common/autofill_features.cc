@@ -522,11 +522,10 @@ BASE_FEATURE_PARAM(bool,
 // special cases. See
 // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
 BASE_FEATURE_PARAM(bool,
-    kAutofillModelPredictionsSmallFormRules,
-    &kAutofillModelPredictions,
-    "small_form_rules",
-    false);
-
+                   kAutofillModelPredictionsSmallFormRules,
+                   &kAutofillModelPredictions,
+                   "small_form_rules",
+                   false);
 
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -821,6 +820,11 @@ BASE_FEATURE(kAutofillThirdPartyModeContentProvider,
 // Defines if the "Your Saved Info" page is eligible to be shown in Chrome
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the FieldClassificationModelHandler loads models with priority
+// USER_VISIBLE instead of BEST_EFFORT.
+BASE_FEATURE(kAutofillLoadModelWithHigherPriority,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace test {
 

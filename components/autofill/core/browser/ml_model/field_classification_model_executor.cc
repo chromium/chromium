@@ -8,13 +8,23 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/task/task_traits.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
 namespace autofill {
 
 FieldClassificationModelExecutor::FieldClassificationModelExecutor() = default;
 FieldClassificationModelExecutor::~FieldClassificationModelExecutor() = default;
+
+base::TaskPriority
+FieldClassificationModelExecutor::GetModelLoadingTaskPriority() const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillLoadModelWithHigherPriority)
+             ? base::TaskPriority::USER_VISIBLE
+             : base::TaskPriority::BEST_EFFORT;
+}
 
 bool FieldClassificationModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
