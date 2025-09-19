@@ -231,10 +231,10 @@ class GlicPinnedTabManager::UpdateThrottler {
 
 GlicPinnedTabManager::GlicPinnedTabManager(
     Profile* profile,
-    GlicWindowController* window_controller,
+    GlicInstance::UIDelegate* ui_delegate,
     GlicMetrics* metrics)
     : profile_(profile),
-      window_controller_(window_controller),
+      ui_delegate_(ui_delegate),
       metrics_(metrics),
       max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
@@ -498,7 +498,7 @@ bool GlicPinnedTabManager::IsValidForSharing(
 }
 
 bool GlicPinnedTabManager::IsGlicWindowShowing() {
-  return window_controller_->IsShowing();
+  return ui_delegate_->IsShowing();
 }
 
 }  // namespace glic

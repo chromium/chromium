@@ -26,7 +26,7 @@ class GlicMetrics;
 class GlicPinnedTabManager : public TabStripModelObserver {
  public:
   explicit GlicPinnedTabManager(Profile* profile,
-                                GlicWindowController* window_controller,
+                                GlicInstance::UIDelegate* ui_delegate,
                                 GlicMetrics* metrics);
   ~GlicPinnedTabManager() override;
 
@@ -163,7 +163,7 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // Enables searching for pin_candidates.
   raw_ptr<Profile> profile_;
 
-  raw_ptr<GlicWindowController> window_controller_;
+  raw_ptr<GlicInstance::UIDelegate> ui_delegate_;
 
   // Enables providing pin-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
