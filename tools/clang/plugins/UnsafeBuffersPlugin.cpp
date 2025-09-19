@@ -28,7 +28,7 @@ llvm::StringMap<Disposition> g_checked_files_cache;
 
 class UnsafeBuffersConfig {
  public:
-  bool LoadFromPath(std::string_view path) {
+  bool LoadFromPath(std::string path) {
     // Parse the contents of the path suppression file.
     //
     // The file format is as follows:
@@ -78,6 +78,7 @@ class UnsafeBuffersConfig {
       return false;
     }
 
+    path = llvm::sys::path::convert_to_slash(path);
     path_to_source_root_.assign(path.begin(), path.end());
     llvm::sys::path::remove_filename(path_to_source_root_);
     if (!path_to_source_root_.empty() && path_to_source_root_.back() != '/') {
