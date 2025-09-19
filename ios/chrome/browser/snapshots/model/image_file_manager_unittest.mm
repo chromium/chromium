@@ -159,9 +159,9 @@ class LegacyImageFileManagerTest : public PlatformTest {
                               int* red,
                               int* green,
                               int* blue) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
     CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    int byteOrder = bitmapInfo & kCGBitmapByteOrderMask;
+    CGBitmapInfo byteOrder =
+        CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
 
     *red = 0;
     *green = 1;
@@ -175,7 +175,7 @@ class LegacyImageFileManagerTest : public PlatformTest {
       *blue = 3;
     }
 
-    if (byteOrder != kCGBitmapByteOrder32Host) {
+    if (byteOrder != kCGImageByteOrder32Host) {
       int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
       *red = lastChannel - *red;
       *green = lastChannel - *green;
@@ -554,9 +554,9 @@ class ImageFileManagerTest : public PlatformTest {
                               int* red,
                               int* green,
                               int* blue) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
     CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    int byteOrder = bitmapInfo & kCGBitmapByteOrderMask;
+    CGBitmapInfo byteOrder =
+        CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
 
     *red = 0;
     *green = 1;
@@ -570,7 +570,7 @@ class ImageFileManagerTest : public PlatformTest {
       *blue = 3;
     }
 
-    if (byteOrder != kCGBitmapByteOrder32Host) {
+    if (byteOrder != kCGImageByteOrder32Host) {
       int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
       *red = lastChannel - *red;
       *green = lastChannel - *green;

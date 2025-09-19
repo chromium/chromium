@@ -47,8 +47,8 @@ SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
           /*height=*/1,
           /*bitsPerComponent=*/8,
           /*bytesPerRow=*/4, color_space.get(),
-          kCGImageAlphaPremultipliedFirst |
-              static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
+          static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) |
+              kCGImageByteOrder32Host));
   CGContextDrawImage(bitmap_context.get(), CGRectMake(0, 0, 1, 1),
                      pixel_image.get());
 

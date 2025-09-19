@@ -64,7 +64,8 @@ CGContextRef GraphicsContextCanvas::CgContext() {
   cg_context_.reset(CGBitmapContextCreate(
       offscreen_.getPixels(), offscreen_.width(), offscreen_.height(), 8,
       offscreen_.rowBytes(), color_space.get(),
-      uint32_t{kCGBitmapByteOrder32Host} | kCGImageAlphaPremultipliedFirst));
+      kCGImageByteOrder32Host |
+          static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst)));
   DCHECK(cg_context_);
 
   SkMatrix matrix = canvas_->getLocalToDevice().asM33();

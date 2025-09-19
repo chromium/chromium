@@ -56,9 +56,10 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   const int width = 200;
   const int height = 50;
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
-      nullptr, width, height, 8 /* bitsPerComponent */,
-      width * 4 /* rowBytes */, rgb_colorspace.get(),
-      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
+      nullptr, width, height, /*bitsPerComponent=*/8,
+      /*bytesPerRow=*/width * 4, rgb_colorspace.get(),
+      static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) |
+          kCGImageByteOrder32Host));
 
   // Draw a white background.
   CGContextSetRGBFillColor(context.get(), 1.0, 1.0, 1.0, 1.0);
