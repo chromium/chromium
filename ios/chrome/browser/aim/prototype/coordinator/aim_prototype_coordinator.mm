@@ -60,7 +60,8 @@
           GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
           templateURLService,
           VariationsClientServiceFactory::GetForProfile(self.profile),
-          /*send_lns_surface=*/false);
+          /*send_lns_surface=*/false,
+          /*enable_multi_context_input_flow=*/false);
 
   _mediator = [[AIMPrototypeMediator alloc]
       initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent

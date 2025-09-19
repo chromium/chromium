@@ -1049,6 +1049,8 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
+  bool enable_multi_context_input_flow =
+      ntp_composebox::kMaxNumFiles.Get() > 1;
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
@@ -1058,7 +1060,8 @@ void NewTabPageUI::CreatePageHandler(
           g_browser_process->GetApplicationLocale(),
           TemplateURLServiceFactory::GetForProfile(profile_),
           profile_->GetVariationsClient(),
-          ntp_composebox::kSendLnsSurfaceParam.Get()),
+          ntp_composebox::kSendLnsSurfaceParam.Get(),
+          enable_multi_context_input_flow),
       std::make_unique<ComposeboxMetricsRecorder>("NewTabPage."), profile_,
       web_contents(), service->metrics_reporter());
 

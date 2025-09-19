@@ -85,11 +85,13 @@ class ComposeboxQueryControllerTest
   ComposeboxQueryControllerTest() = default;
   ~ComposeboxQueryControllerTest() override = default;
 
-  void CreateController(bool send_lns_surface) {
+  void CreateController(bool send_lns_surface,
+                        bool enable_multi_context_input_flow = false) {
     controller_ = std::make_unique<TestComposeboxQueryController>(
         identity_manager(), shared_url_loader_factory_,
         version_info::Channel::UNKNOWN, kLocale, template_url_service(),
-        fake_variations_client_.get(), send_lns_surface);
+        fake_variations_client_.get(), send_lns_surface,
+        enable_multi_context_input_flow);
     controller_->AddObserver(this);
 
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -1700,4 +1702,132 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithLnsSurface) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsSurfaceParameterKey,
                                          &lns_surface_value));
   EXPECT_EQ(lns_surface_value, "47");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       MultipleUploadedPdf_HasCorrectRequestIds) {
+  CreateController(/*send_lns_surface=*/false,
+                   /*enable_multi_context_input_flow=*/true);
+
+  // Act: Start the session.
+  controller().NotifySessionStarted();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the first file upload flow.
+  const base::UnguessableToken first_file_token =
+      base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(first_file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(first_file_token, lens::MimeType::kPdf);
+
+  auto first_file_upload_request = controller().last_sent_file_upload_request();
+
+  // Act: Start the second file upload flow.
+  const base::UnguessableToken second_file_token =
+      base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(second_file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(second_file_token, lens::MimeType::kPdf);
+
+  auto second_file_upload_request =
+      controller().last_sent_file_upload_request();
+
+  // Validate the file upload request payloads.
+  EXPECT_EQ(first_file_upload_request->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  EXPECT_EQ(second_file_upload_request->objects_request()
+                .payload()
+                .content()
+                .content_data(0)
+                .content_type(),
+            lens::ContentData::CONTENT_TYPE_PDF);
+  // Check that the vsrid matches that for the multi context flow.
+  EXPECT_EQ(controller()
+                .GetFileInfo(first_file_token)
+                ->GetRequestIdForTesting()
+                ->sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(second_file_token)
+                ->GetRequestIdForTesting()
+                ->sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(first_file_token)
+                ->GetRequestIdForTesting()
+                ->image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(second_file_token)
+                ->GetRequestIdForTesting()
+                ->image_sequence_id(),
+            1);
+  EXPECT_EQ(controller()
+                .GetFileInfo(first_file_token)
+                ->GetRequestIdForTesting()
+                ->long_context_id(),
+            0);
+  EXPECT_EQ(controller()
+                .GetFileInfo(second_file_token)
+                ->GetRequestIdForTesting()
+                ->long_context_id(),
+            0);
+  EXPECT_EQ(first_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(second_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .sequence_id(),
+            1);
+  EXPECT_EQ(first_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(second_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .image_sequence_id(),
+            1);
+  EXPECT_EQ(first_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            0);
+  EXPECT_EQ(second_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .long_context_id(),
+            0);
+  EXPECT_EQ(first_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_EQ(second_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  EXPECT_NE(first_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .uuid(),
+            second_file_upload_request->objects_request()
+                .request_context()
+                .request_id()
+                .uuid());
 }

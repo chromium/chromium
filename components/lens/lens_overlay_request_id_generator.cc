@@ -40,28 +40,36 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
         sequence_id_ == 0);
 
-  bool increment_image_sequence =
-      update_mode == RequestIdUpdateMode::kFullImageRequest ||
-      update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
-      update_mode == RequestIdUpdateMode::kInitialRequest;
-  bool increment_sequence = update_mode != RequestIdUpdateMode::kOpenInNewTab;
-  bool increment_long_context =
-      update_mode == RequestIdUpdateMode::kPageContentRequest ||
-      update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
-      update_mode == RequestIdUpdateMode::kInitialRequest;
   bool create_analytics_id =
       update_mode != RequestIdUpdateMode::kSearchUrl &&
       update_mode != RequestIdUpdateMode::kPartialPageContentRequest;
   bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
 
-  if (increment_image_sequence) {
-    image_sequence_id_++;
-  }
-  if (increment_sequence) {
-    sequence_id_++;
-  }
-  if (increment_long_context) {
-    long_context_id_++;
+  if (update_mode == RequestIdUpdateMode::kMultiContextUploadRequest) {
+    uuid_ = base::RandUint64();
+    image_sequence_id_ = 1;
+    sequence_id_ = 1;
+    long_context_id_ = 0;
+  } else {
+    bool increment_image_sequence =
+        update_mode == RequestIdUpdateMode::kFullImageRequest ||
+        update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
+        update_mode == RequestIdUpdateMode::kInitialRequest;
+    bool increment_sequence = update_mode != RequestIdUpdateMode::kOpenInNewTab;
+    bool increment_long_context =
+        update_mode == RequestIdUpdateMode::kPageContentRequest ||
+        update_mode == RequestIdUpdateMode::kPageContentWithViewportRequest ||
+        update_mode == RequestIdUpdateMode::kInitialRequest;
+
+    if (increment_image_sequence) {
+      image_sequence_id_++;
+    }
+    if (increment_sequence) {
+      sequence_id_++;
+    }
+    if (increment_long_context) {
+      long_context_id_++;
+    }
   }
   std::string analytics_id_to_set = analytics_id_;
   if (create_analytics_id) {
