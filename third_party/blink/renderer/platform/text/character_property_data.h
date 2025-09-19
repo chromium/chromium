@@ -118,25 +118,29 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     0x1F900, 0x1F90F,
     // ZIPPER-MOUTH FACE...SIGN OF THE HORNS
     0x1F910, 0x1F918, 0x1F919, 0x1F97F, 0x1F980, 0x1F9BF, 0x1F9C0, 0x1F9FF,
-    // Clothing, heart and Medical symbols
+    // Clothing
+    // Colored heart symbols
+    // Medical symbols
     0x1FA70, 0x1FA7C,
     // Toys and sport symbols
-    0x1FA80, 0x1FA88,
+    // Musical instruments
+    0x1FA80, 0x1FA8A,
     // Miscellaneous objects
+    // Religious symbol (KHANDA)
     // Animals and nature
-    0x1FA90, 0x1FABD,
-    // Animal
     // Body parts
     // People
-    0x1FABF, 0x1FAC5,
-    // animal-mammal
-    0x1FACE, 0x1FACF,
+    // Miscellaneous (FINGERPRINT)
+    0x1FA8E, 0x1FAC6,
+    // Animals and nature (including reserved)
     // Food and drink
-    0x1FAD0, 0x1FADB,
-    // Face
-    0x1FAE0, 0x1FAE8,
-    // Hand
-    0x1FAF0, 0x1FAF8,
+    0x1FAC8, 0x1FADC,
+    // Miscellaneous (SPLATTER)
+    // Faces
+    0x1FADF, 0x1FAEA,
+    // Emotion (FIGHT CLOUD)
+    // Hand symbols
+    0x1FAEF, 0x1FAF8,
     };
 
 // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
