@@ -951,6 +951,13 @@ EntityInstance GetPassportEntityInstance(PassportEntityOptions options) {
       options.are_attributes_read_only);
 }
 
+EntityInstance GetPassportEntityInstanceWithRandomGuid(
+    PassportEntityOptions options) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return GetPassportEntityInstance(options);
+}
+
 EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
@@ -994,6 +1001,13 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
       base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
       /*use_date=*/base::Time::FromTimeT(0), options.record_type,
       options.are_attributes_read_only);
+}
+
+EntityInstance GetDriversLicenseEntityInstanceWithRandomGuid(
+    DriversLicenseOptions options) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return GetDriversLicenseEntityInstance(options);
 }
 
 EntityInstance GetKnownTravelerNumberInstance(
@@ -1096,6 +1110,12 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
       options.are_attributes_read_only);
 }
 
+EntityInstance GetVehicleEntityInstanceWithRandomGuid(VehicleOptions options) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return GetVehicleEntityInstance(options);
+}
+
 EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;
@@ -1190,6 +1210,13 @@ EntityInstance GetFlightReservationEntityInstance(
       base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
       /*use_date=*/base::Time::FromTimeT(0), options.record_type,
       options.are_attributes_read_only);
+}
+
+EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
+    FlightReservationOptions options) {
+  base::Uuid guid = base::Uuid::GenerateRandomV4();
+  options.guid = guid.AsLowercaseString();
+  return GetFlightReservationEntityInstance(options);
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,

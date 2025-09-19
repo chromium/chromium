@@ -359,6 +359,9 @@ using PassportEntityOptions = PassportEntityOptionsT<>;
 // base::Time in the database is seconds).
 EntityInstance GetPassportEntityInstance(PassportEntityOptions options = {});
 
+EntityInstance GetPassportEntityInstanceWithRandomGuid(
+    PassportEntityOptions options = {});
+
 template <typename = void>
 struct DriversLicenseOptionsT {
   const char16_t* name = u"Knecht Ruprecht";
@@ -378,6 +381,9 @@ struct DriversLicenseOptionsT {
 using DriversLicenseOptions = DriversLicenseOptionsT<>;
 
 EntityInstance GetDriversLicenseEntityInstance(
+    DriversLicenseOptions options = {});
+
+EntityInstance GetDriversLicenseEntityInstanceWithRandomGuid(
     DriversLicenseOptions options = {});
 
 template <typename = void>
@@ -401,6 +407,9 @@ struct VehicleOptionsT {
 using VehicleOptions = VehicleOptionsT<>;
 
 EntityInstance GetVehicleEntityInstance(VehicleOptions options = {});
+
+EntityInstance GetVehicleEntityInstanceWithRandomGuid(
+    VehicleOptions options = {});
 
 template <typename = void>
 struct NationalIdCardOptionsT {
@@ -474,6 +483,9 @@ struct FlightReservationOptionsT {
 using FlightReservationOptions = FlightReservationOptionsT<>;
 
 EntityInstance GetFlightReservationEntityInstance(
+    FlightReservationOptions options = {});
+
+EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
     FlightReservationOptions options = {});
 
 // Adds `possible_types` at the end of `possible_field_types`.

@@ -21,18 +21,6 @@
 
 namespace autofill {
 
-namespace {
-
-// TODO(crbug.com/436548962): Consider moving this method inside a test utils.
-EntityInstance MakePassportWithRandomGuid(
-    test::PassportEntityOptions options = {}) {
-  base::Uuid guid = base::Uuid::GenerateRandomV4();
-  options.guid = guid.AsLowercaseString();
-  return test::GetPassportEntityInstance(options);
-}
-
-}  // namespace
-
 class EntityInstanceCleanerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -94,9 +82,9 @@ TEST_F(EntityInstanceCleanerTest, DeduplicationRunIfMilestoneIsDifferent) {
 }
 
 TEST_F(EntityInstanceCleanerTest, DuplicatedLocalEntitiesAreRemoved) {
-  EntityInstance entity1 = MakePassportWithRandomGuid();
-  EntityInstance entity2 = MakePassportWithRandomGuid();
-  EntityInstance entity3 = MakePassportWithRandomGuid(
+  EntityInstance entity1 = test::GetPassportEntityInstanceWithRandomGuid();
+  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
+  EntityInstance entity3 = test::GetPassportEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
@@ -123,8 +111,9 @@ TEST_F(EntityInstanceCleanerTest, DuplicatedLocalEntitiesAreRemoved) {
 }
 
 TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
-  EntityInstance entity1 = MakePassportWithRandomGuid({.expiry_date = nullptr});
-  EntityInstance entity2 = MakePassportWithRandomGuid();
+  EntityInstance entity1 =
+      test::GetPassportEntityInstanceWithRandomGuid({.expiry_date = nullptr});
+  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
   entity_data_manager().AddOrUpdateEntityInstance(entity2);
   webdata_helper()->WaitUntilIdle();
@@ -152,8 +141,10 @@ TEST_F(EntityInstanceCleanerTest, EntityThatIsSubsetOfAnotherIsRemoved) {
 }
 
 TEST_F(EntityInstanceCleanerTest, DifferentEntities_NoneIsRemoved) {
-  EntityInstance entity1 = MakePassportWithRandomGuid({.name = u"Jon snow"});
-  EntityInstance entity2 = MakePassportWithRandomGuid({.name = u"Sansa"});
+  EntityInstance entity1 =
+      test::GetPassportEntityInstanceWithRandomGuid({.name = u"Jon snow"});
+  EntityInstance entity2 =
+      test::GetPassportEntityInstanceWithRandomGuid({.name = u"Sansa"});
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
   entity_data_manager().AddOrUpdateEntityInstance(entity2);
   webdata_helper()->WaitUntilIdle();
@@ -183,9 +174,9 @@ TEST_F(EntityInstanceCleanerTest,
        DuplicatedLocalEntities_FeatureOff_NotRemoved) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiDedupeEntities);
-  EntityInstance entity1 = MakePassportWithRandomGuid();
-  EntityInstance entity2 = MakePassportWithRandomGuid();
-  EntityInstance entity3 = MakePassportWithRandomGuid(
+  EntityInstance entity1 = test::GetPassportEntityInstanceWithRandomGuid();
+  EntityInstance entity2 = test::GetPassportEntityInstanceWithRandomGuid();
+  EntityInstance entity3 = test::GetPassportEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kServerWallet});
 
   entity_data_manager().AddOrUpdateEntityInstance(entity1);
