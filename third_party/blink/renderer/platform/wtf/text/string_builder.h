@@ -183,6 +183,33 @@ class WTF_EXPORT StringBuilder {
     return *this;
   }
 
+  // Append each elements in a collection `range`, separated by `delimiter`.
+  // This adds nothing if `range` is empty.  `stringifier` is a callable object,
+  // and it should convert an element to a string to be appended.
+  //
+  // Example:
+  //   HeapVector<Member<Foo>> list;
+  //   StringBuilder builder;
+  //   builder.AppendRange(
+  //       list, ", ", [](const auto& value) { return value->ToString(); });
+  template <typename R, typename F>
+    requires(std::ranges::range<R> &&
+             std::invocable<F, const std::ranges::range_value_t<R>&> &&
+             std::is_convertible_v<
+                 std::invoke_result_t<F, const std::ranges::range_value_t<R>&>,
+                 StringView>)
+  StringBuilder& AppendRange(const R& range,
+                             StringView delimiter,
+                             F stringifier) {
+    StringView current_delimiter;
+    for (const auto& item : range) {
+      Append(current_delimiter);
+      current_delimiter = delimiter;
+      Append(stringifier(item));
+    }
+    return *this;
+  }
+
   void erase(unsigned);
 
   // ReleaseString is similar to ToString but releases the string_ object
