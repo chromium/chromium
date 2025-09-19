@@ -2644,6 +2644,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.MetaTableExists" enum="Boolean"
+    expires_after="2026-09-12">
+  <owner>etienneb@chromium.org</owner>
+  <owner>jpgravel@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    Indicates whether an existing history database has a meta table or not.
+    Logged each time the history table is initialized.
+  </summary>
+</histogram>
+
 <histogram name="History.MigrateFailureFromVersion" units="units"
     expires_after="2026-06-25">
   <owner>etienneb@chromium.org</owner>
