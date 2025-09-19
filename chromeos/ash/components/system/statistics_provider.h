@@ -128,6 +128,12 @@ inline constexpr char kSerialNumberKey[] = "serial_number";
 // is the appropriate way to obtain the serial number.
 inline constexpr char kFlexIdKey[] = "flex_id";
 
+// System Management BIOS (SMBIOS)/Desktop Management Interface (DMI)
+// information for Flex devices.
+inline constexpr char kFlexSysVendorKey[] = "flex_sys_vendor";
+inline constexpr char kFlexProductNameKey[] = "flex_product_name";
+inline constexpr char kFlexProductVersionKey[] = "flex_product_version";
+
 // Display Profiles key.
 inline constexpr char kDisplayProfilesKey[] = "display_profiles";
 

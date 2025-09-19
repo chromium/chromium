@@ -213,11 +213,14 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,
   // |attested_device_id|, |ethernet_mac_address|, |dock_mac_address| and
-  // |manufacture_date| are passed to the server verbatim. As these reveal
-  // machine identity, they must only be used where this is appropriate (i.e.
-  // device policy, but not user policy). |service| is weak pointer and it's
-  // the caller's responsibility to keep it valid for the lifetime of
-  // CloudPolicyClient. |device_dm_token_callback| is used to retrieve device
+  // |manufacture_date| are passed to the server verbatim.
+  // Additionally, Flex devices will send |flex_sys_vendor|,
+  // |flex_product_name|, and |flex_product_version|.
+  // As these reveal machine identity, they must only be used where
+  // this is appropriate (i.e. device policy, but not user policy).
+  // |service| is weak pointer and it's the caller's responsibility to
+  // keep it valid for the lifetime of CloudPolicyClient.
+  // |device_dm_token_callback| is used to retrieve device
   // DMToken for affiliated users. Could be null if it's not possible to use
   // device DMToken for user policy fetches.
   CloudPolicyClient(
@@ -228,6 +231,9 @@ class POLICY_EXPORT CloudPolicyClient {
       std::optional<MacAddress> ethernet_mac_address,
       std::optional<MacAddress> dock_mac_address,
       std::string_view manufacture_date,
+      std::string_view flex_sys_vendor,
+      std::string_view flex_product_name,
+      std::string_view flex_product_version,
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
@@ -563,6 +569,18 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return manufacture_date_;
   }
+  const std::string& flex_sys_vendor() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_sys_vendor_;
+  }
+  const std::string& flex_product_name() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_product_name_;
+  }
+  const std::string& flex_product_version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return flex_product_version_;
+  }
   const std::string& oidc_user_display_name() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return oidc_user_display_name_;
@@ -797,6 +815,9 @@ class POLICY_EXPORT CloudPolicyClient {
   const std::string ethernet_mac_address_;
   const std::string dock_mac_address_;
   const std::string manufacture_date_;
+  const std::string flex_sys_vendor_;
+  const std::string flex_product_name_;
+  const std::string flex_product_version_;
 
   // Specific fields for oidc registration responses.
   std::string oidc_user_display_name_;

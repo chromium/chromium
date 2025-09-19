@@ -99,6 +99,9 @@ constexpr CloudPolicyClient::MacAddress kDockMacAddress = {170, 187, 204,
                                                            221, 238, 255};
 constexpr char kDockMacAddressStr[] = "AABBCCDDEEFF";
 constexpr char kManufactureDate[] = "fake-manufacture-date";
+constexpr char kFlexSysVendor[] = "fake-flex-sys-vendor";
+constexpr char kFlexProductName[] = "fake-flex-product-name";
+constexpr char kFlexProductVersion[] = "fake-flex-product-version";
 constexpr char kOAuthToken[] = "fake-oauth-token";
 constexpr char kDMToken[] = "fake-dm-token";
 constexpr char kDeviceDMToken[] = "fake-device-dm-token";
@@ -283,6 +286,10 @@ em::DeviceManagementRequest GetTokenBasedDeviceRegistrationRequest() {
   register_request->set_brand_code(kBrandCode);
   register_request->set_ethernet_mac_address(kEthernetMacAddressStr);
   register_request->set_dock_mac_address(kDockMacAddressStr);
+  register_request->mutable_smbios_info()->set_sys_vendor(kFlexSysVendor);
+  register_request->mutable_smbios_info()->set_product_name(kFlexProductName);
+  register_request->mutable_smbios_info()->set_product_version(
+      kFlexProductVersion);
   register_request->set_lifetime(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
   register_request->set_flavor(
@@ -491,11 +498,15 @@ class CloudPolicyClientTest : public testing::Test {
 
   void RegisterClient() { RegisterClient(kDeviceDMToken); }
 
-  void CreateClient() { CreateClient(kAttestedDeviceId, kManufactureDate); }
+  void CreateClient() {
+    CreateClient(kAttestedDeviceId, kManufactureDate, "", "", "");
+  }
 
   // Flex devices don't have VPD so will not have attested device ID or
   // manufacture date.
-  void CreateFlexClient() { CreateClient("", ""); }
+  void CreateFlexClient() {
+    CreateClient("", "", kFlexSysVendor, kFlexProductName, kFlexProductVersion);
+  }
 
   base::Value::Dict MakeDefaultRealtimeReport() {
     base::Value::Dict context;
@@ -640,7 +651,10 @@ class CloudPolicyClientTest : public testing::Test {
 
  private:
   void CreateClient(std::string_view attested_device_id,
-                    std::string_view manufacture_date) {
+                    std::string_view manufacture_date,
+                    std::string_view flex_sys_vendor,
+                    std::string_view flex_product_name,
+                    std::string_view flex_product_version) {
     service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
 
@@ -649,7 +663,8 @@ class CloudPolicyClientTest : public testing::Test {
             &url_loader_factory_);
     client_ = std::make_unique<CloudPolicyClient>(
         kMachineID, kMachineModel, kBrandCode, attested_device_id,
-        kEthernetMacAddress, kDockMacAddress, manufacture_date, &service_,
+        kEthernetMacAddress, kDockMacAddress, manufacture_date, flex_sys_vendor,
+        flex_product_name, flex_product_version, &service_,
         shared_url_loader_factory_,
         base::BindRepeating(
             &MockDeviceDMTokenCallbackObserver::OnDeviceDMTokenRequested,

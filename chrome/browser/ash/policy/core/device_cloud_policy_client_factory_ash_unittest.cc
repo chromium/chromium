@@ -25,6 +25,9 @@ constexpr char kDockMacAddressValidValue[] = "AA:BB:CC:DD:EE:FF";
 constexpr char kDockMacAddressValidParsedValue[] = "AABBCCDDEEFF";
 constexpr char kDockMacAddressInvalidValue[] = "AA:NO:CC:DD:EE:FF";
 constexpr char kManufactureDateValue[] = "a_manufacture_date_value";
+constexpr char kFlexSysVendorValue[] = "a_flex_sys_vendor_value";
+constexpr char kFlexProductNameValue[] = "a_flex_product_name_value";
+constexpr char kFlexProductVersionValue[] = "a_flex_product_version_value";
 
 class DeviceCloudPolicyClientFactoryAshTest : public testing::Test {
  protected:
@@ -51,6 +54,12 @@ TEST_F(DeviceCloudPolicyClientFactoryAshTest, ValidStatistics) {
                                                 kDockMacAddressValidValue);
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kManufactureDateKey, kManufactureDateValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kFlexSysVendorKey,
+                                                kFlexSysVendorValue);
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kFlexProductNameKey, kFlexProductNameValue);
+  fake_statistics_provider_.SetMachineStatistic(
+      ash::system::kFlexProductVersionKey, kFlexProductVersionValue);
 
   std::unique_ptr<CloudPolicyClient> client = CreateDeviceCloudPolicyClientAsh(
       &fake_statistics_provider_, &fake_service_,
@@ -66,6 +75,9 @@ TEST_F(DeviceCloudPolicyClientFactoryAshTest, ValidStatistics) {
             kEthernetMacAddressValidParsedValue);
   EXPECT_EQ(client->dock_mac_address(), kDockMacAddressValidParsedValue);
   EXPECT_EQ(client->manufacture_date(), kManufactureDateValue);
+  EXPECT_EQ(client->flex_sys_vendor(), kFlexSysVendorValue);
+  EXPECT_EQ(client->flex_product_name(), kFlexProductNameValue);
+  EXPECT_EQ(client->flex_product_version(), kFlexProductVersionValue);
 }
 
 TEST_F(DeviceCloudPolicyClientFactoryAshTest, InvalidStatistics) {
@@ -87,6 +99,9 @@ TEST_F(DeviceCloudPolicyClientFactoryAshTest, InvalidStatistics) {
   EXPECT_TRUE(client->ethernet_mac_address().empty());
   EXPECT_TRUE(client->dock_mac_address().empty());
   EXPECT_TRUE(client->manufacture_date().empty());
+  EXPECT_TRUE(client->flex_sys_vendor().empty());
+  EXPECT_TRUE(client->flex_product_name().empty());
+  EXPECT_TRUE(client->flex_product_version().empty());
 }
 
 }  // namespace policy

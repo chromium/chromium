@@ -79,6 +79,12 @@ std::unique_ptr<CloudPolicyClient> CreateDeviceCloudPolicyClientAsh(
           ash::system::kDockMacAddressKey))),
       EmptyIfAbsent(statistics_provider->GetMachineStatistic(
           ash::system::kManufactureDateKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexSysVendorKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexProductNameKey)),
+      EmptyIfAbsent(statistics_provider->GetMachineStatistic(
+          ash::system::kFlexProductVersionKey)),
       service, url_loader_factory, std::move(device_dm_token_callback));
 }
 

@@ -358,6 +358,9 @@ CloudPolicyClient::CloudPolicyClient(
     std::optional<MacAddress> ethernet_mac_address,
     std::optional<MacAddress> dock_mac_address,
     std::string_view manufacture_date,
+    std::string_view flex_sys_vendor,
+    std::string_view flex_product_name,
+    std::string_view flex_product_version,
     DeviceManagementService* service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     DeviceDMTokenCallback device_dm_token_callback)
@@ -371,6 +374,9 @@ CloudPolicyClient::CloudPolicyClient(
       dock_mac_address_(dock_mac_address ? FormatMacAddress(*dock_mac_address)
                                          : std::string()),
       manufacture_date_(manufacture_date),
+      flex_sys_vendor_(flex_sys_vendor),
+      flex_product_name_(flex_product_name),
+      flex_product_version_(flex_product_version),
       service_(service),  // Can be null for unit tests.
       device_dm_token_callback_(device_dm_token_callback),
       url_loader_factory_(url_loader_factory) {}
@@ -1957,6 +1963,15 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
   }
   if (!manufacture_date_.empty()) {
     request->set_manufacture_date(manufacture_date_);
+  }
+  if (!flex_sys_vendor_.empty()) {
+    request->mutable_smbios_info()->set_sys_vendor(flex_sys_vendor_);
+  }
+  if (!flex_product_name_.empty()) {
+    request->mutable_smbios_info()->set_product_name(flex_product_name_);
+  }
+  if (!flex_product_version_.empty()) {
+    request->mutable_smbios_info()->set_product_version(flex_product_version_);
   }
   if (!params.requisition.empty()) {
     request->set_requisition(params.requisition);

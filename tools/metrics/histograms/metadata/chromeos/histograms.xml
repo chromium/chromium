@@ -218,6 +218,9 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   <variant name="DockMac"/>
   <variant name="EthernetMac"/>
   <variant name="FlexId"/>
+  <variant name="FlexProductName"/>
+  <variant name="FlexProductVersion"/>
+  <variant name="FlexSysVendor"/>
   <variant name="GbindAttribute"/>
   <variant name="HardwareClass"/>
   <variant name="InitialLocale"/>
