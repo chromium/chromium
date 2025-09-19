@@ -47,7 +47,11 @@ builtin_module("_Builtin_stdarg") {
 }
 
 builtin_module("_Builtin_stdatomic") {
-  public_deps = [ ":sys_stage1" ]
+  public_deps = [
+    ":_Builtin_stddef",
+    ":_Builtin_stdint",
+    ":sys_stage1",
+  ]
 }
 
 builtin_module("_Builtin_stdbool") {

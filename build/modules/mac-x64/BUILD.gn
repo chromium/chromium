@@ -7,85 +7,43 @@
 
 import("//buildtools/third_party/libc++/modules.gni")
 
-apple_sysroot_modulemap("os_availability_modulemap") {
-  sysroot_path = "os_availability.modulemap"
-}
-apple_sysroot_module("AvailabilityMacros") {
-  modulemap = ":os_availability_modulemap"
-  modulemap_path = "os_availability.modulemap"
-  public_deps = [
-    ":TargetConditionals",
-    ":os_availability",
-    ":os_availability_internal",
-  ]
-}
-
-apple_sysroot_modulemap("DarwinFoundation_modulemap") {
-  sysroot_path = "DarwinFoundation.modulemap"
-}
-apple_sysroot_module("DarwinFoundation") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [
-    ":_Builtin_stdarg",
-    ":_Builtin_stddef",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_modulemap("DarwinBasic_modulemap") {
-  sysroot_path = "DarwinBasic.modulemap"
-}
-apple_sysroot_module("MachO") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":TargetConditionals",
-    ":_Builtin_stdarg",
-    ":_Builtin_stdbool",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":_limits",
-    ":mach",
-    ":os_availability",
-    ":std_string_h",
-    ":sys_types",
-    ":unistd",
-    ":uuid",
-  ]
-}
-
-apple_sysroot_modulemap("TargetConditionals_modulemap") {
-  sysroot_path = "TargetConditionals.modulemap"
+apple_sysroot_modulemap("DarwinFoundation1_modulemap") {
+  sysroot_path = "DarwinFoundation1.modulemap"
 }
 apple_sysroot_module("TargetConditionals") {
-  modulemap = ":TargetConditionals_modulemap"
-  modulemap_path = "TargetConditionals.modulemap"
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_DarwinFoundation1" ]
+}
+
+apple_sysroot_module("_AvailabilityInternal") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
 }
 
 builtin_module("_Builtin_float") {
-  public_deps = [ ":_float" ]
+  public_deps = [ ":_c_standard_library_obsolete" ]
 }
 
 builtin_module("_Builtin_intrinsics") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
-    ":_stdlib",
+    ":_DarwinFoundation3",
+    ":_c_standard_library_obsolete",
     ":std_core",
   ]
 }
 
 builtin_module("_Builtin_inttypes") {
-  public_deps = [ ":_inttypes" ]
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 builtin_module("_Builtin_iso646") {
 }
 
 builtin_module("_Builtin_limits") {
-  public_deps = [ ":_limits" ]
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
 builtin_module("_Builtin_stdalign") {
@@ -98,6 +56,7 @@ builtin_module("_Builtin_stdatomic") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":_c_standard_library_obsolete",
   ]
 }
 
@@ -114,7 +73,7 @@ builtin_module("_Builtin_stddef_wint_t") {
 }
 
 builtin_module("_Builtin_stdint") {
-  public_deps = [ ":_stdint" ]
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 builtin_module("_Builtin_stdnoreturn") {
@@ -127,358 +86,52 @@ builtin_module("_Builtin_unwind") {
   ]
 }
 
-apple_sysroot_module("_Darwin_xlocale") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
+apple_sysroot_module("_DarwinFoundation1") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_AvailabilityInternal" ]
+}
+
+apple_sysroot_modulemap("DarwinFoundation2_modulemap") {
+  sysroot_path = "DarwinFoundation2.modulemap"
+}
+apple_sysroot_module("_DarwinFoundation2") {
+  modulemap = ":DarwinFoundation2_modulemap"
+  modulemap_path = "DarwinFoundation2.modulemap"
   public_deps = [
-    ":DarwinFoundation",
-    ":nl_types",
-    ":os_availability",
-    ":sys_types",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_modulemap("c_standard_library_modulemap") {
-  sysroot_path = "c_standard_library.modulemap"
-}
-apple_sysroot_module("__wctype") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_ctype",
-    ":std_ctype_h",
-  ]
-}
-
-apple_sysroot_module("_assert") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_ctype") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":runetype",
-  ]
-}
-
-apple_sysroot_module("_errno") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_fenv") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-}
-
-apple_sysroot_module("_float") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-}
-
-apple_sysroot_module("_inttypes") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_module("_limits") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_locale") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_math") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_module("_setjmp") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_module("_signal") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":mach",
-    ":os_availability",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("_stdint") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_stdio") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("_stdlib") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_Builtin_stddef",
-    ":alloca",
-    ":os_availability",
-    ":runetype",
-    ":sys_types",
-    ":sys_wait",
-  ]
-}
-
-apple_sysroot_module("_string") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_strings",
-    ":os_availability",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("_strings") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_module("_sys_select") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-  ]
-}
-
-apple_sysroot_module("_time") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":os_availability",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("_useconds_t") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("_wchar") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
     ":_Builtin_stdarg",
     ":_Builtin_stddef",
-    ":__wctype",
-    ":_stdio",
-    ":_time",
-    ":os_availability",
-    ":runetype",
+    ":_DarwinFoundation1",
+    ":_c_standard_library_obsolete",
   ]
 }
 
-apple_sysroot_module("_wctype") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":__wctype",
-    ":_ctype",
-    ":std_ctype_h",
-  ]
+apple_sysroot_modulemap("DarwinFoundation3_modulemap") {
+  sysroot_path = "DarwinFoundation3.modulemap"
 }
-
-apple_sysroot_module("_xlocale_ctype_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
+apple_sysroot_module("_DarwinFoundation3") {
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
   public_deps = [
-    ":std_ctype_h",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_inttypes_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":std_inttypes_h",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_stdio_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":_stdio",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_stdlib_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":_stdlib",
-    ":std_core",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_string_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":std_string_h",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_time_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":_time",
-    ":xlocale",
-  ]
-}
-
-apple_sysroot_module("_xlocale_wchar_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
+    ":_Builtin_stdarg",
     ":_Builtin_stddef",
-    ":_wchar",
-    ":std_private_mbstate_t",
-    ":xlocale",
+    ":_Builtin_stdint",
+    ":_DarwinFoundation1",
+    ":_DarwinFoundation2",
+    ":_c_standard_library_obsolete",
+    ":std_ctype_h",
   ]
 }
 
-apple_sysroot_module("_xlocale_wctype_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":std_wctype_h",
-    ":xlocale",
-  ]
+apple_sysroot_module("_c_standard_library_obsolete") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
 }
 
 apple_sysroot_module("alloca") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("assert_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_assert",
-    ":_stdlib",
-    ":std_core",
-  ]
-}
-
-apple_sysroot_module("complex_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_complex_h" ]
-}
-
-apple_sysroot_module("ctype_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_ctype_h" ]
-}
-
-apple_sysroot_module("errno_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_errno_h" ]
-}
-
-apple_sysroot_module("fenv_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_fenv_h" ]
-}
-
-apple_sysroot_module("float_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_float_h" ]
-}
-
-apple_sysroot_module("gethostuuid") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_time",
-    ":os_availability",
-    ":uuid",
-  ]
-}
-
-apple_sysroot_module("inttypes_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_inttypes_h" ]
-}
-
-apple_sysroot_module("iso646_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_iso646" ]
+  modulemap = ":DarwinFoundation2_modulemap"
+  modulemap_path = "DarwinFoundation2.modulemap"
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 apple_sysroot_modulemap("libunwind_modulemap") {
@@ -490,93 +143,43 @@ apple_sysroot_module("libunwind") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
-    ":os_availability",
+    ":_DarwinFoundation1",
+    ":_c_standard_library_obsolete",
     ":unwind",
   ]
 }
 
-apple_sysroot_module("limits_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_limits" ]
-}
-
-apple_sysroot_module("locale_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_locale" ]
-}
-
-apple_sysroot_module("mach") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("math_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_math_h" ]
-}
-
-apple_sysroot_module("netinet_in") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
 apple_sysroot_module("nl_types") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":sys_types",
-  ]
+  modulemap = ":DarwinFoundation2_modulemap"
+  modulemap_path = "DarwinFoundation2.modulemap"
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 apple_sysroot_module("os_availability") {
-  modulemap = ":os_availability_modulemap"
-  modulemap_path = "os_availability.modulemap"
-  public_deps = [ ":os_availability_internal" ]
-}
-
-apple_sysroot_module("os_availability_internal") {
-  modulemap = ":os_availability_modulemap"
-  modulemap_path = "os_availability.modulemap"
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
 apple_sysroot_module("pthread") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_signal",
-    ":_time",
-    ":mach",
-    ":os_availability",
-    ":sys_types",
-  ]
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 builtin_module("ptrauth") {
 }
 
 apple_sysroot_module("runetype") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
+  modulemap = ":DarwinFoundation2_modulemap"
+  modulemap_path = "DarwinFoundation2.modulemap"
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
-apple_sysroot_module("setjmp_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_setjmp" ]
-}
-
-apple_sysroot_module("signal_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_signal" ]
+apple_sysroot_module("sched") {
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 libcxx_module("std") {
@@ -585,14 +188,9 @@ libcxx_module("std") {
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
     ":_Builtin_stddef",
-    ":_locale",
-    ":_signal",
-    ":_stdio",
-    ":_stdlib",
-    ":_time",
-    ":_wchar",
-    ":nl_types",
-    ":pthread",
+    ":_DarwinFoundation2",
+    ":_DarwinFoundation3",
+    ":_c_standard_library_obsolete",
     ":std_core",
     ":std_ctype_h",
     ":std_errno_h",
@@ -616,19 +214,20 @@ libcxx_module("std_core") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":_c_standard_library_obsolete",
   ]
 }
 
 libcxx_module("std_ctype_h") {
-  public_deps = [ ":_ctype" ]
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 libcxx_module("std_errno_h") {
-  public_deps = [ ":_errno" ]
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
 libcxx_module("std_fenv_h") {
-  public_deps = [ ":_fenv" ]
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
 libcxx_module("std_float_h") {
@@ -644,13 +243,13 @@ libcxx_module("std_inttypes_h") {
 
 libcxx_module("std_math_h") {
   public_deps = [
-    ":_math",
+    ":_DarwinFoundation1",
     ":std_core",
   ]
 }
 
 libcxx_module("std_private_mbstate_t") {
-  public_deps = [ ":__wctype" ]
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 libcxx_module("std_stdatomic_h") {
@@ -658,7 +257,7 @@ libcxx_module("std_stdatomic_h") {
 }
 
 libcxx_module("std_string_h") {
-  public_deps = [ ":_string" ]
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 libcxx_module("std_tgmath_h") {
@@ -668,157 +267,61 @@ libcxx_module("std_tgmath_h") {
 libcxx_module("std_uchar_h") {
   public_deps = [
     ":_Builtin_stddef",
+    ":_c_standard_library_obsolete",
     ":std_private_mbstate_t",
   ]
 }
 
 libcxx_module("std_wctype_h") {
-  public_deps = [ ":_wctype" ]
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
-apple_sysroot_module("stdalign_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stdalign" ]
+apple_sysroot_module("sys_appleapiopts") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
-apple_sysroot_module("stdarg_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stdarg" ]
+apple_sysroot_module("sys_cdefs") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
-apple_sysroot_module("stdatomic_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_stdatomic_h" ]
-}
-
-apple_sysroot_module("stdbool_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stdbool" ]
-}
-
-apple_sysroot_module("stddef_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stddef" ]
-}
-
-apple_sysroot_module("stdint_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stdint" ]
-}
-
-apple_sysroot_module("stdio_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_stdio" ]
-}
-
-apple_sysroot_module("stdlib_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":_stdlib",
-    ":std_core",
-  ]
-}
-
-apple_sysroot_module("stdnoreturn_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_Builtin_stdnoreturn" ]
-}
-
-apple_sysroot_module("string_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_string_h" ]
+apple_sysroot_module("sys_qos") {
+  modulemap = ":DarwinFoundation1_modulemap"
+  modulemap_path = "DarwinFoundation1.modulemap"
+  public_deps = [ ":_DarwinFoundation1" ]
 }
 
 apple_sysroot_module("sys_resource") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_Builtin_stdint",
-    ":os_availability",
-    ":sys_time",
-    ":sys_types",
-  ]
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 apple_sysroot_module("sys_select") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_signal",
-    ":_sys_select",
-    ":_time",
-    ":sys_time",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("sys_time") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 apple_sysroot_module("sys_types") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_errno",
-    ":_sys_select",
-    ":_useconds_t",
-    ":netinet_in",
-  ]
+  modulemap = ":DarwinFoundation2_modulemap"
+  modulemap_path = "DarwinFoundation2.modulemap"
+  public_deps = [ ":_DarwinFoundation2" ]
 }
 
 apple_sysroot_module("sys_wait") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_signal",
-    ":sys_resource",
-    ":sys_types",
-  ]
-}
-
-apple_sysroot_module("tgmath_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_tgmath_h" ]
-}
-
-apple_sysroot_module("time_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":_time" ]
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 apple_sysroot_module("unistd") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [
-    ":DarwinFoundation",
-    ":_limits",
-    ":_stdio",
-    ":_useconds_t",
-    ":gethostuuid",
-    ":os_availability",
-    ":sys_select",
-    ":sys_types",
-    ":uuid",
-  ]
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
+  public_deps = [ ":_DarwinFoundation3" ]
 }
 
 apple_sysroot_module("unwind") {
@@ -827,52 +330,23 @@ apple_sysroot_module("unwind") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":_c_standard_library_obsolete",
   ]
-}
-
-apple_sysroot_module("unwind_h") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
-  public_deps = [ ":_Builtin_unwind" ]
-}
-
-apple_sysroot_module("uuid") {
-  modulemap = ":DarwinFoundation_modulemap"
-  modulemap_path = "DarwinFoundation.modulemap"
-  public_deps = [ ":DarwinFoundation" ]
-}
-
-apple_sysroot_module("wchar_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [
-    ":_Builtin_stddef",
-    ":_wchar",
-    ":std_private_mbstate_t",
-  ]
-}
-
-apple_sysroot_module("wctype_h") {
-  modulemap = ":c_standard_library_modulemap"
-  modulemap_path = "c_standard_library.modulemap"
-  public_deps = [ ":std_wctype_h" ]
 }
 
 apple_sysroot_module("xlocale") {
-  modulemap = ":DarwinBasic_modulemap"
-  modulemap_path = "DarwinBasic.modulemap"
+  modulemap = ":DarwinFoundation3_modulemap"
+  modulemap_path = "DarwinFoundation3.modulemap"
   public_deps = [
-    ":DarwinFoundation",
-    ":_locale",
+    ":_DarwinFoundation1",
+    ":_DarwinFoundation2",
   ]
 }
 
 group("all_modules") {
   public_deps = [
-    ":AvailabilityMacros",
-    ":DarwinFoundation",
-    ":MachO",
     ":TargetConditionals",
+    ":_AvailabilityInternal",
     ":_Builtin_float",
     ":_Builtin_intrinsics",
     ":_Builtin_inttypes",
@@ -888,61 +362,18 @@ group("all_modules") {
     ":_Builtin_stdint",
     ":_Builtin_stdnoreturn",
     ":_Builtin_unwind",
-    ":_Darwin_xlocale",
-    ":__wctype",
-    ":_assert",
-    ":_ctype",
-    ":_errno",
-    ":_fenv",
-    ":_float",
-    ":_inttypes",
-    ":_limits",
-    ":_locale",
-    ":_math",
-    ":_setjmp",
-    ":_signal",
-    ":_stdint",
-    ":_stdio",
-    ":_stdlib",
-    ":_string",
-    ":_strings",
-    ":_sys_select",
-    ":_time",
-    ":_useconds_t",
-    ":_wchar",
-    ":_wctype",
-    ":_xlocale_ctype_h",
-    ":_xlocale_inttypes_h",
-    ":_xlocale_stdio_h",
-    ":_xlocale_stdlib_h",
-    ":_xlocale_string_h",
-    ":_xlocale_time_h",
-    ":_xlocale_wchar_h",
-    ":_xlocale_wctype_h",
+    ":_DarwinFoundation1",
+    ":_DarwinFoundation2",
+    ":_DarwinFoundation3",
+    ":_c_standard_library_obsolete",
     ":alloca",
-    ":assert_h",
-    ":complex_h",
-    ":ctype_h",
-    ":errno_h",
-    ":fenv_h",
-    ":float_h",
-    ":gethostuuid",
-    ":inttypes_h",
-    ":iso646_h",
     ":libunwind",
-    ":limits_h",
-    ":locale_h",
-    ":mach",
-    ":math_h",
-    ":netinet_in",
     ":nl_types",
     ":os_availability",
-    ":os_availability_internal",
     ":pthread",
     ":ptrauth",
     ":runetype",
-    ":setjmp_h",
-    ":signal_h",
+    ":sched",
     ":std",
     ":std_complex_h",
     ":std_core",
@@ -958,29 +389,15 @@ group("all_modules") {
     ":std_tgmath_h",
     ":std_uchar_h",
     ":std_wctype_h",
-    ":stdalign_h",
-    ":stdarg_h",
-    ":stdatomic_h",
-    ":stdbool_h",
-    ":stddef_h",
-    ":stdint_h",
-    ":stdio_h",
-    ":stdlib_h",
-    ":stdnoreturn_h",
-    ":string_h",
+    ":sys_appleapiopts",
+    ":sys_cdefs",
+    ":sys_qos",
     ":sys_resource",
     ":sys_select",
-    ":sys_time",
     ":sys_types",
     ":sys_wait",
-    ":tgmath_h",
-    ":time_h",
     ":unistd",
     ":unwind",
-    ":unwind_h",
-    ":uuid",
-    ":wchar_h",
-    ":wctype_h",
     ":xlocale",
   ]
 }
@@ -989,11 +406,9 @@ config("all_modulemap_configs") {
   configs = [
     "//buildtools/third_party/libc++:builtin_modulemap",
     "//buildtools/third_party/libc++:libcxx_modulemap",
-    ":DarwinBasic_modulemap",
-    ":DarwinFoundation_modulemap",
-    ":TargetConditionals_modulemap",
-    ":c_standard_library_modulemap",
+    ":DarwinFoundation1_modulemap",
+    ":DarwinFoundation2_modulemap",
+    ":DarwinFoundation3_modulemap",
     ":libunwind_modulemap",
-    ":os_availability_modulemap",
   ]
 }
