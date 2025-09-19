@@ -917,31 +917,6 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="SupervisedUsers.ClassifyUrlThrottle.Status"
-    enum="ClassifyUrlThrottleStatus" expires_after="2025-09-14">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    Tracks the throttle interaction with the navigation flow.
-
-    Typically, unblocked navigation with a single request records one Continue
-    status, followed by either Proceed or Defer and then Resume. If there are
-    redirects, then more Continue statuses are recorded.
-
-    Blocked navigation records at least one Continue followed by Defer and
-    CancelDeferredNavigation when the check was asynchronous, or an immediate
-    DeferAndScheduleInterstitial status if the check is synchronouns. When the
-    user navigates to a redirect chain, there might be more continue events
-    recorded.
-
-    The scenarios above mean that the number of Defer statuses should match the
-    number of Resume and CancelDeferredNavigation statuses.
-
-    Cancel is a definitive termination of the navigation without classification,
-    due to eg. unsupported type of request.
-  </summary>
-</histogram>
-
 <histogram name="SupervisedUsers.ExtensionApprovalsCountOnExtensionToggle"
     units="Extensions" expires_after="2025-10-26">
   <owner>anthie@google.com</owner>

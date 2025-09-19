@@ -43,17 +43,6 @@ static const char* kExampleURL = "https://example.com/";
 static const char* kExample1URL = "https://example1.com/";
 static const char* kExample2URL = "https://example2.com/";
 
-void ExpectThrottleStatus(base::HistogramTester* tester,
-                          std::map<ClassifyUrlThrottleStatus, int> buckets) {
-  int total = 0;
-  for (const auto& [bucket, count] : buckets) {
-    total += count;
-    tester->ExpectBucketCount(kClassifyUrlThrottleStatusHistogramName, bucket,
-                              count);
-  }
-  tester->ExpectTotalCount(kClassifyUrlThrottleStatusHistogramName, total);
-}
-
 void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
   tester->ExpectTotalCount(kClassifiedEarlierThanContentResponseHistogramName,
                            /*expected_count=*/0);
@@ -226,11 +215,6 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count(grew by)*/ 1);
-
-  // This throttle continued on request, and proceeded on response.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -253,10 +237,6 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -275,10 +255,6 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
 }
@@ -348,10 +324,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
 }
@@ -402,12 +374,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request, and proceeded on response because the
-  // result was already there.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
@@ -456,13 +422,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request, and deferred on response because the
-  // result wasn't there. Then it resumed.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kDefer, 1},
-                        {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
 // Checks a scenario where the classification responses arrive in reverse order:
@@ -513,12 +472,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on request and redirect, and deferred on response
-  // because the result wasn't there. It never recovered from defer state
-  // (interstitial was presented).
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 2},
-                        {ClassifyUrlThrottleStatus::kDefer, 1}});
   EXPECT_FALSE(resume_called());
 }
 
@@ -617,12 +570,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and proceeded because
-  // verdict was ready.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -687,12 +634,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and then proceeded because
-  // verdict was ready.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -762,13 +703,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and then deferred because
-  // one check was outstanding. After it was completed, the throttle resumed.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kDefer, 1},
-                        {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -815,11 +749,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   EXPECT_FALSE(resume_called());
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on first request deferred on second one.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kContinue, 1},
-       {ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -888,11 +817,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   EXPECT_FALSE(resume_called());
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on request and redirects and deferred waiting for
-  // last classification.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kDefer, 1}});
 }
 
 const TestCase kTestCases[] = {

@@ -234,9 +234,6 @@ extern const char kClassifiedEarlierThanContentResponseHistogramName[];
 // Histogram name to track how much throttle delayed the navigation.
 extern const char kClassifiedLaterThanContentResponseHistogramName[];
 
-// Histogram name to track intermediate throttle states.
-extern const char kClassifyUrlThrottleStatusHistogramName[];
-
 // Histogram name to track the final throttle verdict.
 extern const char kClassifyUrlThrottleFinalStatusHistogramName[];
 

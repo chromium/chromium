@@ -29,20 +29,6 @@ enum class ClassifyUrlThrottleFinalStatus : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleFinalStatus)
 
-// LINT.IfChange(ClassifyUrlThrottleStatus)
-enum class ClassifyUrlThrottleStatus : int {
-  kContinue = 0,
-  kProceed = 1,
-  kDefer = 2,
-  kDeferAndScheduleInterstitial = 3,
-  kCancel = 4,
-  kResume = 5,
-  kCancelDeferredNavigation = 6,
-
-  kMaxValue = kCancelDeferredNavigation,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleStatus)
-
 enum class InterstitialResultCallbackActions {
   kCancelNavigation = 0,
   kCancelWithInterstitial = 1
@@ -131,10 +117,6 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // The triggered callback; results will be written onto check.
   void OnURLCheckDone(ClassifyUrlCheckList::Key key,
                       SupervisedUserURLFilter::Result result);
-
-  // Change state of the throttle and record metrics.
-  std::optional<ThrottleCheckResult> NextNavigationState(
-      ClassifyUrlThrottleStatus status);
 
   // Defers the navigation to accommodate the interstitial and shows that
   // interstitial.
