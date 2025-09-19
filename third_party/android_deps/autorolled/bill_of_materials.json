@@ -1392,7 +1392,7 @@
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.41.0"
+        "version": "2.42.0"
     },
     {
         "name": "firebase-annotations",
@@ -1402,7 +1402,7 @@
     {
         "name": "firebase-common",
         "group": "com.google.firebase",
-        "version": "22.0.0"
+        "version": "22.0.1"
     },
     {
         "name": "firebase-components",
@@ -1452,7 +1452,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "25.0.0"
+        "version": "25.0.1"
     },
     {
         "name": "failureaccess",

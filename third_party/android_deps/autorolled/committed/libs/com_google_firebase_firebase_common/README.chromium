@@ -1,7 +1,7 @@
 Name: firebase-common
 Short Name: firebase-common
 URL: https://firebase.google.com
-Version: 22.0.0
+Version: 22.0.1
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
