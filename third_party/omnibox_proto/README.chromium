@@ -1,9 +1,9 @@
 Name: Omnibox Protos
 Short Name: omnibox_proto
-URL: This is the canonical public repository
+URL: Google Internal
 Version: 804504049
 Date: 2025-09-08
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/422306307)
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes

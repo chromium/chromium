@@ -1,9 +1,9 @@
 Name: Lens Protos
 Short Name: lens_overlay_proto
-URL: This is the canonical public repository
+URL: Google Internal
 Version: 802165699
 Date: 2025-09-09
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/422305932)
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
