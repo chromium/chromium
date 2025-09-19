@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/typed_macros.h"
@@ -35,20 +36,20 @@ namespace {
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
 // Creates a collapsible global track to hold all PageNode tracing tracks.
-const perfetto::NamedTrack CreatePageGroupTrack() {
-  perfetto::NamedTrack track("PageNodes", 0, perfetto::Track::Global(0));
-  return base::trace_event::InitializeTrack(track);
+perfetto::NamedTrack CreatePageGroupTrack() {
+  return perfetto::NamedTrack("PageNodes", 0, perfetto::Track::Global(0));
 }
 
 // Creates a tracing track for the PageNode identified by `token`.
-const perfetto::NamedTrack CreatePageNodeTrack(
-    const base::UnguessableToken& token) {
-  static const perfetto::NamedTrack page_group_track = CreatePageGroupTrack();
+perfetto::NamedTrack CreatePageNodeTrack(const base::UnguessableToken& token) {
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      page_group_track(CreatePageGroupTrack());
   auto track =
       perfetto::NamedTrack("PageNode", base::UnguessableTokenHash()(token),
-                           page_group_track)
+                           page_group_track->track())
           .disable_sibling_merge();
-  return base::trace_event::InitializeTrack(track);
+  return track;
 }
 
 perfetto::StaticString PageNodeLoadingStateToString(
@@ -85,18 +86,18 @@ PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                            base::TimeTicks visibility_change_time)
     : web_contents_(std::move(web_contents)),
       tracing_track_(CreatePageNodeTrack(page_token_.value())),
-      loading_track_("Loading", 0, tracing_track_),
+      loading_track_("Loading", 0, *tracing_track_),
       visibility_change_time_(visibility_change_time),
       main_frame_url_(visible_url),
       browser_context_id_(browser_context_id),
       is_focused_(false,
-                  perfetto::NamedTrack("IsFocused", 0, tracing_track_),
+                  perfetto::NamedTrack("IsFocused", 0, *tracing_track_),
                   YesNoStateToString),
       is_visible_(initial_properties.Has(PagePropertyFlag::kIsVisible),
-                  tracing_track_,
+                  *tracing_track_,
                   PageNodeVisibilityToString),
       is_audible_(initial_properties.Has(PagePropertyFlag::kIsAudible),
-                  perfetto::NamedTrack("IsAudible", 0, tracing_track_),
+                  perfetto::NamedTrack("IsAudible", 0, *tracing_track_),
                   YesNoStateToString),
       has_picture_in_picture_(
           initial_properties.Has(PagePropertyFlag::kHasPictureInPicture)),

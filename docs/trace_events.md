@@ -108,20 +108,16 @@ TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Destructor",
 #include "base/trace_event/track_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
-const perfetto::NamedTrack CreateFrameParentTrack() {
-  perfetto::NamedTrack track("Frames", 0, perfetto::Track());
-  if (perfetto::Tracing::IsInitialized()) {
-    // Because the track doesn't get any events of its own it must manually
-    // emit the track descriptor. This is done conditionally to avoid
-    // crashing in unit tests where tracing isn't initialized.
-    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
-  }
-  return track;
+perfetto::NamedTrack CreateFrameParentTrack() {
+  return perfetto::NamedTrack("Frames", 0, perfetto::Track());
 }
 
 perfetto::NamedTrack GetFrameVisibleTrack(int64_t frame_id) {
-  static const perfetto::NamedTrack parent_track = CreateFrameParentTrack();
-  return perfetto::NamedTrack("Frame Visibility", frame_id, parent_track);
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      parent_track(CreateFrameParentTrack());
+  return perfetto::NamedTrack("Frame Visibility", frame_id,
+      parent_track->track());
 }
 
 void MyFunction(int64_t frame_id, int64_t start_ts, int64_t end_ts) {

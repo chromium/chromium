@@ -193,16 +193,34 @@ class TraceScopedTrackableObject {
   IDType id_;
 };
 
+// Tracks that are used to group other tracks may not get any events of their
+// own, so their descriptor needs to be explicitly registered. This class wraps
+// a track to automatically register/unregistered its descriptor in the
+// constructor/destructor.
 template <class TrackType>
-TrackType InitializeTrack(const TrackType& track) {
-  if (perfetto::Tracing::IsInitialized()) {
-    // Because the track may not get any events of its own it must manually
-    // emit the track descriptor. SetTrackDescriptor may crash in unit tests
-    // where tracing isn't initialized.
-    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+class TrackRegistration {
+ public:
+  explicit TrackRegistration(const TrackType& track) : track_(track) {
+    if (perfetto::Tracing::IsInitialized()) {
+      // SetTrackDescriptor may crash in unit tests where tracing isn't
+      // initialized.
+      base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+    }
   }
-  return track;
-}
+  ~TrackRegistration() {
+    if (perfetto::Tracing::IsInitialized()) {
+      base::TrackEvent::EraseTrackDescriptor(track_);
+    }
+  }
+  TrackRegistration(const TrackRegistration&) = delete;
+  TrackRegistration& operator=(const TrackRegistration&) = delete;
+
+  const TrackType& operator*() const { return track_; }
+  const TrackType& track() const { return track_; }
+
+ private:
+  TrackType track_;
+};
 
 }  // namespace trace_event
 }  // namespace base

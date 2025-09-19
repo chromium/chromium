@@ -5556,7 +5556,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::OnceClosure on_process_before_unload_completed_for_testing_;
 
   // Tracing track used to emit async event related to lifecycle.
-  perfetto::NamedTrack tracing_track_;
+  const perfetto::NamedTrack tracing_track_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

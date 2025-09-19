@@ -18,7 +18,7 @@ GetLocalFrameTracingTrack(const LocalFrameToken& frame_token,
           perfetto::StaticString(is_main_frame ? "MainFrame" : "SubFrame"),
           base::PersistentHash(frame_token->AsBytes()), parent)
           .disable_sibling_merge();
-  return base::trace_event::InitializeTrack(track);
+  return track;
 }
 
 }  // namespace blink
