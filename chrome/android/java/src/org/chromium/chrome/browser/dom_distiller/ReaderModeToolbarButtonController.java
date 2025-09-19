@@ -10,7 +10,10 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,14 +37,20 @@ import java.util.Objects;
 
 /** Responsible for providing UI resources for showing a reader mode button on toolbar. */
 @NullMarked
-public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
+public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
+        implements ReaderModeActionRateLimiter.Observer {
     private final Context mContext;
     private final ActivityTabProvider mActivityTabProvider;
     private final TabSupplierObserver mActivityTabObserver;
     private final ButtonSpec mEntryPointSpec;
     private final ButtonSpec mExitPointSpec;
+
+    private CallbackController mCallbackController = new CallbackController();
     // Only populated when the TabSupplierObserver events fire.
     private @Nullable GURL mTabLastUrlSeen;
+    private boolean mShouldShowButtonForCurrentPage;
+    // Null until native is initialized.
+    private @Nullable ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     /**
      * Creates a new instance of {@code ReaderModeToolbarButtonController}.
@@ -76,11 +85,11 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                 new TabSupplierObserver(mActivityTabProvider) {
                     @Override
                     public void onUrlUpdated(@Nullable Tab tab) {
-                        maybeRefreshButton(tab);
-
                         GURL currentUrl = tab == null ? null : tab.getUrl();
                         if (Objects.equals(currentUrl, mTabLastUrlSeen)) return;
                         mTabLastUrlSeen = currentUrl;
+
+                        maybeRefreshButton(tab);
                     }
 
                     @Override
@@ -105,6 +114,20 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
                         /* tooltipTextResId= */ R.string.hide_reading_mode_text,
                         /* hasErrorBadge= */ false,
                         /* isChecked= */ true);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (mReaderModeActionRateLimiter != null) {
+            mReaderModeActionRateLimiter.removeObserver(this);
+        }
+    }
+
+    @Override
+    public void onFinishNativeInitialization() {
+        mReaderModeActionRateLimiter = ReaderModeActionRateLimiter.getInstance();
+        mReaderModeActionRateLimiter.addObserver(this);
     }
 
     @Override
@@ -138,8 +161,40 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
         return iphCommandBuilder;
     }
 
+    @Override
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        return mShouldShowButtonForCurrentPage;
+    }
+
+    // ReaderModeActionRateLimiter.Observer implementation.
+
+    @Override
+    public void onActionShown() {
+        Runnable task =
+                mCallbackController.makeCancelable(
+                        () -> {
+                            setCanShowButton(false);
+                        });
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                task,
+                DomDistillerFeatures.sReaderModeDistillInAppHideCpaDelayMs.getValue());
+    }
+
+    // Private methods
+
+    private void setCanShowButton(boolean canShow) {
+        mShouldShowButtonForCurrentPage = canShow;
+        notifyObservers(mShouldShowButtonForCurrentPage);
+    }
+
     private void maybeRefreshButton(@Nullable Tab tab) {
         if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
+
+        // The callback controller may still have a pending task to hide the button. Destroy it and
+        // create a new one to ensure that the button can be shown again.
+        mCallbackController.destroy();
+        mCallbackController = new CallbackController();
 
         if (tab != null && DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
             mButtonData.setButtonSpec(mExitPointSpec);
@@ -147,7 +202,7 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider {
             mButtonData.setButtonSpec(mEntryPointSpec);
         }
 
-        notifyObservers(mButtonData.canShow());
+        setCanShowButton(true);
     }
 
     // Testing-specific functions

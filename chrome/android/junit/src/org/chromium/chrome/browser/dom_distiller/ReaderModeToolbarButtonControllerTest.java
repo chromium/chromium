@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,13 +21,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -35,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
@@ -47,6 +53,7 @@ import org.chromium.url.GURL;
 
 /** This class tests the behavior of the {@link ReaderModeToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public class ReaderModeToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -70,6 +77,15 @@ public class ReaderModeToolbarButtonControllerTest {
 
     @Before
     public void setUp() throws Exception {
+        ShadowPostTask.setTestImpl(
+                new ShadowPostTask.TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
+
         mUserDataHost = new UserDataHost();
         mUnownedUserDataHost = new UnownedUserDataHost();
 
@@ -167,5 +183,27 @@ public class ReaderModeToolbarButtonControllerTest {
         assertEquals(
                 R.string.reader_mode_cpa_button_text,
                 controller.getButtonDataForTesting().getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP + ":hide_cpa_delay_ms/0")
+    public void testReaderModeButton_timesOut() throws Exception {
+        ReaderModeToolbarButtonController controller = createController();
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ButtonDataProvider.ButtonDataObserver observer =
+                new ButtonDataProvider.ButtonDataObserver() {
+                    @Override
+                    public void buttonDataChanged(boolean canShowHint) {
+                        Assert.assertFalse(canShowHint);
+                        callbackHelper.notifyCalled();
+                        controller.removeObserver(this);
+                    }
+                };
+        controller.addObserver(observer);
+
+        // Simulate the button being shown, and verify that the button is hidden after a delay.
+        controller.onActionShown();
+        callbackHelper.waitForNext();
     }
 }

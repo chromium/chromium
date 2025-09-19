@@ -225,6 +225,15 @@ public class AdaptiveToolbarUiCoordinator {
     }
 
     /**
+     * Called when native is initialized.
+     */
+    public void onFinishNativeInitialization() {
+        for (ButtonDataProvider provider : mButtonDataProviders) {
+            provider.onFinishNativeInitialization();
+        }
+    }
+
+    /**
      * Add voice search action button.
      *
      * @param voiceRecognitionHandler Supplies {@link VoiceRecognitionHandler} object.

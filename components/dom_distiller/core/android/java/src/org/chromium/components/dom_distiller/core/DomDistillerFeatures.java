@@ -74,6 +74,10 @@ public class DomDistillerFeatures {
             sReaderModeDistillInApp.newIntParam(
                     "suppression_window_ms", (int) TimeUnit.DAYS.toMillis(3));
 
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppHideCpaDelayMs =
+            sReaderModeDistillInApp.newIntParam(
+                    "hide_cpa_delay_ms", (int) TimeUnit.SECONDS.toMillis(5));
+
     public static final MutableBooleanParamWithSafeDefault
             sReaderModeImprovementsTriggerOnMobileFriendlyPages =
                     sReaderModeImprovements.newBooleanParam(

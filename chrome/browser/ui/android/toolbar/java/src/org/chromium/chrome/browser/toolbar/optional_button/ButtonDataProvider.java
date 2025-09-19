@@ -43,4 +43,9 @@ public interface ButtonDataProvider {
      * held and destroyed as a separate, concrete instance in addition to a ButtonDataProvider.
      */
     void destroy();
+
+    /**
+     * Called when native is initialized.
+     */
+    default void onFinishNativeInitialization() {}
 }

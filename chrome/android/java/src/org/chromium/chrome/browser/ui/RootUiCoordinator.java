@@ -979,6 +979,7 @@ public class RootUiCoordinator
 
         initMessagesInfra();
         initScrollCapture();
+        mAdaptiveToolbarUiCoordinator.onFinishNativeInitialization();
 
         if (mWindowAndroid.getInsetObserver() != null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R

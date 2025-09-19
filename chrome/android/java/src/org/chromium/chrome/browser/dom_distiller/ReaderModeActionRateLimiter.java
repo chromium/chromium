@@ -41,7 +41,10 @@ public class ReaderModeActionRateLimiter {
 
     public interface Observer {
         /** Called when the contextual page action was just suppressed. */
-        void onActionSuppressed();
+        default void onActionSuppressed() {}
+
+        /** Called when the contextual page action was just shown. */
+        default void onActionShown() {}
     }
 
     /** No-op implementation for when the feature is off. */
@@ -133,6 +136,10 @@ public class ReaderModeActionRateLimiter {
         prefs.writeInt(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT, showCount);
         if (showCount >= DomDistillerFeatures.sReaderModeDistillInAppCpaShowLimit.getValue()) {
             startTemporarySuppression(prefs);
+        }
+
+        for (Observer obs : mObservers) {
+            obs.onActionShown();
         }
     }
 

@@ -149,6 +149,13 @@ public class AdaptiveToolbarButtonController
                 profileSupplier, mCallbackController.makeCancelable(this::setProfile));
     }
 
+    @Override
+    public void onFinishNativeInitialization() {
+        for (ButtonDataProvider provider : mButtonDataProviderMap.values()) {
+            provider.onFinishNativeInitialization();
+        }
+    }
+
     private void startSettings(UiState uiState) {
         Bundle args = new Bundle();
         args.putBoolean(ARG_UI_STATE_CAN_SHOW_UI, uiState.canShowUi);
@@ -310,6 +317,13 @@ public class AdaptiveToolbarButtonController
     @Override
     public void buttonDataChanged(boolean canShowHint) {
         notifyObservers(canShowHint);
+
+        // If the dynamic button is no longer available, switch to the session button variant.
+        if (!canShowHint
+                && (mButtonData.getButtonSpec() == null || mButtonData.getButtonSpec().getButtonVariant() != mSessionButtonVariant)) {
+            setSingleProvider(mSessionButtonVariant);
+            notifyObservers(true);
+        }
     }
 
     @VisibleForTesting

@@ -74,6 +74,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock private ButtonDataProvider mNewTabButtonController;
     @Mock private ButtonDataProvider mPriceTrackingButtonController;
+    @Mock private ButtonDataProvider mReaderModeButtonController;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Profile mProfile;
@@ -131,6 +132,42 @@ public class AdaptiveToolbarButtonControllerTest {
         mProfileSupplier.set(mProfile);
 
         verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(
+                mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
+    public void testDynamicAction_readerModeFallbackToNewTab() {
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, List.of(AdaptiveToolbarButtonVariant.NEW_TAB)));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        verify(mActivityLifecycleDispatcher).register(adaptiveToolbarButtonController);
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        mProfileSupplier.set(mProfile);
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(
+                mNewTabButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.READER_MODE, mReaderModeButtonController);
+        adaptiveToolbarButtonController.showDynamicAction(AdaptiveToolbarButtonVariant.READER_MODE);
+        Assert.assertEquals(
+                mReaderModeButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        // Simulate the case the reader mode dynamic action times out. This should flip the button
+        // back to the static new tab button.
+        adaptiveToolbarButtonController.buttonDataChanged(false);
         Assert.assertEquals(
                 mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());

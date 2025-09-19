@@ -112,7 +112,6 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      * @param tab Current tab.
      * @return whether the button should be shown for the current tab.
      */
-    @CallSuper
     @Contract("null -> false")
     protected boolean shouldShowButton(@Nullable Tab tab) {
         if (tab == null) return false;
