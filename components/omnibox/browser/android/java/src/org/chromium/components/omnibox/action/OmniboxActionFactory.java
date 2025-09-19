@@ -45,17 +45,6 @@ public interface OmniboxActionFactory {
             String actionUri,
             boolean showAsActionButton);
 
-    /**
-     * Construct a new OmniboxAnswerAction.
-     *
-     * @param nativeInstance Pointer to native instance of the object.
-     * @param hint Text that should be displayed in the associated action chip.
-     * @param accessibilityHint Text for screen reader to read when focusing action chip
-     */
-    @CalledByNative
-    OmniboxAction buildOmniboxAnswerAction(
-            long nativeInstance, String hint, String accessibilityHint);
-
     @NativeMethods
     public interface Natives {
         /** Pass the OmniboxActionFactory instance to C++. */

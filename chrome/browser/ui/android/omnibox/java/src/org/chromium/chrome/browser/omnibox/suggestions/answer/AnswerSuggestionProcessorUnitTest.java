@@ -49,8 +49,6 @@ import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -250,51 +248,6 @@ public class AnswerSuggestionProcessorUnitTest {
             Assert.assertNotNull(
                     "No icon associated with type: " + type.name(), suggHelper.getIcon());
         }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
-    public void richAnswerCard() {
-        OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
-        SuggestionTestHelper suggHelper =
-                createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, true);
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_leadin));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-        Assert.assertNull(suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
-        Assert.assertEquals(
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_top_padding),
-                suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
-        Assert.assertEquals(
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_leadin),
-                suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
-
-        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
-        Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-
-        // A rich answer with no actions shouldn't get the card treatment.
-        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 0, true);
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
-        Assert.assertFalse(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-        Assert.assertEquals(0, suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
-        Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
-        Assert.assertEquals(
-                1, suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
     }
 
     @Test

@@ -34,7 +34,6 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -1437,7 +1436,6 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
         return OmniboxEventProto::Suggestion::TAB_SWITCH;
       case OmniboxActionId::HISTORY_CLUSTERS:
       case OmniboxActionId::ACTION_IN_SUGGEST:
-      case OmniboxActionId::ANSWER_ACTION:
       case OmniboxActionId::EXTENSION_ACTION:
       case OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT:
         // Preserve existing behavior by continuing on to use the match `type`.
@@ -1588,11 +1586,6 @@ int AutocompleteMatch::GetSortingOrder() const {
     return 3;
   }
 #endif  // !BUILDFLAG(IS_IOS)
-
-  if (answer_template && actions.size() > 0 &&
-      OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
-    return 4;
-  }
 
   switch (enterprise_search_aggregator_type) {
     case EnterpriseSearchAggregatorType::NONE:
@@ -1813,16 +1806,7 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
   }
 }
 
-void AutocompleteMatch::RemoveAnswerActions() {
-  if (actions.empty()) {
-    return;
-  }
 
-  std::erase_if(actions, [&](const auto& action) {
-    auto* ans_action = OmniboxAnswerAction::FromAction(action.get());
-    return ans_action != nullptr;
-  });
-}
 
 bool AutocompleteMatch::IsTrivialAutocompletion() const {
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
@@ -1958,9 +1942,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   // Absorb the `actions` and `takeover_action` so they won't be buried.
   // Don't absorb answer actions; they should always be created fresh.
   if (actions.empty() && !duplicate_match.actions.empty() &&
-      IsActionCompatible() &&
-      OmniboxAnswerAction::FromAction(duplicate_match.actions[0].get()) ==
-          nullptr) {
+      IsActionCompatible()) {
     actions = std::move(duplicate_match.actions);
     takeover_action = std::move(duplicate_match.takeover_action);
   }

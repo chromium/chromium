@@ -45,7 +45,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
@@ -445,32 +444,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
   return url::GURLAndroid::FromNativeGURL(env, match->destination_url);
 }
 
-base::android::ScopedJavaLocalRef<jobject>
-AutocompleteControllerAndroid::GetAnswerActionDestinationURL(
-    JNIEnv* env,
-    uintptr_t match_ptr,
-    jlong elapsed_time_since_input_change,
-    uintptr_t answer_action_ptr) {
-  auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
-  auto* action = reinterpret_cast<OmniboxAnswerAction*>(answer_action_ptr);
 
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile_);
-
-  if (action == nullptr || template_url_service == nullptr) {
-    return url::GURLAndroid::FromNativeGURL(env, GURL());
-  }
-
-  autocomplete_controller_->UpdateSearchTermsArgsWithAdditionalSearchboxStats(
-      base::Milliseconds(elapsed_time_since_input_change),
-      action->search_terms_args);
-  TemplateURL* template_url =
-      match->GetTemplateURL(template_url_service, false);
-  return url::GURLAndroid::FromNativeGURL(
-      env, GURL(template_url->url_ref().ReplaceSearchTerms(
-               action->search_terms_args,
-               template_url_service->search_terms_data())));
-}
 
 ScopedJavaLocalRef<jobject>
 AutocompleteControllerAndroid::GetMatchingTabForSuggestion(

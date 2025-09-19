@@ -19,7 +19,6 @@ enum class OmniboxActionId {
   HISTORY_CLUSTERS,
   ACTION_IN_SUGGEST,
   TAB_SWITCH,
-  ANSWER_ACTION,
   EXTENSION_ACTION,
 
   // Takeover actions added to matches that are fulfilled via lens controller.

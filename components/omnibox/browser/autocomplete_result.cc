@@ -726,23 +726,12 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
     static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 1;
     static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
     std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
-                                             OmniboxActionId::ANSWER_ACTION,
                                              OmniboxActionId::PEDAL};
     std::vector<OmniboxActionId> include_at_most_pedals_or_answers{
-        OmniboxActionId::ANSWER_ACTION, OmniboxActionId::PEDAL};
-    std::vector<OmniboxActionId> include_only_answer_actions{
-        OmniboxActionId::ANSWER_ACTION};
-
-    bool has_url = std::ranges::any_of(matches_, [](const auto& match) {
-      return !AutocompleteMatch::IsSearchType(match.type);
-    });
-    bool hide_answer_actions_when_url_present =
-        !OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.Get();
+        OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_only_answer_actions{};
 
     for (size_t index = 0u; index < matches_.size(); ++index) {
-      if (has_url && hide_answer_actions_when_url_present) {
-        matches_[index].RemoveAnswerActions();
-      }
       matches_[index].FilterOmniboxActions(
           (!is_zero_suggest && index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD)
               ? include_all
@@ -1631,13 +1620,8 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
 AutocompleteResult::MatchDedupComparator
 AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
   AutocompleteMatchDedupeType type;
-  if ((match.answer_template.has_value() &&
-       OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) ||
-      match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER) {
-    type = AutocompleteMatchDedupeType::kHistoryEmbeddingAnswer;
-  } else if (match.provider != nullptr &&
-             match.provider->type() ==
-                 AutocompleteProvider::TYPE_VERBATIM_MATCH) {
+  if (match.provider != nullptr &&
+      match.provider->type() == AutocompleteProvider::TYPE_VERBATIM_MATCH) {
     type = AutocompleteMatchDedupeType::kVerbatimProvider;
   } else if (match.type == ACMatchType::CALCULATOR) {
     type = AutocompleteMatchDedupeType::kCalculator;

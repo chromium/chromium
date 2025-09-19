@@ -1643,9 +1643,6 @@ extern const char kOmniboxAdjustIndentationDescription[];
 extern const char kOmniboxAllowAiModeMatchesName[];
 extern const char kOmniboxAllowAiModeMatchesDescription[];
 
-extern const char kOmniboxAnswerActionsName[];
-extern const char kOmniboxAnswerActionsDescription[];
-
 extern const char kOmniboxAsyncViewInflationName[];
 extern const char kOmniboxAsyncViewInflationDescription[];
 

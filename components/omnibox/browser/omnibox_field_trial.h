@@ -647,25 +647,6 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 // ---------------------------------------------------------
 // Actions In Suggest ->
 
-constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
-    &omnibox::kOmniboxAnswerActions,
-    "AnswerActionsCounterfactual",
-    false);
-constexpr base::FeatureParam<bool> kAnswerActionsShowAboveKeyboard(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowAboveKeyboard",
-    false);
-
-constexpr base::FeatureParam<bool> kAnswerActionsShowIfUrlsPresent(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowIfUrlsPresent",
-    false);
-
-constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowRichCard",
-    false);
-
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->

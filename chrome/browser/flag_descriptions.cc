@@ -2805,10 +2805,6 @@ const char kOmniboxAllowAiModeMatchesName[] = "Omnibox Allow AI Mode Matches";
 const char kOmniboxAllowAiModeMatchesDescription[] =
     "Allow showing AI mode matches if returned from the search server.";
 
-const char kOmniboxAnswerActionsName[] = "Answer Actions";
-const char kOmniboxAnswerActionsDescription[] =
-    "Answer Actions attaches related Action Chips to Answer suggestions.";
-
 const char kOmniboxAsyncViewInflationName[] = "Async Omnibox view inflation";
 const char kOmniboxAsyncViewInflationDescription[] =
     "Inflate Omnibox and Suggestions views off the UI thread.";

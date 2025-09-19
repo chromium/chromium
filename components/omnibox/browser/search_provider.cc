@@ -1045,9 +1045,6 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
                                   &matches);
   }
 
-  if (OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
-    DuplicateCardAnswer(&matches);
-  }
   // Now add the most relevant matches to |matches_|.  We take up to
   // provider_max_matches_ suggest/navsuggest matches, regardless of origin.  We
   // always include in that set a legal default match if possible. If we have

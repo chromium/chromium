@@ -946,17 +946,16 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
         if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
           // omnibox::RichAnswerTemplate is preferred to "ansa" if available.
-          if (suggest_template.has_rich_answer_template() &&
-              !OmniboxFieldTrial::kAnswerActionsCounterfactual.Get()) {
+          if (suggest_template.has_rich_answer_template()) {
             answer_template = suggest_template.rich_answer_template();
             FormatAnswerTemplateImageURL(&answer_template);
             // Ensure `answer_template` has an answer.
             answer_parsed_successfully = answer_template.answers_size() > 0;
           } else if (const auto* answer_json =
                          suggestion_detail.FindDict("ansa")) {
-              answer_parsed_successfully =
-                  omnibox::answer_data_parser::ParseJsonToAnswerData(
-                      *answer_json, &answer_template);
+            answer_parsed_successfully =
+                omnibox::answer_data_parser::ParseJsonToAnswerData(
+                    *answer_json, &answer_template);
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
                                     answer_parsed_successfully);

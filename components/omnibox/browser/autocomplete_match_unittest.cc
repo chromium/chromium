@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -599,23 +598,6 @@ TEST_F(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
   EXPECT_EQ(history_match.type, AutocompleteMatchType::HISTORY_TITLE);
   EXPECT_EQ(history_match.contents, u"propagate");
   EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
-
-  omnibox::RichAnswerTemplate answer_template;
-  omnibox::SuggestionEnhancement* enhancement =
-      answer_template.mutable_enhancements()->add_enhancements();
-  enhancement->set_display_text("Similar and opposite words");
-  AutocompleteMatch match_with_answer_actions(
-      search_provider.get(), 400, true, AutocompleteMatchType::SEARCH_SUGGEST);
-  match_with_answer_actions.actions.push_back(
-      base::MakeRefCounted<OmniboxAnswerAction>(
-          std::move(*enhancement), TemplateURLRef::SearchTermsArgs(),
-          omnibox::ANSWER_TYPE_DICTIONARY));
-  AutocompleteMatch match_with_no_answer_actions(
-      search_provider.get(), 400, true,
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match_with_no_answer_actions.UpgradeMatchWithPropertiesFrom(
-      match_with_answer_actions);
-  EXPECT_EQ(0u, match_with_no_answer_actions.actions.size());
 }
 
 TEST_F(AutocompleteMatchTest, MergeScoringSignals) {

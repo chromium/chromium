@@ -66,8 +66,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsCoordinator;
 import org.chromium.chrome.browser.omnibox.navattach.NavigationFulfillmentType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerAction;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1682,23 +1680,6 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onTopResumedActivityChanged(false);
         assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
-    }
-
-    @Test
-    public void onOmniboxAnswerActionClicked() {
-        mMediator.setAutocompleteProfile(mProfile);
-        mMediator.onNativeInitialized();
-        mMediator.onOmniboxSessionStateChange(true);
-        OmniboxAnswerAction answerAction =
-                (OmniboxAnswerAction)
-                        OmniboxActionFactoryImpl.get()
-                                .buildOmniboxAnswerAction(123L, "7 day forecast", "7 day forecast");
-
-        mMediator.onSuggestionsReceived(
-                AutocompleteResult.fromCache(mSuggestionsList, null), /* isFinal= */ true);
-        mMediator.onOmniboxActionClicked(answerAction, 0);
-
-        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
     }
 
     @Test

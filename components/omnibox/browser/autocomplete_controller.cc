@@ -45,7 +45,6 @@
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
@@ -2111,20 +2110,14 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
     for (auto& scoped_action : match->actions) {
       auto* action_in_suggest =
           OmniboxActionInSuggest::FromAction(scoped_action.get());
-      auto* answer_action =
-          OmniboxAnswerAction::FromAction(scoped_action.get());
 
-      TemplateURLRef::SearchTermsArgs* search_terms_args;
       if (action_in_suggest == nullptr ||
           !action_in_suggest->search_terms_args.has_value()) {
-        if (answer_action == nullptr) {
-          continue;
-        }
-        search_terms_args = &answer_action->search_terms_args;
-      } else {
-        search_terms_args = &action_in_suggest->search_terms_args.value();
+        continue;
       }
 
+      TemplateURLRef::SearchTermsArgs* search_terms_args;
+      search_terms_args = &action_in_suggest->search_terms_args.value();
       search_terms_args->searchbox_stats.MergeFrom(
           match->search_terms_args->searchbox_stats);
 

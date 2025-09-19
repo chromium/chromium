@@ -16675,27 +16675,6 @@
             ]
         }
     ],
-    "OmniboxAnswerActions": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ShowAboveKeyboard": "false",
-                        "ShowIfUrlsPresent": "false",
-                        "ShowRichCard": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxAnswerActions",
-                        "OmniboxSuggestionAnswerMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxAsyncViewInflation": [
         {
             "platforms": [

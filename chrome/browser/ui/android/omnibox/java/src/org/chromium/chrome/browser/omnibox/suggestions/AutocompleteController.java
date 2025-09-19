@@ -14,7 +14,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerAction;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -370,34 +369,12 @@ public class AutocompleteController {
     }
 
     /**
-     * Returns the final url for navigating to the SRP for the given answer action. The returned URL
-     * is augmented with the final searchbox stats.
-     */
-    @Nullable
-    GURL getAnswerActionDestinationURL(
-            AutocompleteMatch match,
-            long elapsedTimeSinceInputChange,
-            OmniboxAnswerAction answerAction) {
-        if (mNativeController == 0) return null;
-        assert hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH);
-        if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
-
-        return AutocompleteControllerJni.get()
-                .getAnswerActionDestinationURL(
-                        mNativeController,
-                        match.getNativeObjectRef(),
-                        elapsedTimeSinceInputChange,
-                        answerAction.getNativeInstance());
-    }
-
-    /**
      * Retrieves matching tab for suggestion at specific index.
      *
      * @param match the AutocompleteMatch to retrieve Tab info for
      * @return tab that hosts matching URL
      */
-    @Nullable
-    Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
+    @Nullable Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
         if (mNativeController == 0) return null;
         if (!hasValidNativeObjectRef(match, VerificationPoint.GET_MATCHING_TAB)) return null;
         return AutocompleteControllerJni.get()
@@ -487,12 +464,6 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange);
-
-        GURL getAnswerActionDestinationURL(
-                long nativeAutocompleteControllerAndroid,
-                long nativeAutocompleteMatch,
-                long elapsedTimeSinceInputChange,
-                long nativeAnswerAction);
 
         Tab getMatchingTabForSuggestion(
                 long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);

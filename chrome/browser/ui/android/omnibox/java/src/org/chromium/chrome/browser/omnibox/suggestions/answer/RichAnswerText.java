@@ -17,7 +17,6 @@ import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
@@ -86,13 +85,8 @@ class RichAnswerText implements AnswerText {
 
         FormattedString firstLine;
         FormattedString secondLine;
-        if (shouldSkipTextReversal(answerType)) {
-            firstLine = richAnswerTemplate.getAnswers(0).getHeadline();
-            secondLine = richAnswerTemplate.getAnswers(0).getSubhead();
-        } else {
-            firstLine = richAnswerTemplate.getAnswers(0).getSubhead();
-            secondLine = richAnswerTemplate.getAnswers(0).getHeadline();
-        }
+        firstLine = richAnswerTemplate.getAnswers(0).getSubhead();
+        secondLine = richAnswerTemplate.getAnswers(0).getHeadline();
 
         // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
         result[0] =
@@ -256,18 +250,5 @@ class RichAnswerText implements AnswerText {
                         || answerType == AnswerType.ANSWER_TYPE_TRANSLATION)
                 ? 3
                 : 1;
-    }
-
-    /**
-     * When shouldShowAnswerActions() is true, the backend provides dictionary, finance, sports,
-     * knowledge graph, and weather answer in reversed form already. Dictionary is handled
-     * separately, but for the remainder we want to skip reversing the text but continue to swap
-     * a11y content.
-     */
-    private static boolean shouldSkipTextReversal(AnswerType answerType) {
-        return OmniboxFeatures.shouldShowAnswerActions()
-                && (answerType == AnswerType.ANSWER_TYPE_FINANCE
-                        || answerType == AnswerType.ANSWER_TYPE_SPORTS
-                        || answerType == AnswerType.ANSWER_TYPE_WEATHER);
     }
 }

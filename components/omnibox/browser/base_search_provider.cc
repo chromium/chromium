@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
@@ -145,13 +144,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.website_uri = suggestion.entity_info().website_uri();
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
-  if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-      suggestion.answer_template() &&
-      suggestion.answer_template()->enhancements().enhancements().size() > 0) {
-    match.suggestion_group_id = omnibox::GROUP_MOBILE_RICH_ANSWER;
-  } else {
-    match.suggestion_group_id = suggestion.suggestion_group_id();
-  }
+  match.suggestion_group_id = suggestion.suggestion_group_id();
   match.answer_template = suggestion.answer_template();
   match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
@@ -265,16 +258,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
     }
   }
 
-  if (is_android && is_google && suggestion.answer_template()) {
-    std::ranges::transform(
-        suggestion.answer_template()->enhancements().enhancements(),
-        std::back_inserter(match.actions),
-        [&](const omnibox::SuggestionEnhancement& enhancement) {
-          return CreateAnswerAction(enhancement, *match.search_terms_args,
-                                    suggestion.answer_type());
-        });
-  }
-
   match.navigational_intent = suggestion.navigational_intent();
 
   return match;
@@ -298,20 +281,6 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
 
   return base::MakeRefCounted<OmniboxActionInSuggest>(
       std::move(template_action), std::move(action_search_terms_args));
-}
-
-// static
-scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
-    omnibox::SuggestionEnhancement enhancement,
-    TemplateURLRef::SearchTermsArgs search_terms_args,
-    omnibox::AnswerType answer_type) {
-  // Define actions destination URL.
-  search_terms_args.additional_query_params =
-      CreateQueryParamStringFromMap(enhancement.query_cgi_params());
-  search_terms_args.search_terms = base::UTF8ToUTF16(enhancement.query());
-
-  return base::MakeRefCounted<OmniboxAnswerAction>(
-      std::move(enhancement), search_terms_args, answer_type);
 }
 
 // static
@@ -722,10 +691,6 @@ void BaseSearchProvider::AddMatchToMap(
       existing_match.answer_template =
           less_relevant_duplicate_match.answer_template;
       existing_match.answer_type = less_relevant_duplicate_match.answer_type;
-      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
-        existing_match.suggestion_group_id =
-            less_relevant_duplicate_match.suggestion_group_id;
-      }
     }
     // This is to avoid having shopping categorical queries lose their images to
     // higher-relevance local history and verbatim matches. This works for the

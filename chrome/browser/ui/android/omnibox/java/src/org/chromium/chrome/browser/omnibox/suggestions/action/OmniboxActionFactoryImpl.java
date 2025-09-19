@@ -75,10 +75,4 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
         return new OmniboxActionInSuggest(
                 nativeInstance, hint, accessibilityHint, actionType, actionUri, showAsActionButton);
     }
-
-    @Override
-    public OmniboxAction buildOmniboxAnswerAction(
-            long nativeInstance, String hint, String accessibilityHint) {
-        return new OmniboxAnswerAction(nativeInstance, hint, accessibilityHint);
-    }
 }

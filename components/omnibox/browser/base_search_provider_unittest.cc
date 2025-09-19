@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -721,58 +720,7 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
   }
 }
 
-TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
-  struct {
-    std::string query;
-    std::vector<std::pair<std::string, std::string>> query_cgi_params;
-    std::vector<std::string> possible_param_variations;
-  } test_cases[]{
-      // No additional params.
-      {/*query=*/"Alphabet Inc Class C compare", /*query_cgi_params=*/{},
-       /*possible_param_variations=*/{}},
-      // One additional param.
-      {/*query=*/"Alphabet Inc Class C financials",
-       /*query_cgi_params=*/{{"name", "value"}},
-       /*possible_param_variations=*/{"name=value"}},
-      // Multiple additional params.
-      {/*query=*/"About Alphabet Inc Class C",
-       /*query_cgi_params=*/{{"name1", "value1"}, {"name2", "value2"}},
-       /*possible_param_variations=*/
-       {"name1=value1&name2=value2", "name2=value2&name1=value1"}},
-  };
-  omnibox::RichAnswerTemplate answer_template;
-  for (const auto& test_case : test_cases) {
-    omnibox::SuggestionEnhancement* enhancement =
-        answer_template.mutable_enhancements()->add_enhancements();
-    enhancement->set_query(test_case.query);
-    for (const auto& param : test_case.query_cgi_params) {
-      enhancement->mutable_query_cgi_params()->insert(
-          {param.first, param.second});
-    }
-    TemplateURLRef::SearchTermsArgs search_terms_args;
-    SearchTermsData search_terms_data;
-    TemplateURLData template_url_data;
-    template_url_data.SetURL("https://www.google.com/search?q={searchTerms}");
-    auto template_url = std::make_unique<TemplateURL>(template_url_data);
 
-    auto action = BaseSearchProvider::CreateAnswerAction(
-        std::move(*enhancement), search_terms_args,
-        omnibox::ANSWER_TYPE_FINANCE);
-
-    auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
-    // Ensure search terms additional params match. Checking the exact value is
-    // not easily possible as param order is not guaranteed.
-    bool found_matching_param_sequence =
-        test_case.possible_param_variations.empty();
-    for (const std::string& param_sequence :
-         test_case.possible_param_variations) {
-      found_matching_param_sequence |=
-          answer_action->search_terms_args.additional_query_params ==
-          param_sequence;
-    }
-    EXPECT_TRUE(found_matching_param_sequence);
-  }
-}
 
 TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   TemplateURLData data;

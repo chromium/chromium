@@ -18,19 +18,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
-import org.chromium.components.omnibox.RichAnswerTemplateProto.SuggestionEnhancement;
-import org.chromium.components.omnibox.RichAnswerTemplateProto.SuggestionEnhancements;
 
 /** Tests for {@link RichAnswerText}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -127,7 +121,6 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testFinanceAnswer() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -219,7 +212,6 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testFinanceAnswer_withColorReversal() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -297,7 +289,6 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testWeatherAnswer() {
         FormattedString headline =
                 FormattedString.newBuilder()
@@ -416,7 +407,6 @@ public class RichAnswerTextTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testNoFragments() {
         FormattedString headline = FormattedString.newBuilder().setText("redmond weather").build();
         FormattedString subhead =
@@ -446,48 +436,5 @@ public class RichAnswerTextTest {
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
         Assert.assertEquals(1, textAppearanceSpans.length);
         Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
-    public void testRichAnswerCard() {
-        OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
-        // The backend sends the lines in Answer > query order for some answer types (dictionary,
-        // sports, weather, finance, knowledge graph). These should not have their order reversed.
-        FormattedString headline =
-                FormattedString.newBuilder().setText("64•F Thu - Redmond, WA").build();
-        FormattedString subhead = FormattedString.newBuilder().setText("redmond weather").build();
-
-        RichAnswerTemplate richAnswerTemplate =
-                RichAnswerTemplate.newBuilder()
-                        .setEnhancements(
-                                SuggestionEnhancements.newBuilder()
-                                        .addEnhancements(
-                                                SuggestionEnhancement.newBuilder()
-                                                        .setDisplayText("7 day forecast"))
-                                        .build())
-                        .addAnswers(
-                                0,
-                                AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
-                        .build();
-
-        AnswerType answerType = AnswerType.ANSWER_TYPE_WEATHER;
-        AnswerText[] texts =
-                RichAnswerText.from(mContext, richAnswerTemplate, answerType, false, true);
-        SpannableStringBuilder primaryText = texts[0].getText();
-        SpannableStringBuilder secondaryText = texts[1].getText();
-
-        Assert.assertEquals("64•F Thu - Redmond, WA", primaryText.toString());
-        TextAppearanceSpan[] textAppearanceSpans =
-                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mHeadlineText.getTextSize());
-
-        Assert.assertEquals("redmond weather", secondaryText.toString());
-        textAppearanceSpans =
-                secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
-        Assert.assertEquals(1, textAppearanceSpans.length);
-        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
     }
 }

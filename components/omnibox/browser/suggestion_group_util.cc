@@ -54,9 +54,7 @@ const GroupConfigMap& BuildDefaultGroups() {
                          : GroupConfig_RenderType_DEFAULT_VERTICAL)},
 
         {GROUP_MOBILE_RICH_ANSWER,
-            OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()
-          ? CreateGroup(SECTION_MOBILE_RICH_ANSWER)
-          : CreateGroup(SECTION_SEARCH)},
+         CreateGroup(SECTION_SEARCH)},
         {GROUP_SEARCH, CreateGroup(SECTION_SEARCH)},
         {GROUP_OTHER_NAVS, CreateGroup(SECTION_SEARCH)},
         // clang-format on

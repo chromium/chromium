@@ -187,51 +187,39 @@ void ZpsSectionWithLocalHistory::InitFromMatches(ACMatches& matches) {
 AndroidNonZPSSection::AndroidNonZPSSection(
     bool show_only_search_suggestions,
     omnibox::GroupConfigMap& group_configs)
-    : Section(
-          15,
-          {
-              // Default match Group, not part of the Grouping.
-              Group(1,
-                    {
-                        {omnibox::GROUP_SEARCH, 1},
-                        {omnibox::GROUP_OTHER_NAVS, 1},
-                        {omnibox::GROUP_MOBILE_RICH_ANSWER,
-                         OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-                                 !OmniboxFieldTrial::
-                                      kAnswerActionsShowAboveKeyboard.Get()
-                             ? 1
-                             : 0},
-                    },
-                    /*is_zps=*/false),
-              // Top Group / above the keyboard.
-              Group(num_visible_matches_ - 1,
-                    {
-                        {omnibox::GROUP_SEARCH, 14},
-                        {omnibox::GROUP_OTHER_NAVS,
-                         show_only_search_suggestions ? 0 : 14},
-                    },
-                    /*is_zps=*/false),
-              // Dedicated Group for rich answer card just above the fold.
-              Group(1,
-                    {
-                        {omnibox::GROUP_MOBILE_RICH_ANSWER,
-                         OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-                                 OmniboxFieldTrial::
-                                     kAnswerActionsShowAboveKeyboard.Get()
-                             ? 1
-                             : 0},
-                    },
-                    /*is_zps=*/false),
-              // Bottom Group, up to the Section limit.
-              Group(14,
-                    {
-                        {omnibox::GROUP_SEARCH, 14},
-                        {omnibox::GROUP_OTHER_NAVS,
-                         show_only_search_suggestions ? 0 : 14},
-                    },
-                    /*is_zps=*/false),
-          },
-          group_configs) {}
+    : Section(15,
+              {
+                  // Default match Group, not part of the Grouping.
+                  Group(1,
+                        {
+                            {omnibox::GROUP_SEARCH, 1},
+                            {omnibox::GROUP_OTHER_NAVS, 1},
+                        },
+                        /*is_zps=*/false),
+                  // Top Group / above the keyboard.
+                  Group(num_visible_matches_ - 1,
+                        {
+                            {omnibox::GROUP_SEARCH, 14},
+                            {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                        },
+                        /*is_zps=*/false),
+                  // Dedicated Group for rich answer card just above the fold.
+                  Group(1,
+                        {
+                            {omnibox::GROUP_MOBILE_RICH_ANSWER, 0},
+                        },
+                        /*is_zps=*/false),
+                  // Bottom Group, up to the Section limit.
+                  Group(14,
+                        {
+                            {omnibox::GROUP_SEARCH, 14},
+                            {omnibox::GROUP_OTHER_NAVS,
+                             show_only_search_suggestions ? 0 : 14},
+                        },
+                        /*is_zps=*/false),
+              },
+              group_configs) {}
 
 void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
   auto rich_answer_match = std::ranges::find_if(
@@ -239,20 +227,6 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
       [&](const auto& match) { return match.answer_template.has_value(); });
   bool has_rich_answer = rich_answer_match != matches.end();
   if (!has_rich_answer) {
-    return;
-  }
-
-  bool has_url = std::ranges::any_of(matches, [](const auto& match) {
-    return !AutocompleteMatch::IsSearchType(match.type);
-  });
-  bool hide_if_urls_present =
-      !OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.Get();
-  if (has_url && hide_if_urls_present) {
-    rich_answer_match->suggestion_group_id = omnibox::GROUP_SEARCH;
-  }
-
-  if (!OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() ||
-      !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
     return;
   }
 
