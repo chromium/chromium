@@ -293,8 +293,19 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
   // Action buttons
   UIButton* plusButton =
-      [self createButtonWithImage:DefaultSymbolWithPointSize(
-                                      kPlusSymbol, kSymbolActionPointSize)];
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  [plusButton
+      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+      forState:UIControlStateNormal];
+  plusButton.translatesAutoresizingMaskIntoConstraints = NO;
+  plusButton.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  plusButton.layer.cornerRadius = kAIMButtonHeight / 2.0;
+  plusButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight].active =
+      YES;
+  [plusButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
+      YES;
 
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
