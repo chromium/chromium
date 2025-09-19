@@ -2,7 +2,7 @@ Name: PipeWire Media Session
 URL: https://gitlab.freedesktop.org/pipewire/media-session
 Version: 0.4.1
 Revision: e5d5cf2404786af8bcc40bdb8a2962bef4ec18b
-Update Mechanism: Manual
+Update Mechanism: Manual (https://crbug.com/422921865)
 License: MIT
 License File: LICENSE
 Security Critical: no
