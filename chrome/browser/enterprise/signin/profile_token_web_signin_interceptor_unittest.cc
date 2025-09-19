@@ -56,6 +56,10 @@ class MockDelegate : public ProfileTokenWebSigninInterceptor::Delegate {
                const CoreAccountId&,
                WebSigninInterceptor::SigninInterceptionType),
               (override));
+  MOCK_METHOD(void,
+              ShowSigninError,
+              (content::WebContents*, const SigninUIError&),
+              (override));
 };
 
 MATCHER_P(HasSameAccountIdAs, other, "") {

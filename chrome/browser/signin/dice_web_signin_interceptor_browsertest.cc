@@ -71,6 +71,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -181,6 +182,15 @@ class FakeDiceWebSigninInterceptorDelegate
     return weak_bubble_handle_.WasInvalidated();
   }
 
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override {
+    signin_error_ = error;
+  }
+
+  const std::optional<SigninUIError>& signin_error() const {
+    return signin_error_;
+  }
+
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> fre_browser_ = nullptr;
   CoreAccountId fre_account_id_;
@@ -188,6 +198,7 @@ class FakeDiceWebSigninInterceptorDelegate
       WebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
       SigninInterceptionResult::kAccepted;
+  std::optional<SigninUIError> signin_error_;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
 
@@ -585,7 +596,7 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
     // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
     base::RunLoop().RunUntilIdle();
 
-    // Following the result the bubble should have been desrtoyed.
+    // Following the result the bubble should have been destroyed.
     EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
   }
 
@@ -1491,6 +1502,15 @@ struct SigninNotAllowedByPatternTestParams {
 class DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest,
       public testing::WithParamInterface<SigninNotAllowedByPatternTestParams> {
+ public:
+  void SetUpOnMainThread() override {
+    DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest::
+        SetUpOnMainThread();
+    // Set the signin pattern to allow only @example.com accounts.
+    g_browser_process->local_state()->SetString(
+        prefs::kGoogleServicesUsernamePattern, ".*@example.com");
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       syncer::kReplaceSyncPromosWithSignInPromos};
@@ -1500,9 +1520,6 @@ IN_PROC_BROWSER_TEST_P(
     DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
     SigninNotAllowedByPattern) {
   const SigninNotAllowedByPatternTestParams& params = GetParam();
-  // Set the signin pattern to allow only @example.com accounts.
-  g_browser_process->local_state()->SetString(
-      prefs::kGoogleServicesUsernamePattern, ".*@example.com");
 
   // Create an account with the email from the test parameters.
   AccountInfo account_info =
@@ -1513,12 +1530,138 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(delegate->intercept_bubble_shown(), params.expect_bubble_shown);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
+    ForcedEnterpriseInterception) {
+  const SigninNotAllowedByPatternTestParams& params = GetParam();
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate(params.email, "example.com");
+  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
+                            {{account_info.email, account_info.gaia}});
+
+  // Enforce enterprise profile separation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "primary_account_strict");
+
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Do the signin interception.
+  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  ProfileWaiter profile_waiter;
+  base::RunLoop token_removed_run_loop;
+  signin::TestIdentityManagerObserver token_updated_observer(identity_manager);
+  token_updated_observer.SetOnRefreshTokenRemovedCallback(
+      token_removed_run_loop.QuitClosure());
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       signin_metrics::AccessPoint::kWebSignin,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  if (params.expect_bubble_shown) {
+    // Wait for the interception to be complete.
+    profile_waiter.WaitForProfileAdded();
+  }
+
+  EXPECT_EQ(interceptor_delegate->intercept_bubble_shown(),
+            params.expect_bubble_shown);
+  EXPECT_EQ(interceptor_delegate->signin_error(),
+            params.expect_bubble_shown
+                ? std::optional<SigninUIError>()
+                : SigninUIError::UsernameNotAllowedByPatternFromPrefs(
+                      account_info.email));
+  EXPECT_FALSE(interceptor->is_interception_in_progress());
+  // If the interception happened, the account was moved to another profile.
+  // Otherwise the account was removed entirely.
+  token_removed_run_loop.Run();
+  EXPECT_TRUE(identity_manager->GetAccountsWithRefreshTokens().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
+    OptionalEnterpriseInterception) {
+  const SigninNotAllowedByPatternTestParams& params = GetParam();
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+
+  AccountInfo primary_account_info =
+      MakeAccountInfoAvailableAndUpdate("bob@example.com", "example.com");
+  IdentityManagerFactory::GetForProfile(GetProfile())
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(primary_account_info.account_id,
+                          signin::ConsentLevel::kSignin);
+  enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
+
+  AccountInfo account_info =
+      MakeAccountInfoAvailableAndUpdate(params.email, "example.com");
+  signin::SetCookieAccounts(identity_manager, test_url_loader_factory(),
+                            {{account_info.email, account_info.gaia}});
+
+  // Do not enforce enterprise profile separation.
+  GetProfile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                      "none");
+  DiceWebSigninInterceptorFactory::GetForProfile(GetProfile())
+      ->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+          policy::ProfileSeparationPolicies(""));
+  SetupGaiaResponses();
+
+  // Add a tab.
+  GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
+  content::WebContents* web_contents = AddTab(intercepted_url);
+
+  // Do the signin interception.
+  FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+      GetInterceptorDelegate(GetProfile());
+  interceptor_delegate->set_expected_interception_type(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise);
+  ProfileWaiter profile_waiter;
+  DiceWebSigninInterceptor* interceptor =
+      DiceWebSigninInterceptorFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
+                                       signin_metrics::AccessPoint::kWebSignin,
+                                       /*is_new_account=*/true,
+                                       /*is_sync_signin=*/false);
+
+  if (params.expect_bubble_shown) {
+    // Wait for the interception to be complete.
+    profile_waiter.WaitForProfileAdded();
+  }
+
+  EXPECT_EQ(interceptor_delegate->intercept_bubble_shown(),
+            params.expect_bubble_shown);
+  EXPECT_EQ(interceptor_delegate->signin_error(), std::nullopt);
+  EXPECT_FALSE(interceptor->is_interception_in_progress());
+  // If the interception happened, the account was moved to another profile.
+  if (params.expect_bubble_shown) {
+    EXPECT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);
+  } else {
+    // Otherwise nothing happened.
+    EXPECT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 2u);
+  }
+  EXPECT_EQ(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      primary_account_info.account_id);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     DiceWebSigninInterceptorSigninNotAllowedByPatternBrowserTest,
-    testing::Values(
-        SigninNotAllowedByPatternTestParams{"test@gmail.com", false},
-        SigninNotAllowedByPatternTestParams{"test@example.com", true}));
+    testing::Values(SigninNotAllowedByPatternTestParams{"test@nope.com", false},
+                    SigninNotAllowedByPatternTestParams{"test@example.com",
+                                                        true}));
 
 // Test Suite where PRE_* tests are with explicit signin disabled, and regular
 // test with explicit signin enabled, simulating users transitioning in to

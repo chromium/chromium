@@ -336,6 +336,10 @@ class MockDelegate : public OidcAuthenticationSigninInterceptor::Delegate {
                const CoreAccountId&,
                WebSigninInterceptor::SigninInterceptionType),
               (override));
+  MOCK_METHOD(void,
+              ShowSigninError,
+              (content::WebContents*, const SigninUIError&),
+              (override));
 };
 
 }  // namespace

@@ -26,6 +26,7 @@ class WebContents;
 
 struct AccountInfo;
 class Browser;
+class SigninUIError;
 
 // Outcome of the interception heuristic (decision whether the interception
 // bubble is shown or not).
@@ -220,6 +221,9 @@ class WebSigninInterceptor {
         Browser* browser,
         const CoreAccountId& account_id,
         SigninInterceptionType interception_type) = 0;
+
+    virtual void ShowSigninError(content::WebContents* web_contents,
+                                 const SigninUIError& error) = 0;
   };
 
   WebSigninInterceptor(const WebSigninInterceptor&) = delete;

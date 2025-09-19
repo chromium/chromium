@@ -90,6 +90,8 @@ class MockDiceWebSigninInterceptorDelegate
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override {}
 
  private:
   base::WeakPtrFactory<MockDiceWebSigninInterceptorDelegate> weak_factory_{

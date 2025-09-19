@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
@@ -86,6 +87,7 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -227,6 +229,15 @@ void MaybeUpdateRepromptInfoAfterDecline(SigninPrefs& signin_prefs,
   base::UmaHistogramExactLinear("Signin.Intercept.ChromeSignin.RepromptCount",
                                 new_reprompt_count,
                                 kMaxChromeSigninBubbleRepromptCountAllowed + 1);
+}
+
+// Returns whether we can offer sign-in for the given account. Returns false
+// error if the account does not match the signin pattern policy.
+bool IsUsernameAllowedForInterceptionByPattern(const std::string& email) {
+  return !base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) ||
+         signin::IsUsernameAllowedByPatternFromPrefs(
+             g_browser_process->local_state(), email);
 }
 
 // Returns true if we have the minimum extended account information needed to
@@ -753,9 +764,14 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+
+  if (!IsUsernameAllowedForInterceptionByPattern(
+          intercepted_account_info.email)) {
+    return false;
+  }
+
   // Check if the intercepted account or the primary account is managed.
   AccountInfo primary_acccount = GetPrimaryAccountInfo(identity_manager_);
-
   if (primary_acccount.IsEmpty() ||
       IsPrimaryAccountInterception(intercepted_account_info.account_id,
                                    identity_manager_)) {
@@ -772,6 +788,12 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+
+  if (!IsUsernameAllowedForInterceptionByPattern(
+          intercepted_account_info.email)) {
+    return false;
+  }
+
   if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
@@ -836,14 +858,7 @@ bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
       break;
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      !signin::IsUsernameAllowedByPatternFromPrefs(
-          g_browser_process->local_state(), email)) {
-    return false;
-  }
-
-  return true;
+  return IsUsernameAllowedForInterceptionByPattern(email);
 }
 
 void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
@@ -950,6 +965,35 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   bool show_link_data_option = false;
 
   if (force_profile_separation) {
+    bool email_allowed = IsUsernameAllowedForInterceptionByPattern(info.email);
+    if (!email_allowed) {
+      // Profile separation is strictly enforced, so it's not possible to leave
+      // the account signed in on the web only. It's also not possible to sign
+      // the account into Chrome. The only option left is removing the account
+      // and showing an error message.
+      RecordSigninInterceptionHeuristicOutcome(
+          SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
+      delegate_->ShowSigninError(
+          state_->web_contents_.get(),
+          SigninUIError::UsernameNotAllowedByPatternFromPrefs(info.email));
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WeakPtr<signin::IdentityManager> identity_manager,
+                 const CoreAccountId& account_id) {
+                if (!identity_manager) {
+                  return;
+                }
+                identity_manager->GetAccountsMutator()->RemoveAccount(
+                    account_id,
+                    signin_metrics::SourceForRefreshTokenOperation::
+                        kEnterprisePolicy_AccountNotAllowedInContentArea);
+              },
+              identity_manager_->GetWeakPtr(), info.account_id));
+      Reset();
+      return;
+    }
+
     if (switch_to_entry) {
       interception_type =
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced;
