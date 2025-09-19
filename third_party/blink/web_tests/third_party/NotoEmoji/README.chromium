@@ -5,7 +5,7 @@ License File: OFL.txt
 Security Critical: no
 Shipped: no
 Version: 2.001
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/422373855)
 
 Description:
 Font file subset included to have a cross platform font for testing emoji variation selectors support.
