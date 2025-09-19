@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/android/jni_weak_ref.h"
 #include "chrome/browser/android/extensions/extensions_url_override_state_tracker.h"
 
 namespace extensions {
@@ -17,7 +18,10 @@ namespace extensions {
 class ExtensionsUrlOverrideRegistryManager
     : public ExtensionUrlOverrideStateTracker::StateListener {
  public:
-  explicit ExtensionsUrlOverrideRegistryManager(Profile* profile);
+  explicit ExtensionsUrlOverrideRegistryManager(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jobject>& j_object,
+      Profile* profile);
   virtual ~ExtensionsUrlOverrideRegistryManager();
 
   ExtensionsUrlOverrideRegistryManager(
@@ -32,6 +36,7 @@ class ExtensionsUrlOverrideRegistryManager
                             bool incognito_enabled) override;
   void OnUrlOverrideDisabled(const std::string& chrome_url_path) override;
 
+  jni_zero::ScopedJavaGlobalRef<jobject> j_object_;
   std::unique_ptr<ExtensionUrlOverrideStateTracker> state_tracker_;
 };
 }  // namespace extensions

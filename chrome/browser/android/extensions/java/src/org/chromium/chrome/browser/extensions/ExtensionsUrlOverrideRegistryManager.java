@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.extensions;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -30,6 +31,13 @@ public class ExtensionsUrlOverrideRegistryManager {
             mNativePtr = 0;
         }
     }
+
+    @CalledByNative
+    public void onUrlOverrideEnabled(
+            @JniType("std::string") String chromeUrlPath, boolean incognitoEnabled) {}
+
+    @CalledByNative
+    public void onUrlOverrideDisabled(@JniType("std::string") String chromeUrlPath) {}
 
     @NativeMethods
     interface Natives {
