@@ -141,7 +141,7 @@ describe('SubscriptionManager', () => {
     it('should re-subscribe in proper order', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], ANOTHER_CHANNEL);
-      subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
       expect(
         subscriptionManager.getGoogChannelsSubscribedToEvent(
@@ -207,7 +207,7 @@ describe('SubscriptionManager', () => {
     });
 
     it('should re-subscribe contexts in proper order', () => {
-      subscriptionManager.subscribe(
+      const subscription = subscriptionManager.subscribe(
         [SOME_EVENT],
         [SOME_CONTEXT],
         [],
@@ -219,11 +219,7 @@ describe('SubscriptionManager', () => {
         [],
         ANOTHER_CHANNEL,
       );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
+      subscriptionManager.unsubscribeById([subscription.id]);
       subscriptionManager.subscribe(
         [SOME_EVENT],
         [SOME_CONTEXT],
@@ -263,7 +259,7 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       expect(() => {
-        subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+        subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       }).to.throw('No subscription found');
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
@@ -297,7 +293,7 @@ describe('SubscriptionManager', () => {
 
     it('should unsubscribe', () => {
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(false);
@@ -321,7 +317,6 @@ describe('SubscriptionManager', () => {
       expect(() =>
         subscriptionManager.unsubscribe(
           [SOME_EVENT, ANOTHER_EVENT],
-          [],
           SOME_CHANNEL,
         ),
       ).to.throw('No subscription found');
@@ -335,7 +330,6 @@ describe('SubscriptionManager', () => {
       subscriptionManager.subscribe([ANOTHER_EVENT], [], [], SOME_CHANNEL);
       subscriptionManager.unsubscribe(
         [SOME_EVENT, ANOTHER_EVENT],
-        [],
         SOME_CHANNEL,
       );
       expect(
@@ -359,7 +353,7 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(false);
@@ -378,11 +372,10 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       expect(() => {
         subscriptionManager.unsubscribe(
           [SOME_EVENT, ANOTHER_EVENT],
-          [],
           SOME_CHANNEL,
         );
       }).to.throw('No subscription found');
@@ -402,7 +395,7 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       subscriptionManager.subscribe([SOME_EVENT], [], [], SOME_CHANNEL);
-      subscriptionManager.unsubscribe([SOME_EVENT], [], SOME_CHANNEL);
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(true);
@@ -438,82 +431,14 @@ describe('SubscriptionManager', () => {
       ).to.equal(false);
     });
 
-    it('should partially unsubscribe from a context', () => {
-      subscriptionManager.subscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT, ANOTHER_CONTEXT],
-        [],
-        SOME_CHANNEL,
-      );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
-      expect(
-        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-      expect(
-        subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
-      ).to.equal(true);
-    });
-
-    it('should error if the unsubscribe is invalid', () => {
-      subscriptionManager.subscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT, ANOTHER_CONTEXT],
-        [],
-        SOME_CHANNEL,
-      );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
-      expect(() => {
-        subscriptionManager.unsubscribe(
-          [SOME_EVENT],
-          [SOME_CONTEXT, ANOTHER_CONTEXT],
-          SOME_CHANNEL,
-        );
-      }).to.throw('No subscription found');
-      expect(
-        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-      expect(
-        subscriptionManager.isSubscribedTo(SOME_EVENT, ANOTHER_CONTEXT),
-      ).to.equal(true);
-    });
-
-    it('should completely unsubscribe', () => {
-      subscriptionManager.subscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        [],
-        SOME_CHANNEL,
-      );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
-      expect(
-        subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
-      ).to.equal(false);
-    });
-
     it('should unsubscribe a module', () => {
-      subscriptionManager.subscribe(
+      const subscription = subscriptionManager.subscribe(
         [ALL_EVENTS],
         [SOME_CONTEXT],
         [],
         SOME_CHANNEL,
       );
-      subscriptionManager.unsubscribe(
-        [ALL_EVENTS],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
+      subscriptionManager.unsubscribeById([subscription.id]);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(false);
@@ -527,11 +452,7 @@ describe('SubscriptionManager', () => {
         [],
         SOME_CHANNEL,
       );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_CONTEXT],
-        SOME_CHANNEL,
-      );
+      subscriptionManager.unsubscribe([SOME_EVENT], SOME_CHANNEL);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(true);
@@ -562,17 +483,13 @@ describe('SubscriptionManager', () => {
     });
 
     it('should unsubscribe from top-level context when unsubscribed from nested context', () => {
-      subscriptionManager.subscribe(
+      const subscription = subscriptionManager.subscribe(
         [SOME_EVENT],
         [SOME_CONTEXT],
         [],
         SOME_CHANNEL,
       );
-      subscriptionManager.unsubscribe(
-        [SOME_EVENT],
-        [SOME_NESTED_CONTEXT],
-        SOME_CHANNEL,
-      );
+      subscriptionManager.unsubscribeById([subscription.id]);
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),
       ).to.equal(false);
@@ -586,11 +503,7 @@ describe('SubscriptionManager', () => {
         SOME_CHANNEL,
       );
       expect(() => {
-        subscriptionManager.unsubscribe(
-          [SOME_EVENT],
-          [SOME_NESTED_CONTEXT],
-          ANOTHER_CHANNEL,
-        );
+        subscriptionManager.unsubscribe([SOME_EVENT], ANOTHER_CHANNEL);
       }).to.throw('No subscription found');
       expect(
         subscriptionManager.isSubscribedTo(SOME_EVENT, SOME_CONTEXT),

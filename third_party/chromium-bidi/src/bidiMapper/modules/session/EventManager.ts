@@ -312,13 +312,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
 
   async unsubscribe(
     eventNames: ChromiumBidi.EventNames[],
-    contextIds: BrowsingContext.BrowsingContext[],
     googChannel: GoogChannel,
   ): Promise<void> {
     for (const name of eventNames) {
       assertSupportedEvent(name);
     }
-    this.#subscriptionManager.unsubscribe(eventNames, contextIds, googChannel);
+    this.#subscriptionManager.unsubscribe(eventNames, googChannel);
     await this.toggleModulesIfNeeded();
   }
 

@@ -240,31 +240,12 @@ export class SubscriptionManager {
    */
   unsubscribe(
     inputEventNames: ChromiumBidi.EventNames[],
-    inputContextIds: BrowsingContext.BrowsingContext[],
     googChannel: GoogChannel,
   ) {
     const eventNames = new Set(unrollEvents(inputEventNames));
 
-    // Validation that contexts exist.
-    this.#browsingContextStorage.verifyContextsList(inputContextIds);
-
-    const topLevelTraversables = new Set(
-      inputContextIds.map((contextId) => {
-        const topLevelContext =
-          this.#browsingContextStorage.findTopLevelContextId(contextId);
-        if (!topLevelContext) {
-          throw new NoSuchFrameException(
-            `Top-level navigable not found for context id ${contextId}`,
-          );
-        }
-        return topLevelContext;
-      }),
-    );
-
-    const isGlobalUnsubscribe = topLevelTraversables.size === 0;
     const newSubscriptions: Subscription[] = [];
     const eventsMatched = new Set<ChromiumBidi.EventNames>();
-    const contextsMatched = new Set<BrowsingContext.BrowsingContext>();
     for (const subscription of this.#subscriptions) {
       if (subscription.googChannel !== googChannel) {
         newSubscriptions.push(subscription);
@@ -280,77 +261,28 @@ export class SubscriptionManager {
         newSubscriptions.push(subscription);
         continue;
       }
-      if (isGlobalUnsubscribe) {
-        // Skip non-global subscriptions.
-        if (subscription.topLevelTraversableIds.size !== 0) {
-          newSubscriptions.push(subscription);
-          continue;
+      // Skip non-global subscriptions.
+      if (subscription.topLevelTraversableIds.size !== 0) {
+        newSubscriptions.push(subscription);
+        continue;
+      }
+      const subscriptionEventNames = new Set(subscription.eventNames);
+      for (const eventName of eventNames) {
+        if (subscriptionEventNames.has(eventName)) {
+          eventsMatched.add(eventName);
+          subscriptionEventNames.delete(eventName);
         }
-        const subscriptionEventNames = new Set(subscription.eventNames);
-        for (const eventName of eventNames) {
-          if (subscriptionEventNames.has(eventName)) {
-            eventsMatched.add(eventName);
-            subscriptionEventNames.delete(eventName);
-          }
-        }
-        // If some events remain in the subscription, we keep it.
-        if (subscriptionEventNames.size !== 0) {
-          newSubscriptions.push({
-            ...subscription,
-            eventNames: subscriptionEventNames,
-          });
-        }
-      } else {
-        // Skip global subscriptions.
-        if (subscription.topLevelTraversableIds.size === 0) {
-          newSubscriptions.push(subscription);
-          continue;
-        }
-
-        // Splitting context subscriptions.
-        const eventMap = new Map<
-          ChromiumBidi.EventNames,
-          Set<BrowsingContext.BrowsingContext>
-        >();
-        for (const eventName of subscription.eventNames) {
-          eventMap.set(eventName, new Set(subscription.topLevelTraversableIds));
-        }
-        for (const eventName of eventNames) {
-          const eventContextSet = eventMap.get(eventName);
-          if (!eventContextSet) {
-            continue;
-          }
-          for (const toRemoveId of topLevelTraversables) {
-            if (eventContextSet.has(toRemoveId)) {
-              contextsMatched.add(toRemoveId);
-              eventsMatched.add(eventName);
-              eventContextSet.delete(toRemoveId);
-            }
-          }
-          if (eventContextSet.size === 0) {
-            eventMap.delete(eventName);
-          }
-        }
-        for (const [eventName, remainingContextIds] of eventMap) {
-          const partialSubscription: Subscription = {
-            id: subscription.id,
-            googChannel: subscription.googChannel,
-            eventNames: new Set([eventName]),
-            topLevelTraversableIds: remainingContextIds,
-            userContextIds: new Set(),
-          };
-          newSubscriptions.push(partialSubscription);
-        }
+      }
+      if (subscriptionEventNames.size !== 0) {
+        newSubscriptions.push({
+          ...subscription,
+          eventNames: subscriptionEventNames,
+        });
       }
     }
 
     // If some events did not match, it is an invalid request.
     if (!equal(eventsMatched, eventNames)) {
-      throw new InvalidArgumentException('No subscription found');
-    }
-
-    // If some contexts did not match, it is an invalid request.
-    if (!isGlobalUnsubscribe && !equal(contextsMatched, topLevelTraversables)) {
       throw new InvalidArgumentException('No subscription found');
     }
 

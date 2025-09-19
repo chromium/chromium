@@ -180,8 +180,6 @@ export class SessionProcessor {
     }
     await this.#eventManager.unsubscribe(
       params.events as ChromiumBidi.EventNames[],
-      // Will be removed in https://github.com/GoogleChromeLabs/chromium-bidi/pull/3733.
-      (params as any).contexts ?? [],
       googChannel,
     );
     return {};
