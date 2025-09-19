@@ -329,12 +329,11 @@ declare_args() {
 declare_args() {
   # Because of address space issue, this feature cannot be enabled on
   # 32bit OS and iOS, i.e. has_64_bit_pointers && !is_ios
-  move_metadata_outside_gigacage = false && has_64_bit_pointers && !is_ios
+  move_metadata_outside_gigacage = has_64_bit_pointers && !is_ios
 }
 
 declare_args() {
-  enable_move_metadata_outside_gigacage_trial =
-      false && move_metadata_outside_gigacage
+  enable_move_metadata_outside_gigacage_trial = move_metadata_outside_gigacage
 }
 
 assert(!enable_move_metadata_outside_gigacage_trial ||
