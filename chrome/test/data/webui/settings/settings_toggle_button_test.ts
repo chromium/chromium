@@ -415,6 +415,22 @@ suite('SettingsToggleButton', () => {
     assertEquals(actionLink.getAttribute('aria-label'), 'Label');
   });
 
+  test('shows more-actions-after slot content', () => {
+    const slottedContent = document.createElement('div');
+    slottedContent.setAttribute('slot', 'more-actions-after');
+    slottedContent.textContent = 'Slotted content';
+    testElement.appendChild(slottedContent);
+    flush();
+
+    const slot = testElement.shadowRoot!.querySelector<HTMLSlotElement>(
+        'slot[name="more-actions-after"]');
+    assertTrue(!!slot);
+    const assignedNodes = slot.assignedNodes({flatten: true});
+    assertEquals(1, assignedNodes.length);
+    assertEquals(slottedContent, assignedNodes[0]);
+    assertEquals('Slotted content', assignedNodes[0]!.textContent!.trim());
+  });
+
   // <if expr="is_chromeos">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
