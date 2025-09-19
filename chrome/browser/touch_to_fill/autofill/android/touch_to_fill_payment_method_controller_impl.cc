@@ -14,6 +14,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -155,6 +156,18 @@ bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
   }
 
   delegate_ = delegate;
+  return true;
+}
+
+bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
+  if (!view_ || !view_->ShowBnplIssuers(bnpl_issuers_to_suggest)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  delegate_ = std::move(delegate);
   return true;
 }
 

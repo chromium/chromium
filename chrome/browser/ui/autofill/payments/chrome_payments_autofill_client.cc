@@ -959,6 +959,18 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillProgress(
 #endif
 }
 
+bool ChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::BnplIssuer> bnpl_issurs_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetTouchToFillPaymentMethodController()->ShowBnplIssuers(
+      delegate, bnpl_issurs_to_suggest);
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
 void ChromePaymentsAutofillClient::HideTouchToFillPaymentMethod() {
 #if BUILDFLAG(IS_ANDROID)
   GetTouchToFillPaymentMethodController()->Hide();

@@ -255,6 +255,12 @@ bool PaymentsAutofillClient::ShowTouchToFillProgress(
   return false;
 }
 
+bool PaymentsAutofillClient::ShowTouchToFillBnplIssuers(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
+  return false;
+}
+
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()

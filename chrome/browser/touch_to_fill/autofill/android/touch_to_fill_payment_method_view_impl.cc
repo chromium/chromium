@@ -174,6 +174,26 @@ bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
   return true;
 }
 
+bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
+    base::span<const autofill::BnplIssuer> bnpl_issuers_to_suggest) {
+  if (!java_object_) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> issuers_array;
+  issuers_array.reserve(bnpl_issuers_to_suggest.size());
+  for (const autofill::BnplIssuer& issuer : bnpl_issuers_to_suggest) {
+    issuers_array.push_back(
+        PersonalDataManagerAndroid::CreateJavaBnplIssuerFromNative(env,
+                                                                   issuer));
+  }
+
+  Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(
+      env, java_object_, std::move(issuers_array));
+  return true;
+}
+
 void TouchToFillPaymentMethodViewImpl::Hide() {
   if (java_object_) {
     Java_TouchToFillPaymentMethodViewBridge_hideSheet(

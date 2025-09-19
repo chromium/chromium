@@ -13,6 +13,7 @@
 
 namespace autofill {
 
+class BnplIssuer;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -66,6 +67,13 @@ class TouchToFillPaymentMethodController
   virtual bool ShowProgressScreen(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::WeakPtr<TouchToFillDelegate> delegate) = 0;
+
+  // Shows the Touch To Fill BNPL issuer selection screen. `delegate` will
+  // provide the BNPL issuers and be notified of the user's decision. Returns
+  // whether the surface was successfully shown.
+  virtual bool ShowBnplIssuers(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const BnplIssuer> bnpl_issuers_to_suggest) = 0;
 
   // Hides the surface if it is currently shown.
   virtual void Hide() = 0;

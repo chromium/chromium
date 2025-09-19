@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FOCUSED_VIEW_ID_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
@@ -32,6 +33,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuer;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -115,6 +117,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
+    public void showBnplIssuers(List<BnplIssuer> bnplIssuers) {
+        mMediator.showBnplIssuers(bnplIssuers);
+    }
+
+    @Override
     public void hideSheet() {
         mMediator.hideSheet();
     }
@@ -181,6 +188,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 BNPL_SELECTION_PROGRESS_HEADER,
                 TouchToFillPaymentMethodViewBinder::createBnplSelectionProgressHeaderItemView,
                 TouchToFillPaymentMethodViewBinder::bindBnplSelectionProgressHeaderView);
+        adapter.registerType(
+                BNPL_ISSUER,
+                TouchToFillPaymentMethodViewBinder::createBnplIssuerItemView,
+                TouchToFillPaymentMethodViewBinder::bindBnplIssuerItemView);
         view.setSheetItemListAdapter(adapter);
     }
 

@@ -47,6 +47,8 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/touch_to_fill_all_loyalty_cards_item.xml",
+    "java/res/layout/touch_to_fill_bnpl_issuer_selection_screen.xml",
+    "java/res/layout/touch_to_fill_bnpl_issuer_selection_sheet_item.xml",
     "java/res/layout/touch_to_fill_bnpl_selection_and_progress_screen_header_item.xml",
     "java/res/layout/touch_to_fill_bnpl_sheet_item.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",

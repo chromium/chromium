@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -842,6 +843,22 @@ jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
     return payments_data_manager().IsCardEligibleForBenefits(*card);
   }
   return false;
+}
+
+// static
+ScopedJavaLocalRef<jobject>
+PersonalDataManagerAndroid::CreateJavaBnplIssuerFromNative(
+    JNIEnv* env,
+    const BnplIssuer& bnpl_issuer) {
+  // For now, Android only uses the `LightModeImageId`.
+  const std::pair<BnplIssuer::LightModeImageId, BnplIssuer::DarkModeImageId>
+      image_ids = GetBnplIssuerIconIds(
+          bnpl_issuer.issuer_id(),
+          /*issuer_linked=*/bnpl_issuer.payment_instrument().has_value());
+  // TOOD(crbug.com/430575808): Provide the selection text to the Java
+  // BnplIssuer object.
+  return Java_BnplIssuer_createBnplIssuer(env, bnpl_issuer.GetDisplayName(),
+                                          image_ids.first.value());
 }
 
 }  // namespace autofill

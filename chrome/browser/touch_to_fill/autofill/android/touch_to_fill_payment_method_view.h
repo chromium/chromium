@@ -9,6 +9,7 @@
 
 namespace autofill {
 
+class BnplIssuer;
 class Iban;
 class LoyaltyCard;
 struct Suggestion;
@@ -33,6 +34,8 @@ class TouchToFillPaymentMethodView {
       bool first_time_usage) = 0;
   virtual bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) = 0;
+  virtual bool ShowBnplIssuers(
+      base::span<const BnplIssuer> bnpl_issuers_to_suggest) = 0;
   virtual void Hide() = 0;
 };
 

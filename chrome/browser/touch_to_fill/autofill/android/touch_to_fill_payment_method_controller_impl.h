@@ -19,6 +19,7 @@
 
 namespace autofill {
 
+class BnplIssuer;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -56,6 +57,9 @@ class TouchToFillPaymentMethodControllerImpl
                         bool first_time_usage) override;
   bool ShowProgressScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
                           base::WeakPtr<TouchToFillDelegate> delegate) override;
+  bool ShowBnplIssuers(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
   void Hide() override;
 
   // content::WebContentsObserver:

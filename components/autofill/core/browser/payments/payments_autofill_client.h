@@ -32,6 +32,7 @@ class AutofillOfferData;
 class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
+class BnplIssuer;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class AutofillProgressDialogController;
@@ -614,6 +615,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // platform. If `delegate` is present, it will be notified of events.
   virtual bool ShowTouchToFillProgress(
       base::WeakPtr<TouchToFillDelegate> delegate);
+
+  // Shows the Touch To Fill surface with BNPL issuer information, if possible,
+  // returning `true` on success. `delegate` will be notified of events. This
+  // function is not implemented on iOS and iOS WebView, and should not be used
+  // on those platforms.
+  virtual bool ShowTouchToFillBnplIssuers(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const BnplIssuer> bnpl_issuers_to_suggest);
 
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the

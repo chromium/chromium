@@ -121,6 +121,15 @@ interface TouchToFillPaymentMethodComponent {
     /** Displays a progress screen bottomsheet. */
     void showProgressScreen();
 
+    /**
+     * Displays a new BNPL issuers bottom sheet.
+     *
+     * @param bnplIssuers A list of {@link PersonalDataManager.BnplIssuer} objects, each
+     *     representing a BNPL issuer, to be displayed on the bottom sheet for the user to select
+     *     from.
+     */
+    void showBnplIssuers(List<PersonalDataManager.BnplIssuer> bnplIssuers);
+
     /** Hides the bottom sheet if shown. */
     void hideSheet();
 }

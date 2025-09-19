@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -38,6 +42,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
@@ -60,6 +65,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_SELECTION_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
@@ -76,6 +82,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.BnplIssuer;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -225,6 +232,7 @@ class TouchToFillPaymentMethodMediator {
     private List<Iban> mIbans;
     private List<LoyaltyCard> mAffiliatedLoyaltyCards;
     private List<LoyaltyCard> mAllLoyaltyCards;
+    private List<BnplIssuer> mBnplIssuers;
     private Function<LoyaltyCard, Drawable> mValuableImageFunction;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private boolean mShouldShowScanCreditCard;
@@ -256,6 +264,7 @@ class TouchToFillPaymentMethodMediator {
         mAffiliatedLoyaltyCards = null;
         mAllLoyaltyCards = null;
         mValuableImageFunction = null;
+        mBnplIssuers = null;
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
 
@@ -340,6 +349,7 @@ class TouchToFillPaymentMethodMediator {
         mValuableImageFunction = null;
         mShouldShowScanCreditCard = false;
         mCardImageFunction = null;
+        mBnplIssuers = null;
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
@@ -396,6 +406,7 @@ class TouchToFillPaymentMethodMediator {
         mIbans = null;
         mShouldShowScanCreditCard = false;
         mCardImageFunction = null;
+        mBnplIssuers = null;
 
         mModel.set(
                 SHEET_ITEMS,
@@ -485,6 +496,47 @@ class TouchToFillPaymentMethodMediator {
                 SHEET_FULL_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_progress_sheet_full_height);
         mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_progress_sheet_closed);
+        mModel.set(VISIBLE, true);
+    }
+
+    /**
+     * Displays the BNPL issuer selection screen.
+     *
+     * <p>This method shows a bottom sheet listing the provided BNPL issuers.
+     *
+     * @param bnplIssuers A list of {@link BnplIssuer} to be displayed.
+     */
+    public void showBnplIssuers(List<BnplIssuer> bnplIssuers) {
+        mInputProtector.markShowTime();
+
+        assert bnplIssuers != null;
+        mBnplIssuers = bnplIssuers;
+        mIbans = null;
+        mAffiliatedLoyaltyCards = null;
+        mAllLoyaltyCards = null;
+        mValuableImageFunction = null;
+
+        mModel.set(CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
+        ModelList sheetItems = new ModelList();
+
+        for (BnplIssuer issuer : mBnplIssuers) {
+            sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerModel(issuer)));
+        }
+
+        // TODO(crbug.com/438784993): Add header, footer, and linked status UI to BNPL issuer
+        // selection screen.
+
+        mModel.set(
+                SHEET_CONTENT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_bottom_sheet_content_description);
+        mModel.set(
+                SHEET_HALF_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_bottom_sheet_half_height);
+        mModel.set(
+                SHEET_FULL_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_bnpl_issuer_bottom_sheet_full_height);
+        mModel.set(SHEET_CLOSED_DESCRIPTION_ID, R.string.autofill_bnpl_issuer_bottom_sheet_closed);
+        mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(VISIBLE, true);
     }
 
@@ -615,7 +667,11 @@ class TouchToFillPaymentMethodMediator {
     }
 
     private void onAcceptedBnplSuggestion() {
-        // TODO(crbug.com/c/430575808): Handle user clicking the chip.
+        // TODO(crbug.com/430575808): Handle user clicking the BNPL chip.
+    }
+
+    private void onAcceptedBnplIssuer() {
+        // TODO(crbug.com/430575808): Handle user clicking a BNPL issuer.
     }
 
     private void showAllLoyaltyCards() {
@@ -683,6 +739,21 @@ class TouchToFillPaymentMethodMediator {
                         .with(BNPL_ITEM_COLLECTION_INFO, itemCollectionInfo)
                         .with(IS_ENABLED, !suggestion.applyDeactivatedStyle());
         return bnplSuggestionModelBuilder.build();
+    }
+
+    private PropertyModel createBnplIssuerModel(BnplIssuer issuer) {
+        // TODO(crbug.com/430575808): `ISSUER_SELECTION_TEXT` will be set once
+        // the Java `BnplIssuer` begins accepting the selection text from the
+        // native side.
+        // TODO(crbug.com/430575808): `APPLY_ISSUER_DEACTIVATED_STYLE` will be
+        // set once the Java `BnplIssuer` begins accepting this value from the
+        // native side.
+        PropertyModel.Builder bnplIssuerModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS)
+                        .with(ISSUER_NAME, issuer.getDisplayName())
+                        .with(ISSUER_ICON_ID, issuer.getIconId())
+                        .with(ON_ISSUER_CLICK_ACTION, this::onAcceptedBnplIssuer);
+        return bnplIssuerModelBuilder.build();
     }
 
     private PropertyModel createIbanModel(Iban iban) {

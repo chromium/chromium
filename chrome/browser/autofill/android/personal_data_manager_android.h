@@ -251,6 +251,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // benefits.
   jboolean IsCardEligibleForBenefits(JNIEnv* env, const std::string& guid);
 
+  // Create an object of Java BNPL Issuer from native BnplIssuer.
+  static base::android::ScopedJavaLocalRef<jobject>
+  CreateJavaBnplIssuerFromNative(JNIEnv* env, const BnplIssuer& bnpl_issuer);
+
  private:
   ~PersonalDataManagerAndroid() override;
 

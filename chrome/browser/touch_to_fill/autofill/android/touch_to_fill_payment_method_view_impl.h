@@ -16,6 +16,7 @@ class WebContents;
 
 namespace autofill {
 
+class BnplIssuer;
 class Iban;
 class LoyaltyCard;
 struct Suggestion;
@@ -48,6 +49,8 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                         bool first_time_usage) override;
   bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) override;
+  bool ShowBnplIssuers(
+      base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.

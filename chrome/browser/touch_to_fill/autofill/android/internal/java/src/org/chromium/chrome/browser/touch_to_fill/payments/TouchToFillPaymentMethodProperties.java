@@ -66,6 +66,9 @@ class TouchToFillPaymentMethodProperties {
 
         // The screen displaying the progress spinner.
         int PROGRESS_SCREEN = 2;
+
+        // The screen displaying all available BNPL issuers.
+        int BNPL_ISSUER_SELECTION_SCREEN = 3;
     }
 
     @interface ItemType {
@@ -105,6 +108,9 @@ class TouchToFillPaymentMethodProperties {
 
         // The header at the top of the BNPL selection and progress screens.
         int BNPL_SELECTION_PROGRESS_HEADER = 11;
+
+        // A section containing the BNPL issuer data.
+        int BNPL_ISSUER = 12;
     }
 
     /** Metadata associated with a card's image. */
@@ -260,6 +266,22 @@ class TouchToFillPaymentMethodProperties {
         static final PropertyKey[] ALL_KEYS = {PROGRESS_CONTENT_DESCRIPTION_ID};
 
         private ProgressIconProperties() {}
+    }
+
+    /** Properties for a BNPL issuer entry in the TouchToFill sheet for payments. */
+    static class BnplIssuerProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> ISSUER_NAME =
+                new PropertyModel.ReadableObjectPropertyKey<>("issuer_name");
+        static final PropertyModel.ReadableIntPropertyKey ISSUER_ICON_ID =
+                new PropertyModel.ReadableIntPropertyKey("issuer_icon_id");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_ISSUER_CLICK_ACTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_issuer_click_action");
+
+        static final PropertyKey[] NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS = {
+            ISSUER_NAME, ISSUER_ICON_ID, ON_ISSUER_CLICK_ACTION
+        };
+
+        private BnplIssuerProperties() {}
     }
 
     /**

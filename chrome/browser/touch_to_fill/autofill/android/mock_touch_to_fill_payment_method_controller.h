@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
@@ -58,6 +59,11 @@ class MockTouchToFillPaymentMethodController
               ShowProgressScreen,
               (std::unique_ptr<TouchToFillPaymentMethodView> view,
                base::WeakPtr<TouchToFillDelegate> delegate),
+              (override));
+  MOCK_METHOD(bool,
+              ShowBnplIssuers,
+              (base::WeakPtr<TouchToFillDelegate>,
+               base::span<const BnplIssuer>),
               (override));
   MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
   MOCK_METHOD(void, ScanCreditCard, (JNIEnv*), (override));

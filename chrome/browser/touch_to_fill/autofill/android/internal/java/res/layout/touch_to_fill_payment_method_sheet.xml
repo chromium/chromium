@@ -44,6 +44,10 @@ found in the LICENSE file.
         <include
             android:id="@+id/touch_to_fill_progress_screen"
             layout="@layout/touch_to_fill_progress_screen" />
+
+        <include
+            android:id="@+id/touch_to_fill_bnpl_issuer_selection_screen"
+            layout="@layout/touch_to_fill_bnpl_issuer_selection_screen" />
     </ViewFlipper>
 
 

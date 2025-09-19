@@ -690,6 +690,37 @@ public class PersonalDataManager implements Destroyable {
         }
     }
 
+    /** Autofill BNPL issuer information. */
+    public static class BnplIssuer {
+        private final String mDisplayName;
+        private final int mIconId;
+
+        /**
+         * Constructs a new BnplIssuer.
+         *
+         * @param displayName The name of the issuer to be displayed.
+         * @param iconId The resource ID of the issuer's icon.
+         */
+        public BnplIssuer(String displayName, int iconId) {
+            mDisplayName = displayName;
+            mIconId = iconId;
+        }
+
+        public String getDisplayName() {
+            return mDisplayName;
+        }
+
+        public int getIconId() {
+            return mIconId;
+        }
+
+        @CalledByNative("BnplIssuer")
+        private static BnplIssuer createBnplIssuer(
+                @JniType("std::u16string") String displayName, int iconId) {
+            return new BnplIssuer(displayName, iconId);
+        }
+    }
+
     private final PrefService mPrefService;
     private final List<PersonalDataManagerObserver> mDataObservers = new ArrayList<>();
 
