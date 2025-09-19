@@ -211,7 +211,6 @@ size_t WhitespaceCount(const std::u16string& string) {
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeFile];
   item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
-  item.subtitle = @"PDF";
   [_items addObject:item];
   [self updateConsumerItems];
   const base::UnguessableToken& token = item.token;
@@ -477,7 +476,6 @@ size_t WhitespaceCount(const std::u16string& string) {
   AIMInputItem* item = [[AIMInputItem alloc]
       initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeTab];
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
-  item.subtitle = base::SysUTF8ToNSString(webState->GetVisibleURL().host());
   [_items addObject:item];
   [self updateConsumerItems];
   __block const base::UnguessableToken& token = item.token;

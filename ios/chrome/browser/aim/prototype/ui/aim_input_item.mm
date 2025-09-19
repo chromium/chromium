@@ -48,7 +48,6 @@
     copy->_token = _token;
     copy.previewImage = self.previewImage;
     copy.title = self.title;
-    copy.subtitle = self.subtitle;
     copy.state = self.state;
     copy.type = self.type;
   }

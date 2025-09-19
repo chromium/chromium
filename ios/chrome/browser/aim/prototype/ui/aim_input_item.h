@@ -42,8 +42,6 @@ enum class AIMInputItemType {
 @property(nonatomic, strong) UIImage* leadingIconImage;
 // The title for this item.
 @property(nonatomic, copy) NSString* title;
-// The subtitle for this item.
-@property(nonatomic, copy) NSString* subtitle;
 // The current state of the item.
 @property(nonatomic, assign) AIMInputItemState state;
 // The type of the input item.

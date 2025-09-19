@@ -31,15 +31,15 @@ const float kInputPlateShadowOpacity = 0.2f;
 /// The shadow radius for the input plate container.
 const CGFloat kInputPlateShadowRadius = 20.0f;
 /// The spacing between items in the carousel.
-const CGFloat kCarouselItemSpacing = 12.0f;
+const CGFloat kCarouselItemSpacing = 6.0f;
 /// The height of the carousel view.
-const CGFloat kCarouselHeight = 42.0f;
+const CGFloat kCarouselHeight = 36.0f;
 /// The height of the AIM mode button.
-const CGFloat kAIMButtonHeight = 32.0f;
+const CGFloat kAIMButtonHeight = 36.0f;
 /// The width of the AIM mode button.
 const CGFloat kAIMButtonWidth = 94.0f;
 /// The spacing for the horizontal buttons stack view.
-const CGFloat kButtonsStackViewSpacing = 18.0f;
+const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 16.0f;
 /// The padding for the close button.
@@ -55,7 +55,7 @@ const CGFloat kInputPlateStackViewTrailingPadding = 12.0f;
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
-const CGFloat kAIMButtonSymbolPointSize = 12.0f;
+const CGFloat kAIMButtonSymbolPointSize = 12;
 /// The width of the buttons created with `createButtonWithImage:`.
 const CGFloat kGenericButtonWidth = 24.0f;
 /// The height of the buttons created with `createButtonWithImage:`.
@@ -77,6 +77,8 @@ const CGFloat kCloseButtonSize = 30.0f;
 const CGFloat kCloseButtonAlpha = 0.6f;
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
+/// The duration for the AIM button animation.
+const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 @interface AIMPrototypeViewController () <UITextViewDelegate,
@@ -84,6 +86,12 @@ const CGFloat kFadeViewWidth = 30.0f;
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
+
+/// Whether the carousel is scrollable.
+@property(nonatomic, assign) BOOL shouldMinimizeAimButton;
+
+/// The width constraint for the AIM button.
+@property(nonatomic, strong) NSLayoutConstraint* aimButtonWidthConstraint;
 
 /// Edit view contained in `_omniboxContainer`.
 @property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
@@ -114,6 +122,8 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIView* _omniboxContainer;
   /// Container for the omnibox popup.
   UIView* _omniboxPopupContainer;
+  /// A spacer view used in the stack view.
+  UIView* _spacerView;
 }
 
 /// AIMPrototypeAnimationContextProvider
@@ -233,7 +243,6 @@ const CGFloat kFadeViewWidth = 30.0f;
   // Carousel container and fade view.
   _carouselContainer = [[UIView alloc] init];
   _carouselContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _carouselContainer.hidden = YES;
   [_carouselContainer addSubview:_carouselView];
   AddSameConstraints(_carouselContainer, _carouselView);
 
@@ -268,6 +277,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIButton* plusButton =
       [self createButtonWithImage:DefaultSymbolWithPointSize(
                                       kPlusSymbol, kSymbolActionPointSize)];
+
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
        forControlEvents:UIControlEventTouchDown];
@@ -332,21 +342,26 @@ const CGFloat kFadeViewWidth = 30.0f;
 
   [_aimButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
       YES;
-  [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth].active =
-      YES;
+  self.aimButtonWidthConstraint =
+      [_aimButton.widthAnchor constraintEqualToConstant:kAIMButtonWidth];
+  self.aimButtonWidthConstraint.active = YES;
 
   // Horizontal stack view for buttons
-  UIStackView* buttonsStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ plusButton, _aimButton, [UIView new] ]];
+  _spacerView = [[UIView alloc] init];
+  [_spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+  UIStackView* buttonsStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        plusButton, _carouselContainer, _spacerView, _aimButton
+      ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonsStackView.spacing = kButtonsStackViewSpacing;
   buttonsStackView.alignment = UIStackViewAlignmentBottom;
 
   // Main vertical stack view
-  _inputPlateStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _omniboxContainer, _carouselContainer, buttonsStackView
-  ]];
+  _inputPlateStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _omniboxContainer, buttonsStackView ]];
   _inputPlateStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
   _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
@@ -396,7 +411,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   // Update the gradient layer's frame.
   _carouselFadeView.layer.sublayers.firstObject.frame =
       _carouselFadeView.bounds;
-  [self updateCarouselFade];
+  [self updateInputPlateLayout];
 }
 
 #pragma mark - Public
@@ -448,7 +463,6 @@ const CGFloat kFadeViewWidth = 30.0f;
 #pragma mark - AIMPrototypeConsumer
 
 - (void)setItems:(NSArray<AIMInputItem*>*)items {
-  _carouselContainer.hidden = items.count == 0;
   NSDiffableDataSourceSnapshot<NSString*, AIMInputItem*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kMainSectionIdentifier ]];
@@ -457,7 +471,7 @@ const CGFloat kFadeViewWidth = 30.0f;
   [_dataSource applySnapshot:snapshot
         animatingDifferences:YES
                   completion:^{
-                    [weakSelf updateCarouselFade];
+                    [weakSelf updateInputPlateLayout];
                   }];
 }
 
@@ -518,11 +532,45 @@ const CGFloat kFadeViewWidth = 30.0f;
   [_glowEffectView stopGlow];
 }
 
-- (void)updateCarouselFade {
-  // Checks if the carousel is scrollable.
+- (void)updateInputPlateLayout {
+  // Determine if the fade view should be visible. The fade is shown when the
+  // carousel's content is wider than its bounds, indicating scrollability.
   BOOL shouldShowFade =
       _carouselView.contentSize.width > _carouselView.bounds.size.width;
   _carouselFadeView.hidden = !shouldShowFade;
+
+  // Determine if the AIM button should be minimized.
+  BOOL shouldMinimize = self.shouldMinimizeAimButton;
+  if (shouldShowFade) {
+    // If the carousel is scrollable, the button must be minimized.
+    shouldMinimize = YES;
+  } else {
+    // Calculate the unused space available within the carousel's frame.
+    CGFloat availableSpace =
+        _carouselView.bounds.size.width - _carouselView.contentSize.width;
+    // Calculate the extra width the AIM button needs to change from its
+    // minimized (circular) to its full expanded state.
+    CGFloat expansionWidthNeeded = kAIMButtonWidth - kAIMButtonHeight;
+
+    // If the available space is greater than the space needed for the button
+    // to expand, the button should not be minimized.
+    if (availableSpace > expansionWidthNeeded) {
+      shouldMinimize = NO;
+    }
+  }
+
+  // If the minimization state has changed, update the button's appearance and
+  // animate the layout change.
+  if (self.shouldMinimizeAimButton != shouldMinimize) {
+    _shouldMinimizeAimButton = shouldMinimize;
+    [self updateAIMButtonAppearance];
+    if (shouldMinimize) {
+      [UIView animateWithDuration:kAIMButtonAnimationDuration
+                       animations:^{
+                         [self.view layoutIfNeeded];
+                       }];
+    }
+  }
 }
 
 #pragma mark - Private
@@ -567,20 +615,26 @@ const CGFloat kFadeViewWidth = 30.0f;
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
 
-  // Font setup
-  UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
-                                   weight:UIFontWeightMedium];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSAttributedString* attributedTitle =
-      [[NSAttributedString alloc] initWithString:@"AI Mode"
-                                      attributes:attributes];
-  config.attributedTitle = attributedTitle;
-
-  config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
-  config.imagePadding = 5;
   config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
   config.image = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
                                            kAIMButtonSymbolPointSize);
+
+  if (self.shouldMinimizeAimButton) {
+    self.aimButtonWidthConstraint.constant = kAIMButtonHeight;
+  } else {
+    // Font setup
+    UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
+                                     weight:UIFontWeightMedium];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle =
+        [[NSAttributedString alloc] initWithString:@"AI Mode"
+                                        attributes:attributes];
+    config.attributedTitle = attributedTitle;
+
+    config.contentInsets = NSDirectionalEdgeInsetsMake(5, 8, 5, 8);
+    config.imagePadding = 5;
+    self.aimButtonWidthConstraint.constant = kAIMButtonWidth;
+  }
 
   if (self.AIModeEnabled) {
     config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];

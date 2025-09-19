@@ -11,7 +11,7 @@
 
 namespace {
 /// The cell's max height.
-const CGFloat kMaxCellHeight = 42;
+const CGFloat kMaxCellHeight = 36;
 }  // namespace
 
 @implementation AIMInputItemCell {
