@@ -170,6 +170,7 @@ void IpProtectionTokenManagerImpl::MaybeRefillCache() {
 
   if (NeedsRefill(current_geo_id_)) {
     fetching_auth_tokens_ = true;
+    tokens_demanded_during_fetch_ = 0;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
     fetcher_->TryGetAuthTokens(
         batch_size_, proxy_layer_,
@@ -185,6 +186,12 @@ void IpProtectionTokenManagerImpl::MaybeRefillCache() {
 void IpProtectionTokenManagerImpl::InvalidateTryAgainAfterTime() {
   try_get_auth_tokens_after_ = base::Time();
   ScheduleMaybeRefillCache();
+}
+
+void IpProtectionTokenManagerImpl::RecordTokenDemand() {
+  if (fetching_auth_tokens_) {
+    tokens_demanded_during_fetch_++;
+  }
 }
 
 std::string IpProtectionTokenManagerImpl::CurrentGeo() const {
@@ -364,6 +371,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   // Log the number of tokens successfully fetched.
   Telemetry().RecordTokenCountEvent(
       proxy_layer_, IpProtectionTokenCountEvent::kIssued, tokens->size());
+  Telemetry().TokenDemandDuringBatchGeneration(tokens_demanded_during_fetch_);
 
   cache.insert(cache.end(), std::make_move_iterator(tokens->begin()),
                std::make_move_iterator(tokens->end()));

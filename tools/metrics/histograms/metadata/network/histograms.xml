@@ -5428,6 +5428,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.TokenDemandDuringBatchGeneration"
+    units="tokens" expires_after="2026-01-07">
+  <owner>jtoohill@google.com</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    An upper bound on the number of tokens that might have been spent while a
+    call to TryGetAuthTokens was in flight. This includes both tokens that were
+    successfully spent from the cache, and requests that were not proxied
+    because the cache was empty. Emitted when TryGetAuthTokens finishes.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.TryGetAuthTokensErrors"
     enum="IpProtectionTokenBatchRequestError" expires_after="2026-03-08">
   <owner>linxinan@chromium.org</owner>

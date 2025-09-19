@@ -53,6 +53,9 @@ class IpProtectionTokenManager {
   //
   // Returns true if the token cache was filled at some point, false otherwise.
   virtual bool WasTokenCacheEverFilled() = 0;
+
+  // Signal that a token was demanded by the proxy delegate, for metrics.
+  virtual void RecordTokenDemand() = 0;
 };
 
 }  // namespace ip_protection

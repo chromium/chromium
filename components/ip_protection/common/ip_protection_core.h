@@ -114,6 +114,9 @@ class IpProtectionCore {
 
   // Sets the bypass status for the IP Protection proxy.
   virtual void SetBypassProxy(bool bypass_proxy) = 0;
+
+  // Signal that a token was demanded by the proxy delegate, for metrics.
+  virtual void RecordTokenDemand(size_t chain_index) = 0;
 };
 
 }  // namespace ip_protection

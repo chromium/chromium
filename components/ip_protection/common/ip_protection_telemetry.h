@@ -218,6 +218,10 @@ class IpProtectionTelemetry {
   virtual void RecordTokenCountEvent(ProxyLayer layer,
                                      IpProtectionTokenCountEvent event,
                                      int count) = 0;
+
+  // Records the number of tokens that were demanded while a token fetch was in
+  // flight.
+  virtual void TokenDemandDuringBatchGeneration(int count) = 0;
 };
 
 // Get the singleton instance of this type. This will be implemented by each

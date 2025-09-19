@@ -94,6 +94,7 @@ class MockIpProtectionProxyConfigFetcher
 class MockIpProtectionCore : public IpProtectionCore {
  public:
   MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
+  MOCK_METHOD(void, RecordTokenDemand, (size_t chain_index), (override));
 
   // Dummy implementations for functions not tested in this file.
   bool IsMdlPopulated() override { return false; }

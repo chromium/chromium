@@ -372,4 +372,12 @@ void IpProtectionCoreImpl::SetBypassProxy(bool bypass_proxy) {
   }
 }
 
+void IpProtectionCoreImpl::RecordTokenDemand(size_t chain_index) {
+  auto it = ipp_token_managers_.find(chain_index == 0 ? ProxyLayer::kProxyA
+                                                      : ProxyLayer::kProxyB);
+  if (it != ipp_token_managers_.end()) {
+    it->second->RecordTokenDemand();
+  }
+}
+
 }  // namespace ip_protection

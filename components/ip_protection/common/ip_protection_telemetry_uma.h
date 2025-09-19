@@ -57,6 +57,7 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void RecordTokenCountEvent(ProxyLayer layer,
                              IpProtectionTokenCountEvent event,
                              int count) override;
+  void TokenDemandDuringBatchGeneration(int count) override;
 };
 
 }  // namespace ip_protection

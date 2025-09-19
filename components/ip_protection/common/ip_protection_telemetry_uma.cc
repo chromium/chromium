@@ -277,4 +277,9 @@ void IpProtectionTelemetryUma::RecordTokenCountEvent(
   base::UmaHistogramCounts1000(histogram_name, count);
 }
 
+void IpProtectionTelemetryUma::TokenDemandDuringBatchGeneration(int count) {
+  base::UmaHistogramCounts100(
+      "NetworkService.IpProtection.TokenDemandDuringBatchGeneration", count);
+}
+
 }  // namespace ip_protection

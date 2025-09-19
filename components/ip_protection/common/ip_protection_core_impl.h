@@ -111,6 +111,8 @@ class IpProtectionCoreImpl
   // routed through the IP Protection proxy will instead bypass it.
   void SetBypassProxy(bool bypass_proxy) override;
 
+  void RecordTokenDemand(size_t chain_index) override;
+
  protected:
   // Set the enabled status of IP Protection.
   void set_ip_protection_enabled(bool enabled);

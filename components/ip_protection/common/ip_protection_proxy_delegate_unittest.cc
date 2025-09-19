@@ -220,6 +220,12 @@ class MockIpProtectionCore : public IpProtectionCore {
   void SetBypassProxy(bool bypass_proxy) override {
     proxy_is_bypassed_ = bypass_proxy;
   }
+  void RecordTokenDemand(size_t chain_index) override {
+    tokens_demanded_per_chain_index_[chain_index]++;
+  }
+  int GetTokenDemand(size_t chain_index) {
+    return tokens_demanded_per_chain_index_[chain_index];
+  }
 
   void SetIpProtectionEnabled(bool value) { is_ip_protection_enabled_ = value; }
 
@@ -255,6 +261,7 @@ class MockIpProtectionCore : public IpProtectionCore {
       tp_content_settings_;
   raw_ptr<IpProtectionProbabilisticRevealTokenManager> prt_manager_;
   bool proxy_is_bypassed_ = false;
+  std::map<size_t, int> tokens_demanded_per_chain_index_;
 };
 
 MaskedDomainListManager CreateMdlManager(
@@ -413,6 +420,8 @@ TEST_F(IpProtectionProxyDelegateTest, AddsTokenToTunnelRequest) {
       /*chain_index=*/0, base::BindOnce(DoNotCallCallback));
   ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(), Contain("Authorization", "Bearer: a-token"));
+  EXPECT_EQ(ipp_core->GetTokenDemand(/*chain_index=*/0), 1);
+  EXPECT_EQ(ipp_core->GetTokenDemand(/*chain_index=*/1), 0);
 }
 
 TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
@@ -727,6 +736,8 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken_Exhausted) {
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
+  EXPECT_EQ(ipp_core->GetTokenDemand(/*chain_index=*/0), 1);
+  EXPECT_EQ(ipp_core->GetTokenDemand(/*chain_index=*/1), 1);
   histogram_tester_.ExpectUniqueSample(
       kProxyResolutionHistogram, ProxyResolutionResult::kTokensExhausted, 1);
 }

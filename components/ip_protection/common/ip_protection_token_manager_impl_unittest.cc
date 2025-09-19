@@ -77,6 +77,8 @@ constexpr char kProxyATokenCountOrphanedHistogram[] =
     "NetworkService.IpProtection.ProxyA.TokenCount.Orphaned";
 constexpr char kProxyATokenCountRecycledHistogram[] =
     "NetworkService.IpProtection.ProxyA.TokenCount.Recycled";
+constexpr char kTokenDemandDuringBatchGenerationHistogram[] =
+    "NetworkService.IpProtection.TokenDemandDuringBatchGeneration";
 
 constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 constexpr base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
@@ -142,6 +144,11 @@ class MockIpProtectionTokenFetcher : public IpProtectionTokenFetcher {
   void TryGetAuthTokens(uint32_t batch_size,
                         ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
+    if (pause_try_get_auth_tokens_for_testing_) {
+      held_callback_for_testing_ = std::move(callback);
+      std::move(pause_try_get_auth_tokens_for_testing_).Run();
+      return;
+    }
     ASSERT_FALSE(expected_try_get_auth_token_calls_.empty())
         << "Unexpected call to TryGetAuthTokens";
     auto& exp = expected_try_get_auth_token_calls_.front();
@@ -150,13 +157,28 @@ class MockIpProtectionTokenFetcher : public IpProtectionTokenFetcher {
     expected_try_get_auth_token_calls_.pop_front();
   }
 
+  void SetPauseTryGetAuthTokensForTesting(base::OnceClosure on_start) {
+    pause_try_get_auth_tokens_for_testing_ = std::move(on_start);
+  }
+
+  void ResumeTryGetAuthTokensForTesting(
+      std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens,
+      std::optional<base::Time> try_again_after) {
+    ASSERT_TRUE(held_callback_for_testing_);
+    std::move(held_callback_for_testing_)
+        .Run(std::move(bsa_tokens), try_again_after);
+  }
+
  protected:
   std::deque<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
+  base::OnceClosure pause_try_get_auth_tokens_for_testing_;
+  TryGetAuthTokensCallback held_callback_for_testing_;
 };
 
 class MockIpProtectionCore : public IpProtectionCore {
  public:
   MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
+  MOCK_METHOD(void, RecordTokenDemand, (size_t chain_index), (override));
 
   // Dummy implementations for functions not tested in this file.
   bool IsMdlPopulated() override { return false; }
@@ -1370,9 +1392,60 @@ TEST_F(IpProtectionTokenManagerImplTest, InitialTokensSkipsPrefill) {
       task_environment_.QuitClosure());
   token_manager->SetCurrentGeo(kMountainViewGeoId);
   task_environment_.RunUntilQuit();
+
   EXPECT_TRUE(token_fetcher->GotAllExpectedMockCalls());
   EXPECT_TRUE(token_manager->IsAuthTokenAvailable(kMountainViewGeoId));
   token_fetcher = nullptr;
+}
+
+TEST_F(IpProtectionTokenManagerImplTest,
+       TokenDemandDuringTryGetAuthTokensSuccess) {
+  // Begin fetching tokens.
+  ipp_proxy_a_token_fetcher_->SetPauseTryGetAuthTokensForTesting(
+      task_environment_.QuitClosure());
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  task_environment_.RunUntilQuit();
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->fetching_auth_tokens_for_testing());
+
+  // Simulate 5 tokens demanded while the fetch is in progress.
+  for (int i = 0; i < 5; i++) {
+    ipp_proxy_a_token_manager_->RecordTokenDemand();
+  }
+
+  // End the token fetch, and verify that the token demand was recorded.
+  ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+      task_environment_.QuitClosure());
+  ipp_proxy_a_token_fetcher_->ResumeTryGetAuthTokensForTesting(
+      TokenBatch(expected_batch_size_, kFutureExpiration, kMountainViewGeo),
+      std::nullopt);
+  task_environment_.RunUntilQuit();
+  histogram_tester_.ExpectUniqueSample(
+      kTokenDemandDuringBatchGenerationHistogram, 5, 1);
+}
+
+TEST_F(IpProtectionTokenManagerImplTest,
+       TokenDemandDuringTryGetAuthTokensError) {
+  // Begin fetching tokens.
+  ipp_proxy_a_token_fetcher_->SetPauseTryGetAuthTokensForTesting(
+      task_environment_.QuitClosure());
+  ipp_proxy_a_token_manager_->EnableCacheManagementForTesting();
+  task_environment_.RunUntilQuit();
+  ASSERT_TRUE(ipp_proxy_a_token_manager_->fetching_auth_tokens_for_testing());
+
+  // Simulate 5 tokens demanded while the fetch is in progress.
+  for (int i = 0; i < 5; i++) {
+    ipp_proxy_a_token_manager_->RecordTokenDemand();
+  }
+
+  // End the token fetch with an error, and verify that the token demand was not
+  // recorded.
+  ipp_proxy_a_token_manager_->SetOnTryGetAuthTokensCompletedForTesting(
+      task_environment_.QuitClosure());
+  ipp_proxy_a_token_fetcher_->ResumeTryGetAuthTokensForTesting(
+      std::nullopt, base::Time::Now() + base::Seconds(12345));
+  task_environment_.RunUntilQuit();
+  histogram_tester_.ExpectTotalCount(kTokenDemandDuringBatchGenerationHistogram,
+                                     0);
 }
 
 }  // namespace

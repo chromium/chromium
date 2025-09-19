@@ -103,6 +103,10 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     return ProxyResolutionResult::kTokensNeverAvailable;
   } else if (!auth_tokens_are_available) {
     vlog("no auth token available from cache");
+    // Signal demand for both proxy layers. The respective token managers can
+    // determine whether a token fetch is ongoing or not.
+    ip_protection_core_->RecordTokenDemand(/*chain_index=*/0);
+    ip_protection_core_->RecordTokenDemand(/*chain_index=*/1);
     return ProxyResolutionResult::kTokensExhausted;
   }
 
@@ -228,6 +232,7 @@ IpProtectionProxyDelegate::OnBeforeTunnelRequest(
   };
   net::HttpRequestHeaders extra_headers;
   if (proxy_chain.is_for_ip_protection()) {
+    ip_protection_core_->RecordTokenDemand(proxy_index);
     std::optional<BlindSignedAuthToken> token =
         ip_protection_core_->GetAuthToken(proxy_index);
     if (token) {
