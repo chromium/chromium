@@ -13,6 +13,7 @@ import static org.mockito.Mockito.withSettings;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.WindowManager;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.mojom.WindowShowState;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -210,10 +212,28 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @return The {@link AndroidBrowserWindowCreateParams} mock.
      */
     static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams() {
+        return createMockAndroidBrowserWindowCreateParams(
+                BrowserWindowType.NORMAL, new Rect(), WindowShowState.DEFAULT);
+    }
+
+    /**
+     * Creates an {@link AndroidBrowserWindowCreateParams} mock.
+     *
+     * @param windowType The mock {@link BrowserWindowType} to set in the create params.
+     * @param launchBounds The launch bounds to set in the create params.
+     * @param showState The mock {@link WindowShowState} to set in the create params.
+     * @return The {@link AndroidBrowserWindowCreateParams} mock.
+     */
+    static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams(
+            @BrowserWindowType int windowType,
+            Rect launchBounds,
+            @WindowShowState.EnumType int showState) {
         var mockParams = mock(AndroidBrowserWindowCreateParams.class);
-        when(mockParams.getWindowType()).thenReturn(BrowserWindowType.NORMAL);
+        when(mockParams.getWindowType()).thenReturn(windowType);
         Profile mockProfile = mock(Profile.class);
         when(mockParams.getProfile()).thenReturn(mockProfile);
+        when(mockParams.getInitialBounds()).thenReturn(launchBounds);
+        when(mockParams.getInitialShowState()).thenReturn(showState);
 
         return mockParams;
     }

@@ -22,6 +22,7 @@ if (is_android) {
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
+      "//ui/base/mojom:ui_base_types_java",
     ]
   }
 

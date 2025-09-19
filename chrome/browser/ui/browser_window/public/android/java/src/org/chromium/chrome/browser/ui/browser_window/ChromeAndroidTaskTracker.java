@@ -19,6 +19,13 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 public interface ChromeAndroidTaskTracker {
 
     /**
+     * The Intent extra key to store the id of a pending ChromeAndroidTask that will be adopted by
+     * the Activity launched from the Intent.
+     */
+    String EXTRA_PENDING_BROWSER_WINDOW_TASK_ID =
+            "org.chromium.chrome.browser.ui.browser_window.pending_task_id";
+
+    /**
      * Returns a {@link ChromeAndroidTask} with the same Task ID as that of the given {@link
      * ActivityWindowAndroid}'s {@code Activity}.
      *
@@ -50,7 +57,7 @@ public interface ChromeAndroidTaskTracker {
      * Activity}.
      *
      * @param createParams The {@link AndroidBrowserWindowCreateParams} that will determine the
-     *     newly created {@link Activity}'s startup state.
+     *     newly created {@code Activity}'s startup state.
      * @return The pending {@link ChromeAndroidTask}.
      */
     ChromeAndroidTask createPendingTask(AndroidBrowserWindowCreateParams createParams);
