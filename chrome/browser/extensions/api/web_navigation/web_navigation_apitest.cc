@@ -319,10 +319,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Api) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/api")) << message_;
 }
 
-// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
-// the API is ported and chrome.tabs becomes available.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class WebNavigationApiPrerenderTestWithContextType
     : public WebNavigationApiTest,
       public testing::WithParamInterface<ContextType> {
@@ -350,6 +346,9 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiPrerenderTestWithContextType, GetFrame) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrame")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432404): Port to desktop Android. Lookup of incognito
+// windows is broken on Android in some cases, including this one.
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
   ScopedAllowHttpForHostnamesForTesting allow_http({"a.com"},
@@ -358,21 +357,30 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrameIncognito) {
 
   GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
 
-  Browser* incognito_browser = OpenURLOffTheRecord(profile(), url);
-  ASSERT_TRUE(incognito_browser);
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), url);
+  ASSERT_TRUE(incognito_contents);
 
   // Now that we have a OTR browser, run the extension test.
   ASSERT_TRUE(RunExtensionTest("webnavigation/getFrameIncognito", {},
                                {.allow_in_incognito = true}))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENIONS)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports service worker, not persistent background pages.
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          WebNavigationApiPrerenderTestWithContextType,
                          testing::Values(ContextType::kPersistentBackground));
+#endif  // !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebNavigationApiPrerenderTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
+
+// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
+// the API is ported and chrome.tabs becomes available.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ClientRedirect) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect")) << message_;
