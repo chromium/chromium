@@ -14,7 +14,6 @@
     "target_os": "android",
     "use_clang_coverage": true,
     "use_jacoco_coverage": true,
-    "use_partition_alloc": false,
     "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true

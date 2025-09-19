@@ -459,7 +459,6 @@ gn_args.config(
         # TODO: https://crbug.com/40287068 - clean up this list. Ideally it
         # should be empty.
         # LINT.IfChange(cronet_android)
-        "use_partition_alloc": False,
         "default_min_sdk_version": 23,
         "clang_use_default_sample_profile": False,
         "enable_resource_allowlist_generation": False,

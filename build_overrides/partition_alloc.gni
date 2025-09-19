@@ -141,3 +141,7 @@ raw_ptr_zero_on_destruct_default = false
 # Allow embedders to opt-out of C++20 build which is set as default.
 # Kindly notify PartitionAlloc owners of change to false.
 assert_cpp20_default = true
+
+# Cronet disables PartitionAlloc to reduce its binary size (crbug.com/674570).
+# TODO(crbug.com/384669394): Consider enabling it instead.
+use_partition_alloc_default = !is_cronet_build

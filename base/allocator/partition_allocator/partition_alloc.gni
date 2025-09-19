@@ -54,6 +54,11 @@ if (!defined(partition_alloc_dcheck_always_on_default)) {
   }
 }
 
+# Allows embedders to optionally disable PartitionAlloc.
+if (!defined(use_partition_alloc_default)) {
+  use_partition_alloc_default = true
+}
+
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
@@ -119,7 +124,7 @@ declare_args() {
   #     and doesn't wish to incur the library size increase (crbug.com/674570).
   # 2.  On NaCl (through this declaration), where PartitionAlloc doesn't
   #     build at all.
-  use_partition_alloc = is_clang_or_gcc
+  use_partition_alloc = use_partition_alloc_default && is_clang_or_gcc
 }
 
 if (!is_clang_or_gcc) {
