@@ -41,7 +41,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   UseCounter::Count(context, WebFeature::kFocusgroup);
 
   // 1. Parse the input.
-  bool has_extend = false;
   bool has_inline = false;
   bool has_block = false;
   bool has_grid = false;
@@ -56,9 +55,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   SpaceSplitString tokens(input);
   for (unsigned i = 0; i < tokens.size(); i++) {
     AtomicString lowercase_token = tokens[i].LowerASCII();
-    if (lowercase_token == "extend") {
-      has_extend = true;
-    } else if (lowercase_token == "inline") {
+    if (lowercase_token == "inline") {
       has_inline = true;
     } else if (lowercase_token == "block") {
       has_block = true;
@@ -99,49 +96,10 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
 
   FocusgroupFlags flags = FocusgroupFlags::kNone;
 
-  // 2. Apply the extend logic. A focusgroup can extend another one explicitly
-  // when the author specifies "extend" or implicitly when a focusgroup has the
-  // "gridcells" role.
-  FocusgroupFlags ancestor_flags = FocusgroupFlags::kNone;
-  if (has_extend) {
-    // Focusgroups should only be allowed to extend when they have a focusgroup
-    // ancestor and the focusgroup ancestor isn't a grid focusgroup.
-    ancestor_flags = FindNearestFocusgroupAncestorFlags(element);
-    if (ancestor_flags != FocusgroupFlags::kNone) {
-      flags |= FocusgroupFlags::kExtend;
-      if (ancestor_flags & FocusgroupFlags::kGrid) {
-        element->GetDocument().AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kOther,
-                mojom::blink::ConsoleMessageLevel::kError,
-                "Focusgroup attribute value 'extend' present, but grid "
-                "focusgroups cannot be extended. Ignoring focusgroup."));
-        return FocusgroupFlags::kNone;
-      }
-    } else {
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kError,
-              "Focusgroup attribute value 'extend' present, but no parent "
-              "focusgroup found. Ignoring 'extend'."));
-    }
-  }
-
-  // 3. Apply the grid focusgroup logic:
+  // 2. Apply the grid focusgroup logic:
   //     * 'grid' can only be set on an HTML table element.
   //     * The grid-related wrap/flown can only be set on a grid focusgroup.
   if (has_grid) {
-    if (has_extend) {
-      element->GetDocument().AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kError,
-              "Focusgroup attribute values 'extend' and 'grid' present, but "
-              "grid focusgroup cannot extend. Ignoring focusgroup."));
-      return FocusgroupFlags::kNone;
-    }
-
     flags |= FocusgroupFlags::kGrid;
 
     // Set the wrap/flow flags, if specified.
@@ -334,57 +292,11 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // 6. Determine in what axis a focusgroup should wrap. This needs to be
   // performed once the supported axes are final.
   if (has_wrap) {
-    if (flags & FocusgroupFlags::kExtend) {
-      bool extends_inline = flags & FocusgroupFlags::kInline &&
-                            ancestor_flags & FocusgroupFlags::kInline;
-      if (!extends_inline && flags & FocusgroupFlags::kInline) {
-        flags |= FocusgroupFlags::kWrapInline;
-      }
-      bool extends_block = flags & FocusgroupFlags::kBlock &&
-                           ancestor_flags & FocusgroupFlags::kBlock;
-      if (!extends_block && flags & FocusgroupFlags::kBlock) {
-        flags |= FocusgroupFlags::kWrapBlock;
-      }
-
-      if (extends_inline && extends_block) {
-        element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
-                                                 ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            "Focusgroup attribute value 'wrap' present but ignored. 'wrap' has "
-            "no effect when set on a focusgroup that extends another one in "
-            "both axes."));
-      }
-    } else {
-      if (flags & FocusgroupFlags::kInline) {
-        flags |= FocusgroupFlags::kWrapInline;
-      }
-      if (flags & FocusgroupFlags::kBlock) {
-        flags |= FocusgroupFlags::kWrapBlock;
-      }
-    }
-  }
-
-  // When a focusgroup extends another one, inherit the ancestor's wrap behavior
-  // for the descendant's supported axes.
-  if (flags & FocusgroupFlags::kExtend) {
-    DCHECK(ancestor_flags != FocusgroupFlags::kNone);
-    if ((flags & FocusgroupFlags::kWrapInline) ==
-            (ancestor_flags & FocusgroupFlags::kWrapInline) &&
-        (flags & FocusgroupFlags::kWrapBlock) ==
-            (ancestor_flags & FocusgroupFlags::kWrapBlock)) {
-      element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
-                                               ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "Focusgroup attribute value 'wrap' present but ignored. 'wrap' is "
-          "inherited from the extended parent focusgroup."));
-    }
     if (flags & FocusgroupFlags::kInline) {
-      flags |= (ancestor_flags & FocusgroupFlags::kWrapInline);
+      flags |= FocusgroupFlags::kWrapInline;
     }
     if (flags & FocusgroupFlags::kBlock) {
-      flags |= (ancestor_flags & FocusgroupFlags::kWrapBlock);
+      flags |= FocusgroupFlags::kWrapBlock;
     }
   }
 

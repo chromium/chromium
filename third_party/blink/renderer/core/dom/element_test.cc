@@ -638,9 +638,9 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
     <div id=fg1 focusgroup=inline></div>
     <div id=fg2 focusgroup=block></div>
     <div id=fg3 focusgroup>
-      <div id=fg3_a focusgroup="extend inline"></div>
-      <div id=fg3_b focusgroup="extend block">
-        <div id=fg3_b_1 focusgroup=extend></div>
+      <div id=fg3_a focusgroup="inline"></div>
+      <div id=fg3_b focusgroup="block">
+        <div id=fg3_b_1 focusgroup></div>
       </div>
     </div>
   )HTML");
@@ -669,8 +669,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   ASSERT_TRUE(fg3_flags & FocusgroupFlags::kInline);
   ASSERT_TRUE(fg3_flags & FocusgroupFlags::kBlock);
 
-  // 4. Only support inline because it's specified, regardless of the
-  // extend.
+  // 4. Only support inline because it's specified.
   auto* fg3_a = document.getElementById(AtomicString("fg3_a"));
   ASSERT_TRUE(fg3_a);
 
@@ -678,7 +677,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   ASSERT_TRUE(fg3_a_flags & FocusgroupFlags::kInline);
   ASSERT_FALSE(fg3_a_flags & FocusgroupFlags::kBlock);
 
-  // 5. Only support block because it's specified, regardless of the extend.
+  // 5. Only support block because it's specified.
   auto* fg3_b = document.getElementById(AtomicString("fg3_b"));
   ASSERT_TRUE(fg3_b);
 
@@ -686,8 +685,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   ASSERT_FALSE(fg3_b_flags & FocusgroupFlags::kInline);
   ASSERT_TRUE(fg3_b_flags & FocusgroupFlags::kBlock);
 
-  // 6. Extends a focusgroup that only supports block axis, but should
-  // support both axes regardless.
+  // 6. Child specifying only should still support both axes.
   auto* fg3_b_1 = document.getElementById(AtomicString("fg3_b_1"));
   ASSERT_TRUE(fg3_b_1);
 
@@ -696,164 +694,23 @@ TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
   ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kBlock);
 }
 
-TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
-  Document& document = GetDocument();
-  document.body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
-    <div id=fg1 focusgroup>
-      <div id=fg2 focusgroup=extend>
-        <div>
-          <div>
-            <div id=fg3 focusgroup=extend></div>
-          </div>
-        </div>
-        <div id=fg4-container>
-          <template shadowrootmode=open>
-            <div id=fg4 focusgroup=extend></div>
-          </template>
-        </div>
-      </div>
-      <div id=fg5 focusgroup></div>
-    </div>
-    <div id=fg6 focusgroup=extend>
-  )HTML");
-
-  // 1. Root focusgroup shouldn't extend any other.
-  auto* fg1 = document.getElementById(AtomicString("fg1"));
-  ASSERT_TRUE(fg1);
-
-  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
-  ASSERT_NE(fg1_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kExtend);
-
-  // 2. Direct child on which we specified "extend" should extend.
-  auto* fg2 = document.getElementById(AtomicString("fg2"));
-  ASSERT_TRUE(fg2);
-
-  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
-  ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
-
-  // 3. A focusgroup marked as extend should extend its closest ancestor even if
-  // that ancestor isn't its parent.
-  auto* fg3 = document.getElementById(AtomicString("fg3"));
-  ASSERT_TRUE(fg3);
-
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
-
-  // 4. A focusgroup within a ShadowDOM should be able to extend its focusgroup
-  // ancestor that exists outside the ShadowDOM.
-  auto* fg4_container = document.getElementById(AtomicString("fg4-container"));
-  ASSERT_TRUE(fg4_container);
-  ASSERT_NE(nullptr, fg4_container->GetShadowRoot());
-  auto* fg4 =
-      fg4_container->GetShadowRoot()->getElementById(AtomicString("fg4"));
-  ASSERT_TRUE(fg4);
-
-  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
-  ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kExtend);
-
-  // 5. A focusgroup child of another focusgroup should only extend if the
-  // extend keyword is specified - in this case, it's not.
-  auto* fg5 = document.getElementById(AtomicString("fg5"));
-  ASSERT_TRUE(fg5);
-
-  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
-  ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kExtend);
-
-  // 6. A focusgroup that doesn't have an ancestor focusgroup can't extend.
-  auto* fg6 = document.getElementById(AtomicString("fg6"));
-  ASSERT_TRUE(fg6);
-
-  FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
-  ASSERT_NE(fg6_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kExtend);
-}
-
-TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
-  Document& document = GetDocument();
-  SetBodyContent(R"HTML(
-    <div id=fg1 focusgroup=wrap>
-      <div id=fg2 focusgroup=extend>
-        <div id=fg3 focusgroup="extend inline"></div>
-        <div id=fg4 focusgroup="extend block">
-          <div id=fg5 focusgroup="extend inline"></div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-
-  // 1. Root focusgroup supports both axes and wraps, so should support wrapping
-  // in both axes.
-  auto* fg1 = document.getElementById(AtomicString("fg1"));
-  ASSERT_TRUE(fg1);
-
-  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
-  ASSERT_NE(fg1_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapBlock);
-
-  // 2. When a focusgroup extends another one, it should inherit its wrap
-  // properties in all supported axes.
-  auto* fg2 = document.getElementById(AtomicString("fg2"));
-  ASSERT_TRUE(fg2);
-
-  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
-  ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapBlock);
-
-  // 3. The ancestor focusgroup's wrap properties should only be inherited in
-  // the inline axis.
-  auto* fg3 = document.getElementById(AtomicString("fg3"));
-  ASSERT_TRUE(fg3);
-
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
-
-  // 4. The ancestor focusgroup's wrap properties should only be inherited in
-  // the block axis.
-  auto* fg4 = document.getElementById(AtomicString("fg4"));
-  ASSERT_TRUE(fg4);
-
-  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
-  ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapBlock);
-
-  // 5. The ancestor focusgroup's wrap properties shouldn't be inherited since
-  // the two focusgroups have no axis in common.
-  auto* fg5 = document.getElementById(AtomicString("fg5"));
-  ASSERT_TRUE(fg5);
-
-  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
-  ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapBlock);
-}
-
-TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
+TEST_F(ElementTest, ParseFocusgroupAttrWrapIgnoredInDescendantsWithoutOwnWrap) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
     <div id=fg1 focusgroup>
-      <div id=fg2 focusgroup="extend inline wrap"></div>
-      <div id=fg3 focusgroup="extend block wrap"></div>
-      <div id=fg4 focusgroup="extend wrap"></div>
+      <div id=fg2 focusgroup="inline wrap"></div>
+      <div id=fg3 focusgroup="block wrap"></div>
+      <div id=fg4 focusgroup=wrap></div>
     </div>
     <div id=fg5 focusgroup=inline>
-      <div id=fg6 focusgroup="extend inline wrap"></div>
-      <div id=fg7 focusgroup="extend block wrap"></div>
-      <div id=fg8 focusgroup="extend wrap"></div>
+      <div id=fg6 focusgroup="inline wrap"></div>
+      <div id=fg7 focusgroup="block wrap"></div>
+      <div id=fg8 focusgroup=wrap></div>
     </div>
     <div id=fg9 focusgroup=block>
-      <div id=fg10 focusgroup="extend inline wrap"></div>
-      <div id=fg11 focusgroup="extend block wrap"></div>
-      <div id=fg12 focusgroup="extend wrap"></div>
+      <div id=fg10 focusgroup="inline wrap"></div>
+      <div id=fg11 focusgroup="block wrap"></div>
+      <div id=fg12 focusgroup=wrap></div>
     </div>
   )HTML");
 
@@ -889,18 +746,18 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
   ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
   ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
   ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
   ASSERT_NE(fg4_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapBlock);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
   ASSERT_NE(fg5_flags, FocusgroupFlags::kNone);
@@ -909,7 +766,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
 
   FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
   ASSERT_NE(fg6_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg6_flags & FocusgroupFlags::kWrapInline);
   ASSERT_FALSE(fg6_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg7_flags = fg7->GetFocusgroupFlags();
@@ -919,7 +776,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
 
   FocusgroupFlags fg8_flags = fg8->GetFocusgroupFlags();
   ASSERT_NE(fg8_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg8_flags & FocusgroupFlags::kWrapInline);
+  ASSERT_TRUE(fg8_flags & FocusgroupFlags::kWrapInline);
   ASSERT_TRUE(fg8_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg9_flags = fg9->GetFocusgroupFlags();
@@ -935,12 +792,12 @@ TEST_F(ElementTest, ParseFocusgroupAttrDoesntWrapInExtendingFocusgroupOnly) {
   FocusgroupFlags fg11_flags = fg11->GetFocusgroupFlags();
   ASSERT_NE(fg11_flags, FocusgroupFlags::kNone);
   ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg11_flags & FocusgroupFlags::kWrapBlock);
+  ASSERT_TRUE(fg11_flags & FocusgroupFlags::kWrapBlock);
 
   FocusgroupFlags fg12_flags = fg12->GetFocusgroupFlags();
   ASSERT_NE(fg12_flags, FocusgroupFlags::kNone);
   ASSERT_TRUE(fg12_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg12_flags & FocusgroupFlags::kWrapBlock);
+  ASSERT_TRUE(fg12_flags & FocusgroupFlags::kWrapBlock);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
@@ -961,10 +818,8 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
     <table id=e12 focusgroup="grid row-wrap col-flow"></table>
     <table id=e13 focusgroup="grid col-wrap col-flow"></table>
     <table id=e14 focusgroup="grid col-wrap row-flow"></table>
-    <table focusgroup=grid>
-      <tbody id=e15 focusgroup=extend></tbody> <!-- Error -->
-    </table>
-    <div id=e16 focusgroup="flow"></div> <!-- Error -->
+    <table focusgroup=grid></table>
+    <div id=e15 focusgroup="flow"></div> <!-- Error -->
   )HTML");
 
   auto* e1 = document.getElementById(AtomicString("e1"));
@@ -982,7 +837,6 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   auto* e13 = document.getElementById(AtomicString("e13"));
   auto* e14 = document.getElementById(AtomicString("e14"));
   auto* e15 = document.getElementById(AtomicString("e15"));
-  auto* e16 = document.getElementById(AtomicString("e16"));
   ASSERT_TRUE(e1);
   ASSERT_TRUE(e2);
   ASSERT_TRUE(e3);
@@ -998,7 +852,6 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   ASSERT_TRUE(e13);
   ASSERT_TRUE(e14);
   ASSERT_TRUE(e15);
-  ASSERT_TRUE(e16);
 
   FocusgroupFlags e1_flags = e1->GetFocusgroupFlags();
   FocusgroupFlags e2_flags = e2->GetFocusgroupFlags();
@@ -1015,7 +868,6 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   FocusgroupFlags e13_flags = e13->GetFocusgroupFlags();
   FocusgroupFlags e14_flags = e14->GetFocusgroupFlags();
   FocusgroupFlags e15_flags = e15->GetFocusgroupFlags();
-  FocusgroupFlags e16_flags = e16->GetFocusgroupFlags();
 
   ASSERT_EQ(e1_flags, FocusgroupFlags::kGrid);
   ASSERT_EQ(e2_flags, FocusgroupFlags::kGrid);
@@ -1037,18 +889,14 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   ASSERT_EQ(e13_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock));
   ASSERT_EQ(e14_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock |
                         FocusgroupFlags::kRowFlow));
-  ASSERT_EQ(e15_flags, FocusgroupFlags::kNone);
-  ASSERT_EQ(e16_flags, (FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+  ASSERT_EQ(e15_flags, (FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
     <div id=fg1 focusgroup=wrap>
-      <div id=fg2 focusgroup=extend>
-          <div>
-            <div id=fg3 focusgroup=extend></div>
-          </div>
+      <div id=fg2 focusgroup='inline wrap'>
       </div>
     </div>
     <div id=not-fg></div>
@@ -1061,18 +909,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
   ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapBlock);
-
-  auto* fg3 = document.getElementById(AtomicString("fg3"));
-  ASSERT_TRUE(fg3);
-
-  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapBlock);
 
   // 2. Move |fg2| from |fg1| to |not-fg|.
   auto* not_fg = document.getElementById(AtomicString("not-fg"));
@@ -1081,18 +918,10 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
   not_fg->AppendChild(fg2);
 
   // 3. Validate that the focusgroup properties were updated correctly on |fg2|
-  // and |fg3| after they moved to a different ancestor.
+  // after they moved to a different ancestor. (No change)
   fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kExtend);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapBlock);
-
-  fg3_flags = fg3->GetFocusgroupFlags();
-  ASSERT_NE(fg3_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapInline);
-  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapBlock);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapInline);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
@@ -1117,7 +946,7 @@ TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
 
   FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
   ASSERT_NE(fg2_flags, FocusgroupFlags::kNone);
-  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kExtend);
 
   // 2. Remove |fg1| from the DOM.
   fg1->remove();
