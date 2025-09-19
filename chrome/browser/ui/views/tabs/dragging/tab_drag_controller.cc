@@ -843,28 +843,11 @@ void TabDragController::RestoreFocus() {
     if (is_dragging_new_browser_) {
       content::WebContents* active_contents =
           drag_data_.source_dragged_contents();
-
-      if (active_contents) {
-        // If the tab is split, make the last active split tab stay active
-        // instead of the drag source.
-        const tabs::TabInterface* tab =
-            tabs::TabInterface::GetFromContents(active_contents);
-
-        if (tab->IsSplit()) {
-          TabStripModel* tab_strip_model =
-              attached_context_->GetTabStripModel();
-          active_contents = tab_strip_model->GetWebContentsAt(
-              split_tabs::GetIndexOfLastActiveTab(tab_strip_model,
-                                                  tab->GetSplit().value()));
-        }
-
-        if (!active_contents->FocusLocationBarByDefault()) {
-          active_contents->Focus();
-        }
+      if (active_contents && !active_contents->FocusLocationBarByDefault()) {
+        active_contents->Focus();
       }
-
+    }
     return;
-  }
   }
   views::View* old_focused_view = old_focused_view_tracker_->view();
   if (!old_focused_view || !old_focused_view->GetFocusManager()) {
