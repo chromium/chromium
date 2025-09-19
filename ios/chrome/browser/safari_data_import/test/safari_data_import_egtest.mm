@@ -122,16 +122,8 @@
   }
 }
 
-// TODO(crbug.com/446122860): Test is flaky on ipad-device.
 /// Tests that the entry point displays in full screen in landscape mode.
 - (void)testFullscreenEntryPointLandscapeMode {
-#if !TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Test is flaky on ipad-device (crbug.com/446122860)");
-    return;
-  }
-#endif
   if (@available(iOS 18.2, *)) {
     /// Verify that NTP logo is visible before rotation.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
