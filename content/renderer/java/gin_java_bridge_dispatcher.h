@@ -10,7 +10,7 @@
 #include <set>
 #include <string>
 
-#include "base/containers/id_map.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -20,14 +20,14 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "v8/include/cppgc/persistent.h"
 
 namespace content {
 
 class GinJavaBridgeObject;
 
 struct NamedObject {
-  using ObjectMap = base::IDMap<GinJavaBridgeObject*>;
-  using ObjectID = ObjectMap::KeyType;
+  using ObjectID = int32_t;
 
   ObjectID object_id;
   origin_matcher::OriginMatcher matcher;
@@ -46,8 +46,9 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
   // when it is no more referenced from JS. As GinJavaBridgeObject reports
   // deletion of self to GinJavaBridgeDispatcher, we would not have stale
   // pointers here.
-  using ObjectMap = base::IDMap<GinJavaBridgeObject*>;
-  using ObjectID = ObjectMap::KeyType;
+  using ObjectID = int32_t;
+  using ObjectMap =
+      base::flat_map<ObjectID, cppgc::WeakPersistent<GinJavaBridgeObject>>;
 
   explicit GinJavaBridgeDispatcher(RenderFrame* render_frame);
 

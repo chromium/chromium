@@ -10,49 +10,42 @@
 
 #include "gin/interceptor.h"
 #include "gin/per_isolate_data.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/public/wrapper_info.h"
+#include "gin/wrappable.h"
 #include "v8/include/v8-exception.h"
+#include "v8/include/v8-object.h"
 #include "v8/include/v8-template.h"
 
 namespace gin {
 
-namespace {
-
-DeprecatedWrappableBase* WrappableFromV8(v8::Isolate* isolate,
-                                         v8::Local<v8::Value> val) {
+NamedPropertyInterceptor* NamedInterceptorFromV8(v8::Isolate* isolate,
+                                                 v8::Local<v8::Value> val,
+                                                 WrappablePointerTag tag) {
   if (!val->IsObject()) {
     return nullptr;
   }
-  v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(val);
-  DeprecatedWrapperInfo* info = DeprecatedWrapperInfo::From(obj);
-
-  // If this fails, the object is not managed by Gin.
-  if (!info) {
+  v8::Local<v8::Object> obj = val.As<v8::Object>();
+  if (!obj->IsApiWrapper()) {
     return nullptr;
   }
-
-  // We don't further validate the type of the object, but assume it's derived
-  // from WrappableBase. We look up the pointer in a global registry, to make
-  // sure it's actually pointed to a valid life object.
-  return static_cast<DeprecatedWrappableBase*>(
-      obj->GetAlignedPointerFromInternalField(kEncodedValueIndex));
-}
-
-NamedPropertyInterceptor* NamedInterceptorFromV8(v8::Isolate* isolate,
-                                                 v8::Local<v8::Value> val) {
-  DeprecatedWrappableBase* base = WrappableFromV8(isolate, val);
+  v8::CppHeapPointerTag cpp_heap_pointer_tag =
+      static_cast<v8::CppHeapPointerTag>(tag);
+  auto* base = v8::Object::Unwrap<WrappableBase>(
+      isolate, obj, {cpp_heap_pointer_tag, cpp_heap_pointer_tag});
   if (!base) {
     return nullptr;
   }
   return base->GetNamedPropertyInterceptor();
 }
 
-v8::Intercepted NamedPropertyGetter(
+v8::Intercepted ObjectTemplateBuilder::NamedPropertyGetterImpl(
+    WrappablePointerTag tag,
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2());
+      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -67,13 +60,14 @@ v8::Intercepted NamedPropertyGetter(
   return v8::Intercepted::kNo;
 }
 
-v8::Intercepted NamedPropertySetter(
+v8::Intercepted ObjectTemplateBuilder::NamedPropertySetterImpl(
+    WrappablePointerTag tag,
     v8::Local<v8::Name> property,
     v8::Local<v8::Value> value,
     const v8::PropertyCallbackInfo<void>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2());
+      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -85,12 +79,13 @@ v8::Intercepted NamedPropertySetter(
   return v8::Intercepted::kNo;
 }
 
-v8::Intercepted NamedPropertyQuery(
+v8::Intercepted ObjectTemplateBuilder::NamedPropertyQueryImpl(
+    WrappablePointerTag tag,
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Integer>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2());
+      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -103,10 +98,12 @@ v8::Intercepted NamedPropertyQuery(
   return v8::Intercepted::kNo;
 }
 
-void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
+void ObjectTemplateBuilder::NamedPropertyEnumeratorImpl(
+    WrappablePointerTag tag,
+    const v8::PropertyCallbackInfo<v8::Array>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2());
+      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
   if (!interceptor) {
     return;
   }
@@ -117,6 +114,7 @@ void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
   }
   info.GetReturnValue().Set(v8::Local<v8::Array>::Cast(properties));
 }
+namespace {
 
 void Constructor(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
@@ -150,14 +148,6 @@ ObjectTemplateBuilder::ObjectTemplateBuilder(
     const ObjectTemplateBuilder& other) = default;
 
 ObjectTemplateBuilder::~ObjectTemplateBuilder() = default;
-
-ObjectTemplateBuilder& ObjectTemplateBuilder::AddNamedPropertyInterceptor() {
-  template_->SetHandler(v8::NamedPropertyHandlerConfiguration(
-      &NamedPropertyGetter, &NamedPropertySetter, &NamedPropertyQuery, nullptr,
-      &NamedPropertyEnumerator, v8::Local<v8::Value>(),
-      v8::PropertyHandlerFlags::kOnlyInterceptStrings));
-  return *this;
-}
 
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
     const std::string_view& name,

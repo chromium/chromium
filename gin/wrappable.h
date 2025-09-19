@@ -87,11 +87,13 @@ class GIN_EXPORT WrappableBase : public v8::Object::Wrappable {
 
   const v8::Object::WrapperTypeInfo* GetWrapperTypeInfo() const override;
 
+  virtual NamedPropertyInterceptor* GetNamedPropertyInterceptor();
+
   v8::MaybeLocal<v8::Object> GetWrapper(v8::Isolate* isolate);
   void SetWrapper(v8::Isolate* isolate, v8::Local<v8::Object> wrapper);
 
  protected:
-  explicit WrappableBase() = default;
+  WrappableBase() = default;
 
   // Overrides of this method should be declared final and not overridden again.
   virtual ObjectTemplateBuilder GetObjectTemplateBuilder(v8::Isolate* isolate);
@@ -169,8 +171,6 @@ class GIN_EXPORT DeprecatedWrappableBase {
   DeprecatedWrappableBase(const DeprecatedWrappableBase&) = delete;
   DeprecatedWrappableBase& operator=(const DeprecatedWrappableBase&) = delete;
 
-  virtual NamedPropertyInterceptor* GetNamedPropertyInterceptor();
-
  protected:
   DeprecatedWrappableBase();
   virtual ~DeprecatedWrappableBase();
@@ -217,11 +217,13 @@ template <typename T>
   requires(std::is_convertible_v<T*, DeprecatedWrappableBase*>)
 struct Converter<T*> {
   static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate, T* val) {
-    if (val == nullptr)
+    if (val == nullptr) {
       return v8::Null(isolate);
+    }
     v8::Local<v8::Object> wrapper;
-    if (!val->GetWrapper(isolate).ToLocal(&wrapper))
+    if (!val->GetWrapper(isolate).ToLocal(&wrapper)) {
       return v8::MaybeLocal<v8::Value>();
+    }
     return v8::MaybeLocal<v8::Value>(wrapper);
   }
 

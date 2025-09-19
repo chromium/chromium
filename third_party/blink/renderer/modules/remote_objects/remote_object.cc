@@ -9,14 +9,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
-
-gin::DeprecatedWrapperInfo RemoteObject::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 namespace {
 
@@ -52,8 +51,9 @@ v8::Local<v8::Object> GetMethodCache(v8::Isolate* isolate,
   V8PrivateProperty::Symbol method_cache_symbol =
       V8PrivateProperty::GetSymbol(isolate, kMethodCacheKey);
   v8::Local<v8::Value> result;
-  if (!method_cache_symbol.GetOrUndefined(object).ToLocal(&result))
+  if (!method_cache_symbol.GetOrUndefined(object).ToLocal(&result)) {
     return v8::Local<v8::Object>();
+  }
 
   if (result->IsUndefined()) {
     result = v8::Object::New(isolate, v8::Null(isolate), nullptr, nullptr, 0);
@@ -98,8 +98,9 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
     for (uint32_t i = 0; i < array->Length(); ++i) {
       v8::Local<v8::Value> element_v8;
 
-      if (!array->Get(isolate->GetCurrentContext(), i).ToLocal(&element_v8))
+      if (!array->Get(isolate->GetCurrentContext(), i).ToLocal(&element_v8)) {
         return nullptr;
+      }
 
       // The array length might change during iteration. Set the output array
       // elements to null for nonexistent input array elements.
@@ -129,8 +130,9 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
           nested_argument = JSValueToMojom(element_v8, isolate);
         }
 
-        if (!nested_argument)
+        if (!nested_argument) {
           return nullptr;
+        }
 
         nested_arguments.push_back(std::move(nested_argument));
       }
@@ -234,8 +236,9 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
       }
 
       uint32_t key_value;
-      if (!key->Uint32Value(isolate->GetCurrentContext()).To(&key_value))
+      if (!key->Uint32Value(isolate->GetCurrentContext()).To(&key_value)) {
         continue;
+      }
 
       v8::Local<v8::Value> value_v8;
       v8::MaybeLocal<v8::Value> maybe_value =
@@ -246,8 +249,9 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
       }
 
       auto nested_argument = JSValueToMojom(value_v8, isolate);
-      if (!nested_argument)
+      if (!nested_argument) {
         continue;
+      }
       nested_arguments[key_value] = std::move(nested_argument);
     }
 
@@ -294,22 +298,21 @@ v8::Local<v8::Value> MojomToJSValue(
 }  // namespace
 
 RemoteObject::RemoteObject(RemoteObjectGatewayImpl* gateway, int32_t object_id)
-    : gateway_(gateway), object_id_(object_id) {}
+    : gateway_(gateway),
+      object_(gateway->GetSupplementable()->DomWindow()),
+      object_id_(object_id) {}
 
-RemoteObject::~RemoteObject() {
-  if (gateway_) {
-    gateway_->ReleaseObject(object_id_, this);
-
-    if (object_)
-      object_->NotifyReleasedObject();
-  }
+void RemoteObject::Trace(cppgc::Visitor* visitor) const {
+  WrappableWithNamedPropertyInterceptor<RemoteObject>::Trace(visitor);
+  visitor->Trace(gateway_);
+  visitor->Trace(object_);
 }
 
 gin::ObjectTemplateBuilder RemoteObject::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
-  return gin::DeprecatedWrappable<RemoteObject>::GetObjectTemplateBuilder(
-             isolate)
-      .AddNamedPropertyInterceptor();
+  return gin::WrappableWithNamedPropertyInterceptor<
+             RemoteObject>::GetObjectTemplateBuilder(isolate)
+      .template AddNamedPropertyInterceptor<kWrapperInfo.pointer_tag>();
 }
 
 void RemoteObject::RemoteObjectInvokeCallback(
@@ -328,15 +331,16 @@ void RemoteObject::RemoteObjectInvokeCallback(
   if (!gin::ConvertFromV8(isolate, info.This(), &remote_object)) {
     // Someone messed with the |this| pointer. Throw and return.
     isolate->ThrowException(v8::Exception::Error(V8String(
-        isolate, StrCat({"Error invoking ", ": ", method_name,
+        isolate, StrCat({"Error invoking ", method_name, ": ",
                          kMethodInvocationOnNonInjectedObjectDisallowed}))));
     return;
   }
 
   v8::Local<v8::Object> method_cache = GetMethodCache(
       isolate, remote_object->GetWrapper(isolate).ToLocalChecked());
-  if (method_cache.IsEmpty())
+  if (method_cache.IsEmpty()) {
     return;
+  }
 
   v8::Local<v8::Value> cached_method =
       method_cache
@@ -345,7 +349,7 @@ void RemoteObject::RemoteObjectInvokeCallback(
 
   if (cached_method->IsUndefined()) {
     isolate->ThrowException(v8::Exception::Error(
-        V8String(isolate, StrCat({"Error invoking ", ": ", method_name,
+        V8String(isolate, StrCat({"Error invoking ", method_name, ": ",
                                   kMethodInvocationNonexistentMethod}))));
     return;
   }
@@ -355,8 +359,9 @@ void RemoteObject::RemoteObjectInvokeCallback(
 
   for (int i = 0; i < info.Length(); i++) {
     auto argument = JSValueToMojom(info[i], isolate);
-    if (!argument)
+    if (!argument) {
       return;
+    }
 
     arguments.push_back(std::move(argument));
   }
@@ -374,27 +379,40 @@ void RemoteObject::RemoteObjectInvokeCallback(
     return;
   }
 
-  if (!result->value)
+  if (!result->value) {
     return;
+  }
 
   if (result->value->is_object_id()) {
     RemoteObject* object_result = remote_object->gateway_->GetRemoteObject(
         info.GetIsolate(), result->value->get_object_id());
-    gin::Handle<RemoteObject> controller =
-        gin::CreateHandle(isolate, object_result);
-    if (controller.IsEmpty())
+    v8::Local<v8::Object> wrapper;
+    if (object_result->GetWrapper(isolate).ToLocal(&wrapper)) {
+      info.GetReturnValue().Set(wrapper);
+    } else {
       info.GetReturnValue().SetUndefined();
-    else
-      info.GetReturnValue().Set(controller.ToV8());
+    }
   } else {
     info.GetReturnValue().Set(MojomToJSValue(result->value, isolate));
   }
 }
 
+void RemoteObject::Dispose() {
+  if (gateway_) {
+    gateway_->ReleaseObject(object_id_, this);
+
+    if (object_) {
+      object_->NotifyReleasedObject();
+    }
+  }
+}
+
 void RemoteObject::EnsureRemoteIsBound() {
   if (!object_.is_bound()) {
-    gateway_->BindRemoteObjectReceiver(object_id_,
-                                       object_.BindNewPipeAndPassReceiver());
+    gateway_->BindRemoteObjectReceiver(
+        object_id_, object_.BindNewPipeAndPassReceiver(
+                        gateway_->GetSupplementable()->GetTaskRunner(
+                            TaskType::kMiscPlatformAPI)));
   }
 }
 
@@ -404,17 +422,19 @@ v8::Local<v8::Value> RemoteObject::GetNamedProperty(
   auto wtf_property = String::FromUTF8(property);
 
   v8::Local<v8::String> v8_property = V8AtomicString(isolate, wtf_property);
-  v8::Local<v8::Object> method_cache =
-      GetMethodCache(isolate, GetWrapper(isolate).ToLocalChecked());
-  if (method_cache.IsEmpty())
+  v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();
+  v8::Local<v8::Object> method_cache = GetMethodCache(isolate, wrapper);
+  if (method_cache.IsEmpty()) {
     return v8::Local<v8::Value>();
+  }
 
   v8::Local<v8::Value> cached_method =
       method_cache->Get(isolate->GetCurrentContext(), v8_property)
           .ToLocalChecked();
 
-  if (!cached_method->IsUndefined())
+  if (!cached_method->IsUndefined()) {
     return cached_method;
+  }
 
   // if not in the cache, ask the browser
   EnsureRemoteIsBound();
@@ -440,8 +460,9 @@ std::vector<std::string> RemoteObject::EnumerateNamedProperties(
   Vector<String> methods;
   object_->GetMethods(&methods);
   std::vector<std::string> result;
-  for (const auto& method : methods)
+  for (const auto& method : methods) {
     result.push_back(method.Utf8());
+  }
   return result;
 }
 
