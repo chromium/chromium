@@ -92,8 +92,8 @@ void ShelfBubble::CreateBubble() {
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ShelfBubble::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ShelfBubble::CreateNonClientFrameView(
+    views::Widget* widget) {
   auto frame = for_tooltip_
                    ? std::make_unique<ShelfTooltipBubbleFrameView>()
                    : BubbleDialogDelegateView::CreateNonClientFrameView(widget);

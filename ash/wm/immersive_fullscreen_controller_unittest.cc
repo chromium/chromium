@@ -107,7 +107,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   }
 
   views::View* top_container() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   views::Widget* widget() { return widget_; }
@@ -115,7 +115,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   aura::Window* window() { return widget_->GetNativeWindow(); }
 
   chromeos::HeaderView* immersive_delegate() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   // Access to private data from the controller.

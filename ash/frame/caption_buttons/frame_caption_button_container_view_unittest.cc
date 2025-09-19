@@ -5,7 +5,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 
 #include "ash/constants/ash_switches.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -406,7 +406,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, TabletSizeButtonVisibility) {
   auto* window_state = WindowState::Get(window.get());
   ASSERT_TRUE(window_state->IsMaximized());
 
-  auto* frame = NonClientFrameViewAsh::Get(window.get());
+  auto* frame = FrameViewAsh::Get(window.get());
   DCHECK(frame);
   FrameCaptionButtonContainerView* container =
       frame->GetHeaderView()->caption_button_container();

@@ -8,7 +8,7 @@
 #include <variant>
 #include <vector>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -294,7 +294,7 @@ chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
   } else {
     aura::Window* window = std::get<aura::Window*>(window_or_size_button);
     CHECK(window);
-    auto* frame_view = NonClientFrameViewAsh::Get(window);
+    auto* frame_view = FrameViewAsh::Get(window);
     if (!frame_view) {
       return nullptr;
     }

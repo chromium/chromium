@@ -234,8 +234,8 @@ class PipToggleResizeFeatureTest : public AshTestBase,
         new TestWidgetDelegateAsh);
     Shell::Get()->pip_controller()->SetPipWindow(window.get());
 
-    auto* custom_frame = static_cast<TestFrameViewAsh*>(
-        NonClientFrameViewAsh::Get(window.get()));
+    auto* custom_frame =
+        static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window.get()));
 
     custom_frame->SetMaximumSize(kMaxWindowSize);
     custom_frame->SetMinimumSize(kMinWindowSize);

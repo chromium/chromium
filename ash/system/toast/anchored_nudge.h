@@ -61,7 +61,7 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
                                 views::Widget* widget) const override;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   // views::View:

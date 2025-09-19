@@ -704,8 +704,8 @@ void HelpBubbleViewAsh::OnTimeout() {
   GetWidget()->Close();
 }
 
-std::unique_ptr<views::NonClientFrameView>
-HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> HelpBubbleViewAsh::CreateNonClientFrameView(
+    views::Widget* widget) {
   auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);

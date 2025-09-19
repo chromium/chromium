@@ -11,7 +11,7 @@
 
 namespace ash {
 
-// WidgetDelegate that is resizable and creates ash's NonClientFrameView
+// WidgetDelegate that is resizable and creates ash's FrameView
 // implementation.  This is not in anonymous namespace to access
 // WidgetDelegateView's ctor.
 class TestWidgetBuilderDelegate : public views::WidgetDelegateView {
@@ -28,7 +28,7 @@ class TestWidgetBuilderDelegate : public views::WidgetDelegateView {
   ~TestWidgetBuilderDelegate() override = default;
 
   // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return Shell::Get()->CreateDefaultNonClientFrameView(widget);
   }

@@ -155,7 +155,7 @@ TEST_F(SystemGestureEventFilterTest, WindowsWithMaxSizeDontSnap) {
       widget_delegate, root_window, bounds);
 
   auto* custom_frame = static_cast<TestFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(toplevel->GetNativeWindow()));
+      FrameViewAsh::Get(toplevel->GetNativeWindow()));
   custom_frame->SetMaximumSize(gfx::Size(200, 200));
 
   toplevel->Show();

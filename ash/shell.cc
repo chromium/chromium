@@ -85,8 +85,8 @@
 #include "ash/focus/ash_focus_rules.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/focus/shutdown_focus_rules.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -502,10 +502,10 @@ void Shell::UntrackTrackInputMethodBounds(
       ->RemoveInputMethodBoundsTrackerObserver(tracker);
 }
 
-std::unique_ptr<views::NonClientFrameView>
-Shell::CreateDefaultNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> Shell::CreateDefaultNonClientFrameView(
+    views::Widget* widget) {
   // Use translucent-style window frames for dialogs.
-  return std::make_unique<NonClientFrameViewAsh>(widget);
+  return std::make_unique<FrameViewAsh>(widget);
 }
 
 void Shell::OnCastingSessionStartedOrStopped(bool started) {

@@ -100,7 +100,7 @@ class PipWindowResizerTest : public AshTestBase,
     params.parent = pip_container;
 
     // Add a delegate to make it possible to set the maximum and minimum
-    // size for the window with `NonClientFrameViewAsh`.
+    // size for the window with `FrameViewAsh`.
     params.delegate = new TestWidgetDelegateAsh();
 
     widget->Init(std::move(params));
@@ -161,7 +161,7 @@ class PipWindowResizerTest : public AshTestBase,
     Shell::Get()->pip_controller()->SetPipWindow(window_);
 
     auto* custom_frame =
-        static_cast<TestFrameViewAsh*>(NonClientFrameViewAsh::Get(window()));
+        static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window()));
     custom_frame->SetMaximumSize(gfx::Size(300, 200));
     custom_frame->SetMinimumSize(gfx::Size(30, 20));
 
@@ -708,7 +708,7 @@ TEST_P(PipWindowResizerTest, PipPinchResizeWithNoMaximumSizeRestrinction) {
   PreparePipWindow(gfx::Rect(200, 200, 100, 100));
 
   auto* custom_frame =
-      static_cast<TestFrameViewAsh*>(NonClientFrameViewAsh::Get(window()));
+      static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window()));
   // This means there is no maximum size limit.
   custom_frame->SetMaximumSize(gfx::Size(0, 0));
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));

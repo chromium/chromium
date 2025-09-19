@@ -24,7 +24,7 @@ class MenuRunner;
 namespace ash {
 
 // FrameContextMenuController is used to house the common code for displaying
-// the context menu of frames like `NonClientFrameViewAsh` and `WideFrameView`.
+// the context menu of frames like `FrameViewAsh` and `WideFrameView`.
 class ASH_EXPORT FrameContextMenuController
     : public views::ContextMenuController {
  public:

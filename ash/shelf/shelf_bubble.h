@@ -50,7 +50,7 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView {
 
  private:
   // views::BubbleDialogDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
   int border_radius_ = 0;

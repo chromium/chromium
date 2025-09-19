@@ -85,7 +85,7 @@ TEST_F(QuickInsertWidgetTest, CreateWidgetHasCorrectHierarchy) {
   FakeQuickInsertViewDelegate delegate;
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
 
-  // Widget should contain a NonClientView, which has a NonClientFrameView for
+  // Widget should contain a NonClientView, which has a FrameView for
   // borders and shadows, and a ClientView with a sole child of the
   // QuickInsertView.
   ASSERT_TRUE(widget);

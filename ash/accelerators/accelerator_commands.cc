@@ -23,7 +23,7 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus/focus_cycler.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -419,7 +419,7 @@ chromeos::FrameSizeButton* GetFrameSizeButton(aura::Window* window) {
   if (!window) {
     return nullptr;
   }
-  auto* frame_view = NonClientFrameViewAsh::Get(window);
+  auto* frame_view = FrameViewAsh::Get(window);
   if (!frame_view) {
     return nullptr;
   }
@@ -757,7 +757,7 @@ bool CanToggleResizeLockMenu() {
   if (!window) {
     return false;
   }
-  auto* frame_view = NonClientFrameViewAsh::Get(window);
+  auto* frame_view = FrameViewAsh::Get(window);
   return frame_view && frame_view->GetToggleResizeLockMenuCallback();
 }
 
@@ -1758,7 +1758,7 @@ void ToggleSnapGroupsMinimize() {
 
 void ToggleResizeLockMenu() {
   aura::Window* window = GetTargetWindow();
-  auto* frame_view = NonClientFrameViewAsh::Get(window);
+  auto* frame_view = FrameViewAsh::Get(window);
   frame_view->GetToggleResizeLockMenuCallback().Run();
 }
 
@@ -1803,13 +1803,13 @@ void ToggleMultitaskMenu() {
     multitask_menu_controller->ShowMultitaskMenu(window);
     return;
   }
-  auto* frame_view = NonClientFrameViewAsh::Get(window);
+  auto* frame_view = FrameViewAsh::Get(window);
   if (!frame_view) {
     // If `window` doesn't have a frame, it must be the multitask menu and have
     // a transient parent for `CanToggleMultitaskMenu()` to arrive here.
     auto* transient_parent = wm::GetTransientParent(window);
     DCHECK(transient_parent);
-    frame_view = NonClientFrameViewAsh::Get(transient_parent);
+    frame_view = FrameViewAsh::Get(transient_parent);
   }
   DCHECK(frame_view);
   auto* size_button =

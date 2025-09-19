@@ -16,7 +16,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
@@ -799,7 +799,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     if (caption_button_model) {
       // Override the caption button model and ensure the values referencing the
       // model are updated.
-      auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+      auto* frame_view = FrameViewAsh::Get(game_window_.get());
       ASSERT_TRUE(frame_view);
       frame_view->SetCaptionButtonModel(std::move(caption_button_model));
     }
@@ -809,7 +809,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // not visible.
     ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
     ToggleFullScreen(window_state, /*delegate=*/nullptr);
-    auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+    auto* frame_view = FrameViewAsh::Get(game_window_.get());
     chromeos::FrameCaptionButtonContainerView::TestApi test_api(
         frame_view->GetHeaderView()->caption_button_container());
     test_api.EndAnimations();

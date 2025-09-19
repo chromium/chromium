@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -33,7 +33,7 @@ class TestWidgetDelegateAsh : public views::WidgetDelegateView {
 };
 
 // Support class for testing windows with a maximum size.
-class TestFrameViewAsh : public NonClientFrameViewAsh {
+class TestFrameViewAsh : public FrameViewAsh {
  public:
   explicit TestFrameViewAsh(views::Widget* widget);
   TestFrameViewAsh(const TestFrameViewAsh&) = delete;
@@ -43,7 +43,7 @@ class TestFrameViewAsh : public NonClientFrameViewAsh {
   void SetMaximumSize(const gfx::Size& size);
   void SetMinimumSize(const gfx::Size& size);
 
-  // NonClientFrameViewAsh:
+  // FrameViewAsh:
   gfx::Size GetMaximumSize() const override;
   gfx::Size GetMinimumSize() const override;
 

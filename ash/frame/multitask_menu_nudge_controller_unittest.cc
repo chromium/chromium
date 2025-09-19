@@ -8,8 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/display_move_window_util.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -55,7 +55,7 @@ chromeos::MultitaskMenuNudgeController* GetNudgeControllerForWindow(
         ->nudge_controller_for_testing();
   }
 
-  if (auto* frame = NonClientFrameViewAsh::Get(window)) {
+  if (auto* frame = FrameViewAsh::Get(window)) {
     return chromeos::FrameCaptionButtonContainerView::TestApi(
                frame->GetHeaderView()->caption_button_container())
         .nudge_controller();

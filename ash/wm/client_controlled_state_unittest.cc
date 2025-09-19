@@ -8,7 +8,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -253,9 +253,9 @@ class ClientControlledStateTestWidgetDelegate
     GetWidget()->OnSizeConstraintsChanged();
   }
 
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
+    return std::make_unique<FrameViewAsh>(widget);
   }
 };
 
@@ -319,7 +319,7 @@ class ClientControlledStateTest : public AshTestBase {
   }
 
   chromeos::HeaderView* GetHeaderView() {
-    auto* const frame = NonClientFrameViewAsh::Get(window());
+    auto* const frame = FrameViewAsh::Get(window());
     DCHECK(frame);
     return frame->GetHeaderView();
   }

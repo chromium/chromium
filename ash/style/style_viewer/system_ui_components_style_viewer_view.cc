@@ -72,7 +72,7 @@ class SystemUIComponentsStyleViewerClientView : public views::ClientView {
   // ClientView:
   void UpdateWindowRoundedCorners(
       const gfx::RoundedCornersF& window_radii) override {
-    // The top corners will be rounded by NonClientFrameViewAsh. The
+    // The top corners will be rounded by FrameViewAsh. The
     // client-view is responsible for rounding the bottom corners.
 
     const gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),

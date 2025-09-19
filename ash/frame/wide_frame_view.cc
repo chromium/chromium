@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -251,8 +251,8 @@ bool WideFrameView::ShouldShowContextMenu(
 }
 
 chromeos::HeaderView* WideFrameView::GetTargetHeaderView() {
-  auto* frame_view = static_cast<NonClientFrameViewAsh*>(
-      target_->non_client_view()->frame_view());
+  auto* frame_view =
+      static_cast<FrameViewAsh*>(target_->non_client_view()->frame_view());
   return frame_view->GetHeaderView();
 }
 

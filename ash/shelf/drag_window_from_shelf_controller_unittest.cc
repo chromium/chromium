@@ -10,7 +10,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -1689,8 +1689,7 @@ TEST_F(FloatDragWindowFromShelfControllerTest, DraggingFloatedWindow) {
 
   // We need to force a layout to start dragging. Drag the window so that it is
   // magnetized to the top edge.
-  views::test::RunScheduledLayout(
-      NonClientFrameViewAsh::Get(floated_window.get()));
+  views::test::RunScheduledLayout(FrameViewAsh::Get(floated_window.get()));
   GetEventGenerator()->PressTouch(float_bounds.top_center() +
                                   gfx::Vector2d(0, 10));
   GetEventGenerator()->MoveTouchBy(0, -100);

@@ -77,7 +77,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
@@ -338,8 +338,8 @@ bool QuickInsertView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
-QuickInsertView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> QuickInsertView::CreateNonClientFrameView(
+    views::Widget* widget) {
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());
   frame->SetBubbleBorder(CreateBorder());

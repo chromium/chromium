@@ -22,7 +22,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -1481,7 +1481,7 @@ TEST_P(OverviewSessionTest, DoNotHideBubbleTransient) {
     // Create a bubble widget that's anchored to frame.
     views::View* anchor_view = anchor == views::BubbleBorder::NONE
                                    ? nullptr
-                                   : NonClientFrameViewAsh::Get(window.get());
+                                   : FrameViewAsh::Get(window.get());
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
         views::BubbleDialogDelegateView::CreatePassKey(), anchor_view, anchor);
 

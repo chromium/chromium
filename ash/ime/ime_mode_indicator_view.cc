@@ -100,7 +100,7 @@ void ImeModeIndicatorView::Init() {
   SetAnchorRect(cursor_bounds_);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ImeModeIndicatorView::CreateNonClientFrameView(views::Widget* widget) {
   auto frame = std::make_unique<ModeIndicatorFrameView>();
   // arrow adjustment in BubbleDialogDelegateView is unnecessary because arrow

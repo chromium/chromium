@@ -184,7 +184,7 @@ class StuckWidgetDelegate : public views::WidgetDelegate {
   ~StuckWidgetDelegate() override = default;
 
   // Overridden from WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
       views::Widget* widget) override {
     return Shell::Get()->CreateDefaultNonClientFrameView(widget);
   }

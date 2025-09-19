@@ -43,7 +43,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
 #include "ui/views/window/dialog_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {

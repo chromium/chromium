@@ -379,7 +379,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   void TrackInputMethodBounds(ArcInputMethodBoundsTracker* tracker);
   void UntrackTrackInputMethodBounds(ArcInputMethodBoundsTracker* tracker);
 
-  // Creates a default views::NonClientFrameView for use by windows in the
+  // Creates a default views::FrameView for use by windows in the
   // Ash environment.
   std::unique_ptr<views::FrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget);

@@ -239,7 +239,7 @@ void ActivateWindowInOverviewGroupItem(
 
 // Gets a point to drag `window` by the header.
 gfx::Point GetDragPoint(aura::Window* window) {
-  auto* frame = NonClientFrameViewAsh::Get(window);
+  auto* frame = FrameViewAsh::Get(window);
   views::test::RunScheduledLayout(frame);
   return frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
 }
@@ -356,8 +356,8 @@ class SnapGroupTestBase : public OverviewTestBase {
     std::unique_ptr<aura::Window> window =
         CreateAppWindow(gfx::Rect(800, 600), chromeos::AppType::SYSTEM_APP,
                         kShellWindowId_Invalid, new TestWidgetDelegateAsh);
-    auto* custom_frame = static_cast<TestFrameViewAsh*>(
-        NonClientFrameViewAsh::Get(window.get()));
+    auto* custom_frame =
+        static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window.get()));
     custom_frame->SetMinimumSize(min_size);
     return window;
   }
@@ -3573,7 +3573,7 @@ TEST_F(SnapGroupTest, NoCrashWhenReSnappingSecondaryToPrimaryWithTransient) {
   // Create a bubble widget that's anchored to `w1`.
   auto bubble_delegate1 = std::make_unique<views::BubbleDialogDelegateView>(
       views::BubbleDialogDelegateView::CreatePassKey(),
-      NonClientFrameViewAsh::Get(w1.get()), views::BubbleBorder::TOP_RIGHT);
+      FrameViewAsh::Get(w1.get()), views::BubbleBorder::TOP_RIGHT);
   // The line below is essential to make sure that the bubble doesn't get closed
   // when entering overview.
   bubble_delegate1->set_close_on_deactivate(false);

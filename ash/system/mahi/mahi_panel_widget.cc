@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -36,7 +36,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace ash {
 
@@ -108,10 +108,10 @@ std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
       .Build();
 }
 
-// TODO(zoraiznaem): Investigate if MahiFrameView needs NonClientFrameViewAsh.
-class MahiFrameView : public NonClientFrameViewAsh {
+// TODO(zoraiznaem): Investigate if MahiFrameView needs FrameViewAsh.
+class MahiFrameView : public FrameViewAsh {
  public:
-  explicit MahiFrameView(views::Widget* frame) : NonClientFrameViewAsh(frame) {
+  explicit MahiFrameView(views::Widget* frame) : FrameViewAsh(frame) {
     SetFrameEnabled(false);
     SetShouldPaintHeader(false);
   }
@@ -121,7 +121,7 @@ class MahiFrameView : public NonClientFrameViewAsh {
 
   ~MahiFrameView() override = default;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(mahi_constants::kPanelDefaultWidth,
                      mahi_constants::kPanelDefaultHeight);
@@ -180,9 +180,8 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
-    delegate->SetNonClientFrameViewFactory(
-        base::BindRepeating([](views::Widget* widget)
-                                -> std::unique_ptr<views::NonClientFrameView> {
+    delegate->SetNonClientFrameViewFactory(base::BindRepeating(
+        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
           return std::make_unique<MahiFrameView>(widget);
         }));
 
