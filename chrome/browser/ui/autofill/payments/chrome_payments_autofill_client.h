@@ -118,6 +118,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #endif  // BUILDFLAG(IS_ANDROID)
   bool HasCreditCardScanFeature() const override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  bool LocalCardSaveIsSupported() override;
   void ShowSaveCreditCardLocally(const CreditCard& card,
                                  SaveCreditCardOptions options,
                                  LocalSaveCardPromptCallback callback) override;

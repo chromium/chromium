@@ -107,6 +107,10 @@ void IOSChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
       std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options));
 }
 
+bool IOSChromePaymentsAutofillClient::LocalCardSaveIsSupported() {
+  return true;
+}
+
 void IOSChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,

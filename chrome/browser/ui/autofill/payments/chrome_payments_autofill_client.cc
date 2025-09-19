@@ -260,6 +260,10 @@ void ChromePaymentsAutofillClient::ScanCreditCard(
                                               std::move(callback));
 }
 
+bool ChromePaymentsAutofillClient::LocalCardSaveIsSupported() {
+  return true;
+}
+
 void ChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,

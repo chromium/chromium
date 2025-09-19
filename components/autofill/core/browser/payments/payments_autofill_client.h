@@ -353,6 +353,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback);
 
+  // Returns true if credit card local save is supported by the client.
+  virtual bool LocalCardSaveIsSupported() = 0;
+
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save local card prompt and the
   // save CVC for a local card prompt. On desktop, shows the offer-to-save

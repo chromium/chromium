@@ -44,6 +44,10 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
   [bridge_ loadRiskData:std::move(callback)];
 }
 
+bool IOSWebViewPaymentsAutofillClient::LocalCardSaveIsSupported() {
+  return false;
+}
+
 void IOSWebViewPaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,

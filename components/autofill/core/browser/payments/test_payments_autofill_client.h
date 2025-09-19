@@ -85,6 +85,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool LocalCardSaveIsSupported() override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   MockMultipleRequestPaymentsNetworkInterface*
   GetMultipleRequestPaymentsNetworkInterface() override;

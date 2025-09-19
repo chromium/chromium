@@ -201,6 +201,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
        std::optional<PaymentsAutofillClient::OnConfirmationClosedCallback>
            on_confirmation_closed_callback),
       (override));
+  MOCK_METHOD(bool, LocalCardSaveIsSupported, (), (override));
   MOCK_METHOD(void, HideSaveCardPrompt, (), (override));
 
 #if BUILDFLAG(IS_ANDROID)
@@ -337,6 +338,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
     autofill_client_.GetVotesUploader().set_expected_observed_submission(true);
+    ON_CALL(payments_client(), LocalCardSaveIsSupported)
+        .WillByDefault(Return(true));
   }
 
   void TearDown() override {
@@ -6764,6 +6767,22 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
 
   EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew);
+
+  credit_card_save_manager_->OnDidUploadCard(
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      payments::UploadCardResponseDetails());
+}
+
+// Test that if server card upload fails, fallback local card save is not
+// offered if it's not supported by the client.
+TEST_F(
+    CreditCardSaveManagerTest,
+    OnDidUploadCard_NotFallbackToLocalSaveOnServerUploadFailureIfNotSupported) {
+  ON_CALL(payments_client(), LocalCardSaveIsSupported)
+      .WillByDefault(Return(false));
+  credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
+
+  EXPECT_CALL(payments_data_manager(), SaveCardLocallyIfNew).Times(0);
 
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,

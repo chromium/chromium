@@ -100,6 +100,10 @@ TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
 }
 
+bool TestPaymentsAutofillClient::LocalCardSaveIsSupported() {
+  return true;
+}
+
 MockMultipleRequestPaymentsNetworkInterface*
 TestPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
   return multiple_request_payments_network_interface_.get();

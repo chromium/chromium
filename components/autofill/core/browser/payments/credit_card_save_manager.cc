@@ -177,6 +177,9 @@ CreditCardSaveManager::~CreditCardSaveManager() = default;
 
 bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
     const CreditCard& card) {
+  if (!client_->GetPaymentsAutofillClient()->LocalCardSaveIsSupported()) {
+    return false;
+  }
   card_save_candidate_ = card;
   show_save_prompt_.reset();
 
@@ -578,11 +581,12 @@ void CreditCardSaveManager::OnDidUploadCard(
           upload_request_.card.cvc());
     }
   } else {
-    // If the upload failed, fallback to a local card save.
+    // If the upload failed, fallback to a local card save if supported.
     // Do not save if card does not have the expiration month or the year
     // because the local save bubble does not support the expiration date fix
     // flow.
-    bool run_save_card_fallback = true;
+    bool run_save_card_fallback =
+        client_->GetPaymentsAutofillClient()->LocalCardSaveIsSupported();
 
     if (run_save_card_fallback &&
         !upload_request_.card
