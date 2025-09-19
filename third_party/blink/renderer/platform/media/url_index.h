@@ -340,7 +340,9 @@ class PLATFORM_EXPORT UrlIndex {
   // Currently only changed for testing purposes.
   const int block_shift_;
 
-  base::MemoryPressureListener memory_pressure_listener_;
+  // Must be async, because it runs on the renderer's main thread, which is not
+  // the process's main thread in --single-process mode.
+  base::AsyncMemoryPressureListener memory_pressure_listener_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<UrlIndex> weak_factory_{this};
