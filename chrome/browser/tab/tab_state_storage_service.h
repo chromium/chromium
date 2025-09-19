@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
+#include "chrome/browser/tab/tab_state_storage_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace tabs {
@@ -50,6 +51,8 @@ class TabStateStorageService : public KeyedService,
       TabStateStorageService* tab_state_storage_service);
 
  private:
+  void OnAllTabsLoaded(LoadAllTabsCallback callback,
+                       std::vector<NodeState> entries);
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
 };
 

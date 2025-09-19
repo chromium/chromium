@@ -18,6 +18,15 @@ class MetaTable;
 
 namespace tabs {
 
+// Represents a row in the node table, to allow returning many rows of data.
+// Each row may be a tab or parent collection.
+struct NodeState {
+  int id;
+  int type;
+  std::string payload;
+  std::string children;
+};
+
 // This class is responsible for all database operations.
 class TabStateStorageDatabase {
  public:
@@ -29,11 +38,11 @@ class TabStateStorageDatabase {
   // Initializes the database.
   bool Initialize();
 
-  // Saves a tab state to the database.
-  bool SaveTabState(int id, tabs_pb::TabState tab_state);
+  // Saves a node to the database.
+  bool SaveNode(int id, int type, std::string payload, std::string children);
 
-  // Loads all tab states from the database.
-  std::vector<tabs_pb::TabState> LoadAllTabStates();
+  // Loads all nodes from the database.
+  std::vector<NodeState> LoadAllNodes();
 
  private:
   base::FilePath profile_path_;

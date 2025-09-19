@@ -53,11 +53,29 @@ void TabStateStorageService::SaveTab(
 
   tab_state.set_tab_has_sensitive_content(tab_has_sensitive_content);
   tab_state.set_is_pinned(is_pinned);
-  tab_backend_->SaveTabState(id, tab_state);
+  std::string payload;
+  tab_state.SerializeToString(&payload);
+  tab_backend_->SaveNode(id, 1, std::move(payload), "");
 }
 
 void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
-  tab_backend_->LoadAllTabStates(std::move(callback));
+  tab_backend_->LoadAllNodes(
+      base::BindOnce(&TabStateStorageService::OnAllTabsLoaded,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
+                                             std::vector<NodeState> entries) {
+  std::vector<tabs_pb::TabState> tab_states;
+  for (auto& entry : entries) {
+    if (entry.type == 1) {
+      tabs_pb::TabState tab_state;
+      if (tab_state.ParseFromString(entry.payload)) {
+        tab_states.emplace_back(std::move(tab_state));
+      }
+    }
+  }
+  std::move(callback).Run(std::move(tab_states));
 }
 
 }  // namespace tabs

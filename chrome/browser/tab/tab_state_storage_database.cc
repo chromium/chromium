@@ -108,8 +108,10 @@ bool TabStateStorageDatabase::Initialize() {
   return true;
 }
 
-bool TabStateStorageDatabase::SaveTabState(int id,
-                                           tabs_pb::TabState tab_state) {
+bool TabStateStorageDatabase::SaveNode(int id,
+                                       int type,
+                                       std::string payload,
+                                       std::string children) {
   CHECK(db_);
 
   sql::Transaction transaction(db_.get());
@@ -119,8 +121,8 @@ bool TabStateStorageDatabase::SaveTabState(int id,
 
   static constexpr char kInsertTabSql[] =
       "INSERT OR REPLACE INTO nodes"
-      "(id, type, payload)"
-      "VALUES (?,?,?)";
+      "(id, type, payload, children)"
+      "VALUES (?,?,?,?)";
 
   DCHECK(db_->IsSQLValid(kInsertTabSql));
 
@@ -128,10 +130,9 @@ bool TabStateStorageDatabase::SaveTabState(int id,
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertTabSql));
 
   write_statement.BindInt(0, id);
-  write_statement.BindInt(1, 1);
-  std::string data;
-  tab_state.SerializeToString(&data);
-  write_statement.BindBlob(2, data);
+  write_statement.BindInt(1, type);
+  write_statement.BindBlob(2, std::move(payload));
+  write_statement.BindBlob(3, std::move(children));
 
   if (!write_statement.Run()) {
     DLOG(ERROR) << "Could not write to tabs table.";
@@ -140,18 +141,21 @@ bool TabStateStorageDatabase::SaveTabState(int id,
   return transaction.Commit();
 }
 
-std::vector<tabs_pb::TabState> TabStateStorageDatabase::LoadAllTabStates() {
-  std::vector<tabs_pb::TabState> tab_states;
-  static constexpr char kSelectAllTabsSql[] = "SELECT payload FROM tab_state";
+std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
+  std::vector<NodeState> entries;
+  static constexpr char kSelectAllTabsSql[] =
+      "SELECT id, type, payload, children FROM nodes";
   sql::Statement select_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectAllTabsSql));
   while (select_statement.Step()) {
-    tabs_pb::TabState tab_state;
-    if (tab_state.ParseFromString(select_statement.ColumnString(0))) {
-      tab_states.emplace_back(std::move(tab_state));
-    }
+    NodeState entry;
+    entry.id = select_statement.ColumnInt(0);
+    entry.type = select_statement.ColumnInt(1);
+    select_statement.ColumnBlobAsString(2, &entry.payload);
+    select_statement.ColumnBlobAsString(3, &entry.children);
+    entries.emplace_back(std::move(entry));
   }
-  return tab_states;
+  return entries;
 }
 
 }  // namespace tabs

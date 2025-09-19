@@ -38,22 +38,24 @@ void TabStateStorageBackend::Initialize() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TabStateStorageBackend::SaveTabState(int id,
-                                          tabs_pb::TabState tab_state) {
+void TabStateStorageBackend::SaveNode(int id,
+                                      int type,
+                                      std::string payload,
+                                      std::string children) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&TabStateStorageDatabase::SaveTabState,
-                     base::Unretained(database_.get()), id,
-                     std::move(tab_state)),
+      base::BindOnce(&TabStateStorageDatabase::SaveNode,
+                     base::Unretained(database_.get()), id, type,
+                     std::move(payload), std::move(children)),
       base::BindOnce(&TabStateStorageBackend::OnWrite,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TabStateStorageBackend::LoadAllTabStates(
-    base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback) {
+void TabStateStorageBackend::LoadAllNodes(
+    base::OnceCallback<void(std::vector<NodeState>)> callback) {
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&TabStateStorageDatabase::LoadAllTabStates,
+      base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
                      base::Unretained(database_.get())),
       base::BindOnce(&TabStateStorageBackend::OnAllTabsRead,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -64,8 +66,8 @@ void TabStateStorageBackend::OnDBReady(bool success) {}
 void TabStateStorageBackend::OnWrite(bool success) {}
 
 void TabStateStorageBackend::OnAllTabsRead(
-    base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback,
-    std::vector<tabs_pb::TabState> result) {
+    base::OnceCallback<void(std::vector<NodeState>)> callback,
+    std::vector<NodeState> result) {
   std::move(callback).Run(std::move(result));
 }
 

@@ -13,10 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/tab_state_storage_database.h"
 
 namespace tabs {
-
-class TabStateStorageDatabase;
 
 // Backend for TabStateStorage, responsible for coordinating with the storage
 // layer.
@@ -29,17 +28,15 @@ class TabStateStorageBackend {
 
   void Initialize();
 
-  void SaveTabState(int id, tabs_pb::TabState tab_state);
+  void SaveNode(int id, int type, std::string payload, std::string children);
 
-  void LoadAllTabStates(
-      base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback);
+  void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 
  private:
   void OnDBReady(bool success);
   void OnWrite(bool success);
-  void OnAllTabsRead(
-      base::OnceCallback<void(std::vector<tabs_pb::TabState>)> callback,
-      std::vector<tabs_pb::TabState> result);
+  void OnAllTabsRead(base::OnceCallback<void(std::vector<NodeState>)> callback,
+                     std::vector<NodeState> result);
 
   const base::FilePath profile_path_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
