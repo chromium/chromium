@@ -214,4 +214,15 @@ scoped_refptr<OptimizationGuideGlobalState> OptimizationGuideGlobalState::Create
   return scoped_refptr<OptimizationGuideGlobalState>(instance.get());
 }
 
+OptimizationGuideGlobalFeature::OptimizationGuideGlobalFeature() = default;
+
+OptimizationGuideGlobalFeature::~OptimizationGuideGlobalFeature() = default;
+
+OptimizationGuideGlobalState& OptimizationGuideGlobalFeature::Get() {
+  if (!global_state_) {
+    global_state_ = OptimizationGuideGlobalState::CreateOrGet();
+  }
+  return *global_state_;
+}
+
 }  // namespace optimization_guide

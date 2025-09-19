@@ -12,6 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -171,8 +172,10 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   base::FilePath GetModelStoreBaseDir() {
-    return optimization_guide::OptimizationGuideGlobalState::CreateOrGet()
-        ->prediction_model_store()
+    return g_browser_process->GetFeatures()
+        ->optimization_guide_global_feature()
+        ->Get()
+        .prediction_model_store()
         .GetBaseStoreDirForTesting();
   }
 

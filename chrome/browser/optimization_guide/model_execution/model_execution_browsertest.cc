@@ -15,6 +15,7 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -713,7 +714,9 @@ class OnDeviceModelExecutionEnabledBrowserTest
   OptimizationGuideGlobalState* broker_state() {
     // Ensure keyed service is created, which should create and hold state.
     GetOptimizationGuideKeyedService();
-    return OptimizationGuideGlobalState::CreateOrGet().get();
+    return &g_browser_process->GetFeatures()
+                ->optimization_guide_global_feature()
+                ->Get();
   }
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {

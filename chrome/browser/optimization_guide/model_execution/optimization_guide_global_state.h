@@ -20,6 +20,7 @@
 namespace optimization_guide {
 
 class ChromeModelComponentStateManagerObserver;
+class OptimizationGuideGlobalFeature;
 
 // This holds the ModelBrokerState and other common objects shared between
 // profiles. Since some of the membersit hold raw_ptr to browser process level
@@ -32,7 +33,6 @@ class OptimizationGuideGlobalState final
  public:
   // Retrieves or creates the instance.
   static scoped_refptr<OptimizationGuideGlobalState> CreateOrGet();
-
   UsageTracker& usage_tracker() { return model_broker_state_.usage_tracker(); }
 
   OnDeviceModelComponentStateManager& component_state_manager() {
@@ -66,6 +66,7 @@ class OptimizationGuideGlobalState final
 
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
+
   OptimizationGuideGlobalState();
   ~OptimizationGuideGlobalState();
 
@@ -82,9 +83,24 @@ class OptimizationGuideGlobalState final
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };
 
-// Chrome uses a single shared instance of ModelBrokerState.
-// This retrieves it, or creates it if it doesn't exist yet.
-OptimizationGuideGlobalState& GetOrCreateChromeModelBrokerState();
+// This is a wrapper around OptimizationGuideGlobalState that keeps a reference
+// to the global state. This is needed for these two reasons:
+// 1. Some members of OptimizationGuideGlobalState create task runner, which
+// necessitates the unittests to use the full TaskEnvironment instead of
+// SingleThreadTaskEnvironment.
+// 2. Profiles are destroyed after GlobalFeatures, at least in tests. So the
+// OptimizationGuideKeyedService needs to keep a reference to the global state to
+// keep it alive.
+class OptimizationGuideGlobalFeature {
+ public:
+  OptimizationGuideGlobalFeature();
+  ~OptimizationGuideGlobalFeature();
+
+  OptimizationGuideGlobalState& Get();
+
+ private:
+  scoped_refptr<OptimizationGuideGlobalState> global_state_;
+};
 
 }  // namespace optimization_guide
 

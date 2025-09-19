@@ -62,6 +62,7 @@ source_set("impl") {
   deps = [
     ":optimization_guide",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

@@ -34,8 +34,12 @@ namespace installer_downloader {
 class InstallerDownloaderController;
 }
 
+namespace optimization_guide {
+class OptimizationGuideGlobalFeature;
+}  // namespace optimization_guide
+
 // This class owns the core controllers for features that are globally
-// scoped on desktop. It can be subclassed by tests to perform
+// scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
 class GlobalFeatures {
  public:
@@ -94,6 +98,11 @@ class GlobalFeatures {
   }
 #endif
 
+  optimization_guide::OptimizationGuideGlobalFeature*
+  optimization_guide_global_feature() {
+    return optimization_guide_global_feature_.get();
+  }
+
  protected:
   GlobalFeatures();
 
@@ -130,6 +139,9 @@ class GlobalFeatures {
   std::unique_ptr<installer_downloader::InstallerDownloaderController>
       installer_downloader_controller_;
 #endif
+
+  std::unique_ptr<optimization_guide::OptimizationGuideGlobalFeature>
+      optimization_guide_global_feature_;
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

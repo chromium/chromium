@@ -389,6 +389,9 @@ class OptimizationGuideKeyedService
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Keep a reference to this so it stays alive.
+  // Even though this can be obtained from OptimizationGuideGlobalFeature, we
+  // keep a reference here to handle difference in lifetime issues. At least in
+  // tests, the GlobalFeatures is destroyed before the Profile.
   scoped_refptr<optimization_guide::OptimizationGuideGlobalState>
       optimization_guide_global_state_;
 

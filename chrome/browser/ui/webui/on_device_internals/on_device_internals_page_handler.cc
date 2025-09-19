@@ -12,6 +12,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
@@ -316,8 +317,10 @@ void PageHandler::OnReceivedPerformanceInfoForPageData(
     info->name = debug_state.state_->GetBaseModelSpec().model_name;
 
     optimization_guide::proto::OnDeviceModelPerformanceHint performance_hint =
-        optimization_guide::OptimizationGuideGlobalState::CreateOrGet()
-            ->service_controller()
+        g_browser_process->GetFeatures()
+            ->optimization_guide_global_feature()
+            ->Get()
+            .service_controller()
             .GetPerformanceHint();
     switch (performance_hint) {
       case optimization_guide::proto::OnDeviceModelPerformanceHint::
@@ -363,7 +366,10 @@ void PageHandler::OnReceivedPerformanceInfoForPageData(
       *optimization_guide_keyed_service_->GetModelExecutionManager()
            ->GetOnDeviceModelServiceController();
   optimization_guide::UsageTracker& usage_tracker =
-      optimization_guide_keyed_service_->GetGlobalState().usage_tracker();
+      g_browser_process->GetFeatures()
+          ->optimization_guide_global_feature()
+          ->Get()
+          .usage_tracker();
   for (const auto feature : optimization_guide::kAllModelBasedCapabilityKeys) {
     if (!optimization_guide::features::internal::
             GetOptimizationTargetForCapability(feature)) {

@@ -28,6 +28,7 @@ source_set("on_device_internals") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/on_device_internals:resources",
