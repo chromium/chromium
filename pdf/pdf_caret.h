@@ -93,14 +93,25 @@ class PdfCaret {
   // Draws `rect` as the caret on `region`.
   void Draw(const RegionData& region, const gfx::Rect& rect) const;
 
+  // Moves the caret to `new_index`. If `should_select` is true, then the text
+  // selection will be extended to `new_index`, starting from the original caret
+  // position if not yet text selecting. If `should_select` is false, text
+  // selection will be cleared.
+  void MoveToChar(const PageCharacterIndex& new_index, bool should_select);
+
   // Determines the next valid char, handling moving horizontally to a char on a
   // different page and ignoring newlines. Does nothing if the current char
   // cannot move to a valid page or char.
-  void MoveHorizontallyToNextChar(bool move_right);
+  void MoveHorizontallyToNextChar(bool move_right, bool should_select);
 
   // Same as `MoveHorizontallyToNextChar()`, but moves in the vertical
   // direction.
-  void MoveVerticallyToNextChar(bool move_down);
+  void MoveVerticallyToNextChar(bool move_down, bool should_select);
+
+  // This should only be called when the caret is moving. Starts a new text
+  // selection at the current caret position, adjusting the exact index
+  // depending on the direction specified by `move_right`.
+  bool StartSelection(bool move_right) const;
 
   // Returns whether moving the caret from `index` will cause it to exit the
   // page or not. Does not consider whether there are any adjacent pages.

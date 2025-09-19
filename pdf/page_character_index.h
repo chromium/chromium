@@ -7,11 +7,13 @@
 
 #include <stdint.h>
 
+#include <compare>
+
 namespace chrome_pdf {
 
 struct PageCharacterIndex {
-  friend constexpr bool operator==(const PageCharacterIndex&,
-                                   const PageCharacterIndex&) = default;
+  friend constexpr auto operator<=>(const PageCharacterIndex&,
+                                    const PageCharacterIndex&) = default;
 
   // Index of PDF page.
   uint32_t page_index = 0;

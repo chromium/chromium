@@ -101,18 +101,20 @@ void PdfCaret::OnGeometryChanged() {
 }
 
 bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
+  bool should_select =
+      !!(event.GetModifiers() & blink::WebInputEvent::Modifiers::kShiftKey);
   switch (event.windows_key_code) {
     case ui::KeyboardCode::VKEY_LEFT:
-      MoveHorizontallyToNextChar(/*move_right=*/false);
+      MoveHorizontallyToNextChar(/*move_right=*/false, should_select);
       return true;
     case ui::KeyboardCode::VKEY_RIGHT:
-      MoveHorizontallyToNextChar(/*move_right=*/true);
+      MoveHorizontallyToNextChar(/*move_right=*/true, should_select);
       return true;
     case ui::KeyboardCode::VKEY_UP:
-      MoveVerticallyToNextChar(/*move_down=*/false);
+      MoveVerticallyToNextChar(/*move_down=*/false, should_select);
       return true;
     case ui::KeyboardCode::VKEY_DOWN:
-      MoveVerticallyToNextChar(/*move_down=*/true);
+      MoveVerticallyToNextChar(/*move_down=*/true, should_select);
       return true;
     default:
       return false;
@@ -206,15 +208,35 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
   }
 }
 
-void PdfCaret::MoveHorizontallyToNextChar(bool move_right) {
+void PdfCaret::MoveToChar(const PageCharacterIndex& new_index,
+                          bool should_select) {
+  if (!should_select) {
+    client_->ClearTextSelection();
+  }
+
+  if (index_ == new_index) {
+    return;
+  }
+
+  if (!should_select || (!client_->IsSelecting() &&
+                         !StartSelection(/*move_right=*/index_ < new_index))) {
+    SetChar(new_index);
+    return;
+  }
+
+  // TODO(crbug.com/427133563): Extend selection.
+  SetChar(new_index);
+}
+
+void PdfCaret::MoveHorizontallyToNextChar(bool move_right, bool should_select) {
   std::optional<PageCharacterIndex> next_char =
       GetAdjacentCaretPos(index_, move_right);
   if (next_char.has_value()) {
-    SetChar(next_char.value());
+    MoveToChar(next_char.value(), should_select);
   }
 }
 
-void PdfCaret::MoveVerticallyToNextChar(bool move_down) {
+void PdfCaret::MoveVerticallyToNextChar(bool move_down, bool should_select) {
   // Find the next text line by getting the next two sets of newlines that
   // border the text line.
 
@@ -238,8 +260,10 @@ void PdfCaret::MoveVerticallyToNextChar(bool move_down) {
     if (!client_->PageIndexInBounds(page_index)) {
       // There is no page in the `move_down` direction. Stay at the end of the
       // page.
-      SetChar({index_.page_index,
-               move_down ? client_->GetCharCount(index_.page_index) : 0});
+      const PageCharacterIndex end_index = {
+          index_.page_index,
+          move_down ? client_->GetCharCount(index_.page_index) : 0};
+      MoveToChar(end_index, should_select);
       return;
     }
     // Start at the beginning or end of the adjacent page.
@@ -276,8 +300,29 @@ void PdfCaret::MoveVerticallyToNextChar(bool move_down) {
   if (first_newline.value().char_index > second_newline.value().char_index) {
     std::swap(first_newline, second_newline);
   }
-  SetChar(
-      GetClosestCharInTextLine(first_newline.value(), second_newline.value()));
+  MoveToChar(
+      GetClosestCharInTextLine(first_newline.value(), second_newline.value()),
+      should_select);
+}
+
+bool PdfCaret::StartSelection(bool move_right) const {
+  if (client_->GetCharCount(index_.page_index) != 0) {
+    client_->StartSelection(index_);
+    return true;
+  }
+
+  // Avoid starting a selection on a no-text page by starting on the adjacent
+  // caret position.
+  // `GetAdjacentCaretPos()` will never return std::nullopt because the caret
+  // should always be moving.
+  PageCharacterIndex adjacent_caret_pos =
+      GetAdjacentCaretPos(index_, move_right).value();
+  if (client_->GetCharCount(adjacent_caret_pos.page_index) != 0) {
+    client_->StartSelection(adjacent_caret_pos);
+    return true;
+  }
+
+  return false;
 }
 
 bool PdfCaret::WillCaretExitPage(const PageCharacterIndex& index,
