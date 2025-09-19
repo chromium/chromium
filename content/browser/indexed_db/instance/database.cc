@@ -1110,7 +1110,6 @@ std::unique_ptr<Connection> Database::CreateConnection(
       std::move(database_callbacks), std::move(client_state_checker),
       client_token, scheduling_priority);
   connections_.insert(connection.get());
-  bucket_context_->OnConnectionPriorityUpdated();
   return connection;
 }
 
@@ -1170,7 +1169,6 @@ void Database::ConnectionClosed(Connection* connection) {
     return;
   }
   connections_.erase(connection);
-  bucket_context_->OnConnectionPriorityUpdated();
   connection_coordinator_.OnConnectionClosed(connection);
   if (connections_.empty()) {
     connection_coordinator_.OnNoConnections();

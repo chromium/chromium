@@ -29,7 +29,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/thread_test_helper.h"
@@ -491,53 +490,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug941965Test) {
              incognito_browser);
   ASSERT_TRUE(incognito_browser);
   incognito_browser->Close();
-}
-
-IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, SchedulingPriority) {
-  // This test page just opens a connection.
-  const GURL url = GetTestUrl("indexeddb", "simple_test.html");
-  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
-  auto control_test = GetControlTest();
-
-  // This test could use a TestFuture inside RunUntil, but Mac doesn't like that
-  // type of message loop nesting. Therefore the RunUntils below asynchronously
-  // update this variable using this closure, and the value returned, if any,
-  // will be checked on the next iteration of the RunUntil body.
-  std::optional<int> priority;
-  base::RepeatingCallback<void(std::optional<int>)> update_priority =
-      base::BindLambdaForTesting(
-          [&priority](std::optional<int> fetched_priority) {
-            priority = fetched_priority;
-          });
-
-  // Since the test page is foregrounded/visible, it should get a priority of
-  // 0.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    if (priority == 0) {
-      return true;
-    }
-    control_test->GetSchedulingPriorityForTesting(update_priority);
-    return false;
-  }));
-
-  // This part is just designed to flush out any pending
-  // `GetSchedulingPriorityForTesting()` calls. `control_test.FlushForTesting()`
-  // would be sufficient except that its implementation is also async.
-  base::test::TestFuture<std::optional<int>> future;
-  control_test->GetSchedulingPriorityForTesting(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  priority.reset();
-
-  // Hide the page and wait for the update to come through.
-  shell()->web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    if (priority && *priority > 0) {
-      return true;
-    }
-    control_test->GetSchedulingPriorityForTesting(update_priority);
-    return false;
-  }));
 }
 
 class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {

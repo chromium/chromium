@@ -759,11 +759,6 @@ void Connection::UpdatePriority(int new_priority) {
     transaction->OnSchedulingPriorityUpdated(new_priority);
   }
 
-  // Null after `AbortTransactionsAndClose()`.
-  if (bucket_context()) {
-    bucket_context()->OnConnectionPriorityUpdated();
-  }
-
   // TODO(crbug.com/359623664): consider reordering transactions already in the
   // queue. For now the priority change will only impact where new transactions
   // are placed (whether they skip past the existing ones).

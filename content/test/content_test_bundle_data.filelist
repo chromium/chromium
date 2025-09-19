@@ -7708,8 +7708,6 @@ data/indexeddb/shared.js
 data/indexeddb/shutdown_with_requests.html
 data/indexeddb/simple_blob_read.html
 data/indexeddb/simple_blob_read.js
-data/indexeddb/simple_test.html
-data/indexeddb/simple_test.js
 data/indexeddb/ssv_version_987654/file__0.indexeddb.leveldb/000003.log
 data/indexeddb/ssv_version_987654/file__0.indexeddb.leveldb/CURRENT
 data/indexeddb/ssv_version_987654/file__0.indexeddb.leveldb/LOCK

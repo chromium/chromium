@@ -9,7 +9,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -53,7 +52,6 @@ class BucketContextTest : public testing::Test {
                 "https://example.com")));
     bucket_context_ = std::make_unique<BucketContext>(
         bucket_info, base::FilePath(), BucketContext::Delegate(),
-        scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote());
@@ -318,9 +316,7 @@ TEST_F(BucketContextTest, MetadataRecordingStateHistory) {
 TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
   auto is_sqlite_used_by_new_bucket = [this]() {
     return BucketContext(storage::BucketInfo(), base::FilePath(),
-                         BucketContext::Delegate(),
-                         scoped_refptr<base::UpdateableSequencedTaskRunner>(),
-                         quota_manager_proxy_,
+                         BucketContext::Delegate(), quota_manager_proxy_,
                          /*blob_storage_context=*/mojo::NullRemote(),
                          /*file_system_access_context=*/mojo::NullRemote())
         .ShouldUseSqlite();

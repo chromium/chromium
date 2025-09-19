@@ -35,8 +35,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -216,35 +214,6 @@ class TestIndexedDBObserver : public storage::mojom::IndexedDBObserver {
 
  private:
   mojo::Receiver<storage::mojom::IndexedDBObserver> receiver_;
-};
-
-class DummyTaskRunner : public base::UpdateableSequencedTaskRunner {
- public:
-  DummyTaskRunner() = default;
-
-  DummyTaskRunner(const DummyTaskRunner&) = delete;
-  DummyTaskRunner& operator=(const DummyTaskRunner&) = delete;
-
-  void UpdatePriority(base::TaskPriority priority) override {
-    priority_ = priority;
-  }
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    NOTREACHED();
-  }
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    NOTREACHED();
-  }
-
-  bool RunsTasksInCurrentSequence() const override { return true; }
-
-  std::optional<base::TaskPriority> priority_;
-
- protected:
-  ~DummyTaskRunner() override = default;
 };
 
 }  // namespace
@@ -2347,79 +2316,6 @@ TEST_P(IndexedDBTest, DataLoss) {
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/2, /*priority=*/0);
     run_loop.Run();
-  }
-}
-
-TEST_P(IndexedDBTest, TaskRunnerPriority) {
-  const blink::StorageKey storage_key =
-      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  BucketLocator bucket_locator = BucketLocator();
-  bucket_locator.storage_key = storage_key;
-  const std::u16string db_name(u"test_db");
-
-  // Bind the IDBFactory.
-  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(),
-              ToBucketInfo(bucket_locator));
-
-  BucketContextHandle bucket_context = CreateBucketHandle(bucket_locator);
-  scoped_refptr<DummyTaskRunner> dummy_task_runner =
-      base::MakeRefCounted<DummyTaskRunner>();
-  bucket_context->updateable_task_runner_ = dummy_task_runner;
-
-  // Open a connection with priority 1; this should be propagated into
-  // `dummy_task_runner` as USER_VISIBLE.
-  MockMojoFactoryClient client;
-  MockMojoDatabaseCallbacks database_callbacks;
-  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
-  base::RunLoop run_loop;
-  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-  EXPECT_CALL(client, MockedUpgradeNeeded)
-      .WillOnce(
-          testing::DoAll(MoveArgPointee<0>(&pending_database),
-                         ::base::test::RunClosure(run_loop.QuitClosure())));
-  factory_remote->Open(client.CreateInterfacePtrAndBind(),
-                       database_callbacks.CreateInterfacePtrAndBind(), db_name,
-                       /*version=*/1,
-                       transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/1, /*priority=*/1);
-  factory_remote.FlushForTesting();
-  EXPECT_EQ(*dummy_task_runner->priority_, base::TaskPriority::USER_VISIBLE);
-  run_loop.Run();
-
-  // Finish hooking up the mojo connection, and issue an `UpdatePriority()`
-  // call, which is invoked when a tab changes between fg and bg. This updates
-  // the task runner.
-  mojo::AssociatedRemote<blink::mojom::IDBDatabase> database(
-      std::move(pending_database));
-  database->UpdatePriority(0);
-  database.FlushForTesting();
-  EXPECT_EQ(*dummy_task_runner->priority_, base::TaskPriority::USER_BLOCKING);
-
-  // Another connection is opened to a different database (although whether the
-  // database is the same or not is irrelevant), and the new connection has a
-  // lower priority (i.e. higher value). This does not change the priority since
-  // the highest priority wins.
-  {
-    MockMojoFactoryClient client2;
-    MockMojoDatabaseCallbacks database_callbacks2;
-    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote2;
-    factory_remote->Open(
-        client2.CreateInterfacePtrAndBind(),
-        database_callbacks2.CreateInterfacePtrAndBind(), u"other_dbame",
-        /*version=*/1, transaction_remote2.BindNewEndpointAndPassReceiver(),
-        /*transaction_id=*/2, /*priority=*/1);
-    factory_remote.FlushForTesting();
-    EXPECT_EQ(*dummy_task_runner->priority_, base::TaskPriority::USER_BLOCKING);
-
-    // After removing the foreground/high priority connection, the priority
-    // should be bumped back down to USER_VISIBLE.
-    database.reset();
-    factory_remote.FlushForTesting();
-    EXPECT_EQ(*dummy_task_runner->priority_, base::TaskPriority::USER_VISIBLE);
   }
 }
 

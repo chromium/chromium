@@ -23,7 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -310,7 +309,6 @@ class DatabaseTest : public ::testing::Test {
 
     bucket_context_ = std::make_unique<BucketContext>(
         storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
-        scoped_refptr<base::UpdateableSequencedTaskRunner>(),
         quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/std::move(fsa_context));

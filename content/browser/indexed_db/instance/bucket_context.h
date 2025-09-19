@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <optional>
 #include <queue>
@@ -44,10 +43,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace base {
-class UpdateableSequencedTaskRunner;
-}
-
 namespace storage {
 class QuotaManagerProxy;
 }
@@ -57,7 +52,6 @@ namespace content::indexed_db {
 class BackingStore;
 class BucketContextHandle;
 class Database;
-struct PendingConnection;
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
 // context like the backing store and lock manager.
@@ -136,16 +130,14 @@ class CONTENT_EXPORT BucketContext
     base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
   };
 
-  BucketContext(
-      storage::BucketInfo bucket_info,
-      const base::FilePath& data_path,
-      Delegate&& delegate,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> updateable_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      mojo::PendingRemote<storage::mojom::BlobStorageContext>
-          blob_storage_context,
-      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-          file_system_access_context);
+  BucketContext(storage::BucketInfo bucket_info,
+                const base::FilePath& data_path,
+                Delegate&& delegate,
+                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+                mojo::PendingRemote<storage::mojom::BlobStorageContext>
+                    blob_storage_context,
+                mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+                    file_system_access_context);
 
   BucketContext(const BucketContext&) = delete;
   BucketContext& operator=(const BucketContext&) = delete;
@@ -183,14 +175,6 @@ class CONTENT_EXPORT BucketContext
   }
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
-
-  // Called whenever some active or new connection's scheduling priority has
-  // changed.
-  void OnConnectionPriorityUpdated();
-
-  // Determines the scheduling priority for this bucket (which is the highest of
-  // all active connections). Public for testing.
-  std::optional<int> CalculateSchedulingPriority();
 
   // Called when `space_requested` bytes are about to be used by committing a
   // transaction. Will invoke `disk_space_check_callback` if this usage is
@@ -318,7 +302,6 @@ class CONTENT_EXPORT BucketContext
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TaskRunnerPriority);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
 
@@ -393,10 +376,6 @@ class CONTENT_EXPORT BucketContext
 
   const storage::BucketInfo bucket_info_;
 
-  // The task runner `this` runs on, if `this` runs on a task runner that can be
-  // updated with different task traits (priority).
-  scoped_refptr<base::UpdateableSequencedTaskRunner> updateable_task_runner_;
-
   // Base directory for blobs and backing store files.
   const base::FilePath data_path_;
 
@@ -425,9 +404,6 @@ class CONTENT_EXPORT BucketContext
   // this bucket context using OpenReference. This is used as closing criteria
   // for this object, see CanClose.
   int64_t open_handles_ = 0;
-
-  // Pending connections are also inputs to the calculated scheduling priority.
-  std::list<base::WeakPtr<PendingConnection>> pending_connections_;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
   std::queue<std::tuple<int64_t /*space_requested*/,

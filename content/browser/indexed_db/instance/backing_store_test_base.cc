@@ -5,7 +5,6 @@
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 
 #include "base/task/thread_pool.h"
-#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -89,7 +88,6 @@ void BackingStoreTestBase::CreateFactoryAndBackingStore() {
 
   bucket_context_ = std::make_unique<BucketContext>(
       bucket_info, temp_dir_.GetPath(), BucketContext::Delegate(),
-      scoped_refptr<base::UpdateableSequencedTaskRunner>(),
       quota_manager_proxy_, std::move(blob_storage_context),
       std::move(fsa_context));
   std::tie(std::ignore, std::ignore, data_loss_info_) =
