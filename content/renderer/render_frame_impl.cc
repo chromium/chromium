@@ -4607,13 +4607,23 @@ void RenderFrameImpl::DidObserveJavaScriptFrameworks(
 
 void RenderFrameImpl::DidObserveSubresourceLoad(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
-  for (auto& observer : observers_)
-    observer.DidObserveSubresourceLoad(subresource_load_metrics);
+  if (subresource_load_callback_) {
+    subresource_load_callback_.Run(subresource_load_metrics);
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidObserveSubresourceLoad(subresource_load_metrics);
+    }
+  }
 }
 
 void RenderFrameImpl::SetNewFeatureUsageCallback(
     NewFeatureUsageCallback callback) {
   new_feature_usage_callback_ = std::move(callback);
+}
+
+void RenderFrameImpl::SetSubresourceLoadCallback(
+    SubresourceLoadCallback callback) {
+  subresource_load_callback_ = std::move(callback);
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(

@@ -117,6 +117,14 @@ MetricsRenderFrameObserver::MetricsRenderFrameObserver(
         &MetricsRenderFrameObserver::DidObserveNewFeatureUsage,
         weak_factory_.GetWeakPtr()));
   }
+  if (base::FeatureList::IsEnabled(
+          features::kDidObserveSubresourceLoadImprovement)) {
+    // If the optimization is enabled, `DidObserveSubresourceLoad()` will be
+    // called as a callback instead of the observer interface.
+    render_frame->SetSubresourceLoadCallback(base::BindRepeating(
+        &MetricsRenderFrameObserver::DidObserveSubresourceLoad,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 MetricsRenderFrameObserver::~MetricsRenderFrameObserver() {

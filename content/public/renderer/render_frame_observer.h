@@ -237,6 +237,9 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Notification when the renderer uses subresources.
   // It is called when there is a subresouce load. The reported values via
   // arguments are cumulative. They are NOT a difference from the previous call.
+  //
+  // TODO(crbug.com/404425954): `DidObserveSubresourceLoad()` is going to be
+  // deprecated. Use `SetSubresourceLoadCallback()` in `RenderFrame` instead.
   virtual void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics) {}
 

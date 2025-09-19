@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/bindings_policy.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
@@ -223,6 +224,12 @@ class CONTENT_EXPORT RenderFrame :
   using NewFeatureUsageCallback =
       base::RepeatingCallback<void(const blink::UseCounterFeature&)>;
   virtual void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) = 0;
+
+  // Sets the callback which is called when the renderer observes a new
+  // subresource load. This is used for subresource loading metrics.
+  using SubresourceLoadCallback =
+      base::RepeatingCallback<void(const blink::SubresourceLoadMetrics&)>;
+  virtual void SetSubresourceLoadCallback(SubresourceLoadCallback callback) = 0;
 
  protected:
   ~RenderFrame() override {}
