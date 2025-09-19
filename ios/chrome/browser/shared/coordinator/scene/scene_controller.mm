@@ -4078,17 +4078,21 @@ using UserFeedbackDataCallback =
 // with or without animation. Executes its signinCompletion. It’s expected to be
 // not already executed.
 - (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated {
-  if (!self.signinCoordinator) {
+  // We retain the coordinator until the end of the completion, while ensuring
+  // that when the completion requests `self` to stop the signin coordinator,
+  // `stop` is not called a second time.
+  SigninCoordinator* signinCoordinator = self.signinCoordinator;
+  if (!signinCoordinator) {
     return;
   }
+  self.signinCoordinator = nil;
 
-  [self.signinCoordinator stopAnimated:animated];
+  [signinCoordinator stopAnimated:animated];
   SigninCoordinatorCompletionCallback signinCompletion =
-      self.signinCoordinator.signinCompletion;
-  self.signinCoordinator.signinCompletion = nil;
+      signinCoordinator.signinCompletion;
+  signinCoordinator.signinCompletion = nil;
   CHECK(signinCompletion, base::NotFatalUntil::M142);
   signinCompletion(SigninCoordinatorResultInterrupted, nil);
-  self.signinCoordinator = nil;
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.

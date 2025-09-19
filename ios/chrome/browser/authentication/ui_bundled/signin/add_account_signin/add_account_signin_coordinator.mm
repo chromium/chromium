@@ -71,6 +71,7 @@ using signin_metrics::PromoAction;
   AddAccountSigninMediator* _mediator;
   // Email to pre-fill.
   NSString* _prefilledEmail;
+  BOOL _stopped;
 }
 
 #pragma mark - Public
@@ -157,12 +158,12 @@ using signin_metrics::PromoAction;
 #pragma mark - AnimatedCoordinator
 
 - (void)stopAnimated:(BOOL)animated {
+  // The coordinator should not be stopped twice. Indeed, after the first stop,
+  // the coordinator will be released, and this will cause the second stop to be
+  // executed on a zombie object. See crbug.com/442589294.
+  CHECK(!_stopped, base::NotFatalUntil::M145);
+  _stopped = YES;
   [super stopAnimated:animated];
-  // When interrupting `self.postSigninManagerCoordinator` or
-  // `self.historySyncPopupCoordinator` below, the signinCompletion is called.
-  // This callback is in charge to call `[self
-  // runCompletionWithSigninResult: completionIdentity:]`.
-
   [self stopPostSigninManagerCoordinatorAnimated:animated];
   [self interruptAddAccountSigninManager:animated];
   [self stopAlertCoordinator];
@@ -345,9 +346,11 @@ using signin_metrics::PromoAction;
   // `identity` is set, only and only if the sign-in is successful.
   DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
          ((signinResult != SigninCoordinatorResultSuccess) && !identity));
-  id<SystemIdentity> completionIdentity = identity;
-  [self runCompletionWithSigninResult:signinResult
-                   completionIdentity:completionIdentity];
+  if (_stopped) {
+    // The delegate is already dealing with stopping `self`.
+    return;
+  }
+  [self runCompletionWithSigninResult:signinResult completionIdentity:identity];
 }
 
 // Presents the extra screen with `identity` pre-selected.
@@ -433,6 +436,10 @@ using signin_metrics::PromoAction;
 
 - (void)mediatorWantsToBeStopped:(AddAccountSigninMediator*)mediator {
   CHECK_EQ(_mediator, mediator, base::NotFatalUntil::M144);
+  if (_stopped) {
+    // Stop is already ongoing.
+    return;
+  }
   [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
                    completionIdentity:nil];
 }
