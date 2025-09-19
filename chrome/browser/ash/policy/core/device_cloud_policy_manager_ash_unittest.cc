@@ -241,7 +241,8 @@ class DeviceCloudPolicyManagerAshTest
     ash::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->os_crypt_async());
 
     url_fetcher_response_code_ = net::HTTP_OK;
     url_fetcher_response_string_ =

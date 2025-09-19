@@ -149,7 +149,8 @@ ChromeBrowserCloudManagementControllerDesktop::
 void ChromeBrowserCloudManagementControllerDesktop::InitializeOAuthTokenFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* local_state) {
-  DeviceOAuth2TokenServiceFactory::Initialize(url_loader_factory, local_state);
+  DeviceOAuth2TokenServiceFactory::Initialize(
+      url_loader_factory, local_state, g_browser_process->os_crypt_async());
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartWatchingRegistration(

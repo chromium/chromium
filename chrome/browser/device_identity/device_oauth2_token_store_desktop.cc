@@ -9,7 +9,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "chrome/common/pref_names.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -25,8 +25,9 @@ const char kCBCMServiceAccountRefreshToken[] =
 const char kCBCMServiceAccountEmail[] = "cbcm.service_account_email";
 
 DeviceOAuth2TokenStoreDesktop::DeviceOAuth2TokenStoreDesktop(
-    PrefService* local_state)
-    : local_state_(local_state) {}
+    PrefService* local_state,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : local_state_(local_state), os_crypt_async_(os_crypt_async) {}
 DeviceOAuth2TokenStoreDesktop::~DeviceOAuth2TokenStoreDesktop() = default;
 
 // static
@@ -37,6 +38,17 @@ void DeviceOAuth2TokenStoreDesktop::RegisterPrefs(
 }
 
 void DeviceOAuth2TokenStoreDesktop::Init(InitCallback callback) {
+  os_crypt_async_->GetInstance(
+      base::BindOnce(&DeviceOAuth2TokenStoreDesktop::OnOsCryptReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+}
+
+void DeviceOAuth2TokenStoreDesktop::OnOsCryptReady(
+    InitCallback callback,
+    os_crypt_async::Encryptor encryptor) {
+  encryptor_ = std::move(encryptor);
+
   std::string base64_encrypted_token =
       local_state_->GetString(kCBCMServiceAccountRefreshToken);
 
@@ -83,7 +95,8 @@ void DeviceOAuth2TokenStoreDesktop::SetAndSaveRefreshToken(
     const std::string& refresh_token,
     StatusCallback result_callback) {
   std::string encrypted_token;
-  bool success = OSCrypt::EncryptString(refresh_token, &encrypted_token);
+  CHECK(encryptor_) << "SetAndSaveRefreshToken called before Init completed";
+  bool success = encryptor_->EncryptString(refresh_token, &encrypted_token);
 
   if (success) {
     refresh_token_ = refresh_token;
@@ -131,7 +144,8 @@ void DeviceOAuth2TokenStoreDesktop::DecryptToken() const {
   DCHECK(!refresh_token_.empty());
 
   std::string decrypted_token;
-  bool success = OSCrypt::DecryptString(refresh_token_, &decrypted_token);
+  CHECK(encryptor_) << "DecryptToken called before Init completed";
+  bool success = encryptor_->DecryptString(refresh_token_, &decrypted_token);
   if (success) {
     refresh_token_ = decrypted_token;
     token_decrypted_ = true;

@@ -863,7 +863,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   DeviceOAuth2TokenServiceFactory::Initialize(
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      g_browser_process->local_state());
+      g_browser_process->local_state(), g_browser_process->os_crypt_async());
 
   fast_transition_observer_ = std::make_unique<FastTransitionObserver>(
       g_browser_process->local_state());

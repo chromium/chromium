@@ -22,12 +22,14 @@ namespace {
 static DeviceOAuth2TokenService* g_device_oauth2_token_service_ = nullptr;
 
 std::unique_ptr<DeviceOAuth2TokenStore> CreatePlatformTokenStore(
-    PrefService* local_state) {
+    PrefService* local_state,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
 #if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<chromeos::DeviceOAuth2TokenStoreChromeOS>(
       local_state);
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return std::make_unique<DeviceOAuth2TokenStoreDesktop>(local_state);
+  return std::make_unique<DeviceOAuth2TokenStoreDesktop>(local_state,
+                                                         os_crypt_async);
 #else
   NOTREACHED();
 #endif
@@ -44,11 +46,13 @@ DeviceOAuth2TokenService* DeviceOAuth2TokenServiceFactory::Get() {
 // static
 void DeviceOAuth2TokenServiceFactory::Initialize(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* local_state) {
+    PrefService* local_state,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_device_oauth2_token_service_);
   g_device_oauth2_token_service_ = new DeviceOAuth2TokenService(
-      url_loader_factory, CreatePlatformTokenStore(local_state));
+      url_loader_factory,
+      CreatePlatformTokenStore(local_state, os_crypt_async));
 }
 
 // static

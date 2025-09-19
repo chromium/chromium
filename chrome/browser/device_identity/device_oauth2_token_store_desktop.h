@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_STORE_DESKTOP_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_OAUTH2_TOKEN_STORE_DESKTOP_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class PrefRegistrySimple;
@@ -26,7 +28,8 @@ extern const char kCBCMServiceAccountEmail[];
 // persist the refresh token of the service account to LocalState.
 class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
  public:
-  explicit DeviceOAuth2TokenStoreDesktop(PrefService* local_state);
+  DeviceOAuth2TokenStoreDesktop(PrefService* local_state,
+                                os_crypt_async::OSCryptAsync* os_crypt_async);
   ~DeviceOAuth2TokenStoreDesktop() override;
 
   DeviceOAuth2TokenStoreDesktop(const DeviceOAuth2TokenStoreDesktop& other) =
@@ -46,6 +49,9 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   void SetAccountEmail(const std::string& account_email) override;
 
  private:
+  void OnOsCryptReady(InitCallback callback,
+                      os_crypt_async::Encryptor encryptor);
+
   void OnServiceAccountIdentityChanged();
 
   // Called the first time GetRefreshToken is called if |token_decrypted_| is
@@ -54,6 +60,9 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   void DecryptToken() const;
 
   const raw_ptr<PrefService> local_state_;
+
+  const raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::optional<os_crypt_async::Encryptor> encryptor_;
 
   // This and the |token_decrypted_| field are mutable because they are modified
   // on the first call to |GetRefreshToken()|, which is const.

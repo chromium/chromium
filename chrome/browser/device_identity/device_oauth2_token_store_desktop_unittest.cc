@@ -8,8 +8,8 @@
 #include "base/test/bind.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,26 +32,35 @@ class TestObserver : public DeviceOAuth2TokenStore::Observer {
 
 class DeviceOAuth2TokenStoreDesktopTest : public testing::Test {
  public:
-  DeviceOAuth2TokenStoreDesktopTest() = default;
+  DeviceOAuth2TokenStoreDesktopTest()
+      : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
+
   ~DeviceOAuth2TokenStoreDesktopTest() override = default;
+
+  std::optional<os_crypt_async::Encryptor> GetTestEncryptorForTesting() {
+    std::optional<os_crypt_async::Encryptor> encryptor;
+    os_crypt_async_->GetInstance(base::BindLambdaForTesting(
+        [&](os_crypt_async::Encryptor new_encryptor) {
+          encryptor = std::move(new_encryptor);
+        }));
+    return encryptor;
+  }
 
   PrefService* local_state() {
     return TestingBrowserProcess::GetGlobal()->local_state();
   }
 
-  void SetUp() override {
-    testing::Test::SetUp();
-    OSCryptMocker::SetUp();
+  os_crypt_async::OSCryptAsync* os_crypt_async() {
+    return os_crypt_async_.get();
   }
 
-  void TearDown() override {
-    OSCryptMocker::TearDown();
-    testing::Test::TearDown();
-  }
+ private:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithoutSavedToken) {
-  DeviceOAuth2TokenStoreDesktop store(local_state());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   EXPECT_TRUE(store.GetAccountId().empty());
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -73,13 +82,15 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, InitWithSavedToken) {
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
   local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(local_state());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
 
@@ -99,13 +110,15 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 
   std::string token = "test_token";
   std::string encrypted_token;
-  OSCrypt::EncryptString(token, &encrypted_token);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->EncryptString(token, &encrypted_token));
 
   std::string encoded = base::Base64Encode(encrypted_token);
 
   local_state()->SetString(kCBCMServiceAccountRefreshToken, encoded);
 
-  DeviceOAuth2TokenStoreDesktop store(local_state());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
 
   TestObserver test_observer;
   store.SetObserver(&test_observer);
@@ -128,7 +141,7 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, ObserverNotifiedWhenAccountChanges) {
 TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   std::string token = "test_token";
 
-  DeviceOAuth2TokenStoreDesktop store(local_state());
+  DeviceOAuth2TokenStoreDesktop store(local_state(), os_crypt_async());
   store.Init(base::BindOnce([](bool, bool) {}));
 
   EXPECT_TRUE(store.GetRefreshToken().empty());
@@ -147,7 +160,9 @@ TEST_F(DeviceOAuth2TokenStoreDesktopTest, SaveToken) {
   std::string decoded;
   base::Base64Decode(persisted_token, &decoded);
   std::string decrypted;
-  OSCrypt::DecryptString(decoded, &decrypted);
+  auto encryptor = GetTestEncryptorForTesting();
+  ASSERT_TRUE(encryptor.has_value());
+  EXPECT_TRUE(encryptor->DecryptString(decoded, &decrypted));
 
   EXPECT_EQ(token, store.GetRefreshToken());
   EXPECT_EQ(token, decrypted);
