@@ -852,8 +852,7 @@
     # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_common': {
       # LINT.IfChange(cronet_common)
-      'gn_args': ('include_transport_security_state_preload_list=false '
-                  'is_cronet_build=true ')
+      'gn_args': ('is_cronet_build=true ')
       # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_common)
     },
 

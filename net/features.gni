@@ -42,7 +42,7 @@ declare_args() {
   # size footprint, this flag should not be disabled unless the embedder is
   # willing to take the responsibility to make sure that all important
   # connections use HTTPS.
-  include_transport_security_state_preload_list = true
+  include_transport_security_state_preload_list = !is_cronet_build
 
   # Platforms for which certificate verification can be performed either using
   # the builtin cert verifier with the Chrome Root Store, or with the platform

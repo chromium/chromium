@@ -483,7 +483,6 @@ gn_args.config(
         # TODO: https://crbug.com/40287068 - clean up this list. Ideally it
         # should contain `is_cronet_build` and nothing else.
         # LINT.IfChange(cronet_common)
-        "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
         # LINT.ThenChange(//tools/mb/mb_config.pyl:cronet_common)
     },

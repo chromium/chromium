@@ -5,7 +5,6 @@
     "debuggable_apks": false,
     "default_min_sdk_version": 23,
     "enable_resource_allowlist_generation": false,
-    "include_transport_security_state_preload_list": false,
     "is_component_build": false,
     "is_cronet_build": true,
     "is_debug": true,
