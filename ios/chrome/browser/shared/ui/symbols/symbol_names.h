@@ -315,6 +315,7 @@ extern NSString* const kCircleBadgeFill;
 extern NSString* const kTextSparkSymbol;
 extern NSString* const kBookSymbol;
 extern NSString* const kKeySymbol;
+extern NSString* const kTextDocument;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

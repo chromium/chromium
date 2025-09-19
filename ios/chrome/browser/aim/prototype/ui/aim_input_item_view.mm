@@ -78,7 +78,7 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
   } else {
     if (item.type == AIMInputItemType::kAIMInputItemTypeFile) {
       _leadingIconImageView.image =
-          DefaultSymbolWithPointSize(kDocSymbol, kLeadingIconSize);
+          DefaultSymbolWithPointSize(kTextDocument, kLeadingIconSize);
     } else {
       _leadingIconImageView.image = item.leadingIconImage;
     }
