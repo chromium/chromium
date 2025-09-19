@@ -215,6 +215,7 @@ void ComposeboxHandler::DeleteContext(
   // has been created in the query controller. We queue all context tokens for
   // deletion at query submission time.
   deleted_context_tokens_.insert(context_token);
+  query_controller_->ClearSuggestInputs();
 }
 
 void ComposeboxHandler::OnGetTabPageContext(

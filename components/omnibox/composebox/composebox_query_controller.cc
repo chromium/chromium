@@ -367,8 +367,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
       file_token, std::move(contextual_input_data), image_options);
 }
 
-bool ComposeboxQueryController::DeleteFile(
-    const base::UnguessableToken& file_token) {
+void ComposeboxQueryController::ClearSuggestInputs() {
   // Multiple file upload is not supported yet, once it is, the suggest
   // inputs should instead be updated to reflect this file being deleted.
   // Suggest inputs must be cleared so when autocomplete is queried again
@@ -376,6 +375,11 @@ bool ComposeboxQueryController::DeleteFile(
   if (active_files_.size() == 1) {
     suggest_inputs_.Clear();
   }
+}
+
+bool ComposeboxQueryController::DeleteFile(
+    const base::UnguessableToken& file_token) {
+  ClearSuggestInputs();
   return !!active_files_.erase(file_token);
 }
 

@@ -1702,7 +1702,8 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
 
 void AutocompleteController::AttachActions() {
   // No actions should be attached for lens searchboxes.
-  if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
+  if (omnibox::IsLensSearchbox(input_.current_page_classification()) ||
+      omnibox::IsComposebox(input_.current_page_classification())) {
     return;
   }
 
