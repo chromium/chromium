@@ -142,6 +142,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.url.GURL;
 
@@ -4531,7 +4532,9 @@ public class AwContents implements SmartClipProvider {
             mIsAttachedToWindow = true;
             mTemporarilyDetached = false;
 
-            mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
+            DisplayAndroid display = mWindowAndroid.getWindowAndroid().getDisplay();
+            mDisplayObserver.onDIPScaleChanged(display.getDipScale());
+            display.addObserver(mDisplayObserver);
 
             mViewEventSink.onAttachedToWindow();
             AwContentsJni.get()
