@@ -40,6 +40,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
 
   // The values of the enum entries must not change because they are used for
   // usage metrics histograms. New values can be added to the end.
+  // LINT.IfChange(CanvasHibernationEvent)
   enum HibernationEvent {
     kHibernationScheduled = 0,
     kHibernationAbortedDueToDestructionWhileHibernatePending = 1,
@@ -56,6 +57,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     kHibernationAbortedBecauseNoSurface = 12,
     kMaxValue = kHibernationAbortedBecauseNoSurface,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CanvasHibernationEvent)
 
   static void ReportHibernationEvent(
       CanvasHibernationHandler::HibernationEvent event) {

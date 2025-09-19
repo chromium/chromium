@@ -81,6 +81,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Slow getImageData on GPU canvases"/>
 </enum>
 
+<!-- LINT.IfChange(CanvasHibernationEvent) -->
+
 <enum name="CanvasHibernationEvent">
   <int value="0" label="Scheduled"/>
   <int value="1"
@@ -89,13 +91,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Aborted due to visibility change"/>
   <int value="4" label="Aborted due to GPU Context loss"/>
   <int value="5" label="Aborted due to switch to unaccelerated rendering"/>
-  <int value="6" label="Aborted due to allocation failure"/>
-  <int value="7" label="Ended normally"/>
-  <int value="8" label="Ended with switch to background rendering"/>
-  <int value="9" label="Ended with fallback to software"/>
-  <int value="10" label="Ended with teardown"/>
-  <int value="11" label="Aborted because there was no surface"/>
+  <int value="6" label="Aborted due to allocation failure (obsolete)"/>
+  <int value="7" label="Aborted due to snapshot failure"/>
+  <int value="8" label="Ended normally"/>
+  <int value="9" label="Ended with switch to background rendering"/>
+  <int value="10" label="Ended with fallback to software"/>
+  <int value="11" label="Ended with teardown"/>
+  <int value="12" label="Aborted because there was no surface"/>
 </enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h:CanvasHibernationEvent) -->
 
 <enum name="CanvasOverdrawOp">
   <int value="0" label="None (should have 0 counts)"/>
