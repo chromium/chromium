@@ -22,7 +22,6 @@ apple_sysroot_module("_AvailabilityInternal") {
 }
 
 builtin_module("_Builtin_float") {
-  public_deps = [ ":_c_standard_library_obsolete" ]
 }
 
 builtin_module("_Builtin_intrinsics") {
@@ -30,7 +29,6 @@ builtin_module("_Builtin_intrinsics") {
     ":_Builtin_stddef",
     ":_Builtin_stdint",
     ":_DarwinFoundation3",
-    ":_c_standard_library_obsolete",
     ":std_core",
   ]
 }
@@ -56,7 +54,6 @@ builtin_module("_Builtin_stdatomic") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
-    ":_c_standard_library_obsolete",
   ]
 }
 
@@ -102,7 +99,6 @@ apple_sysroot_module("_DarwinFoundation2") {
     ":_Builtin_stdarg",
     ":_Builtin_stddef",
     ":_DarwinFoundation1",
-    ":_c_standard_library_obsolete",
   ]
 }
 
@@ -118,14 +114,8 @@ apple_sysroot_module("_DarwinFoundation3") {
     ":_Builtin_stdint",
     ":_DarwinFoundation1",
     ":_DarwinFoundation2",
-    ":_c_standard_library_obsolete",
     ":std_ctype_h",
   ]
-}
-
-apple_sysroot_module("_c_standard_library_obsolete") {
-  modulemap = ":DarwinFoundation1_modulemap"
-  modulemap_path = "DarwinFoundation1.modulemap"
 }
 
 apple_sysroot_module("alloca") {
@@ -144,7 +134,6 @@ apple_sysroot_module("libunwind") {
     ":_Builtin_stddef",
     ":_Builtin_stdint",
     ":_DarwinFoundation1",
-    ":_c_standard_library_obsolete",
     ":unwind",
   ]
 }
@@ -190,7 +179,6 @@ libcxx_module("std") {
     ":_Builtin_stddef",
     ":_DarwinFoundation2",
     ":_DarwinFoundation3",
-    ":_c_standard_library_obsolete",
     ":std_core",
     ":std_ctype_h",
     ":std_errno_h",
@@ -214,7 +202,6 @@ libcxx_module("std_core") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
-    ":_c_standard_library_obsolete",
   ]
 }
 
@@ -267,7 +254,6 @@ libcxx_module("std_tgmath_h") {
 libcxx_module("std_uchar_h") {
   public_deps = [
     ":_Builtin_stddef",
-    ":_c_standard_library_obsolete",
     ":std_private_mbstate_t",
   ]
 }
@@ -330,7 +316,6 @@ apple_sysroot_module("unwind") {
   public_deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
-    ":_c_standard_library_obsolete",
   ]
 }
 
@@ -365,7 +350,6 @@ group("all_modules") {
     ":_DarwinFoundation1",
     ":_DarwinFoundation2",
     ":_DarwinFoundation3",
-    ":_c_standard_library_obsolete",
     ":alloca",
     ":libunwind",
     ":nl_types",

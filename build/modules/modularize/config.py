@@ -59,9 +59,16 @@ def fix_graph(graph: dict[str, Header],
       frm.deps.append(to)
 
   def skip_module(name):
+    found = False
     for hdr in graph.values():
-      if hdr.root_module == name:
-        hdr.textual = True
+      while True:
+        if hdr.root_module == name:
+          hdr.textual = True
+          found = True
+        if hdr.next is None:
+          break
+        hdr = hdr.next
+    assert found
 
   # We made the assumption that the deps of something we couldn't compile is
   # the intersection of the deps of all users of it.
@@ -94,6 +101,9 @@ def fix_graph(graph: dict[str, Header],
     # thus we get an error when attempting to use the symbol "echo" after
     # including *any* part of the module Darwin.
     skip_module("Darwin")
+    # This module isn't intended to be used - it's intended to catch
+    # misconfigured sysroots.
+    skip_module("_c_standard_library_obsolete")
   else:
     for header in all_headers(graph):
       if header.include_dir != IncludeDir.Sysroot:
