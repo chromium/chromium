@@ -223,6 +223,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   }
 
   // Remove current elements.
+  reveal_password_pin_ = nullptr;
   username_dropdown_ = nullptr;
   password_dropdown_ = nullptr;
   accessibility_alert_ = nullptr;
@@ -446,25 +447,28 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
 
   // Prevent the bubble from closing for the duration of the lifetime of the
   // `pin`. This is to keep it open while the user authentication is in action.
-  std::unique_ptr<CloseOnDeactivatePin> pin = PreventCloseOnDeactivate();
-
+  // Store pin as a class member so it can be destroyed early if needed.
+  reveal_password_pin_ = PreventCloseOnDeactivate();
   controller_.ShouldRevealPasswords(base::BindOnce(
-      [](PasswordSaveUpdateView* view,
-         std::unique_ptr<CloseOnDeactivatePin> pin, bool reveal) {
+      [](PasswordSaveUpdateView* view, bool reveal) {
+        auto pin = std::exchange(view->reveal_password_pin_, nullptr);
+        if (!view->password_dropdown_) {
+          return;
+        }
         view->password_dropdown_->RevealPasswords(reveal);
-        // This is necessary on Windows since the bubble isn't activated again
-        // after the conlusion of the auth flow.
+        // This is necessary on Windows since the bubble isn't activated
+        // again after the conlusion of the auth flow.
         view->GetWidget()->Activate();
-        // Delay the destruction of `pin` for 1 sec to make sure the bubble
-        // remains open till the OS closes the authentication dialog and
-        // reactivates the bubble.
+        // Delay the destruction of `pin` for 1 sec to make sure the
+        // bubble remains open till the OS closes the authentication
+        // dialog and reactivates the bubble.
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce([](std::unique_ptr<CloseOnDeactivatePin> pin) {},
                            std::move(pin)),
             base::Seconds(1));
       },
-      base::Unretained(this), std::move(pin)));
+      base::Unretained(this)));
 }
 
 BEGIN_METADATA(PasswordSaveUpdateView)
