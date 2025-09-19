@@ -5,7 +5,7 @@ Shipped: no
 Security Critical: no
 URL: http://scripts.sil.org/cms/scripts/page.php?item_id=Scheherazade
 Date: 2015-11-02
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/422923780)
 Version: 2.100 (build 932/914)
 
 Description:

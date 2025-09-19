@@ -2,7 +2,7 @@ Name: Noto Sans Symbol Font Subset
 Short Name: NotoSansSymbol
 URL: https://www.google.com/get/noto/
 Version: 1.050
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/422924157)
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no
