@@ -6420,6 +6420,7 @@ chromium-metrics-reviews@google.com.
     <variant name="All" summary="all"/>
     <variant name="EME"/>
     <variant name="HLS"/>
+    <variant name="MediaFoundationRenderer"/>
     <variant name="MSE"/>
     <variant name="SRC"/>
   </token>
@@ -6674,6 +6675,7 @@ chromium-metrics-reviews@google.com.
     <variant name="All" summary="all"/>
     <variant name="EME"/>
     <variant name="HLS"/>
+    <variant name="MediaFoundationRenderer"/>
     <variant name="MSE"/>
     <variant name="SRC"/>
   </token>
@@ -7565,6 +7567,7 @@ chromium-metrics-reviews@google.com.
     <variant name="All" summary="all"/>
     <variant name="EME"/>
     <variant name="HLS"/>
+    <variant name="MediaFoundationRenderer"/>
     <variant name="MSE"/>
     <variant name="SRC"/>
   </token>
