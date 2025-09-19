@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap.h"
@@ -26,10 +25,13 @@
 
 namespace {
 
+// TODO(crbug.com/436930319): Revise the thread-affinity of this class.
+// According to crbug.com/436930319 and crbug.com/436929831, it's unclear if
+// this class is expected to be thread-safe or the callers are not correctly
+// using it.
 class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  public:
   ~ClientNativePixmapFuchsia() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (mapping_) {
       // Flush the cache if Unmap is not called before the pixmap is destroyed.
       if (logically_mapped_) {
@@ -47,7 +49,6 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
       delete;
 
   bool Map() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (handle_.planes.empty()) {
       CHECK(!mapping_);
       return false;
@@ -93,7 +94,6 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   }
 
   void Unmap() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(mapping_);
     DCHECK(logically_mapped_);
 
@@ -189,9 +189,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  private:
   // Allow being created only by the factory method above.
   explicit ClientNativePixmapFuchsia(gfx::NativePixmapHandle handle)
-      : handle_(std::move(handle)) {
-    DETACH_FROM_SEQUENCE(sequence_checker_);
-  }
+      : handle_(std::move(handle)) {}
 
   // A shortcut to call private constructor.
   static std::unique_ptr<gfx::ClientNativePixmap> CreateUniquePtr(
@@ -200,9 +198,8 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
         new ClientNativePixmapFuchsia(std::move(handle)));
   }
 
-  gfx::NativePixmapHandle handle_;
+  const gfx::NativePixmapHandle handle_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
   bool logically_mapped_ = false;
   raw_ptr<uint8_t, AllowPtrArithmetic> mapping_ = nullptr;
   size_t mapping_size_ = 0;
