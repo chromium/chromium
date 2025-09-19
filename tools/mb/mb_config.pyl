@@ -842,7 +842,6 @@
       'mixins': ['cronet_common'],
       # LINT.IfChange(cronet_android)
       'gn_args': ('use_partition_alloc=false '
-                  'use_hashed_jni_names=true '
                   'default_min_sdk_version=23 '
                   'clang_use_default_sample_profile=false '
                   'enable_resource_allowlist_generation=false '),

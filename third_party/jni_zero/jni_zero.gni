@@ -23,7 +23,8 @@ declare_args() {
 
 declare_args() {
   # Use hashed symbol names to reduce JNI symbol overhead when not multiplexing.
-  use_hashed_jni_names = !enable_jni_multiplexing && !is_java_debug
+  use_hashed_jni_names =
+      (!enable_jni_multiplexing && !is_java_debug) || is_cronet_build
 }
 
 assert(!use_hashed_jni_names || !enable_jni_multiplexing,

@@ -13,7 +13,6 @@
     "target_cpu": "x86",
     "target_os": "android",
     "use_clang_coverage": true,
-    "use_hashed_jni_names": true,
     "use_jacoco_coverage": true,
     "use_partition_alloc": false,
     "use_reclient": false,
