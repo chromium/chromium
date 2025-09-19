@@ -305,14 +305,6 @@ void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
   GetAutofillAgent()->TriggerFormExtraction();
 }
 
-void ContentAutofillDriver::DispatchEmailVerifiedEvent(
-    FieldGlobalId field_id,
-    const std::string& presentation_token) {
-  RouteToAgent(router(), &AutofillDriverRouter::DispatchEmailVerifiedEvent,
-               &mojom::AutofillAgent::DispatchEmailVerifiedEvent, field_id,
-               presentation_token);
-}
-
 void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
     base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
   std::vector<ContentAutofillDriver*> drivers;
@@ -548,6 +540,14 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
                &AutofillDriverRouter::RendererShouldSetSuggestionAvailability,
                &mojom::AutofillAgent::SetSuggestionAvailability, field_id,
                suggestion_availability);
+}
+
+void ContentAutofillDriver::DispatchEmailVerifiedEvent(
+    FieldGlobalId field_id,
+    const std::string& presentation_token) {
+  RouteToAgent(router(), &AutofillDriverRouter::DispatchEmailVerifiedEvent,
+               &mojom::AutofillAgent::DispatchEmailVerifiedEvent, field_id,
+               presentation_token);
 }
 
 void ContentAutofillDriver::FormsSeen(

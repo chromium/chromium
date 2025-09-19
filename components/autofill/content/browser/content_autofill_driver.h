@@ -179,19 +179,19 @@ class ContentAutofillDriver : public AutofillDriver,
   //
   // (1) Browser -> renderer (autofill::AutofillDriver):
   //     These events are triggered by an AutofillManager or similar and are
-  //     passed to one or multiple AutofillAgents. They fall into three groups:
-  //     (1a) Broadcast events are sent to many AutofillAgents.
-  //     (1b) Routed events are sent to a single AutofillAgent, which may
-  //          be not this driver's AutofillAgent.
+  //     passed to one or multiple AutofillAgents. They fall into four groups:
+  //     (1a) Broadcast events are sent to all AutofillAgents.
+  //     (1b) Routed events are sent to a single or sometimes multiple selected
+  //          AutofillAgents, which might not be this driver's AutofillAgent.
   //     (1c) Main-frame events are sent to the driver's main frame's
   //          AutofillAgent.
   //     (1d) Unrouted events are sent to this driver's AutofillAgent.
   // (2) Renderer -> browser (mojom::AutofillDriver):
   //     These events are triggered by an AutofillAgent and are passed to one or
   //     multiple AutofillManagers. They fall into two groups:
-  //     (2a) Broadcast events are sent to many AutofillManagers.
-  //     (2b) Routed events are sent to a single AutofillManager, which may
-  //          be not this driver's AutofillManager.
+  //     (2a) Broadcast events are sent to all AutofillManagers.
+  //     (2b) Routed events are sent to a single AutofillManager, which might
+  //          not be this driver's AutofillManager.
   //
   // These events are private to avoid accidental use in the browser process.
   // Groups (1) and (2) can be accessed explicitly through browser_events() and
@@ -219,6 +219,9 @@ class ContentAutofillDriver : public AutofillDriver,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
+  void DispatchEmailVerifiedEvent(
+      FieldGlobalId field_id,
+      const std::string& presentation_token) override;
   void ExtractForm(FormGlobalId form,
                    BrowserFormHandler final_handler) override;
   void RendererShouldAcceptDataListSuggestion(
@@ -233,8 +236,8 @@ class ContentAutofillDriver : public AutofillDriver,
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
   void ExposeDomNodeIDs() override;
 
-  // Group (1c): browser -> renderer events, directed to to this driver's main
-  // driver (see comment above).
+  // Group (1c): browser -> renderer events, directed to this driver's main
+  // frame's agent (see comment above).
   // autofill::AutofillDriver:
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
@@ -253,9 +256,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   void TriggerFormExtractionInDriverFrame(
       AutofillDriverRouterAndFormForestPassKey pass_key) override;
-  void DispatchEmailVerifiedEvent(
-      FieldGlobalId field_id,
-      const std::string& presentation_token) override;
 
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:
