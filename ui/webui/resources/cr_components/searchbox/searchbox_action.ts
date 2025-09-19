@@ -5,105 +5,98 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Action} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './searchbox_action.html.js';
+import {getCss} from './searchbox_action.css.js';
+import {getHtml} from './searchbox_action.html.js';
 import {decodeString16} from './utils.js';
 
 // Displays an action associated with AutocompleteMatch (i.e. Clear
 // Browsing History, etc.)
-class SearchboxActionElement extends PolymerElement {
+export class SearchboxActionElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-action';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       //========================================================================
       // Public properties
       //========================================================================
-      action: {
-        type: Object,
-      },
+      action: {type: Object},
 
       /**
        * Index of the action in the autocomplete result. Used to inform handler
        * of action that was selected.
        */
-      actionIndex: {
-        type: Number,
-        value: -1,
-      },
+      actionIndex: {type: Number},
 
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
        * of events such as click, keyboard events etc.
        */
-      matchIndex: {
-        type: Number,
-        value: -1,
-      },
+      matchIndex: {type: Number},
 
       //========================================================================
       // Private properties
       //========================================================================
-      actionIconStyle_: {
-        type: String,
-        computed: `computeActionIconStyle_(action)`,
-      },
+      actionIconStyle_: {type: String},
 
       /** Element's 'aria-label' attribute. */
       ariaLabel: {
         type: String,
-        computed: `computeAriaLabel_(action)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /** Rendered hint from action. */
-      hintHtml_: {
-        type: String,
-        computed: `computeHintHtml_(action)`,
-      },
+      hintHtml_: {type: String},
 
       /** Rendered tooltip from action. */
-      tooltip_: {
-        type: String,
-        computed: `computeTooltip_(action)`,
-      },
+      tooltip_: {type: String},
     };
   }
 
-  declare action: Action;
-  declare actionIndex: number;
-  declare matchIndex: number;
-  declare ariaLabel: string;
-  declare private hintHtml_: TrustedHTML;
-  declare private tooltip_: string;
-  declare private actionIconStyle_;
+  accessor action: Action;
+  accessor actionIndex: number = -1;
+  accessor matchIndex: number = -1;
+  override accessor ariaLabel: string;
+  protected accessor hintHtml_: TrustedHTML;
+  protected accessor tooltip_: string;
+  protected accessor actionIconStyle_: string;
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('click', (event) => this.onActionClick_(event));
     this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
     this.addEventListener(
         'mousedown', (event) => this.onActionMouseDown_(event));
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('action')) {
+      this.actionIconStyle_ = this.computeActionIconStyle_();
+      this.ariaLabel = this.computeAriaLabel_();
+      this.hintHtml_ = this.computeHintHtml_();
+      this.tooltip_ = this.computeTooltip_();
+    }
+  }
+
   private onActionClick_(e: MouseEvent|KeyboardEvent) {
-    this.dispatchEvent(new CustomEvent('execute-action', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        event: e,
-        actionIndex: this.actionIndex,
-      },
-    }));
+    this.fire('execute-action', {
+      event: e,
+      actionIndex: this.actionIndex,
+    });
 
     e.preventDefault();   // Prevents default browser action (navigation).
     e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
@@ -152,6 +145,12 @@ class SearchboxActionElement extends PolymerElement {
       return decodeString16(this.action.suggestionContents);
     }
     return '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-searchbox-action': SearchboxActionElement;
   }
 }
 

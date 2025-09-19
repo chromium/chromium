@@ -2,66 +2,69 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './searchbox_thumbnail.html.js';
-
-const ThumbnailElementBase = I18nMixin(PolymerElement);
+import {getCss} from './searchbox_thumbnail.css.js';
+import {getHtml} from './searchbox_thumbnail.html.js';
 
 // Displays a thumbnail in the searchbox input.
-class SearchboxThumbnailElement extends ThumbnailElementBase {
+export class SearchboxThumbnailElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-thumbnail';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       //========================================================================
       // Private properties
       //========================================================================
-      thumbnailUrl_: {
-        type: String,
-      },
+      thumbnailUrl_: {type: String},
 
       isDeletable_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       enableThumbnailSizingTweaks_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableThumbnailSizingTweaks'),
-        reflectToAttribute: true,
+        reflect: true,
       },
-
     };
   }
 
   // The URL of the thumbnail to display.
-  declare private thumbnailUrl_: string;
+  protected accessor thumbnailUrl_: string;
   // Whether the user can delete the thumbnail.
-  declare private isDeletable_: boolean;
+  protected accessor isDeletable_: boolean;
   // Whether to enable thumbnail sizing tweaks.
-  declare private enableThumbnailSizingTweaks_: boolean;
+  private accessor enableThumbnailSizingTweaks_: boolean =
+      loadTimeData.getBoolean('enableThumbnailSizingTweaks');
 
   //============================================================================
   // Event handlers
   //============================================================================
 
-  private onRemoveButtonClick_(e: Event) {
-    this.dispatchEvent(new CustomEvent('remove-thumbnail-click', {
-      bubbles: true,
-      composed: true,
-    }));
+  protected onRemoveButtonClick_(e: Event) {
     e.preventDefault();
+    this.fire('remove-thumbnail-click');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-searchbox-thumbnail': SearchboxThumbnailElement;
   }
 }
 
