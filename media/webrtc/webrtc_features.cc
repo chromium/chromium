@@ -17,12 +17,6 @@ BASE_FEATURE(kWebRtcAllowWgcScreenCapturer,
              "AllowWgcScreenCapturer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled we will tell WebRTC that we want to use the
-// Windows.Graphics.Capture API based window capturer, if it is available.
-BASE_FEATURE(kWebRtcAllowWgcWindowCapturer,
-             "AllowWgcWindowCapturer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled we will tell WebRTC that we want to use the 0Hz mode of the
 // Windows.Graphics.Capture API based {Screen/Window} capturer, if the WGC
 // capturer is available and enabled. In this mode, only frames with new content
@@ -32,7 +26,6 @@ BASE_FEATURE(kWebRtcAllowWgcWindowCapturer,
 BASE_FEATURE(kWebRtcAllowWgcScreenZeroHz,
              "AllowWgcScreenZeroHz",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// This flag only has an effect if kWebRtcAllowWgcWindowCapturer is enabled.
 BASE_FEATURE(kWebRtcAllowWgcWindowZeroHz,
              "AllowWgcWindowZeroHz",
              base::FEATURE_ENABLED_BY_DEFAULT);
