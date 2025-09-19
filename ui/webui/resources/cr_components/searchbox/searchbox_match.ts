@@ -4,21 +4,20 @@
 
 import './searchbox_icon.js';
 import './searchbox_action.js';
-import './searchbox_dropdown_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_hidden_style.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import {getTemplate} from './searchbox_match.html.js';
+import {getCss} from './searchbox_match.css.js';
+import {getHtml} from './searchbox_match.html.js';
 import {decodeString16, mojoTimeTicks} from './utils.js';
 
 
@@ -57,16 +56,20 @@ export interface SearchboxMatchElement {
 }
 
 // Displays an autocomplete match.
-export class SearchboxMatchElement extends PolymerElement {
+export class SearchboxMatchElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-match';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       //========================================================================
       // Public properties
@@ -75,14 +78,12 @@ export class SearchboxMatchElement extends PolymerElement {
       /** Element's 'aria-label' attribute. */
       ariaLabel: {
         type: String,
-        computed: `computeAriaLabel_(match.a11yLabel)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       hasAction: {
         type: Boolean,
-        computed: `computeHasAction_(match.actions)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -90,8 +91,7 @@ export class SearchboxMatchElement extends PolymerElement {
        */
       hasImage: {
         type: Boolean,
-        computed: `computeHasImage_(match)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -99,8 +99,7 @@ export class SearchboxMatchElement extends PolymerElement {
        */
       isEntitySuggestion: {
         type: Boolean,
-        computed: `computeIsEntitySuggestion_(match)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
@@ -109,33 +108,24 @@ export class SearchboxMatchElement extends PolymerElement {
        */
       isRichSuggestion: {
         type: Boolean,
-        computed: `computeIsRichSuggestion_(match)`,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      match: Object,
+      match: {type: Object},
 
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
        * of events such as deletion, click, etc.
        */
-      matchIndex: {
-        type: Number,
-        value: -1,
-      },
+      matchIndex: {type: Number},
 
       showThumbnail: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      showEllipsis: {
-        type: Boolean,
-        computed:
-            `computeShowEllipsis_(showThumbnail, isLensSearchbox_, forceHideEllipsis_)`,
-      },
-
-      sideType: Number,
+      showEllipsis: {type: Boolean},
+      sideType: {type: Number},
 
       //========================================================================
       // Private properties
@@ -143,77 +133,58 @@ export class SearchboxMatchElement extends PolymerElement {
 
       isLensSearchbox_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('isLensSearchbox'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
-      forceHideEllipsis_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('forceHideEllipsis'),
-      },
+      forceHideEllipsis_: {type: Boolean},
 
       /** Rendered match contents based on autocomplete provided styling. */
-      contentsHtml_: {
-        type: String,
-        computed: `computeContentsHtml_(match)`,
-      },
+      contentsHtml_: {type: String},
 
       /** Rendered match description based on autocomplete provided styling. */
-      descriptionHtml_: {
-        type: String,
-        computed: `computeDescriptionHtml_(match)`,
-      },
+      descriptionHtml_: {type: String},
 
       enableCsbMotionTweaks_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('enableCsbMotionTweaks'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /** Remove button's 'aria-label' attribute. */
-      removeButtonAriaLabel_: {
-        type: String,
-        computed: `computeRemoveButtonAriaLabel_(match.removeButtonA11yLabel)`,
-      },
+      removeButtonAriaLabel_: {type: String},
 
-      removeButtonTitle_: {
-        type: String,
-        value: () => loadTimeData.getString('removeSuggestion'),
-      },
+      removeButtonTitle_: {type: String},
 
       /** Used to separate the contents from the description. */
-      separatorText_: {
-        type: String,
-        computed: `computeSeparatorText_(match)`,
-      },
+      separatorText_: {type: String},
 
       /** Rendered tail suggest common prefix. */
-      tailSuggestPrefix_: {
-        type: String,
-        computed: `computeTailSuggestPrefix_(match)`,
-      },
+      tailSuggestPrefix_: {type: String},
     };
   }
 
-  declare ariaLabel: string;
-  declare hasAction: boolean;
-  declare hasImage: boolean;
-  declare isEntitySuggestion: boolean;
-  declare isRichSuggestion: boolean;
-  declare match: AutocompleteMatch;
-  declare matchIndex: number;
-  declare sideType: SideType;
-  declare showThumbnail: boolean;
-  declare showEllipsis: boolean;
-  declare private isLensSearchbox_: boolean;
-  declare private forceHideEllipsis_: boolean;
-  declare private contentsHtml_: TrustedHTML;
-  declare private descriptionHtml_: TrustedHTML;
-  declare private enableCsbMotionTweaks_: boolean;
-  declare private removeButtonAriaLabel_: string;
-  declare private removeButtonTitle_: string;
-  declare private separatorText_: string;
-  declare private tailSuggestPrefix_: string;
+  override accessor ariaLabel: string;
+  accessor hasAction: boolean;
+  accessor hasImage: boolean;
+  accessor isEntitySuggestion: boolean;
+  accessor isRichSuggestion: boolean;
+  accessor match: AutocompleteMatch;
+  accessor matchIndex: number = -1;
+  accessor sideType: SideType;
+  accessor showThumbnail: boolean;
+  accessor showEllipsis: boolean;
+  private accessor isLensSearchbox_: boolean =
+      loadTimeData.getBoolean('isLensSearchbox');
+  private accessor forceHideEllipsis_: boolean =
+      loadTimeData.getBoolean('forceHideEllipsis');
+  protected accessor contentsHtml_: TrustedHTML;
+  protected accessor descriptionHtml_: TrustedHTML;
+  private accessor enableCsbMotionTweaks_: boolean =
+      loadTimeData.getBoolean('enableCsbMotionTweaks');
+  protected accessor removeButtonAriaLabel_: string;
+  protected accessor removeButtonTitle_: string =
+      loadTimeData.getString('removeSuggestion');
+  protected accessor separatorText_: string;
+  protected accessor tailSuggestPrefix_: string;
 
   private pageHandler_: PageHandlerInterface;
 
@@ -222,12 +193,36 @@ export class SearchboxMatchElement extends PolymerElement {
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('click', (event) => this.onMatchClick_(event));
     this.addEventListener('focusin', () => this.onMatchFocusin_());
     this.addEventListener('mousedown', () => this.onMatchMouseDown_());
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('match')) {
+      this.ariaLabel = this.computeAriaLabel_();
+      this.contentsHtml_ = this.computeContentsHtml_();
+      this.descriptionHtml_ = this.computeDescriptionHtml_();
+      this.hasAction = this.computeHasAction_();
+      this.hasImage = this.computeHasImage_();
+      this.isEntitySuggestion = this.computeIsEntitySuggestion_();
+      this.isRichSuggestion = this.computeIsRichSuggestion_();
+      this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
+      this.separatorText_ = this.computeSeparatorText_();
+      this.tailSuggestPrefix_ = this.computeTailSuggestPrefix_();
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('showThumbnail') ||
+        changedPrivateProperties.has('isLensSearchbox_') ||
+        changedPrivateProperties.has('forceHideEllipsis_')) {
+      this.showEllipsis = this.computeShowEllipsis_();
+    }
   }
 
   //============================================================================
@@ -238,7 +233,7 @@ export class SearchboxMatchElement extends PolymerElement {
    * containing index of the action that was removed as well as modifier key
    * presses.
    */
-  private onExecuteAction_(e: ActionEvent) {
+  protected onExecuteAction_(e: ActionEvent) {
     const event = e.detail.event;
     this.pageHandler_.executeAction(
         this.matchIndex, e.detail.actionIndex, this.match.destinationUrl,
@@ -260,18 +255,11 @@ export class SearchboxMatchElement extends PolymerElement {
         /* are_matches_showing */ true, e.button || 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey);
 
-    this.dispatchEvent(new CustomEvent('match-click', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('match-click');
   }
 
   private onMatchFocusin_() {
-    this.dispatchEvent(new CustomEvent('match-focusin', {
-      bubbles: true,
-      composed: true,
-      detail: this.matchIndex,
-    }));
+    this.fire('match-focusin', this.matchIndex);
   }
 
   private onMatchMouseDown_() {
@@ -280,7 +268,7 @@ export class SearchboxMatchElement extends PolymerElement {
         NavigationPredictor.kMouseDown);
   }
 
-  private onRemoveButtonClick_(e: MouseEvent) {
+  protected onRemoveButtonClick_(e: MouseEvent) {
     if (e.button !== 0) {
       // Only handle main (generally left) button presses.
       return;
@@ -293,7 +281,7 @@ export class SearchboxMatchElement extends PolymerElement {
         this.matchIndex, this.match.destinationUrl);
   }
 
-  private onRemoveButtonMouseDown_(e: Event) {
+  protected onRemoveButtonMouseDown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 
@@ -305,7 +293,7 @@ export class SearchboxMatchElement extends PolymerElement {
    * @returns Index of the action in the autocomplete match. Passed to the
    *     action so it knows its position in the list of actions.
    */
-  private actionIndex_(action: Action): number {
+  protected actionIndex_(action: Action): number {
     return this.match?.actions?.indexOf(action) ?? -1;
   }
 
@@ -476,7 +464,7 @@ export class SearchboxMatchElement extends PolymerElement {
         selection.state === SelectionLineState.kFocusedButtonRemoveSuggestion &&
             selection.line === this.matchIndex);
 
-    [...this.shadowRoot!.querySelectorAll('cr-searchbox-action')].forEach(
+    [...this.shadowRoot.querySelectorAll('cr-searchbox-action')].forEach(
         (action, index) => {
           action.classList.toggle(
               'selected',

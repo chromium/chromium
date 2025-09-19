@@ -2006,7 +2006,7 @@ suite('NewTabPageRealboxTest', () => {
     action.focus();
 
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(action, matchEls[0]!.shadowRoot!.activeElement);
+    assertEquals(action, matchEls[0]!.shadowRoot.activeElement);
     assertFalse(isVisible(focusIndicator));
 
     // Give focus to remove button
@@ -2014,7 +2014,7 @@ suite('NewTabPageRealboxTest', () => {
     removeButton.focus();
 
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals(removeButton, matchEls[0]!.shadowRoot!.activeElement);
+    assertEquals(removeButton, matchEls[0]!.shadowRoot.activeElement);
     assertFalse(isVisible(focusIndicator));
   });
 
@@ -2850,7 +2850,7 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
 
     const pedalElTab =
-        $$(matchEls[1]!.shadowRoot!.querySelectorAll('cr-searchbox-action')[1]!,
+        $$(matchEls[1]!.shadowRoot.querySelectorAll('cr-searchbox-action')[1]!,
            '.contents')!;
 
     pedalElTab.dispatchEvent(leftClick);
