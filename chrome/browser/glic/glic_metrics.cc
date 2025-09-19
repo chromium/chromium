@@ -272,10 +272,17 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
 }
 
 void GlicMetrics::OnContextUploadStarted() {
+  last_upload_start_time_ = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("GlicContextUploadStarted"));
 }
 
 void GlicMetrics::OnContextUploadCompleted() {
+  if (last_upload_start_time_) {
+    base::UmaHistogramMediumTimes(
+        "Glic.TabContext.UploadTime",
+        base::TimeTicks::Now() - *last_upload_start_time_);
+    last_upload_start_time_ = std::nullopt;
+  }
   base::RecordAction(base::UserMetricsAction("GlicContextUploadCompleted"));
 }
 

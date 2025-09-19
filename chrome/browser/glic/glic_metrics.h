@@ -454,6 +454,8 @@ class GlicMetrics {
   // response has completed to the input mode that triggered them.
   mojom::WebClientMode last_input_mode_ = mojom::WebClientMode::kUnknown;
 
+  std::optional<base::TimeTicks> last_upload_start_time_;
+
   std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
 

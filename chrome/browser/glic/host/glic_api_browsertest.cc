@@ -1151,6 +1151,7 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testMetrics) {
   EXPECT_EQ(1, user_action_tester->GetActionCount("GlicResponseStopByUser"));
   histogram_tester->ExpectTotalCount("Glic.FirstReaction.Text.Modelled.Time",
                                      1);
+  histogram_tester->ExpectTotalCount("Glic.TabContext.UploadTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {

@@ -1263,6 +1263,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.TabContext.UploadTime" units="ms"
+    expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded when the glic web client reports that it has completed uploading
+    all necessary tab context. Reports the time taken to upload. Note that
+    upload may happen none or many times for any given query, and this may
+    report the wrong timings if the web client performs concurrent upload
+    operations.
+  </summary>
+</histogram>
+
 <histogram name="Glic.TieredRolloutEnablementStatus"
     enum="GlicTieredRolloutEnablementStatus" expires_after="2026-01-15">
   <owner>sophiechang@chromium.org</owner>
