@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
@@ -30,7 +31,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     private final Runnable mBackPressRunnable;
     private final Runnable mOnDestroyRunnable;
     private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
-    private Supplier<Integer> mCurrentBottomSheetTypeSupplier;
+    private Supplier<@Nullable Integer> mCurrentBottomSheetTypeSupplier;
     private final Supplier<Integer> mContainerHeightSupplier;
     private final Supplier<Integer> mMaxSheetWidthSupplier;
     private final int mNtpCustomizationBottomSheetBottomPadding;
@@ -41,7 +42,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
             Supplier<Integer> maxSheetWidthSupplier,
             Runnable backPressRunnable,
             Runnable onDestroy,
-            Supplier<Integer> currentBottomSheetTypeSupplier) {
+            Supplier<@Nullable Integer> currentBottomSheetTypeSupplier) {
         mContentView = contentView;
         mContainerHeightSupplier = containerHeightSupplier;
         mMaxSheetWidthSupplier = maxSheetWidthSupplier;
@@ -145,19 +146,19 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     public @Nullable String getSheetContentDescription(Context context) {
         return context.getString(
                 NtpCustomizationUtils.getSheetContentDescription(
-                        mCurrentBottomSheetTypeSupplier.get()));
+                        assumeNonNull(mCurrentBottomSheetTypeSupplier.get())));
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
         return NtpCustomizationUtils.getSheetHalfHeightAccessibilityStringId(
-                mCurrentBottomSheetTypeSupplier.get());
+                assumeNonNull(mCurrentBottomSheetTypeSupplier.get()));
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
         return NtpCustomizationUtils.getSheetFullHeightAccessibilityStringId(
-                mCurrentBottomSheetTypeSupplier.get());
+                assumeNonNull(mCurrentBottomSheetTypeSupplier.get()));
     }
 
     @Override
@@ -198,8 +199,10 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         mContentView.measure(widthSpec, heightSpec);
 
         int recyclerViewBottomPadding = 0;
-        if (getRecycleViewBottom() > getMaxHeight()) {
-            recyclerViewBottomPadding = (int) Math.ceil(getRecycleViewBottom() - getMaxHeight());
+        float recyclerViewBottom = getRecyclerViewBottom();
+        float maxHeight = getMaxHeight();
+        if (recyclerViewBottom > maxHeight) {
+            recyclerViewBottomPadding = (int) Math.ceil(recyclerViewBottom - maxHeight);
         }
         recyclerView.setPaddingRelative(
                 recyclerView.getPaddingStart(),
@@ -220,8 +223,8 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     }
 
     /** Calculates the position of the recycler view's bottom edge. */
-    private int getRecycleViewBottom() {
-        @BottomSheetType int bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
+    private int getRecyclerViewBottom() {
+        @BottomSheetType int bottomSheetType = assumeNonNull(mCurrentBottomSheetTypeSupplier.get());
         View header = null;
         // TODO(crbug.com/423579377): Pass in a delegate here will make it easier to support other
         // bottom sheets later on.
@@ -265,7 +268,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         mBackPressStateChangedSupplier = supplier;
     }
 
-    void setCurrentBottomSheetTypeSupplierForTesting(Supplier<Integer> supplier) {
+    void setCurrentBottomSheetTypeSupplierForTesting(Supplier<@Nullable Integer> supplier) {
         mCurrentBottomSheetTypeSupplier = supplier;
     }
 }

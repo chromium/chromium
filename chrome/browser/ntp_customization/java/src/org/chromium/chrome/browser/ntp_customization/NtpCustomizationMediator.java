@@ -331,7 +331,7 @@ public class NtpCustomizationMediator {
         return mViewFlipperMap;
     }
 
-    @SuppressWarnings("NullAway") // The call sites require non-null but the value is nullable.
+    @Nullable
     @NtpCustomizationCoordinator.BottomSheetType
     Integer getCurrentBottomSheetType() {
         return mCurrentBottomSheet;

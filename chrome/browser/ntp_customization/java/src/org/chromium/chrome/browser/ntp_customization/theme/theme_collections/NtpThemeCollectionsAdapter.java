@@ -60,7 +60,7 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
      *
      * @param items A list of items to display. Can be of type List<BackgroundCollection> for theme
      *     collections or List<CollectionImage> for theme collection images.
-     * @param themeCollectionsItemType The type of the theme collections items in the RecycleView.
+     * @param themeCollectionsItemType The type of the theme collections items in the RecyclerView.
      * @param onClickListener The {@link View.OnClickListener} for each theme collection item.
      * @param imageFetcher The {@link ImageFetcher} to fetch the images.
      */
