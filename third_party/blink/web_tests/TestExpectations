@@ -9709,3 +9709,4 @@ crbug.com/444150315 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 
 # Gardener 2025-09-19
 crbug.com/446017690 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Pass Timeout ]
+crbug.com/446017690 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-clip-with-page-scale.html [ Pass Failure ]
