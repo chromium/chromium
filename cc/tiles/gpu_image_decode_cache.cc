@@ -2821,15 +2821,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
   }
 
   image_data->upload.SetImage(std::move(uploaded_image));
-
-  // If we have a new GPU-backed image, initialize it for use in the GPU
-  // discardable system.
-  if (image_data->mode == DecodedDataMode::kGpu) {
-    // Notify the discardable system of this image so it will count against
-    // budgets.
-    context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-        image_data->upload.gl_id());
-  }
 }
 
 scoped_refptr<GpuImageDecodeCache::ImageData>
