@@ -11,7 +11,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/scoped_window_tucker.h"
 #include "ash/wm/test/fake_window_state.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -234,7 +234,7 @@ class PipToggleResizeFeatureTest : public AshTestBase,
         new TestWidgetDelegateAsh);
     Shell::Get()->pip_controller()->SetPipWindow(window.get());
 
-    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+    auto* custom_frame = static_cast<TestFrameViewAsh*>(
         NonClientFrameViewAsh::Get(window.get()));
 
     custom_frame->SetMaximumSize(kMaxWindowSize);

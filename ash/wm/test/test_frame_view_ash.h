@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_TEST_TEST_NON_CLIENT_FRAME_VIEW_ASH_H_
-#define ASH_WM_TEST_TEST_NON_CLIENT_FRAME_VIEW_ASH_H_
+#ifndef ASH_WM_TEST_TEST_FRAME_VIEW_ASH_H_
+#define ASH_WM_TEST_TEST_FRAME_VIEW_ASH_H_
 
 #include <memory>
 
@@ -19,7 +19,7 @@ class Widget;
 
 namespace ash {
 
-// A test widget delegate that creates `TestNonClientFrameViewAsh` as its frame.
+// A test widget delegate that creates `TestFrameViewAsh` as its frame.
 class TestWidgetDelegateAsh : public views::WidgetDelegateView {
  public:
   TestWidgetDelegateAsh();
@@ -33,13 +33,12 @@ class TestWidgetDelegateAsh : public views::WidgetDelegateView {
 };
 
 // Support class for testing windows with a maximum size.
-class TestNonClientFrameViewAsh : public NonClientFrameViewAsh {
+class TestFrameViewAsh : public NonClientFrameViewAsh {
  public:
-  explicit TestNonClientFrameViewAsh(views::Widget* widget);
-  TestNonClientFrameViewAsh(const TestNonClientFrameViewAsh&) = delete;
-  TestNonClientFrameViewAsh& operator=(const TestNonClientFrameViewAsh&) =
-      delete;
-  ~TestNonClientFrameViewAsh() override;
+  explicit TestFrameViewAsh(views::Widget* widget);
+  TestFrameViewAsh(const TestFrameViewAsh&) = delete;
+  TestFrameViewAsh& operator=(const TestFrameViewAsh&) = delete;
+  ~TestFrameViewAsh() override;
 
   void SetMaximumSize(const gfx::Size& size);
   void SetMinimumSize(const gfx::Size& size);
@@ -55,4 +54,4 @@ class TestNonClientFrameViewAsh : public NonClientFrameViewAsh {
 
 }  // namespace ash
 
-#endif  // ASH_WM_TEST_TEST_NON_CLIENT_FRAME_VIEW_ASH_H_
+#endif  // ASH_WM_TEST_TEST_FRAME_VIEW_ASH_H_

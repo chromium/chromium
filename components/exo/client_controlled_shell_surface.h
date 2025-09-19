@@ -22,7 +22,7 @@
 #include "ui/display/types/display_constants.h"
 
 namespace ash {
-class NonClientFrameViewAsh;
+class FrameViewAsh;
 class WideFrameView;
 }  // namespace ash
 
@@ -293,8 +293,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void EnsureCompositorIsLockedForOrientationChange();
 
   ash::WindowState* GetWindowState();
-  ash::NonClientFrameViewAsh* GetFrameView();
-  const ash::NonClientFrameViewAsh* GetFrameView() const;
+  ash::FrameViewAsh* GetFrameView();
+  const ash::FrameViewAsh* GetFrameView() const;
 
   void EnsurePendingScale(bool commit_immediately);
 

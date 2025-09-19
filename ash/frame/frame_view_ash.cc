@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 
 #include <memory>
 
@@ -44,7 +44,7 @@
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(ash::NonClientFrameViewAsh*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(ash::FrameViewAsh*)
 
 namespace ash {
 
@@ -55,19 +55,17 @@ using ::chromeos::kImmersiveImpliedByFullscreen;
 using ::chromeos::kTrackDefaultFrameColors;
 using ::chromeos::WindowStateType;
 
-DEFINE_UI_CLASS_PROPERTY_KEY(NonClientFrameViewAsh*,
-                             kNonClientFrameViewAshKey,
-                             nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(FrameViewAsh*, kNonClientFrameViewAshKey, nullptr)
 
 // This helper enables and disables immersive mode in response to state such as
 // tablet mode and fullscreen changing. For legacy reasons, it's only
 // instantiated for windows that have no WindowStateDelegate provided.
-class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
-                                             public aura::WindowObserver,
-                                             public display::DisplayObserver {
+class FrameViewAshImmersiveHelper : public WindowStateObserver,
+                                    public aura::WindowObserver,
+                                    public display::DisplayObserver {
  public:
-  NonClientFrameViewAshImmersiveHelper(views::Widget* widget,
-                                       NonClientFrameViewAsh* custom_frame_view)
+  FrameViewAshImmersiveHelper(views::Widget* widget,
+                              FrameViewAsh* custom_frame_view)
       : widget_(widget),
         window_state_(WindowState::Get(widget->GetNativeWindow())) {
     window_state_->window()->AddObserver(this);
@@ -78,12 +76,11 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     custom_frame_view->InitImmersiveFullscreenControllerForView(
         immersive_fullscreen_controller_.get());
   }
-  NonClientFrameViewAshImmersiveHelper(
-      const NonClientFrameViewAshImmersiveHelper&) = delete;
-  NonClientFrameViewAshImmersiveHelper& operator=(
-      const NonClientFrameViewAshImmersiveHelper&) = delete;
+  FrameViewAshImmersiveHelper(const FrameViewAshImmersiveHelper&) = delete;
+  FrameViewAshImmersiveHelper& operator=(const FrameViewAshImmersiveHelper&) =
+      delete;
 
-  ~NonClientFrameViewAshImmersiveHelper() override {
+  ~FrameViewAshImmersiveHelper() override {
     if (window_state_) {
       window_state_->RemoveObserver(this);
       window_state_->window()->RemoveObserver(this);
@@ -153,18 +150,18 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
   display::ScopedDisplayObserver display_observer_{this};
 };
 
-NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
+FrameViewAsh::FrameViewAsh(views::Widget* frame)
     : chromeos::FrameViewChromeOS(frame),
       frame_context_menu_controller_(
           std::make_unique<FrameContextMenuController>(frame, this)) {
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
-      &NonClientFrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr()));
+      &FrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr()));
 
   aura::Window* frame_window = frame->GetNativeWindow();
   window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
 
   // A delegate may be set which takes over the responsibilities of the
-  // NonClientFrameViewAshImmersiveHelper. This is the case for container apps
+  // FrameViewAshImmersiveHelper. This is the case for container apps
   // such as ARC++, and in some tests.
   WindowState* window_state = WindowState::Get(frame_window);
   // A window may be created as a child window of the toplevel (captive portal).
@@ -172,7 +169,7 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
   // child. Investigate if we can remove this check.
   if (window_state && !window_state->HasDelegate()) {
     immersive_helper_ =
-        std::make_unique<NonClientFrameViewAshImmersiveHelper>(frame, this);
+        std::make_unique<FrameViewAshImmersiveHelper>(frame, this);
   }
 
   frame_window->SetProperty(kNonClientFrameViewAshKey, this);
@@ -187,43 +184,43 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
       frame_context_menu_controller_.get());
 }
 
-NonClientFrameViewAsh::~NonClientFrameViewAsh() {
+FrameViewAsh::~FrameViewAsh() {
   header_view_->set_context_menu_controller(nullptr);
 }
 
 // static
-NonClientFrameViewAsh* NonClientFrameViewAsh::Get(aura::Window* window) {
+FrameViewAsh* FrameViewAsh::Get(aura::Window* window) {
   return window->GetProperty(kNonClientFrameViewAshKey);
 }
 
-void NonClientFrameViewAsh::InitImmersiveFullscreenControllerForView(
+void FrameViewAsh::InitImmersiveFullscreenControllerForView(
     ImmersiveFullscreenController* immersive_fullscreen_controller) {
   immersive_fullscreen_controller->Init(GetHeaderView(), frame_,
                                         GetHeaderView());
 }
 
-void NonClientFrameViewAsh::SetFrameColors(SkColor active_frame_color,
-                                           SkColor inactive_frame_color) {
+void FrameViewAsh::SetFrameColors(SkColor active_frame_color,
+                                  SkColor inactive_frame_color) {
   aura::Window* frame_window = frame_->GetNativeWindow();
   frame_window->SetProperty(kTrackDefaultFrameColors, false);
   frame_window->SetProperty(kFrameActiveColorKey, active_frame_color);
   frame_window->SetProperty(kFrameInactiveColorKey, inactive_frame_color);
 }
 
-void NonClientFrameViewAsh::SetCaptionButtonModel(
+void FrameViewAsh::SetCaptionButtonModel(
     std::unique_ptr<chromeos::CaptionButtonModel> model) {
   header_view_->caption_button_container()->SetModel(std::move(model));
   header_view_->UpdateCaptionButtons();
 }
 
-gfx::Rect NonClientFrameViewAsh::GetClientBoundsForWindowBounds(
+gfx::Rect FrameViewAsh::GetClientBoundsForWindowBounds(
     const gfx::Rect& window_bounds) const {
   gfx::Rect client_bounds(window_bounds);
   client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
-bool NonClientFrameViewAsh::ShouldShowContextMenu(
+bool FrameViewAsh::ShouldShowContextMenu(
     views::View* source,
     const gfx::Point& screen_coords_point) {
   if (header_view_->in_immersive_mode()) {
@@ -243,27 +240,27 @@ bool NonClientFrameViewAsh::ShouldShowContextMenu(
   return NonClientHitTest(point_in_view_coords) == HTCAPTION;
 }
 
-void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
+void FrameViewAsh::SetShouldPaintHeader(bool paint) {
   header_view_->SetShouldPaintHeader(paint);
 }
 
-int NonClientFrameViewAsh::NonClientTopBorderPreferredHeight() const {
+int FrameViewAsh::NonClientTopBorderPreferredHeight() const {
   return header_view_->GetPreferredHeight();
 }
 
-const views::View* NonClientFrameViewAsh::GetAvatarIconViewForTest() const {
+const views::View* FrameViewAsh::GetAvatarIconViewForTest() const {
   return header_view_->avatar_icon();
 }
 
-SkColor NonClientFrameViewAsh::GetActiveFrameColorForTest() const {
+SkColor FrameViewAsh::GetActiveFrameColorForTest() const {
   return frame_->GetNativeWindow()->GetProperty(kFrameActiveColorKey);
 }
 
-SkColor NonClientFrameViewAsh::GetInactiveFrameColorForTest() const {
+SkColor FrameViewAsh::GetInactiveFrameColorForTest() const {
   return frame_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
 }
 
-void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
+void FrameViewAsh::SetFrameEnabled(bool enabled) {
   if (enabled == frame_enabled_)
     return;
 
@@ -273,7 +270,7 @@ void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
   InvalidateLayout();
 }
 
-void NonClientFrameViewAsh::SetFrameOverlapped(bool overlapped) {
+void FrameViewAsh::SetFrameOverlapped(bool overlapped) {
   if (overlapped == frame_overlapped_) {
     return;
   }
@@ -306,18 +303,18 @@ void NonClientFrameViewAsh::SetFrameOverlapped(bool overlapped) {
   InvalidateLayout();
 }
 
-void NonClientFrameViewAsh::SetToggleResizeLockMenuCallback(
+void FrameViewAsh::SetToggleResizeLockMenuCallback(
     base::RepeatingCallback<void()> callback) {
   toggle_resize_lock_menu_callback_ = std::move(callback);
 }
 
-void NonClientFrameViewAsh::ClearToggleResizeLockMenuCallback() {
+void FrameViewAsh::ClearToggleResizeLockMenuCallback() {
   toggle_resize_lock_menu_callback_.Reset();
 }
 
-void NonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
-                                                    const void* key,
-                                                    intptr_t old) {
+void FrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
+                                           const void* key,
+                                           intptr_t old) {
   // ChromeOS has rounded windows for certain window states. If these states
   // changes, we need to update the rounded corners of the frame associate with
   // the `window`accordingly.
@@ -326,7 +323,7 @@ void NonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
 
     // For overlapped frames header_view_ layer needs to non-opaque to avoid
     // visual artifacts at the upper corners.
-    // See comment in NonClientFrameViewAsh::SetFrameOverlapped.
+    // See comment in FrameViewAsh::SetFrameOverlapped.
     bool fills_bounds_opaquely = true;
     if (frame_overlapped_ &&
         WindowState::Get(window)->ShouldWindowHaveRoundedCorners()) {
@@ -338,11 +335,11 @@ void NonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
   }
 }
 
-void NonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
+void FrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
 }
 
-void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
+void FrameViewAsh::UpdateWindowRoundedCorners() {
   if (!GetWidget()) {
     return;
   }
@@ -367,15 +364,15 @@ void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
   GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
 }
 
-base::RepeatingCallback<void()>
-NonClientFrameViewAsh::GetToggleResizeLockMenuCallback() const {
+base::RepeatingCallback<void()> FrameViewAsh::GetToggleResizeLockMenuCallback()
+    const {
   return toggle_resize_lock_menu_callback_;
 }
 
-void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
+void FrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   // We may end up here before |header_view_| has been added to the Widget.
   if (header_view_->GetWidget()) {
-    // The HeaderView is not a child of NonClientFrameViewAsh. Redirect the
+    // The HeaderView is not a child of FrameViewAsh. Redirect the
     // paint to HeaderView instead.
     gfx::RectF to_paint(r);
     views::View::ConvertRectToTarget(this, GetHeaderView(), &to_paint);
@@ -383,7 +380,7 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   }
 }
 
-void NonClientFrameViewAsh::AddedToWidget() {
+void FrameViewAsh::AddedToWidget() {
   if (highlight_border_overlay_ ||
       !GetWidget()->GetNativeWindow()->GetProperty(
           chromeos::kShouldHaveHighlightBorderOverlay)) {
@@ -395,11 +392,11 @@ void NonClientFrameViewAsh::AddedToWidget() {
 }
 
 chromeos::FrameCaptionButtonContainerView*
-NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
+FrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
   return header_view_->caption_button_container();
 }
 
-void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
+void FrameViewAsh::UpdateDefaultFrameColors() {
   aura::Window* frame_window = frame_->GetNativeWindow();
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
@@ -412,7 +409,7 @@ void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
   frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);
 }
 
-BEGIN_METADATA(NonClientFrameViewAsh)
+BEGIN_METADATA(FrameViewAsh)
 END_METADATA
 
 }  // namespace ash

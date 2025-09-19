@@ -34,7 +34,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -1385,8 +1385,8 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
   auto window =
       CreateAppWindow(gfx::Rect(500, 500), chromeos::AppType::SYSTEM_APP,
                       kShellWindowId_DeskContainerA, new TestWidgetDelegateAsh);
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window.get()));
+  auto* custom_frame =
+      static_cast<TestFrameViewAsh*>(NonClientFrameViewAsh::Get(window.get()));
   wm::ActivateWindow(window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());

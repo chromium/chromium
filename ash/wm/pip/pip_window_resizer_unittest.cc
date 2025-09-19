@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/pip/pip_window_resizer.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
@@ -22,12 +21,13 @@
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -160,8 +160,8 @@ class PipWindowResizerTest : public AshTestBase,
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
     Shell::Get()->pip_controller()->SetPipWindow(window_);
 
-    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-        NonClientFrameViewAsh::Get(window()));
+    auto* custom_frame =
+        static_cast<TestFrameViewAsh*>(NonClientFrameViewAsh::Get(window()));
     custom_frame->SetMaximumSize(gfx::Size(300, 200));
     custom_frame->SetMinimumSize(gfx::Size(30, 20));
 
@@ -707,8 +707,8 @@ TEST_P(PipWindowResizerTest, DragDetailsAreDestroyed) {
 TEST_P(PipWindowResizerTest, PipPinchResizeWithNoMaximumSizeRestrinction) {
   PreparePipWindow(gfx::Rect(200, 200, 100, 100));
 
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window()));
+  auto* custom_frame =
+      static_cast<TestFrameViewAsh*>(NonClientFrameViewAsh::Get(window()));
   // This means there is no maximum size limit.
   custom_frame->SetMaximumSize(gfx::Size(0, 0));
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));

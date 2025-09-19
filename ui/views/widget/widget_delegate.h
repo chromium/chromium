@@ -107,7 +107,7 @@ class LoginTestBase;
 class LoginTestWidgetDelegate;
 class MahiPanelWidget;
 class MaximizeDelegateView;
-class NonClientFrameViewAshTestWidgetDelegate;
+class FrameViewAshTestWidgetDelegate;
 class PipTest;
 class QuickInsertSubmenuView;
 class QuickInsertView;
@@ -946,7 +946,7 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class ::ash::KioskExternalUpdateNotificationView;
   friend class ::ash::LayoutWidgetDelegateView;
   friend class ::ash::MaximizeDelegateView;
-  friend class ::ash::NonClientFrameViewAshTestWidgetDelegate;
+  friend class ::ash::FrameViewAshTestWidgetDelegate;
   friend class ::ash::PipTest;
   friend class ::ash::QuickInsertSubmenuView;
   friend class ::ash::QuickInsertView;

@@ -76,7 +76,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
@@ -356,7 +356,7 @@ class SnapGroupTestBase : public OverviewTestBase {
     std::unique_ptr<aura::Window> window =
         CreateAppWindow(gfx::Rect(800, 600), chromeos::AppType::SYSTEM_APP,
                         kShellWindowId_Invalid, new TestWidgetDelegateAsh);
-    auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+    auto* custom_frame = static_cast<TestFrameViewAsh*>(
         NonClientFrameViewAsh::Get(window.get()));
     custom_frame->SetMinimumSize(min_size);
     return window;

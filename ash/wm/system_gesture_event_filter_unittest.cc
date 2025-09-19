@@ -10,7 +10,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/span.h"
@@ -154,7 +154,7 @@ TEST_F(SystemGestureEventFilterTest, WindowsWithMaxSizeDontSnap) {
   views::Widget* toplevel = views::Widget::CreateWindowWithContext(
       widget_delegate, root_window, bounds);
 
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+  auto* custom_frame = static_cast<TestFrameViewAsh*>(
       NonClientFrameViewAsh::Get(toplevel->GetNativeWindow()));
   custom_frame->SetMaximumSize(gfx::Size(200, 200));
 

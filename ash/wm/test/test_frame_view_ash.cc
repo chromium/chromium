@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 
 namespace ash {
 
@@ -14,29 +14,29 @@ TestWidgetDelegateAsh::~TestWidgetDelegateAsh() {}
 
 std::unique_ptr<views::NonClientFrameView>
 TestWidgetDelegateAsh::CreateNonClientFrameView(views::Widget* widget) {
-  return std::make_unique<TestNonClientFrameViewAsh>(widget);
+  return std::make_unique<TestFrameViewAsh>(widget);
 }
 
-TestNonClientFrameViewAsh::TestNonClientFrameViewAsh(views::Widget* widget)
+TestFrameViewAsh::TestFrameViewAsh(views::Widget* widget)
     : NonClientFrameViewAsh(widget) {}
 
-TestNonClientFrameViewAsh::~TestNonClientFrameViewAsh() {}
+TestFrameViewAsh::~TestFrameViewAsh() {}
 
-void TestNonClientFrameViewAsh::SetMaximumSize(const gfx::Size& size) {
+void TestFrameViewAsh::SetMaximumSize(const gfx::Size& size) {
   maximum_size_ = size;
   frame()->OnSizeConstraintsChanged();
 }
 
-void TestNonClientFrameViewAsh::SetMinimumSize(const gfx::Size& size) {
+void TestFrameViewAsh::SetMinimumSize(const gfx::Size& size) {
   minimum_size_ = size;
   frame()->OnSizeConstraintsChanged();
 }
 
-gfx::Size TestNonClientFrameViewAsh::GetMaximumSize() const {
+gfx::Size TestFrameViewAsh::GetMaximumSize() const {
   return maximum_size_;
 }
 
-gfx::Size TestNonClientFrameViewAsh::GetMinimumSize() const {
+gfx::Size TestFrameViewAsh::GetMinimumSize() const {
   return minimum_size_;
 }
 
