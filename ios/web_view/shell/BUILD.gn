@@ -47,11 +47,6 @@ ios_app_bundle("ios_web_view_shell") {
   ]
   entitlements_path = ios_web_view_shell_entitlements_path
   bundle_identifier = ios_web_view_shell_bundle_identifier
-
-  assert_no_deps = [
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
-  ]
 }
 
 source_set("shell_auth_service_interface") {

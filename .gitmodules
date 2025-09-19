@@ -60,42 +60,6 @@
 	path = ios/third_party/lottie/src
 	url = https://chromium.googlesource.com/external/github.com/airbnb/lottie-ios
 	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_components_ios/src"]
-	path = ios/third_party/material_components_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-components/material-components-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_font_disk_loader_ios/src"]
-	path = ios/third_party/material_font_disk_loader_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-font-disk-loader-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_internationalization_ios/src"]
-	path = ios/third_party/material_internationalization_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-internationalization-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_roboto_font_loader_ios/src"]
-	path = ios/third_party/material_roboto_font_loader_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-roboto-font-loader-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_sprited_animation_view_ios/src"]
-	path = ios/third_party/material_sprited_animation_view_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-sprited-animation-view-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/material_text_accessibility_ios/src"]
-	path = ios/third_party/material_text_accessibility_ios/src
-	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-text-accessibility-ios
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/motion_interchange_objc/src"]
-	path = ios/third_party/motion_interchange_objc/src
-	url = https://chromium.googlesource.com/external/github.com/material-motion/motion-interchange-objc
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/motion_animator_objc/src"]
-	path = ios/third_party/motion_animator_objc/src
-	url = https://chromium.googlesource.com/external/github.com/material-motion/motion-animator-objc
-	gclient-condition = checkout_ios
-[submodule "ios/third_party/motion_transitioning_objc/src"]
-	path = ios/third_party/motion_transitioning_objc/src
-	url = https://chromium.googlesource.com/external/github.com/material-motion/motion-transitioning-objc
-	gclient-condition = checkout_ios
 [submodule "ios/third_party/webkit/src"]
 	path = ios/third_party/webkit/src
 	url = https://chromium.googlesource.com/external/github.com/WebKit/webkit
