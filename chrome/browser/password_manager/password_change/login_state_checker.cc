@@ -28,6 +28,8 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
 
 using autofill::SavePasswordProgressLogger;
 using password_manager::BrowserSavePasswordProgressLogger;
+using QualityStatus = optimization_guide::proto::
+    PasswordChangeQuality_StepQuality_SubmissionStatus;
 
 void LogMessage(password_manager::PasswordManagerClient* client,
                 autofill::SavePasswordProgressLogger::StringID message_id) {
@@ -85,9 +87,31 @@ void LoginStateChecker::DidFinishNavigation(
 }
 
 void LoginStateChecker::TerminateLoginChecks() {
-  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_);
+  SetLoginCheckQuality(IsLoggedIn(false));
   state_checks_count_ = kMaxLoginChecks;
   result_check_callback_.Run(false);
+}
+
+void LoginStateChecker::SetLoginCheckQuality(IsLoggedIn is_logged_in) {
+  if (is_logged_in.value()) {
+    logs_uploader_->SetLoggedInCheckQuality(
+        state_checks_count_,
+        QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+    return;
+  }
+
+  QualityStatus quality_status;
+  if (ReachedAttemptsLimit()) {
+    quality_status = QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS;
+  } else {
+    // If the login check terminated before the maximum attempts were reached,
+    // it indicates an unexpected state and a lack of a model response.
+    quality_status = QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
+  }
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_, quality_status);
 }
 
 void LoginStateChecker::CheckLoginState() {
@@ -126,6 +150,7 @@ void LoginStateChecker::OnPageContentReceived(
   if (!content) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_NO_CONTENT);
+    // TODO(crbug.com/446140964): Retry capture instead of failing.
     TerminateLoginChecks();
     return;
   }
@@ -179,7 +204,10 @@ void LoginStateChecker::OnExecutionResponseCallback(
   }
 
   bool is_logged_in = response->is_logged_in_data().is_logged_in();
-  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_);
+  // If the login state is false, a subsequent retry will override the
+  // quality state with either an unexpected or failure status.
+  SetLoginCheckQuality(IsLoggedIn(true));
+
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
              is_logged_in);
