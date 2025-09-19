@@ -196,11 +196,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageChanged) {
-  RunSidePanelTest("side_panel/read_anything/language_change_test.js",
-                   "mocha.run()");
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DownloadNotification) {
   RunSidePanelTest("side_panel/read_anything/download_notification_test.js",

@@ -33,6 +33,8 @@ suite('FontMenu', () => {
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     await microtasksFinished();
+    toolbar.pageLanguage = 'en-us';
+    await microtasksFinished();
     menuButton = toolbar.shadowRoot.querySelector<CrIconButtonElement>('#font');
     fontSelect =
         toolbar.shadowRoot.querySelector<HTMLSelectElement>('#font-select');
@@ -54,7 +56,7 @@ suite('FontMenu', () => {
 
     async function updateFonts(supportedFonts: string[]): Promise<void> {
       chrome.readingMode.supportedFonts = supportedFonts;
-      toolbar.updateFonts();
+      toolbar.pageLanguage = 'hi' + supportedFonts.length;
       await microtasksFinished();
       fontMenuOptions = getItemsInMenu(toolbar.$.fontMenu);
     }
@@ -173,7 +175,7 @@ suite('FontMenu', () => {
 
     async function updateFonts(supportedFonts: string[]): Promise<void> {
       chrome.readingMode.supportedFonts = supportedFonts;
-      toolbar.updateFonts();
+      toolbar.pageLanguage = 'it-it' + supportedFonts.length;
       return microtasksFinished();
     }
 

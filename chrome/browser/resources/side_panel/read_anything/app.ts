@@ -73,6 +73,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       contentState_: {type: Object},
       speechEngineLoaded_: {type: Boolean},
       willDrawAgainSoon_: {type: Boolean},
+      pageLanguage_: {type: String},
     };
   }
 
@@ -109,6 +110,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor previewVoicePlaying_: SpeechSynthesisVoice|null = null;
 
   protected accessor localeToDisplayName_: {[locale: string]: string} = {};
+  protected accessor pageLanguage_: string = '';
 
   private notificationManager_ = VoiceNotificationManager.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
@@ -489,12 +491,11 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   languageChanged() {
-    this.$.toolbar.updateFonts();
+    this.pageLanguage_ = chrome.readingMode.baseLanguageForSpeech;
     if (this.isReadAloudEnabled_) {
       this.voiceLanguageController_.onPageLanguageChanged();
+      TextSegmenter.getInstance().updateLanguage(this.pageLanguage_);
     }
-    TextSegmenter.getInstance().updateLanguage(
-        chrome.readingMode.baseLanguageForSpeech);
   }
 
   protected computeHasContent(): boolean {

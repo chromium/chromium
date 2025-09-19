@@ -133,6 +133,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       speechRate_: {type: Number},
       fontName_: {type: String},
       moreOptionsButtons_: {type: Array},
+      pageLanguage: {type: String},
     };
   }
 
@@ -161,6 +162,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     highlightGranularity: 0,
   };
   accessor selectedVoice: SpeechSynthesisVoice|undefined;
+  accessor pageLanguage: string = '';
   protected accessor fontOptions_: string[] = [];
   protected accessor hideSpinner_: boolean = true;
   protected isReadAloudEnabled_: boolean = true;
@@ -201,6 +203,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (changedProperties.has('isSpeechActive') ||
         changedProperties.has('isAudioCurrentlyPlaying')) {
       this.onSpeechPlayingStateChanged_();
+    }
+
+    if (changedProperties.has('pageLanguage')) {
+      this.updateFonts_();
     }
   }
 
@@ -463,7 +469,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     }
   }
 
-  updateFonts() {
+  private updateFonts_() {
     this.initFonts_();
     this.restoreFontMenu_();
   }

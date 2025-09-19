@@ -31,7 +31,6 @@ build_webui_tests("build") {
     "image_test.ts",
     "images_toggle_button_test.ts",
     "keyboard_util_test.ts",
-    "language_change_test.ts",
     "language_menu_test.ts",
     "language_toast_test.ts",
     "letter_spacing_test.ts",
