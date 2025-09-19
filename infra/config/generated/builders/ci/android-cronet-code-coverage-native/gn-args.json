@@ -6,7 +6,6 @@
     "default_min_sdk_version": 23,
     "disable_file_support": true,
     "enable_resource_allowlist_generation": false,
-    "enable_websockets": false,
     "include_transport_security_state_preload_list": false,
     "is_component_build": false,
     "is_cronet_build": true,

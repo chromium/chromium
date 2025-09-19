@@ -12,9 +12,9 @@ declare_args() {
   # Cronet does not support file URLs.
   disable_file_support = is_cronet_build
 
-  # WebSockets and socket stream code are not used when blink is not used
-  # and are optional in cronet.
-  enable_websockets = use_blink
+  # WebSockets and socket stream code are not used when: either, blink is not
+  # used; or, Cronet is being built.
+  enable_websockets = use_blink && !is_cronet_build
 
   # Enable Kerberos authentication. It is disabled by default on iOS, Fuchsia
   # and Chromecast, at least for now. This feature needs configuration

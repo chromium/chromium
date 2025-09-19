@@ -484,7 +484,6 @@ gn_args.config(
         # should contain `is_cronet_build` and nothing else.
         # LINT.IfChange(cronet_common)
         "disable_file_support": True,
-        "enable_websockets": False,
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
         "use_platform_icu_alternatives": True,
