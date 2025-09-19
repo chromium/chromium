@@ -2,38 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextMenuEntrypointElement} from 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-type Constructor<T> = new (...args: any[]) => T;
-type Installer<T> = (instance: T) => void;
-
-export function installMock<T extends object>(
-    clazz: Constructor<T>, installer?: Installer<T>): TestMock<T> {
-  installer = installer ||
-      (clazz as unknown as {setInstance: Installer<T>}).setInstance;
-  const mock = TestMock.fromClass(clazz);
-  installer(mock);
-  return mock;
-}
 
 suite('ContextMenuEntrypoint', () => {
   let entrypoint: ContextMenuEntrypointElement;
-  let handler: TestMock<PageHandlerRemote>;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    handler = installMock(
-        PageHandlerRemote,
-        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
-            new SearchboxPageCallbackRouter())));
 
     entrypoint = new ContextMenuEntrypointElement();
     document.body.appendChild(entrypoint);
@@ -46,10 +23,11 @@ suite('ContextMenuEntrypoint', () => {
   });
 
   test('clicking entrypoint shows context menu', async () => {
-    handler.setResultFor('getRecentTabs', Promise.resolve([]));
-
     // Act.
+    const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
     entrypoint.$.entrypoint.click();
+    const e = await refreshTabs;
+    e.detail.onRefreshComplete();
     await microtasksFinished();
 
     // Assert.
@@ -60,8 +38,11 @@ suite('ContextMenuEntrypoint', () => {
       'tab header is not displayed when there are no tab suggestions',
       async () => {
         // Arrange & Act.
-        handler.setResultFor('getRecentTabs', Promise.resolve([]));
+        const refreshTabs =
+            eventToPromise('refresh-tab-suggestions', entrypoint);
         entrypoint.$.entrypoint.click();
+        const e = await refreshTabs;
+        e.detail.onRefreshComplete();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
 
@@ -77,21 +58,25 @@ suite('ContextMenuEntrypoint', () => {
   test(
       'clicking entrypoint shows context menu with correct items', async () => {
         // Arrange.
-        handler.setResultFor('getRecentTabs', Promise.resolve({
-          tabs: [
-            {
-              title: 'Tab 1',
-              url: {url: 'https://www.google.com'},
-              tabId: 1,
-            },
-            {
-              title: 'Tab 2',
-              url: {url: 'https://www.google.com'},
-              tabId: 2,
-            },
-          ],
-        }));
+        const refreshTabs =
+            eventToPromise('refresh-tab-suggestions', entrypoint);
+        entrypoint.tabSuggestions = [
+          {
+            title: 'Tab 1',
+            url: {url: 'https://www.google.com'},
+            tabId: 1,
+            lastActive: { internalValue: BigInt(1) },
+          },
+          {
+            title: 'Tab 2',
+            url: {url: 'https://www.google.com'},
+            tabId: 2,
+            lastActive: { internalValue: BigInt(2) },
+          },
+        ];
         entrypoint.$.entrypoint.click();
+        const e = await refreshTabs;
+        e.detail.onRefreshComplete();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
 
@@ -115,8 +100,11 @@ suite('ContextMenuEntrypoint', () => {
             `clicking ${selector} propagates ${eventName} before closing menu`,
             async () => {
               // Arrange.
-              handler.setResultFor('getRecentTabs', Promise.resolve([]));
+              const refreshTabs =
+                  eventToPromise('refresh-tab-suggestions', entrypoint);
               entrypoint.$.entrypoint.click();
+              const e = await refreshTabs;
+              e.detail.onRefreshComplete();
               await microtasksFinished();
               assertTrue(entrypoint.$.menu.open);
 
