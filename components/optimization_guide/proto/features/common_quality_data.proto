@@ -254,7 +254,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 28
+// Next ID: 29
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -343,6 +343,9 @@ message ContentAttributes {
   //
   // Only populated for ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
   AXRole aria_role = 26 [features = { field_presence: EXPLICIT }];
+
+  // Whether the content node is from an ad.
+  bool is_ad_related = 28 [features = { field_presence: EXPLICIT }];
 
   reserved 5, 6, 7, 17, 18, 1, 22;
 }

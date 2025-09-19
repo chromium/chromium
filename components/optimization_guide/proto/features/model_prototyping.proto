@@ -138,7 +138,7 @@ message ConversationTurn {
 
 // All the information collected from the browser along with the user input
 // (for features like Compose).
-// NEXT ID: 18
+// NEXT ID: 20
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1 [features = { field_presence: EXPLICIT }];
@@ -189,6 +189,14 @@ message BrowserCollectedInformation {
   // for production but is needed for  prototyping. See crbug.com/403632369 for more
   // details.
   AnnotatedPageContent action_annotated_page_content = 17 [features = { field_presence: EXPLICIT }];
+
+  // The actor framework screenshot as bytes.
+  bytes actor_framework_screenshot = 18 [features = { field_presence: IMPLICIT }];
+
+  // Where the viewport is in the actor framework screenshot. For viewport
+  // screenshots, this will be the dimensions of the screenshot. For
+  // non-viewport screenshots, this will be a sub-rectangle of the screenshot.
+  BoundingRect viewport_rect_in_actor_framework_screenshot = 19 [features = { field_presence: EXPLICIT }];
 
   reserved 6, 12, 13;
 }
