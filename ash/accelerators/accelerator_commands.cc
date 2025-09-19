@@ -129,7 +129,6 @@
 namespace ash {
 
 const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
-const char kAccelRotation[] = "Ash.Accelerators.Rotation.Usage";
 const char kAccelActivateDeskByIndex[] = "Ash.Accelerators.ActivateDeskByIndex";
 const char kAccelToggleQuickInsert[] = "Ash.Accelerators.TogglePicker.Action";
 
@@ -149,16 +148,6 @@ constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
 // Toast IDs for the Toggle Camera Allowed shortcut.
 constexpr char kToggleCameraToastId[] = "toggle_camera_toast";
 constexpr char kCameraForceDisabledToastId[] = "camera_force_disabled_toast";
-
-// These values are written to logs.  New enum values can be added, but existing
-// enums must never be renumbered or deleted and reused.
-// Records the result of triggering the rotation accelerator.
-enum class RotationAcceleratorAction {
-  kCancelledDialog = 0,
-  kAcceptedDialog = 1,
-  kAlreadyAcceptedDialog = 2,
-  kMaxValue = kAlreadyAcceptedDialog,
-};
 
 // Record which desk is activated.
 enum class ActivateDeskAcceleratorAction {
@@ -180,10 +169,6 @@ enum class ToggleQuickInsertAction {
   kToggleQuickInsert = 1,
   kMaxValue = kToggleQuickInsert,
 };
-
-void RecordRotationAcceleratorAction(const RotationAcceleratorAction& action) {
-  UMA_HISTOGRAM_ENUMERATION(kAccelRotation, action);
-}
 
 void RecordActivateDeskByIndexAcceleratorAction(
     const ActivateDeskAcceleratorAction& action) {
@@ -318,15 +303,10 @@ void RotateScreenImpl() {
 }
 
 void OnRotationDialogAccepted() {
-  RecordRotationAcceleratorAction(RotationAcceleratorAction::kAcceptedDialog);
   RotateScreenImpl();
   Shell::Get()
       ->accessibility_controller()
       ->SetDisplayRotationAcceleratorDialogBeenAccepted();
-}
-
-void OnRotationDialogCancelled() {
-  RecordRotationAcceleratorAction(RotationAcceleratorAction::kCancelledDialog);
 }
 
 // Return false if the accessibility shortcuts have been disabled, or if
@@ -1213,11 +1193,9 @@ void RotateScreen() {
         l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
         l10n_util::GetStringUTF16(IDS_APP_CANCEL),
         base::BindOnce(&OnRotationDialogAccepted),
-        base::BindOnce(&OnRotationDialogCancelled),
+        /*on_cancel_callback=*/base::DoNothing(),
         /*on_close_callback=*/base::DoNothing());
   } else {
-    RecordRotationAcceleratorAction(
-        RotationAcceleratorAction::kAlreadyAcceptedDialog);
     RotateScreenImpl();
   }
 }

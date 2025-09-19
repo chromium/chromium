@@ -548,17 +548,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Accelerators.Rotation.Usage"
-    enum="ScreenRotationAcceleratorAction" expires_after="2023-10-08">
-  <owner>jimmyxgong@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
-  <summary>
-    Captures the result of a user using the rotation accelerator -
-    Ctrl+Shift+Refresh. This histogram shows how frequently users accidentally
-    hit the key combination.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Accelerators.TogglePicker.Action"
     enum="TogglePickerAction" expires_after="2026-05-11">
   <owner>jimmyxgong@chromium.org</owner>
