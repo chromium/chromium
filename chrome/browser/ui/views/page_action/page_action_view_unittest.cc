@@ -384,6 +384,11 @@ TEST_F(PageActionViewTest, Highlight) {
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(ink_drop->GetHighlighted());
 
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+
   EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_FALSE(ink_drop->GetHighlighted());

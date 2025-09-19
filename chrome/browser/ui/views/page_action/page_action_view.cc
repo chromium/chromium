@@ -112,7 +112,7 @@ void PageActionView::OnPageActionModelChanged(
 
   if (model.GetActionActive() && !highlight_) {
     highlight_ = AddAnchorHighlight();
-  } else {
+  } else if (!model.GetActionActive()) {
     highlight_.reset();
   }
 
