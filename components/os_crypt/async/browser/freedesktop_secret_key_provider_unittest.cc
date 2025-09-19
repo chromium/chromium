@@ -72,12 +72,22 @@ template <typename T>
 auto RespondWith(T&& args) {
   return [args = std::move(args)](
              const std::string&, const std::string&, DbusVariant,
-             dbus::ObjectProxy::ResponseCallback* callback) {
+             dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
     auto response = dbus::Response::CreateEmpty();
     dbus::MessageWriter writer(response.get());
     args.Write(&writer);
-    std::move(*callback).Run(response.get());
+    std::move(*callback).Run(response.get(), nullptr);
   };
+}
+
+auto RespondWithTrue(const std::string&,
+                     const std::string&,
+                     DbusVariant,
+                     dbus::ObjectProxy::ResponseCallback* callback) {
+  auto response = dbus::Response::CreateEmpty();
+  dbus::MessageWriter writer(response.get());
+  writer.AppendBool(true);
+  std::move(*callback).Run(response.get());
 }
 
 class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
@@ -87,18 +97,37 @@ class MockObjectProxyWithTypedCalls : public dbus::MockObjectProxy {
                                 const dbus::ObjectPath& object_path)
       : dbus::MockObjectProxy(bus, service_name, object_path) {
     // Forward to Call().
+    EXPECT_CALL(*this, DoCallMethodWithErrorResponse(_, _, _))
+        .Times(AtLeast(0))
+        .WillRepeatedly(
+            [this](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+              dbus::MessageReader reader(method_call);
+              auto args = ReadDbusMessage(&reader);
+              Call(method_call->GetInterface(), method_call->GetMember(),
+                   std::move(args), callback);
+            });
+
+    // Forward to CallWithoutError().
     EXPECT_CALL(*this, DoCallMethod(_, _, _))
         .Times(AtLeast(0))
         .WillRepeatedly([this](dbus::MethodCall* method_call, int timeout_ms,
                                dbus::ObjectProxy::ResponseCallback* callback) {
           dbus::MessageReader reader(method_call);
           auto args = ReadDbusMessage(&reader);
-          Call(method_call->GetInterface(), method_call->GetMember(),
-               std::move(args), callback);
+          CallWithoutError(method_call->GetInterface(),
+                           method_call->GetMember(), std::move(args), callback);
         });
   }
 
   MOCK_METHOD4(Call,
+               void(const std::string& interface,
+                    const std::string& method_name,
+                    DbusVariant args,
+                    dbus::ObjectProxy::ResponseOrErrorCallback* callback));
+
+  // Needed for NameHasOwner calls.
+  MOCK_METHOD4(CallWithoutError,
                void(const std::string& interface,
                     const std::string& method_name,
                     DbusVariant args,
@@ -152,12 +181,13 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
       .WillRepeatedly(Return(mock_session_proxy.get()));
 
   // NameHasOwner for Secret Service
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(
-                       FreedesktopSecretKeyProvider::kSecretServiceName)),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                       MatchArgs(DbusString(
+                           FreedesktopSecretKeyProvider::kSecretServiceName)),
+                       _))
+      .WillOnce(RespondWithTrue);
 
   // ReadAlias("default")
   EXPECT_CALL(
@@ -322,12 +352,13 @@ TEST(FreedesktopSecretKeyProviderTest,
       .WillRepeatedly(Return(mock_item_proxy.get()));
 
   // NameHasOwner for Secret Service
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(
-                       FreedesktopSecretKeyProvider::kSecretServiceName)),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                       MatchArgs(DbusString(
+                           FreedesktopSecretKeyProvider::kSecretServiceName)),
+                       _))
+      .WillOnce(RespondWithTrue);
 
   // ReadAlias("default") returns no default collection
   EXPECT_CALL(
@@ -488,12 +519,13 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
                              dbus::ObjectPath(
                                  FreedesktopSecretKeyProvider::kKWalletD5Path)))
       .WillRepeatedly(Return(mock_kwallet5_proxy.get()));
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(
-                       FreedesktopSecretKeyProvider::kKWalletD5Service)),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                       MatchArgs(DbusString(
+                           FreedesktopSecretKeyProvider::kKWalletD5Service)),
+                       _))
+      .WillOnce(RespondWithTrue);
 
   // isEnabled -> true
   EXPECT_CALL(*mock_kwallet5_proxy,
@@ -598,12 +630,13 @@ TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
                              dbus::ObjectPath(
                                  FreedesktopSecretKeyProvider::kKWalletD6Path)))
       .WillRepeatedly(Return(mock_kwallet6_proxy.get()));
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(
-                       FreedesktopSecretKeyProvider::kKWalletD6Service)),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
+  EXPECT_CALL(
+      *mock_dbus_proxy,
+      CallWithoutError(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                       MatchArgs(DbusString(
+                           FreedesktopSecretKeyProvider::kKWalletD6Service)),
+                       _))
+      .WillOnce(RespondWithTrue);
 
   // isEnabled -> true
   EXPECT_CALL(*mock_kwallet6_proxy,
