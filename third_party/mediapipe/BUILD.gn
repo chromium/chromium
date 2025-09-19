@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/clang/clang.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -222,7 +223,9 @@ source_set("com_google_audio_tools") {
     ":com_google_audio_tools_portable",
     ":mediapipe_shims",
   ]
-  if (is_win) {
+
+  # With clang modules, these are unneccesary.
+  if (is_win && !use_clang_modules) {
     cflags = [ "-permissive" ]
     defines = [ "_USE_MATH_DEFINES" ]
   }
@@ -325,7 +328,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
     ":mediapipe_core",
     ":mediapipe_core_api2",
     ":mediapipe_tasks",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -370,7 +373,7 @@ tflite_source_set("mediapipe_core_always_link") {
   conditional_deps = [
     ":mediapipe_core",
     ":mediapipe_core_api2",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -691,7 +694,7 @@ tflite_static_library("mediapipe_core") {
   ]
 
   conditional_deps = [
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -727,7 +730,7 @@ tflite_static_library("mediapipe_core_api2") {
 
   conditional_deps = [
     ":mediapipe_core",
-    "//third_party/tflite:tflite",
+    "//third_party/tflite",
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 }
@@ -820,7 +823,7 @@ tflite_static_library("mediapipe_tasks") {
     "//third_party/tflite:tflite_builtin_op_resolver",
   ]
 
-  conditional_public_deps = [ "//third_party/tflite:tflite" ]
+  conditional_public_deps = [ "//third_party/tflite" ]
 }
 
 tflite_group("mediapipe") {

@@ -74,6 +74,9 @@ source_set("lib") {
   # Initialization may insert unexpected memset calls.
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
   configs += [ ":mini_installer_compiler_flags" ]
+
+  # Because it changes the stack protector.
+  use_libcxx_modules = false
 }
 
 process_version_rc_template("version") {
@@ -257,6 +260,9 @@ source_set("mini_installer_sources") {
   ]
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
   configs += [ ":mini_installer_compiler_flags" ]
+
+  # Because it changes the stack protector.
+  use_libcxx_modules = false
 }
 
 copy("copy_signing") {
