@@ -256,7 +256,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     bool mailbox_needs_new_sync_token = true;
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
-    size_t bitmap_image_read_refs = 0u;
     bool is_lost = false;
 
     // We need to create 2 representations if canvas is operating in single
@@ -270,7 +269,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   static void OnBitmapImageDestroyed(
       scoped_refptr<CanvasResourceSharedImage> resource,
-      bool has_read_ref_on_texture,
       const gpu::SyncToken& sync_token,
       bool is_lost);
 

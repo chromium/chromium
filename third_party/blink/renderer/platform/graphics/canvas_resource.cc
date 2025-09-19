@@ -461,24 +461,9 @@ void CanvasResourceSharedImage::WillDraw() {
 // static
 void CanvasResourceSharedImage::OnBitmapImageDestroyed(
     scoped_refptr<CanvasResourceSharedImage> resource,
-    bool has_read_ref_on_texture,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   DCHECK(!resource->is_cross_thread());
-
-  if (has_read_ref_on_texture) {
-    DCHECK(!resource->use_oop_rasterization_);
-    DCHECK_GT(resource->owning_thread_data().bitmap_image_read_refs, 0u);
-
-    resource->owning_thread_data().bitmap_image_read_refs--;
-    if (resource->owning_thread_data().bitmap_image_read_refs == 0u &&
-        resource->RasterInterface()) {
-      // This point is not reachable following shipping of OOP-C.
-      // TODO(crbug.com/391648152): Remove the entire `has_read_ref_on_texture`
-      // logic here and all related state.
-      NOTREACHED();
-    }
-  }
 
   auto weak_provider = resource->WeakProvider();
   ReleaseFrameResources(std::move(weak_provider), std::move(resource),
@@ -526,47 +511,22 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
     return image;
   }
 
-  // In order to avoid creating multiple representations for this shared image
-  // on the same context, the AcceleratedStaticBitmapImage uses the texture id
-  // of the resource here. We keep a count of pending shared image releases to
-  // correctly scope the read lock for this texture.
-  // If this resource is accessed across threads, or the
-  // AcceleratedStaticBitmapImage is accessed on a different thread after being
-  // created here, the image will create a new representation from the mailbox
-  // rather than referring to the shared image's texture ID if it was provided
-  // below.
-  const bool has_read_ref_on_texture =
-      !is_cross_thread() && !use_oop_rasterization_;
-  GLuint texture_id_for_image = 0u;
-  if (has_read_ref_on_texture) {
-    texture_id_for_image = owning_thread_data().texture_id_for_read_access;
-    owning_thread_data().bitmap_image_read_refs++;
-    if (owning_thread_data().bitmap_image_read_refs == 1u &&
-        RasterInterface()) {
-      // This point is not reachable following shipping of OOP-C.
-      // TODO(crbug.com/391648152): Remove the entire `has_read_ref_on_texture`
-      // logic here and all related state.
-      NOTREACHED();
-    }
-  }
-
   // The |release_callback| keeps a ref on this resource to ensure the backing
   // shared image is kept alive until the lifetime of the image.
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
   auto release_callback = base::BindOnce(
-      &OnBitmapImageDestroyed, scoped_refptr<CanvasResourceSharedImage>(this),
-      has_read_ref_on_texture);
+      &OnBitmapImageDestroyed, scoped_refptr<CanvasResourceSharedImage>(this));
 
   scoped_refptr<StaticBitmapImage> image;
   const auto& client_shared_image = GetClientSharedImage();
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, GetSyncToken(), texture_id_for_image, GetAlphaType(),
-      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback));
+      client_shared_image, GetSyncToken(), /*shared_image_texture_id=*/0,
+      GetAlphaType(), context_provider_wrapper_, owning_thread_ref_,
+      owning_thread_task_runner_, std::move(release_callback));
 
   DCHECK(image);
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());
