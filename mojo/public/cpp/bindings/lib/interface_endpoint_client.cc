@@ -1008,8 +1008,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
       return control_message_handler_.AcceptWithResponder(message,
                                                           std::move(responder));
     } else {
-      if (idle_tracking_connection_group_)
+      if (idle_tracking_connection_group_) {
         responder->set_connection_group(idle_tracking_connection_group_);
+      }
       accepted_interface_message = incoming_receiver_->AcceptWithResponder(
           message, std::move(responder));
     }
