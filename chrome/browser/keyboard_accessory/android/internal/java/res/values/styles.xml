@@ -48,6 +48,10 @@ found in the LICENSE file.
             @dimen/keyboard_accessory_chip_corner_radius_redesign
         </item>
         <item name="solidColorChip">true</item>
+        <item name="textArrangement">vertical</item>
+        <item name="textAlignStart">true</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
+        <item name="secondaryTextAppearance">@style/TextAppearance.TextSmall.Primary</item>
         <item name="iconWidth">
             @dimen/keyboard_accessory_bar_item_icon_width
         </item>
@@ -65,16 +69,15 @@ found in the LICENSE file.
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="useRoundedIcon">true</item>
     </style>
-        <style name="KeyboardAccessoryHomeAndWorkTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
+    <!-- TODO: crbug.com/444403583 - Figure out correcr padding for Home&Word suggestions. -->
+    <style name="KeyboardAccessoryHomeAndWorkTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
-        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
         <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
     </style>
     <style name="KeyboardAccessoryHomeAndWorkLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
-        <item name="primaryTextStartPadding">@dimen/chip_primary_text_reduced_start_padding</item>
         <item name="chipStartPadding">@dimen/keyboard_accessory_chip_home_and_work_start_padding</item>
     </style>
 </resources>
