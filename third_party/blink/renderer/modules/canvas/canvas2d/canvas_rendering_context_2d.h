@@ -186,21 +186,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
       FlushReason reason) override;
   bool IsCanvas2DResourceProviderValid() override;
   const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() override;
-  int AllocatedBufferCountPerPixel() const override {
-    int buffer_count = 0;
-    auto* provider = GetResourceProvider();
-    if (provider) {
-      buffer_count = 1;
-      if (provider->IsAccelerated()) {
-        // The number of internal GPU buffers vary between one (stable
-        // non-displayed state) and three (triple-buffered animations).
-        // Adding 2 is a pessimistic but relevant estimate.
-        // Note: These buffers might be allocated in GPU memory.
-        buffer_count += 2;
-      }
-    }
-    return buffer_count;
-  }
 
   int Width() const final;
   int Height() const final;
