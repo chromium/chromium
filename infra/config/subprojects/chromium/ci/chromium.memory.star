@@ -1465,7 +1465,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "ios_simulator",
-            "x64",
+            "arm64",
             "release_builder",
             "remoteexec",
             "asan",
@@ -1482,7 +1482,7 @@ ci.builder(
         mixins = [
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
-            "mac_beta_x64",
+            "mac_beta_arm64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_26_main",
