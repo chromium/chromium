@@ -273,7 +273,7 @@ LensSearchboxController::GetPageClassification() const {
   const LensOverlayController::State state =
       lens_search_controller_->lens_overlay_controller()->state();
   bool state_supports_contextualization =
-      state == LensOverlayController::State::kLivePageAndResults ||
+      state == LensOverlayController::State::kHidden ||
       state == LensOverlayController::State::kOverlay ||
       (state == LensOverlayController::State::kOff &&
        lens_search_controller_->lens_search_contextualization_controller()

@@ -181,28 +181,15 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
     // Showing an overlay with results.
     kOverlayAndResults,
 
-    // Showing results with the overlay hidden and live page showing.
-    // TODO(crbug.com/428208291): Live page with results is no longer related to
-    // the overlay and therefore should not exist as a state of the overlay
-    // controller. Remove once we have a parent class that can handle this flow.
-    kLivePageAndResults,
+    // The UI is hidden, but the lens session is still active (e.g. side panel
+    // is showing results). This differs from kBackground, where the tab is
+    // inactive.
+    kHidden,
 
-    // The UI has been made inactive / backgrounded and is hidden. This differs
-    // from kSuspended as the overlay and web view are not freed and could be
+    // The UI has been made inactive because the tab has been backgrounded.
+    // The overlay and web view are not freed and could be
     // immediately reshown.
     kBackground,
-
-    // The UI is currently storing all necessary state for a potential
-    // restoration of the overlay view. This frees the overlay and associated
-    // views. The following is stored in order to restore the overlay if the
-    // user returns:
-    // - Screenshot bitmap
-    // - The currently selected region, if any
-    // - Any overlay objects passed from query controller
-    // - Any text passed from query controller
-    // - the latest interaction response
-    // TODO(b/335516480): Implement suspended state.
-    kSuspended,
 
     // Will be kOff soon.
     kClosing,
@@ -569,9 +556,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // Hides the overlay view and restores input to the tab contents web view.
   void HideOverlay();
 
-  // Hides the overlay, but also sets the state to kLivePageAndResults if the
+  // Hides the overlay, but also sets the state to kHidden if the
   // side panel is bound.
-  void HideOverlayAndMaybeSetLivePageState();
+  void HideOverlayAndMaybeSetHiddenState();
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -684,9 +671,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
       lens::LensOverlayInvocationSource invocation_source);
-
-  // Takes a screenshot of the current viewport.
-  void CaptureScreenshot();
 
   // Fetches the bounding boxes of all images within the current viewport.
   void FetchViewportImageBoundingBoxes(
@@ -965,6 +949,12 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       bool is_zero_prefix_suggestion,
       lens::LensOverlayInvocationSource invocation_source);
 
+  // Called by LensSearchContextualizationController after taking a screenshot.
+  void OnScreenshotTaken(std::optional<base::TimeTicks> screenshot_start_time,
+                         const SkBitmap& bitmap,
+                         const std::vector<gfx::Rect>& all_bounds,
+                         std::optional<uint32_t> pdf_current_page);
+
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();
 
@@ -1072,13 +1062,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
 
   // Indicates whether the user is currently on a context eligible page.
   bool is_page_context_eligible_ = true;
-
-  // Indicates whether the screenshot should be sent when updating the page
-  // content when first initializing the overlay. This is only used when the
-  // early start query flow optimization is enabled. Setting this to true does
-  // not guarantee the screenshot is sent on initialization, as that is still
-  // dependent on whether the page is context eligible or not.
-  bool should_send_screenshot_on_init_ = false;
 
   // Indicates whether live blur should be enabled when the overlay is shown.
   bool should_enable_live_blur_on_show_ = false;

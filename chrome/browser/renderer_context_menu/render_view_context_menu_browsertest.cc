@@ -2745,8 +2745,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   // Clicking the search for text entrypoint should eventually result in CSB
   // state.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return controller->state() ==
-           LensOverlayController::State::kLivePageAndResults;
+    return controller->state() == LensOverlayController::State::kHidden;
   }));
 }
 

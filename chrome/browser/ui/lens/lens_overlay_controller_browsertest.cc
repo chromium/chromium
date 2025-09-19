@@ -2674,7 +2674,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // should result in the state being kLivePageAndResults. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -2754,7 +2754,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // should result in the state being kLivePageAndResults. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -2868,7 +2868,7 @@ IN_PROC_BROWSER_TEST_F(
   // should result in the state being kLivePageAndResults. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -2969,7 +2969,7 @@ IN_PROC_BROWSER_TEST_F(
   // should result in the state being kLivePageAndResults. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -3251,8 +3251,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(test_side_panel_coordinator->side_panel_loading_set_to_false_, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       CsbLivePageAndResults) {
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CsbToHiddenState) {
   WaitForPaint();
 
   // State should start in off.
@@ -3274,10 +3273,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       std::map<std::string, std::string>());
 
   // Issuing a searchbox request when the controller is in kOverlay state
-  // should result in the state being kLivePageAndResults. This shouldn't
+  // should result in the state being kHidden. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 }
@@ -3401,7 +3400,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Wait for URL to load in side panel.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -3447,7 +3446,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Wait for URL to load in side panel.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
@@ -5682,7 +5681,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
@@ -5840,7 +5839,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Cause cluster info to expire again.
   fake_query_controller->ResetRequestClusterInfoStateForTesting();
@@ -5895,7 +5894,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Issuing a search from the overlay state can only be done through the
   // contextual searchbox and should result in a live page with results.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
@@ -6040,7 +6039,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   auto* fake_query_controller =
       static_cast<lens::TestLensOverlayQueryController*>(
@@ -6062,7 +6061,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return fake_query_controller->last_sent_page_content_payload()
@@ -6125,7 +6124,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // should result in the state being kLivePageAndResults. This shouldn't
   // change the CONTEXTUAL_SEARCHBOX page classification.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -6630,7 +6629,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
@@ -6719,7 +6718,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
@@ -7007,7 +7006,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Issuing a search from the overlay state can only be done through the
   // contextual searchbox and should result in a live page with results.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Close the overlay and assert that the histogram was recorded once and
   // that zps was shown in the session.
@@ -7153,7 +7152,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Issuing a search from the overlay state can only be done through the
   // contextual searchbox and should result in a live page with results.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Close the overlay and assert that the histogram was recorded once and
   // that zps was shown in the session.
@@ -7347,7 +7346,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Close the overlay.
   CloseOverlayAndWaitForOff(controller,
@@ -7388,7 +7387,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Issue a follow up after ZPS is shown.
   auto* test_side_panel_coordinator =
@@ -7450,7 +7449,7 @@ IN_PROC_BROWSER_TEST_F(
       /*is_zero_prefix_suggestion=*/false,
       std::map<std::string, std::string>());
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Re-grab the new results side panel coordinator since it was destroyed after
   // the overlay was turned off.
@@ -7517,7 +7516,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify we entered the contextual searchbox flow.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Make another query to build the history stack.
   content::TestNavigationObserver observer(
@@ -7575,7 +7574,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify we entered the live page state.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Make another query to build the history stack.
   content::TestNavigationObserver observer(
@@ -7638,7 +7637,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify we entered the live page state.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Make another query to build the history stack.
   content::TestNavigationObserver observer(
@@ -7712,7 +7711,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Reset mock query controller so we can verify the new request.
   auto* fake_query_controller =
@@ -8196,7 +8195,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Verify transitions to live page.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
 
   // Change page to new URL.
   WaitForPaint(kDocumentWithImage);
@@ -8773,7 +8772,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   // Issuing a search from the overlay state can only be done through the
   // contextual searchbox and should result in a live page with results.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 }
@@ -8814,7 +8813,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
 
   // Wait for the side panel to open.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
+      [&]() { return controller->state() == State::kHidden; }));
   EXPECT_EQ(controller->GetPageClassificationForTesting(),
             metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
 
@@ -9355,7 +9354,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // No metrics should be emitted before anything happens.
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToScreenshot", 0);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateBitmap", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 0);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeForPageToBind", 0);
@@ -9376,7 +9374,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToScreenshot", 1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToFetchBoundingBoxes", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCreateScreenshotBitmap",
                                     1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToGetPageContext", 1);

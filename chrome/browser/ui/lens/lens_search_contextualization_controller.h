@@ -68,6 +68,12 @@ using PdfPartialPageTextRetrievedCallback =
 // the server.
 using OnPageContextUpdatedCallback = base::OnceCallback<void()>;
 
+// Callback type alias for when the screenshot is taken.
+using OnScreenshotTakenCallback =
+    base::OnceCallback<void(const SkBitmap&,
+                            const std::vector<gfx::Rect>&,
+                            std::optional<uint32_t>)>;
+
 // Controller responsible for handling contextualization logic for Lens flows.
 // This includes grabbing content related to the page and issuing Lens requests
 // so searchbox requests are contextualized.
@@ -148,6 +154,10 @@ class LensSearchContextualizationController {
   // request to the server.
   void SetPageContent(std::vector<lens::PageContent> page_contents,
                       lens::MimeType primary_content_type);
+
+  // Starts the screenshot flow. This will take a screenshot,
+  // fetch image bounds, and then run the callback provided with this data.
+  void StartScreenshotFlow(OnScreenshotTakenCallback callback);
 
   // Returns whether the page is context eligible based on the URL and frame
   // metadata provided. Calls the provided callback with the result. This
@@ -306,11 +316,17 @@ class LensSearchContextualizationController {
       int attempt_id,
       const SkBitmap& bitmap,
       const std::vector<gfx::Rect>& bounds,
-      OnPageContextUpdatedCallback callback,
+      OnScreenshotTakenCallback callback,
       std::optional<uint32_t> pdf_current_page);
 
+  // Handles the screenshot after it has been taken for the contextual flow.
+  void OnScreenshotTakenForContextual(OnPageContextUpdatedCallback callback,
+                                      const SkBitmap& bitmap,
+                                      const std::vector<gfx::Rect>& all_bounds,
+                                      std::optional<uint32_t> pdf_current_page);
+
   // Fetches the bounding boxes of all images within the current viewport.
-  void FetchViewportImageBoundingBoxes(OnPageContextUpdatedCallback callback,
+  void FetchViewportImageBoundingBoxes(OnScreenshotTakenCallback callback,
                                        const SkBitmap& bitmap);
 
   // Creates the mojo bounding boxes for the significant regions.
@@ -323,7 +339,7 @@ class LensSearchContextualizationController {
           chrome_render_frame,
       int attempt_id,
       const SkBitmap& bitmap,
-      OnPageContextUpdatedCallback callback,
+      OnScreenshotTakenCallback callback,
       const std::vector<gfx::Rect>& bounds);
 
   // Callback to record the size of the innerText once it is fetched.
@@ -402,6 +418,10 @@ class LensSearchContextualizationController {
   // A stored context eligibility callback to be called once the page context
   // eligibility API is loaded.
   LensSearchPageContextEligibilityCallback page_context_eligibility_callback_;
+
+  // A monotonically increasing id. This is used to differentiate between
+  // different screenshot attempts.
+  int screenshot_attempt_id_ = 0;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

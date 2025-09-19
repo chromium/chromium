@@ -160,8 +160,12 @@ void LensSearchController::OpenLensOverlay(
     return;
   }
 
-  // Setup all state necessary for this Lens session.
-  StartLensSession(invocation_source);
+  // If the overlay is already active, don't start a new session. This can
+  // happen if the side panel is open and the user reinvokes the overlay.
+  if (!lens_overlay_controller_->IsOverlayActive()) {
+    // Setup all state necessary for this Lens session.
+    StartLensSession(invocation_source);
+  }
 
   lens_overlay_controller_->ShowUI(invocation_source,
                                    lens_overlay_query_controller_.get());
@@ -667,7 +671,7 @@ void LensSearchController::OnOverlayHidden(
 
   // Since the side panel is open and the overlay has smoothly faded out, hide
   // the overlay to restore state to the live page.
-  lens_overlay_controller_->HideOverlayAndMaybeSetLivePageState();
+  lens_overlay_controller_->HideOverlayAndMaybeSetHiddenState();
 }
 
 void LensSearchController::OnSidePanelWillHide(
