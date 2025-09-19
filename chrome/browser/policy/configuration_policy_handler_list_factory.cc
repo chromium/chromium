@@ -444,6 +444,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kServiceWorkerAutoPreloadEnabled,
     prefs::kServiceWorkerAutoPreloadEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kIncognitoModeBlocklist,
+    policy_prefs::kIncognitoModeBlocklist,
+    base::Value::Type::LIST },
+  { key::kIncognitoModeAllowlist,
+    policy_prefs::kIncognitoModeAllowlist,
+    base::Value::Type::LIST },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,
@@ -2411,7 +2417,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNTPFooterManagementNoticeEnabled,
     prefs::kNTPFooterManagementNoticeEnabled,
     base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   { key::kAIModeSettings,
     omnibox::kAIModeSettings,
     base::Value::Type::INTEGER },

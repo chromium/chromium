@@ -61,6 +61,8 @@ extern const char kSystemFeaturesDisableList[];
 extern const char kSystemFeaturesDisableMode[];
 extern const char kUrlBlocklist[];
 extern const char kUrlAllowlist[];
+extern const char kIncognitoModeBlocklist[];
+extern const char kIncognitoModeAllowlist[];
 extern const char kUserPolicyRefreshRate[];
 extern const char kIntensiveWakeUpThrottlingEnabled[];
 #if BUILDFLAG(IS_ANDROID)

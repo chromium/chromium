@@ -2271,6 +2271,8 @@ chromium-metrics-reviews@google.com.
   <int value="1389" label="AutoSignOutEnabled"/>
   <int value="1390" label="ExtensionInstallCloudPolicyChecksEnabled"/>
   <int value="1391" label="DevToolsGoogleDeveloperProgramProfileAvailability"/>
+  <int value="1392" label="IncognitoModeBlocklist"/>
+  <int value="1393" label="IncognitoModeAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

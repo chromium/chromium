@@ -204,5 +204,12 @@ const char kBuiltInAIAPIsEnabled[] = "policy.built_in_ai_apis_enabled";
 const char kPasswordManagerBlocklist[] = "policy.password_manager_blocklist";
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_MAC)
+
+// Blocks access to the listed host patterns for incognito mode.
+const char kIncognitoModeBlocklist[] = "policy.incognito_mode_blocklist";
+
+// Allows access to the listed host patterns for incognito mode.
+const char kIncognitoModeAllowlist[] = "policy.incognito_mode_allowlist";
+
 }  // namespace policy_prefs
 }  // namespace policy

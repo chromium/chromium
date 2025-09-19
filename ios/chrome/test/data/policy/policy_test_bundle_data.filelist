@@ -49,7 +49,9 @@
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
+//ios/chrome/test/data/policy/pref_mapping/IncognitoModeAllowlist.json
 //ios/chrome/test/data/policy/pref_mapping/IncognitoModeAvailability.json
+//ios/chrome/test/data/policy/pref_mapping/IncognitoModeBlocklist.json
 //ios/chrome/test/data/policy/pref_mapping/InsecureFormsWarningsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/LensCameraAssistedSearchEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/LensOverlaySettings.json

@@ -1390,6 +1390,8 @@ policies:
   1389: AutoSignOutEnabled
   1390: ExtensionInstallCloudPolicyChecksEnabled
   1391: DevToolsGoogleDeveloperProgramProfileAvailability
+  1392: IncognitoModeBlocklist
+  1393: IncognitoModeAllowlist
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -1024,6 +1024,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kGeminiEnabledByPolicy, 0);
 
+  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
+  registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
+
   // Deprecated 11/2024.
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
 

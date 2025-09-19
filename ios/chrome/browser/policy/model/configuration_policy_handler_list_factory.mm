@@ -185,6 +185,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kNTPCustomBackgroundEnabled,
     prefs::kNTPCustomBackgroundEnabledByPolicy,
     base::Value::Type::BOOLEAN },
+  { policy::key::kIncognitoModeBlocklist,
+    policy::policy_prefs::kIncognitoModeBlocklist,
+    base::Value::Type::LIST },
+  { policy::key::kIncognitoModeAllowlist,
+    policy::policy_prefs::kIncognitoModeAllowlist,
+    base::Value::Type::LIST },
 };
 // clang-format on
 
