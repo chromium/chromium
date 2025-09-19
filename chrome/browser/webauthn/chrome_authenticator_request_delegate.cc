@@ -236,36 +236,6 @@ bool PasswordsUsable(int credential_types, UIPresentation ui_presentation) {
 }  // namespace
 
 // static
-ChromeAuthenticatorRequestDelegate*
-ChromeAuthenticatorRequestDelegate::CreateRequestDelegate(
-    content::RenderFrameHost* render_frame_host) {
-  // RenderFrameHosts which are not exposed to the user can't create
-  // authenticator request delegate.
-  if (!render_frame_host->IsActive()) {
-    return nullptr;
-  }
-
-  auto* const web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents) {
-    return nullptr;
-  }
-  if (FromWebContents(web_contents)) {
-    return nullptr;
-  }
-
-  CreateForWebContents(web_contents, render_frame_host);
-  return FromWebContents(web_contents);
-}
-
-// static
-ChromeAuthenticatorRequestDelegate*
-ChromeAuthenticatorRequestDelegate::GetRequestDelegate(
-    content::WebContents* web_contents) {
-  return FromWebContents(web_contents);
-}
-
-// static
 void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kSecurityKeyPermitAttestation);
