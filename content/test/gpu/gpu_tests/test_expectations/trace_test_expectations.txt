@@ -191,6 +191,9 @@ crbug.com/364179193 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 # Flaky timeouts on all platforms
 crbug.com/371949935 TraceTest_ViewTransitionsCapture [ Skip ]
 
+# Slow on DCHECK and need extra time to address.
+crbug.com/425745937 [ fuchsia web-engine-shell ] TraceTest_Canvas2DBlitText [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################

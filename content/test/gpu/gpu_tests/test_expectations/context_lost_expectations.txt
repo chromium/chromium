@@ -183,6 +183,10 @@ crbug.com/1334650 [ linux ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 # since Windows 8 is no longer tested.
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
+# Slow on DCHECK and need extra time to address.
+crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
+crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################

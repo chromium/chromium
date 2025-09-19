@@ -109,6 +109,9 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Slow on DCHECK and need extra time to address.
+crbug.com/425745937 [ fuchsia web-engine-shell ] ExpectedColor_maps [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
