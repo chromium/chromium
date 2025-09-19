@@ -526,6 +526,16 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="All time deletion time range selected"/>
 </enum>
 
+<!-- LINT.IfChange(RollBack3pcdNoticeAction) -->
+
+<enum name="RollBack3pcdNoticeAction">
+  <int value="0" label="kGotIt"/>
+  <int value="1" label="kSettings"/>
+  <int value="2" label="kClosed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h:RollBack3pcdNoticeAction) -->
+
 <enum name="SecCookieDeprecationHeaderStatus">
   <int value="0" label="kSet"/>
   <int value="1" label="kNoLabel"/>

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
@@ -67,6 +68,11 @@ public class PrivacySandbox3pcdRollbackMessageController {
                                 resources.getString(R.string.mode_b_rollback_got_it))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimaryAction)
                         .with(MessageBannerProperties.ON_FULLY_VISIBLE, onFullyVisible)
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    recordMetrics(dismissReason);
+                                })
                         .build();
         // When the settings icon is clicked, dismiss the message and navigate to cookie settings.
         message.set(
@@ -78,5 +84,30 @@ public class PrivacySandbox3pcdRollbackMessageController {
                 });
         messageDispatcher.enqueueWindowScopedMessage(message, /* highPriority= */ true);
         return true;
+    }
+
+    private static void recordMetrics(@DismissReason int dismissReason) {
+        switch (dismissReason) {
+            case DismissReason.PRIMARY_ACTION:
+                recordActionMetrics(RollBack3pcdNoticeAction.GOT_IT);
+                return;
+            case DismissReason.SECONDARY_ACTION:
+                recordActionMetrics(RollBack3pcdNoticeAction.SETTINGS);
+                return;
+            case DismissReason.GESTURE:
+            case DismissReason.CLOSE_BUTTON:
+                recordActionMetrics(RollBack3pcdNoticeAction.CLOSED);
+                return;
+            default:
+                RecordHistogram.recordBooleanHistogram(
+                        "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", true);
+        }
+    }
+
+    private static void recordActionMetrics(@RollBack3pcdNoticeAction int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Privacy.3PCD.RollbackNotice.Action", action, RollBack3pcdNoticeAction.MAX_VALUE);
+        RecordHistogram.recordBooleanHistogram(
+                "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", false);
     }
 }

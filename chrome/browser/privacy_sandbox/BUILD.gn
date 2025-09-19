@@ -46,6 +46,10 @@ source_set("countries") {
   ]
 }
 
+source_set("roll_back_3pcd_notice_action") {
+  public = [ "roll_back_3pcd_notice_action.h" ]
+}
+
 source_set("countries_browser_test") {
   testonly = true
   sources = [ "privacy_sandbox_countries_browsertest.cc" ]

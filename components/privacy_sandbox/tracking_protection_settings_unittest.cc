@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -353,6 +354,9 @@ class TrackingProtectionSettingsRollbackTest
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {privacy_sandbox::kRollBackModeB};
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
@@ -363,6 +367,8 @@ TEST_F(TrackingProtectionSettingsRollbackTest,
                                  /*is_incognito=*/false);
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
+                                       true, 1);
 }
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
@@ -374,6 +380,8 @@ TEST_F(TrackingProtectionSettingsRollbackTest,
                                  /*is_incognito=*/false);
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
+                                       false, 1);
 }
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
@@ -387,6 +395,8 @@ TEST_F(TrackingProtectionSettingsRollbackTest,
                                  /*is_incognito=*/false);
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
+  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
+                                       false, 1);
 }
 #endif
 

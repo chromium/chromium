@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COOKIE_CONTROLS_ROLL_BACK_MODE_B_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_COOKIE_CONTROLS_ROLL_BACK_MODE_B_INFOBAR_DELEGATE_H_
 
+#include "chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 
@@ -31,6 +32,7 @@ class RollBackModeBInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   bool Cancel() override;
+  bool Accept() override;
   std::u16string GetMessageText() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   // InfoBarDelegate:
@@ -38,6 +40,8 @@ class RollBackModeBInfoBarDelegate : public ConfirmInfoBarDelegate {
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   bool IsCloseable() const override;
+
+  bool user_action_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_COOKIE_CONTROLS_ROLL_BACK_MODE_B_INFOBAR_DELEGATE_H_

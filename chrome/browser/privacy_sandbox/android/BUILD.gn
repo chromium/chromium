@@ -310,5 +310,6 @@ java_cpp_enum("privacy_sandbox_enums") {
     "//chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_service.h",
     "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
     "//chrome/browser/privacy_sandbox/privacy_sandbox_utils.h",
+    "//chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h",
   ]
 }

@@ -16,6 +16,7 @@ source_set("cookie_controls") {
     public_deps += [
       "//base",
       "//chrome/browser/infobars",
+      "//chrome/browser/privacy_sandbox:roll_back_3pcd_notice_action",
       "//content/public/browser",
     ]
   }

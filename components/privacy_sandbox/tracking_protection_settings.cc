@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -90,6 +91,9 @@ TrackingProtectionSettings::TrackingProtectionSettings(
         pref_service_->GetInteger(prefs::kCookieControlsMode) != 1) {
       pref_service_->SetBoolean(prefs::kShowRollbackUiModeB, true);
     }
+    base::UmaHistogramBoolean(
+        "Privacy.3PCD.RollbackNotice.ShouldShow",
+        pref_service_->GetBoolean(prefs::kShowRollbackUiModeB));
     pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   }
 #endif

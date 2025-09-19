@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -60,6 +61,32 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private Profile mProfile;
 
+    private PropertyModel showMessage() {
+        when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+
+        Assert.assertTrue(
+                PrivacySandbox3pcdRollbackMessageController.maybeShow(
+                        mContext, mProfile, mMessageDispatcher));
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), eq(true));
+        return modelCaptor.getValue();
+    }
+
+    private void verifyHistograms(
+            PropertyModel model,
+            @RollBack3pcdNoticeAction int action,
+            @DismissReason int dismissReason) {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Privacy.3PCD.RollbackNotice.Action", action)
+                        .expectBooleanRecord(
+                                "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", false)
+                        .build();
+        model.get(MessageBannerProperties.ON_DISMISSED).onResult(dismissReason);
+        watcher.assertExpected();
+    }
+
     @Before
     public void before() {
         doReturn(Mockito.mock(Resources.class)).when(mContext).getResources();
@@ -89,16 +116,7 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
 
     @Test
     public void maybeShow_verifyMessageProperties() {
-        when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-
-        Assert.assertTrue(
-                PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                        mContext, mProfile, mMessageDispatcher));
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), eq(true));
-        PropertyModel model = modelCaptor.getValue();
-
+        PropertyModel model = showMessage();
         // Verify ID, icon, description, and primary button.
         Assert.assertEquals(
                 MessageIdentifier.MODE_B_ROLLBACK_MESSAGE,
@@ -134,21 +152,56 @@ public class PrivacySandbox3pcdRollbackMessageControllerTest {
 
     @Test
     public void maybeShow_setsPrefWhenMadeVisible() {
-        when(mPrefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)).thenReturn(true);
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-
-        Assert.assertTrue(
-                PrivacySandbox3pcdRollbackMessageController.maybeShow(
-                        mContext, mProfile, mMessageDispatcher));
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(modelCaptor.capture(), eq(true));
-        PropertyModel model = modelCaptor.getValue();
-
+        PropertyModel model = showMessage();
         // Does not set pref when not fully visible.
         model.get(MessageBannerProperties.ON_FULLY_VISIBLE).onResult(false);
         verify(mPrefService, never()).setBoolean(eq(Pref.SHOW_ROLLBACK_UI_MODE_B), anyBoolean());
         // Sets pref when fully visible.
         model.get(MessageBannerProperties.ON_FULLY_VISIBLE).onResult(true);
         verify(mPrefService).setBoolean(eq(Pref.SHOW_ROLLBACK_UI_MODE_B), eq(false));
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsGotItOnPrimaryAction() {
+        PropertyModel model = showMessage();
+        verifyHistograms(model, RollBack3pcdNoticeAction.GOT_IT, DismissReason.PRIMARY_ACTION);
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsSettingsOnSecondaryAction() {
+        PropertyModel model = showMessage();
+        verifyHistograms(model, RollBack3pcdNoticeAction.SETTINGS, DismissReason.SECONDARY_ACTION);
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsClosedOnGesture() {
+        PropertyModel model = showMessage();
+        verifyHistograms(model, RollBack3pcdNoticeAction.CLOSED, DismissReason.GESTURE);
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsClosedOnCloseButton() {
+        PropertyModel model = showMessage();
+        verifyHistograms(model, RollBack3pcdNoticeAction.CLOSED, DismissReason.CLOSE_BUTTON);
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsNoneOnTimer() {
+        PropertyModel model = showMessage();
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", true);
+        model.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TIMER);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void dismissalActionHistogram_recordsNoneOnScopeDestroyed() {
+        PropertyModel model = showMessage();
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.3PCD.RollbackNotice.AutomaticallyDismissed", true);
+        model.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.SCOPE_DESTROYED);
+        watcher.assertExpected();
     }
 }
