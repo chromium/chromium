@@ -291,8 +291,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   // Additionally, these SharedImages can be put into
   // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into GL
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
-  // Hence, GLES2_READ usage is necessary regardless of whether raster is over
-  // GLES.
   shared_image_usage_flags =
       shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
@@ -300,11 +298,8 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
-  if (use_oop_rasterization_) {
+  if (is_accelerated_) {
     shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  } else {
-    // The GLES2_WRITE flag is needed due to raster being over GL.
-    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
