@@ -203,4 +203,18 @@ TEST_F(InspectorCSSParserObserverTest, NestedDeclarationsInvalidPrecedingRule) {
   EXPECT_EQ("dino(t-rex)", data[0]->child_rules[1]->property_data[0].value);
 }
 
+TEST_F(InspectorCSSParserObserverTest, MixinWithNestedDeclarations) {
+  String text = "@mixin --m1() { color: green; }";
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(1u, data.size());
+  EXPECT_EQ(" color: green; ", Substring(text, data[0]->rule_body_range));
+  EXPECT_EQ(" color: green; ",
+            Substring(text, data[0]->rule_declarations_range));
+
+  ASSERT_EQ(1u, data[0]->child_rules.size());
+  ASSERT_EQ(1u, data[0]->child_rules[0]->property_data.size());
+  EXPECT_EQ("color", data[0]->child_rules[0]->property_data[0].name);
+  EXPECT_EQ("green", data[0]->child_rules[0]->property_data[0].value);
+}
+
 }  // namespace blink

@@ -2373,6 +2373,8 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
 }
 
 StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
+  wtf_size_t header_start = stream.LookAheadOffset();
+
   // @mixin must be top-level, and as such, we need to clear the arena
   // after we're done parsing it (like ConsumeStyleRule() does).
   if (in_nested_style_rule_) {
@@ -2415,6 +2417,12 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
                                              CSSAtRuleID::kCSSAtRuleMixin)) {
     return nullptr;
   }
+  wtf_size_t header_end = stream.LookAheadOffset();
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kApplyMixin, header_start);
+    observer_->EndRuleHeader(header_end);
+  }
 
   // Parse the actual block.
   StyleRule* fake_parent_rule;
@@ -2442,6 +2450,10 @@ StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
     CSSParserTokenStream& stream) {
   CSSParserTokenStream::BlockGuard guard(stream);
 
+  if (observer_) {
+    observer_->StartRuleBody(stream.Offset());
+  }
+
   // When we encounter a declaration list, the selector of our fake parent rule
   // will be _copied_, so it needs to be something sane; the implicit @nest rule
   // gives us the behavior that we want.
@@ -2463,6 +2475,11 @@ StyleRule* CSSParserImpl::ConsumeDeclarationListForMixins(
   for (StyleRuleBase* child_rule : child_rules) {
     fake_parent_rule->AddChildRule(child_rule);
   }
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.Offset());
+  }
+
   return fake_parent_rule;
 }
 
@@ -2519,15 +2536,11 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kApplyMixin, header_start);
     observer_->EndRuleHeader(header_end);
-    observer_->StartRuleBody(stream.Offset());
   }
 
   // Parse the @contents block.
   StyleRule* fake_parent_rule_for_contents =
       ConsumeDeclarationListForMixins(stream);
-  if (observer_) {
-    observer_->EndRuleBody(stream.Offset());
-  }
   return MakeGarbageCollected<StyleRuleApplyMixin>(
       name, std::move(arguments), fake_parent_rule_for_contents);
 }
