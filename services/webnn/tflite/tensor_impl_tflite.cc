@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notimplemented.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
@@ -132,15 +131,6 @@ void TensorImplTflite::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
           context_->AsWeakPtr(), buffer_state_, std::move(src_buffer),
           std::move(scoped_trace)));
   task->Enqueue();
-}
-
-bool TensorImplTflite::ImportTensorImpl() {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void TensorImplTflite::ExportTensorImpl() {
-  NOTIMPLEMENTED();
 }
 
 }  // namespace webnn::tflite

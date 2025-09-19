@@ -9,9 +9,24 @@
 #include "services/webnn/dml/context_impl_dml.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "ui/gfx/win/d3d_shared_fence.h"
 
 namespace webnn::dml {
+
+SharedFence::SharedFence(Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+                         UINT64 fence_value)
+    : fence(std::move(fence)), fence_value(fence_value) {}
+
+SharedFence::~SharedFence() = default;
+
+SharedFence::SharedFence(SharedFence&&) = default;
+
+Microsoft::WRL::ComPtr<ID3D12Fence> SharedFence::GetD3D12Fence() const {
+  return fence;
+}
+
+uint64_t SharedFence::GetFenceValue() const {
+  return fence_value;
+}
 
 TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -26,16 +41,19 @@ TensorImplDml::TensorImplDml(
 TensorImplDml::TensorImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
-        representation_access,
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
                       std::move(tensor_info),
-                      std::move(representation),
-                      std::move(representation_access)),
-      buffer_(representation_->GetD3D12Buffer()) {}
+                      std::move(representation)),
+      buffer_(representation_->GetD3D12Buffer()) {
+  // Register this tensor with the representation so it may be used
+  // to call BeginAccessWebNN and EndAccessWebNN from shared image.
+  representation_->ConsumeWebNNTensor(AsWeakPtr());
+  representation_access_ = representation_->BeginScopedAccess();
+  CHECK(representation_access_);
+}
 
 TensorImplDml::~TensorImplDml() = default;
 
@@ -66,8 +84,8 @@ HRESULT TensorImplDml::WaitForExternalFenceAndReset(
     CommandQueue* command_queue) {
   if (wait_fence_external_) {
     RETURN_IF_FAILED(
-        command_queue->WaitForFence(wait_fence_external_->GetD3D12Fence(),
-                                    wait_fence_external_->GetFenceValue()));
+        command_queue->WaitForFence(std::move(wait_fence_external_->fence),
+                                    wait_fence_external_->fence_value));
     wait_fence_external_.reset();
   }
   return S_OK;
@@ -78,57 +96,27 @@ bool TensorImplDml::BeginAccessWebNN(
     uint64_t wait_fence_value) {
   CHECK(wait_fence);
 
-  wait_fence_external_ = gfx::D3DSharedFence::CreateFromD3D12Fence(
-      std::move(wait_fence), wait_fence_value);
+  wait_fence_external_.emplace(std::move(wait_fence), wait_fence_value);
   return true;
 }
 
-scoped_refptr<gfx::D3DSharedFence> TensorImplDml::EndAccessWebNN() {
+std::unique_ptr<native::d3d12::WebNNSharedFence>
+TensorImplDml::EndAccessWebNN() {
   CommandQueue* command_queue =
       static_cast<ContextImplDml*>(context_.get())->GetCommandQueue();
 
   // If WebNN executed no commands using this tensor, the caller's command queue
   // will wait on the last wait fence provided.
   if (wait_fence_external_) {
-    scoped_refptr<gfx::D3DSharedFence> fence = std::move(wait_fence_external_);
+    SharedFence fence = std::move(wait_fence_external_.value());
     wait_fence_external_.reset();
-    return fence;
+    return base::WrapUnique(new SharedFence(std::move(fence)));
   }
 
   // Return WebNN's submission fence and the last fence value from execution
   // that used this tensor.
-  return gfx::D3DSharedFence::CreateFromD3D12Fence(
-      command_queue->submission_fence(), last_submission_fence_value_);
-}
-
-void TensorImplDml::ExportTensorImpl() {
-  CHECK(representation_access_);
-
-  auto webnn_fence_to_wait_for = EndAccessWebNN();
-  CHECK(webnn_fence_to_wait_for)
-      << "[WebNN] Failed to end access on WebNNTensor";
-
-  representation_access_->SetReleaseFence(std::move(webnn_fence_to_wait_for));
-}
-
-bool TensorImplDml::ImportTensorImpl() {
-  CHECK(representation_access_);
-
-  // First access, no fence required.
-  auto d3d_write_fence = representation_access_->GetAcquireFence();
-  if (!d3d_write_fence) {
-    return true;
-  }
-
-  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
-  HRESULT hr = buffer_->GetDevice(IID_PPV_ARGS(&d3d12_device));
-  CHECK_EQ(hr, S_OK) << "[WebNN] Failed to get D3D device from buffer";
-
-  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_write_fence;
-  hr = d3d12_device->OpenSharedHandle(d3d_write_fence->GetSharedHandle(),
-                                      IID_PPV_ARGS(&d3d12_write_fence));
-  CHECK_EQ(hr, S_OK) << "[WebNN] Failed to open handle of a D3D fence";
-  return BeginAccessWebNN(d3d12_write_fence, d3d_write_fence->GetFenceValue());
+  return base::WrapUnique(new SharedFence(
+      {command_queue->submission_fence(), last_submission_fence_value_}));
 }
 
 }  // namespace webnn::dml

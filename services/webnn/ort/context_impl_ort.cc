@@ -329,12 +329,10 @@ ContextImplOrt::CreateTensorImpl(
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-ContextImplOrt::CreateTensorFromSharedImageImpl(
+ContextImplOrt::CreateTensorFromMailboxImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
-        representation_access) {
+    gpu::Mailbox mailbox) {
   return base::unexpected(
       mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                         "WebGPU Interop is not supported."));

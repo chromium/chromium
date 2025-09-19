@@ -95,10 +95,6 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   // success.
   bool IncrementAndSignalD3D11();
 
-  // Returns the D3D12 fence if this fence was created using
-  // CreateFromD3D12Fence.
-  Microsoft::WRL::ComPtr<ID3D12Fence> GetD3D12Fence() const;
-
  private:
   friend class base::RefCountedThreadSafe<D3DSharedFence>;
 

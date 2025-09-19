@@ -91,10 +91,6 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
     RemoveDeviceToDestroyAllContexts(
         static_cast<ContextImplDml*>(context_impl));
   }
-
-  // Interop is not required by tests.
-  bool ImportTensorImpl() override { return false; }
-  void ExportTensorImpl() override {}
 };
 
 // Helper class to create the FakeWebNNGraphImpl that is intended to test

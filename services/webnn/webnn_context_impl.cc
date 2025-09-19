@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -260,49 +259,11 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
             if (!self) {
               return;
             }
-
-            gpu::SharedImageManager* shared_image_manager =
-                self->context_provider()->shared_image_manager();
-            CHECK(shared_image_manager);
-
-            constexpr char kWebNNCreateTensorErrorMessage[] =
-                "Failed to create tensor.";
-
-            // TODO(crbug.com/345352987): give WebNN its own memory source and
-            // tracker.
-            std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
-                shared_image_manager->ProduceWebNNTensor(
-                    mailbox, self->context_provider()
-                                 ->shared_context_state()
-                                 ->memory_type_tracker());
-            if (!representation) {
-              std::move(callback).Run(ToError<mojom::CreateTensorResult>(
-                  mojom::Error::Code::kUnknownError,
-                  kWebNNCreateTensorErrorMessage));
-              return;
-            }
-
-            auto representation_access = representation->BeginScopedAccess();
-            if (!representation_access) {
-              std::move(callback).Run(ToError<mojom::CreateTensorResult>(
-                  mojom::Error::Code::kUnknownError,
-                  kWebNNCreateTensorErrorMessage));
-              return;
-            }
-
-            auto result = self->CreateTensorFromSharedImageImpl(
-                std::move(receiver), std::move(tensor_info),
-                std::move(representation), std::move(representation_access));
+            auto result = self->CreateTensorFromMailboxImpl(
+                std::move(receiver), std::move(tensor_info), mailbox);
             if (!result.has_value()) {
               std::move(callback).Run(mojom::CreateTensorResult::NewError(
                   std::move(result.error())));
-              return;
-            }
-
-            if (!result.value()->ImportTensorImpl()) {
-              std::move(callback).Run(ToError<mojom::CreateTensorResult>(
-                  mojom::Error::Code::kUnknownError,
-                  kWebNNCreateTensorErrorMessage));
               return;
             }
 

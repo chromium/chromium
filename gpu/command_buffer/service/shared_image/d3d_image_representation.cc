@@ -174,12 +174,19 @@ void DawnD3DBufferRepresentation::EndAccess() {
 WebNND3DTensorRepresentation::WebNND3DTensorRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
-    : WebNNTensorRepresentation(manager, backing, tracker) {}
+    MemoryTypeTracker* tracker,
+    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device)
+    : WebNNTensorRepresentation(manager, backing, tracker),
+      d3d12_device_(std::move(d3d12_device)) {}
 
 WebNND3DTensorRepresentation::~WebNND3DTensorRepresentation() = default;
 
 bool WebNND3DTensorRepresentation::BeginAccess() {
+  // Context was lost and re-synchronization isn't necessary.
+  if (!webnn_tensor_) {
+    return false;
+  }
+
   // Backing rejected access.
   auto opt_d3d_write_fence =
       static_cast<D3DImageBacking*>(backing())->BeginAccessWebNN();
@@ -193,13 +200,36 @@ bool WebNND3DTensorRepresentation::BeginAccess() {
     return true;
   }
 
-  acquire_fence_ = std::move(d3d_write_fence);
+  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_write_fence;
+  HRESULT hr = d3d12_device_->OpenSharedHandle(
+      d3d_write_fence->GetSharedHandle(), IID_PPV_ARGS(&d3d12_write_fence));
+  CHECK_EQ(hr, S_OK) << ", OpenSharedHandle failed: "
+                     << logging::SystemErrorCodeToString(hr);
+
+  if (!webnn_tensor_->BeginAccessWebNN(d3d12_write_fence,
+                                       d3d_write_fence->GetFenceValue())) {
+    LOG(ERROR) << "Failed to begin access on WebNNTensor";
+    return false;
+  };
+
   return true;
 }
 
 void WebNND3DTensorRepresentation::EndAccess() {
+  scoped_refptr<gfx::D3DSharedFence> signaled_fence;
+  if (webnn_tensor_) {
+    auto webnn_fence_to_wait_for = webnn_tensor_->EndAccessWebNN();
+    CHECK(webnn_fence_to_wait_for) << "Failed to end access on WebNNTensor";
+    signaled_fence = gfx::D3DSharedFence::CreateFromD3D12Fence(
+        webnn_fence_to_wait_for->GetD3D12Fence(),
+        webnn_fence_to_wait_for->GetFenceValue());
+    if (!signaled_fence) {
+      LOG(ERROR) << "Failed to import D3D fence from WebNN on EndAccess";
+    }
+  }
+
   static_cast<D3DImageBacking*>(backing())->EndAccessWebNN(
-      std::move(release_fence_));
+      std::move(signaled_fence));
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource>
@@ -207,14 +237,10 @@ WebNND3DTensorRepresentation::GetD3D12Buffer() const {
   return static_cast<D3DImageBacking*>(backing())->GetD3D12Buffer();
 }
 
-scoped_refptr<gfx::D3DSharedFence>
-WebNND3DTensorRepresentation::GetAcquireFence() const {
-  return acquire_fence_;
-}
-
-void WebNND3DTensorRepresentation::SetReleaseFence(
-    scoped_refptr<gfx::D3DSharedFence> release_fence) {
-  release_fence_ = std::move(release_fence);
+void WebNND3DTensorRepresentation::ConsumeWebNNTensor(
+    base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor) {
+  CHECK_EQ(webnn_tensor_.get(), nullptr);
+  webnn_tensor_ = std::move(webnn_tensor);
 }
 
 OverlayD3DImageRepresentation::OverlayD3DImageRepresentation(

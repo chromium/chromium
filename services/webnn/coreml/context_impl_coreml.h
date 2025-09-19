@@ -53,12 +53,10 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
                    mojom::TensorInfoPtr tensor_info) override;
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-  CreateTensorFromSharedImageImpl(
+  CreateTensorFromMailboxImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
-          representation_access) override;
+      gpu::Mailbox mailbox) override;
 
   base::WeakPtrFactory<ContextImplCoreml> weak_factory_{this};
 };

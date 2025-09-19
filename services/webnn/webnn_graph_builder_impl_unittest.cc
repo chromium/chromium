@@ -137,12 +137,10 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   }
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-  CreateTensorFromSharedImageImpl(
+  CreateTensorFromMailboxImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      std::unique_ptr<gpu::WebNNTensorRepresentation> representation,
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess>
-          representation_access) override {
+      gpu::Mailbox mailbox) override {
     return base::unexpected(mojom::Error::New(
         mojom::Error::Code::kNotSupportedError, "Not implemented"));
   }

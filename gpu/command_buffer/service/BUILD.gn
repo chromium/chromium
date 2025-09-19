@@ -662,6 +662,7 @@ target(link_target_type, "gles2_sources") {
       "onecore.lib",
     ]
     all_dependent_configs = [ ":service_win_linker_flags" ]
+    deps += [ "//services/webnn:webnn_headers" ]
   }
 }
 

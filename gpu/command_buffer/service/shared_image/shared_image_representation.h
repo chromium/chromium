@@ -43,6 +43,7 @@ class VulkanImplementation;
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "services/webnn/d3d12_backend.h"  // nogncheck
 #include "ui/gl/dc_layer_overlay_image.h"
 #endif
 
@@ -929,27 +930,19 @@ class GPU_GLES2_EXPORT WebNNTensorRepresentation
                  WebNNTensorRepresentation* representation,
                  AccessMode access_mode);
     ~ScopedAccess();
-
-#if BUILDFLAG(IS_WIN)
-    scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const;
-    void SetReleaseFence(scoped_refptr<gfx::D3DSharedFence> release_fence);
-#endif
   };
 
   std::unique_ptr<ScopedAccess> BeginScopedAccess();
 
 #if BUILDFLAG(IS_WIN)
   virtual Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
+  virtual void ConsumeWebNNTensor(
+      base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_APPLE)
   virtual IOSurfaceRef GetIOSurface() const;
 #endif  // BUILDFLAG(IS_APPLE)
  protected:
-#if BUILDFLAG(IS_WIN)
-  virtual scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const = 0;
-  virtual void SetReleaseFence(
-      scoped_refptr<gfx::D3DSharedFence> release_fence) = 0;
-#endif  // BUILDFLAG(IS_WIN)
   virtual bool BeginAccess() = 0;
   virtual void EndAccess() = 0;
 };

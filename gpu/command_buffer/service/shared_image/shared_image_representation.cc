@@ -30,10 +30,6 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "ui/gfx/win/d3d_shared_fence.h"
-#endif
-
 namespace gpu {
 
 namespace {
@@ -835,17 +831,6 @@ WebNNTensorRepresentation::ScopedAccess::~ScopedAccess() {
   representation()->EndAccess();
 }
 
-#if BUILDFLAG(IS_WIN)
-scoped_refptr<gfx::D3DSharedFence>
-WebNNTensorRepresentation::ScopedAccess::GetAcquireFence() const {
-  return representation()->GetAcquireFence();
-}
-void WebNNTensorRepresentation::ScopedAccess::SetReleaseFence(
-    scoped_refptr<gfx::D3DSharedFence> release_fence) {
-  representation()->SetReleaseFence(std::move(release_fence));
-}
-#endif
-
 std::unique_ptr<WebNNTensorRepresentation::ScopedAccess>
 WebNNTensorRepresentation::BeginScopedAccess() {
   if (!BeginAccess()) {
@@ -858,6 +843,10 @@ WebNNTensorRepresentation::BeginScopedAccess() {
 #if BUILDFLAG(IS_WIN)
 Microsoft::WRL::ComPtr<ID3D12Resource>
 WebNNTensorRepresentation::GetD3D12Buffer() const {
+  NOTREACHED();
+}
+void WebNNTensorRepresentation::ConsumeWebNNTensor(
+    base::WeakPtr<webnn::native::d3d12::WebNNTensor> webnn_tensor) {
   NOTREACHED();
 }
 #endif

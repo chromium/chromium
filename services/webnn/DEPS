@@ -20,6 +20,5 @@ include_rules = [
   "+third_party/onnxruntime_headers",
   "+third_party/tflite",
   "+third_party/xnnpack",
-  "+ui/gfx/win/d3d_shared_fence.h",
   "+ui/gl/gl_switches.h",
 ]
