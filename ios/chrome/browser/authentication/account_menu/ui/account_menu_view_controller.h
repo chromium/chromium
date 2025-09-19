@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_MENU_UI_ACCOUNT_MENU_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_MENU_UI_ACCOUNT_MENU_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_consumer.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @protocol AccountMenuDataSource;
@@ -38,4 +38,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_MENU_UI_ACCOUNT_MENU_VIEW_CONTROLLER_H_

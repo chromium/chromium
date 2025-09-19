@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator.h"
 
 #import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
@@ -10,10 +10,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_consumer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_consumer.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"

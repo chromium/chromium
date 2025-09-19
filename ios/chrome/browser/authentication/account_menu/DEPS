@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/trusted_vault/trusted_vault_server_constants.h",
+  "+ios/chrome/browser/settings",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/policy",
+  "+ios/chrome/browser/authentication/account_menu",
+]

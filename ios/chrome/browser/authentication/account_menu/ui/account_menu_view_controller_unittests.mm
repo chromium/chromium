@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_view_controller.h"
 
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_data_source.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_mutator.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_data_source.h"
+#import "ios/chrome/browser/authentication/account_menu/ui/account_menu_mutator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/policy/model/management_state.h"

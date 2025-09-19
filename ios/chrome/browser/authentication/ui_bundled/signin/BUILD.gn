@@ -63,7 +63,7 @@ source_set("signin_impl") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
-    "//ios/chrome/browser/authentication/ui_bundled/account_menu",
+    "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",

@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("account_menu") {
+source_set("coordinator") {
   sources = [
     "account_menu_coordinator.h",
     "account_menu_coordinator.mm",
@@ -14,11 +14,10 @@ source_set("account_menu") {
     "account_menu_mediator_delegate.h",
   ]
   public_deps = [
-    ":constants",
+    "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
   deps = [
-    ":account_menu_ui",
     "//base",
     "//components/prefs",
     "//components/signin/public/base",
@@ -29,6 +28,7 @@ source_set("account_menu") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/account_menu/ui",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
@@ -68,69 +68,28 @@ source_set("account_menu") {
   ]
 }
 
-source_set("account_menu_ui") {
-  sources = [
-    "account_menu_consumer.h",
-    "account_menu_data_source.h",
-    "account_menu_mutator.h",
-    "account_menu_view_controller.h",
-    "account_menu_view_controller.mm",
-  ]
-  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
-  deps = [
-    ":constants",
-    "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled/cells",
-    "//ios/chrome/browser/keyboard/ui_bundled",
-    "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
-    "//ios/chrome/browser/settings/ui_bundled/cells",
-    "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/signin/model:constants",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util:image_util",
-    "//ui/base",
-  ]
-}
-
-source_set("constants") {
-  sources = [
-    "account_menu_constants.h",
-    "account_menu_constants.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "account_menu_coordinator_unittests.mm",
     "account_menu_mediator_unittests.mm",
-    "account_menu_view_controller_unittests.mm",
   ]
   deps = [
-    ":account_menu",
-    ":account_menu_ui",
+    ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/sync:test_support",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled",
+    "//components/sync/service",
+    "//components/trusted_vault",
+    "//ios/chrome/browser/authentication/account_menu/public",
+    "//ios/chrome/browser/authentication/account_menu/ui",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
-    "//ios/chrome/browser/authentication/ui_bundled/signin",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
-    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
-    "//ios/chrome/browser/settings/ui_bundled:constants",
-    "//ios/chrome/browser/settings/ui_bundled/cells",
-    "//ios/chrome/browser/settings/ui_bundled/google_services",
     "//ios/chrome/browser/settings/ui_bundled/google_services:sync_error_settings_command_handler",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -140,7 +99,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
@@ -149,40 +107,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-}
-
-source_set("eg2_tests") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [ "account_menu_egtest.mm" ]
-  deps = [
-    ":constants",
-    "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
-    "//ios/chrome/browser/ntp/ui_bundled:constants",
-    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
-    "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
-    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/snackbar:constants",
-    "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/signin/model:test_constants",
-    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
-    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
-    "//ios/chrome/test/earl_grey:switches",
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//net:test_support",
-    "//ui/base",
-  ]
-  frameworks = [ "UIKit.framework" ]
 }
