@@ -13535,6 +13535,7 @@
                         "EnableReadabilityHeuristic",
                         "EnableReaderMode",
                         "EnableReaderModeDefaultBrowserPromo",
+                        "EnableReaderModeTranslation",
                         "ReaderModeUseReadability"
                     ],
                     "disable_features": [
