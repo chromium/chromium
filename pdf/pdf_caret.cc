@@ -207,44 +207,11 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
 }
 
 void PdfCaret::MoveHorizontallyToNextChar(bool move_right) {
-  if (!WillCaretExitPage(index_, move_right)) {
-    const int delta = move_right ? 1 : -1;
-    PageCharacterIndex next_char = {index_.page_index,
-                                    index_.char_index + delta};
-    // Newlines synthetically created by PDFium have empty screen rects.
-    // Skip consecutive newlines.
-    if (IsSynthesizedNewline(index_) && IsSynthesizedNewline(next_char)) {
-      // Synthetic newlines cannot be the first or last char on a page.
-      CHECK(!WillCaretExitPage(next_char, move_right));
-
-      // There cannot be more than two consecutive synthetic newlines.
-      next_char.char_index += delta;
-    }
-    SetChar(next_char);
-    return;
+  std::optional<PageCharacterIndex> next_char =
+      GetAdjacentCaretPos(index_, move_right);
+  if (next_char.has_value()) {
+    SetChar(next_char.value());
   }
-
-  uint32_t page_index = index_.page_index;
-
-  // If `move_right` is true, move one page to the right if possible.
-  if (move_right) {
-    ++page_index;
-    if (!client_->PageIndexInBounds(page_index)) {
-      // There is no next page. Stay at current position.
-      return;
-    }
-    SetChar({page_index, 0});
-    return;
-  }
-
-  // Otherwise, move one page to the left if possible.
-  if (page_index == 0) {
-    // There is no previous page. Stay at current position.
-    return;
-  }
-
-  --page_index;
-  SetChar({page_index, client_->GetCharCount(page_index)});
 }
 
 void PdfCaret::MoveVerticallyToNextChar(bool move_down) {
@@ -327,6 +294,46 @@ bool PdfCaret::IndexHasChar(const PageCharacterIndex& index) const {
 
 bool PdfCaret::IsSynthesizedNewline(const PageCharacterIndex& index) const {
   return IndexHasChar(index) && client_->IsSynthesizedNewline(index);
+}
+
+std::optional<PageCharacterIndex> PdfCaret::GetAdjacentCaretPos(
+    const PageCharacterIndex& index,
+    bool move_right) const {
+  if (!WillCaretExitPage(index, move_right)) {
+    const int delta = move_right ? 1 : -1;
+    PageCharacterIndex next_char = {index.page_index, index.char_index + delta};
+    // Newlines synthetically created by PDFium have empty screen rects.
+    // Skip consecutive newlines.
+    if (IsSynthesizedNewline(index) && IsSynthesizedNewline(next_char)) {
+      // Synthetic newlines cannot be the first or last char on a page.
+      CHECK(!WillCaretExitPage(next_char, move_right));
+
+      // There cannot be more than two consecutive synthetic newlines.
+      next_char.char_index += delta;
+    }
+    return next_char;
+  }
+
+  uint32_t page_index = index.page_index;
+
+  // If `move_right` is true, move one page to the right if possible.
+  if (move_right) {
+    ++page_index;
+    if (!client_->PageIndexInBounds(page_index)) {
+      // There is no next page. Stay at current position.
+      return std::nullopt;
+    }
+    return PageCharacterIndex(page_index, 0);
+  }
+
+  // Otherwise, move one page to the left if possible.
+  if (page_index == 0) {
+    // There is no previous page. Stay at current position.
+    return std::nullopt;
+  }
+
+  --page_index;
+  return PageCharacterIndex(page_index, client_->GetCharCount(page_index));
 }
 
 std::optional<PageCharacterIndex> PdfCaret::GetNextNonNewlineOnPage(

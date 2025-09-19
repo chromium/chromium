@@ -114,6 +114,14 @@ class PdfCaret {
   // Returns whether `index` is a synthesized newline or not.
   bool IsSynthesizedNewline(const PageCharacterIndex& index) const;
 
+  // Returns the adjacent caret position to `index`, moving in the direction
+  // indicated by `move_right`. Moves across pages if necessary. This can return
+  // caret positions on no-text pages. Returns `std::nullopt` if no adjacent
+  // position is available.
+  std::optional<PageCharacterIndex> GetAdjacentCaretPos(
+      const PageCharacterIndex& index,
+      bool move_right) const;
+
   // Gets the `PageCharacterIndex` of the next non-newline char. Starts from
   // `index` and skips past consecutive newlines on a page, moving in the
   // direction specified by `move_right`. Returns `std::nullopt` if `index` is
