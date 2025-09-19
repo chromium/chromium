@@ -641,6 +641,89 @@ TEST_F(ComposeboxHandlerTabsTest, ActiveTabsCountMetric) {
       "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
 }
 
+TEST_F(ComposeboxHandlerTabsTest, TabWithDuplicateTitleClickedMetric) {
+  // Add tabs with duplicate titles.
+  tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetTitle(u"Title A");
+  tabs::TabInterface* tab_b1 = AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+      ->SetTitle(u"Title B");
+  AddTab(GURL("https://a2.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(2))
+      ->SetTitle(u"Title A");
+
+  // Mock tab upload flow.
+  MockTabContextualizationController* controller_a1 =
+      static_cast<MockTabContextualizationController*>(
+          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+
+  MockTabContextualizationController* controller_b1 =
+      static_cast<MockTabContextualizationController*>(
+          tab_b1->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller_b1, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(2);
+
+  // Click on a tab with a duplicate title.
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
+  EXPECT_CALL(callback1, Run).Times(1);
+  handler().AddTabContext(tab_a1->GetHandle().raw_value(), callback1.Get());
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", true, 1);
+
+  // Click on a tab with a unique title.
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback2;
+  EXPECT_CALL(callback2, Run).Times(1);
+  handler().AddTabContext(tab_b1->GetHandle().raw_value(), callback2.Get());
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
+  histogram_tester().ExpectTotalCount(
+      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", 2);
+}
+
+TEST_F(ComposeboxHandlerTabsTest,
+       TabWithDuplicateTitleClickedMetric_NoDuplicates) {
+  // Add tabs with unique titles.
+  tabs::TabInterface* tab_a1 = AddTab(GURL("https://a1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(0))
+      ->SetTitle(u"Title A");
+  AddTab(GURL("https://b1.com"));
+  content::WebContentsTester::For(tab_strip_model()->GetWebContentsAt(1))
+      ->SetTitle(u"Title B");
+
+  // Mock the call to GetPageContext.
+  MockTabContextualizationController* controller_a1 =
+      static_cast<MockTabContextualizationController*>(
+          tab_a1->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller_a1, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+
+  // Click on a tab with a unique title.
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
+  EXPECT_CALL(callback1, Run).Times(1);
+  handler().AddTabContext(tab_a1->GetHandle().raw_value(), callback1.Get());
+  histogram_tester().ExpectUniqueSample(
+      "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
+}
+
 class ComposeboxHandlerFileUploadStatusTest
     : public ComposeboxHandlerTest,
       public testing::WithParamInterface<
