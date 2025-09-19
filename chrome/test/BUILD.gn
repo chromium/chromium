@@ -7978,6 +7978,11 @@ test("unit_tests") {
       "//ui/events/devices:test_support",
     ]
 
+    if (enable_extensions_core) {
+      sources += [ "../browser/android/extensions/extensions_url_override_state_tracker_unittest.cc" ]
+      deps += [ "//chrome/browser/android/extensions:android" ]
+    }
+
     if (is_desktop_android) {
       deps += [
         # Unit test targets for //chrome/browser/ui/browser_window/internal.

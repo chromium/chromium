@@ -11,7 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/android/extensions/extensions_url_override_state_tracker_impl.h"
 #endif
 
@@ -39,7 +39,7 @@ void ExtensionsUrlOverrideRegistryManager::OnUrlOverrideDisabled(
 
 ExtensionsUrlOverrideRegistryManager::ExtensionsUrlOverrideRegistryManager(
     Profile* profile) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   state_tracker_ =
       std::make_unique<ExtensionUrlOverrideStateTrackerImpl>(profile, this);
 #endif

@@ -22,14 +22,15 @@ source_set("android") {
     "//third_party/jni_zero",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [
       "extensions_url_override_state_tracker_impl.cc",
       "extensions_url_override_state_tracker_impl.h",
     ]
 
     deps += [
-      "//extensions/browser:browser_sources",
+      "//chrome/browser/extensions",
+      "//extensions/browser",
       "//extensions/common",
     ]
   }
