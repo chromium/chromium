@@ -7,16 +7,27 @@
 
 #import <UIKit/UIKit.h>
 
-// Public API for the Glow Effect.
-@protocol GlowEffect <NSObject>
+// Represents the current state of the glow effect animation.
+enum class GlowState {
+  // The glow effect is not visible and no animations are active.
+  kStopped,
+  // The glow and stroke are visible and rotating continuously.
+  kRunning,
+  // The rotation is decelerating to a stop. The stroke is still visible but
+  // will fade out upon completion.
+  kStoppingRotation,
+};
 
-// The duration in seconds for one full 360-degree rotation.
+/// A protocol for a view that displays a glow effect.
+@protocol GlowEffect
+
+/// The duration of one full rotation of the glow effect.
 @property(nonatomic, assign) CFTimeInterval rotationSpeedDuration;
 
 // The duration of the glow fade-in and fade-out animation.
 @property(nonatomic, assign) CFTimeInterval fadeAnimationDuration;
 
-// Starts the glow animation.
+/// Starts the glow effect, making it visible and beginning the rotation.
 - (void)startGlow;
 
 // Stops the glow animation.
