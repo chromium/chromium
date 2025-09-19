@@ -31,7 +31,7 @@ const CGFloat kAnimationDuration = 1.0;
 const CGFloat kDamping = 0.85;
 
 // Spacing for secondary button.
-const CGFloat kSpacingAfterSecondaryButton = 8.0;
+const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 }  // namespace
 
