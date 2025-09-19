@@ -4516,7 +4516,7 @@
       // each script execution. This prevents long tasks and improves responsiveness.
       // https://crbug.com/40894694
       name: "SeparateDeferModuleScriptTasks",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "Serial",
