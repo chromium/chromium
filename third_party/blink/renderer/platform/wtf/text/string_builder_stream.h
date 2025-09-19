@@ -47,6 +47,7 @@ StringBuilder& operator<<(StringBuilder& builder, T number) {
 // `T` should be supported by StringBuilder::Append() or
 // StringBuilder::AppendNumber().
 template <typename T>
+  requires(IsAppendableType<T>)
 StringBuilder& operator<<(StringBuilder& builder, const Vector<T>& vector) {
   builder << "[";
   builder.AppendRange(vector, ", ");

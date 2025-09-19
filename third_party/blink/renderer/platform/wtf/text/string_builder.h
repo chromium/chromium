@@ -29,6 +29,8 @@
 
 #include <unicode/utf16.h>
 
+#include <type_traits>
+
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
@@ -37,6 +39,25 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
+
+// A concept to check if a type is a character type supported by
+// StringBuilder::Append().
+template <typename CharType>
+concept IsAppendableCharType =
+    IsStringCharType<CharType> || std::is_same_v<char, CharType> ||
+    std::is_same_v<UChar32, CharType>;
+
+// A concept to check if a type is a string type supported by
+// StringBuilder::Append().
+template <typename T>
+concept IsAppendableStringType = std::is_convertible_v<T, StringView>;
+
+// A concept to check if a type is supported by StringBuilder::Append() or
+// StringBuilder::AppendNumber().
+template <typename T>
+concept IsAppendableType =
+    IsAppendableCharType<T> || IsAppendableStringType<T> ||
+    std::is_integral_v<T> || std::is_floating_point_v<T>;
 
 class WTF_EXPORT StringBuilder {
   USING_FAST_MALLOC(StringBuilder);
@@ -162,16 +183,14 @@ class WTF_EXPORT StringBuilder {
   // This supports collections of which element type is supported by
   // StringBuilder::Append() or StringBuilder::AppendNumber().
   template <typename R>
-    requires(std::ranges::range<R>)
+    requires(std::ranges::range<R> &&
+             IsAppendableType<std::ranges::range_value_t<R>>)
   StringBuilder& AppendRange(const R& range, StringView delimiter) {
     StringView current_delimiter;
     for (const auto& item : range) {
       Append(current_delimiter);
       current_delimiter = delimiter;
-      if constexpr (std::is_same_v<char, typename R::value_type> ||
-                    std::is_same_v<LChar, typename R::value_type> ||
-                    std::is_same_v<UChar, typename R::value_type> ||
-                    std::is_same_v<UChar32, typename R::value_type>) {
+      if constexpr (IsAppendableCharType<typename R::value_type>) {
         Append(item);
       } else if constexpr (std::is_integral_v<typename R::value_type> ||
                            std::is_floating_point_v<typename R::value_type>) {
