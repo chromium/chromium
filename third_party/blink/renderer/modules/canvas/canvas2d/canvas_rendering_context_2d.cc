@@ -1469,14 +1469,15 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
     return resource_provider_.get();
   }
 
-  if (resource_provider_->IsAccelerated()) {
+  if (!canvas()->IsPageVisible()) {
     CanvasHibernationHandler::ReportHibernationEvent(
-        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithSwitchToBackgroundRendering);
   } else {
-    if (!canvas()->IsPageVisible()) {
+    if (resource_provider_->IsAccelerated()) {
       CanvasHibernationHandler::ReportHibernationEvent(
           CanvasHibernationHandler::HibernationEvent::
-              kHibernationEndedWithSwitchToBackgroundRendering);
+              kHibernationEndedNormally);
     } else {
       CanvasHibernationHandler::ReportHibernationEvent(
           CanvasHibernationHandler::HibernationEvent::

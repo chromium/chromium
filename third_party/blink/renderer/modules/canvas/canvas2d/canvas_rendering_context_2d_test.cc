@@ -2486,6 +2486,41 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   }
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DisablingAccelerationWhileHibernatingLogsAnHistogram) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Disable acceleration on this canvas and a large number of other canvases,
+  // to permanently disable acceleration on this document.
+  CanvasElement().DisableAccelerationForCanvas2D();
+  CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled();
+
+  // Waking up after acceleration was disabled logs an UMA histogram.
+  {
+    base::HistogramTester histogram_tester;
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithFallbackToSW,
+        1);
+    EXPECT_TRUE(Context2D()->IsCanvas2DResourceProviderValid());
+    EXPECT_FALSE(handler.IsHibernating());
+    EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
+  }
+}
+
 TEST_P(
     CanvasRenderingContext2DTestAccelerated,
     DisablingThenReenablingAccelerationWhileHibernationIsPendingDoesntAbortHibernation) {
@@ -2609,6 +2644,36 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_FALSE(Context2D()->IsCanvas2DResourceProviderValid());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       BackgroundRenderingAbortsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
+  EXPECT_TRUE(handler.IsHibernating());
+  EXPECT_FALSE(Context2D()->IsCanvas2DResourceProviderValid());
+
+  // Recreate a provider to simulate background rendering.
+  {
+    base::HistogramTester histogram_tester;
+    Context2D()->GetOrCreateCanvas2DResourceProvider();
+    histogram_tester.ExpectUniqueSample(
+        "Blink.Canvas.HibernationEvents",
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithSwitchToBackgroundRendering,
+        1);
+    EXPECT_FALSE(handler.IsHibernating());
+    EXPECT_TRUE(Context2D()->IsCanvas2DResourceProviderValid());
   }
 }
 
