@@ -12,19 +12,6 @@ import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-declare_args() {
-  # If set to true, this will remove histogram manager to reduce binary size.
-  disable_histogram_support = is_mac || is_win
-}
-
-# Disable histogram support is not allowed on Android.
-assert(!disable_histogram_support || !is_android)
-
-buildflag_header("cronet_buildflags") {
-  header = "cronet_buildflags.h"
-  flags = [ "DISABLE_HISTOGRAM_SUPPORT=$disable_histogram_support" ]
-}
-
 process_version("cronet_version_header") {
   template_file = "//components/cronet/version.h.in"
   sources = [ "//chrome/VERSION" ]
@@ -68,7 +55,6 @@ source_set("cronet_common") {
     "url_request_context_config.h",
   ]
   deps = [
-    ":cronet_buildflags",
     ":cronet_version_header",
     ":request_context_config_proto",
     "//base",
@@ -76,9 +62,7 @@ source_set("cronet_common") {
     "//net",
   ]
 
-  if (!disable_histogram_support) {
-    public_deps = [ "//components/metrics:library_support" ]
-  }
+  public_deps = [ "//components/metrics:library_support" ]
 }
 
 source_set("metrics_util") {
