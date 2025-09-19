@@ -6,6 +6,9 @@ import("//build/config/apple/apple_sdk.gni")
 import("//build/config/c++/modules.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/sysroot.gni")
+if (use_xcode_symlinks) {
+  import("//build/config/apple/mobile_config.gni")
+}
 if (is_win) {
   import("//build/toolchain/win/win_toolchain_data.gni")
 }
@@ -36,7 +39,7 @@ if (use_clang_modules) {
         # between macOS and iOS, so it must be built with the correct toolchain
         # for the target OS.
         toolchain = "//build/toolchain/mac:clang_$target_cpu"
-        if (is_ios) {
+        if (is_ios || target_environment == "catalyst") {
           toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
         } else if (target_os == "ios" && is_mac) {
           toolchain = "//build/toolchain/mac:clang_$host_cpu"
