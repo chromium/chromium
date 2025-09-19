@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -393,58 +394,6 @@ Profile* GetSourceProfile(NavigateParams* params) {
   }
 
   return params->initiating_profile;
-}
-
-base::WeakPtr<content::NavigationHandle> LoadURLInContents(
-    WebContents* target_contents,
-    const GURL& url,
-    NavigateParams* params) {
-  NavigationController::LoadURLParams load_url_params(url);
-  load_url_params.initiator_frame_token = params->initiator_frame_token;
-  load_url_params.initiator_process_id = params->initiator_process_id;
-  load_url_params.initiator_origin = params->initiator_origin;
-  load_url_params.initiator_base_url = params->initiator_base_url;
-  load_url_params.source_site_instance = params->source_site_instance;
-  load_url_params.referrer = params->referrer;
-  load_url_params.frame_name = params->frame_name;
-  load_url_params.frame_tree_node_id = params->frame_tree_node_id;
-  load_url_params.redirect_chain = params->redirect_chain;
-  load_url_params.transition_type = params->transition;
-  load_url_params.extra_headers = params->extra_headers;
-  load_url_params.should_replace_current_entry =
-      params->should_replace_current_entry;
-  load_url_params.is_renderer_initiated = params->is_renderer_initiated;
-  load_url_params.started_from_context_menu = params->started_from_context_menu;
-  load_url_params.has_user_gesture = params->user_gesture;
-  load_url_params.blob_url_loader_factory = params->blob_url_loader_factory;
-  load_url_params.input_start = params->input_start;
-  load_url_params.was_activated = params->was_activated;
-  load_url_params.href_translate = params->href_translate;
-  load_url_params.reload_type = params->reload_type;
-  load_url_params.impression = params->impression;
-  load_url_params.suggested_system_entropy = params->suggested_system_entropy;
-
-  // |frame_tree_node_id| is invalid for main frame navigations.
-  if (params->frame_tree_node_id.is_null()) {
-    bool force_no_https_upgrade =
-        params->url_typed_with_http_scheme ||
-        params->captive_portal_window_type !=
-            captive_portal::CaptivePortalWindowType::kNone;
-    std::unique_ptr<ChromeNavigationUIData> navigation_ui_data =
-        ChromeNavigationUIData::CreateForMainFrameNavigation(
-            target_contents, params->is_using_https_as_default_scheme,
-            force_no_https_upgrade);
-    navigation_ui_data->set_navigation_initiated_from_sync(
-        params->navigation_initiated_from_sync);
-    load_url_params.navigation_ui_data = std::move(navigation_ui_data);
-  }
-
-  if (params->post_data) {
-    load_url_params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
-    load_url_params.post_data = params->post_data;
-  }
-
-  return target_contents->GetController().LoadURLWithParams(load_url_params);
 }
 
 // This class makes sure the Browser object held in |params| is made visible
@@ -834,8 +783,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
             params->url, contents_to_navigate_or_insert->GetBrowserContext())) {
       // Perform the actual navigation, tracking whether it came from the
       // renderer.
-      navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
-                                            params->url, params);
+      NavigationController::LoadURLParams load_url_params =
+          LoadURLParamsFromNavigateParams(contents_to_navigate_or_insert,
+                                          params);
+      navigation_handle =
+          contents_to_navigate_or_insert->GetController().LoadURLWithParams(
+              load_url_params);
     }
   } else {
     // |contents_to_navigate_or_insert| was specified non-NULL, and so we assume
@@ -903,8 +856,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
           content::ReloadType::NORMAL, true);
     } else if (params->path_behavior == NavigateParams::IGNORE_AND_NAVIGATE &&
                contents_to_navigate_or_insert->GetURL() != params->url) {
-      navigation_handle = LoadURLInContents(contents_to_navigate_or_insert,
-                                            params->url, params);
+      NavigationController::LoadURLParams load_url_params =
+          LoadURLParamsFromNavigateParams(contents_to_navigate_or_insert,
+                                          params);
+      navigation_handle =
+          contents_to_navigate_or_insert->GetController().LoadURLWithParams(
+              load_url_params);
     }
 
     // If the singleton tab isn't already selected, select it.

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -54,40 +55,6 @@ constexpr char kLaunchParamsEnqueueMetricWithNavigation[] =
     "Webapp.NavigationCapturing.LaunchParamsConsumedTime.WithNavigation";
 constexpr char kLaunchParamsEnqueueMetricWithoutNavigation[] =
     "Webapp.NavigationCapturing.LaunchParamsConsumedTime.WithoutNavigation";
-
-// Actually start a navigation in an existing web contents for the
-// `navigate-existing` use-case.
-// This is copied from `LoadURLInContents` in browser_navigator.cc.
-void LoadURLInContents(content::WebContents* target_contents,
-                       const GURL& url,
-                       const NavigateParams& params) {
-  content::NavigationController::LoadURLParams load_url_params(url);
-  load_url_params.initiator_frame_token = params.initiator_frame_token;
-  load_url_params.initiator_process_id = params.initiator_process_id;
-  load_url_params.initiator_origin = params.initiator_origin;
-  load_url_params.initiator_base_url = params.initiator_base_url;
-  load_url_params.source_site_instance = params.source_site_instance;
-  load_url_params.referrer = params.referrer;
-  load_url_params.frame_name = params.frame_name;
-  load_url_params.frame_tree_node_id = params.frame_tree_node_id;
-  load_url_params.redirect_chain = params.redirect_chain;
-  load_url_params.transition_type = params.transition;
-  load_url_params.extra_headers = params.extra_headers;
-  load_url_params.should_replace_current_entry =
-      params.should_replace_current_entry;
-  load_url_params.is_renderer_initiated = params.is_renderer_initiated;
-  load_url_params.started_from_context_menu = params.started_from_context_menu;
-  load_url_params.has_user_gesture = params.user_gesture;
-  load_url_params.blob_url_loader_factory = params.blob_url_loader_factory;
-  load_url_params.input_start = params.input_start;
-  load_url_params.was_activated = params.was_activated;
-  load_url_params.href_translate = params.href_translate;
-  load_url_params.reload_type = params.reload_type;
-  load_url_params.impression = params.impression;
-  load_url_params.suggested_system_entropy = params.suggested_system_entropy;
-
-  target_contents->GetController().LoadURLWithParams(load_url_params);
-}
 
 class NavigationCapturingBrowserNavigatorBrowserTest
     : public WebAppBrowserTestBase {
@@ -288,8 +255,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
     params.source_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     Navigate(&params);
-    LoadURLInContents(params.navigated_or_inserted_contents,
-                      GetNavigateExistingSecondUrl(), params);
+    content::NavigationController::LoadURLParams load_url_params =
+        LoadURLParamsFromNavigateParams(&params);
+    (void)params.navigated_or_inserted_contents->GetController()
+        .LoadURLWithParams(load_url_params);
   }
 
   url_observer.Wait();
@@ -517,8 +486,10 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
         new_browser->tab_strip_model()->GetActiveWebContents();
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
-    LoadURLInContents(params.navigated_or_inserted_contents, GetFinalPage(),
-                      params);
+    content::NavigationController::LoadURLParams load_url_params =
+        LoadURLParamsFromNavigateParams(&params);
+    (void)params.navigated_or_inserted_contents->GetController()
+        .LoadURLWithParams(load_url_params);
   }
 
   test::CompletePageLoadForAllWebContents();
@@ -646,8 +617,10 @@ IN_PROC_BROWSER_TEST_F(
     params.source_contents = blank_new_tab;
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
-    LoadURLInContents(params.navigated_or_inserted_contents,
-                      GetNavigateExistingSecondUrl(), params);
+    content::NavigationController::LoadURLParams load_url_params =
+        LoadURLParamsFromNavigateParams(&params);
+    (void)params.navigated_or_inserted_contents->GetController()
+        .LoadURLWithParams(load_url_params);
   }
 
   test::CompletePageLoadForAllWebContents();
@@ -822,7 +795,10 @@ IN_PROC_BROWSER_TEST_F(LaunchContainerMetricMeasurementTest,
         browser()->tab_strip_model()->GetActiveWebContents();
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     Navigate(&params);
-    LoadURLInContents(target_contents, GetNavigateExistingUrl(), params);
+    content::NavigationController::LoadURLParams load_url_params =
+        LoadURLParamsFromNavigateParams(&params);
+    (void)params.navigated_or_inserted_contents->GetController()
+        .LoadURLWithParams(load_url_params);
   }
 
   content::WaitForLoadStop(target_contents);

@@ -53,6 +53,8 @@ static_library("ui") {
     "browser_dialogs.cc",
     "browser_dialogs.h",
     "browser_navigator_params.cc",
+    "browser_navigator_params_utils.cc",
+    "browser_navigator_params_utils.h",
     "browser_ui_prefs.cc",
     "browser_ui_prefs.h",
     "chrome_select_file_policy.cc",
