@@ -52,13 +52,17 @@ public class FaviconHelper {
     public static class DefaultFaviconHelper {
         private @Nullable Bitmap mChromeDarkBitmap;
         private @Nullable Bitmap mChromeLightBitmap;
+        private @Nullable Bitmap mIncognitoNtpBitmap;
         private @Nullable Bitmap mDefaultDarkBitmap;
         private @Nullable Bitmap mDefaultLightBitmap;
 
-        private int getResourceId(GURL url) {
-            return UrlUtilities.isInternalScheme(url)
-                    ? R.drawable.chromelogo16
-                    : R.drawable.ic_globe_24dp;
+        private int getResourceId(GURL url, boolean useIncognitoNtpIcon) {
+            if (UrlUtilities.isInternalScheme(url)) {
+                return useIncognitoNtpIcon && UrlUtilities.isNtpUrl(url)
+                        ? R.drawable.incognito_favicon
+                        : R.drawable.chromelogo16;
+            }
+            return R.drawable.ic_globe_24dp;
         }
 
         private Bitmap createBitmap(Context context, int resourceId, boolean useDarkIcon) {
@@ -81,20 +85,31 @@ public class FaviconHelper {
 
         /**
          * Generate a default favicon bitmap for the given URL.
+         *
          * @param context The {@link Context} to fetch the icons and tint.
          * @param url The URL of the page whose icon is being generated.
          * @param useDarkIcon Whether a dark icon should be used.
+         * @param useIncognitoNtpIcon Whether the Incognito NTP icon should be used.
          * @return The favicon.
          */
-        public Bitmap getDefaultFaviconBitmap(Context context, GURL url, boolean useDarkIcon) {
+        public Bitmap getDefaultFaviconBitmap(
+                Context context, GURL url, boolean useDarkIcon, boolean useIncognitoNtpIcon) {
             boolean isInternal = UrlUtilities.isInternalScheme(url);
-            Bitmap bitmap =
-                    isInternal
-                            ? (useDarkIcon ? mChromeDarkBitmap : mChromeLightBitmap)
-                            : (useDarkIcon ? mDefaultDarkBitmap : mDefaultLightBitmap);
+            boolean isNtp = isInternal && UrlUtilities.isNtpUrl(url);
+            Bitmap bitmap = null;
+            if (isNtp && useIncognitoNtpIcon) {
+                bitmap = mIncognitoNtpBitmap;
+            } else if (isInternal) {
+                bitmap = useDarkIcon ? mChromeDarkBitmap : mChromeLightBitmap;
+            } else {
+                bitmap = useDarkIcon ? mDefaultDarkBitmap : mDefaultLightBitmap;
+            }
             if (bitmap != null) return bitmap;
-            bitmap = createBitmap(context, getResourceId(url), useDarkIcon);
-            if (isInternal && useDarkIcon) {
+
+            bitmap = createBitmap(context, getResourceId(url, useIncognitoNtpIcon), useDarkIcon);
+            if (isNtp && useIncognitoNtpIcon) {
+                mIncognitoNtpBitmap = bitmap;
+            } else if (isInternal && useDarkIcon) {
                 mChromeDarkBitmap = bitmap;
             } else if (isInternal) {
                 mChromeLightBitmap = bitmap;
@@ -108,6 +123,7 @@ public class FaviconHelper {
 
         /**
          * Generate a default favicon drawable for the given URL.
+         *
          * @param context The {@link Context} used to fetch the default icons and tint.
          * @param url The URL of the page whose icon is being generated.
          * @param useDarkIcon Whether a dark icon should be used.
@@ -115,7 +131,9 @@ public class FaviconHelper {
          */
         public Drawable getDefaultFaviconDrawable(Context context, GURL url, boolean useDarkIcon) {
             return new BitmapDrawable(
-                    context.getResources(), getDefaultFaviconBitmap(context, url, useDarkIcon));
+                    context.getResources(),
+                    getDefaultFaviconBitmap(
+                            context, url, useDarkIcon, /* useIncognitoNtpIcon= */ false));
         }
 
         /**
@@ -135,6 +153,7 @@ public class FaviconHelper {
             mChromeLightBitmap = null;
             mDefaultDarkBitmap = null;
             mDefaultLightBitmap = null;
+            mIncognitoNtpBitmap = null;
         }
     }
 

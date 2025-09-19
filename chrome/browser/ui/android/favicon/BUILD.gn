@@ -16,6 +16,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/util/android:java",
@@ -43,14 +44,19 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-hdpi/chromelogo16.png",
     "java/res/drawable-hdpi/default_favicon.png",
+    "java/res/drawable-hdpi/incognito_favicon.png",
     "java/res/drawable-mdpi/chromelogo16.png",
     "java/res/drawable-mdpi/default_favicon.png",
+    "java/res/drawable-mdpi/incognito_favicon.png",
     "java/res/drawable-xhdpi/chromelogo16.png",
     "java/res/drawable-xhdpi/default_favicon.png",
+    "java/res/drawable-xhdpi/incognito_favicon.png",
     "java/res/drawable-xxhdpi/chromelogo16.png",
     "java/res/drawable-xxhdpi/default_favicon.png",
+    "java/res/drawable-xxhdpi/incognito_favicon.png",
     "java/res/drawable-xxxhdpi/chromelogo16.png",
     "java/res/drawable-xxxhdpi/default_favicon.png",
+    "java/res/drawable-xxxhdpi/incognito_favicon.png",
   ]
 
   deps = [

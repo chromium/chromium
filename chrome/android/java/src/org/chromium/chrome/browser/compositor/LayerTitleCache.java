@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -344,8 +345,17 @@ public class LayerTitleCache {
         Bitmap originalFavicon = TabFavicon.getBitmap(tab);
         if (originalFavicon == null) {
             originalFavicon =
-                    mDefaultFaviconHelper.getDefaultFaviconBitmap(
-                            mContext, tab.getUrl(), !isDarkTheme);
+                    IncognitoUtils.shouldOpenIncognitoAsWindow() && isDarkTheme
+                            ? mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                                    mContext,
+                                    tab.getUrl(),
+                                    /* useDarkIcon= */ false,
+                                    /* useIncognitoNtpIcon= */ true)
+                            : mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                                    mContext,
+                                    tab.getUrl(),
+                                    !isDarkTheme,
+                                    /* useIncognitoNtpIcon= */ false);
         }
 
         return originalFavicon;
@@ -354,7 +364,8 @@ public class LayerTitleCache {
     /** Returns a chrome favicon if the tab is a native page. else returns a default favicon. */
     public Bitmap getDefaultFavicon(Tab tab) {
         boolean isDarkTheme = tab.isIncognito();
-        return mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, tab.getUrl(), !isDarkTheme);
+        return mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                mContext, tab.getUrl(), !isDarkTheme, /* useIncognitoNtpIcon= */ false);
     }
 
     private @Nullable ViewResourceAdapter getResourceAdapterFromLoader(int resId) {

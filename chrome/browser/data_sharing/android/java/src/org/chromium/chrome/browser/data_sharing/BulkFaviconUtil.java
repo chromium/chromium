@@ -85,7 +85,8 @@ class BulkFaviconUtil {
                                             .getDefaultFaviconBitmap(
                                                     context,
                                                     webPageUrlList.get(i),
-                                                    /* useDarkIcon= */ !isNightMode);
+                                                    /* useDarkIcon= */ !isNightMode,
+                                                    /* useIncognitoNtpIcon= */ false);
                         }
                         results.add(favicon);
                     }

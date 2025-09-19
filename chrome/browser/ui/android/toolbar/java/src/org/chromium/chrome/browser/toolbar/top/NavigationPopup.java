@@ -289,7 +289,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         if (favicon == null) {
             if (mDefaultFaviconHelper == null) mDefaultFaviconHelper = new DefaultFaviconHelper();
-            favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, pageUrl, true);
+            favicon =
+                    mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                            mContext,
+                            pageUrl,
+                            /* useDarkIcon= */ true,
+                            /* useIncognitoNtpIcon= */ false);
         }
         if (UrlUtilities.isNtpUrl(pageUrl) && shouldUseIncognitoResources()) {
             favicon =
