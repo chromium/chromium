@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -20,6 +21,12 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,8 +45,12 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   }
 
   void SetUp() override {
-    profile_ =
-        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     application_commands_mock_ =
@@ -79,6 +90,18 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   }
 
  protected:
+  // Signs the user in an account with a fake identity.
+  void SignIn() {
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    system_identity_manager->AddIdentity(fake_identity);
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service->SignIn(fake_identity, signin_metrics::AccessPoint::kUnknown);
+  }
+
   base::test::ScopedFeatureList features_;
 
   web::WebTaskEnvironment task_environment_;
@@ -173,6 +196,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
     // This can happen on iOS < 17, where separate profiles are not supported.
     return;
   }
+  SignIn();
   const GURL url("https://www.example.com");
   // Register a second profile.
   TestProfileIOS::Builder builder;
@@ -221,6 +245,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
     // This can happen on iOS < 17, where separate profiles are not supported.
     return;
   }
+  SignIn();
   const GURL url("https://www.example.com");
   // Register a second profile.
   TestProfileIOS::Builder builder;
