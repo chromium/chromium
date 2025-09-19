@@ -1302,6 +1302,52 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testOpenInstance_opensAdjacently_WithRobustWindowManagementExperimental() {
+        setupTwoInstances();
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                true);
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openInstance(INSTANCE_ID_2, INVALID_TASK_ID);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertTrue(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should be set.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testOpenInstance_opensFullScreen_WithRobustWindowManagementExperimental() {
+        setupTwoInstances();
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                false);
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openInstance(INSTANCE_ID_2, INVALID_TASK_ID);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        assertNotEquals("Intent should not be null.", null, intent);
+        int flags = intent.getFlags();
+        assertFalse(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
     public void testMoveSingleTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
         setupMaxInstances();
 

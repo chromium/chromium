@@ -1164,7 +1164,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
         onMultiInstanceModeStarted();
         // TODO: Pass this flag from UI to control the window to open.
-        boolean openAdjacently = true;
+        // If not in multi-window mode, this will be determined by shouldOpenInAdjacentWindow().
+        boolean openAdjacently =
+                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity,
