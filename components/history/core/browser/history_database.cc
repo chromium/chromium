@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/database.h"
@@ -37,8 +38,10 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 70;
-const int kCompatibleVersionNumber = 16;
+constexpr int kCurrentVersionNumber = 70;
+constexpr int kCompatibleVersionNumber = 16;
+// The oldest version number that we can migrate to the current version.
+constexpr int kMinimalVersionNumber = 15;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 const char kMayContainForeignVisits[] = "may_contain_foreign_visits";
@@ -55,21 +58,7 @@ sql::InitStatus LogMigrationFailure(int from_version) {
   return sql::INIT_FAILURE;
 }
 
-// Reasons for initialization to fail. These are logged to UMA. It corresponds
-// to the HistoryInitStep enum in enums.xml.
-//
-// DO NOT CHANGE THE VALUES. Leave holes if anything is removed and add only
-// to the end.
-enum class InitStep {
-  OPEN = 0,
-  TRANSACTION_BEGIN = 1,
-  META_TABLE_INIT = 2,
-  CREATE_TABLES = 3,
-  VERSION = 4,
-  COMMIT = 5,
-};
-
-sql::InitStatus LogInitFailure(InitStep what) {
+sql::InitStatus LogInitFailure(HistoryDatabase::InitStep what) {
   base::UmaHistogramSparse("History.InitializationFailureStep",
                            static_cast<int>(what));
   return sql::INIT_FAILURE;
@@ -101,6 +90,23 @@ HistoryDatabase::HistoryDatabase(
 
 HistoryDatabase::~HistoryDatabase() = default;
 
+bool HistoryDatabase::RazeDbIfTooOld() {
+  const int db_version = sql::InitializedMetaTable(db_).GetVersionNumber();
+  base::UmaHistogramSparse("History.DatabaseVersion", db_version);
+
+  // `db_version` will be 0 if it could not be read, in which case we should
+  // raze the table just as if it was too old.
+  if (db_version >= kMinimalVersionNumber) {
+    return true;
+  }
+
+  base::UmaHistogramSparse("History.DatabaseTooOld", db_version);
+  if (!base::FeatureList::IsEnabled(kRazeOldHistoryDatabase)) {
+    return true;
+  }
+  return db_.Raze();
+}
+
 sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   const bool database_exists = base::PathExists(history_name);
 
@@ -115,6 +121,10 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     // can be removed once the bug is fixed.
     base::UmaHistogramBoolean("History.MetaTableExists",
                               sql::MetaTable::DoesTableExist(&db_));
+  }
+
+  if (database_exists && !RazeDbIfTooOld()) {
+    return LogInitFailure(InitStep::RAZE_OLD_DB);
   }
 
   // Wrap the rest of init in a transaction. This will prevent the database from
@@ -524,6 +534,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   // Put migration code here
 
+  static_assert(kMinimalVersionNumber == 15);
   if (cur_version == 15) {
     if (!db_.Execute("DROP TABLE starred") || !DropStarredIDFromURLs())
       return LogMigrationFailure(15);

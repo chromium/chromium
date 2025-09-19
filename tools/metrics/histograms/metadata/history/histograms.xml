@@ -1402,6 +1402,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.DatabaseTooOld" units="version"
+    expires_after="2026-09-12">
+  <owner>jpgravel@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The version of the database found on disk if it's too old to be migrated to
+    the current version.
+  </summary>
+</histogram>
+
+<histogram name="History.DatabaseVersion" units="version"
+    expires_after="2026-09-12">
+  <owner>jpgravel@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    The version of the database loaded during initialization. This is the
+    version loaded from disk, before the database is migrated to the current
+    version.
+  </summary>
+</histogram>
+
 <histogram name="History.DomainCount1Day_V2" units="domains"
     expires_after="2026-03-01">
   <owner>mpearson@chromium.org</owner>

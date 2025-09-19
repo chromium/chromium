@@ -114,4 +114,8 @@ constexpr base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap{
     INT_MAX};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, very old history databases that cannot be migrated are deleted.
+BASE_FEATURE(kRazeOldHistoryDatabase,
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history

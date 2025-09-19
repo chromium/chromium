@@ -19,6 +19,7 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "sql/test/test_helpers.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -101,6 +102,18 @@ void HistoryBackendDBBaseTest::CreateDBVersion(int version) {
       data_path.AppendASCII(base::StringPrintf("history.%d.sql", version));
   ASSERT_NO_FATAL_FAILURE(
       ExecuteSQLScript(data_path, history_dir_.Append(kHistoryFilename)));
+}
+
+int HistoryBackendDBBaseTest::GetDatabaseVersion() const {
+  sql::Database db(sql::test::kTestTag);
+  CHECK(db.Open(history_dir_.Append(kHistoryFilename)));
+  return sql::InitializedMetaTable(db).GetVersionNumber();
+}
+
+bool HistoryBackendDBBaseTest::SetDatabaseVersion(int version) const {
+  sql::Database db(sql::test::kTestTag);
+  CHECK(db.Open(history_dir_.Append(kHistoryFilename)));
+  return sql::InitializedMetaTable(db).SetVersionNumber(version);
 }
 
 void HistoryBackendDBBaseTest::DeleteBackend() {

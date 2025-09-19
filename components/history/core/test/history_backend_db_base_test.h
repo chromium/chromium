@@ -50,6 +50,9 @@ class HistoryBackendDBBaseTest : public HistoryUnitTestBase {
 
   void CreateDBVersion(int version);
 
+  int GetDatabaseVersion() const;
+  bool SetDatabaseVersion(int version) const;
+
   void DeleteBackend();
 
   bool AddDownload(uint32_t id,

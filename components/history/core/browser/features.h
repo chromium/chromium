@@ -63,6 +63,9 @@ extern const base::FeatureParam<double> kMvtScoringParamDecayPerDay;
 COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap;
 
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kRazeOldHistoryDatabase);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_
