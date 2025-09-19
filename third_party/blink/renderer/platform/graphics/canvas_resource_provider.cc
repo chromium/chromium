@@ -190,6 +190,8 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                                                    ->ContextProvider()
                                                    .GetCapabilities()
                                                    .gpu_rasterization) {
+  CHECK(use_oop_rasterization_ || !is_accelerated_);
+
   if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
   }
