@@ -199,8 +199,17 @@ class AndroidProfileTool:
       logging.info('Using reduced debugging profile')
       profile_benchmark = 'orderfile_generation.webview_startup_debugging'
     RunCommand([
-        'tools/perf/run_benchmark', '--device', self._device.serial,
-        '--browser', browser, '--chromium-output-directory', chromium_out_dir,
+        'tools/perf/run_benchmark',
+        '--device',
+        self._device.serial,
+        '--browser',
+        browser,
+        '--chromium-output-directory',
+        chromium_out_dir,
+        # TODO(tne): Remove this once the builder https://ci.chromium.org/ui/p/chrome/builders/ci/webview-arm-orderfile/ is fixed.
+        '--verbose',
+        '--verbose',
+        '--verbose',
         profile_benchmark
     ])
     self._RestoreCommandLineFlags(changer)
