@@ -21,8 +21,42 @@
     <option name="test-tag" value="NetHttpCoverageTests" />
 
     <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
+        <!--
+          Some of Cronet's unit tests require additional test files at runtime.
+          Chromium's infrastructure pushes these automatically before running
+          them, but Android's doesn't (or maybe it does, but we haven't yet
+          figured out how to do it). With that in mind, copy this list of test
+          files "known" to be needed.
+
+          Note: We don't abort on failure to support HSUM builds
+          (http://shortn/_nB4kKO4zsp). Historically, Chromium has always pushed
+          test files to external storage
+          (see org.chromium.net.UrlUtils#getIsolatedTestRoot,
+          https://crsrc.org/c/base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java;l=39;drc=48d6f7175422b2c969c14258f9f8d5b196c28d18),
+          which points to android.os.Environment#getExternalStorageDirectory.
+          On devices with multiple users, each users get its own external
+          storage, under /storage/emulated/user_id. This means that we must
+          know which user is running the tests. Prior to HSUM, this was always
+          0, but with HSUM this is no longer the case. With the current
+          architecture (pushing files from this xml file), it's impossible to
+          tell which user is running the test. So, in an attempt to get this
+          working, push to both places and ignore the one that fails. See
+          http://b/437294013 for more info.
+
+          Finally, for user 10, we push to /mnt/user/10/emulated/10 instead of
+          /storage/emulated/10 to bypass permission errors.
+          /storage/emulated/10 maps to /mnt/user/{USER_ID}/emulated/10, where
+          {USER_ID} depends on the command that triggered the push. Tradefed
+          triggers that command without specifying an user id, defaulting to
+          user 0, which fails as it cannot access user's 10 external storage.
+        -->
+        <option name="abort-on-push-failure" value="false"/>
+
         <option name="push-file" key="net" value="/storage/emulated/0/chromium_tests_root/net" />
+        <option name="push-file" key="net" value="/mnt/user/10/emulated/10/chromium_tests_root/net" />
+
         <option name="push-file" key="test_server" value="/storage/emulated/0/chromium_tests_root/components/cronet/android/test/test_server" />
+        <option name="push-file" key="test_server" value="/mnt/user/10/emulated/10/chromium_tests_root/components/cronet/android/test/test_server" />
     </target_preparer>
     <!-- Tethering/Connectivity is a SDK 30+ module however Cronet is installed on 31+ due to b/270049141. -->
     <object type="module_controller"
