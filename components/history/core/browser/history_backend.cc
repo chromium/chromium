@@ -956,6 +956,9 @@ OriginCountAndLastVisitMap HistoryBackend::GetCountsAndLastVisitForOrigins(
 void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
   TRACE_EVENT0("browser", "HistoryBackend::AddPage");
   DCHECK(request.url.is_valid());
+  if (request.response_code_category == VisitResponseCodeCategory::k404) {
+    CHECK(request.hidden);
+  }
 
   if (!db_)
     return;

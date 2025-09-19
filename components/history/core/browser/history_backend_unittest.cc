@@ -1225,7 +1225,7 @@ TEST_F(HistoryBackendTest, AddPage404) {
   HistoryAddPageArgs request(
       url, base::Time::Now(), context_id, nav_entry_id,
       /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
-      ui::PAGE_TRANSITION_TYPED, /*hidden=*/false, SOURCE_BROWSED,
+      ui::PAGE_TRANSITION_TYPED, /*hidden=*/true, SOURCE_BROWSED,
       history::VisitResponseCodeCategory::k404, /*did_replace_entry=*/false,
       /*consider_for_ntp_most_visited=*/false);
   backend_->AddPage(request);
