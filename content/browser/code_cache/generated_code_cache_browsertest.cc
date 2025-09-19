@@ -30,6 +30,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 
@@ -78,6 +79,11 @@ class CodeCacheBrowserTest
           std::pair<CodeCacheTestCase, BackgroundResourceFetchTestCase>> {
  public:
   CodeCacheBrowserTest() {
+    // This test directly inspects and manipulates `GeneratedCodeCache` objects
+    // which are not usable under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
+
     // Enable the split HTTP cache since the GeneratedCodeCache won't consider
     // partitioning by NIK unless the HTTP cache does.
     feature_split_cache_by_network_isolation_key_.InitAndEnableFeature(
@@ -317,6 +323,7 @@ class CodeCacheBrowserTest
   std::optional<net::HttpStatusCode> last_cache_js_response_code_;
 
  private:
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
   base::test::ScopedFeatureList feature_split_cache_by_network_isolation_key_;
   base::test::ScopedFeatureList feature_third_party_storage_partitioning_;
   base::test::ScopedFeatureList
@@ -872,21 +879,33 @@ class LocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
         blink::features::kLocalCompileHints);
     interactive_detector_ignore_fcp_.InitAndEnableFeature(
         blink::features::kInteractiveDetectorIgnoreFcp);
+
+    // This test directly inspects and manipulates `GeneratedCodeCache` objects
+    // which are not usable under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
   }
 
  private:
   base::test::ScopedFeatureList local_compile_hints_;
   base::test::ScopedFeatureList interactive_detector_ignore_fcp_;
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
 };
 
 class NoLocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
  public:
   NoLocalCompileHintsBrowserTest() {
+    // This test directly expects histograms from `GeneratedCodeCache` which are
+    // not present under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
+
     local_compile_hints_.InitAndDisableFeature(
         blink::features::kLocalCompileHints);
   }
 
  private:
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
   base::test::ScopedFeatureList local_compile_hints_;
 };
 
