@@ -1,9 +1,9 @@
 Tests that shorthand is marked as overloaded if all its longhands are overloaded.
 
-[expanded] 
+[expanded]
 element.style { ()
 
-[expanded] 
+[expanded]
 .foo { (<style>)
     font-style: normal;
     font-variant-ligatures: normal;
@@ -21,20 +21,20 @@ element.style { ()
     /-- overloaded --/     margin-bottom: 10px;
     /-- overloaded --/     margin-left: 10px;
 
-[expanded] 
+[expanded]
 div { (<style>)
     margin-left: 0px !important;
     margin-right: 0px !important;
     margin-top: 0px !important;
     margin-bottom: 0px !important;
 
-[expanded] 
+[expanded]
 div { (user agent stylesheet)
     display: block;
     unicode-bidi: isolate;
 
 ======== Inherited from body ========
-[expanded] 
+[expanded]
 body { (<style>)
     font: 1.2em "Arial", sans-serif;
     /-- overloaded --/     font-style: normal;
@@ -44,6 +44,7 @@ body { (<style>)
     /-- overloaded --/     font-variant-east-asian: normal;
         font-variant-alternates: normal;
         font-size-adjust: none;
+        font-language-override: normal;
         font-kerning: auto;
         font-optical-sizing: auto;
         font-feature-settings: normal;
@@ -55,5 +56,3 @@ body { (<style>)
     /-- overloaded --/     font-size: 1.2em;
     /-- overloaded --/     line-height: normal;
     /-- overloaded --/     font-family: Arial, sans-serif;
-
-
