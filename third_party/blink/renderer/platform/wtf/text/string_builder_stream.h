@@ -42,14 +42,14 @@ StringBuilder& operator<<(StringBuilder& builder, T number) {
   return builder;
 }
 
+// Append the specified `Vector<T>` like "[element0, element1, element2]".
+//
+// `T` should be supported by StringBuilder::Append() or
+// StringBuilder::AppendNumber().
 template <typename T>
 StringBuilder& operator<<(StringBuilder& builder, const Vector<T>& vector) {
   builder << "[";
-  String delimiter = "";
-  for (const auto& item : vector) {
-    builder << delimiter << item;
-    delimiter = ", ";
-  }
+  builder.AppendRange(vector, ", ");
   return builder << "]";
 }
 

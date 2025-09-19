@@ -33,12 +33,7 @@ namespace {
 template <typename T>
 void AppendVectorOfNumbers(const std::vector<T>& vector,
                            StringBuilder& builder) {
-  String delimiter = "";
-  for (const T& value : vector) {
-    builder.Append(delimiter);
-    builder.AppendNumber(value);
-    delimiter = ", ";
-  }
+  builder.AppendRange(vector, ", ");
 }
 
 base::expected<void, String> ValidateNamedMLTensors(

@@ -198,12 +198,8 @@ class FragmentTreeDumper {
 
   void AppendAttributes(const Vector<String>& attributes) {
     if (!attributes.empty()) {
-      String separator = " (";
-      for (const String& attribute : attributes) {
-        builder_->Append(separator);
-        builder_->Append(attribute);
-        separator = ")(";
-      }
+      builder_->Append(" (");
+      builder_->AppendRange(attributes, ")(");
       builder_->Append(")");
     }
   }

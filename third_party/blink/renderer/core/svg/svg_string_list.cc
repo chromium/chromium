@@ -85,20 +85,9 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
     return String();
 
   StringBuilder builder;
-
-  Vector<String>::const_iterator it = values_.begin();
-  Vector<String>::const_iterator it_end = values_.end();
-  if (it != it_end) {
-    builder.Append(*it);
-    UNSAFE_TODO(++it);
-
-    for (; it != it_end; UNSAFE_TODO(++it)) {
-      builder.Append(list_delimiter);
-      builder.Append(*it);
-    }
-  }
-
-  return builder.ToString();
+  builder.AppendRange(values_,
+                      StringView(base::byte_span_from_ref(list_delimiter)));
+  return builder.ReleaseString();
 }
 
 void SVGStringListBase::Add(const SVGPropertyBase* other,

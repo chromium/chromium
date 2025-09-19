@@ -156,6 +156,33 @@ class WTF_EXPORT StringBuilder {
   PRINTF_FORMAT(2, 3)
   void AppendFormat(const char* format, ...);
 
+  // Append each elements in a collection `range`, separated by `delimiter`.
+  // This adds nothing if `range` is empty.
+  //
+  // This supports collections of which element type is supported by
+  // StringBuilder::Append() or StringBuilder::AppendNumber().
+  template <typename R>
+    requires(std::ranges::range<R>)
+  StringBuilder& AppendRange(const R& range, StringView delimiter) {
+    StringView current_delimiter;
+    for (const auto& item : range) {
+      Append(current_delimiter);
+      current_delimiter = delimiter;
+      if constexpr (std::is_same_v<char, typename R::value_type> ||
+                    std::is_same_v<LChar, typename R::value_type> ||
+                    std::is_same_v<UChar, typename R::value_type> ||
+                    std::is_same_v<UChar32, typename R::value_type>) {
+        Append(item);
+      } else if constexpr (std::is_integral_v<typename R::value_type> ||
+                           std::is_floating_point_v<typename R::value_type>) {
+        AppendNumber(item);
+      } else {
+        Append(item);
+      }
+    }
+    return *this;
+  }
+
   void erase(unsigned);
 
   // ReleaseString is similar to ToString but releases the string_ object
