@@ -16,6 +16,7 @@
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/themes/ntp_background_data.h"
 #import "components/themes/ntp_background_service.h"
+#import "components/themes/pref_names.h"
 #import "ios/chrome/browser/home_customization/model/fake_home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
@@ -66,6 +67,8 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
         pref_service_->registry());
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kNTPCustomBackgroundEnabledByPolicy, true);
+    pref_service_->registry()->RegisterIntegerPref(
+        themes::prefs::kPolicyThemeColor, SK_ColorTRANSPARENT);
   }
 
   void TearDown() override {
@@ -78,6 +81,13 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
         pref_service_.get(), user_image_manager_.get(),
         background_image_service_.get());
     observation_.Observe(service_.get());
+  }
+
+  std::string EncodeThemeSpecificsIos(
+      sync_pb::ThemeSpecificsIos theme_specifics_ios) {
+    std::string serialized = theme_specifics_ios.SerializeAsString();
+    // Encode bytestring so it can be stored in a pref.
+    return base::Base64Encode(serialized);
   }
 
   sync_pb::ThemeSpecificsIos DecodeThemeSpecificsIos(std::string encoded) {
@@ -106,6 +116,21 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
         std::make_tuple("Default", GetDefaultRecentlyUsedImages());
 
     return {collection};
+  }
+
+  sync_pb::UserColorTheme GenerateUserColorTheme(SkColor color) {
+    sync_pb::UserColorTheme color_theme;
+    color_theme.set_color(color);
+    color_theme.set_browser_color_variant(
+        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    return color_theme;
+  }
+
+  HomeUserUploadedBackground GenerateHomeUserUploadedBackground() {
+    HomeUserUploadedBackground background;
+    background.image_path = "image.jpg";
+    background.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
+    return background;
   }
 
  protected:
@@ -287,11 +312,10 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetCurrentBackground) {
 TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
   CreateService();
 
-  SkColor color = 0xffff00;
-  sync_pb::UserColorTheme::BrowserColorVariant color_variant =
-      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT;
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xffff00);
 
-  service_->SetBackgroundColor(color, color_variant);
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
 
   EXPECT_TRUE(observer_.on_background_changed_called);
 
@@ -303,8 +327,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
   // Background should not exist after color is set.
   EXPECT_FALSE(service_->GetCurrentCustomBackground());
 
-  EXPECT_EQ(color, current_theme->color());
-  EXPECT_EQ(color_variant, current_theme->browser_color_variant());
+  EXPECT_EQ(color_theme, current_theme);
 
   // Now persist background to disk.
   service_->StoreCurrentTheme();
@@ -313,9 +336,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
   sync_pb::ThemeSpecificsIos disk_theme_specifics = DecodeThemeSpecificsIos(
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
 
-  EXPECT_EQ(color, disk_theme_specifics.user_color_theme().color());
-  EXPECT_EQ(color_variant,
-            disk_theme_specifics.user_color_theme().browser_color_variant());
+  EXPECT_EQ(color_theme, disk_theme_specifics.user_color_theme());
 
   EXPECT_TRUE(
       pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
@@ -331,10 +352,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
   sync_pb::ThemeSpecificsIos recent_theme_specifics_disk =
       DecodeThemeSpecificsIos(value.GetString());
 
-  EXPECT_EQ(color, recent_theme_specifics_disk.user_color_theme().color());
-  EXPECT_EQ(
-      color_variant,
-      recent_theme_specifics_disk.user_color_theme().browser_color_variant());
+  EXPECT_EQ(color_theme, recent_theme_specifics_disk.user_color_theme());
 
   // Make sure recent backgrounds in-memory data has this item first.
   std::vector<RecentlyUsedBackground> recent_backgrounds =
@@ -347,8 +365,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
   sync_pb::UserColorTheme recent_user_color_theme =
       std::get<sync_pb::UserColorTheme>(recent_background);
 
-  EXPECT_EQ(color, recent_user_color_theme.color());
-  EXPECT_EQ(color_variant, recent_user_color_theme.browser_color_variant());
+  EXPECT_EQ(color_theme, recent_user_color_theme);
 }
 
 // Tests that setting and then persisting a user-provided background works
@@ -357,9 +374,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetBackgroundColor) {
 TEST_F(HomeBackgroundCustomizationServiceTest, SetUserUploadedBackground) {
   CreateService();
 
-  HomeUserUploadedBackground expected;
-  expected.image_path = "test_file.jpg";
-  expected.framing_coordinates = FramingCoordinates(5, 10, 25, 50);
+  HomeUserUploadedBackground expected = GenerateHomeUserUploadedBackground();
 
   service_->SetCurrentUserUploadedBackground(expected.image_path,
                                              expected.framing_coordinates);
@@ -434,13 +449,17 @@ TEST_F(HomeBackgroundCustomizationServiceTest, ClearCurrentBackground) {
   CreateService();
 
   // First, set background to something else.
-  SkColor color = 0xffff00;
-  sync_pb::UserColorTheme::BrowserColorVariant color_variant =
-      sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT;
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xffff00);
 
-  service_->SetBackgroundColor(color, color_variant);
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
 
-  EXPECT_TRUE(service_->GetCurrentColorTheme());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+  EXPECT_EQ(1u,
+            pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds).size());
+  EXPECT_EQ(1u, service_->GetRecentlyUsedBackgrounds().size());
 
   EXPECT_TRUE(observer_.on_background_changed_called);
   observer_.on_background_changed_called = false;
@@ -458,7 +477,307 @@ TEST_F(HomeBackgroundCustomizationServiceTest, ClearCurrentBackground) {
   EXPECT_TRUE(
       pref_service_->GetDict(prefs::kIosUserUploadedBackground).empty());
   EXPECT_EQ("", pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
-  EXPECT_TRUE(
-      pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds).empty());
+
+  // Recently used in-memory and disk data should still be size 1.
+  EXPECT_EQ(1u,
+            pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds).size());
+  EXPECT_EQ(1u, service_->GetRecentlyUsedBackgrounds().size());
+}
+
+// Tests that setting the background without calling StoreCurrentTheme only
+// changes the in-memory data. And then once the theme is reset, the disk
+// data is active again.
+TEST_F(HomeBackgroundCustomizationServiceTest, SetAndClearTemporaryBackground) {
+  // Override the default value of this pref to alert the service that the
+  // recently used backgrounds list has been loaded in the past, so the list
+  // starts off empty.
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  CreateService();
+
+  // First, set and persist the background to a color. This is tested elsewhere.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  std::string disk_theme =
+      pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
+  const base::Value::List& initial_recent_backgrounds =
+      pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
+
+  // Now, set the background temporarily to a user-uploaded image.
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_TRUE(service_->GetCurrentCustomBackground());
+
+  // But, disk data should not change.
+  EXPECT_EQ(disk_theme,
+            pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+  EXPECT_EQ(initial_recent_backgrounds,
+            pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds));
+
+  // Now, reset the change.
+  service_->RestoreCurrentTheme();
+
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_EQ(disk_theme,
+            pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+  EXPECT_EQ(initial_recent_backgrounds,
+            pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds));
+}
+
+// Tests that loading the recently used backgrounds from the disk data loads
+// correctly.
+TEST_F(HomeBackgroundCustomizationServiceTest, LoadRecentBackgrounds) {
+  // First, set up data on disk.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  sync_pb::ThemeSpecificsIos color_theme_specifics;
+  *color_theme_specifics.mutable_user_color_theme() = color_theme;
+
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+
+  base::Value::List recent_backgrounds_data =
+      base::Value::List()
+          .Append(EncodeThemeSpecificsIos(color_theme_specifics))
+          .Append(user_background.ToDict());
+
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds,
+                         std::move(recent_backgrounds_data));
+
+  // Create service to load list from disk.
+  CreateService();
+
+  // Make sure that loaded data matches what was persisted to disk.
+  std::vector<RecentlyUsedBackground> recent_backgrounds =
+      service_->GetRecentlyUsedBackgrounds();
+
+  ASSERT_EQ(2u, recent_backgrounds.size());
+
+  ASSERT_TRUE(
+      std::holds_alternative<sync_pb::UserColorTheme>(recent_backgrounds[0]));
+  EXPECT_EQ(color_theme,
+            std::get<sync_pb::UserColorTheme>(recent_backgrounds[0]));
+
+  ASSERT_TRUE(
+      std::holds_alternative<HomeCustomBackground>(recent_backgrounds[1]));
+  HomeCustomBackground custom_background =
+      std::get<HomeCustomBackground>(recent_backgrounds[1]);
+  ASSERT_TRUE(
+      std::holds_alternative<HomeUserUploadedBackground>(custom_background));
+  EXPECT_EQ(user_background,
+            std::get<HomeUserUploadedBackground>(custom_background));
+}
+
+// Tests that deleting a recently used background correctly removes it from the
+// list. Also tests that the recent backgrounds are listed in reverse order of
+// use.
+TEST_F(HomeBackgroundCustomizationServiceTest, DeleteRecentBackground) {
+  // Override the default value of this pref to alert the service that the
+  // recently used backgrounds list has been loaded in the past, so the list
+  // starts off empty.
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  CreateService();
+
+  // Add 2 recent backgrounds.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  HomeUserUploadedBackground user_background =
+      GenerateHomeUserUploadedBackground();
+
+  service_->SetCurrentUserUploadedBackground(
+      user_background.image_path, user_background.framing_coordinates);
+  service_->StoreCurrentTheme();
+
+  std::vector<RecentlyUsedBackground> initial_recent_backgrounds =
+      service_->GetRecentlyUsedBackgrounds();
+
+  ASSERT_EQ(2u, initial_recent_backgrounds.size());
+
+  // Make sure that the first item is the user uploaded background.
+  ASSERT_TRUE(std::holds_alternative<HomeCustomBackground>(
+      initial_recent_backgrounds[0]));
+  HomeCustomBackground recent_custom_background =
+      std::get<HomeCustomBackground>(initial_recent_backgrounds[0]);
+  ASSERT_TRUE(std::holds_alternative<HomeUserUploadedBackground>(
+      recent_custom_background));
+  EXPECT_EQ(user_background,
+            std::get<HomeUserUploadedBackground>(recent_custom_background));
+
+  // Make sure that the second item is the color background.
+  ASSERT_TRUE(std::holds_alternative<sync_pb::UserColorTheme>(
+      initial_recent_backgrounds[1]));
+  EXPECT_EQ(color_theme,
+            std::get<sync_pb::UserColorTheme>(initial_recent_backgrounds[1]));
+
+  // Delete the second item.
+  service_->DeleteRecentlyUsedBackground(initial_recent_backgrounds[1]);
+
+  // Check that the second item, the color background, is gone.
+  std::vector<RecentlyUsedBackground> final_recent_backgrounds =
+      service_->GetRecentlyUsedBackgrounds();
+
+  ASSERT_EQ(1u, final_recent_backgrounds.size());
+  ASSERT_FALSE(std::holds_alternative<sync_pb::UserColorTheme>(
+      final_recent_backgrounds[0]));
+
+  // Make sure that the first item is still the user uploaded background.
+  ASSERT_TRUE(std::holds_alternative<HomeCustomBackground>(
+      initial_recent_backgrounds[0]));
+  recent_custom_background =
+      std::get<HomeCustomBackground>(initial_recent_backgrounds[0]);
+  ASSERT_TRUE(std::holds_alternative<HomeUserUploadedBackground>(
+      recent_custom_background));
+  EXPECT_EQ(user_background,
+            std::get<HomeUserUploadedBackground>(recent_custom_background));
+}
+
+// Tests that setting the `kNTPCustomBackgroundEnabledByPolicy` policy bypasses
+// any set background while active and prevents changing the background. And
+// then once the policy is disabled, the initial background returns.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       CustomBackgroundEnabledEnterprisePolicy) {
+  // First, set up some state.
+  CreateService();
+
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  std::string disk_theme =
+      pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos);
+  EXPECT_NE("", disk_theme);
+
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  EXPECT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Now, change policy.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, false);
+
+  // When customization is disabled, all accessors should be empty.
+  EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
   EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Setting a background manually shouldn't change anything either.
+  sync_pb::UserColorTheme color_theme2 = GenerateUserColorTheme(0x0000ff);
+
+  service_->SetBackgroundColor(color_theme2.color(),
+                               color_theme2.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Data on disk should also not have changed.
+  EXPECT_EQ(disk_theme,
+            pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+
+  // Setting a custom background manually shouldn't change anything.
+  service_->SetCurrentBackground(
+      GURL("https://www.google.com/test"), GURL(), "Drawn by", "Chrome on iOS",
+      GURL("https://www.google.com/action"), "default");
+
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Data on disk should also not have changed.
+  EXPECT_EQ(disk_theme,
+            pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+
+  // Setting a user-uploaded background shouldn't change anything.
+  service_->SetCurrentUserUploadedBackground("image.jpg",
+                                             FramingCoordinates(5, 10, 15, 20));
+
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Data on disk should also not have changed.
+  EXPECT_EQ(disk_theme,
+            pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
+
+  // After re-enabling the policy, the correct state should be back.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, true);
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_EQ(2u, service_->GetRecentlyUsedBackgrounds().size());
+}
+
+// Tests that setting the `kPolicyThemeColor` policy bypasses
+// any set background while active, overriding it with the given theme color,
+// and prevents changing the background. And then once the policy is disabled,
+// the initial background returns.
+TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
+  // First, set up some state.
+  CreateService();
+
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+
+  // Set managed pref.
+  SkColor managed_color = 0x0000ff;
+  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+                                base::Value(static_cast<int>(managed_color)));
+
+  EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
+
+  // Setting the color manually shouldn't change anything.
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
+
+  // Setting a custom background manually shouldn't change anything.
+  service_->SetCurrentBackground(
+      GURL("https://www.google.com/test"), GURL(), "Drawn by", "Chrome on iOS",
+      GURL("https://www.google.com/action"), "default");
+
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
+
+  // Setting a user-uploaded background shouldn't change anything.
+  service_->SetCurrentUserUploadedBackground("image.jpg",
+                                             FramingCoordinates(5, 10, 15, 20));
+
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
+
+  // Un-manage the pref.
+  pref_service_->RemoveManagedPref(themes::prefs::kPolicyThemeColor);
+
+  // Data should be back to the start.
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
 }

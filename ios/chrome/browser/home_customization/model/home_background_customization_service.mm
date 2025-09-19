@@ -204,6 +204,10 @@ HomeBackgroundCustomizationService::GetCurrentColorTheme() {
 
 std::vector<RecentlyUsedBackground>
 HomeBackgroundCustomizationService::GetRecentlyUsedBackgrounds() {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return {};
+  }
+
   std::vector<RecentlyUsedBackground> backgrounds;
   for (const RecentlyUsedBackgroundInternal& background :
        recently_used_backgrounds_) {

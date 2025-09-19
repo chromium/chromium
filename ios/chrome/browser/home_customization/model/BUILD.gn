@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//components/search",
     "//components/sync/protocol:protocol_gen",
     "//components/themes",
+    "//components/themes:prefs",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
