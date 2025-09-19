@@ -564,6 +564,9 @@ void FakeGaia::Initialize() {
 
   REGISTER_RESPONSE_HANDLER(gaia_urls->oauth2_revoke_url(),
                             HandleOAuth2TokenRevoke);
+
+  REGISTER_RESPONSE_HANDLER(gaia_urls->rotate_bound_cookies_url(),
+                            HandleRotateBoundCookies);
 }
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
@@ -1219,6 +1222,31 @@ void FakeGaia::HandleOAuth2TokenRevoke(
     return;
   }
 
+  http_response->set_code(net::HTTP_OK);
+}
+
+void FakeGaia::HandleRotateBoundCookies(
+    const net::test_server::HttpRequest& request,
+    net::test_server::BasicHttpResponse* http_response) {
+  CHECK(http_response);
+  if (configuration_.rotated_cookies.empty()) {
+    http_response->set_code(net::HTTP_BAD_REQUEST);
+    return;
+  }
+  const GURL url("https://google.com");
+  for (const std::string& cookie_name : configuration_.rotated_cookies) {
+    const std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateSanitizedCookie(
+            url, cookie_name, "dummy_value", url.host(), url.path(),
+            /*creation_time=*/base::Time::Now(),
+            /*expiration_time=*/base::Time::Now() + base::Hours(2),
+            /*last_access_time=*/base::Time::Now(),
+            /*secure=*/true, /*http_only=*/true,
+            net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_HIGH,
+            /*partition_key=*/std::nullopt, /*status=*/nullptr);
+    http_response->AddCustomHeader(
+        "Set-Cookie", net::CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  }
   http_response->set_code(net::HTTP_OK);
 }
 

@@ -106,6 +106,11 @@ class FakeGaia {
     // `OAuthMultiloginResponseStatus::kError` statuses.
     std::optional<OAuthMultiloginResponseStatus>
         oauth_multilogin_response_status;
+
+    // The cookies set by `/RotateBoundCookies` (the cookies are set for
+    // `google.com` domain). If empty, the server will return an HTTP error
+    // (400).
+    std::vector<std::string> rotated_cookies;
   };
 
   struct SyncTrustedVaultKeys {
@@ -368,6 +373,9 @@ class FakeGaia {
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
   void HandleOAuth2TokenRevoke(
+      const net::test_server::HttpRequest& request,
+      net::test_server::BasicHttpResponse* http_response);
+  void HandleRotateBoundCookies(
       const net::test_server::HttpRequest& request,
       net::test_server::BasicHttpResponse* http_response);
 
