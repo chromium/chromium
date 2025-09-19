@@ -4691,12 +4691,11 @@
     },
     {
       name: "SoftNavigationDetectionAdvancedPaintAttribution",
-      status: "stable",
       depends_on: ["SoftNavigationDetection"],
     },
     {
       name: "SoftNavigationDetectionPrePaintBasedAttribution",
-      status: "experimental",
+      status: "stable",
       depends_on: ["SoftNavigationDetection"],
     },
     {
