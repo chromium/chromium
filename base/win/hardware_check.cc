@@ -17,6 +17,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -85,6 +86,8 @@ bool IsUEFISecureBootCapable() {
 }
 
 bool IsTPM20Supported() {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   // Using dynamic loading instead of using linker support for delay
   // loading to prevent failed loads being treated as a fatal failure which
   // can happen in rare cases due to missing or corrupted DLL file.
