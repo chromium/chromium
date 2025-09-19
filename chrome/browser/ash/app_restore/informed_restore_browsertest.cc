@@ -327,9 +327,8 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_WindowStates) {
   AppLaunchInfoSaveWaiter::Wait();
 }
 
-// TODO(crbug.com/330516096): Test is flaky.
 // Tests that the browser windows are restored to their old window states.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we

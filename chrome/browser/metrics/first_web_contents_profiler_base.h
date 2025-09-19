@@ -88,6 +88,10 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
 
   // Whether a main frame navigation finished since this was created.
   bool did_finish_first_navigation_ = false;
+
+  // Whether a navigation was pending at the time this profiler was constructed,
+  // or if a navigation start was observed post-construction.
+  bool first_navigation_started_ = false;
 };
 
 }  // namespace metrics

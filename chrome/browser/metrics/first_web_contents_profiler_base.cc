@@ -18,7 +18,15 @@ namespace metrics {
 
 FirstWebContentsProfilerBase::FirstWebContentsProfilerBase(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {
+  // On ChromeOS, session restore can create the profiler *before* the
+  // navigation for a restored tab has started. In this case, GetPendingEntry()
+  // will return nullptr. We store this initial state so that the first
+  // DidStartNavigation event is correctly identified as the initial navigation
+  // rather than an abandoned one. On other platforms, a navigation is
+  // typically pending at construction.
+  first_navigation_started_ = web_contents->GetController().GetPendingEntry();
+}
 
 FirstWebContentsProfilerBase::~FirstWebContentsProfilerBase() = default;
 
@@ -52,6 +60,14 @@ void FirstWebContentsProfilerBase::DidStartNavigation(
   // The profiler is concerned with the primary main frame navigation only.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // If a navigation wasn't pending when this profiler was created, the first
+  // DidStartNavigation we see is the initial navigation. We should not treat
+  // it as an abandoned navigation.
+  if (!first_navigation_started_) {
+    first_navigation_started_ = true;
     return;
   }
 

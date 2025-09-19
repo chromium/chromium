@@ -48,15 +48,23 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
   ~FirstWebContentsProfiler() override = default;
 };
 
+// FirstWebContentsProfiler is created before the main MessageLoop starts
+// running. It is generally expected that any visible WebContents at this
+// time will have a pending NavigationEntry, i.e. should have dispatched
+// DidStartNavigation() but notDidFinishNavigation().
+//
+// This assumption does not hold true on ChromeOS during a session restore,
+// where the profiler is created before the navigation starts. The base
+// class (`FirstWebContentsProfilerBase`) contains the logic to handle this
+// specific case.
+//
+// This seemingly empty constructor is necessary. It serves as a public
+// entry point to call the protected constructor of the base class, which is
+// required because this class is instantiated by the free function
+// `BeginFirstWebContentsProfiling`.
 FirstWebContentsProfiler::FirstWebContentsProfiler(
     content::WebContents* web_contents)
-    : FirstWebContentsProfilerBase(web_contents) {
-  // FirstWebContentsProfiler is created before the main MessageLoop starts
-  // running. At that time, any visible WebContents should have a pending
-  // NavigationEntry, i.e. should have dispatched DidStartNavigation() but not
-  // DidFinishNavigation().
-  DCHECK(web_contents->GetController().GetPendingEntry());
-}
+    : FirstWebContentsProfilerBase(web_contents) {}
 
 void FirstWebContentsProfiler::RecordFinishReason(
     StartupProfilingFinishReason finish_reason) {
