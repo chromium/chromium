@@ -592,7 +592,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
         Size(), GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         SharedGpuContext::ContextProviderWrapper(),
         weak_ptr_factory_.GetWeakPtr(), IsAccelerated(),
-        shared_image_usage_flags_));
+        GetSharedImageUsageFlags()));
   }
   bool SupportsDirectCompositing() const override {
     return supports_direct_compositing_;

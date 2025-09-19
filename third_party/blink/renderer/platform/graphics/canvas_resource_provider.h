@@ -606,39 +606,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     scoped_refptr<CanvasResourceSharedImage> resource;
   };
 
-  // If this instance is single-buffered or |resource_recycling_enabled_| is
-  // false, |unused_resources_| will be empty.
-  Vector<UnusedResource> unused_resources_;
-  int num_inflight_resources_ = 0;
-  int max_inflight_resources_ = 0;
-  base::OneShotTimer unused_resources_reclaim_timer_;
-  bool resource_recycling_enabled_ = true;
-
-  // `raster_context_provider_` holds a reference on the shared
-  // `RasterContextProvider`, to keep it alive until it notifies us after the
-  // GPU context is lost. Without this, no `CanvasResourceProvider` would get
-  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
-  // recreated.
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
-  const bool is_accelerated_;
-  gpu::SharedImageUsageSet shared_image_usage_flags_;
-  bool current_resource_has_write_access_ = false;
-  const bool use_oop_rasterization_;
-  bool is_software_ = false;
-  bool is_cleared_ = false;
-
-  // The resource that is currently being used by this provider.
-  scoped_refptr<CanvasResourceSharedImage> resource_;
-  scoped_refptr<StaticBitmapImage> cached_snapshot_;
-  cc::PaintImage::ContentId cached_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-
-  bool notified_context_lost_ = false;
-  base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
-      this};
-
   void ClearUnusedResources() override { unused_resources_.clear(); }
   void RegisterUnusedResource(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
@@ -682,8 +649,40 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
-
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
+
+  // If this instance is single-buffered or |resource_recycling_enabled_| is
+  // false, |unused_resources_| will be empty.
+  Vector<UnusedResource> unused_resources_;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
+  base::OneShotTimer unused_resources_reclaim_timer_;
+  bool resource_recycling_enabled_ = true;
+
+  // `raster_context_provider_` holds a reference on the shared
+  // `RasterContextProvider`, to keep it alive until it notifies us after the
+  // GPU context is lost. Without this, no `CanvasResourceProvider` would get
+  // notified after the shared `WebGraphicsContext3DProviderWrapper` instance is
+  // recreated.
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
+  const bool is_accelerated_;
+  gpu::SharedImageUsageSet shared_image_usage_flags_;
+  bool current_resource_has_write_access_ = false;
+  const bool use_oop_rasterization_;
+  bool is_software_ = false;
+  bool is_cleared_ = false;
+
+  // The resource that is currently being used by this provider.
+  scoped_refptr<CanvasResourceSharedImage> resource_;
+  scoped_refptr<StaticBitmapImage> cached_snapshot_;
+  cc::PaintImage::ContentId cached_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+
+  bool notified_context_lost_ = false;
+  base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace blink
