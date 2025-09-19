@@ -29,3 +29,22 @@ const char kSecondBoxLink2URLNonManagedAccount[] =
     "https://support.google.com/gemini/answer/"
     "13594961?hl=en#location_info&zippy=%2Cwhat-location-information-do-gemini-"
     "apps-collect-why-and-how-is-it-used";
+
+// Accessibility identifiers for bwg consent view.
+NSString* const kBwgFootNoteTextViewAccessibilityIdentifier =
+    @"footnote_text_view";
+NSString* const kBwgPrimaryButtonAccessibilityIdentifier = @"primary_button";
+NSString* const kBwgSecondaryButtonAccessibilityIdentifier =
+    @"secondary_button";
+
+// Action identifier on a tap on links in the footnote of the bwg consent view.
+NSString* const kBwgFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
+NSString* const kBwgSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
+NSString* const kBwgFootnoteLinkActionManagedAccount =
+    @"footnoteLinkActionManagedAccount";
+NSString* const kBwgSecondBoxLinkActionManagedAccount =
+    @"secondBoxLinkActionManagedAccount";
+NSString* const kBwgSecondBoxLink1ActionNonManagedAccount =
+    @"secondBoxLink1ActionNonManagedAccount";
+NSString* const kBwgSecondBoxLink2ActionNonManagedAccount =
+    @"secondBoxLink2ActionNonManagedAccount";

@@ -66,14 +66,22 @@ bundle_data("bwg_lottie_resources") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "gemini_fre_wrapper_view_controller_unittest.mm" ]
+  sources = [
+    "bwg_consent_view_controller_unittest.mm",
+    "gemini_fre_wrapper_view_controller_unittest.mm",
+  ]
   deps = [
     ":ui",
+    "//base",
     "//base/test:test_support",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/ui",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }

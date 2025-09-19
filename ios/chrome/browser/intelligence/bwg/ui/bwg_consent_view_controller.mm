@@ -42,17 +42,6 @@ const CGFloat kInnerStackViewPadding = 12.0;
 const CGFloat kSpacingPrimarySecondaryButtonsIOS26 = 4.0;
 const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
-// Action identifier on a tap on links in the footnote.
-NSString* const kFirstFootnoteLinkAction = @"firstFootnoteLinkAction";
-NSString* const kSecondFootnoteLinkAction = @"secondFootnoteLinkAction";
-NSString* const kFootnoteLinkActionManagedAccount =
-    @"footnoteLinkActionManagedAccount";
-NSString* const kSecondBoxLinkActionManagedAccount =
-    @"secondBoxLinkActionManagedAccount";
-NSString* const kSecondBoxLink1ActionNonManagedAccount =
-    @"secondBoxLink1ActionNonManagedAccount";
-NSString* const kSecondBoxLink2ActionNonManagedAccount =
-    @"secondBoxLink2ActionNonManagedAccount";
 
 }  // namespace
 
@@ -159,11 +148,12 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return [self createAttributedString:fullText
-                        withLinkActions:@[ kFootnoteLinkActionManagedAccount ]
-                               inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
+    return
+        [self createAttributedString:fullText
+                     withLinkActions:@[ kBwgFootnoteLinkActionManagedAccount ]
+                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                      textAttributes:textAttributes
+                           fontStyle:fontStyle];
   }
 
   NSString* link1NSString =
@@ -185,7 +175,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions =
-      @[ kFirstFootnoteLinkAction, kSecondFootnoteLinkAction ];
+      @[ kBwgFirstFootnoteLinkAction, kBwgSecondFootnoteLinkAction ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
   ];
@@ -220,11 +210,12 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
     NSRange linkRange = [fullText rangeOfString:linkText];
 
-    return [self createAttributedString:fullText
-                        withLinkActions:@[ kSecondBoxLinkActionManagedAccount ]
-                               inRanges:@[ [NSValue valueWithRange:linkRange] ]
-                         textAttributes:textAttributes
-                              fontStyle:fontStyle];
+    return
+        [self createAttributedString:fullText
+                     withLinkActions:@[ kBwgSecondBoxLinkActionManagedAccount ]
+                            inRanges:@[ [NSValue valueWithRange:linkRange] ]
+                      textAttributes:textAttributes
+                           fontStyle:fontStyle];
   }
 
   NSString* link1NSString = l10n_util::GetNSString(
@@ -247,8 +238,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   NSRange link2Range = [fullText rangeOfString:link2NSString];
 
   NSArray<NSString*>* linkActions = @[
-    kSecondBoxLink1ActionNonManagedAccount,
-    kSecondBoxLink2ActionNonManagedAccount
+    kBwgSecondBoxLink1ActionNonManagedAccount,
+    kBwgSecondBoxLink2ActionNonManagedAccount
   ];
   NSArray<NSValue*>* linkRanges = @[
     [NSValue valueWithRange:link1Range], [NSValue valueWithRange:link2Range]
@@ -487,6 +478,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   footNoteTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
   footNoteTextView.attributedText = [self createFootnoteAttributedText];
+  footNoteTextView.accessibilityIdentifier =
+      kBwgFootNoteTextViewAccessibilityIdentifier;
 
   return footNoteTextView;
 }
@@ -501,6 +494,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
           forControlEvents:UIControlEventTouchUpInside];
   primaryButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_PRIMARY_BUTTON);
+  primaryButton.accessibilityIdentifier =
+      kBwgPrimaryButtonAccessibilityIdentifier;
   return primaryButton;
 }
 
@@ -514,6 +509,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
             forControlEvents:UIControlEventTouchUpInside];
   secondaryButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_SECONDARY_BUTTON);
+  secondaryButton.accessibilityIdentifier =
+      kBwgSecondaryButtonAccessibilityIdentifier;
   return secondaryButton;
 }
 
@@ -540,28 +537,29 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   }
 
   RecordFREConsentAction(IOSGeminiFREAction::kLinkClick);
-  if ([textItem.link.absoluteString isEqualToString:kFirstFootnoteLinkAction]) {
+  if ([textItem.link.absoluteString
+          isEqualToString:kBwgFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFirstFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondFootnoteLinkAction]) {
+          isEqualToString:kBwgSecondFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kSecondFootnoteLinkURL)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kFootnoteLinkActionManagedAccount]) {
+          isEqualToString:kBwgFootnoteLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator openNewTabWithURL:GURL(kFootnoteLinkURLManagedAccount)];
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLinkActionManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLinkActionManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -569,7 +567,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLink1ActionNonManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLink1ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
@@ -577,7 +575,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   if ([textItem.link.absoluteString
-          isEqualToString:kSecondBoxLink2ActionNonManagedAccount]) {
+          isEqualToString:kBwgSecondBoxLink2ActionNonManagedAccount]) {
     __weak __typeof(self) weakSelf = self;
     return [UIAction actionWithHandler:^(UIAction* action) {
       [weakSelf.mutator
