@@ -6,6 +6,8 @@
 
 #include <objbase.h>
 
+#include <winternl.h>
+
 #include <ntstatus.h>
 
 #include <string_view>
@@ -16,6 +18,7 @@
 #include "base/process/process_handle.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/scoped_native_library.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -49,6 +52,25 @@ class ThreadLocaleSaver {
 auto* csm_false = static_cast<bool (*)()>([]() -> bool { return false; });
 
 auto* csm_true = static_cast<bool (*)()>([]() -> bool { return true; });
+
+void TestUnicodeStringToView(wcstring_view test) {
+  UNICODE_STRING teststr = {};
+  ::RtlInitUnicodeString(&teststr, test.c_str());
+  std::wstring_view view = UnicodeStringToView(teststr);
+  EXPECT_EQ(view, test);
+  // Pointer comparison.
+  EXPECT_EQ(view.data(), test.data());
+  EXPECT_EQ(std::size(view), std::size(test));
+}
+
+void TestViewToUnicodeString(std::wstring_view view) {
+  UNICODE_STRING str;
+  EXPECT_TRUE(ViewToUnicodeString(view, str));
+  // Pointer comparison.
+  EXPECT_EQ(str.Buffer, view.data());
+  EXPECT_EQ(str.Length, view.size() * sizeof(WCHAR));
+  EXPECT_EQ(str.Length, str.MaximumLength);
+}
 
 }  // namespace
 
@@ -401,6 +423,25 @@ TEST(BaseWinUtilTest, GetSerialNumber) {
   ScopedCOMInitializer com_initializer;
   ASSERT_OK_AND_ASSIGN(std::wstring serial_number, GetSerialNumber());
   EXPECT_FALSE(serial_number.empty());
+}
+
+TEST(BaseWinUtilTest, UnicodeStringToView) {
+  UNICODE_STRING nullstr = {};
+  EXPECT_TRUE(UnicodeStringToView(nullstr).empty());
+  TestUnicodeStringToView(L"");
+  TestUnicodeStringToView(L"ThisIsATestString");
+  TestUnicodeStringToView(std::wstring((UINT16_MAX / sizeof(WCHAR)) - 1, L'A'));
+}
+
+TEST(BaseWinUtilTest, ViewToUnicodeString) {
+  TestViewToUnicodeString({});
+  TestViewToUnicodeString(L"");
+  TestViewToUnicodeString(L"ThisIsATestString");
+  std::wstring long_str(UINT16_MAX / sizeof(WCHAR), L'A');
+  TestViewToUnicodeString(long_str);
+  long_str += L"A";
+  UNICODE_STRING invalid = {};
+  EXPECT_FALSE(ViewToUnicodeString(long_str, invalid));
 }
 
 }  // namespace win

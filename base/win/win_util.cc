@@ -1244,6 +1244,21 @@ std::optional<std::wstring> GetSerialNumber() {
   return std::nullopt;
 }
 
+std::wstring_view UnicodeStringToView(const UNICODE_STRING& ustr) {
+  return std::wstring_view(ustr.Buffer, ustr.Length / sizeof(wchar_t));
+}
+
+bool ViewToUnicodeString(std::wstring_view str, UNICODE_STRING& ustr) {
+  constexpr size_t kMaxLength = USHORT_MAX / sizeof(WCHAR);
+  if (std::size(str) > kMaxLength) {
+    return false;
+  }
+  ustr.Buffer = const_cast<WCHAR*>(str.data());
+  ustr.Length = static_cast<USHORT>(std::size(str) * sizeof(WCHAR));
+  ustr.MaximumLength = ustr.Length;
+  return true;
+}
+
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)
     : initial_state_(IsEnrolledToDomain()) {
   *GetDomainEnrollmentStateStorage() = state;

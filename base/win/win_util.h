@@ -43,6 +43,7 @@ struct _tagpropertykey;
 using PROPERTYKEY = _tagpropertykey;
 struct tagPOINTER_DEVICE_INFO;
 using POINTER_DEVICE_INFO = tagPOINTER_DEVICE_INFO;
+typedef struct _UNICODE_STRING UNICODE_STRING;
 
 namespace base {
 
@@ -367,6 +368,18 @@ BASE_EXPORT bool SetProcessTimerThrottleState(HANDLE process,
 // Returns the serial number of the device.  Needs to be called from a COM
 // enabled thread.
 BASE_EXPORT std::optional<std::wstring> GetSerialNumber();
+
+// Converts a native UNICODE_STRING to a wstring_view.
+// Note the UNICODE_STRING must be in scope as long as the wstring_view is
+// valid.
+BASE_EXPORT std::wstring_view UnicodeStringToView(const UNICODE_STRING& ustr);
+
+// Converts a wstring_view to a native UNICODE_STRING.
+// Returns false if the string can't be stored in the UNICODE_STRING buffer.
+// Note the wstring_view must be in scope as long as the UNICODE_STRING is
+// valid.
+BASE_EXPORT bool ViewToUnicodeString(std::wstring_view str,
+                                     UNICODE_STRING& ustr);
 
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.
