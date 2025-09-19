@@ -14,6 +14,8 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -25,6 +27,8 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/account_pref_utils.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
@@ -106,6 +110,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
+    case AutofillAiAction::kImportToWallet:
       return false;
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kListEntityInstancesInSettings:
@@ -134,6 +139,73 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return is_enabled(features::kAutofillAiServerModel) &&
              features::kAutofillAiServerModelUseCacheResults.Get();
+    case AutofillAiAction::kImportToWallet:
+      return is_enabled(features::kAutofillAiWalletVehicleRegistration);
+    case AutofillAiAction::kAddEntityInstanceInSettings:
+    case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kImport:
+    case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kOptIn:
+      return true;
+  }
+  NOTREACHED();
+}
+
+// Checks whether all requirements related to syncing state is met.
+[[nodiscard]] bool SatisfiesSyncingRequirements(
+    AutofillAiAction action,
+    const syncer::SyncService* sync_service,
+    std::string* debug_message) {
+  switch (action) {
+    case AutofillAiAction::kImportToWallet:
+      return sync_service &&
+             sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                 syncer::UserSelectableType::kPayments);
+    case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+    case AutofillAiAction::kAddEntityInstanceInSettings:
+    case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kImport:
+    case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kOptIn:
+      return true;
+  }
+  NOTREACHED();
+}
+
+// Checks if the `entity_type` safistifes specific action requirements.
+[[nodiscard]] bool SatisfiesEntityTypeRequirements(
+    AutofillAiAction action,
+    std::optional<EntityType> entity_type) {
+  auto entity_type_can_be_upstreamed = [](EntityType type) {
+    switch (type.name()) {
+      case EntityTypeName::kVehicle:
+        return true;
+      case EntityTypeName::kFlightReservation:
+      case EntityTypeName::kNationalIdCard:
+      case EntityTypeName::kPassport:
+      case EntityTypeName::kDriversLicense:
+      case EntityTypeName::kRedressNumber:
+      case EntityTypeName::kKnownTravelerNumber:
+        return false;
+    }
+    NOTREACHED();
+  };
+  switch (action) {
+    case AutofillAiAction::kImportToWallet:
+      CHECK(entity_type) << "An entity type is required to check if an entity "
+                            "can be upstreamed";
+      return entity_type_can_be_upstreamed(*entity_type);
+    case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
@@ -198,6 +270,10 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return policy_pref_enabled && user_opted_in;
+    case AutofillAiAction::kImportToWallet:
+      // TODO(crbug.com/441742849): This should also check for the specific
+      // wallet pref.
+      return policy_pref_enabled && user_opted_in;
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !user_opted_in;
@@ -258,6 +334,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       case AutofillAiAction::kIphForOptIn:
       case AutofillAiAction::kListEntityInstancesInSettings:
       case AutofillAiAction::kOptIn:
+      case AutofillAiAction::kImportToWallet:
         return base::FeatureList::IsEnabled(
             features::kAutofillAiIgnoreCapabilityCheck);
       case AutofillAiAction::kLogToMqls:
@@ -298,6 +375,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kImportToWallet:
     case AutofillAiAction::kServerClassificationModel: {
       if (is_off_the_record) {
         MaybeOutputReason(debug_message, "Off the record.");
@@ -337,6 +415,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
 bool MayPerformAutofillAiAction(const AutofillClient& client,
                                 AutofillAiAction action,
+                                std::optional<EntityType> entity_type,
                                 std::string* debug_message) {
 #if !BUILDFLAG(IS_FUCHSIA)
   const GoogleGroupsManager* const google_groups_manager =
@@ -370,6 +449,15 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
   if (!SatisfiesAccountRequirements(client.GetIdentityManager(),
                                     has_entity_data_saved, action,
                                     debug_message)) {
+    return false;
+  }
+
+  if (!SatisfiesSyncingRequirements(action, client.GetSyncService(),
+                                    debug_message)) {
+    return false;
+  }
+
+  if (!SatisfiesEntityTypeRequirements(action, entity_type)) {
     return false;
   }
 

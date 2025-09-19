@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_
 
+#include <optional>
 #include <string>
+
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 class PrefService;
 
@@ -41,7 +44,9 @@ enum class AutofillAiAction {
   // Trigger a run of the server classification model.
   kServerClassificationModel,
   // Access locally cached results from the server classification model.
-  kUseCachedServerClassificationModelResults
+  kUseCachedServerClassificationModelResults,
+  // Whether the user can store entities in the Google Wallet server.
+  kImportToWallet,
 };
 
 // Opt-in status for the AutofillAI feature.
@@ -56,18 +61,23 @@ enum class AutofillAiOptInStatus {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiOptInStatus)
 
-// Returns whether all permission-related requirements are met for `action`.
-// This includes:
+// Returns whether all permission-related requirements are met for `action` and
+// a given `entity_type`. This includes:
 // - Feature state (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
 // - Pref state (prefs for address Autofill, AutofillAI and the related policy
 //   prefs.)
 // - Account state (sign-in status, model execution capabilities).
+// - Whether the `action` can be performed for the `entity_type`.
+//   `entity_type` is only considered to kImportToWallet and must be non-empty
+//   in that case.
 // - Miscellaneous state (OTR, locale, GeoIP).
 //
 // See go/forms-ai:permissions for more detail.
-bool MayPerformAutofillAiAction(const AutofillClient& client,
-                                AutofillAiAction action,
-                                std::string* debug_message = nullptr);
+bool MayPerformAutofillAiAction(
+    const AutofillClient& client,
+    AutofillAiAction action,
+    std::optional<EntityType> entity_type = std::nullopt,
+    std::string* debug_message = nullptr);
 
 // Returns the AutofillAI opt-in status for the profile and account tied to
 // `client`. Opt-in status is a profile pref, but keyed by (hashed) GAIA id. In

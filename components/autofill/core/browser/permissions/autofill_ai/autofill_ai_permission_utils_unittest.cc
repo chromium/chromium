@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
@@ -22,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,6 +64,8 @@ std::string GetTestSuffix(
       return "kServerClassificationModel";
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return "kUseCachedServerClassificationModelResults";
+    case AutofillAiAction::kImportToWallet:
+      return "kImportToWallet";
   }
   NOTREACHED();
 }
@@ -74,6 +78,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
     // Features.
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kAutofillAiWithDataSchema, {}},
+         {features::kAutofillAiWalletVehicleRegistration, {}},
          {features::kAutofillAiServerModel,
           {{"autofill_ai_model_use_cache_results", "true"}}}},
         {});
@@ -85,6 +90,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
         /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
     client().SetUpPrefsAndIdentityForAutofillAi();
+    client().set_sync_service(&sync_service_);
   }
 
   void AddEntity() {
@@ -100,6 +106,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
+  syncer::TestSyncService sync_service_;
   TestAutofillClient client_;
 };
 
@@ -107,6 +114,10 @@ class AutofillAiMayPerformActionTest
     : public AutofillAiPermissionUtilsTest,
       public ::testing::WithParamInterface<AutofillAiAction> {
  public:
+  AutofillAiMayPerformActionTest() {
+    client().GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
+  }
   using AutofillAiPermissionUtilsTest::AutofillAiPermissionUtilsTest;
 };
 
@@ -542,6 +553,41 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatusMetrics) {
   EXPECT_TRUE(SetAutofillAiOptInStatus(client(), kOptedOut));
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.Ai.OptIn.Change"),
               BucketsAre(Bucket(kOptedIn, 1), Bucket(kOptedOut, 2)));
+}
+
+TEST_F(AutofillAiMayPerformActionTest, ImportToWallet_TrueWhenSyncingWallet) {
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kVehicle)),
+      true);
+}
+
+TEST_F(AutofillAiMayPerformActionTest,
+       ImportToWallet_FalseEntityTypeIsNotWalletable) {
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kPassport)),
+      false);
+}
+
+TEST_F(AutofillAiMayPerformActionTest, ImportToWallet_FalseWhenFeatureIsOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiWalletVehicleRegistration);
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kPassport)),
+      false);
+}
+
+TEST_F(AutofillAiMayPerformActionTest,
+       ImportToWallet_FalseWhenNotSyncingWallet) {
+  client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+  EXPECT_EQ(
+      MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
+                                 EntityType(EntityTypeName::kVehicle)),
+      false);
 }
 
 }  // namespace
