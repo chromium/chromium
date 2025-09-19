@@ -801,7 +801,7 @@ struct AuthenticatorCommonImpl::RequestState {
   // `AuthenticatorCommonImpl`.
   RequestKey request_key;
 
-  raw_ptr<AuthenticatorRequestClientDelegate> request_delegate;
+  std::unique_ptr<AuthenticatorRequestClientDelegate> request_delegate;
   std::unique_ptr<device::FidoRequestHandlerBase> request_handler;
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory;
   // This dangling raw_ptr occurred in:
@@ -875,11 +875,11 @@ AuthenticatorCommonImpl::AuthenticatorCommonImpl(
 
 AuthenticatorCommonImpl::~AuthenticatorCommonImpl() = default;
 
-AuthenticatorRequestClientDelegate*
+std::unique_ptr<AuthenticatorRequestClientDelegate>
 AuthenticatorCommonImpl::MaybeCreateRequestDelegate() {
   RenderFrameHostImpl* const render_frame_host_impl =
       static_cast<RenderFrameHostImpl*>(GetRenderFrameHost());
-  AuthenticatorRequestClientDelegate* delegate =
+  std::unique_ptr<AuthenticatorRequestClientDelegate> delegate =
       GetContentClient()->browser()->GetWebAuthenticationRequestDelegate(
           render_frame_host_impl);
   if (!delegate) {
@@ -918,7 +918,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       ctap_make_credential_request->user.name,
       base::span<const device::CableDiscoveryData>(), discover_enclave,
       discovery_factory());
-  SetHints(req_state_->request_delegate, req_state_->hints);
+  SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   make_credential_options->allow_skipping_pin_touch = allow_skipping_pin_touch;
 
@@ -1002,7 +1002,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   discovery_factory()->set_get_assertion_request_for_legacy_credential_check(
       *ctap_get_assertion_request);
 #endif
-  SetHints(req_state_->request_delegate, req_state_->hints);
+  SetHints(req_state_->request_delegate.get(), req_state_->hints);
 
   auto platform_discoveries =
       discovery_factory()->IsTestOverride()
@@ -3094,15 +3094,7 @@ void AuthenticatorCommonImpl::CompleteReportRequest(
 
 void AuthenticatorCommonImpl::Cleanup() {
   CHECK(!req_state_ || req_state_->request_key.value() == next_request_key_);
-  // The request delegate must be cleaned up after `req_state_` is destroyed,
-  // because `req_state_` owns the request handler, which the delegate observes.
-  AuthenticatorRequestClientDelegate* request_delegate =
-      req_state_ ? req_state_->request_delegate : nullptr;
   req_state_.reset();
-  if (request_delegate) {
-    request_delegate->Cleanup();
-  }
-
   next_request_key_++;
   CHECK(next_request_key_);  // crash on overflow. Only 2^64 WebAuthn requests
                              // per instance of this object are supported.

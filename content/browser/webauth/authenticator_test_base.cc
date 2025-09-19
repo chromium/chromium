@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/webauth/authenticator_environment.h"
-#include "content/browser/webauth/default_authenticator_request_client_delegate.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -45,15 +44,14 @@
 namespace content {
 
 TestAuthenticatorRequestDelegate::TestAuthenticatorRequestDelegate(
-    WebContents* web_contents,
+    RenderFrameHost* render_frame_host,
     base::OnceClosure action_callbacks_registered_callback,
     base::OnceClosure started_over_callback,
     bool simulate_user_cancelled,
     base::RepeatingCallback<void(bool)> enclave_discovered_callback,
     base::RepeatingCallback<void(const base::flat_set<device::FidoTransportProtocol>&)>
         transports_discovered_callback)
-    : DefaultAuthenticatorRequestClientDelegate(web_contents),
-      action_callbacks_registered_callback_(
+    : action_callbacks_registered_callback_(
           std::move(action_callbacks_registered_callback)),
       started_over_callback_(std::move(started_over_callback)),
       does_block_request_on_failure_(!started_over_callback_.is_null()),
@@ -124,18 +122,6 @@ void TestAuthenticatorRequestDelegate::ConfigureDiscoveries(
   if (enclave_discovered_callback_) {
     enclave_discovered_callback_.Run(is_enclave_authenticator_available);
   }
-}
-
-void TestAuthenticatorRequestDelegate::Cleanup() {
-  transports_discovered_callback_.Reset();
-  enclave_discovered_callback_.Reset();
-  simulate_user_cancelled_ = false;
-  does_block_request_on_failure_ = false;
-  start_over_callback_.Reset();
-  started_over_callback_.Reset();
-  cancel_callback_.Reset();
-  action_callbacks_registered_callback_.Reset();
-  DefaultAuthenticatorRequestClientDelegate::Cleanup();
 }
 
 TestWebAuthenticationRequestProxy::Config::Config() = default;
@@ -352,20 +338,14 @@ bool TestAuthenticatorContentBrowserClient::
   return is_webauthn_security_level_acceptable;
 }
 
-AuthenticatorRequestClientDelegate*
+std::unique_ptr<AuthenticatorRequestClientDelegate>
 TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
     RenderFrameHost* render_frame_host) {
   if (return_null_delegate) {
     return nullptr;
   }
-
-  auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  auto delegate = std::make_unique<TestAuthenticatorRequestDelegate>(
-      web_contents,
+  return std::make_unique<TestAuthenticatorRequestDelegate>(
+      render_frame_host,
       action_callbacks_registered_callback
           ? std::move(action_callbacks_registered_callback)
           : base::DoNothing(),
@@ -387,12 +367,6 @@ TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
             }
           },
           weak_factory_.GetWeakPtr()));
-  auto* delegate_ptr = delegate.get();
-
-  web_contents->SetUserData(
-      DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-      std::move(delegate));
-  return delegate_ptr;
 }
 
 AuthenticatorTestBase::AuthenticatorTestBase()

@@ -37,10 +37,6 @@ AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
 AuthenticatorRequestClientDelegate::~AuthenticatorRequestClientDelegate() =
     default;
 
-void AuthenticatorRequestClientDelegate::Cleanup() {
-  virtual_environment_ = false;
-}
-
 void AuthenticatorRequestClientDelegate::SetRelyingPartyId(const std::string&) {
 }
 

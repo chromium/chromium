@@ -98,7 +98,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/tts_environment_android.h"
 #else
-#include "content/browser/webauth/default_authenticator_request_client_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif
@@ -1312,16 +1311,10 @@ ContentBrowserClient::GetWebAuthenticationDelegate() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-AuthenticatorRequestClientDelegate*
+std::unique_ptr<AuthenticatorRequestClientDelegate>
 ContentBrowserClient::GetWebAuthenticationRequestDelegate(
     RenderFrameHost* render_frame_host) {
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents) {
-    return nullptr;
-  }
-  return DefaultAuthenticatorRequestClientDelegate::GetOrCreateForWebContents(
-      web_contents);
+  return std::make_unique<DefaultAuthenticatorRequestClientDelegate>();
 }
 #endif
 

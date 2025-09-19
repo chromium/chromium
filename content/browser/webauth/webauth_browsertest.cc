@@ -435,10 +435,8 @@ class WebAuthBrowserTestWebAuthenticationDelegate
 class WebAuthBrowserTestClientDelegate
     : public DefaultAuthenticatorRequestClientDelegate {
  public:
-  WebAuthBrowserTestClientDelegate(WebContents* web_contents,
-                                   WebAuthBrowserTestState* test_state)
-      : DefaultAuthenticatorRequestClientDelegate(web_contents),
-        test_state_(test_state) {}
+  explicit WebAuthBrowserTestClientDelegate(WebAuthBrowserTestState* test_state)
+      : test_state_(test_state) {}
 
   WebAuthBrowserTestClientDelegate(const WebAuthBrowserTestClientDelegate&) =
       delete;
@@ -467,17 +465,11 @@ class WebAuthBrowserTestContentBrowserClient
     return &web_authentication_delegate_;
   }
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     test_state_->delegate_create_count++;
-    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-
-    auto delegate = std::make_unique<WebAuthBrowserTestClientDelegate>(
-        web_contents, test_state_);
-    auto* delegate_ptr = delegate.get();
-    web_contents->SetUserData(WebAuthBrowserTestClientDelegate::UserDataKey(),
-                              std::move(delegate));
-    return delegate_ptr;
+    return std::make_unique<WebAuthBrowserTestClientDelegate>(test_state_);
   }
 
   void CreateSecurePaymentConfirmationService(

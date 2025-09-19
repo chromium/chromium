@@ -3221,11 +3221,10 @@ class MockAuthenticatorRequestDelegateObserver
       base::OnceCallback<void(InterestingFailureReason)>;
 
   explicit MockAuthenticatorRequestDelegateObserver(
-      WebContents* web_contents,
       InterestingFailureReasonCallback failure_reasons_callback =
           base::DoNothing())
       : TestAuthenticatorRequestDelegate(
-            web_contents /* web_contents */,
+            nullptr /* render_frame_host */,
             base::DoNothing() /* did_start_request_callback */,
             /*started_over_callback=*/base::OnceClosure(),
             /*simulate_user_cancelled=*/false,
@@ -3274,14 +3273,10 @@ class FakeAuthenticatorCommonImpl : public AuthenticatorCommonImpl {
         mock_delegate_(std::move(mock_delegate)) {}
   ~FakeAuthenticatorCommonImpl() override = default;
 
-  AuthenticatorRequestClientDelegate* MaybeCreateRequestDelegate() override {
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  MaybeCreateRequestDelegate() override {
     DCHECK(mock_delegate_);
-    auto* web_contents = WebContents::FromRenderFrameHost(GetRenderFrameHost());
-    auto* mock_delegate_ptr = mock_delegate_.get();
-    web_contents->SetUserData(
-        DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-        std::move(mock_delegate_));
-    return mock_delegate_ptr;
+    return std::move(mock_delegate_);
   }
 
  private:
@@ -3323,8 +3318,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   TestGetCredentialFuture future;
 
   auto mock_delegate =
-      std::make_unique<MockAuthenticatorRequestDelegateObserver>(
-          web_contents());
+      std::make_unique<MockAuthenticatorRequestDelegateObserver>();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
@@ -3368,7 +3362,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
   FailureReasonFuture failure_reason_future;
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
-      web_contents(), failure_reason_future.GetCallback());
+      failure_reason_future.GetCallback());
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;
@@ -3382,7 +3376,9 @@ TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
             future.Get()->get_get_assertion_response()->status);
 
   ASSERT_TRUE(failure_reason_future.IsReady());
-  EXPECT_EQ(InterestingFailureReason::kTimeout, failure_reason_future.Get());
+  EXPECT_EQ(
+      AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
+      failure_reason_future.Get());
 }
 
 TEST_F(AuthenticatorImplRequestDelegateTest,
@@ -3392,7 +3388,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   FailureReasonFuture failure_reason_future;
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
-      web_contents(), failure_reason_future.GetCallback());
+      failure_reason_future.GetCallback());
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   PublicKeyCredentialCreationOptionsPtr options =
@@ -3409,7 +3405,8 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
             std::get<0>(future.Get()));
 
   ASSERT_TRUE(failure_reason_future.IsReady());
-  EXPECT_EQ(InterestingFailureReason::kKeyAlreadyRegistered,
+  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kKeyAlreadyRegistered,
             failure_reason_future.Get());
 }
 
@@ -3420,7 +3417,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   FailureReasonFuture failure_reason_future;
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
-      web_contents(), failure_reason_future.GetCallback());
+      failure_reason_future.GetCallback());
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;
@@ -3432,7 +3429,8 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
             future.Get()->get_get_assertion_response()->status);
 
   ASSERT_TRUE(failure_reason_future.IsReady());
-  EXPECT_EQ(InterestingFailureReason::kKeyNotRegistered,
+  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kKeyNotRegistered,
             failure_reason_future.Get());
 }
 
@@ -4696,14 +4694,12 @@ static constexpr char16_t kTestPIN16[] = u"1234";
 class UVTestAuthenticatorClientDelegate
     : public DefaultAuthenticatorRequestClientDelegate {
  public:
-  explicit UVTestAuthenticatorClientDelegate(WebContents* web_contents,
-                                             bool* collected_pin,
+  explicit UVTestAuthenticatorClientDelegate(bool* collected_pin,
                                              uint32_t* min_pin_length,
                                              bool* did_bio_enrollment,
                                              bool cancel_bio_enrollment,
                                              bool block_request_on_failure_once)
-      : DefaultAuthenticatorRequestClientDelegate(web_contents),
-        collected_pin_(collected_pin),
+      : collected_pin_(collected_pin),
         min_pin_length_(min_pin_length),
         did_bio_enrollment_(did_bio_enrollment),
         cancel_bio_enrollment_(cancel_bio_enrollment),
@@ -4748,16 +4744,6 @@ class UVTestAuthenticatorClientDelegate
     return block;
   }
 
-  void Cleanup() override {
-    block_request_on_failure_once_ = false;
-    cancel_bio_enrollment_ = false;
-    did_bio_enrollment_ = nullptr;
-    bio_callback_.Reset();
-    min_pin_length_ = nullptr;
-    collected_pin_ = nullptr;
-    DefaultAuthenticatorRequestClientDelegate::Cleanup();
-  }
-
  private:
   raw_ptr<bool> collected_pin_;
   raw_ptr<uint32_t> min_pin_length_;
@@ -4774,17 +4760,12 @@ class UVTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
     return &web_authentication_delegate;
   }
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
-    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-    auto delegate = std::make_unique<UVTestAuthenticatorClientDelegate>(
-        web_contents, &collected_pin, &min_pin_length, &did_bio_enrollment,
+    return std::make_unique<UVTestAuthenticatorClientDelegate>(
+        &collected_pin, &min_pin_length, &did_bio_enrollment,
         cancel_bio_enrollment, block_request_on_failure_once);
-    auto* delegate_ptr = delegate.get();
-    web_contents->SetUserData(
-        DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-        std::move(delegate));
-    return delegate_ptr;
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -4875,13 +4856,11 @@ class PINTestAuthenticatorRequestDelegate
     : public DefaultAuthenticatorRequestClientDelegate {
  public:
   PINTestAuthenticatorRequestDelegate(
-      WebContents* web_contents,
       bool supports_pin,
       const std::list<PINExpectation>& pins,
       std::optional<InterestingFailureReason>* failure_reason,
       base::RepeatingCallback<bool()> collect_pin_cb)
-      : DefaultAuthenticatorRequestClientDelegate(web_contents),
-        supports_pin_(supports_pin),
+      : supports_pin_(supports_pin),
         expected_(pins),
         failure_reason_(failure_reason),
         collect_pin_cb_(collect_pin_cb) {}
@@ -4890,6 +4869,11 @@ class PINTestAuthenticatorRequestDelegate
       const PINTestAuthenticatorRequestDelegate&) = delete;
   PINTestAuthenticatorRequestDelegate& operator=(
       const PINTestAuthenticatorRequestDelegate&) = delete;
+
+  ~PINTestAuthenticatorRequestDelegate() override {
+    DCHECK(expected_.empty())
+        << expected_.size() << " unsatisifed PIN expectations";
+  }
 
   bool SupportsPIN() const override { return supports_pin_; }
 
@@ -4920,15 +4904,8 @@ class PINTestAuthenticatorRequestDelegate
 
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
     *failure_reason_ = reason;
-    return DefaultAuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
+    return AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
         reason);
-  }
-
-  void Cleanup() override {
-    DCHECK(expected_.empty())
-        << expected_.size() << " unsatisifed PIN expectations";
-    collect_pin_cb_.Reset();
-    DefaultAuthenticatorRequestClientDelegate::Cleanup();
   }
 
  private:
@@ -4947,16 +4924,11 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
     return &web_authentication_delegate;
   }
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
-    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-    auto delegate = std::make_unique<PINTestAuthenticatorRequestDelegate>(
-        web_contents, supports_pin, expected, &failure_reason, collect_pin_cb);
-    auto* delegate_ptr = delegate.get();
-    web_contents->SetUserData(
-        DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-        std::move(delegate));
-    return delegate_ptr;
+    return std::make_unique<PINTestAuthenticatorRequestDelegate>(
+        supports_pin, expected, &failure_reason, collect_pin_cb);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -6586,8 +6558,7 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUvBlockedFallBackToPin) {
 class BlockingAuthenticatorRequestDelegate
     : public DefaultAuthenticatorRequestClientDelegate {
  public:
-  explicit BlockingAuthenticatorRequestDelegate(WebContents* web_contents)
-      : DefaultAuthenticatorRequestClientDelegate(web_contents) {}
+  BlockingAuthenticatorRequestDelegate() = default;
 
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
@@ -6612,11 +6583,6 @@ class BlockingAuthenticatorRequestDelegate
     return true;
   }
 
-  void Cleanup() override {
-    cancel_callback_.Reset();
-    DefaultAuthenticatorRequestClientDelegate::Cleanup();
-  }
-
  private:
   base::OnceClosure cancel_callback_;
 };
@@ -6629,21 +6595,18 @@ class BlockingDelegateContentBrowserClient : public ContentBrowserClient {
     return &web_authentication_delegate_;
   }
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
-    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-
-    auto delegate =
-        std::make_unique<BlockingAuthenticatorRequestDelegate>(web_contents);
-    auto* delegate_ptr = delegate.get();
-    web_contents->SetUserData(
-        DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-        std::move(delegate));
-    return delegate_ptr;
+    auto ret = std::make_unique<BlockingAuthenticatorRequestDelegate>();
+    delegate_ = ret.get();
+    return ret;
   }
 
  private:
   TestWebAuthenticationDelegate web_authentication_delegate_;
+  raw_ptr<BlockingAuthenticatorRequestDelegate, AcrossTasksDanglingUntriaged>
+      delegate_ = nullptr;
 };
 
 class BlockingDelegateAuthenticatorImplTest : public AuthenticatorImplTest {
@@ -6752,7 +6715,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
     // If set, indicates that `DoesBlockRequestOnFailure()` is expected to be
     // called with this value.
-    std::optional<InterestingFailureReason> expected_failure_reason;
+    std::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
+        expected_failure_reason;
 
     // If set, indicates that the `AccountPreselectCallback` should be invoked
     // with this credential ID at the beginning of the request.
@@ -6762,11 +6726,16 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     std::optional<std::string> preselected_authenticator_id;
   };
 
-  explicit ResidentKeyTestAuthenticatorRequestDelegate(
-      WebContents* web_contents,
-      Config config)
-      : DefaultAuthenticatorRequestClientDelegate(web_contents),
-        config_(std::move(config)) {}
+  explicit ResidentKeyTestAuthenticatorRequestDelegate(Config config)
+      : config_(std::move(config)) {}
+
+  ~ResidentKeyTestAuthenticatorRequestDelegate() override {
+    CHECK(!config_.expect_conditional || expect_conditional_satisfied_)
+        << "SetUIPresentation(kAutofill) expected but not called";
+    DCHECK(!config_.expected_failure_reason ||
+           expected_failure_reason_satisfied_)
+        << "DoesRequestBlockOnFailure() expected but not called";
+  }
 
   ResidentKeyTestAuthenticatorRequestDelegate(
       const ResidentKeyTestAuthenticatorRequestDelegate&) = delete;
@@ -6841,7 +6810,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       EXPECT_EQ(*config_.expected_failure_reason, reason);
       expected_failure_reason_satisfied_ = true;
     }
-    return DefaultAuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
+    return AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
         reason);
   }
 
@@ -6883,20 +6852,6 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     }
   }
 
-  void Cleanup() override {
-    CHECK(!config_.expect_conditional || expect_conditional_satisfied_)
-        << "SetUIPresentation(kAutofill) expected but not called";
-    DCHECK(!config_.expected_failure_reason ||
-           expected_failure_reason_satisfied_)
-        << "DoesRequestBlockOnFailure() expected but not called";
-    cancel_ui_timeout_callback_.Reset();
-    account_preselected_callback_.Reset();
-    request_callback_.Reset();
-    expected_failure_reason_satisfied_ = false;
-    expect_conditional_satisfied_ = false;
-    DefaultAuthenticatorRequestClientDelegate::Cleanup();
-  }
-
  private:
   const Config config_;
   bool expect_conditional_satisfied_ = false;
@@ -6917,17 +6872,11 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
     return &web_authentication_delegate;
   }
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
-    auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-    auto delegate =
-        std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
-            web_contents, delegate_config);
-    auto* delegate_ptr = delegate.get();
-    web_contents->SetUserData(
-        DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-        std::move(delegate));
-    return delegate_ptr;
+    return std::make_unique<ResidentKeyTestAuthenticatorRequestDelegate>(
+        delegate_config);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -7157,7 +7106,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
       /*user_id=*/{{1, 1, 1, 1}}, "test@example.com", "Test User"));
 
   test_client_.delegate_config.expected_failure_reason =
-      InterestingFailureReason::kStorageFull;
+      AuthenticatorRequestClientDelegate::InterestingFailureReason::
+          kStorageFull;
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kStorageFull,
@@ -8873,10 +8823,8 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         const device::FidoRequestHandlerBase::TransportAvailabilityInfo&,
         const std::optional<std::string>& icloud_keychain_id,
         device::FidoRequestHandlerBase::RequestCallback request_callback)>;
-    InspectTAIAuthenticatorRequestDelegate(WebContents* web_contents,
-                                           Callback callback)
-        : DefaultAuthenticatorRequestClientDelegate(web_contents),
-          callback_(std::move(callback)) {}
+    explicit InspectTAIAuthenticatorRequestDelegate(Callback callback)
+        : callback_(std::move(callback)) {}
 
     void RegisterActionCallbacks(
         base::OnceClosure cancel_callback,
@@ -8934,17 +8882,11 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         InspectTAIAuthenticatorRequestDelegate::Callback callback)
         : callback_(std::move(callback)) {}
 
-    AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+    std::unique_ptr<AuthenticatorRequestClientDelegate>
+    GetWebAuthenticationRequestDelegate(
         RenderFrameHost* render_frame_host) override {
-      auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-
-      auto delegate = std::make_unique<InspectTAIAuthenticatorRequestDelegate>(
-          web_contents, callback_);
-      auto* delegate_ptr = delegate.get();
-      web_contents->SetUserData(
-          DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-          std::move(delegate));
-      return delegate_ptr;
+      return std::make_unique<InspectTAIAuthenticatorRequestDelegate>(
+          callback_);
     }
 
    private:
@@ -9276,20 +9218,14 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
   class ContactWhenReadyAuthenticatorRequestDelegate
       : public DefaultAuthenticatorRequestClientDelegate {
    public:
-    ContactWhenReadyAuthenticatorRequestDelegate(
-        WebContents* web_contents,
+    explicit ContactWhenReadyAuthenticatorRequestDelegate(
         base::RepeatingClosure callback)
-        : DefaultAuthenticatorRequestClientDelegate(web_contents),
-          callback_(std::move(callback)) {}
+        : callback_(callback) {}
+    ~ContactWhenReadyAuthenticatorRequestDelegate() override = default;
 
     void OnTransportAvailabilityEnumerated(
         device::FidoRequestHandlerBase::TransportAvailabilityInfo) override {
       callback_.Run();
-    }
-
-    void Cleanup() override {
-      callback_.Reset();
-      DefaultAuthenticatorRequestClientDelegate::Cleanup();
     }
 
    private:
@@ -9302,17 +9238,11 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
         base::RepeatingClosure callback)
         : callback_(callback) {}
 
-    AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+    std::unique_ptr<AuthenticatorRequestClientDelegate>
+    GetWebAuthenticationRequestDelegate(
         RenderFrameHost* render_frame_host) override {
-      auto* web_contents = WebContents::FromRenderFrameHost(render_frame_host);
-      auto delegate =
-          std::make_unique<ContactWhenReadyAuthenticatorRequestDelegate>(
-              web_contents, callback_);
-      auto* raw_delegate = delegate.get();
-      web_contents->SetUserData(
-          DefaultAuthenticatorRequestClientDelegate::UserDataKey(),
-          std::move(delegate));
-      return raw_delegate;
+      return std::make_unique<ContactWhenReadyAuthenticatorRequestDelegate>(
+          callback_);
     }
 
     WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
@@ -9559,7 +9489,7 @@ TEST_F(AuthenticatorCableV2Test, HandshakeError) {
   FailureReasonFuture failure_reason_future;
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
-      web_contents(), failure_reason_future.GetCallback());
+      failure_reason_future.GetCallback());
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestMakeCredentialFuture future;
@@ -9570,7 +9500,8 @@ TEST_F(AuthenticatorCableV2Test, HandshakeError) {
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, std::get<0>(future.Get()));
 
   ASSERT_TRUE(failure_reason_future.IsReady());
-  EXPECT_EQ(InterestingFailureReason::kHybridTransportError,
+  EXPECT_EQ(AuthenticatorRequestClientDelegate::InterestingFailureReason::
+                kHybridTransportError,
             failure_reason_future.Get());
 }
 

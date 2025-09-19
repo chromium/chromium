@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -145,11 +144,6 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       const AuthenticatorRequestClientDelegate&) = delete;
 
   ~AuthenticatorRequestClientDelegate() override;
-
-  // Called when a request is complete to allow the delegate to clean up any
-  // per-request state. For delegates that are `WebContentsUserData`, this is
-  // also when the delegate should remove itself from the `WebContents`.
-  virtual void Cleanup();
 
   // SetRelyingPartyId sets the RP ID for this request. This is called after
   // |WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride| is given the

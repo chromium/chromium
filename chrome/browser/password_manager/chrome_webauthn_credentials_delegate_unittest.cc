@@ -136,8 +136,9 @@ class ChromeWebAuthnCredentialsDelegateTest
 
   void TearDown() override {
 #if !BUILDFLAG(IS_ANDROID)
-    authenticator_request_delegate_ = nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID)
+    authenticator_request_delegate_.reset();
+#endif
+
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -189,7 +190,8 @@ class ChromeWebAuthnCredentialsDelegateTest
         ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
   }
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<ChromeAuthenticatorRequestDelegate> authenticator_request_delegate_;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate>
+      authenticator_request_delegate_;
 #else
   raw_ptr<WebAuthnRequestDelegateAndroid> delegate_;
   std::optional<std::vector<uint8_t>> selected_id_;

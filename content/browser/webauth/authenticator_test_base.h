@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/webauth/default_authenticator_request_client_delegate.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -216,7 +217,7 @@ class TestAuthenticatorRequestDelegate
     : public DefaultAuthenticatorRequestClientDelegate {
  public:
   TestAuthenticatorRequestDelegate(
-      WebContents* web_contents,
+      RenderFrameHost* render_frame_host,
       base::OnceClosure action_callbacks_registered_callback,
       base::OnceClosure started_over_callback,
       bool simulate_user_cancelled,
@@ -261,8 +262,6 @@ class TestAuthenticatorRequestDelegate
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* fido_discovery_factory) override;
-
-  void Cleanup() override;
 
   base::OnceClosure action_callbacks_registered_callback_;
   base::OnceClosure cancel_callback_;
@@ -455,7 +454,8 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   bool IsSecurityLevelAcceptableForWebAuthn(content::RenderFrameHost* rfh,
                                             const url::Origin& origin) override;
 
-  AuthenticatorRequestClientDelegate* GetWebAuthenticationRequestDelegate(
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override;
 
   TestWebAuthenticationDelegate web_authentication_delegate;

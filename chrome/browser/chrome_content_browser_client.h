@@ -780,7 +780,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   content::HidDelegate* GetHidDelegate() override;
   content::DirectSocketsDelegate* GetDirectSocketsDelegate() override;
-  content::AuthenticatorRequestClientDelegate*
+  std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
 #endif

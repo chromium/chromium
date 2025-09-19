@@ -11,14 +11,15 @@
 namespace content {
 
 class WebContents;
-
 // The default implementation of AuthenticatorRequestClientDelegate.
 // It is used by embedders that do not provide their own implementation, e.g.
 // content_shell. It provides no UI and has minimal functionality.
+
 class CONTENT_EXPORT DefaultAuthenticatorRequestClientDelegate
-    : public AuthenticatorRequestClientDelegate,
-      public WebContentsUserData<DefaultAuthenticatorRequestClientDelegate> {
+    : public AuthenticatorRequestClientDelegate {
  public:
+  DefaultAuthenticatorRequestClientDelegate();
+
   ~DefaultAuthenticatorRequestClientDelegate() override;
 
   DefaultAuthenticatorRequestClientDelegate(
@@ -29,15 +30,8 @@ class CONTENT_EXPORT DefaultAuthenticatorRequestClientDelegate
   // AuthenticatorRequestClientDelegate:
   void StartObserving(device::FidoRequestHandlerBase* request_handler) override;
   void StopObserving(device::FidoRequestHandlerBase* request_handler) override;
-  void Cleanup() override;
-
- protected:
-  explicit DefaultAuthenticatorRequestClientDelegate(WebContents* web_contents);
 
  private:
-  friend class WebContentsUserData<DefaultAuthenticatorRequestClientDelegate>;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
   base::ScopedObservation<device::FidoRequestHandlerBase,
                           device::FidoRequestHandlerBase::Observer>
       request_handler_observation_{this};
