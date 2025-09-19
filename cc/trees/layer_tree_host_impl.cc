@@ -5555,7 +5555,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
     client_shared_image = sii->CreateSharedImageForSoftwareCompositor(
         {format, upload_size, color_space, shared_image_usage,
-         "LayerTreeHostUIResource"});
+         "LayerTreeHostUIResourceSoftware"});
     CHECK(client_shared_image);
     shared_mapping = client_shared_image->Map();
   }
@@ -5569,7 +5569,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       auto* sii = context_provider->SharedImageInterface();
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
-           "LayerTreeHostUIResource"},
+           "LayerTreeHostUIResourceBitmap"},
           bitmap.GetPixels());
       CHECK(client_shared_image);
     } else {
@@ -5637,7 +5637,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       auto* sii = context_provider->SharedImageInterface();
       client_shared_image = sii->CreateSharedImage(
           {format, upload_size, color_space, shared_image_usage,
-           "LayerTreeHostUIResource"},
+           "LayerTreeHostUIResourceScaledBitmap"},
           gfx::SkPixmapToSpan(pixmap));
       CHECK(client_shared_image);
     }
