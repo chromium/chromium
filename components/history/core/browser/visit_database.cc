@@ -1468,12 +1468,6 @@ bool VisitDatabase::MigrateVisitsWithoutPubliclyRoutableColumn() {
       "DEFAULT FALSE NOT NULL");
 }
 
-bool VisitDatabase::CanMigrateFlocAllowed() {
-  // Migration expects a "visits" table with a "publicly_routable" column.
-  return GetDB().DoesTableExist("visits") &&
-         GetDB().DoesColumnExist("visits", "publicly_routable");
-}
-
 bool VisitDatabase::
     MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn() {
   if (!GetDB().DoesTableExist("visits")) {

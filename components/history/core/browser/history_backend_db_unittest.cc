@@ -3442,5 +3442,58 @@ TEST_F(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
   EXPECT_EQ(GetDatabaseVersion(), 10);
 }
 
+TEST_F(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
+
+  {
+    // Corrupt the table in a way that will fail the migration.
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_TRUE(db.Execute("DROP TABLE visits"));
+  }
+
+  // Migration fails, database is razed.
+  EXPECT_FALSE(CreateBackendAndDatabase());
+
+  // Database errors queue a `KillHistoryDatabase` task holding a reference on
+  // the `HistoryBackend`. Wait for that task to finish and the backend deleted.
+  base::RunLoop loop;
+  backend_->SetOnBackendDestroyTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), loop.QuitClosure());
+  DeleteBackend();
+  loop.Run();
+
+  // Creates a new database.
+  EXPECT_TRUE(CreateBackendAndDatabase());
+  EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
+}
+
+TEST_F(HistoryBackendDBTest,
+       Version43WithoutPubliclyRoutableColumnRazesDatabase) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
+
+  {
+    // Corrupt the table in a way that will fail the migration.
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_TRUE(db.Execute("ALTER TABLE visits DROP COLUMN publicly_routable"));
+  }
+
+  // Migration fails, database is razed.
+  EXPECT_FALSE(CreateBackendAndDatabase());
+
+  // Database errors queue a `KillHistoryDatabase` task holding a reference on
+  // the `HistoryBackend`. Wait for that task to finish and the backend deleted.
+  base::RunLoop loop;
+  backend_->SetOnBackendDestroyTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(), loop.QuitClosure());
+  DeleteBackend();
+  loop.Run();
+
+  // Creates a new database.
+  EXPECT_TRUE(CreateBackendAndDatabase());
+  EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
+}
+
 }  // namespace
 }  // namespace history

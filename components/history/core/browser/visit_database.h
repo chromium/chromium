@@ -320,11 +320,6 @@ class VisitDatabase {
   // don't have publicly_routable column yet.
   bool MigrateVisitsWithoutPubliclyRoutableColumn();
 
-  // Called by the derived classes to do early checks before migrating the older
-  // visits table's floc_allowed (for historical reasons named
-  // "publicly_routable" in the schema) column to another table.
-  bool CanMigrateFlocAllowed();
-
   // Called by the derived classes to migrate the older visits table which
   // which doesn't have `opener_visit` column and also drops `publicly_routable`
   // column which is no longer used.
