@@ -287,6 +287,12 @@ const char kQuickDelete[] = "QuickDelete";
 const char kGoogleLens[] = "GoogleLens";
 const char kBottomOmnibox[] = "BottomOmnibox";
 
+// Input Context keys for tips notifications ranker.
+const char kEnhancedSafeBrowsingStatus[] = "enhanced_safe_browsing_status";
+const char kQuickDeleteUsage[] = "quick_delete_usage";
+const char kBottomOmniboxStatus[] = "bottom_omnibox_status";
+const char kBottomOmniboxUsage[] = "bottom_omnibox_usage";
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_

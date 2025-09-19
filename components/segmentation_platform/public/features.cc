@@ -255,8 +255,18 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
     "max_default_browser_magic_stack_ios_impressions",
     /*default_value=*/6};
 
-BASE_FEATURE(kSegmentationPlatformTipsNotificationsRanker,
-             "SegmentationPlatformTipsNotificationsRanker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kTrustAndSafety{&kAndroidTipsNotifications,
+                                                   "trust_and_safety",
+                                                   /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kEssential{&kAndroidTipsNotifications,
+                                              "essential",
+                                              /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kNewFeatures{&kAndroidTipsNotifications,
+                                                "new_features",
+                                                /*default_value=*/false};
 
 }  // namespace segmentation_platform::features

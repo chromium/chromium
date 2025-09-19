@@ -123,7 +123,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
          {features::kSegmentationPlatformFedCmUser, {}},
-         {features::kSegmentationPlatformTipsNotificationsRanker, {}}},
+         {features::kAndroidTipsNotifications, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -690,9 +690,19 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestTipsNotificationsRanker) {
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
 
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace(
+      kEnhancedSafeBrowsingStatus, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kQuickDeleteUsage, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kBottomOmniboxStatus, processing::ProcessedValue::FromFloat(1));
+  input_context->metadata_args.emplace(
+      kBottomOmniboxUsage, processing::ProcessedValue::FromFloat(1));
+
   ExpectGetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
-      nullptr,
+      input_context,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/std::nullopt);
 }

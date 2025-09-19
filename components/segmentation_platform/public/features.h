@@ -204,7 +204,14 @@ BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
 extern const base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions;
 
 // Feature flag for enabling the tips notifications ranker.
-BASE_DECLARE_FEATURE(kSegmentationPlatformTipsNotificationsRanker);
+BASE_DECLARE_FEATURE(kAndroidTipsNotifications);
+
+// The prioritization of tips notifications based on trust and safety.
+extern const base::FeatureParam<bool> kTrustAndSafety;
+// The prioritization of tips notifications based on essential features.
+extern const base::FeatureParam<bool> kEssential;
+// The prioritization of tips notifications based on new features.
+extern const base::FeatureParam<bool> kNewFeatures;
 
 }  // namespace segmentation_platform::features
 
