@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -1623,10 +1624,15 @@ class PrefHashFilterEncryptedTest : public PrefHashFilterTest {
     MockPrefService() = default;
     ~MockPrefService() override = default;
 
-    void ClearPref(const std::string& path) { cleared_prefs_.insert(path); }
+    void ClearPref(const std::string& path) {
+      cleared_prefs_.insert(path);
+      TestingPrefServiceSimple::ClearPref(path);
+    }
     bool WasCleared(const std::string& path) const {
       return cleared_prefs_.count(path);
     }
+
+    void ClearClearedPrefsForTesting() { cleared_prefs_.clear(); }
 
    private:
     std::set<std::string> cleared_prefs_;
@@ -1729,6 +1735,45 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
   mock_pref_hash_store_->ClearTestState();
   revalidation_run_loop.Run();
 
+  EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  // Set the encrypted hash explicitly to be invalid, so the deferred task will
+  // try to reset the pref.
+  mock_pref_hash_store_->SetCheckResult("prefix." + std::string(kAtomicPref),
+                                        ValueState::CHANGED);
+
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false),
+      std::move(pref_store_contents_));
+  mock_pref_service_->ClearPref(kAtomicPref);
+
+  base::RunLoop revalidation_run_loop;
+  bool was_validation_performed = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &was_validation_performed,
+      revalidation_run_loop.QuitClosure()));
+
+  mock_pref_service_->ClearClearedPrefsForTesting();
+  revalidation_run_loop.Run();
+
+  EXPECT_TRUE(was_validation_performed);
+
+  // This means ClearPref should NOT be called a second time.
   EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
 }
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
