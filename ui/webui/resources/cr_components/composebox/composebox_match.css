@@ -81,6 +81,8 @@
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
   display: none;
   position: absolute;
   top: 6px;

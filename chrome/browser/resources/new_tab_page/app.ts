@@ -568,11 +568,6 @@ export class AppElement extends AppElementBase {
       this.singleColoredLogo_ = this.computeSingleColoredLogo_();
     }
 
-    if (changedPrivateProperties.has('showComposebox_')) {
-      this.logoColor_ = this.computeLogoColor_();
-      this.singleColoredLogo_ = this.computeSingleColoredLogo_();
-    }
-
     // theme_, showLensUploadDialog_
     this.realboxShown_ = this.computeRealboxShown_();
 
@@ -891,18 +886,11 @@ export class AppElement extends AppElementBase {
       return null;
     }
 
-    if (this.showComposebox_) {
-      return this.theme_.isDark ? hexColorToSkColor('#ffffff') : null;
-    }
-
     return this.theme_.logoColor ||
         (this.theme_.isDark ? hexColorToSkColor('#ffffff') : null);
   }
 
   private computeSingleColoredLogo_(): boolean {
-    if (this.showComposebox_) {
-      return !!this.theme_ && this.theme_.isDark;
-    }
     return !!this.theme_ && (!!this.theme_.logoColor || this.theme_.isDark);
   }
 
