@@ -752,21 +752,11 @@ crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation
 
 # CSS Anchor Positioning Update failures.
 # New tests which fail without the flag enabled.
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-animation.html [ Failure ]
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-basic.html [ Failure ]
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Failure ]
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-change-try-rule.html [ Failure ]
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-iframe.html [ Failure ]
-crbug.com/438515315 external/wpt/css/css-anchor-position/last-successful-intermediate-ignored.html [ Failure ]
+crbug.com/438515315 external/wpt/css/css-anchor-position/position-area-self-alignment-overflow.html [ Failure ]
 crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-position-area.html [ Failure ]
 crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-size.html [ Failure ]
 crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-animation.html [ Pass ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-basic.html [ Pass ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Pass ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-change-try-rule.html [ Pass ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-iframe.html [ Pass ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/last-successful-intermediate-ignored.html [ Pass ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-self-alignment-overflow.html [ Pass ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-position-area.html [ Pass ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-size.html [ Pass ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Pass ]
