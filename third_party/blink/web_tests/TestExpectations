@@ -6805,12 +6805,13 @@ crbug.com/419066541 virtual/css-gap-decorations-disabled/external/wpt/web-animat
 
 ### Tests failing with CSSGapDecorationOptimizedEnabled:
 # These tests are failing for Multicol because they are testing rule breaking behavior
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-008.html [ Failure ]
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-009.html [ Failure ]
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-010.html [ Failure ]
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-011.html [ Failure ]
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-012.html [ Failure ]
-crbug.com/436140061 virtual/css-gap-decorations-optimized/external/wpt/css/css-gaps/multicol/multicol-gap-decorations-014.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-008.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-009.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-010.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-011.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-012.html [ Failure ]
+crbug.com/436140061 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-014.html [ Failure ]
+### End of tests for CSSGapDecorationOptimized enabled
 
 # I think these are just test issues, but at least the scrollbars are related:
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]

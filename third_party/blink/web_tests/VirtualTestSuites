@@ -400,18 +400,6 @@
     "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com", "javiercon@microsoft.com"]
   },
   {
-    "prefix": "css-gap-decorations-optimized",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/css/css-gaps",
-      "external/wpt/css/css-multicol",
-      "paint/invalidation/multicol/column-rules-fixed-height.html",
-      "paint/invalidation/multicol/multicol-resize-with-rule.html"],
-    "args": ["--enable-blink-features=CSSGapDecorationOptimized"],
-    "expires": "Sep 1, 2026",
-    "owners": ["samomekarajr@microsoft.com", "javiercon@microsoft.com"]
-  },
-  {
     "prefix": "computed-width-values-depend-on-style-values",
     "platforms": ["Linux"],
     "bases": [

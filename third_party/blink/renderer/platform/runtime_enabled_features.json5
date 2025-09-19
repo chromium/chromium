@@ -1351,6 +1351,7 @@
     {
       // https://issues.chromium.org/issues/436140061
       name: "CSSGapDecorationOptimized",
+      status: "experimental",
     },
     {
       // This needs to be kept as a runtime flag as long as we need to forcibly
