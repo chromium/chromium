@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
+class OneShotTimer;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -88,6 +89,9 @@ class SodaSpeechRecognizerImpl
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr audio_data);
 
+  // Ends the speech recognition session if a final result is not received.
+  void OnFinalResultTimeout();
+
   // SpeechRecognizerFsm implementation.
   void DispatchEvent(const FSMEventArgs& event_args) override;
   void ProcessAudioPipeline(const FSMEventArgs& event_args) override;
@@ -133,6 +137,9 @@ class SodaSpeechRecognizerImpl
   mojo::Receiver<media::mojom::SpeechRecognitionAudioForwarder>
       audio_forwarder_;
 
+  // A timer to ensure that the speech recognition session ends if a final
+  // result is not received.
+  base::OneShotTimer final_result_timer_;
   base::WeakPtrFactory<SodaSpeechRecognizerImpl> weak_ptr_factory_{this};
 };
 
