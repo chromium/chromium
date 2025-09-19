@@ -42,14 +42,14 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
 
   // create dummy data for test
   const traceEngineData = await PerformanceTestRunner.createTraceEngineDataFromEvents(testData)
-  const mainThreadEvents = traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
+  const parsedTrace = { data: traceEngineData };
 
   const detailsView = Timeline.TimelinePanel.TimelinePanel.instance().flameChart.detailsView;
 
   async function testDetailsView() {
     TestRunner.addResult('Tests accessibility in performance Details view using the axe-core linter');
 
-    detailsView.setModel(null, traceEngineData, mainThreadEvents);
+    detailsView.setModel({ data: parsedTrace });
 
     const tabbedPane = detailsView.tabbedPane;
     tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.Details);
@@ -65,8 +65,8 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
     const detailsTab = tabbedPane.visibleView;
 
     // update child views with the same test data
-    detailsTab.setModelWithEvents(null, mainThreadEvents, traceEngineData);
-    detailsTab.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
+    detailsTab.setModelWithEvents(null, parsedTrace);
+    detailsTab.updateContents(Timeline.TimelineSelection.selectionFromRangeMilliSeconds(
       // traceBounds are in microseconds, but fromRange expects milliseconds
       traceEngineData.Meta.traceBounds.min / 1000,
       traceEngineData.Meta.traceBounds.max / 1000

@@ -5452,9 +5452,6 @@ crbug.com/757165 [ Win ] external/wpt/preload/download-resources.html [ Crash Fa
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-accelerated-child-with-filter-child.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerated-layer.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5903015
-crbug.com/370599988 http/tests/devtools/a11y-axe-core/performance/performance-pane-a11y-test.js [ Failure Pass ]
-
 crbug.com/769347 [ Mac ] fast/dom/inert/inert-node-is-uneditable.html [ Failure ]
 
 crbug.com/769056 virtual/text-antialias/emoji-web-font.html [ Failure ]
