@@ -176,6 +176,11 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     &kNtpComposebox,
     "ContextMenuMaxTabSuggestions",
     5);
+
+const base::FeatureParam<bool> kShowNextRealbox(&kNtpComposebox,
+                                                "ShowNextRealbox",
+                                                false);
+
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox,
                                             "MaxNumFiles",
                                             1);

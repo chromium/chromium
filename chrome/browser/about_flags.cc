@@ -1656,6 +1656,9 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
     {"ShowComposeboxZps", "true"},
     {"ShowContextMenu", "true"},
 };
+const FeatureEntry::FeatureParam kShowNextRealbox[] = {
+    {"ShowNextRealbox", "true"},
+};
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"MaxNumFiles", "5"},
     {"ShowComposeboxZps", "true"},
@@ -1674,6 +1677,8 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
      std::size(kComposeboxShowContextMenu), nullptr},
     {"- Show Contextual Input Menu and ZPS", kComposeboxShowContextMenuAndZps,
      std::size(kComposeboxShowContextMenuAndZps), nullptr},
+    {"- Show Next Realbox", kShowNextRealbox, std::size(kShowNextRealbox),
+     nullptr},
     {"- Show Contextual Input Menu and ZPS 5 File Limit",
      kComposeboxShowContextMenuAndZpsMultiFile,
      std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},

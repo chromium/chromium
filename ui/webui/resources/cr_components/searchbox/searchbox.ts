@@ -150,6 +150,13 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
+      showNextRealbox:
+          {type: Boolean,
+           value: () => loadTimeData.valueExists('showNextRealbox') &&
+               loadTimeData.getBoolean('showNextRealbox'),
+        reflectToAttribute: true,
+      },
+
       composeboxEnabled: {
         type: Boolean,
       },
@@ -310,6 +317,7 @@ export class SearchboxElement extends SearchboxElementBase {
   declare searchboxLensSearchEnabled: boolean;
   declare searchboxChromeRefreshTheming: boolean;
   declare searchboxSteadyStateShadow: boolean;
+  declare showNextRealbox: boolean;
   declare composeboxEnabled: boolean;
   declare composeButtonEnabled: boolean;
   declare showThumbnail: boolean;

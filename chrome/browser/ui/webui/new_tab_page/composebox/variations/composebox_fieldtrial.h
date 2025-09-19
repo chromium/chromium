@@ -39,6 +39,8 @@ extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
 extern const base::FeatureParam<bool> kShowContextMenu;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
+// Whether to show the next realbox.
+extern const base::FeatureParam<bool> kShowNextRealbox;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
 
