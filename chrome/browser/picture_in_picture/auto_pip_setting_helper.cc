@@ -4,12 +4,18 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -78,6 +84,19 @@ ContentSetting AutoPipSettingHelper::GetEffectiveContentSetting() {
 void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
   content_settings::ContentSettingConstraints constraints;
   constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+
+  // Enable last-visit tracking for eligible permissions granted from
+  // Auto PiP bubble. This allows Safety Hub to auto-revoke the permission
+  // if the site is not visited for a finite amount of time.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::
+              kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+      new_setting &&
+      content_settings::CanBeAutoRevokedAsUnusedPermission(
+          ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+          content_settings::ContentSettingToValue(new_setting))) {
+    constraints.set_track_last_visit_for_autoexpiration(true);
+  }
 
   settings_map_->SetContentSettingDefaultScope(
       origin_, /*secondary_url=*/GURL(),

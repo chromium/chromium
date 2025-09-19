@@ -10,8 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "media/base/picture_in_picture_events_info.h"
@@ -19,6 +24,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -105,6 +111,8 @@ class AutoPipSettingHelperTest
     ViewsTestBase::TearDown();
     settings_map_->ShutdownOnUIThread();
   }
+
+  HostContentSettingsMap* settings_map() { return settings_map_.get(); }
 
   AutoPipSettingHelper* setting_helper() { return setting_helper_.get(); }
   AutoPipSettingOverlayView* setting_overlay() const {
@@ -253,6 +261,100 @@ TEST_F(AutoPipSettingHelperTest, AllowOnEveryVisitDoesNotCallCloseCb) {
   setting_view()->simulate_button_press_for_testing(
       UiResult::kAllowOnEveryVisit);
   EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
+}
+
+// Verify AUTO_PICTURE_IN_PICTURE permission granted through AutoPipSettingView
+// bubble is correctly marked as eligible (i.e. `last_visited` timestamp
+// is tracked) for Safety Hub auto-revocation when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(AutoPipSettingHelperTest, UpdateContentSetting_LastVisited_Tracked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Show AutoPipSettingView bubble for the user to choose a setting for
+  // Automatic Picture in Picture.
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
+
+  // Simulate the user choosing "ALLOW on every visit".
+  setting_view()->simulate_button_press_for_testing(
+      UiResult::kAllowOnEveryVisit);
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
+
+  // Verify that `last_visited` was recorded and lies within the past 7 days.
+  //
+  // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to privacy.
+  // It rounds given timestamp down to the nearest multiple of 7 in the past.
+  // [1] components/content_settings/core/browser/content_settings_utils.cc
+  base::Time now = base::Time::Now();
+  content_settings::SettingInfo info;
+  settings_map()->GetWebsiteSetting(
+      origin(), GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE, &info);
+  EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+  EXPECT_LE(info.metadata.last_visited(), now);
+}
+
+// Verify AUTO_PICTURE_IN_PICTURE permission blocked through AutoPipSettingView
+// bubble is not marked as eligible (i.e. `last_visited` timestamp
+// is tracked) for Safety Hub auto-revocation even when the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+TEST_F(AutoPipSettingHelperTest,
+       UpdateContentSetting_LastVisited_NotTracked_WrongValue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Show AutoPipSettingView bubble for the user to choose a setting for
+  // Automatic Picture in Picture.
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
+
+  // Simulate the user choosing "BLOCK".
+  setting_view()->simulate_button_press_for_testing(UiResult::kBlock);
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
+
+  // Verify that `last_visited` is not recorded unless the value is ALLOW.
+  content_settings::SettingInfo info;
+  settings_map()->GetWebsiteSetting(
+      origin(), GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+// Verify AUTO_PICTURE_IN_PICTURE permission granted through AutoPipSettingView
+// bubble is not marked as eligible (i.e. `last_visited` timestamp
+// is tracked) for Safety Hub auto-revocation because the
+// kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is disabled.
+TEST_F(AutoPipSettingHelperTest,
+       UpdateContentSetting_LastVisited_NotTracked_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Show AutoPipSettingView bubble for the user to choose a setting for
+  // Automatic Picture in Picture.
+  set_content_setting(CONTENT_SETTING_DEFAULT);
+  SetupNoEmbargo();
+  ASSERT_TRUE(AttachOverlayView());
+  setting_overlay()->ShowBubble(widget()->GetNativeView());
+
+  // Simulate the user choosing "ALLOW on every visit".
+  setting_view()->simulate_button_press_for_testing(
+      UiResult::kAllowOnEveryVisit);
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
+
+  // Verify that `last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  settings_map()->GetWebsiteSetting(
+      origin(), GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
 }
 
 TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
