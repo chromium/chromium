@@ -285,26 +285,6 @@ public class DataSharingTabManager {
      * @param joinCallback The callbacks for the join ui.
      * @return The session id of the join screen.
      */
-    public @Nullable String showJoinScreenWithPreviewAndLatencyMetrics(
-            Activity activity,
-            GroupToken token,
-            SharedTabGroupPreview previewTabGroupData,
-            long joinDialogShownTimestampMs,
-            DataSharingJoinUiConfig.JoinCallback joinCallback) {
-        return showJoinScreenWithPreview(
-                activity, token, previewTabGroupData, joinDialogShownTimestampMs, joinCallback);
-    }
-
-    /**
-     * Show the join UI with preview data.
-     *
-     * @param activity The current tabbed activity.
-     * @param token The {@link GroupToken} for the tab group.
-     * @param previewTabGroupData The {@link SharedTabGroupPreview} for the tab group.
-     * @param joinDialogShownTimestampMs elapsedRealtime() from boot till join dialog was displayed.
-     * @param joinCallback The callbacks for the join ui.
-     * @return The session id of the join screen.
-     */
     public @Nullable String showJoinScreenWithPreview(
             Activity activity,
             GroupToken token,
