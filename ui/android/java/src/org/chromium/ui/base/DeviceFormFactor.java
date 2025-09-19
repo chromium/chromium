@@ -57,6 +57,13 @@ public class DeviceFormFactor {
     public static final String TABLET_OR_DESKTOP = "TabletOrDesktop";
 
     /**
+     * Phone or tablet form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>As identified by <code>isDesktop() == false</code>.
+     */
+    public static final String PHONE_OR_TABLET = "PhoneOrTablet";
+
+    /**
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
      * directories. E.g.: res/values-sw600dp/values.xml
      */

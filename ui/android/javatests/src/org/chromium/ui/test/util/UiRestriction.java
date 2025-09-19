@@ -50,5 +50,6 @@ public final class UiRestriction {
         // TODO(crbug.com/415126396): Change TABLET to "isDesktop() || !isTablet()"
         check.addHandler(DeviceFormFactor.ONLY_TABLET, () -> !isTablet());
         check.addHandler(DeviceFormFactor.TABLET_OR_DESKTOP, () -> !isTablet());
+        check.addHandler(DeviceFormFactor.PHONE_OR_TABLET, () -> isDesktop());
     }
 }
