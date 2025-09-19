@@ -720,7 +720,7 @@ export class BrowserProxyImpl implements BrowserProxy {
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    return instance || (instance = new BrowserProxyImpl());
   }
 
   static setInstance(proxy: BrowserProxy) {
