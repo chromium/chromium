@@ -464,7 +464,7 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
   CHECK(performance);
   performance->AddSoftNavigationEntry(
       AtomicString(context->InitialUrl()), context->UserInteractionTimestamp(),
-      context->FirstContentfulPaintTimingInfo());
+      context->FirstContentfulPaintTimingInfo(), context->NavigationId());
   ReportSoftNavigationToMetrics(context);
 
   TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -448,7 +449,7 @@ void PaintTimingDetector::UpdateLcpCandidate() {
 
   lcp_calculator->UpdateWebExposedLargestContentfulPaintIfNeeded(
       text_update_result.first, image_update_result.first,
-      /*is_triggered_by_soft_navigation=*/false);
+      /*is_triggered_by_soft_navigation=*/false, kNavigationIdAbsentValue);
 }
 
 void PaintTimingDetector::ReportIgnoredContent() {

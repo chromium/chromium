@@ -228,7 +228,7 @@ void SoftNavigationContext::OnInputOrScroll() {
 // Presentation.
 void SoftNavigationContext::UpdateWebExposedLargestContentfulPaintIfNeeded() {
   lcp_calculator_->UpdateWebExposedLargestContentfulPaintIfNeeded(
-      largest_text_, largest_image_, true);
+      largest_text_, largest_image_, true, NavigationId());
 }
 
 bool SoftNavigationContext::TryUpdateLcpCandidate() {

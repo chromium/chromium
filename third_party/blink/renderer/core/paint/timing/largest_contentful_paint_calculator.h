@@ -30,7 +30,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void UpdateWebExposedLargestContentfulPaintIfNeeded(
       const TextRecord* largest_text,
       const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation);
+      bool is_triggered_by_soft_navigation,
+      uint32_t navigation_id);
 
   bool HasLargestImagePaintChangedForMetrics(
       base::TimeTicks largest_image_paint_time,
@@ -67,10 +68,12 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void UpdateWebExposedLargestContentfulImage(
       const ImageRecord* largest_image,
-      bool is_triggered_by_soft_navigation);
+      bool is_triggered_by_soft_navigation,
+      uint32_t navigation_id);
   void UpdateWebExposedLargestContentfulText(
       const TextRecord& largest_text,
-      bool is_triggered_by_soft_navigation);
+      bool is_triggered_by_soft_navigation,
+      uint32_t navigation_id);
 
   std::unique_ptr<TracedValue> TextCandidateTraceData(
       const TextRecord& largest_text,

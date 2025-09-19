@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
+#include "third_party/blink/renderer/core/timing/navigation_id_generator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -70,25 +71,27 @@ void LargestContentfulPaintCalculator::
     UpdateWebExposedLargestContentfulPaintIfNeeded(
         const TextRecord* largest_text,
         const ImageRecord* largest_image,
-        bool is_triggered_by_soft_navigation) {
+        bool is_triggered_by_soft_navigation,
+        uint32_t navigation_id) {
   uint64_t text_size = largest_text ? largest_text->RecordedSize() : 0u;
   uint64_t image_size = largest_image ? largest_image->RecordedSize() : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ && largest_image->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulImage(largest_image,
-                                             is_triggered_by_soft_navigation);
+      UpdateWebExposedLargestContentfulImage(
+          largest_image, is_triggered_by_soft_navigation, navigation_id);
     }
   } else {
     if (text_size > largest_reported_size_ && largest_text->HasPaintTime()) {
-      UpdateWebExposedLargestContentfulText(*largest_text,
-                                            is_triggered_by_soft_navigation);
+      UpdateWebExposedLargestContentfulText(
+          *largest_text, is_triggered_by_soft_navigation, navigation_id);
     }
   }
 }
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
     const ImageRecord* largest_image,
-    bool is_triggered_by_soft_navigation) {
+    bool is_triggered_by_soft_navigation,
+    uint32_t navigation_id) {
   DCHECK(window_performance_);
   DCHECK(largest_image);
   const MediaTiming* media_timing = largest_image->GetMediaTiming();
@@ -120,6 +123,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
   if (!is_triggered_by_soft_navigation) {
+    CHECK_EQ(kNavigationIdAbsentValue, navigation_id);
     window_performance_->OnLargestContentfulPaintUpdated(
         std::make_optional(largest_image->PaintTimingInfo()),
         /*paint_size=*/largest_image->RecordedSize(),
@@ -130,7 +134,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
         std::make_optional(largest_image->PaintTimingInfo()),
         /*paint_size=*/largest_image->RecordedSize(),
         /*load_time=*/largest_image->LoadTime(),
-        /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
+        /*id=*/image_id, /*url=*/image_url, /*element=*/image_element,
+        /*navigation_id=*/navigation_id);
   }
 
   // TODO: update trace value with animated frame data
@@ -150,7 +155,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
 void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
     const TextRecord& largest_text,
-    bool is_triggered_by_soft_navigation) {
+    bool is_triggered_by_soft_navigation,
+    uint32_t navigation_id) {
   DCHECK(window_performance_);
   Node* text_node = largest_text.GetNode();
   // |text_node| could be null and |largest_text| should be ignored in this
@@ -169,6 +175,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
 
   // Always use paint time as start time for text LCP candidate.
   if (!is_triggered_by_soft_navigation) {
+    CHECK_EQ(kNavigationIdAbsentValue, navigation_id);
     window_performance_->OnLargestContentfulPaintUpdated(
         largest_text.PaintTimingInfo(),
         /*paint_size=*/largest_text.RecordedSize(),
@@ -181,7 +188,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
         /*paint_size=*/largest_text.RecordedSize(),
         /*load_time=*/base::TimeTicks(),
         /*id=*/text_id,
-        /*url=*/g_empty_string, /*element=*/text_element);
+        /*url=*/g_empty_string, /*element=*/text_element,
+        /*navigation_id=*/navigation_id);
   }
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
