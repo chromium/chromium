@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_
 
-#include <map>
 #include <optional>
 #include <set>
 
+#include "base/containers/variant_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -174,7 +174,8 @@ class CPUMeasurementMonitor
   // `graph_change` is the event that triggered the measurement or NoGraphChange
   // if it wasn't triggered due to a graph change.
   void ApplyMeasurementDeltas(
-      const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
+      const base::VariantMap<ResourceContext, CPUTimeResult>&
+          measurement_deltas,
       GraphChange graph_change = NoGraphChange());
 
   // Adds the measurement in `delta` to the result for `context`. The start time
@@ -210,7 +211,7 @@ class CPUMeasurementMonitor
   static void MeasureAndDistributeCPUUsage(
       const ProcessNode* process_node,
       GraphChange graph_change,
-      std::map<ResourceContext, CPUTimeResult>& measurement_deltas);
+      base::VariantMap<ResourceContext, CPUTimeResult>& measurement_deltas);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -219,12 +220,14 @@ class CPUMeasurementMonitor
   // `OriginInBrowsingInstanceContext` is considered live as long as it's in
   // this map. Results for other context types are held in NodeInlineData in
   // live PM nodes.
-  std::map<OriginInBrowsingInstanceContext, scoped_refptr<ScopedCPUTimeResult>>
+  base::VariantMap<OriginInBrowsingInstanceContext,
+                   scoped_refptr<ScopedCPUTimeResult>>
       origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A map of non-owning pointers to all `ScopedCPUTimeResult` instances
   // associated with `OriginInBrowsingInstanceContext`.
-  std::map<OriginInBrowsingInstanceContext, raw_ptr<ScopedCPUTimeResult>>
+  base::VariantMap<OriginInBrowsingInstanceContext,
+                   raw_ptr<ScopedCPUTimeResult>>
       weak_origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU time results for dead contexts retained by ScopedResourceUsageQuery.
@@ -263,7 +266,7 @@ class CPUMeasurementMonitor
     // measurements, even if the context was transiently dead.
     std::set<scoped_refptr<ScopedCPUTimeResult>> kept_alive;
   };
-  std::map<internal::QueryId, DeadContextResults> dead_context_results_
+  base::VariantMap<internal::QueryId, DeadContextResults> dead_context_results_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Factory that creates CPUMeasurementDelegate objects for each ProcessNode

@@ -13,15 +13,15 @@
 #include <memory>
 
 #include "base/byte_count.h"
+#include "base/containers/variant_map.h"
 #include "base/functional/callback_forward.h"
+#include "components/performance_manager/public/resource_attribution/process_context.h"
 
 namespace performance_manager {
 class Graph;
 }
 
 namespace resource_attribution {
-
-class ProcessContext;
 
 // A shim that Resource Attribution queries use to request memory measurements.
 // Public so that users of the API can inject a test override by passing a
@@ -57,7 +57,10 @@ class MemoryMeasurementDelegate {
                                      const MemorySummaryMeasurement&) = default;
   };
 
-  using MemorySummaryMap = std::map<ProcessContext, MemorySummaryMeasurement>;
+  // TODO(crbug.com/433462519): Replace this with a concrete map type after
+  // using VariantMap to measure the performance of various impls.
+  using MemorySummaryMap =
+      base::VariantMap<ProcessContext, MemorySummaryMeasurement>;
 
   // The given `factory` will be used to create a MemoryMeasurementDelegate to
   // measure ProcessNodes in `graph`. The factory object must outlive the graph.
@@ -75,6 +78,11 @@ class MemoryMeasurementDelegate {
   // with the results, or an empty map on error.
   virtual void RequestMemorySummary(
       base::OnceCallback<void(MemorySummaryMap)>) = 0;
+
+ protected:
+  // Allow implementations to use MemoryMeasurementDelegate's passkey to create
+  // MemorySummaryMaps.
+  static MemorySummaryMap CreateMemorySummaryMap();
 };
 
 class MemoryMeasurementDelegate::Factory {

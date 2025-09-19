@@ -45,6 +45,21 @@ TEST_P(VariantMapTest, Insertion) {
   EXPECT_EQ(map[kTestKey2], kTestValue2);
 }
 
+TEST_P(VariantMapTest, At) {
+  VariantMap<KeyType, ValueType> map(GetParam());
+
+  // at() returns a reference to the value, but only if it already exists in the
+  // map.
+  map[kTestKey] = kTestValue;
+  EXPECT_EQ(map.size(), 1);
+  EXPECT_EQ(map.at(kTestKey), kTestValue);
+  map.at(kTestKey) = kTestValue2;
+
+  // Force the const override of at().
+  const auto& const_map = map;
+  EXPECT_EQ(const_map.at(kTestKey), kTestValue2);
+}
+
 TEST_P(VariantMapTest, Empty) {
   VariantMap<KeyType, ValueType> map(GetParam());
   EXPECT_TRUE(map.empty());

@@ -282,8 +282,9 @@ void QueryScheduler::OnResultsReceived(
         if (observed_memory_summary) {
           observed_results.memory_summary_result = *observed_memory_summary;
         }
-        other_callback.Run(
-            QueryResultMap{{context, std::move(observed_results)}});
+        QueryResultMap single_result_map;
+        single_result_map.emplace(context, std::move(observed_results));
+        other_callback.Run(std::move(single_result_map));
       }
 
       // Merge this context and result type into the results for the triggering

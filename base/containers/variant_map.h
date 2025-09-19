@@ -29,6 +29,13 @@ template <typename ReceiverType, typename ContextType>
 class ReceiverSetBase;
 }
 
+namespace resource_attribution {
+class CPUMeasurementMonitor;
+class FakeMemoryMeasurementDelegateFactory;
+class MemoryMeasurementDelegate;
+class QueryResultMap;
+}  // namespace resource_attribution
+
 namespace base {
 
 // Enum to specify which underlying map implementation to use.
@@ -153,6 +160,23 @@ class VariantMap {
   explicit VariantMap(base::PassKey<mojo::ReceiverSetState> passkey)
       : VariantMap() {}
 
+  explicit VariantMap(
+      base::PassKey<resource_attribution::CPUMeasurementMonitor> passkey)
+      : VariantMap() {}
+
+  explicit VariantMap(
+      base::PassKey<resource_attribution::FakeMemoryMeasurementDelegateFactory>
+          passkey)
+      : VariantMap() {}
+
+  explicit VariantMap(
+      base::PassKey<resource_attribution::MemoryMeasurementDelegate> passkey)
+      : VariantMap() {}
+
+  explicit VariantMap(
+      base::PassKey<resource_attribution::QueryResultMap> passkey)
+      : VariantMap() {}
+
   size_t size() const {
     return std::visit([](const auto& map) { return map.size(); }, data_);
   }
@@ -167,6 +191,16 @@ class VariantMap {
 
   Value& operator[](const Key& key) {
     return std::visit([&key](auto& map) -> Value& { return map[key]; }, data_);
+  }
+
+  Value& at(const Key& key) {
+    return std::visit([&key](auto& map) -> Value& { return map.at(key); },
+                      data_);
+  }
+
+  const Value& at(const Key& key) const {
+    return std::visit(
+        [&key](const auto& map) -> const Value& { return map.at(key); }, data_);
   }
 
   template <class... Args>
@@ -240,6 +274,7 @@ class VariantMap {
  private:
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Construction);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Insertion);
+  FRIEND_TEST_ALL_PREFIXES(VariantMapTest, At);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Find);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Iteration);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Empty);
