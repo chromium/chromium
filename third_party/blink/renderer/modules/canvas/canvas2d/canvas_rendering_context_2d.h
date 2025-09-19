@@ -350,6 +350,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // This method should be called only when `resource_provider_` is null.
   CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
 
+  void WakeUpFromHibernation();
+
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;

@@ -1464,10 +1464,15 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
     return nullptr;
   }
 
-  auto* hibernation_handler = GetHibernationHandler();
-  if (!hibernation_handler->IsHibernating()) {
-    return resource_provider_.get();
+  if (GetHibernationHandler()->IsHibernating()) {
+    WakeUpFromHibernation();
   }
+
+  return resource_provider_.get();
+}
+
+void CanvasRenderingContext2D::WakeUpFromHibernation() {
+  TRACE_EVENT0("base", "Canvas2dWakeUpFromHibernation");
 
   if (!canvas()->IsPageVisible()) {
     CanvasHibernationHandler::ReportHibernationEvent(
@@ -1485,6 +1490,7 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
     }
   }
 
+  CanvasHibernationHandler* hibernation_handler = GetHibernationHandler();
   PaintImageBuilder builder = PaintImageBuilder::WithDefault();
   builder.set_image(hibernation_handler->GetImage(),
                     PaintImage::GetNextContentId());
@@ -1497,8 +1503,6 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
 
   // shouldBeDirectComposited() may have changed.
   canvas()->SetNeedsCompositingUpdate();
-
-  return resource_provider_.get();
 }
 
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
