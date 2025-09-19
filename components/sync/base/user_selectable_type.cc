@@ -127,7 +127,9 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(
               {AUTOFILL_WALLET_CREDENTIAL, AUTOFILL_WALLET_DATA,
                AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
                AUTOFILL_WALLET_USAGE, AUTOFILL_VALUABLE,
-               AUTOFILL_VALUABLE_SETTING}};
+               // ACCOUNT_SETTING currently syncs only Wallet-related settings,
+               // which is why it's linked to `UserSelectableType::kPayments`.
+               ACCOUNT_SETTING}};
     case UserSelectableType::kProductComparison:
       return {
           kProductComparisonTypeName, PRODUCT_COMPARISON, {PRODUCT_COMPARISON}};

@@ -110,8 +110,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
          AUTOFILL_VALUABLE},
         {sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
          SHARED_TAB_GROUP_ACCOUNT_DATA},
-        {sync_pb::EntitySpecifics::kAutofillValuableSettingFieldNumber,
-         AUTOFILL_VALUABLE_SETTING},
+        {sync_pb::EntitySpecifics::kAccountSettingFieldNumber, ACCOUNT_SETTING},
         {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
@@ -280,8 +279,8 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case AUTOFILL_VALUABLE:
       specifics->mutable_autofill_valuable();
       break;
-    case AUTOFILL_VALUABLE_SETTING:
-      specifics->mutable_autofill_valuable_setting();
+    case ACCOUNT_SETTING:
+      specifics->mutable_account_setting();
       break;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       specifics->mutable_shared_tab_group_account_data();
@@ -409,8 +408,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
     case AUTOFILL_VALUABLE:
       return sync_pb::EntitySpecifics::kAutofillValuableFieldNumber;
-    case AUTOFILL_VALUABLE_SETTING:
-      return sync_pb::EntitySpecifics::kAutofillValuableSettingFieldNumber;
+    case ACCOUNT_SETTING:
+      return sync_pb::EntitySpecifics::kAccountSettingFieldNumber;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
     case SHARED_COMMENT:
@@ -592,8 +591,8 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_autofill_valuable()) {
     return AUTOFILL_VALUABLE;
   }
-  if (specifics.has_autofill_valuable_setting()) {
-    return AUTOFILL_VALUABLE_SETTING;
+  if (specifics.has_account_setting()) {
+    return ACCOUNT_SETTING;
   }
   if (specifics.has_shared_tab_group_account_data()) {
     return SHARED_TAB_GROUP_ACCOUNT_DATA;
@@ -768,8 +767,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Plus Address Setting";
     case AUTOFILL_VALUABLE:
       return "Autofill Valuable";
-    case AUTOFILL_VALUABLE_SETTING:
-      return "Autofill Valuable Setting";
+    case ACCOUNT_SETTING:
+      return "Account Setting";
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return "Shared Tab Group Account Data";
     case SHARED_COMMENT:
@@ -893,8 +892,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "SHARED_COMMENT";
     case NIGORI:
       return "NIGORI";
-    case AUTOFILL_VALUABLE_SETTING:
-      return "AUTOFILL_VALUABLE_SETTING";
+    case ACCOUNT_SETTING:
+      return "ACCOUNT_SETTING";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
   NOTREACHED();
@@ -1006,8 +1005,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kPlusAddressSettings;
     case AUTOFILL_VALUABLE:
       return DataTypeForHistograms::kAutofillValuable;
-    case AUTOFILL_VALUABLE_SETTING:
-      return DataTypeForHistograms::kAutofillValuableSetting;
+    case ACCOUNT_SETTING:
+      return DataTypeForHistograms::kAccountSetting;
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return DataTypeForHistograms::kSharedTabGroupAccountData;
     case SHARED_COMMENT:
@@ -1142,8 +1141,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "plus_address_setting";
     case AUTOFILL_VALUABLE:
       return "autofill_valuable";
-    case AUTOFILL_VALUABLE_SETTING:
-      return "autofill_valuable_setting";
+    case ACCOUNT_SETTING:
+      return "account_setting";
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
       return "shared_tab_group_account_data";
     case SHARED_COMMENT:

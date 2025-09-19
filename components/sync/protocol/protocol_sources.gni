@@ -3,13 +3,13 @@
 # found in the LICENSE file.
 
 sync_protocol_sources = [
+  "account_setting_specifics.proto",
   "app_list_specifics.proto",
   "app_setting_specifics.proto",
   "app_specifics.proto",
   "arc_package_specifics.proto",
   "autofill_offer_specifics.proto",
   "autofill_specifics.proto",
-  "autofill_valuable_setting_specifics.proto",
   "autofill_valuable_specifics.proto",
   "autofill_wallet_credential_specifics.proto",
   "autofill_wallet_usage_specifics.proto",

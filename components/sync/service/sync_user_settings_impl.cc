@@ -411,11 +411,11 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
                 " you want to disable the new data type for local sync, aka"
                 " roaming profiles on Windows.");
   if (prefs_->IsLocalSyncEnabled()) {
+    types.Remove(ACCOUNT_SETTING);
     types.Remove(APP_LIST);
     // Note: AUTOFILL_WALLET_CREDENTIAL *is* supported - the user can still save
     // CVVs for local credit cards.
     types.Remove(AUTOFILL_VALUABLE);
-    types.Remove(AUTOFILL_VALUABLE_SETTING);
     types.Remove(AUTOFILL_WALLET_DATA);
     types.Remove(AUTOFILL_WALLET_METADATA);
     types.Remove(AUTOFILL_WALLET_OFFER);

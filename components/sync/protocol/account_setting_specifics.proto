@@ -14,10 +14,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-// Used to sync settings for `AUTOFILL_VALUABLE`. Since these settings originate
-// from the user's Wallet account settings, they are not reusing standard
-// syncable prefs.
-message AutofillValuableSettingSpecifics {
+// Used to sync the user account settings.
+message AccountSettingSpecifics {
   optional string name = 1;
   // The value of the setting. Which variant is set depends on the setting.
   oneof Value {

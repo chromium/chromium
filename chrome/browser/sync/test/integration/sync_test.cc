@@ -1238,8 +1238,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE);
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableSettings)) {
-    allowed_types.Put(syncer::AUTOFILL_VALUABLE);
+  if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    allowed_types.Put(syncer::ACCOUNT_SETTING);
   }
 
 #if BUILDFLAG(IS_ANDROID)

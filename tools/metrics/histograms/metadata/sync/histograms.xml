@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(DataTypeHistogramSuffix) -->
 
 <variants name="SyncDataType">
+  <variant name=".ACCOUNT_SETTING" summary="ACCOUNT_SETTING"/>
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
   <variant name=".APP_SETTING" summary="APP_SETTING"/>
@@ -33,8 +34,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".AUTOFILL_OFFER" summary="AUTOFILL_OFFER"/>
   <variant name=".AUTOFILL_PROFILE" summary="AUTOFILL_PROFILE"/>
   <variant name=".AUTOFILL_VALUABLE" summary="AUTOFILL_VALUABLE"/>
-  <variant name=".AUTOFILL_VALUABLE_SETTING"
-      summary="AUTOFILL_VALUABLE_SETTING"/>
   <variant name=".AUTOFILL_WALLET" summary="AUTOFILL_WALLET"/>
   <variant name=".AUTOFILL_WALLET_CREDENTIAL"
       summary="AUTOFILL_WALLET_CREDENTIAL"/>

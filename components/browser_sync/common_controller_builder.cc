@@ -811,9 +811,9 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 #endif
 
-  if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE_SETTING) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableSettings)) {
-    // TODO(crbug.com/441735283) Complete syncing of valuable settings.
+  if (!disabled_types.Has(syncer::ACCOUNT_SETTING) &&
+      base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    // TODO(crbug.com/441735283) Complete syncing of account settings.
   }
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA) &&

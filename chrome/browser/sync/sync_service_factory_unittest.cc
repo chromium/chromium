@@ -215,8 +215,8 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::AUTOFILL_VALUABLE);
     }
 
-    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableSettings)) {
-      datatypes.Put(syncer::AUTOFILL_VALUABLE_SETTING);
+    if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+      datatypes.Put(syncer::ACCOUNT_SETTING);
     }
 
     return datatypes;

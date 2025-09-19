@@ -11,9 +11,9 @@ namespace syncer {
 BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncAccountSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillValuableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncMoveValuablesToProfileDb, base::FEATURE_DISABLED_BY_DEFAULT);
 

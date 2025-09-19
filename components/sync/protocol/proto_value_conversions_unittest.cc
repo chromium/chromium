@@ -73,6 +73,7 @@ static_assert(56 == syncer::GetNumDataTypes(),
               "for your field below, and optionally a test for the specific "
               "conversions.");
 
+DEFINE_SPECIFICS_TO_VALUE_TEST(account_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app_list)
 DEFINE_SPECIFICS_TO_VALUE_TEST(app_setting)
@@ -126,7 +127,6 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(webauthn_credential)
 DEFINE_SPECIFICS_TO_VALUE_TEST(wifi_configuration)
 DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable)
-DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_comment)
 

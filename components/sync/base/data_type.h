@@ -174,13 +174,13 @@ enum DataType {
   // Comments for shared contexts.
   SHARED_COMMENT,
 
-  // Settings for AUTOFILL_VALUABLE forwarded from the user's account. Since the
-  // settings originate from the user's Wallet account settings, this is not
-  // reusing any of the standard syncable prefs.
+  // ACCOUNT_SETTING(s) forwarded from the user's account. Since the
+  // settings originate from the user account, this is not reusing any of the
+  // standard syncable prefs.
   // Read-only on the client.
-  AUTOFILL_VALUABLE_SETTING,
+  ACCOUNT_SETTING,
 
-  LAST_USER_DATA_TYPE = AUTOFILL_VALUABLE_SETTING,
+  LAST_USER_DATA_TYPE = ACCOUNT_SETTING,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -281,8 +281,8 @@ enum class DataTypeForHistograms {
   kAutofillValuable = 69,
   kSharedTabGroupAccountData = 70,
   kSharedComment = 71,
-  kAutofillValuableSetting = 72,
-  kMaxValue = kAutofillValuableSetting,
+  kAccountSetting = 72,
+  kMaxValue = kAccountSetting,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
