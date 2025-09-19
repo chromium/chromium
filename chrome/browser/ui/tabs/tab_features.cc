@@ -106,6 +106,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
@@ -287,8 +288,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 
 #if BUILDFLAG(ENABLE_GLIC)
-    if (glic::GlicEnabling::IsProfileEligible(
-            tab.GetBrowserWindowInterface()->GetProfile())) {
+    if (glic::GlicEnabling::IsProfileEligible(profile)) {
       glic_instance_helper_ =
           GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(tab,
                                                                         &tab);
@@ -296,7 +296,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<glic::GlicTabIndicatorHelper>(
               tab, &tab);
     }
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance) &&
+        glic::GlicKeyedService::Get(profile)) {
       glic_side_panel_coordinator_ =
           GetUserDataFactory().CreateInstance<glic::GlicSidePanelCoordinator>(
               tab, &tab, side_panel_registry_.get());

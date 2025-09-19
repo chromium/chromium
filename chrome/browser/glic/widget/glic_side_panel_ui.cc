@@ -73,12 +73,12 @@ bool GlicSidePanelUi::IsShowing() const {
   return panel_state_.kind == mojom::PanelState_Kind::kAttached;
 }
 
-// TODO(crbug.com/444293841): Support closing multi instance.
 void GlicSidePanelUi::VisibilityChanged(bool visible) {
-  if (visible) {
-    panel_state_.kind = mojom::PanelState_Kind::kAttached;
-  } else {
+  // Showing only happens through glic entrypoint, hiding can also be triggered
+  // by side panel coordinator when replacing glic with another entry.
+  if (!visible) {
     panel_state_.kind = mojom::PanelState_Kind::kHidden;
+    // TODO(crbug.com/444293841): Support closing multi instance.
   }
 }
 
@@ -86,15 +86,16 @@ void GlicSidePanelUi::Show() {
   if (!tab_) {
     return;
   }
+  panel_state_.kind = mojom::PanelState_Kind::kAttached;
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
 }
-
 void GlicSidePanelUi::Close() {
   if (!tab_ || !IsShowing()) {
     return;
   }
+  panel_state_.kind = mojom::PanelState_Kind::kHidden;
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Close();

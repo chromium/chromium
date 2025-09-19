@@ -34,7 +34,7 @@ actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
   actions::ActionItem* glic_action_item =
       actions::ActionManager::Get().FindAction(kActionSidePanelShowGlic,
                                                root_action_item);
-  CHECK(glic_action_item);
+  DCHECK(glic_action_item);
   return glic_action_item;
 }
 
@@ -53,14 +53,12 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
   CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab->GetBrowserWindowInterface()->GetProfile());
-  if (glic_service) {
-    on_glic_enabled_changed_subscription_ =
-        glic_service->enabling().RegisterAllowedChanged(
-            base::BindRepeating(&GlicSidePanelCoordinator::OnGlicEnabledChanged,
-                                base::Unretained(this)));
-    if (glic_service->enabling().IsAllowed()) {
-      CreateAndRegisterEntry();
-    }
+  on_glic_enabled_changed_subscription_ =
+      glic_service->enabling().RegisterAllowedChanged(
+          base::BindRepeating(&GlicSidePanelCoordinator::OnGlicEnabledChanged,
+                              base::Unretained(this)));
+  if (glic_service->enabling().IsAllowed()) {
+    CreateAndRegisterEntry();
   }
 }
 
@@ -83,7 +81,9 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(entry));
 }
 
-void GlicSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+void GlicSidePanelCoordinator::OnEntryWillHide(
+    SidePanelEntry* entry,
+    SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
   state_observers_.Notify(&StateObserver::VisibilityChanged, false);
 }

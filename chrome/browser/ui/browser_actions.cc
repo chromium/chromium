@@ -104,7 +104,9 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #endif
 
 namespace {
@@ -987,13 +989,40 @@ void BrowserActions::InitializeBrowserActions() {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  root_action_item_->AddChild(
-      SidePanelAction(SidePanelEntryId::kGlic, IDS_SETTINGS_GLIC_PAGE_TITLE,
-                      IDS_SETTINGS_GLIC_PAGE_TITLE,
-                      glic::GlicVectorIconManager::GetVectorIcon(
-                          IDR_GLIC_BUTTON_VECTOR_ICON),
-                      kActionSidePanelShowGlic, bwi, /*is_pinnable=*/true)
-          .Build());
+  auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
+  if (glic_service) {
+    actions::ActionItem::InvokeActionCallback toggle_glic_callback =
+        base::BindRepeating(
+            [](base::WeakPtr<BrowserWindowInterface> bwi,
+               actions::ActionItem* item,
+               actions::ActionInvocationContext context) {
+              if (!bwi) {
+                return;
+              }
+              if (auto* glic_service =
+                      glic::GlicKeyedService::Get(bwi->GetProfile())) {
+                // TODO: create a new invocation source if we end up
+                // keeping toolbar icon
+                glic_service->ToggleUI(
+                    bwi.get(), /*prevent_close=*/false,
+                    glic::mojom::InvocationSource::kTopChromeButton);
+              }
+            },
+            bwi->GetWeakPtr());
+
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(toggle_glic_callback)
+            .SetActionId(kActionSidePanelShowGlic)
+            .SetText(l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
+            .SetTooltipText(
+                l10n_util::GetStringUTF16(IDS_SETTINGS_GLIC_PAGE_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                glic::GlicVectorIconManager::GetVectorIcon(
+                    IDR_GLIC_BUTTON_VECTOR_ICON),
+                ui::kColorIcon))
+            .SetProperty(actions::kActionItemPinnableKey, true)
+            .Build());
+  }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
   AddListeners();

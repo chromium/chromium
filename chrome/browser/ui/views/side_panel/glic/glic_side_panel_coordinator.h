@@ -50,9 +50,9 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
  protected:
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();
-
   // `SidePanelEntryObserver`:
-  void OnEntryHidden(SidePanelEntry* entry) override;
+  void OnEntryWillHide(SidePanelEntry* entry,
+                       SidePanelEntryHideReason reason) override;
   void OnEntryShown(SidePanelEntry* entry) override;
 
  private:

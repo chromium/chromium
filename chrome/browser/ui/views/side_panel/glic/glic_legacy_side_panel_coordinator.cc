@@ -69,10 +69,6 @@ void GlicLegacySidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::move(entry));
 }
 
-void GlicLegacySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  glic_service_->ClosePanel();
-}
-
 void GlicLegacySidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   SidePanelEntry::Key glic_key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
   if (side_panel_coordinator_->IsSidePanelEntryShowing(glic_key)) {

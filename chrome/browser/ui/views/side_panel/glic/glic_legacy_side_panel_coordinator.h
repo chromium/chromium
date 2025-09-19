@@ -42,7 +42,6 @@ class GlicLegacySidePanelCoordinator : public SidePanelEntryObserver {
   void OnGlicEnabledChanged();
 
   // `SidePanelEntryObserver`:
-  void OnEntryHidden(SidePanelEntry* entry) override;
   void OnEntryShown(SidePanelEntry* entry) override;
 
  private:
