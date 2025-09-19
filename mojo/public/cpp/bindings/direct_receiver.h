@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,7 +53,7 @@ namespace internal {
 // last DirectReceiver goes away. (Except in sandboxed processes on Windows,
 // which only allow a fixed number of ThreadLocalNodes, so once created they're
 // never deleted.)
-// TODO(crbug.com/40266729): Remove the refcounting completely. It's unneeded
+// TODO(crbug.com/446199357): Remove the refcounting completely. It's unneeded
 // complexity.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
     : public base::RefCounted<ThreadLocalNode> {
@@ -83,14 +84,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
   static void OnTrapEvent(const IpczTrapEvent* event);
   void OnTransferredPortalAvailable();
 
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  THREAD_CHECKER(thread_checker_);
 
   // A dedicated node created for this object.
   ScopedHandle node_;
 
   // A portal on the local node which is connected to `global_portal_`. Used to
   // receive pipes from the global node.
-  ScopedHandle local_portal_;
+  ScopedHandle local_portal_ GUARDED_BY_CONTEXT(thread_checker_);
 
   // A portal on the global node which is connected to `local_portal_`. Used to
   // transfer pipes from the global node to the local one.
@@ -101,7 +102,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
   uint64_t next_merge_id_ = 0;
   std::map<uint64_t, ScopedHandle> pending_merges_;
 
-  base::WeakPtrFactory<ThreadLocalNode> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ThreadLocalNode> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(thread_checker_){this};
 };
 
 }  // namespace internal

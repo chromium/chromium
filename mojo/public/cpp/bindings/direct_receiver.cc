@@ -90,8 +90,7 @@ thread_local ThreadLocalNode* g_thread_local_node;
 
 }  // namespace
 
-ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
-    : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>) {
   CHECK(IsDirectReceiverSupported());
   CHECK(!g_thread_local_node);
   g_thread_local_node = this;
@@ -143,7 +142,8 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
   // thread. Since this is the first transport connected on that node, all
   // other connections made by ipcz on behalf of this node will also bind I/O
   // to this thread.
-  local_transport->OverrideIOTaskRunner(task_runner_);
+  local_transport->OverrideIOTaskRunner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Finally, establish mutual connection between the global and local nodes
   // and retain a portal going in either direction. These portals will be
@@ -168,7 +168,7 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
 }
 
 ThreadLocalNode::~ThreadLocalNode() {
-  CHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   g_thread_local_node = nullptr;
 }
 
@@ -188,6 +188,8 @@ bool ThreadLocalNode::CurrentThreadHasInstance() {
 
 ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
     ScopedMessagePipeHandle pipe) {
+  // TODO(crbug.com/40266729): Require that this runs on `thread_checker_` and
+  // and GUARDED_BY_CONTEXT annotations to the variables it uses.
   const IpczAPI& ipcz = core::GetIpczAPI();
 
   // Create a new portal pair within our local node. One of these portals is
@@ -227,6 +229,7 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
 }
 
 void ThreadLocalNode::WatchForIncomingTransfers() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Set up a trap so that when a portal arrives on the local node we can
   // retrieve it and merge it with the appropriate stashed portal.
   const IpczAPI& ipcz = core::GetIpczAPI();
@@ -272,6 +275,7 @@ void ThreadLocalNode::OnTrapEvent(const IpczTrapEvent* event) {
 }
 
 void ThreadLocalNode::OnTransferredPortalAvailable() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Retrieve the moved pipe from the message sitting on our local portal and
   // merge it with the appropriate stashed portal.
   IpczHandle portal;
