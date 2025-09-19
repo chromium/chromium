@@ -298,7 +298,7 @@ void ExtensionLocalizationThrottle::WillProcessResponse(
 
   ExtensionLocalizationURLLoader* loader_rawptr = loader.get();
   // `loader` will be deleted when `new_remote` is disconnected.
-  // `new_remote` is binded to ThrottlingURLLoader::url_loader_. So when
+  // `new_remote` is bound to ThrottlingURLLoader::url_loader_. So when
   // ThrottlingURLLoader is deleted, `loader` will be deleted.
   mojo::MakeSelfOwnedReceiver(std::move(loader),
                               new_remote.InitWithNewPipeAndPassReceiver());
