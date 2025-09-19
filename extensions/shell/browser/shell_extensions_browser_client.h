@@ -135,6 +135,8 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
   KioskDelegate* GetKioskDelegate() override;
   SafeBrowsingDelegate* GetSafeBrowsingDelegate() override;
   std::string GetApplicationLocale() override;
+  custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry(
+      content::BrowserContext* context) override;
 
   // `context` is the single BrowserContext used for IsValidContext().
   // `pref_service` is used for GetPrefServiceForContext().

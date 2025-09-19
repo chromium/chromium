@@ -262,6 +262,7 @@ source_set("unit_tests") {
     "//components/account_id:test_support",
     "//components/app_constants",
     "//components/app_icon_loader",
+    "//components/custom_handlers:test_support",
     "//components/exo",
     "//components/keep_alive_registry",
     "//components/prefs",

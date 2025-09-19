@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos",
   "+components/back_forward_cache",
   "+components/crash/core",
+  "+components/custom_handlers",
   "+components/guest_view",
   "+components/input",
   "+components/javascript_dialogs",

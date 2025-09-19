@@ -405,7 +405,10 @@ static_library("test_support") {
       "../common/extensions/manifest_tests/chrome_manifest_test.cc",
       "../common/extensions/manifest_tests/chrome_manifest_test.h",
     ]
-    public_deps += [ "//chrome/browser/extensions:test_support" ]
+    public_deps += [
+      "//chrome/browser/extensions:test_support",
+      "//components/custom_handlers:test_support",
+    ]
   }
 
   if (enable_extensions) {
@@ -4612,6 +4615,7 @@ if (!is_android) {
         "../browser/extensions/api/metrics_private/metrics_apitest.cc",
         "../browser/extensions/api/passwords_private/passwords_private_apitest.cc",
         "../browser/extensions/api/printer_provider/printer_provider_apitest.cc",
+        "../browser/extensions/api/protocol_handlers/protocol_handlers_manager_browsertest.cc",
         "../browser/extensions/api/resources_private/resources_private_apitest.cc",
         "../browser/extensions/api/serial/serial_apitest.cc",
         "../browser/extensions/api/sessions/sessions_apitest.cc",
@@ -9403,6 +9407,7 @@ test("unit_tests") {
       "../browser/extensions/api/passwords_private/password_check_delegate_unittest.cc",
       "../browser/extensions/api/passwords_private/passwords_private_delegate_impl_unittest.cc",
       "../browser/extensions/api/passwords_private/passwords_private_utils_unittest.cc",
+      "../browser/extensions/api/protocol_handlers/protocol_handlers_manager_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_api_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_util_unittest.cc",
       "../browser/extensions/api/settings_private/settings_private_event_router_unittest.cc",

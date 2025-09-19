@@ -31,6 +31,8 @@ class SimpleProtocolHandlerRegistryFactory
   // Returns the singleton instance of the ProtocolHandlerRegistryFactory.
   static SimpleProtocolHandlerRegistryFactory* GetInstance();
 
+  static TestingFactory GetDefaultFactory();
+
   // Returns the ProtocolHandlerRegistry that provides intent registration for
   // |context|. Ownership stays with this factory object.
   // Allows the caller to indicate that the KeyedService should not be created

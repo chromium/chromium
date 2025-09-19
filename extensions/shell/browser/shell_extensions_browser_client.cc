@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -337,6 +338,13 @@ void ShellExtensionsBrowserClient::InitWithBrowserContext(
   DCHECK(!pref_service_);
   browser_context_ = context;
   pref_service_ = pref_service;
+}
+
+custom_handlers::ProtocolHandlerRegistry*
+ShellExtensionsBrowserClient::GetProtocolHandlerRegistry(
+    content::BrowserContext* context) {
+  return custom_handlers::SimpleProtocolHandlerRegistryFactory::
+      GetForBrowserContext(context, true);
 }
 
 }  // namespace extensions

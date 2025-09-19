@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/custom_handlers:test_support",
     "//components/variations:test_support",
     "//components/webapps/browser",
     "//components/webapps/isolated_web_apps/types",

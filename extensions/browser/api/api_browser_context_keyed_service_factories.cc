@@ -39,6 +39,7 @@
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
+#include "extensions/browser/api/protocol_handlers/protocol_handlers_manager.h"
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/api/serial/serial_port_manager.h"
 #include "extensions/browser/api/socket/socket.h"
@@ -131,6 +132,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   VirtualKeyboardAPI::GetFactoryInstance();
   WebcamPrivateAPI::GetFactoryInstance();
 #endif
+  ProtocolHandlersManager::GetFactoryInstance();
   WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt();
   WriteQuotaChecker::GetFactoryInstance();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

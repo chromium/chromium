@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id:test_support",
     "//components/app_constants",
+    "//components/custom_handlers:test_support",
     "//components/services/app_service/public/cpp:test_support",
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",

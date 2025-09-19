@@ -240,4 +240,10 @@ bool ExtensionsBrowserClient::HasControlledFrameCapability(
   return false;
 }
 
+custom_handlers::ProtocolHandlerRegistry*
+ExtensionsBrowserClient::GetProtocolHandlerRegistry(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
 }  // namespace extensions

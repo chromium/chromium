@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -92,6 +94,14 @@ TestingProfile* TestWithBrowserView::CreateProfile(
   // location bar.
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&CreateAutocompleteClassifier));
+  // ProtocolHandlerRegistryFactory is normally null during testing. Instant
+  // extended needs this service so set a custom factory function.
+  ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+      profile, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                   GetDefaultFactory());
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
+      profile,
+      TemplateURLServiceTestUtil::GetTemplateURLServiceTestingFactory());
   // ToolbarActionsModel must exist before the toolbar initializes the
   // extensions area.
   extensions::LoadErrorReporter::Init(/*enable_noisy_errors=*/false);

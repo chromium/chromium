@@ -248,6 +248,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       bool in_memory,
       base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
           callback) override;
+  custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry(
+      content::BrowserContext* context) override;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   static void set_did_chrome_update_for_testing(bool did_update);

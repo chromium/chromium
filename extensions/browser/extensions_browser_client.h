@@ -79,6 +79,10 @@ namespace media_device_salt {
 class MediaDeviceSaltService;
 }  // namespace media_device_salt
 
+namespace custom_handlers {
+class ProtocolHandlerRegistry;
+}  // namespace custom_handlers
+
 namespace extensions {
 
 class ComponentExtensionResourceManager;
@@ -537,6 +541,11 @@ class ExtensionsBrowserClient {
   // since extensions shouldn't have knowledge of Controlled Frame.
   virtual bool HasControlledFrameCapability(content::BrowserContext* context,
                                             const GURL& url);
+
+  // Returns the ProtocolHandlerRegistry instance associated with the user
+  // profile.
+  virtual custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry(
+      content::BrowserContext* context);
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

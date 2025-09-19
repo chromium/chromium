@@ -103,6 +103,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
+    "//components/custom_handlers:test_support",
     "//extensions/common",
     "//testing/gtest",
     "//url",

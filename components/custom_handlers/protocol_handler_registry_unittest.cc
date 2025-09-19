@@ -145,6 +145,14 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     return ProtocolHandler::CreateWebAppProtocolHandler(protocol, url, app_id);
   }
 
+  ProtocolHandler CreateExtensionProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      const std::string& extension_id) {
+    return ProtocolHandler::CreateExtensionProtocolHandler(protocol, url,
+                                                           extension_id);
+  }
+
   bool ProtocolHandlerCanRegisterProtocol(
       const std::string& protocol,
       const GURL& handler_url,
@@ -296,7 +304,8 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("https://example.com"), "app_id", now,
+  ProtocolHandler handler("news", GURL("https://example.com"), "app_id",
+                          std::nullopt, now,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated = ProtocolHandler::CreateProtocolHandler(value);
@@ -378,6 +387,34 @@ TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   EXPECT_FALSE(registry()->IsIgnored(ignored1));
   EXPECT_FALSE(registry()->IsIgnored(ignored2));
   EXPECT_FALSE(registry()->IsIgnored(ignored3));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestExtensionProtocolHandlers) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph1 =
+      CreateExtensionProtocolHandler("news", GURL("https://test/%s"), kIdFoo);
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_TRUE(registry()->IsDefault(ph1));
+
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph2 =
+      CreateExtensionProtocolHandler("mailto", GURL("https://test/%s"), kIdBar);
+  registry()->OnAcceptRegisterProtocolHandler(ph2);
+  ASSERT_TRUE(registry()->IsHandledProtocol("mailto"));
+  ASSERT_TRUE(registry()->IsDefault(ph2));
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers();
+    ASSERT_EQ(static_cast<size_t>(2), handlers.size());
+  }
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers(kIdBar);
+    ASSERT_EQ(static_cast<size_t>(1), handlers.size());
+  }
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestEnabledDisabled) {

@@ -234,6 +234,7 @@ source_set("unit_tests") {
       "//chrome/common/extensions",
       "//chrome/test:test_support",
       "//components/crx_file",
+      "//components/custom_handlers:test_support",
       "//components/proxy_config",
       "//components/search_engines",
       "//components/signin/public/base",

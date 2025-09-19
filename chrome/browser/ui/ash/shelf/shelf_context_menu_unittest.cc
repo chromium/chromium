@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -61,6 +62,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -159,6 +161,10 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     }
 
     user_manager_->OnUserProfileCreated(kPrimaryUserId, profile_->GetPrefs());
+
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile(), custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                       GetDefaultFactory());
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(

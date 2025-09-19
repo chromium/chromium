@@ -127,10 +127,24 @@ void ProtocolHandlerRegistry::OnIgnoreRegisterProtocolHandler(
   NotifyChanged();
 }
 
+static bool CanReplaceHandler(const ProtocolHandler& handler1,
+                              const ProtocolHandler& handler2) {
+  if (!handler1.IsSameOrigin(handler2)) {
+    return false;
+  }
+
+  // Extension handlers must not override WebAPI or PWAs registrations.
+  if (handler1.IsExtensionHandler()) {
+    return handler2.IsExtensionHandler();
+  }
+
+  return true;
+}
+
 bool ProtocolHandlerRegistry::AttemptReplace(const ProtocolHandler& handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ProtocolHandler old_default = GetHandlerFor(handler.protocol());
-  bool make_new_handler_default = handler.IsSameOrigin(old_default);
+  bool make_new_handler_default = CanReplaceHandler(handler, old_default);
   ProtocolHandlerList to_replace(GetReplacedHandlers(handler));
   if (to_replace.empty())
     return false;
@@ -151,12 +165,11 @@ ProtocolHandlerRegistry::GetReplacedHandlers(
     const ProtocolHandler& handler) const {
   ProtocolHandlerList replaced_handlers;
   const ProtocolHandlerList* handlers = GetHandlerList(handler.protocol());
-  if (!handlers)
-    return replaced_handlers;
-  for (const auto& old_handler : *handlers) {
-    if (handler.IsSameOrigin(old_handler)) {
-      replaced_handlers.push_back(old_handler);
-    }
+  if (handlers) {
+    std::ranges::copy_if(*handlers, std::back_inserter(replaced_handlers),
+                         [&](const ProtocolHandler& old_handler) {
+                           return CanReplaceHandler(handler, old_handler);
+                         });
   }
   return replaced_handlers;
 }
@@ -272,6 +285,21 @@ ProtocolHandlerRegistry::GetUserIgnoredHandlers(base::Time begin,
   for (const ProtocolHandler& handler : user_ignored_protocol_handlers_) {
     if (begin <= handler.last_modified() && handler.last_modified() < end)
       result.push_back(handler);
+  }
+  return result;
+}
+
+ProtocolHandlerRegistry::ProtocolHandlerList
+ProtocolHandlerRegistry::GetExtensionProtocolHandlers(
+    std::optional<std::string> extension_id) {
+  ProtocolHandlerRegistry::ProtocolHandlerList result;
+  for (const auto& [protocol, handlers_list] : user_protocol_handlers_) {
+    std::ranges::copy_if(
+        handlers_list, std::back_inserter(result),
+        [&](const ProtocolHandler& handler) {
+          return handler.extension_id() &&
+                 (!extension_id || handler.extension_id() == extension_id);
+        });
   }
   return result;
 }
@@ -409,12 +437,11 @@ void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
   }
   auto q = default_handlers_.find(handler.protocol());
   if (erase_success && q != default_handlers_.end() && q->second == handler) {
+    default_handlers_.erase(q);
     // Make the new top handler in the list the default.
     if (!handlers.empty()) {
       // NOTE We pass a copy because SetDefault() modifies handlers.
       SetDefault(ProtocolHandler(handlers[0]));
-    } else {
-      default_handlers_.erase(q);
     }
   }
 
@@ -536,6 +563,31 @@ ProtocolHandlerRegistry::GetHandlerList(std::string_view scheme) const {
   return &p->second;
 }
 
+bool ProtocolHandlerRegistry::ShouldPromoteToDefault(
+    const ProtocolHandler& handler) const {
+  ProtocolHandlerMap::const_iterator p =
+      default_handlers_.find(handler.protocol());
+  if (p == default_handlers_.end()) {
+    return true;
+  }
+
+  // Avoid unnecessary promotions.
+  const ProtocolHandler& default_handler = p->second;
+  if (handler == default_handler) {
+    return false;
+  }
+
+  // Extension handlers must not override WebAPI or PWAs registrations.
+  if (handler.IsExtensionHandler()) {
+    return default_handler.IsExtensionHandler();
+  }
+
+  // TODO(crbug.com/40482153): Implement a more sophisticated conflict
+  // resolution mechanism to determine whether a handler can be replaced when
+  // managing registrations from different sources.
+  return true;
+}
+
 void ProtocolHandlerRegistry::SetDefault(const ProtocolHandler& handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -546,10 +598,11 @@ void ProtocolHandlerRegistry::SetDefault(const ProtocolHandler& handler) {
   if (!is_loading_ && p == default_handlers_.end())
     delegate_->RegisterWithOSAsDefaultClient(
         protocol, GetDefaultWebClientCallback(protocol));
-  default_handlers_.erase(protocol);
-  default_handlers_.insert(std::make_pair(protocol, handler));
-
-  PromoteHandler(handler);
+  if (ShouldPromoteToDefault(handler)) {
+    default_handlers_.erase(protocol);
+    default_handlers_.insert(std::make_pair(protocol, handler));
+    PromoteHandler(handler);
+  }
 }
 
 void ProtocolHandlerRegistry::InsertHandler(const ProtocolHandler& handler) {

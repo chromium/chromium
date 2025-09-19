@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//chrome/browser/background",
     "//chrome/browser/status_icons",
     "//chrome/test:test_support",
+    "//components/custom_handlers:test_support",
     "//components/policy/core/common:test_support",
     "//components/sync_preferences",
     "//content/public/browser",

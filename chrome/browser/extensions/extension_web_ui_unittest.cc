@@ -13,12 +13,14 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -93,6 +95,11 @@ class ExtensionWebUITest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
+    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
+    // the protocol registration process.
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                            GetDefaultFactory());
     TestExtensionSystem* system =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
     system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),

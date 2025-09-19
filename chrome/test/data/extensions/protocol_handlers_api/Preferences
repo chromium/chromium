@@ -1,0 +1,26 @@
+{
+   "extensions": {
+      "settings": {
+         "oddldldiddnfpoecindoignlngbecglb": {
+            "location": 1,
+            "path": "oddldldiddnfpoecindoignlngbecglb/",
+            "state": 1,
+            "newAllowFileAccess": true,
+            "manifest": {
+               "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA34SsYcczQcBlZAGXEyYFrM6n56cNWbkZwjWoZYZyeIkUNn+4Rh7o2E9rOOtqfja4cjhlWxBQmoK2OUrzR1u8n/3JplUPFqn4Mshgj65cu3yei7uO1sKVuUL2F/wrsVM2ClFeNyY/6OXmQnYD660ZxRWlsUOzCm+1triVurkiRKPtXT0knRAWGFBaDNKEy9Ub/7+S2xJDuZwgbq+pYPl/IeQdiwodCo3rsoTSsbPoKu+a6X9hayaUnpPUoWsq49g06eBhcBh5nwUdN5D58tK9biGDlIoSptZOIKFFD3/yvthG19mpepRbTefbHLXru239WQn1JYu6wss18hcBXiOFUQIDAQAB",
+               "name": "protocol-handlers testing",
+               "description" : "Testing extension for the protocol-handlers Manifest key.",
+               "version": "1.0",
+               "manifest_version": 3,
+               "protocol_handlers": [
+                  {
+                     "name": "Testing Protocol Handler",
+                     "protocol": "ipfs",
+                     "uriTemplate": "https://www.bing.com/search?q=%s"
+                  }
+               ]
+            }
+         }
+      }
+   }
+}
