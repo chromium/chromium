@@ -28,6 +28,8 @@ namespace ui {
 class NativeThemeFluentTest : public ::testing::Test,
                               public ::testing::WithParamInterface<float> {
  protected:
+  const NativeThemeFluent& theme() const { return theme_; }
+
   void VerifyArrowRectCommonDimensions(const gfx::RectF& arrow_rect) const {
     EXPECT_FALSE(arrow_rect.IsEmpty());
     EXPECT_EQ(arrow_rect.width(), arrow_rect.height());
@@ -37,42 +39,37 @@ class NativeThemeFluentTest : public ::testing::Test,
   void VerifyArrowRectIsCentered(const gfx::RectF& button_rect,
                                  const gfx::RectF& arrow_rect,
                                  NativeTheme::Part part) const {
+    const gfx::PointF button_center = button_rect.CenterPoint();
+    const gfx::PointF arrow_center = arrow_rect.CenterPoint();
+    // Due to the offset the arrow rect is shifted from the center.
+    float expected_shift = ScaleFromDIP() * 2;
     if (part == NativeTheme::kScrollbarUpArrow ||
         part == NativeTheme::kScrollbarDownArrow) {
-      EXPECT_EQ(button_rect.CenterPoint().x(), arrow_rect.CenterPoint().x());
-      // Due to the offset the arrow rect is shifted from the center.
-      // See NativeThemeFluent::GetArrowRect() for more details. Same below.
-      EXPECT_NEAR(button_rect.CenterPoint().y(), arrow_rect.CenterPoint().y(),
-                  ScaleFromDIP() * 2);
+      EXPECT_EQ(button_center.x(), arrow_center.x());
+      EXPECT_NEAR(button_center.y(), arrow_center.y(), expected_shift);
     } else {
-      EXPECT_EQ(button_rect.CenterPoint().y(), arrow_rect.CenterPoint().y());
-      EXPECT_NEAR(button_rect.CenterPoint().x(), arrow_rect.CenterPoint().x(),
-                  ScaleFromDIP() * 2);
+      EXPECT_NEAR(button_center.x(), arrow_center.x(), expected_shift);
+      EXPECT_EQ(button_center.y(), arrow_center.y());
     }
   }
 
   void VerifyArrowRectIsIntRect(const gfx::RectF& arrow_rect) const {
-    if (theme_.ArrowIconsAvailable()) {
-      return;
-    }
-
-    // Verify that an arrow rect with triangular arrows is an integer rect.
-    EXPECT_TRUE(IsNearestRectWithinDistance(arrow_rect, 0.01f));
+    EXPECT_TRUE(gfx::IsNearestRectWithinDistance(arrow_rect, 0.01f));
   }
 
   void VerifyArrowRectLengthRatio(const gfx::RectF& button_rect,
                                   const gfx::RectF& arrow_rect,
                                   NativeTheme::State state) const {
-    const int smaller_button_side =
-        std::min(button_rect.width(), button_rect.height());
+    const float thickness = std::min(button_rect.width(), button_rect.height());
+    const float arrow_side = arrow_rect.width();  // The arrow is square.
     if (state == NativeTheme::kNormal) {
       // Default state arrows are slightly bigger than the half of the button's
       // smaller side (track thickness).
-      EXPECT_GT(arrow_rect.width(), smaller_button_side / 2.0f);
-      EXPECT_LT(arrow_rect.width(), smaller_button_side);
+      EXPECT_GT(arrow_side, thickness / 2.0f);
+      EXPECT_LT(arrow_side, thickness);
     } else {
-      EXPECT_GT(arrow_rect.width(), smaller_button_side / 3.0f);
-      EXPECT_LT(arrow_rect.width(), smaller_button_side / 1.5f);
+      EXPECT_GT(arrow_side, thickness / 3.0f);
+      EXPECT_LT(arrow_side, thickness / 1.5f);
     }
   }
 
@@ -82,9 +79,11 @@ class NativeThemeFluentTest : public ::testing::Test,
       const gfx::RectF button_rect(ButtonRect(part));
       for (auto const& state : {NativeTheme::kNormal, NativeTheme::kPressed}) {
         const gfx::RectF arrow_rect =
-            theme_.GetArrowRect(ToNearestRect(button_rect), part, state);
+            theme().GetArrowRect(gfx::ToNearestRect(button_rect), part, state);
         VerifyArrowRectCommonDimensions(arrow_rect);
-        VerifyArrowRectIsIntRect(arrow_rect);
+        if (!theme().GetArrowIconsAvailable()) {
+          VerifyArrowRectIsIntRect(arrow_rect);
+        }
         VerifyArrowRectIsCentered(button_rect, arrow_rect, part);
         VerifyArrowRectLengthRatio(button_rect, arrow_rect, state);
       }
@@ -92,39 +91,30 @@ class NativeThemeFluentTest : public ::testing::Test,
   }
 
   gfx::RectF ButtonRect(NativeTheme::Part part) const {
-    const int button_length = base::ClampFloor(
-        NativeThemeFluent::kScrollbarButtonSideLength * ScaleFromDIP());
-    const int track_thickness = base::ClampFloor(
-        NativeThemeFluent::kScrollbarThickness * ScaleFromDIP());
-
-    if (part == NativeTheme::kScrollbarUpArrow ||
-        part == NativeTheme::kScrollbarDownArrow) {
-      return gfx::RectF(0, 0, track_thickness, button_length);
+    gfx::Rect rect({}, theme().GetVerticalScrollbarButtonSize());
+    if (part == NativeTheme::kScrollbarLeftArrow ||
+        part == NativeTheme::kScrollbarRightArrow) {
+      rect.Transpose();
     }
-
-    return gfx::RectF(0, 0, button_length, track_thickness);
+    return gfx::RectF(gfx::ScaleToEnclosedRect(rect, ScaleFromDIP()));
   }
 
   void PaintScrollbarThumb(cc::PaintCanvas* canvas) const {
     ColorProvider color_provider;
-    theme_.PaintScrollbarThumb(canvas, &color_provider,
-                               NativeTheme::kScrollbarVerticalThumb,
-                               NativeTheme::kNormal, gfx::Rect(15, 100), {});
+    theme().PaintScrollbarThumb(canvas, &color_provider,
+                                NativeTheme::kScrollbarVerticalThumb,
+                                NativeTheme::kNormal, gfx::Rect(15, 100), {});
   }
 
-  float ScaleFromDIP() const { return GetParam(); }
+  static float ScaleFromDIP() { return GetParam(); }
 
   // Mocks the availability of the font for drawing arrow icons.
-  void SetArrowIconsAvailable(bool enabled) {
-    if (enabled) {
-      theme_.typeface_ = skia::DefaultTypeface();
-      EXPECT_TRUE(theme_.ArrowIconsAvailable());
-    } else {
-      theme_.typeface_ = nullptr;
-      EXPECT_FALSE(theme_.ArrowIconsAvailable());
-    }
+  void SetArrowIconsAvailable(bool available) {
+    theme_.SetArrowIconsAvailableForTesting(available);
+    EXPECT_EQ(theme().GetArrowIconsAvailable(), available);
   }
 
+ private:
   NativeThemeFluent theme_;
 };
 
@@ -163,18 +153,18 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
   // When there are no extra params set, the colors should be the ones that
   // correspond to the ColorId.
   EXPECT_EQ(color_provider->GetColor(kColorWebNativeControlScrollbarThumb),
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kNormal, {}));
+            theme().GetScrollbarThumbColor(color_provider.get(),
+                                           NativeTheme::kNormal, {}));
   const auto hovered_thumb_color =
       color_provider->GetColor(kColorWebNativeControlScrollbarThumbHovered);
   EXPECT_EQ(hovered_thumb_color,
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kHovered, {}));
+            theme().GetScrollbarThumbColor(color_provider.get(),
+                                           NativeTheme::kHovered, {}));
   const auto pressed_thumb_color =
       color_provider->GetColor(kColorWebNativeControlScrollbarThumbPressed);
   EXPECT_EQ(pressed_thumb_color,
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kPressed, {}));
+            theme().GetScrollbarThumbColor(color_provider.get(),
+                                           NativeTheme::kPressed, {}));
 
   // When the thumb is being painted in minimal mode, the normal state should
   // return the minimal mode's transparent color while the other states remain
@@ -183,13 +173,13 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
       .is_thumb_minimal_mode = true};
   EXPECT_EQ(color_provider->GetColor(
                 kColorWebNativeControlScrollbarThumbOverlayMinimalMode),
-            theme_.GetScrollbarThumbColor(
+            theme().GetScrollbarThumbColor(
                 color_provider.get(), NativeTheme::kNormal, kMinimalParams));
   EXPECT_EQ(hovered_thumb_color,
-            theme_.GetScrollbarThumbColor(
+            theme().GetScrollbarThumbColor(
                 color_provider.get(), NativeTheme::kHovered, kMinimalParams));
   EXPECT_EQ(pressed_thumb_color,
-            theme_.GetScrollbarThumbColor(
+            theme().GetScrollbarThumbColor(
                 color_provider.get(), NativeTheme::kPressed, kMinimalParams));
 
   // When there is a css color set in the extra params, we modify the color
@@ -198,18 +188,18 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
   static constexpr NativeTheme::ScrollbarThumbExtraParams kColorParams = {
       .thumb_color = kCssColor};
   EXPECT_EQ(kCssColor,
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kNormal, kColorParams));
+            theme().GetScrollbarThumbColor(color_provider.get(),
+                                           NativeTheme::kNormal, kColorParams));
   EXPECT_NE(kCssColor,
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kHovered, kColorParams));
+            theme().GetScrollbarThumbColor(
+                color_provider.get(), NativeTheme::kHovered, kColorParams));
   EXPECT_NE(kCssColor,
-            theme_.GetScrollbarThumbColor(color_provider.get(),
-                                          NativeTheme::kPressed, kColorParams));
+            theme().GetScrollbarThumbColor(
+                color_provider.get(), NativeTheme::kPressed, kColorParams));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NativeThemeFluentTest,
-                         ::testing::Values(1.f, 1.25f, 1.5f, 1.75f, 2.f));
+                         ::testing::Values(1.0f, 1.25f, 1.5f, 1.75f, 2.0f));
 
 }  // namespace ui

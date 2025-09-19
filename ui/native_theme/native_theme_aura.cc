@@ -196,7 +196,7 @@ void NativeThemeAura::PaintArrowButton(
   }
 
   PaintArrow(
-      canvas, rect, part,
+      canvas, rect, part, state,
       GetScrollbarArrowForegroundColor(bg_color, extra_params, state, dark_mode,
                                        contrast, color_provider));
 }
@@ -215,6 +215,7 @@ void NativeThemeAura::PaintScrollbarThumb(
   TRACE_EVENT0("blink", "NativeThemeAura::PaintScrollbarThumb");
 
   gfx::Rect fill_rect(rect);
+  fill_rect.Inset(GetScrollbarSolidColorThumbInsets(part));
   if (use_overlay_scrollbar()) {
     // Paint a stroke.
     gfx::RectF stroke_rect(fill_rect);
@@ -230,10 +231,9 @@ void NativeThemeAura::PaintScrollbarThumb(
 
     cc::PaintFlags stroke_flags;
     CHECK(color_provider);
-    const bool hovered = state != kNormal;
-    stroke_flags.setColor(
-        color_provider->GetColor(hovered ? kColorOverlayScrollbarStrokeHovered
-                                         : kColorOverlayScrollbarStroke));
+    stroke_flags.setColor(color_provider->GetColor(
+        state == kNormal ? kColorOverlayScrollbarStroke
+                         : kColorOverlayScrollbarStrokeHovered));
     stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
     stroke_flags.setStrokeWidth(kOverlayScrollbarStrokeWidth);
     canvas->drawRect(gfx::RectFToSkRect(stroke_rect), stroke_flags);
@@ -243,8 +243,6 @@ void NativeThemeAura::PaintScrollbarThumb(
     // `ScrollbarThemeOverlay::PaintThumb()`.
     fill_rect.Inset(gfx::Insets(kOverlayScrollbarStrokeWidth) +
                     edge_adjust_insets);
-  } else {
-    fill_rect.Inset(GetScrollbarSolidColorThumbInsets(part));
   }
 
   cc::PaintFlags fill_flags;

@@ -17,7 +17,6 @@
 #include "ui/native_theme/native_theme_observer.h"
 
 namespace ui {
-
 namespace {
 
 class NativeThemeTest : public ::testing::Test {

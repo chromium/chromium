@@ -4,48 +4,59 @@
 
 #include "ui/native_theme/native_theme_base.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <array>
 #include <optional>
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace ui {
 
-class NativeThemeBaseTest : public NativeThemeBase, public testing::Test {
+class NativeThemeBaseTest : public ::testing::Test {
  public:
-  SkColor GetContrastingColorForScrollbarPart(
-      SkColor fg,
-      std::optional<SkColor> bg = std::nullopt) {
-    return NativeThemeBase::GetContrastingColorForScrollbarPart(
-               fg, bg, NativeTheme::State::kHovered)
-        .value();
-  }
-  float GetScrollbarPartContrastRatio() {
-    return NativeThemeBase::GetScrollbarPartContrastRatioForState(
+  float GetScrollbarPartContrastRatio() const {
+    return theme_.GetScrollbarPartContrastRatioForState(
         NativeTheme::State::kHovered);
   }
+
+  SkColor GetContrastingColorForScrollbarPart(
+      std::optional<SkColor> color,
+      std::optional<SkColor> bg_color) const {
+    return theme_
+        .GetContrastingColorForScrollbarPart(
+            std::move(color), std::move(bg_color), NativeTheme::State::kHovered)
+        .value();
+  }
+
+ private:
+  NativeThemeBase theme_;
 };
 
-// Check that `GetContrastingColorForScrollbarPart()` doesn't modify
+// Checks that `GetContrastingColorForScrollbarPart()` doesn't modify
 // fully-transparent colors.
 TEST_F(NativeThemeBaseTest, GetContrastingColorTransparent) {
-  static constexpr auto kTransparentColor =
-      SkColorSetARGB(0x00, 0xBA, 0x74, 0x74);
-  EXPECT_EQ(kTransparentColor,
-            GetContrastingColorForScrollbarPart(kTransparentColor));
+  static constexpr auto kOpaqueColor = SkColorSetRGB(0xBA, 0x74, 0x74);
+  static constexpr auto kTransparentColor = SkColorSetA(kOpaqueColor, 0x00);
+  EXPECT_EQ(kTransparentColor, GetContrastingColorForScrollbarPart(
+                                   kTransparentColor, kOpaqueColor));
 }
 
-// Tests that the `GetContrastingColorForScrollbarPart` can adapt to a whole
-// range of luminosity for the colors to modify.
-TEST_F(NativeThemeBaseTest, GetContrastingColorForScrollbarPart) {
+// Checks that `GetContrastingColorForScrollbarPart` can adapt to a whole range
+// of luminosity for the colors to modify.
+TEST_F(NativeThemeBaseTest, GetContrastingColorLuminosity) {
   for (unsigned i = 0; i < 255; i++) {
     const SkColor color = SkColorSetRGB(i, i, i);
     const float luminance = color_utils::GetRelativeLuminance(color);
     const float adjusted_luminance = color_utils::GetRelativeLuminance(
-        GetContrastingColorForScrollbarPart(color));
+        GetContrastingColorForScrollbarPart(color, std::nullopt));
     if (color_utils::IsDark(color)) {
       EXPECT_GT(adjusted_luminance, luminance);
     } else {
@@ -54,7 +65,7 @@ TEST_F(NativeThemeBaseTest, GetContrastingColorForScrollbarPart) {
   }
 }
 
-// Tests that the returned color never loses contrast against the background
+// Checks that the returned color never loses contrast against the background
 // color.
 TEST_F(NativeThemeBaseTest, GetContrastingColorBackgroundContrast) {
   for (size_t c = 0; c < 24; c += 8) {
@@ -69,6 +80,7 @@ TEST_F(NativeThemeBaseTest, GetContrastingColorBackgroundContrast) {
     }
   }
 }
+
 // Checks that grayscale colors never lose contrast with the background when it
 // is different shades of gray.
 TEST_F(NativeThemeBaseTest, GetContrastingColorGrayScales) {

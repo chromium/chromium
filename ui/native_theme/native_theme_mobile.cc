@@ -28,14 +28,6 @@ gfx::Size NativeThemeMobile::GetPartSize(
              : NativeThemeBase::GetPartSize(part, state, extra_params);
 }
 
-void NativeThemeMobile::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
-  // Take 1px for padding around the checkbox/radio button.
-  rect->setLTRB(static_cast<int>(rect->x()) + 1,
-                static_cast<int>(rect->y()) + 1,
-                static_cast<int>(rect->right()) - 1,
-                static_cast<int>(rect->bottom()) - 1);
-}
-
 SkColor NativeThemeMobile::GetControlColor(
     ControlColorId color_id,
     bool dark_mode,
@@ -226,12 +218,12 @@ void NativeThemeMobile::PaintArrowButton(
 
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setColor(GetControlColor(kButtonBorderColors[state], dark_mode,
-                                 contrast, color_provider));
+  flags.setColor(GetControlColorForState(kButtonBorderColors, state, dark_mode,
+                                         contrast, color_provider));
   canvas->drawPath(outline, flags);
 
   PaintArrow(
-      canvas, rect, part,
+      canvas, rect, part, state,
       GetScrollbarArrowForegroundColor(bg_color, extra_params, state, dark_mode,
                                        contrast, color_provider));
 }

@@ -13,6 +13,8 @@ namespace ui {
 namespace {
 
 void VerifyPoint(SkPoint a, SkPoint b) {
+  // TODO(pkasting): Move `cc::PaintOpHelper::ToString(const SkPoint&)` to a
+  // more general location and use `EXPECT_EQ(actual_point, expected_point)`.
   EXPECT_EQ(a.x(), b.x());
   EXPECT_EQ(a.y(), b.y());
 }
@@ -36,7 +38,8 @@ class NativeThemeAuraTest : public testing::Test {
   }
 
   gfx::RectF GetArrowRect(const gfx::Rect& rect) const {
-    return theme_.GetArrowRect(rect);
+    return theme_.GetArrowRect(rect, NativeTheme::kScrollbarDownArrow,
+                               NativeTheme::kNormal);
   }
 
  private:

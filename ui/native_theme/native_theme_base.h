@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -115,13 +116,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                  PreferredContrast contrast,
                  std::optional<SkColor> accent_color) const override;
 
-  // Shrinks checkbox/radio button rect, if necessary, to make room for padding
-  // and drop shadow.
-  // TODO(mohsen): This is needed because checkboxes/radio buttons on Android
-  // have different padding from those on desktop Chrome. Get rid of this when
-  // crbug.com/530746 is resolved.
-  virtual void AdjustCheckboxRadioRectForPadding(SkRect* rect) const;
-
   // Returns the size of a vertical scrollbar button. Horizontal scrollbars
   // transpose this value.
   //
@@ -132,6 +126,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   // Returns the size of a vertical scrollbar thumb. Horizontal scrollbars
   // transpose this value.
   virtual gfx::Size GetVerticalScrollbarThumbSize() const;
+
+  // Returns the scrollbar arrow rect, given an arrow button rect of `rect`.
+  virtual gfx::RectF GetArrowRect(const gfx::Rect& rect,
+                                  Part part,
+                                  State state) const;
 
   virtual SkColor GetControlColor(ControlColorId color_id,
                                   bool dark_mode,
@@ -205,33 +204,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       const gfx::Rect& rect,
       const ScrollbarTrackExtraParams& extra_params) const;
 
-  SkColor ControlsAccentColorForState(
-      State state,
-      bool dark_mode,
-      PreferredContrast contrast,
-      const ColorProvider* color_provider) const;
-  SkColor ControlsSliderColorForState(
-      State state,
-      bool dark_mode,
-      PreferredContrast contrast,
-      const ColorProvider* color_provider) const;
-  SkColor ButtonBorderColorForState(State state,
-                                    bool dark_mode,
-                                    PreferredContrast contrast,
-                                    const ColorProvider* color_provider) const;
-  SkColor ButtonFillColorForState(State state,
+  // Selects a color from `colors` based on `state`, then returns the physical
+  // color. `colors` must be in the same order as the actual `State` enum.
+  SkColor GetControlColorForState(base::span<const ControlColorId, 4> colors,
+                                  State state,
                                   bool dark_mode,
                                   PreferredContrast contrast,
                                   const ColorProvider* color_provider) const;
-  SkColor ControlsBorderColorForState(
-      State state,
-      bool dark_mode,
-      PreferredContrast contrast,
-      const ColorProvider* color_provider) const;
-  SkColor ControlsFillColorForState(State state,
-                                    bool dark_mode,
-                                    PreferredContrast contrast,
-                                    const ColorProvider* color_provider) const;
 
   SkColor GetScrollbarArrowBackgroundColor(
       const ScrollbarArrowExtraParams& extra_params,
@@ -262,9 +241,39 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
   void PaintArrow(cc::PaintCanvas* canvas,
                   const gfx::Rect& rect,
                   Part part,
+                  State state,
                   SkColor color) const;
 
+ private:
+  friend class NativeThemeAuraTest;
+  friend class NativeThemeBaseTest;
+
+  static constexpr auto kBorderColors =
+      std::to_array({kDisabledBorder, kHoveredBorder, kBorder, kPressedBorder});
+  static constexpr auto kAccentColors =
+      std::to_array({kDisabledAccent, kHoveredAccent, kAccent, kPressedAccent});
+  static constexpr auto kBackgroundColors = std::to_array(
+      {kDisabledBackground, kBackground, kBackground, kBackground});
+  static constexpr auto kFillColors =
+      std::to_array({kDisabledFill, kHoveredFill, kFill, kPressedFill});
+  static constexpr auto kSliderColors =
+      std::to_array({kDisabledSlider, kHoveredSlider, kSlider, kPressedSlider});
+  static constexpr auto kSliderBorderColors =
+      std::to_array({kDisabledBorder, kHoveredSliderBorder, kSliderBorder,
+                     kPressedSliderBorder});
+
   static SkPath PathForArrow(const gfx::RectF& rect, Part part);
+
+  // Like `GetControlColorForState()`; however, if `accent_color` is non-null
+  // and `state` is not `kDisabled`, overrides the default colors with computed
+  // ones based on `accent_color`.
+  SkColor GetAccentOrControlColorForState(
+      std::optional<SkColor> accent_color,
+      base::span<const ControlColorId, 4> colors,
+      State state,
+      bool dark_mode,
+      PreferredContrast contrast,
+      const ColorProvider* color_provider) const;
 
   // Adjusts custom scrollbar button/thumb colors to meet contrast minima. When
   // `state` is hovered or pressed, `color` (if present) will be adjusted to
@@ -353,22 +362,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                       bool dark_mode,
                       PreferredContrast contrast) const;
 
- private:
-  friend class NativeThemeAuraTest;
-  friend class NativeThemeBaseTest;
-
-  static constexpr auto kSliderBorderColors =
-      std::to_array({kDisabledBorder, kHoveredSliderBorder, kSliderBorder,
-                     kPressedSliderBorder});
-
-  gfx::RectF GetArrowRect(const gfx::Rect& rect) const;
-
-  SkColor ControlsBackgroundColorForState(
-      State state,
-      bool dark_mode,
-      PreferredContrast contrast,
-      const ColorProvider* color_provider) const;
-
   // Draws the common elements of checkboxes and radio buttons. Returns the
   // rectangle within which any additional decorations should be drawn, or empty
   // if none.
@@ -376,7 +369,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
                                   const ColorProvider* color_provider,
                                   State state,
                                   const gfx::Rect& rect,
-                                  const ButtonExtraParams& button,
+                                  const ButtonExtraParams& extra_params,
                                   bool is_checkbox,
                                   float border_radius,
                                   bool dark_mode,

@@ -18,8 +18,7 @@ class SkTypeface;
 
 namespace cc {
 class PaintCanvas;
-class PaintFlags;
-}  // namespace cc
+}
 
 namespace gfx {
 class Rect;
@@ -46,10 +45,10 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   // NativeThemeBase:
   int GetPaintedScrollbarTrackInset() const override;
 
-  // Gets whether arrow icons are treated as available for metric computations.
-  bool ArrowIconsAvailable() const {
-    return typeface_.has_value() && typeface_.value().get();
-  }
+  // Gets/sets whether arrow icons are treated as available for metric
+  // computations.
+  bool GetArrowIconsAvailable() const;
+  void SetArrowIconsAvailableForTesting(bool available);
 
  protected:
   NativeThemeFluent();
@@ -58,6 +57,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   // NativeThemeBase:
   gfx::Size GetVerticalScrollbarButtonSize() const override;
   gfx::Size GetVerticalScrollbarThumbSize() const override;
+  gfx::RectF GetArrowRect(const gfx::Rect& rect,
+                          Part part,
+                          State state) const override;
   std::optional<ColorId> GetScrollbarThumbColorId(
       State state,
       const ScrollbarThumbExtraParams& extra_params) const override;
@@ -98,20 +100,13 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeFluent
   friend class base::NoDestructor<NativeThemeFluent>;
   friend class NativeThemeFluentTest;
 
-  // Calculates and returns the position and dimensions of the scaled arrow rect
-  // within the scrollbar button rect. The goal is to keep the arrow in the
-  // center of the button with the applied kFluentScrollbarArrowOffset.
-  gfx::RectF GetArrowRect(const gfx::Rect& rect, Part part, State state) const;
+  // Returns the typeface to use for arrow icons. May return null if the
+  // typeface is not available. Lazily loads the typeface on first call.
+  sk_sp<SkTypeface> GetArrowIconTypeface() const;
 
-  // Used by Overlay Fluent scrollbars to paint buttons with rounded corners.
-  void PaintRoundedButton(cc::PaintCanvas* canvas,
-                          const gfx::RectF& paint_rect,
-                          cc::PaintFlags paint_flags,
-                          Part part) const;
-
-  // The typeface which contains arrow icons. Because `PaintArrow()` lazily
-  // loads, a null optional means "no load attempted" while a null pointer
-  // inside the optional means "load failed and will not be retried".
+  // The typeface which contains arrow icons. Because `GetArrowIconTypeface()`
+  // lazily loads, a null optional means "no load attempted" while a null
+  // pointer inside the optional means "load failed and will not be retried".
   mutable std::optional<sk_sp<SkTypeface>> typeface_;
 };
 
