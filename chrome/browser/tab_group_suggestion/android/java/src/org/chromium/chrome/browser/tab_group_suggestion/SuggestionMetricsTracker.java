@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion;
 
+import android.os.SystemClock;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
@@ -25,25 +27,42 @@ import java.util.Map;
 @NullMarked
 public class SuggestionMetricsTracker implements Destroyable {
     /** The histogram prefix for the total number of tab switches within a session. */
-    public static final String TOTAL_HISTOGRAM_PREFIX =
+    public static final String TOTAL_SWITCHES_HISTOGRAM_PREFIX =
             "GroupSuggestionsService.TabSwitches.Total.";
 
     /** The histogram prefix for the number of tab switches per group within a session. */
-    public static final String PER_GROUP_HISTOGRAM_PREFIX =
+    public static final String PER_GROUP_SWITCHES_HISTOGRAM_PREFIX =
             "GroupSuggestionsService.TabSwitches.PerGroup.";
 
-    /** A data class used to track the number of tab groups and tab foreground switches. */
-    private static class GroupAndSwitchCounts {
+    /** The histogram prefix for the total time spent within a session. */
+    public static final String TOTAL_TIME_SPENT_HISTOGRAM_PREFIX =
+            "GroupSuggestionsService.TimeSpent.Total.";
+
+    /** The histogram prefix for the time spent per group within a session. */
+    public static final String PER_GROUP_TIME_SPENT_HISTOGRAM_PREFIX =
+            "GroupSuggestionsService.TimeSpent.PerGroup.";
+
+    /** A data class used to track metrics for a specific group type. */
+    private static class GroupTypeMetricsCounts {
+        /** The number of tab groups for this Group Type. */
         public int groupCount;
+
+        /** The number of tab foreground switches for this Group Type. */
         public int foregroundSwitchCount;
+
+        /** The total time spent with tabs in the foreground for this Group Type. */
+        public long totalTimeSpentMs;
     }
 
     private final Map<Token, @GroupCreationSource Integer> mGroupIdToSuggestionType =
             new HashMap<>();
-    private final Map<@GroupCreationSource Integer, GroupAndSwitchCounts> mSuggestionTypeToCounts =
-            new HashMap<>();
+    private final Map<@GroupCreationSource Integer, GroupTypeMetricsCounts>
+            mSuggestionTypeToCounts = new HashMap<>();
     private final Callback<@Nullable Tab> mOnCurrentTabChangedCallback = this::onChangeCurrentTab;
     private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+
+    private long mCurrentTabForegroundTime;
+    private @Nullable Token mCurrentTabGroupId;
 
     /**
      * @param tabModelSelector The {@link TabModelSelector} to observe for tab changes.
@@ -57,11 +76,14 @@ public class SuggestionMetricsTracker implements Destroyable {
 
     /** Resets the counters for a new session. */
     /*package*/ void reset() {
+        mCurrentTabForegroundTime = 0;
+        mCurrentTabGroupId = null;
         resetSuggestionTypeToCounts();
     }
 
     /** Records histograms for the current session. */
     /*package*/ void recordMetrics() {
+        updateTimeSpent(SystemClock.elapsedRealtime());
         mSuggestionTypeToCounts.forEach(this::recordHistogramsForBin);
         mSuggestionTypeToCounts.clear();
         resetSuggestionTypeToCounts();
@@ -73,9 +95,11 @@ public class SuggestionMetricsTracker implements Destroyable {
     }
 
     private void resetSuggestionTypeToCounts() {
-        mSuggestionTypeToCounts.put(GroupCreationSource.GTS_SUGGESTION, new GroupAndSwitchCounts());
-        mSuggestionTypeToCounts.put(GroupCreationSource.CPA_SUGGESTION, new GroupAndSwitchCounts());
-        mSuggestionTypeToCounts.put(GroupCreationSource.UNKNOWN, new GroupAndSwitchCounts());
+        mSuggestionTypeToCounts.put(
+                GroupCreationSource.GTS_SUGGESTION, new GroupTypeMetricsCounts());
+        mSuggestionTypeToCounts.put(
+                GroupCreationSource.CPA_SUGGESTION, new GroupTypeMetricsCounts());
+        mSuggestionTypeToCounts.put(GroupCreationSource.UNKNOWN, new GroupTypeMetricsCounts());
     }
 
     /**
@@ -87,12 +111,15 @@ public class SuggestionMetricsTracker implements Destroyable {
     /*package*/ void onSuggestionAccepted(
             @GroupCreationSource Integer suggestionType, Token groupId) {
         mGroupIdToSuggestionType.put(groupId, suggestionType);
-        GroupAndSwitchCounts counts = mSuggestionTypeToCounts.get(suggestionType);
+        GroupTypeMetricsCounts counts = mSuggestionTypeToCounts.get(suggestionType);
         assert counts != null;
         counts.groupCount++;
     }
 
     private void onChangeCurrentTab(@Nullable Tab tab) {
+        long currentTimeMs = SystemClock.elapsedRealtime();
+        updateTimeSpent(currentTimeMs);
+
         if (tab == null) return;
 
         @GroupCreationSource int creationSource;
@@ -105,28 +132,55 @@ public class SuggestionMetricsTracker implements Destroyable {
             creationSource = GroupCreationSource.UNKNOWN;
             mGroupIdToSuggestionType.put(groupId, creationSource);
 
-            GroupAndSwitchCounts counts = mSuggestionTypeToCounts.get(creationSource);
+            GroupTypeMetricsCounts counts = mSuggestionTypeToCounts.get(creationSource);
             assert counts != null;
 
             counts.groupCount++;
         }
 
-        GroupAndSwitchCounts counts = mSuggestionTypeToCounts.get(creationSource);
+        GroupTypeMetricsCounts counts = mSuggestionTypeToCounts.get(creationSource);
         assert counts != null;
 
         counts.foregroundSwitchCount++;
     }
 
+    private void updateTimeSpent(long currentTimeMs) {
+        long previousTabForegroundTime = mCurrentTabForegroundTime;
+        Token previousTabGroupId = mCurrentTabGroupId;
+
+        mCurrentTabForegroundTime = currentTimeMs;
+        Tab tab = mCurrentTabSupplier.get();
+        mCurrentTabGroupId = tab != null ? tab.getTabGroupId() : null;
+
+        if (previousTabGroupId == null || previousTabForegroundTime == 0) return;
+
+        @GroupCreationSource
+        int creationSource =
+                mGroupIdToSuggestionType.getOrDefault(
+                        previousTabGroupId, GroupCreationSource.UNKNOWN);
+        GroupTypeMetricsCounts counts = mSuggestionTypeToCounts.get(creationSource);
+        assert counts != null;
+
+        counts.totalTimeSpentMs += currentTimeMs - previousTabForegroundTime;
+    }
+
     private void recordHistogramsForBin(
-            @GroupCreationSource Integer creationSource, GroupAndSwitchCounts counts) {
+            @GroupCreationSource Integer creationSource, GroupTypeMetricsCounts counts) {
         if (counts.groupCount == 0) return;
         String suffix = groupCreationSourceToSuffix(creationSource);
         RecordHistogram.recordCount100Histogram(
-                TOTAL_HISTOGRAM_PREFIX + suffix, counts.foregroundSwitchCount);
+                TOTAL_SWITCHES_HISTOGRAM_PREFIX + suffix, counts.foregroundSwitchCount);
 
         RecordHistogram.recordCount100Histogram(
-                PER_GROUP_HISTOGRAM_PREFIX + suffix,
+                PER_GROUP_SWITCHES_HISTOGRAM_PREFIX + suffix,
                 counts.foregroundSwitchCount / counts.groupCount);
+
+        RecordHistogram.recordMediumTimesHistogram(
+                TOTAL_TIME_SPENT_HISTOGRAM_PREFIX + suffix, counts.totalTimeSpentMs);
+
+        RecordHistogram.recordMediumTimesHistogram(
+                PER_GROUP_TIME_SPENT_HISTOGRAM_PREFIX + suffix,
+                counts.totalTimeSpentMs / counts.groupCount);
     }
 
     private String groupCreationSourceToSuffix(@GroupCreationSource int source) {

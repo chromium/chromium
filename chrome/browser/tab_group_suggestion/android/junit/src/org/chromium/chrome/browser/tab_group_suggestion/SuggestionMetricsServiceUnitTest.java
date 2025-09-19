@@ -101,9 +101,12 @@ public class SuggestionMetricsServiceUnitTest {
     public void testOnSuggestionAccepted() {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(SuggestionMetricsTracker.TOTAL_HISTOGRAM_PREFIX + "GTS", 1)
                         .expectIntRecord(
-                                SuggestionMetricsTracker.PER_GROUP_HISTOGRAM_PREFIX + "GTS", 1)
+                                SuggestionMetricsTracker.TOTAL_SWITCHES_HISTOGRAM_PREFIX + "GTS", 1)
+                        .expectIntRecord(
+                                SuggestionMetricsTracker.PER_GROUP_SWITCHES_HISTOGRAM_PREFIX
+                                        + "GTS",
+                                1)
                         .build();
 
         mSuggestionMetricsService.onSuggestionAccepted(
@@ -122,7 +125,8 @@ public class SuggestionMetricsServiceUnitTest {
 
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords(SuggestionMetricsTracker.TOTAL_HISTOGRAM_PREFIX + "GTS")
+                        .expectNoRecords(
+                                SuggestionMetricsTracker.TOTAL_SWITCHES_HISTOGRAM_PREFIX + "GTS")
                         .build();
 
         onStart();
@@ -138,14 +142,16 @@ public class SuggestionMetricsServiceUnitTest {
 
         HistogramWatcher watcher1 =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(SuggestionMetricsTracker.TOTAL_HISTOGRAM_PREFIX + "GTS", 1)
+                        .expectIntRecord(
+                                SuggestionMetricsTracker.TOTAL_SWITCHES_HISTOGRAM_PREFIX + "GTS", 1)
                         .build();
         onStop();
         watcher1.assertExpected();
 
         HistogramWatcher watcher2 =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords(SuggestionMetricsTracker.TOTAL_HISTOGRAM_PREFIX + "GTS")
+                        .expectNoRecords(
+                                SuggestionMetricsTracker.TOTAL_SWITCHES_HISTOGRAM_PREFIX + "GTS")
                         .build();
         onStop();
         watcher2.assertExpected();
