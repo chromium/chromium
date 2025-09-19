@@ -301,12 +301,10 @@ export class ComposeboxElement extends I18nMixinLit
       this.submitEnabled_ = this.submitEnabled_ || this.files_.size > 0;
     }
 
-    if (changedPrivateProperties.has('input_')) {
-      // lastQueriedInput_ is used here since the input_ changes based on
-      // the selected match. If typed suggest is not enabled and input_ is used,
-      // the dropdown will hide if the user keys down over zps matches.
-      this.showDropdown_ = (this.showTypedSuggest_ && !!this.input_.trim()) ||
-          (this.showZps && !this.lastQueriedInput_);
+    // When the result initially gets set check if dropdown should show.
+    if (changedPrivateProperties.has('input_') ||
+        changedPrivateProperties.has('result_')) {
+      this.showDropdown_ = this.computeShowDropdown_();
     }
   }
 
@@ -332,11 +330,19 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.input.value = text;
         this.input_ = text;
         this.submitEnabled_ = true;
+      } else {
+        this.$.input.value = '';
+        this.input_ = '';
+        this.submitEnabled_ = false;
       }
     }
     if (changedPrivateProperties.has('smartComposeInlineHint_')) {
       if (this.smartComposeInlineHint_) {
         this.adjustInputForSmartCompose();
+      } else {
+        // Unset the height override so input can expand through typing.
+        this.$.input.style.height =
+            'calc-size(fit-content, min(size + 4px, 190px))';
       }
     }
   }
@@ -357,6 +363,22 @@ export class ComposeboxElement extends I18nMixinLit
     return this.input_.trim().length > 0 || this.files_.size > 0 ?
         this.i18n('composeboxCancelButtonTitleInput') :
         this.i18n('composeboxCancelButtonTitle');
+  }
+
+  private computeShowDropdown_() {
+    // Don't show dropdown if there's no results.
+    if (!this.result_?.matches?.length) {
+      return false;
+    }
+
+    if (this.showTypedSuggest_ && this.input_.trim()) {
+      return true;
+    }
+
+    // lastQueriedInput_ is used here since the input_ changes based on
+    // the selected match. If typed suggest is not enabled and input_ is used,
+    // the dropdown will hide if the user keys down over zps matches.
+    return this.showZps && !this.lastQueriedInput_;
   }
 
   protected shouldShowSuggestionActivityLink_() {
@@ -523,15 +545,30 @@ export class ComposeboxElement extends I18nMixinLit
       if ((e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
         return;
       }
-      if (e.key === 'Tab' && this.smartComposeInlineHint_) {
-        this.input_ = this.input_ + this.smartComposeInlineHint_;
-        this.$.input.value = this.input_;
-        this.smartComposeInlineHint_ = '';
-        e.preventDefault();
+      // TODO(crbug.com/444495048): Add test for tab selection logic.
+      if (e.key === 'Tab') {
+        // If focus leaves the input, unselect the first match.
+        if (e.shiftKey && this.selectedMatchIndex_ === 0) {
+          this.$.matches.unselect();
+        } else if (this.smartComposeInlineHint_) {
+          this.input_ = this.input_ + this.smartComposeInlineHint_;
+          this.$.input.value = this.input_;
+          this.smartComposeInlineHint_ = '';
+          e.preventDefault();
+        }
         return;
       }
     }
 
+    if (e.key === 'Tab') {
+      // If focus goes past the last match, unselect the last match.
+      if (this.result_ && this.result_.matches) {
+        if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
+          this.$.matches.unselect();
+        }
+      }
+      return;
+    }
 
     if (e.key === 'Enter' && this.submitEnabled_) {
       if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
