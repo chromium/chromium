@@ -72,8 +72,9 @@ SVGStringListTearOff* SVGStaticStringList::TearOff() {
 }
 
 SVGParsingError SVGStaticStringList::AttributeChanged(const String& value) {
-  SetContentAttributeState(value.IsNull() ? kNotSet : kHasValue);
-  return value_->SetValueAsString(value);
+  return UpdateBaseValueFromAttribute(
+      *value_, value,
+      [](const SVGStringListBase&) { return SVGParseStatus::kNoError; });
 }
 
 }  // namespace blink

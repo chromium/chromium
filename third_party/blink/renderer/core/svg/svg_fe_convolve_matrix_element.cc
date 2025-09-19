@@ -56,12 +56,10 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
                                           svg_names::kOrderAttr,
                                           3) {}
 
-  SVGParsingError AttributeChanged(const String&) override;
+  SVGParsingError AttributeChanged(const String& value) override;
 
  protected:
-  static SVGParsingError CheckValue(SVGParsingError parse_status, int value) {
-    if (parse_status != SVGParseStatus::kNoError)
-      return parse_status;
+  static SVGParsingError CheckValue(int value) {
     if (value < 0)
       return SVGParseStatus::kNegativeValue;
     if (value == 0)
@@ -71,13 +69,15 @@ class SVGAnimatedOrder : public SVGAnimatedIntegerOptionalInteger {
 };
 
 SVGParsingError SVGAnimatedOrder::AttributeChanged(const String& value) {
-  SVGParsingError parse_status =
-      SVGAnimatedIntegerOptionalInteger::AttributeChanged(value);
-  // Check for semantic errors.
-  parse_status = CheckValue(parse_status, FirstInteger()->BaseValue()->Value());
-  parse_status =
-      CheckValue(parse_status, SecondInteger()->BaseValue()->Value());
-  return parse_status;
+  return UpdateBaseValueFromAttribute(
+      *BaseValue(), value, [](const SVGIntegerOptionalInteger& base_value) {
+        SVGParsingError parse_status =
+            CheckValue(base_value.FirstInteger()->Value());
+        if (parse_status != SVGParseStatus::kNoError) {
+          return parse_status;
+        }
+        return CheckValue(base_value.SecondInteger()->Value());
+      });
 }
 
 SVGFEConvolveMatrixElement::SVGFEConvolveMatrixElement(Document& document)
