@@ -1221,6 +1221,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // If the context is lost we don't want to re-create it here, the resulting
   // resource provider would be invalid anyway
   if (!context_provider_wrapper ||
+      !context_provider_wrapper->ContextProvider().RasterInterface() ||
       context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
   }
