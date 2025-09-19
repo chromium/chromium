@@ -192,6 +192,20 @@ void BocaReceiverUntrustedPageHandler::OnGetConnectionInfoResponse(
     case ::boca::ReceiverConnectionState::START_REQUESTED:
       ProcessStartRequested(std::move(new_connection_info.value()));
       break;
+    case ::boca::ReceiverConnectionState::STOP_REQUESTED:
+      ProcessStopRequested(new_connection_info.value());
+      break;
+    case ::boca::ReceiverConnectionState::CONNECTING:
+    case ::boca::ReceiverConnectionState::CONNECTED:
+      if (!connection_info_.has_value()) {
+        // If there is no ongoing connection but the state at the server is
+        // CONNECTING or CONNECTED, update the server with DISCONNECTED state.
+        // This may happen if the receiver was shutdown or crash in the middle
+        // of a session.
+        UpdateConnection(new_connection_info->connection_id(),
+                         ::boca::ReceiverConnectionState::DISCONNECTED);
+      }
+      break;
     default:
       break;
   }
@@ -218,6 +232,20 @@ void BocaReceiverUntrustedPageHandler::ProcessStartRequested(
     MaybeEndConnection(mojom::ConnectionClosedReason::kTakeOver);
   }
   MaybeStartConnection(std::move(new_connection_info));
+}
+
+void BocaReceiverUntrustedPageHandler::ProcessStopRequested(
+    const ::boca::KioskReceiverConnection& new_connection_info) {
+  CHECK_EQ(new_connection_info.receiver_connection_state(),
+           ::boca::ReceiverConnectionState::STOP_REQUESTED);
+  if (!connection_info_.has_value() ||
+      connection_info_->connection_id() !=
+          new_connection_info.connection_id()) {
+    UpdateConnection(new_connection_info.connection_id(),
+                     ::boca::ReceiverConnectionState::DISCONNECTED);
+    return;
+  }
+  MaybeEndConnection(mojom::ConnectionClosedReason::kInitiatorClosed);
 }
 
 void BocaReceiverUntrustedPageHandler::MaybeStartConnection(

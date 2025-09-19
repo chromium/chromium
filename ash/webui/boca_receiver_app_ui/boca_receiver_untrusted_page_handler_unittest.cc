@@ -60,6 +60,9 @@ constexpr std::string_view kInitiatorGaiaId = "initiator-gaia-id";
 constexpr std::string_view kPresenterGaiaId = "presenter-gaia-id";
 constexpr std::string_view kInitiatorName = "Initiator Name";
 constexpr std::string_view kPresenterName = "Presenter Name";
+constexpr std::string_view kConnectingPair = R"({"state":"CONNECTING"})";
+constexpr std::string_view kConnectedPair = R"({"state":"CONNECTED"})";
+constexpr std::string_view kDisconnectedPair = R"({"state":"DISCONNECTED"})";
 
 constexpr std::string_view kConnectionCodeJson = R"(
           "connectionCode": {
@@ -387,10 +390,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
   WaitForTokenUpload();
 
   // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"CONNECTING"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTING"})");
+      update_connection_url_.spec(), kConnectingPair);
 
   ASSERT_FALSE(frame_received_cb.is_null());
   // First frame received.
@@ -404,9 +406,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
   bitmap.eraseColor(SK_ColorRED);
   frame_received_cb.Run(bitmap, /*desktop_frame=*/nullptr);
   // The first frame should trigger an update to CONNECTED state.
-  EXPECT_EQ(GetRequestBody(update_connection_url_), R"({"state":"CONNECTED"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectedPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTED"})");
+      update_connection_url_.spec(), kConnectedPair);
 
   const SkBitmap& received_bitmap = frame_future.Get();
   EXPECT_EQ(received_bitmap.getColor(0, 0), SK_ColorRED);
@@ -439,10 +441,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
   WaitForTokenUpload();
 
   // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"CONNECTING"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTING"})");
+      update_connection_url_.spec(), kConnectingPair);
 
   ASSERT_FALSE(session_ended_cb.is_null());
   base::test::TestFuture<mojom::ConnectionClosedReason>
@@ -456,8 +457,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
 
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kPresenterConnectionLost);
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"DISCONNECTED"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest,
@@ -476,10 +476,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
   WaitForTokenUpload();
 
   // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"CONNECTING"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTING"})");
+      update_connection_url_.spec(), kConnectingPair);
 
   ASSERT_FALSE(state_updated_cb.is_null());
   base::test::TestFuture<mojom::ConnectionClosedReason>
@@ -494,8 +493,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
 
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kPresenterConnectionLost);
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"DISCONNECTED"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdConnectionStateUpdated_Error) {
@@ -513,10 +511,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdConnectionStateUpdated_Error) {
   WaitForTokenUpload();
 
   // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"CONNECTING"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTING"})");
+      update_connection_url_.spec(), kConnectingPair);
 
   ASSERT_FALSE(state_updated_cb.is_null());
   base::test::TestFuture<mojom::ConnectionClosedReason>
@@ -542,10 +539,9 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
       page_.BindAndGetRemote(), &handler_delegate_);
   EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
   WaitForTokenUpload();
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"CONNECTING"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "CONNECTING"})");
+      update_connection_url_.spec(), kConnectingPair);
 
   // New connection request with different ID.
   constexpr std::string_view kNewConnectionId = "new-connection-id";
@@ -572,13 +568,129 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
 
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kTakeOver);
-  EXPECT_EQ(GetRequestBody(update_connection_url_),
-            R"({"state":"DISCONNECTED"})");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), R"({"state": "DISCONNECTED"})");
-  EXPECT_EQ(GetRequestBody(kUpdateNewConnectionUrl),
-            R"({"state":"CONNECTING"})");
+      update_connection_url_.spec(), kDisconnectedPair);
+  EXPECT_EQ(GetRequestBody(kUpdateNewConnectionUrl), kConnectingPair);
 }
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedBeforeConnecting) {
+  // Establish a connection first.
+  url_loader_factory_.AddResponse(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kConnectionId, "START_REQUESTED", ""));
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  WaitForTokenUpload();
+  // Now simulate a STOP_REQUESTED invalidation for the same connection.
+  url_loader_factory_.AddResponse(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kConnectionId, "STOP_REQUESTED"));
+
+  EXPECT_CALL(page_, OnConnectionClosed).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
+
+  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
+  // Establish a connection first.
+  url_loader_factory_.AddResponse(get_connection_url_.spec(),
+                                  CreateConnectionInfo(kConnectionId));
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
+  WaitForTokenUpload();
+  // Wait for CONNECTING update.
+  url_loader_factory_.WaitForRequest(update_connection_url_);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      update_connection_url_.spec(), kConnectingPair);
+
+  // Now simulate a STOP_REQUESTED invalidation for the same connection.
+  url_loader_factory_.AddResponse(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kConnectionId, "STOP_REQUESTED"));
+
+  base::test::TestFuture<mojom::ConnectionClosedReason>
+      connection_closed_future;
+  EXPECT_CALL(page_, OnConnectionClosed)
+      .WillOnce(
+          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
+            connection_closed_future.GetCallback().Run(reason);
+          });
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
+
+  invalidation_service_delegate_->OnInvalidationReceived("payload");
+
+  EXPECT_EQ(connection_closed_future.Get(),
+            mojom::ConnectionClosedReason::kInitiatorClosed);
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
+  // Establish a connection first.
+  url_loader_factory_.AddResponse(get_connection_url_.spec(),
+                                  CreateConnectionInfo(kConnectionId));
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  EXPECT_CALL(*remoting_client_, StartCrdClient).Times(1);
+  WaitForTokenUpload();
+  // Wait for CONNECTING update.
+  url_loader_factory_.WaitForRequest(update_connection_url_);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      update_connection_url_.spec(), kConnectingPair);
+
+  // Now simulate a STOP_REQUESTED invalidation for a different connection.
+  constexpr std::string_view kOldConnectionId = "old-connection-id";
+  const GURL kUpdateOldConnectionUrl =
+      GURL(boca::GetSchoolToolsUrl())
+          .Resolve(base::ReplaceStringPlaceholders(
+              UpdateKioskReceiverStateRequest::kRelativeUrlTemplate,
+              {std::string(kReceiverId), std::string(kOldConnectionId)},
+              /*offsets=*/nullptr));
+  url_loader_factory_.AddResponse(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kOldConnectionId, "STOP_REQUESTED"));
+
+  EXPECT_CALL(page_, OnConnectionClosed).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
+
+  invalidation_service_delegate_->OnInvalidationReceived("payload");
+
+  EXPECT_EQ(GetRequestBody(kUpdateOldConnectionUrl), kDisconnectedPair);
+}
+
+class BocaReceiverUntrustedPageHandlerNoActiveConnectionTest
+    : public BocaReceiverUntrustedPageHandlerTest,
+      public testing::WithParamInterface<std::string_view> {};
+
+TEST_P(BocaReceiverUntrustedPageHandlerNoActiveConnectionTest,
+       UpdateConnectionState) {
+  // No active connection on the client.
+  url_loader_factory_.AddResponse(get_connection_url_.spec(), "{}");
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  WaitForTokenUpload();
+
+  // Simulate an invalidation with a given state.
+  const std::string_view connection_state = GetParam();
+  url_loader_factory_.AddResponse(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kConnectionId, connection_state));
+
+  EXPECT_CALL(page_, OnConnectionClosed).Times(0);
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(0);
+
+  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BocaReceiverUntrustedPageHandlerNoActiveConnectionTest,
+                         testing::Values("STOP_REQUESTED",
+                                         "CONNECTING",
+                                         "CONNECTED"));
 
 }  // namespace
 }  // namespace ash::boca_receiver

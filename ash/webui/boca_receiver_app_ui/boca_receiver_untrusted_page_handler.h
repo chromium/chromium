@@ -95,6 +95,8 @@ class BocaReceiverUntrustedPageHandler
 
   void ProcessStartRequested(
       ::boca::KioskReceiverConnection new_connection_info);
+  void ProcessStopRequested(
+      const ::boca::KioskReceiverConnection& new_connection_info);
   void MaybeStartConnection(
       ::boca::KioskReceiverConnection new_connection_info);
   void MaybeEndConnection(mojom::ConnectionClosedReason reason);
