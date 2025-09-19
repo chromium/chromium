@@ -116,6 +116,13 @@ static_library("enterprise") {
   if (!is_ios && !is_android) {
     deps += [ "//components/signin/public/identity_manager" ]
   }
+
+  if (is_android) {
+    deps += [
+      "//components/enterprise/device_attestation/android",
+      "//components/enterprise/device_attestation/android:jni_headers",
+    ]
+  }
 }
 
 static_library("test_support") {
