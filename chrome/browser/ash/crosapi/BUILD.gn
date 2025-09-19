@@ -19,8 +19,6 @@ static_library("crosapi") {
     "crosapi_id.h",
     "crosapi_manager.cc",
     "crosapi_manager.h",
-    "crosapi_util.cc",
-    "crosapi_util.h",
     "document_scan_ash.cc",
     "document_scan_ash.h",
     "document_scan_ash_type_converters.cc",
@@ -307,7 +305,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "crosapi_util_unittest.cc",
     "document_scan_ash_type_converters_unittest.cc",
     "document_scan_ash_unittest.cc",
     "keystore_service_ash_unittest.cc",

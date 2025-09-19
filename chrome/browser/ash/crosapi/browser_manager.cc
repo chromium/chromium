@@ -55,7 +55,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
