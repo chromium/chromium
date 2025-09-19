@@ -14,6 +14,8 @@ assert(!is_android,
 source_set("web_applications") {
   sources = [
     "callback_utils.h",
+    "commands/apply_pending_manifest_update_command.cc",
+    "commands/apply_pending_manifest_update_command.h",
     "commands/clear_browsing_data_command.cc",
     "commands/clear_browsing_data_command.h",
     "commands/command_metrics.cc",
@@ -851,6 +853,7 @@ source_set("web_applications_unit_tests") {
   testonly = true
 
   sources = [
+    "commands/apply_pending_manifest_update_command_unittest.cc",
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/dedupe_install_urls_command_unittest.cc",
     "commands/external_app_resolution_command_unittest.cc",

@@ -56,6 +56,7 @@ class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
 enum class ApiApprovalState;
+enum class ApplyPendingManifestUpdateResult;
 enum class FallbackBehavior;
 enum class InstallableCheckResult;
 enum class IsolatedInstallabilityCheckResult;
@@ -231,6 +232,16 @@ class WebAppCommandScheduler {
   void ScheduleManifestSilentUpdate(
       content::WebContents& contents,
       ManifestSilentUpdateCompletedCallback callback,
+      const base::Location& location = FROM_HERE);
+
+  using ApplyPendingManifestUpdateCallback =
+      base::OnceCallback<void(ApplyPendingManifestUpdateResult check_result)>;
+  // Applies any stored pending update metadata to the web app, updating its
+  // security sensitive fields in accordance to a more predictable app updating
+  // algorithm as defined in go/predictable-app-updating-design-doc.
+  void ScheduleApplyPendingManifestUpdate(
+      const webapps::AppId& app_id,
+      ApplyPendingManifestUpdateCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Finalizes a manifest update by writing the new `install_info` to the

@@ -412,6 +412,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to commit update to jump list"/>
 </enum>
 
+<enum name="WebAppApplyPendingManifestUpdateResult">
+  <int value="0" label="System shutdown"/>
+  <int value="1" label="App not installed"/>
+  <int value="2" label="Icon changes applied successfully"/>
+  <int value="3" label="Failed to overwrite icons from pending icons"/>
+  <int value="4" label="App has no pending updates"/>
+</enum>
+
 <enum name="WebAppIconDownloaderResult">
   <int value="0" label="Success"/>
   <int value="1" label="PrimaryPageChanged"/>

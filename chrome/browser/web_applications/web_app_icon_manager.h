@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -41,6 +42,7 @@ namespace web_app {
 
 class WebAppInstallManager;
 class WebAppProvider;
+class ApplyPendingManifestUpdateCommand;
 
 using HomeTabIconBitmaps = std::vector<SkBitmap>;
 using SquareSizeDip = int;
@@ -214,6 +216,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   using GetIconsSizeCallback = base::OnceCallback<void(uint64_t)>;
   void GetIconsSizeForApp(const webapps::AppId& app_id,
                           GetIconsSizeCallback callback) const;
+
+  using OverwriteAppIconsFromPendingIconsCallback =
+      base::OnceCallback<void(bool success)>;
+  void OverwriteAppIconsFromPendingIcons(
+      const webapps::AppId& app_id,
+      base::PassKey<ApplyPendingManifestUpdateCommand>,
+      OverwriteAppIconsFromPendingIconsCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.

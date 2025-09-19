@@ -2692,6 +2692,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Update.ApplyPendingManifestUpdateResult"
+    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2026-03-05">
+  <owner>msiem@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of web app manifest updating a security sensitive field
+    (name and icons). These fields are stored as a pending update info through
+    the manifest silent update command. Manifest updates for pending update
+    infos are triggered only if the user confirms the changes through the web
+    app update dialog. This operation can result in either or both the app name
+    or icons updating.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.Update.ManifestSilentUpdateCheckResult"
     enum="WebAppManifestSilentUpdateCheckResult" expires_after="2026-03-05">
   <owner>msiem@chromium.org</owner>
