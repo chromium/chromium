@@ -400,6 +400,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/widget/RichRadioButtonRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedIconGeneratorTest.java",
     "java/src/org/chromium/components/browser_ui/widget/WrappingLayoutTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/chips/ChipViewRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/dragreorder/DragReorderableRecyclerViewAdapterTest.java",
     "java/src/org/chromium/components/browser_ui/widget/highlight/ViewHighlighterTest.java",
     "java/src/org/chromium/components/browser_ui/widget/list_view/TouchTrackingListViewTest.java",

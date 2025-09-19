@@ -258,12 +258,7 @@ public class ChipView extends LinearLayout {
                         verticalInset);
         setIcon(INVALID_ICON_ID, false);
 
-        // Apply RTL layout changes.
-        int layoutDirection =
-                LocalizationUtils.isLayoutRtl()
-                        ? View.LAYOUT_DIRECTION_RTL
-                        : View.LAYOUT_DIRECTION_LTR;
-        setLayoutDirection(layoutDirection);
+        updateLayoutDirection();
     }
 
     /**
@@ -372,6 +367,7 @@ public class ChipView extends LinearLayout {
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
         this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        updateLayoutDirection();
     }
 
     /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
@@ -399,6 +395,7 @@ public class ChipView extends LinearLayout {
         // Remove the end padding from the chip to make X icon touch target extend till the end of
         // the chip.
         this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        updateLayoutDirection();
     }
 
     /**
@@ -445,6 +442,7 @@ public class ChipView extends LinearLayout {
             mSecondaryText.setSelected(isSelected());
             mSecondaryText.setEnabled(isEnabled());
             addView(mSecondaryText);
+            updateLayoutDirection();
         }
         return mSecondaryText;
     }
@@ -549,5 +547,15 @@ public class ChipView extends LinearLayout {
             super.onMeasure(
                     MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
+    }
+
+    private void updateLayoutDirection() {
+        // Apply RTL layout changes, this is mostly relevant for render tests.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+
+        setLayoutDirection(layoutDirection);
     }
 }
