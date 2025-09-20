@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/bind_post_task.h"
+#include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
@@ -19,6 +21,11 @@
 #include "media/base/media_log.h"
 #include "media/base/sample_format.h"
 #include "media/base/timestamp_constants.h"
+
+#if !BUILDFLAG(ENABLE_SYMPHONIA)
+#error "This file should only be included with Symphonia support enabled."
+#endif
+
 #include "media/filters/symphonia_glue.rs.h"
 
 namespace base {
@@ -31,14 +38,16 @@ class AudioDiscardHelper;
 class DecoderBuffer;
 
 // SymphoniaAudioDecoder uses the Symphonia library (via Rust FFI) to decode
-// audio streams. All public methods and callbacks are trampolined to the
-// |task_runner_| so that no locks are required for thread safety.
+// audio streams.
 class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
  public:
+  enum class ExecutionMode { kAsynchronous, kSynchronous };
+
   SymphoniaAudioDecoder() = delete;
 
   SymphoniaAudioDecoder(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                        MediaLog* media_log);
+                        MediaLog* media_log,
+                        ExecutionMode mode = ExecutionMode::kAsynchronous);
 
   SymphoniaAudioDecoder(const SymphoniaAudioDecoder&) = delete;
   SymphoniaAudioDecoder& operator=(const SymphoniaAudioDecoder&) = delete;
@@ -54,6 +63,10 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure closure) override;
+
+  // Returns true if the codec is currently supported by the
+  // SymphoniaAudioDecoder.
+  static bool IsCodecSupported(AudioCodec codec);
 
  private:
   // There are four states the decoder can be in:
@@ -102,14 +115,29 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // Resets the timestamp helper state.
   void ResetTimestampState(const AudioDecoderConfig& config);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // If the execution mode is set to asynchronous, wraps the `callback` in a
+  // bind post task on the current default task runner. Otherwise, a noop.
+  template <typename T>
+  std::decay_t<T> BindCallbackIfNeeded(T&& callback) {
+    return mode_ == ExecutionMode::kAsynchronous
+               ? base::BindPostTask(task_runner_, std::forward<T>(callback))
+               : std::forward<T>(callback);
+  }
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // MediaLog for reporting messages and properties.
+  const raw_ptr<MediaLog> media_log_ = nullptr;
+
+  // The threading mode that this decoder should operate in.
+  const ExecutionMode mode_ = ExecutionMode::kAsynchronous;
 
   // Callback provided during Initialize() used for decoded audio output.
   OutputCB output_cb_;
 
   // Current state of the decoder.
-  DecoderState state_;
+  DecoderState state_ = DecoderState::kUninitialized;
 
   // Symphonia decoder instance owned by this object via CXX bridge.
   std::optional<rust::Box<media::SymphoniaDecoder>> symphonia_decoder_;
@@ -120,11 +148,9 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   // Used to estimate timestamps for buffers missing timestamps.
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
-  // MediaLog for reporting messages and properties.
-  raw_ptr<MediaLog> media_log_;
-
   // Memory pool for creating AudioBuffer objects.
-  scoped_refptr<AudioBufferMemoryPool> pool_;
+  scoped_refptr<AudioBufferMemoryPool> pool_ =
+      base::MakeRefCounted<AudioBufferMemoryPool>();
 
   // The timestamp of the first frame. Symphonia is configured to count in
   // microseconds with the first frame starting at zero.

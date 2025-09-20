@@ -108,7 +108,7 @@ class MEDIA_EXPORT AudioFileReader {
 
   // Destruct `glue_` after `codec_context_`.
   std::unique_ptr<FFmpegGlue> glue_;
-  std::unique_ptr<FFmpegAudioDecoder> decoder_;
+  std::unique_ptr<AudioDecoder> decoder_;
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> codec_context_;
 
   raw_ptr<FFmpegURLProtocol, DanglingUntriaged> protocol_;

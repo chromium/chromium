@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
@@ -15,6 +16,7 @@
 #include "media/base/audio_hash.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -26,9 +28,13 @@
 
 namespace media {
 
-class AudioFileReaderTest : public testing::Test {
+class AudioFileReaderTest : public testing::TestWithParam<bool> {
  public:
-  AudioFileReaderTest() = default;
+  AudioFileReaderTest() {
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+    feature_list_.InitWithFeatureState(kSymphoniaAudioDecoding, GetParam());
+#endif
+  }
 
   AudioFileReaderTest(const AudioFileReaderTest&) = delete;
   AudioFileReaderTest& operator=(const AudioFileReaderTest&) = delete;
@@ -150,62 +156,67 @@ class AudioFileReaderTest : public testing::Test {
   void disable_packet_verification() { packet_verification_disabled_ = true; }
 
  protected:
-  NullMediaLog media_log_;
+  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<DecoderBuffer> data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
   bool packet_verification_disabled_ = false;
 };
 
-TEST_F(AudioFileReaderTest, WithoutOpen) {
+TEST_P(AudioFileReaderTest, WithoutOpen) {
   Initialize("bear.ogv");
 }
 
-TEST_F(AudioFileReaderTest, InvalidFile) {
+TEST_P(AudioFileReaderTest, InvalidFile) {
   RunTestFailingDemux("ten_byte_file");
 }
 
-TEST_F(AudioFileReaderTest, UnknownDuration) {
+TEST_P(AudioFileReaderTest, UnknownDuration) {
   RunTest("bear-320x240-live.webm", "-3.59,-2.06,-0.43,2.15,0.77,-0.95,", 2,
           44100, base::Microseconds(-1), -1, 121024);
 }
 
-TEST_F(AudioFileReaderTest, WithVideo) {
+TEST_P(AudioFileReaderTest, WithVideo) {
   RunTest("bear.ogv", "-0.73,0.92,0.48,-0.07,-0.92,-0.88,", 2, 44100,
           base::Microseconds(1011520), 44609, 45632);
 }
 
-TEST_F(AudioFileReaderTest, Vorbis) {
+TEST_P(AudioFileReaderTest, FLAC) {
+  RunTest("sfx.flac", "3.03,2.86,2.99,3.31,3.57,4.06,", 1, 44100,
+          base::Microseconds(288414), 12720, 12719);
+}
+
+TEST_P(AudioFileReaderTest, Vorbis) {
   RunTest("sfx.ogg", "2.17,3.31,5.15,6.33,5.97,4.35,", 1, 44100,
           base::Microseconds(350001), 15436, 15936);
 }
 
-TEST_F(AudioFileReaderTest, WaveU8) {
+TEST_P(AudioFileReaderTest, WaveU8) {
   RunTest("sfx_u8.wav", "-1.23,-1.57,-1.14,-0.91,-0.87,-0.07,", 1, 44100,
           base::Microseconds(288414), 12720, 12719);
 }
 
-TEST_F(AudioFileReaderTest, WaveS16LE) {
+TEST_P(AudioFileReaderTest, WaveS16LE) {
   RunTest("sfx_s16le.wav", "3.05,2.87,3.00,3.32,3.58,4.08,", 1, 44100,
           base::Microseconds(288414), 12720, 12719);
 }
 
-TEST_F(AudioFileReaderTest, WaveS24LE) {
+TEST_P(AudioFileReaderTest, WaveS24LE) {
   RunTest("sfx_s24le.wav", "3.03,2.86,2.99,3.31,3.57,4.06,", 1, 44100,
           base::Microseconds(288414), 12720, 12719);
 }
 
-TEST_F(AudioFileReaderTest, WaveF32LE) {
+TEST_P(AudioFileReaderTest, WaveF32LE) {
   RunTest("sfx_f32le.wav", "3.03,2.86,2.99,3.31,3.57,4.06,", 1, 44100,
           base::Microseconds(288414), 12720, 12719);
 }
 
-TEST_F(AudioFileReaderTest, MP3) {
+TEST_P(AudioFileReaderTest, MP3) {
   RunTest("sfx.mp3", "1.30,2.72,4.56,5.08,3.74,2.03,", 1, 44100,
           base::Microseconds(250001), 11026, 11025);
 }
 
-TEST_F(AudioFileReaderTest, CorruptMP3) {
+TEST_P(AudioFileReaderTest, CorruptMP3) {
   // Disable packet verification since the file is corrupt and FFmpeg does not
   // make any guarantees on packet consistency in this case.
   disable_packet_verification();
@@ -214,37 +225,49 @@ TEST_F(AudioFileReaderTest, CorruptMP3) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-TEST_F(AudioFileReaderTest, AAC) {
+TEST_P(AudioFileReaderTest, AAC) {
   RunTest("sfx.m4a", "2.47,2.30,2.45,2.80,3.06,3.56,", 1, 44100,
           base::Microseconds(347665), 15333, 12719);
 }
 
-TEST_F(AudioFileReaderTest, AAC_SinglePacket) {
+TEST_P(AudioFileReaderTest, AAC_SinglePacket) {
   RunTest("440hz-10ms.m4a", "3.84,4.25,4.33,3.58,3.27,3.16,", 1, 44100,
           base::Microseconds(69660), 3073, 960);
 }
 
-TEST_F(AudioFileReaderTest, AAC_ADTS) {
+TEST_P(AudioFileReaderTest, AAC_ADTS) {
   RunTest("sfx.adts", "1.80,1.66,2.31,3.26,4.46,3.36,", 1, 44100,
           base::Microseconds(384733), 16967, 13312);
 }
 
-TEST_F(AudioFileReaderTest, MidStreamConfigChangesFail) {
+TEST_P(AudioFileReaderTest, MidStreamConfigChangesFail) {
   RunTestFailingDecode("midstream_config_change.mp3");
 }
 #endif
 
-TEST_F(AudioFileReaderTest, VorbisInvalidChannelLayout) {
+TEST_P(AudioFileReaderTest, VorbisInvalidChannelLayout) {
   RunTestFailingDemux("9ch.ogg");
 }
 
-TEST_F(AudioFileReaderTest, WaveValidFourChannelLayout) {
+TEST_P(AudioFileReaderTest, WaveValidFourChannelLayout) {
   RunTest("4ch.wav", "131.71,38.02,130.31,44.89,135.98,42.52,", 4, 44100,
           base::Microseconds(100001), 4411, 4410, /*packet_reads=*/2);
 }
 
-TEST_F(AudioFileReaderTest, ReadPartialMP3) {
+TEST_P(AudioFileReaderTest, ReadPartialMP3) {
   RunTestPartialDecode("sfx.mp3");
 }
+
+// If Symphonia build support is enabled, test with both the Symphonia
+// audio decoder feature enabled and disabled. Otherwise, just provide a false
+// parameter so no duplicate tests are ran.
+INSTANTIATE_TEST_SUITE_P(All,
+                         AudioFileReaderTest,
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+                         ::testing::Bool()
+#else
+                         ::testing::Values(false)
+#endif
+);
 
 }  // namespace media

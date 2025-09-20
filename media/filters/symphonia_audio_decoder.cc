@@ -107,12 +107,13 @@ SampleFormat ToSampleFormat(SymphoniaSampleFormat value) {
 
 SymphoniaAudioDecoder::SymphoniaAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    MediaLog* media_log)
-    : task_runner_(std::move(task_runner)),
-      state_(DecoderState::kUninitialized),
-      media_log_(media_log),
-      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
+    MediaLog* media_log,
+    ExecutionMode mode)
+    : task_runner_(std::move(task_runner)), media_log_(media_log), mode_(mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  if (mode_ == ExecutionMode::kAsynchronous) {
+    CHECK(task_runner_);
+  }
 }
 
 SymphoniaAudioDecoder::~SymphoniaAudioDecoder() {
@@ -132,7 +133,7 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config.IsValidConfig());
 
-  InitCB bound_init_cb = base::BindPostTaskToCurrentDefault(std::move(init_cb));
+  InitCB bound_init_cb = BindCallbackIfNeeded(std::move(init_cb));
   if (config.is_encrypted()) {
     MEDIA_LOG(ERROR, media_log_)
         << "SymphoniaAudioDecoder does not currently support encrypted content";
@@ -141,8 +142,7 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
     return;
   }
 
-  // Symphonia is currently only enabled for FLAC audio streams.
-  if (config.codec() != AudioCodec::kFLAC) {
+  if (!IsCodecSupported(config.codec())) {
     MEDIA_LOG(ERROR, media_log_)
         << "Unsupported codec: " << GetCodecName(config.codec());
     std::move(bound_init_cb)
@@ -170,7 +170,7 @@ void SymphoniaAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   // Success!
   config_ = config;
-  output_cb_ = base::BindPostTaskToCurrentDefault(output_cb);
+  output_cb_ = BindCallbackIfNeeded(output_cb);
   state_ = DecoderState::kNormal;
   std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
   DVLOG(3) << __func__
@@ -182,8 +182,7 @@ void SymphoniaAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(state_, DecoderState::kUninitialized);
   CHECK(decode_cb);
-  DecodeCB decode_cb_bound =
-      base::BindPostTaskToCurrentDefault(std::move(decode_cb));
+  DecodeCB decode_cb_bound = BindCallbackIfNeeded(std::move(decode_cb));
 
   switch (state_) {
     // If the decoder is uninitialized at this point, that's a developer error.
@@ -244,7 +243,18 @@ void SymphoniaAudioDecoder::Reset(base::OnceClosure closure) {
 
   state_ = DecoderState::kNormal;
   ResetTimestampState(config_);
-  task_runner_->PostTask(FROM_HERE, std::move(closure));
+
+  if (mode_ == ExecutionMode::kAsynchronous) {
+    task_runner_->PostTask(FROM_HERE, std::move(closure));
+  } else {
+    std::move(closure).Run();
+  }
+}
+
+// static
+bool SymphoniaAudioDecoder::IsCodecSupported(AudioCodec codec) {
+  // Currently, only FLAC audio is supported.
+  return codec == AudioCodec::kFLAC;
 }
 
 bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {

@@ -35,6 +35,7 @@ class FFmpegDecodingLoop;
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
   enum class ExecutionMode { kAsynchronous, kSynchronous };
+
   FFmpegAudioDecoder(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log,
@@ -107,7 +108,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   template <typename T>
   std::decay_t<T> BindCallbackIfNeeded(T&& callback) {
     return mode_ == ExecutionMode::kAsynchronous
-               ? base::BindPostTaskToCurrentDefault(std::forward<T>(callback))
+               ? base::BindPostTask(task_runner_, std::forward<T>(callback))
                : std::forward<T>(callback);
   }
 
