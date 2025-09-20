@@ -57,16 +57,20 @@ namespace segmentation_platform {
 
 // A helper macro to define a list of features. This macro generates an enum for
 // feature indices and a constexpr array of `MetadataWriter::Feature` structs.
-#define SEGMENTATION_DEFINE_FEATURES(array_name, feature_list)       \
-  enum { feature_list(SEGMENTATION_INTERNAL_GENERATE_ENUM) kCount }; \
-  inline constexpr MetadataWriter::Feature array_name[] = {          \
+#define SEGMENTATION_DEFINE_FEATURES(array_name, feature_list)          \
+  enum {                                                                \
+    feature_list(SEGMENTATION_INTERNAL_GENERATE_ENUM) array_name##Count \
+  };                                                                    \
+  inline constexpr MetadataWriter::Feature array_name[] = {             \
       feature_list(SEGMENTATION_INTERNAL_GENERATE_FEATURE)}
 
 // A helper macro to define a list of output labels. This macro generates an
 // enum for label indices and a constexpr array of label strings.
-#define SEGMENTATION_DEFINE_LABELS(array_name, label_list)                     \
-  enum { label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM) kLabelsCount }; \
-  inline constexpr const char* array_name[] = {                                \
+#define SEGMENTATION_DEFINE_LABELS(array_name, label_list)                  \
+  enum {                                                                    \
+    label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM) array_name##Count \
+  };                                                                        \
+  inline constexpr const char* array_name[] = {                             \
       label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_STRING)}
 
 // Utility to write metadata proto for default models.

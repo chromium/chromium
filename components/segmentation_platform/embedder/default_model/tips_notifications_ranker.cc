@@ -108,7 +108,7 @@ TipsNotificationsRanker::GetModelConfig() {
 
   // Set output config.
   writer.AddOutputConfigForMultiClassClassifier(kTipsNotificationsLabels,
-                                                kLabelsCount,
+                                                kTipsNotificationsLabelsCount,
                                                 /*threshold=*/0.5);
 
   // Set UMA features and custom inputs.
@@ -121,13 +121,13 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kCount) {
+  if (inputs.size() != kTipsNotificationsRankerFeaturesCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  ModelProvider::Response response(kLabelsCount, 0);
+  ModelProvider::Response response(kTipsNotificationsLabelsCount, 0);
   // TODO(crbug.com/444281425): Include logic for trying to schedule once a week
   // and to cycle the tips via histogram on notif showing for L28 or max 1 time.
   // Counts refer to the L28 days and bools are represented through 0 or 1.
@@ -147,21 +147,21 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   // show if it exists and then early exit.
   std::vector<int> tips_priority_list = GetTipsPriorityRankingList();
   if (!tips_priority_list.empty()) {
-    bool hasEligibleTip = false;
+    bool has_eligible_tip = false;
     for (auto tip_idx : tips_priority_list) {
       switch (tip_idx) {
         case kEnhancedSafeBrowsingTipIdx:
           if (IsEnhancedSafeBrowsingTipEligible(esb_is_enabled,
                                                 esb_use_count)) {
             response[kEnhancedSafeBrowsingTipIdx] = 1;
-            hasEligibleTip = true;
+            has_eligible_tip = true;
           }
           break;
         case kQuickDeleteTipIdx:
           if (IsQuickDeleteTipEligible(qd_ever_used,
                                        qd_magic_stack_shown_count)) {
             response[kQuickDeleteTipIdx] = 1;
-            hasEligibleTip = true;
+            has_eligible_tip = true;
           }
           break;
         case kGoogleLensTipIdx:
@@ -169,14 +169,14 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
                                       lens_omnibox_use_count,
                                       lens_tasks_surface_use_count)) {
             response[kGoogleLensTipIdx] = 1;
-            hasEligibleTip = true;
+            has_eligible_tip = true;
           }
           break;
         case kBottomOmniboxTipIdx:
           if (IsBottomOmniboxTipEligible(bottom_omnibox_is_enabled,
                                          bottom_omnibox_was_ever_used)) {
             response[kBottomOmniboxTipIdx] = 1;
-            hasEligibleTip = true;
+            has_eligible_tip = true;
           }
           break;
         default:
@@ -184,7 +184,7 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
       }
 
       // Early exit if an eligible tip has been found.
-      if (hasEligibleTip) {
+      if (has_eligible_tip) {
         break;
       }
     }

@@ -118,7 +118,7 @@ AndroidHomeModuleRanker::GetModelConfig() {
 
   // Set output config.
   writer.AddOutputConfigForMultiClassClassifier(kAndroidHomeModuleLabels,
-                                                kLabelsCount,
+                                                kAndroidHomeModuleLabelsCount,
                                                 /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
@@ -144,7 +144,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
     ExecutionCallback callback) {
   // Invalid inputs.
   size_t expected_input_size = is_android_home_module_ranker_v2_enabled
-                                   ? kCount
+                                   ? kUMAFeaturesCount
                                    : kSingleTabFreshnessIdx;
 
   if (inputs.size() != expected_input_size) {
@@ -190,7 +190,7 @@ void AndroidHomeModuleRanker::ExecuteModelWithInput(
                            safety_hub_weights[1] * safety_hub_impression +
                            safety_hub_weights[2] * safety_hub_freshness;
 
-  ModelProvider::Response response(kLabelsCount, 0);
+  ModelProvider::Response response(kAndroidHomeModuleLabelsCount, 0);
   // Default ranking
   response[kPriceChangeIdx] = price_change_score;
   response[kSingleTabIdx] = single_tab_score;
