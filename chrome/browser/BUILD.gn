@@ -3662,7 +3662,6 @@ static_library("browser") {
       # headers get componentized:
       # - c/b/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h
       # - c/b/android/tab_android.h
-      # - c/b/flags/android/chrome_feature_list.h
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
       # - c/b/visited_url_ranking/visited_url_ranking_service_factory.h
       "//chrome/browser/auxiliary_search:impl",
@@ -3672,11 +3671,6 @@ static_library("browser") {
       # - c/b/android/android_theme_resources.h
       # - c/b/android/resource_mapper.h
       "//chrome/browser/send_tab_to_self:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
-      # - c/b/flags/android/chrome_feature_list.h
-      "//chrome/browser/banners:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:
