@@ -124,6 +124,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const OverlayCandidate& overlay) const;
 
   std::vector<std::unique_ptr<OverlayProcessorStrategy>> strategies_;
+
+  // Only tracked when multi-overlay is not used.
   raw_ptr<OverlayProcessorStrategy> last_successful_strategy_ = nullptr;
 
   gfx::Rect overlay_damage_rect_;
