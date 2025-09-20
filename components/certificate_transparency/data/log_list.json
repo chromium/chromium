@@ -1,6 +1,6 @@
 {
-  "version": "68.1",
-  "log_list_timestamp": "2025-09-18T14:11:34Z",
+  "version": "69.3",
+  "log_list_timestamp": "2025-09-20T12:54:23Z",
   "operators": [
     {
       "name": "Google",
@@ -314,8 +314,12 @@
           "url": "https://sabre2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2023-11-26T12:00:00Z"
+            "readonly": {
+              "timestamp": "2025-09-18T17:20:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "eJj4IHvdYpljVsW/YCery+QsSRHbuYBME7H912a5P2Y=",
+                "tree_size": 1213760846
+              }
             }
           },
           "temporal_interval": {
@@ -350,8 +354,12 @@
           "url": "https://mammoth2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-10-14T17:00:00Z"
+            "readonly": {
+              "timestamp": "2025-09-18T17:20:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "N7bqzTXnPktVFG8/h3gi5pcuxCo+mfWyv+XlIIS4cEU=",
+                "tree_size": 65240567
+              }
             }
           },
           "temporal_interval": {
@@ -366,8 +374,12 @@
           "url": "https://mammoth2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-10-14T17:00:00Z"
+            "readonly": {
+              "timestamp": "2025-09-18T17:20:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "vJHecZC18lG3qp9lV2jZoi+7nkPHQx2SmM4VWglNsIk=",
+                "tree_size": 57634084
+              }
             }
           },
           "temporal_interval": {
@@ -382,8 +394,12 @@
           "url": "https://sabre2026h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-10-14T17:00:00Z"
+            "readonly": {
+              "timestamp": "2025-09-18T17:20:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "ONxslVVBTXcSuBVlFOVDuNQoTCdDNLCRVHoHfNLMZfo=",
+                "tree_size": 88744201
+              }
             }
           },
           "temporal_interval": {
@@ -398,8 +414,12 @@
           "url": "https://sabre2026h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2024-10-14T17:00:00Z"
+            "readonly": {
+              "timestamp": "2025-09-18T17:20:00Z",
+              "final_tree_head": {
+                "sha256_root_hash": "HWG3vP/FX6JRs5yyXDfrNoUA7D6TZAib9ZE2Llno0II=",
+                "tree_size": 68732791
+              }
             }
           },
           "temporal_interval": {
