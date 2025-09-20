@@ -75,6 +75,7 @@ if (!limit_android_deps) {
       ":androidx_compose_ui_ui_java",
       ":androidx_core_core_ktx_java",
       ":androidx_lifecycle_lifecycle_common_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       ":androidx_navigationevent_navigationevent_compose_java",
