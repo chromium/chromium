@@ -1,5 +1,19 @@
 # Releases
 
+## 2.11.3 (2025-09-15)
+
+- Make the minimum `serde` version only apply when "serde" is enabled.
+
+## 2.11.2 (2025-09-15)
+
+- Switched the "serde" feature to depend on `serde_core`, improving build
+  parallelism in cases where other dependents have enabled "serde/derive".
+
+## 2.11.1 (2025-09-08)
+
+- Added a `get_key_value_mut` method to `IndexMap`.
+- Removed the unnecessary `Ord` bound on `insert_sorted_by` methods.
+
 ## 2.11.0 (2025-08-22)
 
 - Added `insert_sorted_by` and `insert_sorted_by_key` methods to `IndexMap`,

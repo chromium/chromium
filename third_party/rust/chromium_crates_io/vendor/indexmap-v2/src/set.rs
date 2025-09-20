@@ -436,7 +436,6 @@ where
     /// Computes in **O(n)** time (average).
     pub fn insert_sorted_by<F>(&mut self, value: T, mut cmp: F) -> (usize, bool)
     where
-        T: Ord,
         F: FnMut(&T, &T) -> Ordering,
     {
         let (index, existing) = self

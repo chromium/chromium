@@ -1,10 +1,10 @@
 #![cfg_attr(docsrs, doc(cfg(feature = "serde")))]
 
-use serde::de::value::{MapDeserializer, SeqDeserializer};
-use serde::de::{
+use serde_core::de::value::{MapDeserializer, SeqDeserializer};
+use serde_core::de::{
     Deserialize, Deserializer, Error, IntoDeserializer, MapAccess, SeqAccess, Visitor,
 };
-use serde::ser::{Serialize, Serializer};
+use serde_core::ser::{Serialize, Serializer};
 
 use core::fmt::{self, Formatter};
 use core::hash::{BuildHasher, Hash};

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "indexmap"
-version = "2.11.0"
+version = "2.11.3"
 build = false
 autolib = false
 autobins = false
@@ -55,6 +55,10 @@ tag-name = "{{version}}"
 
 [features]
 default = ["std"]
+serde = [
+    "dep:serde_core",
+    "dep:serde",
+]
 std = []
 test_debug = []
 
@@ -114,8 +118,8 @@ default-features = false
 version = "1.9"
 optional = true
 
-[dependencies.serde]
-version = "1.0"
+[dependencies.serde_core]
+version = "1.0.220"
 optional = true
 default-features = false
 
@@ -138,8 +142,15 @@ version = "0.14"
 version = "1.0"
 default-features = false
 
-[dev-dependencies.serde_derive]
+[dev-dependencies.serde]
 version = "1.0"
+features = ["derive"]
+default-features = false
+
+[target."cfg(any())".dependencies.serde]
+version = "1.0.220"
+optional = true
+default-features = false
 
 [lints.clippy]
 style = "allow"
