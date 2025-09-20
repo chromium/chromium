@@ -16,44 +16,9 @@ BASE_FEATURE(kNtpSearchboxComposeEntrypointEnglishUs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNtpSearchboxComposeEntrypointEnabled(Profile* profile) {
-  // If the generic entrypoint feature is overridden to be false, return false.
-  auto* feature_list = base::FeatureList::GetInstance();
-  if (feature_list &&
-      feature_list->IsFeatureOverridden(kNtpSearchboxComposeEntrypoint.name) &&
-      !base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint)) {
-    return false;
-  }
-
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  if (!aim_eligibility_service) {
-    return false;
-  }
-
-  // If the server eligibility is enabled, check overall eligibility alone.
-  // The service will control locale rollout so there's no need to check locale
-  // or the state of kNtpSearchboxComposeEntrypoint(EnglishUs) below.
-  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
-    return aim_eligibility_service->IsAimEligible();
-  }
-
-  // If not locally eligible, return false.
-  if (!aim_eligibility_service->IsAimLocallyEligible()) {
-    return false;
-  }
-
-  // For English locales in the US, check the EnglishUS entrypoint feature.
-  // Since the base::Feature default state cannot be set based on a dynamic
-  // condition, use a dedicated feature to control the entrypoint for English
-  // locales in the US, allowing for targeted rollbacks if needed.
-  if (aim_eligibility_service->IsCountry("us") &&
-      aim_eligibility_service->IsLanguage("en")) {
-    return base::FeatureList::IsEnabled(
-        kNtpSearchboxComposeEntrypointEnglishUs);
-  }
-
-  // Otherwise, check the generic entrypoint feature.
-  return base::FeatureList::IsEnabled(kNtpSearchboxComposeEntrypoint);
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      AimEligibilityServiceFactory::GetForProfile(profile),
+      kNtpSearchboxComposeEntrypoint, kNtpSearchboxComposeEntrypointEnglishUs);
 }
 
 }  // namespace ntp_composebox

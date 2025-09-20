@@ -4,7 +4,9 @@
 
 #include "components/omnibox/browser/aim_eligibility_service.h"
 
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base64.h"
@@ -152,7 +154,9 @@ bool GetResponseFromPrefs(const PrefService* prefs,
 // static
 bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     const AimEligibilityService* aim_eligibility_service,
-    const base::Feature& feature) {
+    const base::Feature& feature,
+    const std::optional<std::reference_wrapper<const base::Feature>>
+        feature_en_us) {
   // If the generic feature is overridden to be false, return false.
   auto* feature_list = base::FeatureList::GetInstance();
   if (feature_list && feature_list->IsFeatureOverridden(feature.name) &&
@@ -177,7 +181,11 @@ bool AimEligibilityService::GenericKillSwitchFeatureCheck(
   }
 
   // Otherwise, check the generic entrypoint feature.
-  return base::FeatureList::IsEnabled(feature);
+  return base::FeatureList::IsEnabled(feature) ||
+         (feature_en_us &&
+          base::FeatureList::IsEnabled(feature_en_us.value()) &&
+          aim_eligibility_service->IsLanguage("en") &&
+          aim_eligibility_service->IsCountry("us"));
 }
 
 // static

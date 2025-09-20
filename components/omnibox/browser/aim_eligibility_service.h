@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_H_
 
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
@@ -41,11 +43,13 @@ class AimEligibilityService : public KeyedService,
  public:
   // Helper that individual AIM features can use to check if they should be
   // enabled. Unlike most chrome features, which simply check if the
-  // `base::Feature` is enabled, AIM features should use this because we want to
+  // `base::Feature` is enabled, AIM features should use this so that they
   // auto-launch them when the eligibility service launches.
   static bool GenericKillSwitchFeatureCheck(
       const AimEligibilityService* aim_eligibility_service,
-      const base::Feature& feature);
+      const base::Feature& feature,
+      const std::optional<std::reference_wrapper<const base::Feature>>
+          feature_en_us = std::nullopt);
   // See comment for `WriteToPref()`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   // Returns true if the AIM is allowed per the policy.

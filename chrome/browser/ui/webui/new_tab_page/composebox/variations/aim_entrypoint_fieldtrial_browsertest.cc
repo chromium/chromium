@@ -177,9 +177,11 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxFieldTrialEntrypointBrowserTest, Test) {
       if (!is_locally_eligible) {
         expected_enabled = false;
       } else {
-        // 4. For English locales in the US, check the EnglishUS feature.
+        // 4. For English locales in the US, check either the EnglishUS or
+        // generic features.
         if (locale == "en-US" && country == "us") {
-          expected_enabled = entrypoint_english_us_feature;
+          expected_enabled =
+              entrypoint_english_us_feature || entrypoint_feature;
         } else {
           // 5. Otherwise, check the generic entrypoint feature.
           expected_enabled = entrypoint_feature;
