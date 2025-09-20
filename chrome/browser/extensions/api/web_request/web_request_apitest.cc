@@ -1584,8 +1584,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   custom_args.Append(url.spec());
   custom_args.Append(insecure_destination.spec());
 
-  std::string config_string;
-  base::JSONWriter::Write(custom_args, &config_string);
+  std::string config_string = base::WriteJson(custom_args).value_or("");
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects_from_secure",
                                {.custom_arg = config_string.c_str()}))
       << message_;
@@ -1615,8 +1614,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       https_test_server.GetURL("/webrequest/test_redirects_workers/page/");
   base::Value::Dict custom_args;
   custom_args.Set("base_url", base_url.spec());
-  std::string config_string;
-  base::JSONWriter::Write(custom_args, &config_string);
+  std::string config_string = base::WriteJson(custom_args).value_or("");
 
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects_workers",
                                {.custom_arg = config_string.c_str()}))

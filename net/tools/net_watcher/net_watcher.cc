@@ -90,10 +90,7 @@ const char* IPAddressChangeTypeToString(
 }
 
 std::string ProxyConfigToString(const net::ProxyConfig& config) {
-  base::Value config_value = config.ToValue();
-  std::string str;
-  base::JSONWriter::Write(config_value, &str);
-  return str;
+  return base::WriteJson(config.ToValue()).value_or("");
 }
 
 const char* ConfigAvailabilityToString(

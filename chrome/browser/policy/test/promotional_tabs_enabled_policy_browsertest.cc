@@ -139,7 +139,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     // tries to restore the last session and suppresses the NTP.
     prefs.SetByDottedPath(prefs::kRestoreOnStartup,
                           SessionStartupPref::kPrefValueNewTab);
-    base::JSONWriter::Write(prefs, &json);
+    json = base::WriteJson(prefs).value_or("");
 
     base::FilePath default_dir =
         user_data_dir.AppendASCII(chrome::kInitialProfile);
@@ -159,8 +159,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     base::Value::Dict local_state;
     local_state.SetByDottedPath(prefs::kLastWhatsNewVersion,
                                 WhatsNewVersionForPref());
-    std::string local_state_string;
-    base::JSONWriter::Write(local_state, &local_state_string);
+    std::string local_state_string = base::WriteJson(local_state).value_or("");
     base::FilePath local_state_path =
         user_data_dir.Append(chrome::kLocalStateFilename);
     if (!base::WriteFile(local_state_path, local_state_string)) {

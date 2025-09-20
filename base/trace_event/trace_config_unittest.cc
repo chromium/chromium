@@ -459,8 +459,8 @@ TEST(TraceConfigTest, TraceConfigFromValidString) {
                event_filter.category_filter().excluded_categories()[0].c_str());
   EXPECT_FALSE(event_filter.filter_args().empty());
 
-  std::string json_out;
-  base::JSONWriter::Write(event_filter.filter_args(), &json_out);
+  std::string json_out =
+      base::WriteJson(event_filter.filter_args()).value_or("");
   EXPECT_STREQ(json_out.c_str(),
                "{\"event_name_allowlist\":[\"a snake\",\"a dog\"]}");
   std::unordered_set<std::string> filter_values;

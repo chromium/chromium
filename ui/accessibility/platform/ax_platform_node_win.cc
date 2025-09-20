@@ -5867,8 +5867,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
   result.Set("y", base::Value(bounds.y()));
   result.Set("width", base::Value(bounds.width()));
   result.Set("height", base::Value(bounds.height()));
-  std::string json_result;
-  base::JSONWriter::Write(result, &json_result);
+  std::string json_result = base::WriteJson(result).value_or("");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(

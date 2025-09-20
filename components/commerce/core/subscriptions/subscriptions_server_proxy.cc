@@ -109,8 +109,7 @@ void SubscriptionsServerProxy::Create(
   subscriptions_json.Set(kSubscriptionsKey, std::move(subscriptions_list));
   base::Value::Dict request_json;
   request_json.Set(kCreateRequestParamsKey, std::move(subscriptions_json));
-  std::string post_data;
-  base::JSONWriter::Write(request_json, &post_data);
+  std::string post_data = base::WriteJson(request_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -183,8 +182,7 @@ void SubscriptionsServerProxy::Delete(
   deletions_json.Set(kEventTimestampsKey, std::move(deletions_list));
   base::Value::Dict request_json;
   request_json.Set(kDeleteRequestParamsKey, std::move(deletions_json));
-  std::string post_data;
-  base::JSONWriter::Write(request_json, &post_data);
+  std::string post_data = base::WriteJson(request_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(

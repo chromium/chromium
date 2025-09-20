@@ -471,8 +471,7 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
   base::Value::Dict result;
   ASSERT_TRUE(
       StatusOk(client.SendCommandAndGetResult("method", params, &result)));
-  std::string json;
-  base::JSONWriter::Write(base::Value(std::move(result)), &json);
+  std::string json = base::WriteJson(result).value_or("");
   ASSERT_STREQ("{\"param\":1}", json.c_str());
 }
 
@@ -1557,17 +1556,13 @@ class OnConnectedSyncWebSocket : public StubSyncWebSocket {
       base::Value::Dict response;
       response.Set("id", cmd_id);
       response.Set("result", base::Value::Dict());
-      std::string json_response;
-      base::JSONWriter::Write(base::Value(std::move(response)), &json_response);
-      queued_response_.push(std::move(json_response));
+      queued_response_.push(base::WriteJson(response).value_or(""));
 
       // Push one event.
       base::Value::Dict event;
       event.Set("method", "updateEvent");
       event.Set("params", base::Value::Dict());
-      std::string json_event;
-      base::JSONWriter::Write(base::Value(std::move(event)), &json_event);
-      queued_response_.push(std::move(json_event));
+      queued_response_.push(base::WriteJson(event).value_or(""));
     } else {
       EnqueueHandshakeResponse(cmd_id, method);
     }

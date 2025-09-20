@@ -366,7 +366,7 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
   dict.Set(kIframeHeightPx, metadata.iframe_height_px);
   dict.Set(kDarkBackgroundColorKey, metadata.dark_background_color);
   SetTimeValue(dict, kExpirationTimeKey, metadata.expiration_time);
-  base::JSONWriter::Write(dict, str);
+  *str = base::WriteJson(dict).value_or("");
 }
 
 base::FilePath LogoCache::GetLogoPath() {

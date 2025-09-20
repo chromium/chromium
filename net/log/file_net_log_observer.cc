@@ -761,8 +761,7 @@ void FileNetLogObserver::FileWriter::WritePolledDataToFile(
 
   // Write the polled data (if any).
   if (polled_data) {
-    std::string polled_data_json;
-    base::JSONWriter::Write(*polled_data, &polled_data_json);
+    std::string polled_data_json = base::WriteJson(*polled_data).value_or("");
     if (!polled_data_json.empty())
       WriteToFile(file, ",\n\"polledData\": ", polled_data_json, "\n");
   }

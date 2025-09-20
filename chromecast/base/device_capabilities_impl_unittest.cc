@@ -302,9 +302,8 @@ TEST_F(DeviceCapabilitiesImplTest, Unregister) {
   delete manager;
 
   EXPECT_FALSE(capabilities()->GetValidator(key));
-  std::string empty_dict_string;
-  base::JSONWriter::Write(base::Value(base::Value::Type::DICT),
-                          &empty_dict_string);
+  std::string empty_dict_string =
+      base::WriteJson(base::Value::Dict()).value_or("");
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetCapability(key).is_none());
 }

@@ -62,8 +62,7 @@ void FakeSoftwareVideoEncoder::Encode(
           .Set("id", static_cast<int>(encoded_frame->frame_id.lower_32_bits()))
           .Set("size", frame_size_);
 
-  std::string raw_data;
-  base::JSONWriter::Write(values, &raw_data);
+  std::string raw_data = base::WriteJson(values).value_or("");
   if (static_cast<size_t>(frame_size_) > raw_data.size()) {
     raw_data.append(' ', frame_size_ - raw_data.size());
   }

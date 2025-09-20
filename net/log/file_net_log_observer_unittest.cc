@@ -67,9 +67,7 @@ void AddEntries(FileNetLogObserver* logger,
   NetLogEntry base_entry(NetLogEventType::PAC_JAVASCRIPT_ERROR, source,
                          NetLogEventPhase::BEGIN, base::TimeTicks::Now(),
                          NetLogParamsWithString("message", ""));
-  base::Value::Dict value = base_entry.ToDict();
-  std::string json;
-  base::JSONWriter::Write(value, &json);
+  std::string json = base::WriteJson(base_entry.ToDict()).value_or("");
   size_t base_entry_size = json.size();
 
   // The maximum value of base::TimeTicks::Now() will be the maximum value of
