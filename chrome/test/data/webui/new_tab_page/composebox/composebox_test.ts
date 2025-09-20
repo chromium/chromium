@@ -881,13 +881,13 @@ suite('NewTabPageComposeboxTest', () => {
       key: 'ArrowDown',
     });
 
-    composeboxElement.dispatchEvent(arrowDownEvent);
+    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
     await microtasksFinished();
-    assertFalse(arrowDownEvent.defaultPrevented);
+    assertTrue(arrowDownEvent.defaultPrevented);
 
-    // First match is not selected as focus is in input
-    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('', composeboxElement.$.input.value);
+    // First match is selected
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', composeboxElement.$.input.value);
 
     // Move the focus to the second match.
     matchEls[1]!.focus();

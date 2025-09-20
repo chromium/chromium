@@ -340,13 +340,21 @@ export class ComposeboxElement extends I18nMixinLit
     }
     if (changedPrivateProperties.has('selectedMatchIndex_')) {
       if (this.selectedMatch_) {
+        // If the selected match is the default match (typing) the input will
+        // already have been set by handleInput.
+        if (this.selectedMatchIndex_ === 0 &&
+            this.selectedMatch_.allowedToBeDefaultMatch) {
+          return;
+        }
         // Update the input.
         const text = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
         assert(text);
         this.$.input.value = text;
         this.input_ = text;
         this.submitEnabled_ = true;
-      } else {
+      } else if (!this.lastQueriedInput_) {
+        // This is for cases when focus leaves the matches/input.
+        // If there was already text in the input do not clear it.
         this.$.input.value = '';
         this.input_ = '';
         this.submitEnabled_ = false;
@@ -562,7 +570,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.shadowRoot.activeElement === this.$.input) {
-      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      // TODO(crbug.com/445671495): Allow arrowing up and down to typed
+      //  suggestions.
+      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') &&
+          this.lastQueriedInput_) {
         return;
       }
       // TODO(crbug.com/444495048): Add test for tab selection logic.
@@ -578,16 +589,6 @@ export class ComposeboxElement extends I18nMixinLit
         }
         return;
       }
-    }
-
-    if (e.key === 'Tab') {
-      // If focus goes past the last match, unselect the last match.
-      if (this.result_ && this.result_.matches) {
-        if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
-          this.$.matches.unselect();
-        }
-      }
-      return;
     }
 
     if (e.key === 'Enter' && this.submitEnabled_) {
@@ -620,6 +621,12 @@ export class ComposeboxElement extends I18nMixinLit
       this.$.matches.selectFirst();
     } else if (e.key === 'PageDown') {
       this.$.matches.selectLast();
+    } else if (e.key === 'Tab') {
+      // If focus goes past the last match, unselect the last match.
+      if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
+        this.$.matches.unselect();
+      }
+      return;
     }
     e.preventDefault();
 
