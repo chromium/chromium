@@ -176,6 +176,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientNotifyPinnedTabsChanged(payload: {tabData: TabDataPrivate[]}):
       void {
+    // MOJO_RUNTIME_FEATURE_GATED NotifyPinnedTabsChanged
+    // No gating necessary here, this is called by the browser.
     this.cachedPinnedTabs =
         payload.tabData.map((x) => convertTabDataFromPrivate(x));
     this.host.pinnedTabs?.assignAndSignal(this.cachedPinnedTabs);
@@ -183,6 +185,8 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientNotifyPinnedTabDataChanged(payload: {tabData: TabDataPrivate}):
       void {
+    // MOJO_RUNTIME_FEATURE_GATED NotifyPinnedTabDataChanged
+    // No gating necessary here, this is called by the browser.
     if (!this.cachedPinnedTabs) {
       return;
     }
@@ -416,6 +420,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     // results in a mojo pipe closure.
     if (!this.hostCapabilities.has(
             HostCapability.GET_MODEL_QUALITY_CLIENT_ID)) {
+      // MOJO_RUNTIME_FEATURE_GATED GetModelQualityClientId
       this.getModelQualityClientId = undefined;
     }
 
@@ -441,6 +446,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
     if (!state.enableZeroStateSuggestions) {
       this.getZeroStateSuggestionsForFocusedTab = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED GetZeroStateSuggestionsAndSubscribe
       this.getZeroStateSuggestions = undefined;
     }
 
@@ -459,16 +465,23 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
 
     if (!state.enableMultiTab) {
+      // MOJO_RUNTIME_FEATURE_GATED GetContextFromTab
       this.getContextFromTab = undefined;
       this.getPinnedTabs = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED SubscribeToPinCandidates
       this.getPinCandidates = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED PinTabs
       this.pinTabs = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED SetMaximumNumberOfPinnedTabs
       this.setMaximumNumberOfPinnedTabs = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED UnpinTabs
       this.unpinTabs = undefined;
+      // MOJO_RUNTIME_FEATURE_GATED UnpinAllTabs
       this.unpinAllTabs = undefined;
     }
 
     if (!state.enableGetContextActor) {
+      // MOJO_RUNTIME_FEATURE_GATED GetContextForActorFromTab
       this.getContextForActorFromTab = undefined;
     }
 
