@@ -91,7 +91,11 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   bool IsInclusiveAncestorTreeScopeOf(const TreeScope&) const;
 
-  Element* AdjustedFocusedElement() const;
+  // is_pseudo_allowed:
+  // - if true, PseudoElement can be returned
+  // - if false, PseudoElement will be retargeted to some Element according to
+  // the rules.
+  Element* AdjustedFocusedElement(bool is_pseudo_allowed = true) const;
   // Finds a retargeted element to the given argument, when the retargeted
   // element is in this TreeScope. Returns null otherwise.
   // TODO(kochi): once this algorithm is named in the spec, rename the method
