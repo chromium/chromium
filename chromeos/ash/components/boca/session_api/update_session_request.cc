@@ -116,7 +116,7 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
     root.Set(kStudentGroupsConfig, std::move(group_student_config));
   }
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

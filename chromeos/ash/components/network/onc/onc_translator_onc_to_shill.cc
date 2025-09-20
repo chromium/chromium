@@ -478,9 +478,8 @@ void LocalTranslator::TranslateNetworkConfiguration() {
     base::Value::Dict proxy_config =
         ConvertOncProxySettingsToProxyConfig(*proxy_settings)
             .value_or(base::Value::Dict());
-    std::string proxy_config_str;
-    base::JSONWriter::Write(proxy_config, &proxy_config_str);
-    shill_dictionary_->Set(shill::kProxyConfigProperty, proxy_config_str);
+    shill_dictionary_->Set(shill::kProxyConfigProperty,
+                           base::WriteJson(proxy_config).value_or(""));
   }
 
   const std::string* checkCaptivePortal =

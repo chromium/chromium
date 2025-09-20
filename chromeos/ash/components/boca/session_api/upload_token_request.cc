@@ -63,7 +63,7 @@ bool UploadTokenRequest::GetContentData(std::string* upload_content_type,
   base::Value::Dict root;
   root.Set("token", token_);
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

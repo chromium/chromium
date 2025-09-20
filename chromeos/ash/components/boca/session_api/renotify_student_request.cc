@@ -61,7 +61,7 @@ bool RenotifyStudentRequest::GetContentData(std::string* upload_content_type,
     students.Append(std::move(item));
   }
   root.Set(kUsers, std::move(students));
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 
