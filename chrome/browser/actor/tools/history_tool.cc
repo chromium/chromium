@@ -45,10 +45,14 @@ HistoryTool::HistoryTool(TaskId task_id,
 HistoryTool::~HistoryTool() = default;
 
 void HistoryTool::Validate(ValidateCallback callback) {
+  PostResponseTask(std::move(callback), MakeOkResult());
+}
+
+mojom::ActionResultPtr HistoryTool::TimeOfUseValidation(
+    const optimization_guide::proto::AnnotatedPageContent* last_observation) {
   NavigationController& controller = web_contents()->GetController();
   mojom::ActionResultPtr result;
 
-  // TODO(crbug.com/411462297): Move these checks to TimeOfUseValidation.
   if (direction_ == HistoryToolRequest::Direction::kBack &&
       !controller.CanGoBack()) {
     result = MakeResult(mojom::ActionResultCode::kHistoryNoBackEntries);
@@ -59,10 +63,7 @@ void HistoryTool::Validate(ValidateCallback callback) {
     result = MakeOkResult();
   }
 
-  // TODO(crbug.com/402731599): Additional validation here (e.g. is URL in
-  // allowlist).
-
-  PostResponseTask(std::move(callback), std::move(result));
+  return result;
 }
 
 void HistoryTool::Invoke(InvokeCallback callback) {
