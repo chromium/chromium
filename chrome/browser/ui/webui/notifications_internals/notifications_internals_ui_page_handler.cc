@@ -8,6 +8,8 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
@@ -29,9 +31,8 @@ void NotificationsInternalsUIPageHandler::ScheduleNotification() {
       notifications::ScheduleParams::Priority::kNoThrottle;
   schedule_params.deliver_time_start = base::Time::Now();
   schedule_params.deliver_time_end = base::Time::Now() + base::Minutes(1);
-  notifications::NotificationData data;
-  data.title = u"title";
-  data.message = u"message";
+  notifications::NotificationData data = notifications::GetTipsNotificationData(
+      notifications::TipsNotificationsFeatureType::kEnhancedSafeBrowsing);
   auto params = std::make_unique<notifications::NotificationParams>(
       notifications::SchedulerClientType::kTips, std::move(data),
       std::move(schedule_params));

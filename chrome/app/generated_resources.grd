@@ -19352,6 +19352,34 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Use a different account
     </message>
 
+    <!-- Tips Notifications-->
+    <message name="IDS_TIPS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT" desc="Text for the helpful button found on tips notifications.">
+      Open Chrome
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_TITLE" desc="Title for the enhanced safe browsing tip notification. [CHAR_LIMIT=32]">
+      Get Chrome's strongest security
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_SUBTITLE" desc="Subtitle for the enhanced safe browsing tip notification.">
+      Add an extra layer of security against online threats with enhanced protection
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_TITLE" desc="Title for the quick delete tip notification. [CHAR_LIMIT=32]">
+      Quickly delete your browsing data
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_SUBTITLE" desc="Subtitle for the enhanced safe browsing tip notification.">
+      You can delete some or all of your history, cookies, site data, and more
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_TITLE" desc="Title for the Google Lens tip notification. [CHAR_LIMIT=32]">
+      Search with Google Lens
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_SUBTITLE" desc="Subtitle for the Google Lens tip notification.">
+      Shop, translate, and identify what you see with your camera and photo gallery
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_TITLE" desc="Title for the bottom omnibox tip notification. [CHAR_LIMIT=32]">
+      Choose your address bar position
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_SUBTITLE" desc="Subtitle for the bottom omnibox tip notification.">
+      Switch the position of your address bar for a customized browsing experience
+    </message>
   </messages>
 </release>
 </grit>

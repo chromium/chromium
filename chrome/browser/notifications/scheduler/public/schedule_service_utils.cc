@@ -4,10 +4,38 @@
 
 #include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
 
+#include <map>
+
 #include "base/check_op.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace notifications {
 namespace {
+
+const std::map<TipsNotificationsFeatureType, std::pair<int, int>>&
+GetTipsNotificationsFeatureTypeMap() {
+  static const base::NoDestructor<
+      std::map<TipsNotificationsFeatureType, std::pair<int, int>>>
+      kTipsNotificationsFeatureTypeMap({
+          {TipsNotificationsFeatureType::kEnhancedSafeBrowsing,
+           {IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_TITLE,
+            IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_SUBTITLE}},
+          {TipsNotificationsFeatureType::kQuickDelete,
+           {IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_TITLE,
+            IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_SUBTITLE}},
+          {TipsNotificationsFeatureType::kGoogleLens,
+           {IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_TITLE,
+            IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_SUBTITLE}},
+          {TipsNotificationsFeatureType::kBottomOmnibox,
+           {IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_TITLE,
+            IDS_TIPS_NOTIFICATIONS_BOTTOM_OMNIBOX_SUBTITLE}},
+      });
+  return *kTipsNotificationsFeatureTypeMap;
+}
 
 bool ValidateTimeWindow(const TimeDeltaPair& window) {
   return (window.second - window.first < base::Hours(12) &&
@@ -69,6 +97,27 @@ bool NextTimeWindow(base::Clock* clock,
       beginning_of_today + base::Days(1) + morning.first,
       beginning_of_today + base::Days(1) + morning.second);
   return true;
+}
+
+NotificationData GetTipsNotificationData(
+    TipsNotificationsFeatureType feature_type) {
+  const auto& map = GetTipsNotificationsFeatureTypeMap();
+  const auto it = map.find(feature_type);
+  DCHECK(it != map.end());
+
+  NotificationData data;
+  data.title = l10n_util::GetStringUTF16(it->second.first);
+  data.message = l10n_util::GetStringUTF16(it->second.second);
+  data.custom_data[kTipsNotificationsFeatureType] =
+      base::NumberToString(static_cast<int>(feature_type));
+  data.buttons.clear();
+  NotificationData::Button open_chrome_button;
+  open_chrome_button.type = ActionButtonType::kHelpful;
+  open_chrome_button.id = kDefaultHelpfulButtonId;
+  open_chrome_button.text =
+      l10n_util::GetStringUTF16(IDS_TIPS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT);
+  data.buttons.emplace_back(std::move(open_chrome_button));
+  return data;
 }
 
 }  // namespace notifications

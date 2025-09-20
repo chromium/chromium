@@ -9,6 +9,9 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/notifications/scheduler/public/notification_data.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace notifications {
 
@@ -38,6 +41,12 @@ bool ToLocalHour(int hour,
                  const base::Time& today,
                  int day_delta,
                  base::Time* out);
+
+// Constructs and returns the NotificationData object for the requested feature.
+// This mainly contains UI information and an enum representing the feature
+// type. |feature_type| the feature in question to create a data object for.
+NotificationData GetTipsNotificationData(
+    TipsNotificationsFeatureType feature_type);
 
 }  // namespace notifications
 
