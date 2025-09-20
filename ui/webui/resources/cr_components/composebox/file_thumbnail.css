@@ -66,32 +66,32 @@
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-margin-start: 0px;
-  border-radius: 4px;
+  border-radius: 10px;
   display: flex;
 }
 
 .chip {
   align-items: center;
   background-color: var(--color-new-tab-page-composebox-file-chip-background);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   gap: 8px;
-  height: 36px;
-  padding: 8px 16px 8px 12px;
-  width: 153px;
+  height: 40px;
+  padding: 0px 0px 0px 4px;
+  width: 156px;
 }
 
 .thumbnail {
   flex-shrink: 0;
-  height: 36px;
+  height: 33px;
   position: relative;
-  width: 36px;
+  width: 33px;
 }
 
 .pdf-icon {
   background-color: var(--color-new-tab-page-composebox-background);
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 10px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
   padding: 9px;
@@ -114,7 +114,7 @@
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-margin-end: 8px;
   background-color: var(--color-new-tab-page-composebox-background);
-  border-radius: 4px;
+  border-radius: 10px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
   height: 100%;
   width: 100%;
@@ -124,8 +124,8 @@
   color: var(--color-new-tab-page-composebox-file-chip-text);
   font-family: inherit;
   font-size: 14px;
-  font-weight: 500;
-  margin-inline-end: 16px;
+  font-weight: 400;
+  margin-inline-end: 13px;
   max-width: 100px;
   overflow: hidden;
   position: relative;
@@ -141,7 +141,7 @@
 }
 
 #tabThumbnail composebox-tab-favicon {
-  border-radius: 4px;
+  border-radius: 10px;
   height: 100%;
   width: 100%;
 }

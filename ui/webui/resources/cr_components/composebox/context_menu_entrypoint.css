@@ -14,9 +14,14 @@
 }
 
 #entrypoint {
-  --cr-button-text-color: currentColor;
+  --cr-button-disabled-text-color:
+      var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);
+  --cr-button-text-color: var(--color-new-tab-page-composebox-file-chip-text);
+  --cr-hover-background-color:
+      var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
   border: initial;
   gap: 2px;
+  padding-bottom: 10px;
 }
 
 #entrypoint cr-icon {
@@ -29,7 +34,11 @@
 }
 
 #menu {
+  --color-sys-divider:
+    var(--color-new-tab-page-composebox-file-carousel-divider);
+  --cr-menu-background-color: var(--color-new-tab-page-composebox-background);
   --cr-menu-border-radius: 16px;
+  --cr-primary-text-color: var(--color-new-tab-page-composebox-file-chip-text);
 }
 
 #tabHeader {
