@@ -48,13 +48,13 @@ void RecordLoginDetectionMetrics(LoginDetectionType type,
                                  const std::optional<GURL>& provider,
                                  ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
-  base::UmaHistogramEnumeration(
-      content::kBrowserAssistedLoginTypeHistogram,
-      content::BrowserAssistedLoginType::kNonFedCmOAuth);
 
   if (type == LoginDetectionType::kNoLogin) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      content::kBrowserAssistedLoginTypeHistogram,
+      content::BrowserAssistedLoginType::kNonFedCmOAuth);
   ukm::builders::LoginDetectionV2 builder(ukm_source_id);
   builder.SetPage_LoginType(static_cast<int64_t>(type))
       .Record(ukm::UkmRecorder::Get());

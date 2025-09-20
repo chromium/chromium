@@ -42,13 +42,6 @@ class LoginDetectionTabHelperTest : public ChromeRenderViewHostTestHarness {
     VerifyLoginDetectionUkm(type, ukm::builders::LoginDetectionV2::kEntryName);
     VerifyLoginDetectionUkm(
         type, ukm::builders::LoginDetectionV2IdentityProvider::kEntryName);
-
-    if (type == LoginDetectionType::kNoLogin) {
-      return;
-    }
-    histogram_tester_->ExpectUniqueSample(
-        content::kBrowserAssistedLoginTypeHistogram,
-        content::BrowserAssistedLoginType::kNonFedCmOAuth, 1);
   }
 
   void VerifyLoginDetectionUkm(LoginDetectionType type,
@@ -76,6 +69,14 @@ TEST_F(LoginDetectionTabHelperTest, NoLogin) {
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
 }
 
+TEST_F(LoginDetectionTabHelperTest,
+       NoLogin_BrowserAssistedLoginHistogramNotRecorded) {
+  NavigateAndCommit(GURL("https://foo.com/page.html"));
+  VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
+  histogram_tester_->ExpectTotalCount(
+      content::kBrowserAssistedLoginTypeHistogram, 0);
+}
+
 TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
   NavigateAndCommit(GURL("https://foo.com/page.html"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kNoLogin);
@@ -89,6 +90,9 @@ TEST_F(LoginDetectionTabHelperTest, SimpleOAuthLogin) {
   ResetMetricsTesters();
   NavigateAndCommit(GURL("https://foo.com/redirect?code=secret"));
   VerifyLoginDetectionTypeMetrics(LoginDetectionType::kOauthFirstTimeLoginFlow);
+  histogram_tester_->ExpectUniqueSample(
+      content::kBrowserAssistedLoginTypeHistogram,
+      content::BrowserAssistedLoginType::kNonFedCmOAuth, 1);
 }
 
 TEST_F(LoginDetectionTabHelperTest, NavigationToOAuthLoggedInSite) {
