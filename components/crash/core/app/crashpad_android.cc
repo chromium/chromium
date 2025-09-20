@@ -700,9 +700,11 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
+  DCHECK(attachments.empty());
 
   // Not used on Android.
   DCHECK(!embedded_handler);

@@ -160,10 +160,13 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
-  DCHECK(!embedded_handler);     // This is not used on iOS.
-  DCHECK(exe_path.empty());      // This is not used on iOS.
+  // This are not used on iOS.
+  DCHECK(!embedded_handler);
+  DCHECK(exe_path.empty());
   DCHECK(initial_arguments.empty());
+  DCHECK(attachments.empty());
   DCHECK(initial_client);
 
   @autoreleasepool {

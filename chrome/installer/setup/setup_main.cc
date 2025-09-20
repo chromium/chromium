@@ -1457,7 +1457,7 @@ int SetupMain() {
   persistent_histogram_storage.set_storage_base_dir(
       installer_state.target_path());
 
-  installer::ConfigureCrashReporting(installer_state);
+  installer::ConfigureCrashReporting(prefs, installer_state);
   installer::SetInitialCrashKeys(installer_state);
   installer::SetCrashKeysFromCommandLine(cmd_line);
 

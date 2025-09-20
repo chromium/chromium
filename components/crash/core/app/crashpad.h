@@ -83,25 +83,30 @@ bool InitializeCrashpad(bool initial_client, const std::string& process_type);
 // crashpad_handler executable, relaunches the executable at |exe_path| or the
 // current executable if |exe_path| is empty with a command line argument of
 // --type=crashpad-handler. If |user_data_dir| is non-empty, it is added to the
-// handler's command line for use by Chrome Crashpad extensions.
-bool InitializeCrashpadWithEmbeddedHandler(bool initial_client,
-                                           const std::string& process_type,
-                                           const std::string& user_data_dir,
-                                           const base::FilePath& exe_path);
+// handler's command line for use by Chrome Crashpad extensions. |attachments|,
+// if not empty, indicates a list of files to be attached to a generated report.
+bool InitializeCrashpadWithEmbeddedHandler(
+    bool initial_client,
+    const std::string& process_type,
+    const std::string& user_data_dir,
+    const base::FilePath& exe_path,
+    const std::vector<base::FilePath>& attachments = {});
 
 // This version of InitializeCrashpadWithEmbeddedHandler is used to call an
 // embedded crash handler that comes from an entry point in a DLL. The command
 // line for these kind of embedded handlers is usually:
 // C:\Windows\System32\rundll.exe <path to dll>,<entrypoint> ...
 // In this situation the exe_path is not sufficient to allow spawning a crash
-// handler through the DLL so |initial_arguments| needs to be passed to
-// specify the DLL entry point.
+// handler through the DLL so |initial_arguments| needs to be passed to specify
+// the DLL entry point. |attachments|, if not empty, indicates a list of files
+// to be attached to a generated report.
 bool InitializeCrashpadWithDllEmbeddedHandler(
     bool initial_client,
     const std::string& process_type,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments);
+    const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments = {});
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns the CrashpadClient for this process. This will lazily create it if
@@ -307,8 +312,10 @@ bool StartHandlerForClient(int fd, bool write_minidump_to_database);
 // |user_data_dir| is non-empty, the user data directory will be passed to the
 // handler process for use by Chrome Crashpad extensions; if |exe_path| is
 // non-empty, it specifies the path to the executable holding the embedded
-// handler. Sets the database path in |database_path|, if initializing in the
-// browser process. Returns false if initialization fails.
+// handler. |attachments|, if not empty, indicates a list of files to be
+// attached to a generated report (only supported on Linux and Windows). Sets
+// the database path in |database_path|, if initializing in the browser process.
+// Returns false if initialization fails.
 bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
@@ -316,6 +323,7 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path);
 
 // Returns the current crash report database object, or null if it has not

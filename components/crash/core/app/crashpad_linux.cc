@@ -134,6 +134,7 @@ bool PlatformCrashpadInitialization(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments,
     base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
@@ -240,7 +241,8 @@ bool PlatformCrashpadInitialization(
 #endif
 
     CHECK(client.StartHandler(handler_path, *database_path, metrics_path, url,
-                              annotations, arguments, false, false));
+                              annotations, arguments, false, false,
+                              attachments));
   } else {
     int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
 

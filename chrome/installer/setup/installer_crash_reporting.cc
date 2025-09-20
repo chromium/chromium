@@ -22,6 +22,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/setup/installer_crash_reporter_client.h"
 #include "chrome/installer/setup/installer_state.h"
+#include "chrome/installer/util/logging_installer.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -64,7 +65,8 @@ bool GetSystemTemp(base::FilePath* temp) {
 
 }  // namespace
 
-void ConfigureCrashReporting(const InstallerState& installer_state) {
+void ConfigureCrashReporting(const InitialPreferences& initial_prefs,
+                             const InstallerState& installer_state) {
   // This is inspired by work done in various parts of Chrome startup to connect
   // to the crash service. Since the installer does not split its work between
   // a stub .exe and a main .dll, crash reporting can be configured in one place
@@ -91,7 +93,8 @@ void ConfigureCrashReporting(const InstallerState& installer_state) {
   }
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
-      true, "Chrome Installer", "", base::FilePath());
+      true, "Chrome Installer", "", base::FilePath(),
+      {GetLogFilePath(initial_prefs)});
 }
 
 void SetInitialCrashKeys(const InstallerState& state) {
