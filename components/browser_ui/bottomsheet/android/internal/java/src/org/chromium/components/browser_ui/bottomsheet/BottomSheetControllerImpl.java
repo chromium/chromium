@@ -718,7 +718,17 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         return mBottomSheet.getSheetBackgroundColor();
     }
 
+    @Override
+    public void onSheetBackgroundColorOverrideChanged() {
+        if (mBottomSheet == null) {
+            return;
+        }
+
+        mBottomSheet.onSheetBackgroundColorOverrideChanged();
+    }
+
     // ScrimCoordinator.Observer
+
     @Override
     public void scrimVisibilityChanged(boolean scrimVisible) {
         if (mBottomSheet == null) return;

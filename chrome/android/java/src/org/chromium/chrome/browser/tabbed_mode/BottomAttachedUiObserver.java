@@ -568,6 +568,11 @@ public class BottomAttachedUiObserver
         maybeUpdateBottomSheetColor();
     }
 
+    @Override
+    public void onSheetBackgroundColorOverrideChanged() {
+        maybeUpdateBottomSheetColor();
+    }
+
     private void maybeUpdateBottomSheetColor() {
         @SheetState int currentState = mBottomSheetController.getSheetState();
         boolean isSheetVisible =

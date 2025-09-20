@@ -1438,6 +1438,13 @@ class BottomSheet extends FrameLayout
         mSheetContainer.setLayoutParams(layoutParams);
     }
 
+    void onSheetBackgroundColorOverrideChanged() {
+        updateBackgroundColor();
+        for (BottomSheetObserver o : mObservers) {
+            o.onSheetBackgroundColorOverrideChanged();
+        }
+    }
+
     @VisibleForTesting
     void updateBackgroundColor() {
         if (mSheetContent == null) return;

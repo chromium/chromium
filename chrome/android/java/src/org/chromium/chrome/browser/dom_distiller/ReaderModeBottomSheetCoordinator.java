@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -131,7 +132,7 @@ public class ReaderModeBottomSheetCoordinator {
         mThemeColorProvider.removeTintObserver(mThemeTintObserver);
     }
 
-    private static class ReaderModeBottomSheetContent implements BottomSheetContent {
+    private class ReaderModeBottomSheetContent implements BottomSheetContent {
         private final View mContentView;
 
         ReaderModeBottomSheetContent(View contentView) {
@@ -215,6 +216,13 @@ public class ReaderModeBottomSheetCoordinator {
         public boolean hideOnScroll() {
             return true;
         }
+
+        @Override
+        public @ColorInt int getSheetBackgroundColorOverride() {
+            return mPropertyModel.containsKey(ReaderModeBottomSheetProperties.BACKGROUND_COLOR)
+                    ? mPropertyModel.get(ReaderModeBottomSheetProperties.BACKGROUND_COLOR)
+                    : Color.TRANSPARENT;
+        }
     }
 
     void setTab(Tab tab) {
@@ -246,6 +254,7 @@ public class ReaderModeBottomSheetCoordinator {
         mPropertyModel.set(
                 ReaderModeBottomSheetProperties.ICON_TINT,
                 ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
+        mBottomSheetController.onSheetBackgroundColorOverrideChanged();
     }
 
     // For testing methods.
