@@ -132,8 +132,7 @@ void TemplateURLTableModel::Reload() {
     // Skip @aimode if feature disabled.
     if (template_url->starter_pack_id() ==
             template_url_starter_pack_data::kAiMode &&
-        (!omnibox_feature_configs::Toolbelt::Get().enabled ||
-         !ai_mode_enabled_)) {
+        !ai_mode_enabled_) {
       continue;
     }
 

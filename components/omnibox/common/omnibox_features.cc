@@ -259,6 +259,9 @@ BASE_FEATURE(kStarterPackExpansion, enable_if(!IS_ANDROID && !IS_IOS));
 // users to certain starter pack engines.
 BASE_FEATURE(kStarterPackIPH, DISABLED);
 
+// Enables an '@aimode' starter pack keyword for eligible users only.
+BASE_FEATURE(kAiModeStartPack, DISABLED);
+
 // If enabled, |SearchProvider| will not function in Zero Suggest.
 BASE_FEATURE(kAblateSearchProviderWarmup, DISABLED);
 

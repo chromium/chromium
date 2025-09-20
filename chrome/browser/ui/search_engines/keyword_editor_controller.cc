@@ -9,7 +9,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -19,11 +19,10 @@ using base::UserMetricsAction;
 
 KeywordEditorController::KeywordEditorController(Profile* profile)
     : url_model_(TemplateURLServiceFactory::GetForProfile(profile)) {
-  AimEligibilityService* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  table_model_ = std::make_unique<TemplateURLTableModel>(
-      url_model_,
-      aim_eligibility_service && aim_eligibility_service->IsAimEligible());
+  bool ai_mode_enabled = OmniboxFieldTrial::IsAimStarterPackEnabled(
+      AimEligibilityServiceFactory::GetForProfile(profile));
+  table_model_ =
+      std::make_unique<TemplateURLTableModel>(url_model_, ai_mode_enabled);
 }
 
 KeywordEditorController::~KeywordEditorController() = default;
