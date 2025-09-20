@@ -845,6 +845,14 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   if (!encoder_metrics_provider_) {
     encoder_metrics_provider_ = CreateVideoEncoderMetricsProvider();
   }
+  if (active_config_->codec == media::VideoCodec::kAV1 &&
+      active_config_->options.bitrate.value_or(media::Bitrate()).mode() ==
+          media::Bitrate::Mode::kExternal) {
+    // Count usages of Av1 encoding with per-frame QP, to estimate how many
+    // users would notice if we change Av1 QP range from 0-63 to 0-255.
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kWebCodecsAv1EncodingWithQP);
+  }
   encoder_metrics_provider_->Initialize(
       active_config_->profile, active_config_->options.frame_size,
       is_platform_encoder,

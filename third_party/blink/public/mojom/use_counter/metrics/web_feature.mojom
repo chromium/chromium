@@ -4975,6 +4975,7 @@ enum WebFeature {
   kReportToHeader = 5664,
   kReportingEndpointsHeader = 5665,
   kOverscrollBehaviorWithOverflowHidden = 5666,
+  kWebCodecsAv1EncodingWithQP = 5667,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
