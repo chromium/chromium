@@ -104,7 +104,7 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
 // Counts the number of grapheme clusters. A surrogate pair or a sequence
 // of a non-combining character and following combining characters is
 // counted as 1 grapheme cluster.
-PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
+PLATFORM_EXPORT unsigned NumGraphemeClusters(const StringView&);
 
 // Returns the number of code units that the next grapheme cluster is made of.
 PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);
