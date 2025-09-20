@@ -54,19 +54,21 @@ class CORE_EXPORT ColumnLayoutAlgorithm
       const BlockBreakToken* next_column_token,
       MarginStrut*);
 
-  // Lay out one row of columns. The layout result returned is for the last
-  // column that was laid out. The rows themselves don't create fragments. If
+  // Lay out one line of columns. The layout result returned is for the last
+  // column that was laid out. The lines themselves don't create fragments. If
   // we're in a nested fragmentation context, and a break is inserted before the
-  // row, nullptr is returned.
-  const LayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
-                                LayoutUnit row_offset,
-                                LayoutUnit miminum_column_block_size,
-                                bool has_wrapped,
-                                MarginStrut*);
+  // line, nullptr is returned.
+  //
+  // `line_offset` is the block-offset from the start of the multicol fragment.
+  const LayoutResult* LayoutLine(const BlockBreakToken* next_column_token,
+                                 LayoutUnit line_offset,
+                                 LayoutUnit miminum_column_block_size,
+                                 bool has_wrapped,
+                                 MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
-  // before the spanner or not. If |BreakStatus::kContinue| is returned, and
-  // no break token was set, it means that we can proceed to the next row of
+  // before the spanner or not. If `BreakStatus::kContinue` is returned, and no
+  // break token was set, it means that we can proceed to the next line of
   // columns.
   BreakStatus LayoutSpanner(BlockNode spanner_node,
                             const BlockBreakToken* break_token,
@@ -171,26 +173,27 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // out until the desired result is achieved). For column-fill:auto and
   // unconstrained block-size, we also need to go through this, since we need to
   // know the column block-size before performing "real" layout, since all
-  // columns in a row need to have the same block-size.
+  // columns in a line need to have the same block-size.
   LayoutUnit ResolveColumnAutoBlockSize(
       const LogicalSize& column_size,
-      LayoutUnit row_offset,
+      LayoutUnit line_offset,
       LayoutUnit available_outer_space,
       const BlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ResolveColumnAutoBlockSizeInternal(
       const LogicalSize& column_size,
-      LayoutUnit row_offset,
+      LayoutUnit line_offset,
       LayoutUnit available_outer_space,
       const BlockBreakToken* child_break_token,
       bool balance_columns);
 
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
-                                      LayoutUnit row_offset,
+                                      LayoutUnit line_offset,
                                       LayoutUnit available_outer_space) const;
-  LayoutUnit CurrentContentBlockOffset(LayoutUnit border_box_row_offset) const {
-    return border_box_row_offset - BorderScrollbarPadding().block_start;
+  LayoutUnit CurrentContentBlockOffset(
+      LayoutUnit border_box_line_offset) const {
+    return border_box_line_offset - BorderScrollbarPadding().block_start;
   }
 
   // Get the percentage resolution size to use for column content (i.e. not

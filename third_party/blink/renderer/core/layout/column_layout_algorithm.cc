@@ -304,7 +304,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   // context (if any), our columns may be constrained by that, meaning that we
   // may have to fragment earlier than what we would have otherwise, and, if
   // that's the case, that we may also not create overflowing columns (in the
-  // inline axis), but rather finish the row and resume in the next row in the
+  // inline axis), but rather finish the line and resume in the next line in the
   // next outer fragmentainer. Note that it is possible to be nested inside a
   // fragmentation context that doesn't know the block-size of its
   // fragmentainers. This would be in the first layout pass of an outer multicol
@@ -624,7 +624,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
           LayoutFragmentationContext(child_break_token, &margin_strut);
 
       if (!result) {
-        // An outer fragmentainer break was inserted before this row.
+        // An outer fragmentainer break was inserted before this line.
         DCHECK(GetConstraintSpace().HasBlockFragmentation());
         break;
       }
@@ -743,21 +743,21 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutFragmentationContext(
     // previous adjacent column spanner. We will not reset the margin strut just
     // yet, as we first need to figure out if there's any content at all inside
     // the columns. If there isn't, it should be possible to collapse the margin
-    // through the row (and as far as the spec is concerned, the row won't even
-    // exist then). If this row follows after a wrapped row, also include
+    // through the line (and as far as the spec is concerned, the line won't
+    // even exist then). If this line follows after a wrapped row, also include
     // row-gap.
-    LayoutUnit row_offset = intrinsic_block_size_ + margin_strut->Sum();
+    LayoutUnit line_offset = intrinsic_block_size_ + margin_strut->Sum();
 
     if (!is_first_row) {
-      row_offset += row_gap_size_;
+      line_offset += row_gap_size_;
       num_columns_in_prev_row = num_columns_in_last_processed_row_;
     }
     const LayoutResult* new_result =
-        LayoutRow(next_column_token, row_offset, minimum_column_block_size,
-                  !is_first_row, margin_strut);
+        LayoutLine(next_column_token, line_offset, minimum_column_block_size,
+                   !is_first_row, margin_strut);
 
     if (!new_result) {
-      // An outer fragmentainer break was inserted before this row.
+      // An outer fragmentainer break was inserted before this line.
       DCHECK(GetConstraintSpace().HasBlockFragmentation());
       return result;
     }
@@ -940,9 +940,9 @@ struct ResultWithOffset {
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 };
 
-const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
+const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     const BlockBreakToken* next_column_token,
-    LayoutUnit row_offset,
+    LayoutUnit line_offset,
     LayoutUnit minimum_column_block_size,
     bool has_wrapped,
     MarginStrut* margin_strut) {
@@ -954,8 +954,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   } else if (column_size.block_size != kIndefiniteSize &&
              !ShouldWrapColumns()) {
     // Subtract the space already taken in the current fragment (spanners and
-    // earlier column rows).
-    column_size.block_size -= CurrentContentBlockOffset(row_offset);
+    // earlier column lines).
+    column_size.block_size -= CurrentContentBlockOffset(line_offset);
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
@@ -964,7 +964,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   if (is_constrained_by_outer_fragmentation_context_) {
     available_outer_space =
         std::max(minimum_column_block_size,
-                 FragmentainerSpaceLeftForChildren() - row_offset);
+                 FragmentainerSpaceLeftForChildren() - line_offset);
     DCHECK_GE(available_outer_space, LayoutUnit());
 
     // Determine if we should resume layout in the next outer fragmentation
@@ -1000,7 +1000,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
   if (has_content_based_block_size) {
     column_size.block_size = ResolveColumnAutoBlockSize(
-        column_size, row_offset, available_outer_space, next_column_token,
+        column_size, line_offset, available_outer_space, next_column_token,
         balance_columns);
   } else if (available_outer_space != kIndefiniteSize) {
     // Finally, resolve any remaining auto block-size, and make sure that we
@@ -1010,9 +1010,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         column_size.block_size == kIndefiniteSize) {
       // If the block-size of the inner multicol is unconstrained, we'll let the
       // outer fragmentainer context constrain it. However, if the inner
-      // multicol only has content for one column (in the current row), and only
-      // fills it partially, we need to shrink its block-size, to make room for
-      // any content that follows the inner multicol, rather than eating the
+      // multicol only has content for one column (in the current line), and
+      // only fills it partially, we need to shrink its block-size, to make room
+      // for any content that follows the inner multicol, rather than eating the
       // entire fragmentainer.
       if (column_size.block_size == kIndefiniteSize)
         shrink_to_fit_column_block_size = true;
@@ -1094,12 +1094,12 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
           To<PhysicalBoxFragment>(result->GetPhysicalFragment());
       intrinsic_block_size_contribution = column_size.block_size;
       if (shrink_to_fit_column_block_size) {
-        // Shrink-to-fit the row block-size contribution from the first column
+        // Shrink-to-fit the line block-size contribution from the first column
         // if we're nested inside another fragmentation context. The column
         // block-size that we use in auto-filled (non-balanced) inner multicol
         // containers with unconstrained block-size is set to the available
         // block-size in the outer fragmentation context. If we end up with just
-        // one inner column in this row, we should shrink the inner multicol
+        // one inner column in this line, we should shrink the inner multicol
         // container fragment, so that it doesn't take up the entire outer
         // fragmentainer needlessly. So clamp it to the total block-size of the
         // contents in the column (including overflow).
@@ -1124,7 +1124,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
       // Add the new column fragment to the list, but don't commit anything to
       // the fragment builder until we know whether these are the final columns.
-      LogicalOffset logical_offset(column_inline_offset, row_offset);
+      LogicalOffset logical_offset(column_inline_offset, line_offset);
       new_columns.emplace_back(result, logical_offset);
 
       std::optional<LayoutUnit> space_shortage = result->MinimalSpaceShortage();
@@ -1150,7 +1150,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       //
       // We'll also wrap (even with `column-wrap:nowrap`) if we're participating
       // in an outer fragmentation context, and content is expected to resume in
-      // a next outer fragmentainer (and thus the next inner row). Note that it
+      // a next outer fragmentainer (and thus the next inner line). Note that it
       // will not be the case if we have determined that this is going to be the
       // last fragment for this multicol container in the outer fragmentation
       // context. Then we'll just allow as many columns as needed (and let them
@@ -1165,10 +1165,10 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
       if (may_have_more_space_in_next_outer_fragmentainer) {
         // If the outer fragmentainer already has content progress (before this
-        // row), we are in a situation where there may be more space for us
+        // line), we are in a situation where there may be more space for us
         // (block-size) in the next outer fragmentainer. This means that it may
         // be possible to avoid suboptimal breaks if we push content to a column
-        // row in the next outer fragmentainer. Therefore, avoid breaks with
+        // line in the next outer fragmentainer. Therefore, avoid breaks with
         // lower appeal than what we've seen so far. Anything that would cause
         // "too severe" breaking violations will be pushed to the next outer
         // fragmentainer.
@@ -1180,7 +1180,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
             LogicalBoxFragment(GetConstraintSpace().GetWritingDirection(),
                                column)
                 .BlockEndScrollableOverflow();
-        if (row_offset + block_end_overflow >
+        if (line_offset + block_end_overflow >
             FragmentainerSpaceLeftForChildren()) {
           if (GetConstraintSpace().IsInsideBalancedColumns() &&
               !container_builder_.IsInitialColumnBalancingPass()) {
@@ -1190,17 +1190,17 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
               block_end_overflow > column_size.block_size) {
             // We're inside nested block fragmentation, and the column was
             // overflowed by content taller than what there is room for in the
-            // outer fragmentainer. Try row layout again, but this time force
-            // the columns to be this tall as well, to encompass overflow. It's
-            // generally undesirable to overflow the outer fragmentainer, but
-            // it's up to the parent algorithms to decide.
+            // outer fragmentainer. Try column line layout again, but this time
+            // force the columns to be this tall as well, to encompass
+            // overflow. It's generally undesirable to overflow the outer
+            // fragmentainer, but it's up to the parent algorithms to decide.
             DCHECK_GT(block_end_overflow, LayoutUnit());
             minimum_column_block_size = block_end_overflow;
             // TODO(mstensho): Consider refactoring this, rather than calling
             // ourselves recursively.
-            return LayoutRow(next_column_token, row_offset,
-                             minimum_column_block_size, has_wrapped,
-                             margin_strut);
+            return LayoutLine(next_column_token, line_offset,
+                              minimum_column_block_size, has_wrapped,
+                              margin_strut);
           }
         }
       }
@@ -1214,7 +1214,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         balance_columns = true;
         new_columns.clear();
         column_size.block_size = ResolveColumnAutoBlockSize(
-            column_size, row_offset, available_outer_space, next_column_token,
+            column_size, line_offset, available_outer_space, next_column_token,
             balance_columns);
         continue;
       }
@@ -1231,9 +1231,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     if (has_oof_fragmentainer_descendants) {
       // If, for example, the columns get split by a column spanner, the offset
       // of an OOF's containing block will be relative to the first
-      // fragmentainer in the first row. However, we are only concerned about
-      // the current row of columns, so we should adjust the containing block
-      // offsets to be relative to the first column in the current row.
+      // fragmentainer in the first line. However, we are only concerned about
+      // the current line of columns, so we should adjust the containing block
+      // offsets to be relative to the first column in the current column line.
       LayoutUnit containing_block_adjustment = -TotalColumnBlockSize();
 
       OutOfFlowLayoutPart::ColumnBalancingInfo column_balancing_info;
@@ -1299,7 +1299,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         break;
       // We'll get properly constrained right below. Rely on that, rather than
       // calculating the exact amount here (we could check the available outer
-      // fragmentainer size and subtract the row offset and stuff, but that's
+      // fragmentainer size and subtract the line offset and stuff, but that's
       // duplicated logic). We'll use as much as we're allowed to.
       new_column_block_size = LayoutUnit::Max();
     } else {
@@ -1308,7 +1308,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         new_column_block_size += minimal_space_shortage;
     }
     new_column_block_size = ConstrainColumnBlockSize(
-        new_column_block_size, row_offset, available_outer_space);
+        new_column_block_size, line_offset, available_outer_space);
 
     // Give up if we cannot get taller columns. The multicol container may have
     // a specified block-size preventing taller columns, for instance.
@@ -1330,17 +1330,17 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   } while (true);
 
   if (GetConstraintSpace().HasBlockFragmentation() &&
-      row_offset > LayoutUnit()) {
-    // If we have container separation, breaking before this row is fine.
+      line_offset > LayoutUnit()) {
+    // If we have container separation, breaking before this line is fine.
     LayoutUnit fragmentainer_block_offset =
-        FragmentainerOffsetForChildren() + row_offset;
+        FragmentainerOffsetForChildren() + line_offset;
     // TODO(layout-dev): Consider adjusting break appeal based on the preceding
     // column spanner (if any), e.g. if it has break-after:avoid, so that we can
     // support early-breaks.
     if (!MovePastBreakpoint(*result, fragmentainer_block_offset,
                             kBreakAppealPerfect)) {
-      // This row didn't fit nicely in the outer fragmentation context. Breaking
-      // before is better.
+      // This line didn't fit nicely in the outer fragmentation context.
+      // Breaking before is better.
       if (!next_column_token) {
         // We haven't made any progress in the fragmentation context at all, but
         // when there's preceding initial multicol border/padding, we may want
@@ -1374,16 +1374,16 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     const auto& first_column =
         To<PhysicalBoxFragment>(new_columns[0].Fragment());
 
-    // Only the first column in a row may attempt to place any unpositioned
+    // Only the first column in a line may attempt to place any unpositioned
     // list-item. This matches the behavior in Gecko, and also to some extent
     // with how baselines are propagated inside a multicol container.
-    AttemptToPositionListMarker(first_column, row_offset);
+    AttemptToPositionListMarker(first_column, line_offset);
 
-    // We're adding a row with content. We can update the intrinsic block-size
+    // We're adding a line with content. We can update the intrinsic block-size
     // (which will also be used as layout position for subsequent content), and
     // reset the margin strut (it has already been incorporated into the
     // offset).
-    intrinsic_block_size_ = row_offset + intrinsic_block_size_contribution;
+    intrinsic_block_size_ = line_offset + intrinsic_block_size_contribution;
     *margin_strut = MarginStrut();
   }
 
@@ -1454,7 +1454,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       // intersections added to each column gap is wrong, since it should be in
       // the middle of the row gap. Thus, we go back and modify them first.
       if (has_wrapped && column_index_in_row == 0) {
-        AdjustEveryColumnLastGapIntersectionsWithRowGap(row_offset);
+        AdjustEveryColumnLastGapIntersectionsWithRowGap(line_offset);
         // We need to build the intersections of the row gap with each column
         // gap separately. We need to do this once per row of columns, since it
         // could be the case that the last row of columns has fewer columns than
@@ -1710,23 +1710,23 @@ void ColumnLayoutAlgorithm::PropagateBaselineFromChild(
 
 LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSize(
     const LogicalSize& column_size,
-    LayoutUnit row_offset,
+    LayoutUnit line_offset,
     LayoutUnit available_outer_space,
     const BlockBreakToken* child_break_token,
     bool balance_columns) {
   spanner_path_ = nullptr;
-  return ResolveColumnAutoBlockSizeInternal(column_size, row_offset,
+  return ResolveColumnAutoBlockSizeInternal(column_size, line_offset,
                                             available_outer_space,
                                             child_break_token, balance_columns);
 }
 
 LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     const LogicalSize& column_size,
-    LayoutUnit row_offset,
+    LayoutUnit line_offset,
     LayoutUnit available_outer_space,
     const BlockBreakToken* child_break_token,
     bool balance_columns) {
-  // To calculate a balanced column size for one row of columns, we need to
+  // To calculate a balanced column size for one line of columns, we need to
   // figure out how tall our content is. To do that we need to lay out. Create a
   // special constraint space for column balancing, without allowing soft
   // breaks. It will make us lay out all the multicol content as one single tall
@@ -1862,9 +1862,10 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     tallest_unbreakable_block_size_ = std::max(
         tallest_unbreakable_block_size_, result->TallestUnbreakableBlockSize());
 
-    // Stop when we reach a spanner. That's where this row of columns will end.
-    // When laying out a row of columns, we'll pass in the spanner path, so that
-    // the block layout algorithms can tell whether a node contains the spanner.
+    // Stop when we reach a spanner. That's where this line of columns will end.
+    // When laying out a line of columns, we'll pass in the spanner path, so
+    // that the block layout algorithms can tell whether a node contains the
+    // spanner.
     if (const auto* spanner_path = result->GetColumnSpannerPath()) {
       bool knew_about_spanner = !!spanner_path_;
       spanner_path_ = spanner_path;
@@ -1872,7 +1873,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
         // We may incorrectly have entered parallel flows, because we didn't
         // know about the spanner. Try again.
         return ResolveColumnAutoBlockSizeInternal(
-            column_size, row_offset, available_outer_space, child_break_token,
+            column_size, line_offset, available_outer_space, child_break_token,
             balance_columns);
       }
       break;
@@ -1903,8 +1904,8 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   // of unbreakable content.
   if (tallest_unbreakable_block_size_ >=
       content_runs.TallestContentBlockSize()) {
-    return ConstrainColumnBlockSize(tallest_unbreakable_block_size_, row_offset,
-                                    available_outer_space);
+    return ConstrainColumnBlockSize(tallest_unbreakable_block_size_,
+                                    line_offset, available_outer_space);
   }
 
   if (balance_columns) {
@@ -1912,14 +1913,14 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     content_runs.DistributeImplicitBreaks(used_column_count_);
   }
   return ConstrainColumnBlockSize(content_runs.TallestColumnBlockSize(),
-                                  row_offset, available_outer_space);
+                                  line_offset, available_outer_space);
 }
 
 // Constrain a balanced column block size to not overflow the multicol
 // container.
 LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     LayoutUnit size,
-    LayoutUnit row_offset,
+    LayoutUnit line_offset,
     LayoutUnit available_outer_space) const {
   // Avoid becoming shorter than the tallest piece of unbreakable content.
   size = std::max(size, tallest_unbreakable_block_size_);
@@ -1988,8 +1989,8 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     }
 
     // We may already have used some of the available space in earlier column
-    // rows or spanners.
-    max -= CurrentContentBlockOffset(row_offset);
+    // lines or spanners.
+    max -= CurrentContentBlockOffset(line_offset);
   }
 
   // Constrain and convert the value back to content-box.
