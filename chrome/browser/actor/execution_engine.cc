@@ -281,10 +281,7 @@ void ExecutionEngine::KickOffNextAction(
 
   SetState(State::kStartAction);
 
-  // TODO(crbug.com/411462297): It's not clear that navigate requests (which are
-  // tab scoped) should be doing tab safety checks. For now we return `true` to
-  // preserve existing behavior.
-  if (GetNextAction().IsTabScoped()) {
+  if (GetNextAction().RequiresUrlCheckInCurrentTab()) {
     SafetyChecksForNextAction();
   } else {
     ExecuteNextAction();

@@ -48,6 +48,12 @@ class ToolRequest {
   // (non-tab, non-page scoped tool requests) returns a null handle.
   virtual tabs::TabHandle GetTabHandle() const;
 
+  // Returns true if this tool takes action within the page of the current tab
+  // and thus requires checking the current tab's URL for safety checks.
+  // Typically, most tab scoped tools will return true here but, for example, a
+  // navigate tool is tab scoped but navigates *away* from the current URL.
+  virtual bool RequiresUrlCheckInCurrentTab() const;
+
   // Returns the name to use for the journal when recording entries for this
   // request.
   virtual std::string JournalEvent() const = 0;

@@ -21,6 +21,7 @@ class NavigateToolRequest : public TabToolRequest {
   NavigateToolRequest(tabs::TabHandle tab_handle, GURL url);
   ~NavigateToolRequest() override;
 
+  bool RequiresUrlCheckInCurrentTab() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
   // ToolRequest

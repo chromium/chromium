@@ -40,6 +40,12 @@ tabs::TabHandle ToolRequest::GetTabHandle() const {
   return tabs::TabHandle();
 }
 
+bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
+  // By default, tab scoped tools require current tab URL checks but individual
+  // tools can override this.
+  return IsTabScoped();
+}
+
 std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
   return std::nullopt;
 }

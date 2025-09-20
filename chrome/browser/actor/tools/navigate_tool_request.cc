@@ -32,6 +32,11 @@ ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
           MakeOkResult()};
 }
 
+bool NavigateToolRequest::RequiresUrlCheckInCurrentTab() const {
+  // A navigate tool is tab scoped but navigates *away* from the current URL.
+  return false;
+}
+
 void NavigateToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
