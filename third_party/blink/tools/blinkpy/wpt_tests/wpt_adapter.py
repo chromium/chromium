@@ -90,9 +90,6 @@ class WPTAdapter:
         env_total_shards = host.environ.get('GTEST_TOTAL_SHARDS')
         if env_total_shards is not None:
             cls._ensure_value(options, 'total_shards', int(env_total_shards))
-        if options.use_upstream_wpt:
-            # do not use expectations when run with upstream WPT
-            options.no_expectations = True
         if options.product in cls.PORT_NAME_BY_PRODUCT:
             port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
         port = host.port_factory.get(port_name, options)
@@ -279,16 +276,23 @@ class WPTAdapter:
         elif self.options.timeout_multiplier:
             runner_options.timeout_multiplier = self.options.timeout_multiplier
 
-        if self.options.use_upstream_wpt:
-            # when running with upstream, the goal is to get wpt report that can
-            # be uploaded to wpt.fyi. We do not really care if tests failed or
-            # not. Add '--no-fail-on-unexpected' so that the overall result is
-            # success. Add '--no-restart-on-unexpected' to speed up the test. On
-            # Android side, we are always running with one emulator or worker,
-            # so do not add '--run-by-dir=0'
+        if self.options.no_expectations:
+            # When running with `--no-expectations` or `--use-upstream-wpt`, the
+            # goal is to gather data, such as:
+            #   * Reports to wpt.fyi (https://github.com/w3c/wptreport)
+            #   * Traces
+            #   * Code coverage profiles
+            #
+            # ... not to verify browser code changes. Therefore, test failures
+            # should not cause the shard to fail, and there's no need to retry
+            # any tests to work around flakiness.
             runner_options.fail_on_unexpected = False
-            runner_options.restart_on_unexpected = False
             runner_options.retry_unexpected = 0
+            # To speed up testing, don't restart browsers after unexpected
+            # failures.
+            runner_options.restart_on_unexpected = False
+            # Don't add `--run-by-dir=0` because Android currently always uses
+            # one emulator or worker.
         else:
             # Unexpected subtest passes in wptrunner are equivalent to baseline
             # mismatches in `run_web_tests.py`, so don't pass
