@@ -106,6 +106,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
 
   virtual gfx::NativeViewAccessible GetNativeViewAccessible() = 0;
 
+  // Returns the NativeViewAccessible for the parent Widget's RootView if the
+  // parent is a Views-owned Widget; otherwise nullptr.
+  virtual gfx::NativeViewAccessible GetParentNativeViewAccessible() = 0;
+
   // TODO(beng): Investigate migrating these methods to On* prefixes once
   // HWNDMessageHandler is the WindowImpl.
 

@@ -63,6 +63,9 @@ class TestHWNDMessageHandlerDelegate : public HWNDMessageHandlerDelegate {
   gfx::NativeViewAccessible GetNativeViewAccessible() override {
     return nullptr;
   }
+  gfx::NativeViewAccessible GetParentNativeViewAccessible() override {
+    return nullptr;
+  }
   void HandleActivationChanged(bool active) override {}
   bool HandleAppCommand(int command) override { return false; }
   void HandleCancelMode() override {}
