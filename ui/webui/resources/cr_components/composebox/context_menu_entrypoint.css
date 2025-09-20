@@ -35,10 +35,12 @@
 
 #menu {
   --color-sys-divider:
-    var(--color-new-tab-page-composebox-file-carousel-divider);
+      var(--color-new-tab-page-composebox-file-carousel-divider);
   --cr-menu-background-color: var(--color-new-tab-page-composebox-background);
   --cr-menu-border-radius: 16px;
   --cr-primary-text-color: var(--color-new-tab-page-composebox-file-chip-text);
+  --cr-hover-background-color:
+      var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
 }
 
 #tabHeader {
