@@ -58,7 +58,9 @@
 # license_files: A list of license files, relative to the crate's root.
 #   This is normally found automatically based on convention, but it can be
 #   specified to override it. A license file is expected for all shipped
-#   libraries.
+#   libraries. If the license file is relatively common, consider adding it
+#   to the static LICENSE_KIND_TO_LICENSE_FILES object in
+#   //tools/crates/gnrt/lib/readme.rs instead.
 #
 # security_critical: A boolean that overrides if the crate is marked security-
 #   critical in the README.chromium. It defaults to true if the crate is not in
@@ -131,8 +133,8 @@ allow_unstable_features = ["portable_simd"]
 [crate.bytemuck_derive.extra_kv]
 allow_unsafe = false
 
-[crate.bytes]
-extra_kv = { allow_unsafe = true }
+[crate.bytes.extra_kv]
+allow_unsafe = true
 
 [crate.calendrical_calculations.extra_kv]
 allow_unsafe = false
@@ -154,8 +156,8 @@ extra_kv = { allow_unsafe = false }
 [crate.clap_lex.extra_kv]
 allow_unsafe = true
 
-[crate.codespan-reporting]
-extra_kv = { allow_unsafe = false }
+[crate.codespan-reporting.extra_kv]
+allow_unsafe = false
 
 [crate.core_maths.extra_kv]
 allow_unsafe = false
@@ -269,8 +271,8 @@ extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
-[crate.icu_collections]
-extra_kv = { allow_unsafe = true }
+[crate.icu_collections.extra_kv]
+allow_unsafe = true
 
 [crate.icu_decimal.extra_kv]
 allow_unsafe = false
@@ -300,11 +302,11 @@ extra_src_roots = ['../data']
 extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 
-[crate.icu_locale]
-extra_kv = { allow_unsafe = true }
+[crate.icu_locale.extra_kv]
+allow_unsafe = true
 
-[crate.icu_locale_core]
-extra_kv = { allow_unsafe = true }
+[crate.icu_locale_core.extra_kv]
+allow_unsafe = true
 
 [crate.icu_locale_data]
 extra_input_roots = ['../data']
@@ -338,8 +340,8 @@ extra_input_roots = ['../data']
 extra_src_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
-[crate.icu_provider]
-extra_kv = { allow_unsafe = true }
+[crate.icu_provider.extra_kv]
+allow_unsafe = true
 
 [crate.indexmap.extra_kv]
 allow_unsafe = true
@@ -357,14 +359,13 @@ allow_unsafe = false
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
 
-[crate.libc]
+[crate.libc.extra_kv]
 # `libc` crate is implicitly trusted because it comes from
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
 # `rustc`).
-extra_kv = { allow_unsafe = true }
+allow_unsafe = true
 
 [crate.libm]
-license_files= ["LICENSE.txt"]
 extra_build_script_src_roots = ['../configure.rs']
 # `libm` crate is implicitly trusted because it comes from
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
@@ -456,7 +457,7 @@ shipped = false
 
 [crate.rustversion]
 allow_first_party_usage = false
-build_script_outputs = [ "version.expr" ]
+build_script_outputs = ["version.expr"]
 extra_build_script_src_roots = ['../build/rustc.rs']
 extra_kv = { allow_unsafe = false }
 
@@ -511,20 +512,20 @@ allow_unsafe = false
 [crate.subtle.extra_kv]
 allow_unsafe = false
 
-[crate.symphonia]
-extra_kv = { allow_unsafe = false }
+[crate.symphonia.extra_kv]
+allow_unsafe = false
 
-[crate.symphonia-bundle-flac]
-extra_kv = { allow_unsafe = false }
+[crate.symphonia-bundle-flac.extra_kv]
+allow_unsafe = false
 
-[crate.symphonia-core]
-extra_kv = { allow_unsafe = false }
+[crate.symphonia-core.extra_kv]
+allow_unsafe = false
 
-[crate.symphonia-metadata]
-extra_kv = { allow_unsafe = false }
+[crate.symphonia-metadata.extra_kv]
+allow_unsafe = false
 
-[crate.symphonia-utils-xiph]
-extra_kv = { allow_unsafe = false }
+[crate.symphonia-utils-xiph.extra_kv]
+allow_unsafe = false
 
 [crate.syn.extra_kv]
 allow_unsafe = true
@@ -532,20 +533,17 @@ allow_unsafe = true
 [crate.synstructure.extra_kv]
 allow_unsafe = false
 
-[crate.temporal_capi]
-extra_kv = { allow_unsafe = false }
-license_files = ["LICENSE-MIT", "LICENSE-Apache"]
+[crate.temporal_capi.extra_kv]
+allow_unsafe = false
 
-[crate.temporal_rs]
-extra_kv = { allow_unsafe = false }
-license_files = ["LICENSE-MIT", "LICENSE-Apache"]
+[crate.temporal_rs.extra_kv]
+allow_unsafe = false
 
 [crate.termcolor.extra_kv]
 allow_unsafe = false
 
-[crate.timezone_provider]
-license_files = ["LICENSE-MIT", "LICENSE-Apache"]
-extra_kv = { allow_unsafe = true }
+[crate.timezone_provider.extra_kv]
+allow_unsafe = true
 
 [crate.tinystr.extra_kv]
 allow_unsafe = true
@@ -564,21 +562,21 @@ allow_unsafe = true
 
 [crate.windows-sys.extra_kv]
 allow_unsafe = false
-visibility = [ '//build/rust/tests/windows_sys_test' ]
+visibility = ['//build/rust/tests/windows_sys_test']
 
 [crate.windows-targets.extra_kv]
 allow_unsafe = false
 
 [crate.windows_aarch64_msvc]
-native_libs_roots = [ '../lib' ]
+native_libs_roots = ['../lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.windows_i686_msvc]
-native_libs_roots = [ '../lib' ]
+native_libs_roots = ['../lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.windows_x86_64_msvc]
-native_libs_roots = [ '../lib' ]
+native_libs_roots = ['../lib']
 extra_kv = { allow_unsafe = false }
 
 [crate.writeable.extra_kv]

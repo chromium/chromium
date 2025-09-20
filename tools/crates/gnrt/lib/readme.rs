@@ -335,7 +335,9 @@ static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<String>>
 
         // Special cases for specific license types. If your license has a case
         // that is not covered already in the map generated above, add it here.
-        map.get_mut(&LicenseKind::Apache2).unwrap().insert(0, "license-apache-2.0".to_string());
+        let apache = map.get_mut(&LicenseKind::Apache2).unwrap();
+        apache.insert(0, "license-apache-2.0".to_string());
+        apache.insert(0, "LICENSE-Apache".to_string());
         map
     });
 

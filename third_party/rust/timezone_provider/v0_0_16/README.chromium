@@ -4,7 +4,7 @@ Version: 0.0.16
 Revision: 08a77fd945a8a051ec52d89068a38a8a9dda7124
 Update Mechanism: Manual
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_16/LICENSE-MIT,//third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_16/LICENSE-Apache
+License File: //third_party/rust/chromium_crates_io/vendor/timezone_provider-v0_0_16/LICENSE-Apache
 Shipped: yes
 Security Critical: yes
 
