@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -710,8 +711,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
             return null;
         }
 
-        @ColorInt Integer overrideColor = content.getSheetBackgroundColorOverride();
-        if (overrideColor != null) {
+        @ColorInt int overrideColor = content.getSheetBackgroundColorOverride();
+        if (overrideColor != Color.TRANSPARENT) {
             return overrideColor;
         }
         return mBottomSheet.getSheetBackgroundColor();

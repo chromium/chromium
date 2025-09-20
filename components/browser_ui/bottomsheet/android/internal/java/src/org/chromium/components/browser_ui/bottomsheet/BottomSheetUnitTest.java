@@ -221,4 +221,17 @@ public class BottomSheetUnitTest {
                 overrideColor,
                 mBottomSheet.getSheetBackgroundColor());
     }
+
+    @Test
+    public void testBackgroundColorOverride_Transparent() {
+        doReturn(true).when(mSheetContent).hasSolidBackgroundColor();
+        doReturn(Color.TRANSPARENT).when(mSheetContent).getSheetBackgroundColorOverride();
+
+        mBottomSheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Sheet bg color should be the override color.",
+                SemanticColorUtils.getSheetBgColor(mActivity),
+                mBottomSheet.getSheetBackgroundColor());
+    }
 }
