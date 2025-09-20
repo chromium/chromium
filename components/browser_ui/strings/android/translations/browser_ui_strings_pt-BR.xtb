@@ -422,7 +422,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5749158352074143502">Continuar com esta guia</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5753570386948603678">Excluir do histórico</translation>
-<translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueada</translation>
+<translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5801457289562671820">Recomendado pela sua organização</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5822675474983796325">A página inferior "Personalizar 'Nova guia'" está aberta no tamanho máximo</translation>

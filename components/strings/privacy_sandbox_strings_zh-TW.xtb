@@ -46,7 +46,7 @@
 <translation id="3187472288455401631">廣告評估</translation>
 <translation id="3425311689852411591">依賴第三方 Cookie 的網站應該都能正常運作</translation>
 <translation id="3442071090395342573">Chromium 會在 30 天後刪除你提供給網站的所有活動資料。如果你再次造訪某個網站，該網站可能會重新列入清單。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chromium 中管理廣告隱私權<ph name="END_LINK" />。</translation>
-<translation id="3467081767799433066">藉由廣告評估機制，網站間可分享某些特定資料，以評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
+<translation id="3467081767799433066">藉由廣告評估機制，不同網站間可分享某些特定資料，以評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
 <translation id="364348650177270461">Chromium 會盡可能限制嵌入的網站存取裝置和瀏覽器資料 (例如時區或安裝的字型)，避免這些網站取得你的個人資訊</translation>
 <translation id="3645682729607284687">Chrome 會根據你最近瀏覽的網站，記錄感興趣的主題，例如運動、服飾等等</translation>
