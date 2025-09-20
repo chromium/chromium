@@ -1587,7 +1587,7 @@ TEST_F(TabletModeWindowManagerTest, StateTypeChange) {
 TEST_F(TabletModeWindowManagerTest, SetPropertyOnUnmanagedWindow) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   InitParams params(aura::client::WINDOW_TYPE_NORMAL);
-  params.bounds = gfx::Rect(10, 10, 100, 100);
+  params.bounds = {10, 10, 100, 100};
   params.show_on_creation = false;
   std::unique_ptr<aura::Window> window(CreateWindowInWatchedContainer(params));
   WindowState::Get(window.get())->set_allow_set_bounds_direct(true);

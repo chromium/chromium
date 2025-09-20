@@ -2294,8 +2294,8 @@ class WindowObserverTest : public WindowTest,
 
 // Various assertions for WindowObserver.
 TEST_F(WindowObserverTest, WindowObserver) {
-  std::unique_ptr<Window> w1(
-      CreateTestWindow({.parent = root_window(), .window_id = 1}));
+  std::unique_ptr<Window> w1 =
+      CreateTestWindow({.parent = root_window(), .window_id = 1});
   w1->AddObserver(this);
 
   // Create a new window as a child of w1, our observer should be notified.

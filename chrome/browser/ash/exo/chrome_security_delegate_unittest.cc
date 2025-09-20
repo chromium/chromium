@@ -175,13 +175,14 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   aura::test::TestWindowDelegate delegate;
 
   // CanLockPointer should be allowed for arc, but not others.
-  std::unique_ptr<aura::Window> arc_toplevel(aura::test::CreateTestWindow(
-      {.delegate = &delegate, .parent = &container_window, .bounds = {}}));
+  std::unique_ptr<aura::Window> arc_toplevel = aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = &container_window, .bounds = {}});
   arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel.get()));
 
-  std::unique_ptr<aura::Window> crostini_toplevel(aura::test::CreateTestWindow(
-      {.delegate = &delegate, .parent = &container_window, .bounds = {}}));
+  std::unique_ptr<aura::Window> crostini_toplevel =
+      aura::test::CreateTestWindow(
+          {.delegate = &delegate, .parent = &container_window, .bounds = {}});
   crostini_toplevel->SetProperty(chromeos::kAppTypeKey,
                                  chromeos::AppType::CROSTINI_APP);
   EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel.get()));

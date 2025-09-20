@@ -13,8 +13,8 @@ namespace wm {
 typedef aura::test::AuraTestBase CoordinateConversionTest;
 
 TEST_F(CoordinateConversionTest, ConvertRect) {
-  std::unique_ptr<aura::Window> w(aura::test::CreateTestWindow(
-      {.parent = root_window(), .bounds = {10, 20, 100, 200}}));
+  std::unique_ptr<aura::Window> w = aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {10, 20, 100, 200}});
 
   gfx::Rect r1(10, 20, 100, 120);
   ConvertRectFromScreen(w.get(), &r1);

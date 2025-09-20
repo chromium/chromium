@@ -2709,7 +2709,7 @@ TEST_F(GestureRecognizerTest, GestureEndLocation) {
   std::unique_ptr<aura::Window> window =
       CreateTestWindow({.delegate = &delegate,
                         .parent = root_window(),
-                        .bounds = gfx::Rect(10, 10, 300, 300),
+                        .bounds = {10, 10, 300, 300},
                         .window_id = -1234});
   ui::test::EventGenerator generator(root_window(), window.get());
   const gfx::Point begin(20, 20);
@@ -2761,7 +2761,7 @@ TEST_F(GestureRecognizerTest, CaptureDoesNotCancelFinishedTouches) {
   std::unique_ptr<aura::Window> window1 =
       CreateTestWindow({.delegate = delegate.get(),
                         .parent = root_window(),
-                        .bounds = gfx::Rect(10, 10, 300, 300),
+                        .bounds = {10, 10, 300, 300},
                         .window_id = -1234});
   window1->SetCapture();
 
@@ -2818,7 +2818,7 @@ TEST_F(GestureRecognizerTest, PressDoesNotCrash) {
   std::unique_ptr<aura::Window> window =
       CreateTestWindow({.delegate = delegate.get(),
                         .parent = root_window(),
-                        .bounds = gfx::Rect(10, 10, 300, 300),
+                        .bounds = {10, 10, 300, 300},
                         .window_id = -1234});
 
   ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(45, 45),
