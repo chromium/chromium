@@ -2539,6 +2539,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.Viz.DroppedKeyEvent.Type"
+    enum="AInputEventType" expires_after="2026-01-18">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the type of key event as gotten from `AInputEvent_getType` Android
+    NDK API. Viz is not exepcted to receive key events, but in practice it does
+    due to races in focus handling at startup. All the key events received on
+    Viz are dropped and reported in this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputOnViz.Viz.DroppedNonTouchActions"
     enum="MotionEventAction" expires_after="2026-01-25">
   <owner>kartarsingh@google.com</owner>

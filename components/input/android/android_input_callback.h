@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(INPUT) AndroidInputCallback {
   ~AndroidInputCallback();
 
   static bool OnMotionEventThunk(void* context, AInputEvent* input_event);
+  static bool OnKeyEventThunk(void* context, AInputEvent* key_event);
 
   bool OnMotionEvent(base::android::ScopedInputEvent input_event);
 

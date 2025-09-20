@@ -48,6 +48,20 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Auto with Read Aloud (Listen to this page)"/>
 </enum>
 
+<!-- LINT.IfChange(AInputEventType) -->
+
+<enum name="AInputEventType">
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="AINPUT_EVENT_TYPE_KEY"/>
+  <int value="2" label="AINPUT_EVENT_TYPE_MOTION"/>
+  <int value="3" label="AINPUT_EVENT_TYPE_FOCUS"/>
+  <int value="4" label="AINPUT_EVENT_TYPE_CAPTURE"/>
+  <int value="5" label="AINPUT_EVENT_TYPE_DRAG"/>
+  <int value="6" label="AINPUT_EVENT_TYPE_TOUCH_MODE"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/input/android/android_input_callback.cc:AInputEventType)-->
+
 <enum name="Android.MemoryPressureNotification">
   <int value="0" label="Unknown onTrimMemory() level"/>
   <int value="1" label="TRIM_MEMORY_COMPLETE"/>

@@ -884,6 +884,10 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       .AInputReceiverCallbacks_setMotionEventCallbackFn(
           callbacks.a_input_receiver_callbacks(),
           input::AndroidInputCallback::OnMotionEventThunk);
+  base::AndroidInputReceiverCompat::GetInstance()
+      .AInputReceiverCallbacks_setKeyEventCallbackFn(
+          callbacks.a_input_receiver_callbacks(),
+          input::AndroidInputCallback::OnKeyEventThunk);
 
   AInputReceiver* a_input_receiver;
   bool batched = base::FeatureList::IsEnabled(
