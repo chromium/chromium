@@ -635,7 +635,12 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
+  const GURL cross_origin_rpc_url =
+      embedded_test_server()->GetURL("b.com", "/fake-rpc/cors");
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+      "rpcUrls", base::Value::List()
+                     .Append("/fake-rpc")
+                     .Append(cross_origin_rpc_url.spec())))});
 
   auto request_header_matcher =
       testing::AllOf(Contains(Pair("x-glic", "1")),
@@ -645,20 +650,26 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
                      Contains(Pair("x-glic-chrome-version",
                                    version_info::GetVersionNumber())));
 
-  auto main_request = std::ranges::find_if(
-      embedded_test_server_requests_, [&](const auto& request) {
-        return request.GetURL().path() == GetGuestURL().path();
-      });
-  ASSERT_NE(main_request, embedded_test_server_requests_.end());
+  auto find_request = [&](std::string_view path) {
+    const auto it = std::ranges::find_if(
+        embedded_test_server_requests_, [&](const auto& request) {
+          return request.GetURL().path() == path &&
+              request.method == net::test_server::METHOD_GET;
+        });
+    return it == embedded_test_server_requests_.end() ? nullptr : &(*it);
+  };
+
+  auto* main_request = find_request(GetGuestURL().path());
+  ASSERT_TRUE(main_request);
   EXPECT_THAT(main_request->headers, request_header_matcher);
 
-  // TODO(b/444636417): Reinstate this check.
-  auto rpc_request = std::ranges::find_if(
-      embedded_test_server_requests_, [&](const auto& request) {
-        return request.GetURL().path() == "/fake-rpc";
-      });
-  ASSERT_NE(rpc_request, embedded_test_server_requests_.end());
-  EXPECT_THAT(rpc_request->headers, ::testing::Not(request_header_matcher));
+  auto* rpc_request = find_request("/fake-rpc");
+  ASSERT_TRUE(rpc_request);
+  EXPECT_THAT(rpc_request->headers, request_header_matcher);
+
+  auto* cross_origin_rpc_request = find_request("/fake-rpc/cors");
+  ASSERT_TRUE(cross_origin_rpc_request);
+  EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {

@@ -23,7 +23,7 @@ export class GlicRequestHeaderInjector {
           types: requestTypes.split(',') as chrome.webRequest.ResourceType[],
           urls: ['<all_urls>'],
         },
-        ['blocking', 'requestHeaders']);
+        ['blocking', 'requestHeaders', 'extraHeaders']);
 
     this.onDestroy = () => {
       webview.request.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);

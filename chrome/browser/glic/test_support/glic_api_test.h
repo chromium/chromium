@@ -135,6 +135,8 @@ class GlicApiTestBase : public T {
   explicit GlicApiTestBase(std::string_view js_source_path) {
     T::embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &GlicApiTestBase::SorryPageRequestHandler, base::Unretained(this)));
+    T::embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &GlicApiTestBase::FakeRpcRequestHandler, base::Unretained(this)));
 
     T::embedded_test_server()->RegisterRequestMonitor(
         base::BindRepeating(&GlicApiTestBase::OnEmbeddedTestServerHttpRequest,
@@ -266,6 +268,24 @@ class GlicApiTestBase : public T {
     result->set_code(net::HttpStatusCode::HTTP_OK);
     result->set_content_type("text/html");
     result->set_content("Sorry!");
+    return result;
+  }
+
+  // Fake RPC endpoint that sometimes produces a CORS response.
+  // It does not respond to allow preflights, though.
+  std::unique_ptr<net::test_server::HttpResponse> FakeRpcRequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.method != net::test_server::METHOD_GET ||
+        !base::StartsWith(request.relative_url, "/fake-rpc")) {
+      return nullptr;
+    }
+    auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+    result->set_code(net::HttpStatusCode::HTTP_OK);
+    result->set_content_type("application/json");
+    result->set_content("{\"status\": \"ok\"}");
+    if (request.relative_url.find("/cors") != std::string::npos) {
+      result->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    }
     return result;
   }
 

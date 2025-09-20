@@ -677,10 +677,9 @@ BASE_FEATURE(kGlicHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 // Comma-separated list of request types to attach the X-Glic headers to.
 // These must be valid values for the webRequest extensions API.
 // Previously only "main_frame" was used.
-// TODO(b/444636417): Reinstate xmlhttprequest and possibly websocket once
-// we've fixed this issue.
 const base::FeatureParam<std::string> kGlicHeaderRequestTypes{
-    &kGlicHeader, "glic-header-request-types", "main_frame"};
+    &kGlicHeader, "glic-header-request-types",
+    "main_frame,xmlhttprequest,websocket"};
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

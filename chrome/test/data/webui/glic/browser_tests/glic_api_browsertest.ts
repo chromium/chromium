@@ -29,7 +29,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testRequestHeader() {
-    await fetch('/fake-rpc');
+    const rpcUrls: string[] = this.testParams.rpcUrls;
+    await Promise.all(rpcUrls.map(url => fetch(url)));
   }
 
   async testCreateTab() {
