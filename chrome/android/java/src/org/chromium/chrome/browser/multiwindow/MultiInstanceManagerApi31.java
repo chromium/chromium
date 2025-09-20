@@ -1403,25 +1403,29 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabsToNewWindow(List<Tab> tabs) {
+        boolean openAdjacently =
+                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
         moveToNewWindowIfPossible(
                 () ->
                         moveAndReparentTabsToNewWindow(
                                 tabs,
                                 INVALID_WINDOW_ID,
                                 /* preferNew= */ true,
-                                /* openAdjacently= */ false,
+                                openAdjacently,
                                 /* addTrustedIntentExtras= */ true));
     }
 
     @Override
     public void moveTabGroupToNewWindow(TabGroupMetadata tabGroupMetadata) {
+        boolean openAdjacently =
+                !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
         moveToNewWindowIfPossible(
                 () ->
                         moveAndReparentTabGroupToNewWindow(
                                 tabGroupMetadata,
                                 INVALID_WINDOW_ID,
                                 /* preferNew= */ true,
-                                /* openAdjacently= */ false,
+                                openAdjacently,
                                 /* addTrustedIntentExtras= */ true));
     }
 
