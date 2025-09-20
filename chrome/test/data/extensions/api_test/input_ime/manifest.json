@@ -2,10 +2,10 @@
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9fDu8apG3Dz72XTT3Ym1SfGt06tdowTlYQ+3lGlCbVpfnMOmewgRgYxzUtUPso9aQERZcmI2+7UtbWjtk6/usl9Hr7a1JBQwfaUoUygEe56ajUeZhe/ErkH5CXT84U0pokfPr5vMvc7RVPduU+UBiF0DnGb/hSpzz/1UhJ5H9AwIDAQAB",
   "name": "input.ime test",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Input method ime tests.",
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "permissions": [ "input", "inputMethodPrivate" ],
   "input_components": [{
