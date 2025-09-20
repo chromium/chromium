@@ -718,7 +718,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   // After re-enabling the policy, the correct state should be back.
   pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, true);
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
   EXPECT_FALSE(service_->GetCurrentCustomBackground());
   EXPECT_EQ(2u, service_->GetRecentlyUsedBackgrounds().size());
@@ -739,7 +738,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
   service_->StoreCurrentTheme();
 
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
 
   // Set managed pref.
@@ -748,14 +746,13 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
                                 base::Value(static_cast<int>(managed_color)));
 
   EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
 
   // Setting the color manually shouldn't change anything.
   service_->SetBackgroundColor(color_theme.color(),
                                color_theme.browser_color_variant());
 
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
 
   // Setting a custom background manually shouldn't change anything.
@@ -763,14 +760,13 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
       GURL("https://www.google.com/test"), GURL(), "Drawn by", "Chrome on iOS",
       GURL("https://www.google.com/action"), "default");
 
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
 
   // Setting a user-uploaded background shouldn't change anything.
   service_->SetCurrentUserUploadedBackground("image.jpg",
                                              FramingCoordinates(5, 10, 15, 20));
 
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
 
   // Un-manage the pref.
@@ -778,6 +774,60 @@ TEST_F(HomeBackgroundCustomizationServiceTest, PolicyThemeColor) {
 
   // Data should be back to the start.
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
-  ASSERT_TRUE(service_->GetCurrentColorTheme());
   EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+}
+
+// Tests that the 2 enterprise policies work correctly when both are set.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       CustomBackgroundEnabledAndPolicyThemeColor) {
+  CreateService();
+
+  // Set the initial theme to a color.
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+
+  service_->SetBackgroundColor(color_theme.color(),
+                               color_theme.browser_color_variant());
+  service_->StoreCurrentTheme();
+
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+
+  // Disable the kNTPCustomBackgroundEnabledByPolicy and set a policy theme
+  // color.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, false);
+
+  SkColor managed_color = 0x0000ff;
+  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+                                base::Value(static_cast<int>(managed_color)));
+
+  // The policy theme color should be ignored and there should be no active
+  // theme.
+  EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Setting anything should do nothing.
+  service_->SetCurrentUserUploadedBackground("image.jpg",
+                                             FramingCoordinates(5, 10, 15, 20));
+
+  EXPECT_FALSE(service_->GetCurrentColorTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // After re-enabling the kNTPCustomBackgroundEnabledByPolicy, the policy theme
+  // color should be active.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, true);
+  EXPECT_TRUE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  ASSERT_TRUE(service_->GetCurrentColorTheme());
+  EXPECT_EQ(managed_color, service_->GetCurrentColorTheme()->color());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // After removing the policy theme color, the originally set color should be
+  // active.
+  pref_service_->RemoveManagedPref(themes::prefs::kPolicyThemeColor);
+  EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
+  EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
+  EXPECT_EQ(2u, service_->GetRecentlyUsedBackgrounds().size());
 }

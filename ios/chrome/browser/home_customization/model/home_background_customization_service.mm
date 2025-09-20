@@ -181,6 +181,11 @@ HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
 
 std::optional<sync_pb::UserColorTheme>
 HomeBackgroundCustomizationService::GetCurrentColorTheme() {
+  // If customization is disabled by policy, no color theme is available.
+  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
+    return std::nullopt;
+  }
+
   // If policy theme is managed, just return that and bypass all local data.
   if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
     sync_pb::UserColorTheme theme;
@@ -189,11 +194,6 @@ HomeBackgroundCustomizationService::GetCurrentColorTheme() {
     theme.set_browser_color_variant(
         sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
     return theme;
-  }
-
-  // If customization is disabled by policy, no color theme is available.
-  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
-    return std::nullopt;
   }
 
   if (!current_theme_.has_user_color_theme()) {
