@@ -285,11 +285,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // handled correctly when WebView is drawing edge-to-edge.
   aw_feature_overrides.DisableFeature(features::kDrawCutoutEdgeToEdge);
 
-  // This is enabled for WebView to improve crbug.com/418159642.
-  // TODO(crbug.com/422161917): Revert this for the ablation study.
-  aw_feature_overrides.EnableFeature(
-      features::kServiceWorkerBackgroundUpdateForRegisteredStorageKeys);
-
   // Explicitly disable PrefetchProxy instead of relying only on passing an
   // empty URL.
   aw_feature_overrides.DisableFeature(features::kPrefetchProxy);

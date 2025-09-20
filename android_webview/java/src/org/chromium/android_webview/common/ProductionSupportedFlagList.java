@@ -1038,8 +1038,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"),
         Flag.baseFeature("ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"),
         Flag.baseFeature(
-                "ServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_CONNECT_TO_COMPONENT_PROVIDER_IN_BACKGROUND,
                 "Connect to the non-embedded components provider from a background thread."),
         Flag.baseFeature("PrefetchUseContentRefactor"),

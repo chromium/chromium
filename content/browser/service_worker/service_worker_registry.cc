@@ -45,13 +45,6 @@ namespace content {
 
 namespace {
 
-// Another switch for `kServiceWorkerBackgroundUpdateForRegisteredStorageKeys`
-// intended to be controlled from Field Trial (e.g. kill-switch). The original
-// flag may be overridden by `AwFieldTrials::RegisterFeatureOverrides`.
-BASE_FEATURE(
-    kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled,
-    base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -234,10 +227,7 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
                              storage::ServiceWorkerStorage::
                                  StorageSharedBuffer>(
           base::FeatureList::IsEnabled(
-              features::
-                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeys) &&
-              base::FeatureList::IsEnabled(
-                  kServiceWorkerBackgroundUpdateForRegisteredStorageKeysFieldTrialControlled),
+              features::kServiceWorkerBackgroundUpdateForRegisteredStorageKeys),
           base::FeatureList::IsEnabled(
               kServiceWorkerBackgroundUpdateForServiceWorkerScopeCache),
           base::FeatureList::IsEnabled(
