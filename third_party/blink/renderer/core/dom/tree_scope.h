@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
@@ -40,8 +39,8 @@
 namespace blink {
 
 class Animation;
-class ContainerNode;
 class CSSStyleSheet;
+class ContainerNode;
 class CustomElementRegistry;
 class DOMSelection;
 class Document;
@@ -52,7 +51,9 @@ class IdTargetObserverRegistry;
 class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
+class ScriptState;
 class StyleSheetList;
+class V8ObservableArrayCSSStyleSheet;
 
 // The root node of a document tree (in which case this is a Document) or of a
 // shadow tree (in which case this is a ShadowRoot). Various things, like

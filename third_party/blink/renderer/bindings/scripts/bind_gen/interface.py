@@ -6741,6 +6741,13 @@ def _collect_include_headers(class_like):
         if idl_type.is_frozen_array:
             headers.add(
                 "third_party/blink/renderer/bindings/core/v8/frozen_array.h")
+            return
+
+        observable_array_def_obj = idl_type.observable_array_definition_object
+        if observable_array_def_obj is not None:
+            headers.add(
+                PathManager(observable_array_def_obj).api_path(ext="h"))
+            return
 
     for attribute in class_like.attributes:
         collect_from_idl_type(attribute.idl_type)

@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
