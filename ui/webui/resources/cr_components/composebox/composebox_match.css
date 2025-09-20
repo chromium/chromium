@@ -94,7 +94,7 @@
   right: unset;
 }
 
-.container:hover #remove,
-:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
+.container:hover #remove:not([hidden]),
+:host-context(ntp-composebox-match:-webkit-any(:focus-within, [selected])) #remove:not([hidden]) {
   display: inline-flex;
 }
