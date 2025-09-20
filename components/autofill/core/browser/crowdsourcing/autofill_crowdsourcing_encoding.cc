@@ -709,6 +709,9 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
       alternative_field_suggestion};
   base::optional_ref<FieldSuggestion> preferred_field_suggestion =
       *std::ranges::max_element(suggestions, {}, get_suggestion_priority);
+  if (!preferred_field_suggestion) {
+    return std::nullopt;
+  }
 
   // Add predictions for PasswordManager from `iframe_field_suggestions` if
   // `field_suggestion` is missing them. This is only relevant for
@@ -720,9 +723,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
     MergePasswordManagerPredictions(*iframe_field_suggestion,
                                     *preferred_field_suggestion);
   }
-  return preferred_field_suggestion.has_value()
-             ? std::optional(std::move(*preferred_field_suggestion))
-             : std::nullopt;
+  return std::move(*preferred_field_suggestion);
 }
 
 // Builds a map from a pair of (form_signature, field_signature) to all the
