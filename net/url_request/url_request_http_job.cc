@@ -1234,8 +1234,8 @@ void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
                                                                   headers);
   for (auto& param : challenge_params) {
     service->SetChallengeForBoundSession(
-        request_->device_bound_session_access_callback(), request_url,
-        std::move(param));
+        request_->device_bound_session_access_callback(), *request_,
+        first_party_set_metadata_, std::move(param));
   }
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

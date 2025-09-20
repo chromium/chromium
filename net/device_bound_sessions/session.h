@@ -110,6 +110,13 @@ class NET_EXPORT Session {
   // enter backoff mode.
   void InformOfRefreshResult(SessionError::ErrorType error_type);
 
+  // Returns whether `request` would be allowed to set any bound
+  // cookies. This is a prerequisite for certain kinds of changes to
+  // session config.
+  bool CanSetBoundCookie(
+      const URLRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata) const;
+
   const url::Origin& origin() const { return inclusion_rules_.origin(); }
 
   const std::vector<std::string>& allowed_refresh_initiators() {

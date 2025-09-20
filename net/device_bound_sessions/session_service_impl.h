@@ -79,9 +79,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                               DeferralParams deferral,
                               RefreshCompleteCallback callback) override;
 
-  void SetChallengeForBoundSession(OnAccessCallback on_access_callback,
-                                   const GURL& request_url,
-                                   const SessionChallengeParam& param) override;
+  void SetChallengeForBoundSession(
+      OnAccessCallback on_access_callback,
+      const URLRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata,
+      const SessionChallengeParam& param) override;
 
   void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)

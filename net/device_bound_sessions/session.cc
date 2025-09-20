@@ -518,4 +518,46 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
   }
 }
 
+bool Session::CanSetBoundCookie(
+    const URLRequest& request,
+    const FirstPartySetMetadata& first_party_set_metadata) const {
+  // TODO(crbug.com/438783631): Refactor this.
+  // The below is all copied from
+  // UrlRequestHttpJob::SaveCookiesAndNotifyHeadersComplete. We should refactor
+  // it.
+  CookieStore* cookie_store = request.context()->cookie_store();
+  if ((request.load_flags() & LOAD_DO_NOT_SAVE_COOKIES) || !cookie_store) {
+    return false;
+  }
+
+  bool force_ignore_site_for_cookies = request.force_ignore_site_for_cookies();
+  if (cookie_store->cookie_access_delegate() &&
+      cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
+          request.url(), request.site_for_cookies())) {
+    force_ignore_site_for_cookies = true;
+  }
+  bool is_main_frame_navigation =
+      IsolationInfo::RequestType::kMainFrame ==
+          request.isolation_info().request_type() ||
+      request.force_main_frame_for_same_site_cookies();
+  CookieOptions::SameSiteCookieContext same_site_context =
+      cookie_util::ComputeSameSiteContextForResponse(
+          request.url_chain(), request.site_for_cookies(), request.initiator(),
+          is_main_frame_navigation, force_ignore_site_for_cookies);
+
+  CookieOptions options;
+  options.set_return_excluded_cookies();
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(same_site_context);
+
+  for (const CookieCraving& cookie_craving : cookie_cravings_) {
+    if (cookie_craving.CanSetBoundCookie(request, first_party_set_metadata,
+                                         &options)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace net::device_bound_sessions

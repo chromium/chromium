@@ -46,7 +46,8 @@ class SessionServiceMock : public SessionService {
   MOCK_METHOD(void,
               SetChallengeForBoundSession,
               (OnAccessCallback on_access_callback,
-               const GURL& request_url,
+               const URLRequest& request,
+               const FirstPartySetMetadata& first_party_set_metadata,
                const SessionChallengeParam& challenge_param),
               (override));
   MOCK_METHOD(

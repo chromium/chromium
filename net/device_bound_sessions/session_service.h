@@ -131,7 +131,8 @@ class NET_EXPORT SessionService {
   // Sec-Session-Challenge header.
   virtual void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
-      const GURL& request_url,
+      const URLRequest& request,
+      const FirstPartySetMetadata& first_party_set_metadata,
       const SessionChallengeParam& param) = 0;
 
   // Get all sessions. If sessions have not yet been loaded from disk,

@@ -442,22 +442,29 @@ void SessionServiceImpl::UnblockDeferredRequests(const SessionKey& session_key,
 
 void SessionServiceImpl::SetChallengeForBoundSession(
     OnAccessCallback on_access_callback,
-    const GURL& request_url,
+    const URLRequest& request,
+    const FirstPartySetMetadata& first_party_set_metadata,
     const SessionChallengeParam& param) {
   if (!param.session_id()) {
     return;
   }
 
-  SchemefulSite site(request_url);
-  for (const auto& [_, session] : GetSessionsForSite(site)) {
-    if (session->id().value() == param.session_id()) {
-      NotifySessionAccess(on_access_callback,
-                          SessionAccess::AccessType::kUpdate,
-                          SessionKey{site, session->id()}, *session);
-      session->set_cached_challenge(param.challenge());
-      return;
-    }
+  SessionKey session_key{SchemefulSite(request.url()),
+                         Session::Id(*param.session_id())};
+  Session* session = GetSession(session_key);
+  if (!session) {
+    return;
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsOriginTrialFeedback) &&
+      !session->CanSetBoundCookie(request, first_party_set_metadata)) {
+    return;
+  }
+
+  NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kUpdate,
+                      session_key, *session);
+  session->set_cached_challenge(param.challenge());
 }
 
 void SessionServiceImpl::GetAllSessionsAsync(

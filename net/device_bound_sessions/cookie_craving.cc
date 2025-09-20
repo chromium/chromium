@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
@@ -424,6 +425,40 @@ bool CookieCraving::ShouldIncludeForRequest(
   CookieAccessResultList excluded_cravings;
   return request->network_delegate()->AnnotateAndMoveUserBlockedCookies(
       *request, first_party_set_metadata, included_cravings, excluded_cravings);
+}
+
+bool CookieCraving::CanSetBoundCookie(
+    const URLRequest& request,
+    const FirstPartySetMetadata& first_party_set_metadata,
+    CookieOptions* options) const {
+  // TODO(crbug.com/438783631): Refactor this.
+  // The below is all copied from
+  // UrlRequestHttpJob::SaveCookiesAndNotifyHeadersComplete. We should refactor
+  // it.
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> canonical_cookie =
+      CreateCanonicalCookieForRequest(request.url(), &status);
+  if (!canonical_cookie || !status.IsInclude()) {
+    return false;
+  }
+
+  if (!request.network_delegate()) {
+    return false;
+  }
+
+  if (!request.network_delegate()->CanSetCookie(
+          request, *canonical_cookie, options, first_party_set_metadata,
+          &status)) {
+    return false;
+  }
+
+  return IsSetPermittedInContext(
+             request.url(), *options,
+             CookieAccessParams(CookieAccessSemantics::UNKNOWN,
+                                CookieScopeSemantics::UNKNOWN,
+                                /* delegate_treats_url_as_trustworthy=*/false),
+             {"https"}, std::nullopt)
+      .status.IsInclude();
 }
 
 std::unique_ptr<CanonicalCookie> CookieCraving::CreateCanonicalCookieForRequest(

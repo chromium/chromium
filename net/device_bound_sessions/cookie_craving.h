@@ -149,6 +149,12 @@ class NET_EXPORT CookieCraving : public CookieBase {
       const CookieOptions& options,
       const CookieAccessParams& params) const;
 
+  // Whether the craving could be modified by `request`, with other
+  // arguments providing context for the access.
+  bool CanSetBoundCookie(const URLRequest& request,
+                         const FirstPartySetMetadata& first_party_set_metadata,
+                         CookieOptions* options) const;
+
  private:
   // Creates a CanonicalCookie for this craving in the context of a request to
   // `url`. Fills in `status` with any exclusion reasons, which answer why this
