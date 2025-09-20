@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -366,6 +367,10 @@ HeapVector<Member<EventTarget>> Event::composedPath(
           event_path_->TopNodeEventContext()
               .GetTreeScopeEventContext()
               .EnsureEventPath(*event_path_));
+    }
+    if (RuntimeEnabledFeatures::ComposedPathEmptyAfterDispatchEnabled() &&
+        !IsBeingDispatched()) {
+      return HeapVector<Member<EventTarget>>();
     }
     return HeapVector<Member<EventTarget>>(1, window);
   }

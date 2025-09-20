@@ -1031,6 +1031,14 @@
       status: "stable",
     },
     {
+      // Return an empty list from composedPath() when the event
+      // path is empty.
+      // This was added in M142 and can be removed after M144.
+      // https://issues.chromium.org/issues/444932649
+      name: "ComposedPathEmptyAfterDispatch",
+      status: "stable",
+    },
+    {
       name: "CompositeBGColorAnimation",
       public: true,
       status: "experimental",
