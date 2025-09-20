@@ -510,4 +510,10 @@ bool IsWasmTtsEngineAutoInstallDisabled() {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+BASE_FEATURE(kAccessibilityHitTestPointCopy, base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsAccessibilityHitTestPointCopyEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityHitTestPointCopy);
+}
+
 }  // namespace features

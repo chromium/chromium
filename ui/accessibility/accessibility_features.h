@@ -394,6 +394,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kWasmTtsEngineAutoInstallDisabled);
 AX_BASE_EXPORT bool IsWasmTtsEngineAutoInstallDisabled();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Killswitch: use per-child copy of point during Views hit testing (prevents
+// coordinate corruption). Enabled by default.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityHitTestPointCopy);
+AX_BASE_EXPORT bool IsAccessibilityHitTestPointCopyEnabled();
+
 }  // namespace features
 
 #endif  // UI_ACCESSIBILITY_ACCESSIBILITY_FEATURES_H_
