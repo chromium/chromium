@@ -42,6 +42,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -5262,8 +5263,18 @@ bool NavigationControllerImpl::ShouldOverrideUserAgentInNextNavigation(
     NavigationController::UserAgentOverrideOption option) {
   switch (option) {
     case NavigationController::UA_OVERRIDE_INHERIT: {
-      auto* last_entry = GetLastCommittedEntry();
-      return last_entry && last_entry->GetIsOverridingUserAgent();
+      NavigationEntryImpl* last_entry = GetLastCommittedEntry();
+      CHECK(last_entry);
+      // A prerender page has a distinct `NavigationController`, thus its last
+      // committed entry is always an initial entry when starting prerender. In
+      // such cases, delegate the decision to `PrerenderHost`.
+      if (frame_tree_->is_prerendering() && last_entry->IsInitialEntry() &&
+          base::FeatureList::IsEnabled(
+              features::kPreloadingRespectUserAgentOverride)) {
+        return PrerenderHost::GetFromFrameTree(&frame_tree_.get())
+            .IsInitiatorOverridingUserAgent();
+      }
+      return last_entry->GetIsOverridingUserAgent();
     }
     case NavigationController::UA_OVERRIDE_TRUE:
       return true;

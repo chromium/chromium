@@ -443,6 +443,11 @@ class CONTENT_EXPORT PrerenderHost {
     return *attributes_.preload_pipeline_info.get();
   }
 
+  // Returns whether the initiator page is overriding user agents. The initiator
+  // page may be retrieved differently between renderer-initiated and
+  // browser-initiated prerender.
+  bool IsInitiatorOverridingUserAgent();
+
   base::WeakPtr<PrerenderHost> GetWeakPtr();
 
  private:

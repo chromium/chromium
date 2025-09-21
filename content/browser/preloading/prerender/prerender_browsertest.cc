@@ -81,6 +81,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -116,6 +117,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -13220,6 +13222,167 @@ IN_PROC_BROWSER_TEST_P(PrerenderSpecificRequestHeadersBrowserTest,
 INSTANTIATE_TEST_SUITE_P(RemovePurposeHeaderVariations,
                          PrerenderSpecificRequestHeadersBrowserTest,
                          ::testing::Bool());
+
+class PrerenderUserAgentOverrideBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderUserAgentOverrideBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPreloadingRespectUserAgentOverride);
+  }
+  ~PrerenderUserAgentOverrideBrowserTest() override = default;
+
+  std::string GetUserAgentHeader(const GURL& url) {
+    net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
+    EXPECT_TRUE(headers.contains(net::HttpRequestHeaders::kUserAgent));
+    return headers[net::HttpRequestHeaders::kUserAgent];
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// WebContentsDelegate to set UserAgentOverrideOption for prefetch and
+// prerender.
+class ScopedUserAgentOverrideTestDelegate : public WebContentsDelegate {
+ public:
+  explicit ScopedUserAgentOverrideTestDelegate(WebContents& web_contents)
+      : web_contents_(web_contents.GetWeakPtr()) {
+    web_contents_->SetDelegate(this);
+  }
+  ~ScopedUserAgentOverrideTestDelegate() override {
+    if (web_contents_) {
+      web_contents_->SetDelegate(nullptr);
+    }
+  }
+
+  NavigationController::UserAgentOverrideOption
+  ShouldOverrideUserAgentForPrerender2(const GURL& url) override {
+    return override_option_;
+  }
+
+  PreloadingEligibility IsPrerender2Supported(
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
+    return PreloadingEligibility::kEligible;
+  }
+
+  void InheritOverride() {
+    override_option_ =
+        NavigationController::UserAgentOverrideOption::UA_OVERRIDE_INHERIT;
+  }
+  void ForceEnableOverride() {
+    override_option_ =
+        NavigationController::UserAgentOverrideOption::UA_OVERRIDE_TRUE;
+  }
+  void ForceDisableOverride() {
+    override_option_ =
+        NavigationController::UserAgentOverrideOption::UA_OVERRIDE_FALSE;
+  }
+
+ private:
+  NavigationController::UserAgentOverrideOption override_option_ =
+      NavigationController::UserAgentOverrideOption::UA_OVERRIDE_INHERIT;
+  base::WeakPtr<WebContents> web_contents_;
+};
+
+// Tests that WebContents-level User-Agent header overrides are used for
+// prerender requests depending on `UserAgentOverrideOption`.
+IN_PROC_BROWSER_TEST_F(PrerenderUserAgentOverrideBrowserTest,
+                       EnabledToDisabled) {
+  const GURL initial_url = GetUrl("/prerender/empty.html");
+  const GURL prerendering_url_1 = GetUrl("/prerender/empty.html?prerender1");
+  const GURL prerendering_url_2 = GetUrl("/prerender/empty.html?prerender2");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Set User-Agent override.
+  shell()->web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("fake"), true);
+  ScopedUserAgentOverrideTestDelegate ua_override_delegate(
+      *shell()->web_contents());
+
+  // Enable UA override and start prerendering.
+  ua_override_delegate.ForceEnableOverride();
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      AddEmbedderTriggeredPrerender(prerendering_url_1);
+  ASSERT_TRUE(prerender_handle);
+
+  // The prerender request should use the overridden User-Agent.
+  EXPECT_EQ(GetUserAgentHeader(prerendering_url_1), "fake");
+
+  // Disable UA override and start prerendering.
+  ua_override_delegate.ForceDisableOverride();
+  std::unique_ptr<PrerenderHandle> prerender_handle_2 =
+      AddEmbedderTriggeredPrerender(prerendering_url_2);
+  ASSERT_TRUE(prerender_handle_2);
+
+  // The prerender request should NOT use the overridden User-Agent.
+  EXPECT_NE(GetUserAgentHeader(prerendering_url_2), "fake");
+}
+
+// Tests that the WebContents-level User-Agent header override setting is
+// inherited for prerender request with `UA_OVERRIDE_INHERIT`.
+IN_PROC_BROWSER_TEST_F(PrerenderUserAgentOverrideBrowserTest, Inherit) {
+  const GURL initial_url_1 = GetUrl("/empty.html");
+  const GURL initial_url_2 = GetUrl("/title1.html");
+  const GURL prerendering_url_1 = GetUrl("/prerender/empty.html?prerender");
+  const GURL prerendering_url_2 = GetUrl("/prerender/empty.html?prerender2");
+
+  // Set a User-Agent override and make sure `UserAgentOverrideOption` is
+  // `UA_OVERRIDE_INHERIT`.
+  shell()->web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("fake"), true);
+  ScopedUserAgentOverrideTestDelegate ua_override_delegate(
+      *shell()->web_contents());
+  ua_override_delegate.InheritOverride();
+
+  // Scenario 1: Navigate from a page without UA override.
+  {
+    // Navigate to an initial page without UA override.
+    ASSERT_TRUE(NavigateToURL(shell(), initial_url_1));
+    ASSERT_FALSE(shell()
+                     ->web_contents()
+                     ->GetPrimaryMainFrame()
+                     ->GetController()
+                     .GetLastCommittedEntry()
+                     ->GetIsOverridingUserAgent());
+
+    // Start prerendering.
+    std::unique_ptr<PrerenderHandle> prerender_handle =
+        AddEmbedderTriggeredPrerender(prerendering_url_1);
+    ASSERT_TRUE(prerender_handle);
+
+    // The prerender request should NOT use the overridden User-Agent.
+    EXPECT_NE(GetUserAgentHeader(prerendering_url_1), "fake");
+  }
+
+  // Scenario 2: Navigate from a page with UA override.
+  {
+    // Navigate to an initial page with UA override.
+    shell()
+        ->web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetController()
+        .GetLastCommittedEntry()
+        ->SetIsOverridingUserAgent(true);
+    ASSERT_TRUE(NavigateToURL(shell(), initial_url_2));
+    ASSERT_TRUE(shell()
+                    ->web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetController()
+                    .GetLastCommittedEntry()
+                    ->GetIsOverridingUserAgent());
+
+    // Start prerendering.
+    std::unique_ptr<PrerenderHandle> prerender_handle =
+        AddEmbedderTriggeredPrerender(prerendering_url_2);
+    ASSERT_TRUE(prerender_handle);
+
+    // The prerender request should use the overridden User-Agent.
+    EXPECT_EQ(GetUserAgentHeader(prerendering_url_2), "fake");
+  }
+}
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
   const GURL kInitialUrl = GetUrl("/empty.html");

@@ -1899,6 +1899,27 @@ void PrerenderHost::OnWillBeCancelled(
   }
 }
 
+bool PrerenderHost::IsInitiatorOverridingUserAgent() {
+  // The initiator FrameTreeNode can be unavailable in browser-initiated
+  // prerender. In such cases, we use the primary main frame of the initiator
+  // `WebContents` as a workaround.
+  // TODO(crbug.com/445992576): Support prerender in new tab by looking into
+  // `should_override_user_agent_in_new_tab_` in `WebContentsImpl`.
+  NavigationEntry* last_entry = nullptr;
+  if (initiator_frame_tree_node_id()) {
+    last_entry = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id())
+                     ->frame_tree()
+                     .controller()
+                     .GetLastCommittedEntry();
+  } else if (initiator_web_contents()) {
+    last_entry = initiator_web_contents()
+                     ->GetPrimaryMainFrame()
+                     ->GetController()
+                     .GetLastCommittedEntry();
+  }
+  return last_entry && last_entry->GetIsOverridingUserAgent();
+}
+
 base::WeakPtr<PrerenderHost> PrerenderHost::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
