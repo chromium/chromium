@@ -603,7 +603,7 @@ void Fullscreen::ContextDestroyed() {
 // https://fullscreen.spec.whatwg.org/#dom-element-requestfullscreen
 void Fullscreen::RequestFullscreen(Element& pending) {
   FullscreenOptions* options = FullscreenOptions::Create();
-  options->setNavigationUI("hide");
+  options->setNavigationUI(V8FullscreenNavigationUI::Enum::kHide);
   RequestFullscreen(pending, options, FullscreenRequestType::kUnprefixed);
 }
 

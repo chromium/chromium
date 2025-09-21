@@ -480,7 +480,7 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
 void HTMLVideoElement::EnterFullscreen() {
   if (!IsFullscreen()) {
     FullscreenOptions* options = FullscreenOptions::Create();
-    options->setNavigationUI("hide");
+    options->setNavigationUI(V8FullscreenNavigationUI::Enum::kHide);
     Fullscreen::RequestFullscreen(*this, options,
                                   FullscreenRequestType::kPrefixed);
   }
