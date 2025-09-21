@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.suggestions.tile;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.url.GURL;
 
 /**
@@ -64,6 +66,7 @@ class TileInteractionDelegateImpl
         mView.setOnKeyListener(this);
         mView.setOnLongClickListener(this);
         mView.setOnTouchListener(this);
+        mView.setOnGenericMotionListener(this);
 
         mAndroidPrerenderManager = AndroidPrerenderManager.getAndroidPrerenderManager();
 
@@ -133,6 +136,17 @@ class TileInteractionDelegateImpl
         }
 
         return false;
+    }
+
+    // TileGroup.TileInteractionDelegate => View.OnGenericMotionListener implementation.
+    @Override
+    public boolean onGenericMotion(View view, MotionEvent event) {
+        if (MotionEventUtils.isSecondaryClick(event.getButtonState())
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && view.hasOnLongClickListeners()) {
+            return view.performLongClick();
+        }
+        return view.onGenericMotionEvent(event);
     }
 
     // TileGroup.TileInteractionDelegate implementation.

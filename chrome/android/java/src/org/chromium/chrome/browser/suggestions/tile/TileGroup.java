@@ -175,7 +175,8 @@ public class TileGroup implements MostVisitedSites.Observer {
             extends View.OnClickListener,
                     View.OnKeyListener,
                     View.OnLongClickListener,
-                    View.OnTouchListener {
+                    View.OnTouchListener,
+                    View.OnGenericMotionListener {
         /**
          * Set a runnable for click events on the tile. This is primarily used to track interaction
          * with the tile used by feature engagement purposes.
