@@ -51,10 +51,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/synthetic_trials.h"
-#include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_switches.h"
-#include "components/version_info/version_info_values.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,7 +76,6 @@
 #if defined(__arm__)
 #include <cpu-features.h>
 #endif
-#include "chrome/browser/flags/android/chrome_session_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
@@ -1034,86 +1030,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Set up experiment for 64-bit Clank (incl. GWS visible IDs, so that the
-  // groups are visible to Google servers).
-  //
-  // We are specifically interested in devices that meet all of these criteria:
-  // 1) Devices with 4&6GB RAM, as we're launching the feature only for those
-  //    (using (3.2;6.5) range to match RAM targeting in Play).
-  // 2) Devices with only one Android profile (work versus personal), as having
-  //    multiple profiles is a source of a population bias (so is having
-  //    multiple users, but that bias is known to be small, and they're hard to
-  //    filter out).
-  // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
-  //    a particular bitness, thus don't participate in the experiment.
-  base::ByteCount ram = base::SysInfo::AmountOfPhysicalMemory();
-  auto cpu_abi_bitness_support =
-      metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();
-  bool is_device_of_interest =
-      (3.2 < ram.InGiBF() && ram.InGiBF() < 6.5) &&
-      (chrome::android::GetMultipleUserProfilesState() ==
-       chrome::android::MultipleUserProfilesState::kSingleProfile) &&
-      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit) &&
-      IsBundleForMixedDeviceAccordingToVersionCode(
-          base::android::apk_info::package_version_code());
-  if (is_device_of_interest) {
-    std::vector<std::string> gws_experiment_ids;
-    std::string trial_group;
-    base::Version product_version(PRODUCT_VERSION);
-#if defined(ARCH_CPU_64_BITS)
-    trial_group = "64bit";
-    gws_experiment_ids.push_back("3368915");
-    if (product_version.IsValid()) {
-      // For now, we only plan to run the experiment in Chrome 117+ and 118+, so
-      // only send GWS IDs for those versions.
-      auto milestone = product_version.components()[0];
-      if (milestone >= 117) {
-        gws_experiment_ids.push_back("3367345");
-      }
-      if (milestone >= 118) {
-        gws_experiment_ids.push_back("3368917");
-      }
-      if (milestone >= 119) {
-        gws_experiment_ids.push_back("3369945");
-      }
-      if (milestone >= 120) {
-        gws_experiment_ids.push_back("3369947");
-      }
-    }
-#else   // defined(ARCH_CPU_64_BITS)
-    gws_experiment_ids.push_back("3368914");
-    trial_group = "32bit";
-    if (product_version.IsValid()) {
-      // For now, we only plan to run the experiment in Chrome 117+ and 118+, so
-      // only send GWS IDs for those versions.
-      auto milestone = product_version.components()[0];
-      if (milestone >= 117) {
-        gws_experiment_ids.push_back("3367344");
-      }
-      if (milestone >= 118) {
-        gws_experiment_ids.push_back("3368916");
-      }
-      if (milestone >= 119) {
-        gws_experiment_ids.push_back("3369944");
-      }
-      if (milestone >= 120) {
-        gws_experiment_ids.push_back("3369946");
-      }
-    }
-#endif  // defined(ARCH_CPU_64_BITS)
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "BitnessForMidRangeRAM", trial_group,
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "BitnessForMidRangeRAM_wVersion",
-        std::string(PRODUCT_VERSION) + "_" + trial_group,
-        variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-        gws_experiment_ids, "");
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
