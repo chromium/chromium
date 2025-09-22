@@ -29,6 +29,7 @@ public class PageZoomSeekbarPreference extends PageZoomPreference
 
     public PageZoomSeekbarPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setLayoutResource(R.layout.page_zoom_legacy_preference);
     }
 
     @Override

@@ -58,8 +58,6 @@ public abstract class PageZoomPreference extends Preference {
 
     public PageZoomPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-
-        setLayoutResource(R.layout.page_zoom_preference);
     }
 
     @Initializer
