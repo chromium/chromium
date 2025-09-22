@@ -159,22 +159,15 @@ bool IsChromeClient(const DeviceInfoSpecifics& specifics) {
 
 // Converts DeviceInfoSpecifics into DeviceInfo.
 DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
-  DeviceInfo::FormFactor device_form_factor;
-  if (specifics.has_device_form_factor()) {
-    device_form_factor = ToDeviceInfoFormFactor(specifics.device_form_factor());
-  } else {
-    // Fallback to derive from old device type enum.
-    device_form_factor =
-        DeriveFormFactorFromDeviceType(specifics.device_type());
-  }
-  DeviceInfo::OsType os_type;
-  if (specifics.has_os_type()) {
-    os_type = ToDeviceInfoOsType(specifics.os_type());
-  } else {
-    // Fallback to derive from old device type enum.
-    os_type = DeriveOsFromDeviceType(specifics.device_type(),
-                                     specifics.manufacturer());
-  }
+  const DeviceInfo::FormFactor device_form_factor =
+      specifics.has_device_form_factor()
+          ? ToDeviceInfoFormFactor(specifics.device_form_factor())
+          : DeriveFormFactorFromDeviceType(specifics.device_type());
+  const DeviceInfo::OsType os_type =
+      specifics.has_os_type()
+          ? ToDeviceInfoOsType(specifics.os_type())
+          : DeriveOsFromDeviceType(specifics.device_type(),
+                                   specifics.manufacturer());
   return DeviceInfo(
       specifics.cache_guid(), specifics.client_name(),
       GetVersionNumberFromSpecifics(specifics), specifics.sync_user_agent(),
@@ -295,6 +288,18 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
   return specifics;
 }
 
+bool ArePaaskInfosEqual(
+    const std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& a,
+    const std::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& b) {
+  if (a.has_value() != b.has_value()) {
+    return false;
+  }
+  if (!a.has_value()) {
+    return true;
+  }
+  return a->NonRotatingFieldsEqual(*b);
+}
+
 // Returns true if |stored| is similar enough to |current| that |current|
 // needn't be uploaded.
 bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
@@ -316,16 +321,10 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->send_tab_to_self_receiving_type() ==
              stored->send_tab_to_self_receiving_type() &&
          current->sharing_info() == stored->sharing_info() &&
-         current->paask_info().has_value() ==
-             stored->paask_info().has_value() &&
-         (!current->paask_info().has_value() ||
-          current->paask_info()->NonRotatingFieldsEqual(
-              stored->paask_info().value())) &&
+         ArePaaskInfosEqual(current->paask_info(), stored->paask_info()) &&
          current->fcm_registration_token() ==
              stored->fcm_registration_token() &&
          current->interested_data_types() == stored->interested_data_types() &&
-         current->auto_sign_out_last_signin_timestamp().has_value() ==
-             stored->auto_sign_out_last_signin_timestamp().has_value() &&
          current->auto_sign_out_last_signin_timestamp() ==
              stored->auto_sign_out_last_signin_timestamp();
 }

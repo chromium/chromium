@@ -17,6 +17,21 @@ namespace syncer {
 
 using DeviceType = DeviceInfo::FormFactor;
 
+namespace {
+
+// Returns the count for the given |form_factor|, or 0 if not found.
+int GetCount(const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts,
+             DeviceInfo::FormFactor form_factor) {
+  auto it = counts.find(form_factor);
+  return it != counts.end() ? it->second : 0;
+}
+
+void RecordDeviceCountMetric(const std::string& histogram_name, int count) {
+  base::UmaHistogramSparse(histogram_name, std::min(count, 100));
+}
+
+}  // namespace
+
 DeviceCountMetricsProvider::DeviceCountMetricsProvider(
     const ProvideTrackersCallback& provide_trackers)
     : provide_trackers_(provide_trackers) {}
@@ -40,20 +55,19 @@ void DeviceCountMetricsProvider::ProvideCurrentSessionData(
 
     max_total = std::max(max_total, total_devices);
     max_desktop_count = std::max(
-        max_desktop_count, count_by_type[DeviceInfo::FormFactor::kDesktop]);
-    max_phone_count = std::max(max_phone_count,
-                               count_by_type[DeviceInfo::FormFactor::kPhone]);
-    max_tablet_count = std::max(max_tablet_count,
-                                count_by_type[DeviceInfo::FormFactor::kTablet]);
+        max_desktop_count,
+        GetCount(count_by_type, DeviceInfo::FormFactor::kDesktop));
+    max_phone_count = std::max(
+        max_phone_count, GetCount(count_by_type, DeviceInfo::FormFactor::kPhone));
+    max_tablet_count = std::max(
+        max_tablet_count,
+        GetCount(count_by_type, DeviceInfo::FormFactor::kTablet));
   }
 
-  base::UmaHistogramSparse("Sync.DeviceCount2", std::min(max_total, 100));
-  base::UmaHistogramSparse("Sync.DeviceCount2.Desktop",
-                           std::min(max_desktop_count, 100));
-  base::UmaHistogramSparse("Sync.DeviceCount2.Phone",
-                           std::min(max_phone_count, 100));
-  base::UmaHistogramSparse("Sync.DeviceCount2.Tablet",
-                           std::min(max_tablet_count, 100));
+  RecordDeviceCountMetric("Sync.DeviceCount2", max_total);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Desktop", max_desktop_count);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Phone", max_phone_count);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Tablet", max_tablet_count);
 }
 
 }  // namespace syncer
