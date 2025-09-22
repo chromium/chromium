@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] x, y, width, and height presentation attributes supported on symbol element
-  assert_true: Presentation attribute x="1" should be supported on symbol element expected true got false
-Harness: the test ran to completion.

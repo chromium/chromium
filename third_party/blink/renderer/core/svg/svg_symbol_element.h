@@ -26,6 +26,8 @@
 
 namespace blink {
 
+class SVGAnimatedLength;
+
 class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -40,6 +42,13 @@ class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
+  void CollectExtraStyleForPresentationAttribute(
+      HeapVector<CSSPropertyValue, 8>& style) override;
+
+  Member<SVGAnimatedLength> x_;
+  Member<SVGAnimatedLength> y_;
+  Member<SVGAnimatedLength> width_;
+  Member<SVGAnimatedLength> height_;
 };
 
 }  // namespace blink
