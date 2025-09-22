@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -23,6 +24,8 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

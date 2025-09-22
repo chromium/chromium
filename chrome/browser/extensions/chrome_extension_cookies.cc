@@ -20,12 +20,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_store_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/restricted_cookie_manager.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

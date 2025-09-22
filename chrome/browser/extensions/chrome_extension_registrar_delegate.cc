@@ -41,6 +41,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/crash_keys.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -60,6 +61,8 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
