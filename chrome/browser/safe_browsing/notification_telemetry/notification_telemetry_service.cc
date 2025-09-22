@@ -390,6 +390,10 @@ void NotificationTelemetryService::OnGetServiceWorkerBehaviors(
     // `script_url`.
     if (entry.has_script_url()) {
       messages.emplace(entry.script_url(), service_worker_behavior);
+      report->set_page_url(entry.script_url());
+    } else if (entry.has_scope_url()) {
+      // A ServiceWorkerBehavior may have a scope url without a script url.
+      report->set_page_url(entry.scope_url());
     }
   }
   std::string serialized_report;

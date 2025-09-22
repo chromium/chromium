@@ -76,6 +76,11 @@ ClientSafeBrowsingReportRequest MakeCSBRR(
   report->set_type(CSBRR::SERVICE_WORKER_BEHAVIOR);
   for (const auto& behavior : service_worker_behaviors) {
     *report->add_service_worker_behaviors() = behavior;
+    if (behavior.has_script_url()) {
+      report->set_page_url(behavior.script_url());
+    } else if (behavior.has_scope_url()) {
+      report->set_page_url(behavior.scope_url());
+    }
   }
   return *report;
 }
