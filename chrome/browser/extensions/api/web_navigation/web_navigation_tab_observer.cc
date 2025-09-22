@@ -21,8 +21,6 @@
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
 
-class TabStripModel;
-
 namespace extensions {
 
 namespace web_navigation = api::web_navigation;
@@ -216,10 +214,14 @@ void WebNavigationTabObserver::DidOpenRequestedURL(
     return;
   }
 
-  TabStripModel* ignored_tab_strip_model = nullptr;
+  bool new_contents_is_present_in_tabstrip = false;
+  TabListInterface* ignored_tab_list_interface = nullptr;
   int ignored_tab_index = -1;
-  bool new_contents_is_present_in_tabstrip = ExtensionTabUtil::GetTabStripModel(
-      new_contents, &ignored_tab_strip_model, &ignored_tab_index);
+  // It's possible `new_contents` could be null.
+  if (new_contents) {
+    new_contents_is_present_in_tabstrip = ExtensionTabUtil::GetTabListInterface(
+        *new_contents, &ignored_tab_list_interface, &ignored_tab_index);
+  }
   router->RecordNewWebContents(
       web_contents(), source_render_frame_host->GetProcess()->GetDeprecatedID(),
       source_render_frame_host->GetRoutingID(), url, new_contents,

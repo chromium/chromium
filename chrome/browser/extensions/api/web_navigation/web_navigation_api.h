@@ -70,11 +70,8 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
   static const bool kServiceRedirectedInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Created lazily upon OnListenerAdded.
-  // TODO(crbug.com/371432404): Port to desktop Android.
   std::unique_ptr<WebNavigationEventRouter> web_navigation_event_router_;
-#endif
 };
 
 }  // namespace extensions

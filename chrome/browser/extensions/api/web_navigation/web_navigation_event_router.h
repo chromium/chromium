@@ -9,24 +9,20 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 // Tracks new tab navigations and routes them as events to the extension system.
-class WebNavigationEventRouter : public TabStripModelObserver,
-                                 public BrowserTabStripTrackerDelegate {
+class WebNavigationEventRouter {
  public:
   explicit WebNavigationEventRouter(Profile* profile);
 
   WebNavigationEventRouter(const WebNavigationEventRouter&) = delete;
   WebNavigationEventRouter& operator=(const WebNavigationEventRouter&) = delete;
 
-  ~WebNavigationEventRouter() override;
+  ~WebNavigationEventRouter();
 
   // Router level handler for the creation of WebContents. Stores information
   // about the newly created WebContents. This information is later used when
@@ -81,18 +77,13 @@ class WebNavigationEventRouter : public TabStripModelObserver,
     base::OnceCallback<void(content::WebContents*)> on_destroy_;
   };
 
-  // BrowserTabStripTrackerDelegate implementation.
-  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
-
-  // TabStripModelObserver implementation.
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // The method takes the details of such an event and creates a JSON formatted
   // extension event from it.
   void TabAdded(content::WebContents* tab);
+
+  // Dispatches the tab replaced extension event.
+  void TabReplaced(content::WebContents* old_contents,
+                   content::WebContents* new_contents);
 
   // Removes |tab| from |pending_web_contents_| if it is there.
   void PendingWebContentsDestroyed(content::WebContents* tab);
@@ -104,7 +95,9 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   // The profile that owns us via ExtensionService.
   raw_ptr<Profile> profile_;
 
-  BrowserTabStripTracker browser_tab_strip_tracker_;
+  // Handles tab strip differences between Win/Mac/Linux and Android.
+  class TabHelper;
+  std::unique_ptr<TabHelper> tab_helper_;
 };
 
 }  // namespace extensions

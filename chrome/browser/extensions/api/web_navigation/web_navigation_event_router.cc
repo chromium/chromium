@@ -15,6 +15,12 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
+
 namespace extensions {
 
 WebNavigationEventRouter::PendingWebContents::PendingWebContents() = default;
@@ -41,48 +47,86 @@ void WebNavigationEventRouter::PendingWebContents::WebContentsDestroyed() {
   // |this| is deleted!
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371432404): Provide an implementation for desktop Android,
+// based on TabModelListObserver and TabModelObserver.
+class WebNavigationEventRouter::TabHelper {
+ public:
+  TabHelper(WebNavigationEventRouter* router, Profile* profile) {}
+  TabHelper(const TabHelper&) = delete;
+  TabHelper& operator=(const TabHelper&) = delete;
+  ~TabHelper() = default;
+
+  void Init() {}
+};
+#else
+// Tab helper implementation for Win/Mac/Linux/Chrome OS.
+class WebNavigationEventRouter::TabHelper
+    : public TabStripModelObserver,
+      public BrowserTabStripTrackerDelegate {
+ public:
+  TabHelper(WebNavigationEventRouter* router, Profile* profile)
+      : router_(router),
+        profile_(profile),
+        browser_tab_strip_tracker_(this, this) {}
+  TabHelper(const TabHelper&) = delete;
+  TabHelper& operator=(const TabHelper&) = delete;
+  ~TabHelper() override = default;
+
+  void Init() { browser_tab_strip_tracker_.Init(); }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kReplaced) {
+      auto* replace = change.GetReplace();
+      router_->TabReplaced(replace->old_contents, replace->new_contents);
+    } else if (change.type() == TabStripModelChange::kInserted) {
+      for (auto& tab : change.GetInsert()->contents) {
+        router_->TabAdded(tab.contents);
+      }
+    }
+  }
+
+  // BrowserTabStripTrackerDelegate:
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override {
+    return profile_->IsSameOrParent(browser->GetProfile());
+  }
+
+  raw_ptr<WebNavigationEventRouter> router_;
+  raw_ptr<Profile> profile_;
+  BrowserTabStripTracker browser_tab_strip_tracker_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 WebNavigationEventRouter::WebNavigationEventRouter(Profile* profile)
-    : profile_(profile), browser_tab_strip_tracker_(this, this) {
-  browser_tab_strip_tracker_.Init();
+    : profile_(profile),
+      tab_helper_(std::make_unique<TabHelper>(this, profile_)) {
+  tab_helper_->Init();
 }
 
 WebNavigationEventRouter::~WebNavigationEventRouter() = default;
 
-bool WebNavigationEventRouter::ShouldTrackBrowser(
-    BrowserWindowInterface* browser) {
-  return profile_->IsSameOrParent(browser->GetProfile());
-}
+void WebNavigationEventRouter::TabReplaced(content::WebContents* old_contents,
+                                           content::WebContents* new_contents) {
+  WebNavigationTabObserver* tab_observer =
+      WebNavigationTabObserver::Get(old_contents);
 
-void WebNavigationEventRouter::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kReplaced) {
-    auto* replace = change.GetReplace();
-    WebNavigationTabObserver* tab_observer =
-        WebNavigationTabObserver::Get(replace->old_contents);
-
-    if (!tab_observer) {
-      // If you hit this DCHECK(), please add reproduction steps to
-      // http://crbug.com/109464.
-      DCHECK(GetViewType(replace->old_contents) !=
-             mojom::ViewType::kTabContents);
-      return;
-    }
-    if (!FrameNavigationState::IsValidUrl(
-            replace->old_contents->GetLastCommittedURL()) ||
-        !FrameNavigationState::IsValidUrl(
-            replace->new_contents->GetLastCommittedURL())) {
-      return;
-    }
-
-    web_navigation_api_helpers::DispatchOnTabReplaced(
-        replace->old_contents, profile_, replace->new_contents);
-  } else if (change.type() == TabStripModelChange::kInserted) {
-    for (auto& tab : change.GetInsert()->contents) {
-      TabAdded(tab.contents);
-    }
+  if (!tab_observer) {
+    // If you hit this DCHECK(), please add reproduction steps to
+    // http://crbug.com/109464.
+    DCHECK(GetViewType(old_contents) != mojom::ViewType::kTabContents);
+    return;
   }
+  if (!FrameNavigationState::IsValidUrl(old_contents->GetLastCommittedURL()) ||
+      !FrameNavigationState::IsValidUrl(new_contents->GetLastCommittedURL())) {
+    return;
+  }
+
+  web_navigation_api_helpers::DispatchOnTabReplaced(old_contents, profile_,
+                                                    new_contents);
 }
 
 void WebNavigationEventRouter::RecordNewWebContents(
