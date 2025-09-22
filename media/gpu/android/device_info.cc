@@ -39,16 +39,6 @@ bool DeviceInfo::IsDecoderKnownUnaccelerated(VideoCodec codec) {
                                               MediaCodecDirection::DECODER);
 }
 
-bool DeviceInfo::IsSetOutputSurfaceSupported() {
-  static const bool result = MediaCodecUtil::IsSetOutputSurfaceSupported();
-  return result;
-}
-
-bool DeviceInfo::SupportsOverlaySurfaces() {
-  static const bool result = MediaCodecUtil::IsSurfaceViewOutputSupported();
-  return result;
-}
-
 void DeviceInfo::AddSupportedCodecProfileLevels(
     std::vector<CodecProfileLevel>* result) {
   MediaCodecUtil::AddSupportedCodecProfileLevels(result);

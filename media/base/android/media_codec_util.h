@@ -57,12 +57,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // Indicates if the AAC encoder is available on this device.
   static bool IsAACEncoderAvailable();
 
-  // Indicates if SurfaceView and MediaCodec work well together on this device.
-  static bool IsSurfaceViewOutputSupported();
-
-  // Indicates if MediaCodec.setOutputSurface() works on this device.
-  static bool IsSetOutputSurfaceSupported();
-
   // Returns a known alignment which can be used to translate visible size into
   // coded size. E.g., a size of (1, 1) means no alignment while a size of
   // (64, 1) would mean visible width should be rounded up to the nearest

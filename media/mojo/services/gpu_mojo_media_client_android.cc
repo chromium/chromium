@@ -76,8 +76,7 @@ class GpuMojoMediaClientAndroid final : public GpuMojoMediaClient {
         gpu_preferences_, is_surface_control_enabled, traits.media_log->Clone(),
         DeviceInfo::GetInstance(),
         CodecAllocator::GetInstance(gpu_task_runner_),
-        std::make_unique<AndroidVideoSurfaceChooserImpl>(
-            DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
+        std::make_unique<AndroidVideoSurfaceChooserImpl>(),
         android_overlay_factory_cb_, std::move(traits.request_overlay_info_cb),
         std::make_unique<VideoFrameFactoryImpl>(
             gpu_task_runner_, gpu_preferences_, std::move(image_provider),

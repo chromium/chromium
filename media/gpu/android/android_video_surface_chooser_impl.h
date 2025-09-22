@@ -20,12 +20,10 @@ namespace media {
 class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
     : public AndroidVideoSurfaceChooser {
  public:
-  // |allow_dynamic| should be true if and only if we are allowed to change the
-  // surface selection after the initial callback.  |tick_clock|, if provided,
-  // will be used as our time source.  Otherwise, we'll use wall clock.  If
-  // provided, then it must outlast |this|.
-  AndroidVideoSurfaceChooserImpl(bool allow_dynamic,
-                                 const base::TickClock* tick_clock = nullptr);
+  // |tick_clock|, if provided, will be used as our time source.  Otherwise,
+  // we'll use wall clock.  If provided, then it must outlast |this|.
+  explicit AndroidVideoSurfaceChooserImpl(
+      const base::TickClock* tick_clock = nullptr);
 
   AndroidVideoSurfaceChooserImpl(const AndroidVideoSurfaceChooserImpl&) =
       delete;
@@ -72,10 +70,6 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
 
   AndroidOverlayFactoryCB overlay_factory_;
 
-  // Do we allow dynamic surface switches.  Usually this means "Are we running
-  // on M or later?".
-  bool allow_dynamic_;
-
   enum OverlayState {
     kUnknown,
     kUsingTextureOwner,
@@ -86,8 +80,6 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   OverlayState client_overlay_state_ = kUnknown;
 
   State current_state_;
-
-  bool initial_state_received_ = false;
 
   // Not owned by us.
   raw_ptr<const base::TickClock> tick_clock_;

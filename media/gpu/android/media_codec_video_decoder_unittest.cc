@@ -187,11 +187,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   }
 
   VideoFrameFactory::OverlayMode ExpectedOverlayMode() const {
-    const bool want_promotion_hint =
-        device_info_->IsSetOutputSurfaceSupported();
-    return want_promotion_hint
-               ? VideoFrameFactory::OverlayMode::kRequestPromotionHints
-               : VideoFrameFactory::OverlayMode::kDontRequestPromotionHints;
+    return VideoFrameFactory::OverlayMode::kRequestPromotionHints;
   }
 
   void CreateCdm(bool has_media_crypto_context,
@@ -395,18 +391,7 @@ TEST_P(MediaCodecVideoDecoderTest,
   ASSERT_TRUE(provide_overlay_info_cb_);
 }
 
-TEST_P(MediaCodecVideoDecoderTest,
-       OverlayInfoIsNotRequestedIfOverlaysNotSupported) {
-  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
-  ON_CALL(*device_info_, SupportsOverlaySurfaces())
-      .WillByDefault(Return(false));
-  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
-  ASSERT_FALSE(provide_overlay_info_cb_);
-}
-
 TEST_P(MediaCodecVideoDecoderTest, RestartForOverlayTransitionsFlagIsCorrect) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(true));
   ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   ASSERT_FALSE(restart_for_transitions_);
@@ -538,20 +523,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecIsCreatedWithChosenOverlay) {
       codec_allocator_->most_recent_config->surface.obj()));
 }
 
-TEST_P(MediaCodecVideoDecoderTest,
-       CodecCreationWeakPtrIsInvalidatedBySurfaceDestroyed) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(false));
-  auto* overlay =
-      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(overlay);
-  overlay->OnSurfaceDestroyed();
 
-  // MCVD handles release of the MediaCodec after WeakPtr invalidation.
-  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(NotNull()));
-  auto* codec = codec_allocator_->ProvideMockCodecAsync();
-  ASSERT_TRUE(codec);
-}
 
 TEST_P(MediaCodecVideoDecoderTest, SurfaceChangedWhileCodecCreationPending) {
   auto* overlay =
@@ -580,22 +552,7 @@ TEST_P(MediaCodecVideoDecoderTest, SurfaceDestroyedDoesSyncSurfaceTransition) {
   overlay->OnSurfaceDestroyed();
 }
 
-TEST_P(MediaCodecVideoDecoderTest,
-       SurfaceDestroyedReleasesCodecIfSetSurfaceIsNotSupported) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(false));
-  auto* overlay =
-      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(overlay);
-  auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
-  // MCVD must synchronously release the codec.
-  EXPECT_CALL(*codec, SetSurface(_)).Times(0);
-  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec));
-  overlay->OnSurfaceDestroyed();
-  // Verify expectations before we delete the MCVD.
-  testing::Mock::VerifyAndClearExpectations(codec_allocator_.get());
-}
 
 TEST_P(MediaCodecVideoDecoderTest, PumpCodecPerformsPendingSurfaceTransitions) {
   ASSERT_TRUE(

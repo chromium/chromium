@@ -537,12 +537,8 @@ void MediaCodecVideoDecoder::StartLazyInit() {
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::StartLazyInit");
   lazy_init_pending_ = false;
 
-  // Only ask for promotion hints if we can actually switch surfaces, since we
-  // wouldn't be able to do anything with them. Also, if threaded texture
-  // mailboxes are enabled, then we turn off overlays anyway.
-  const bool want_promotion_hints =
-      device_info_->IsSetOutputSurfaceSupported() &&
-      !enable_threaded_texture_mailboxes_;
+  // If threaded texture mailboxes are enabled, then we turn off overlays.
+  const bool want_promotion_hints = !enable_threaded_texture_mailboxes_;
 
   VideoFrameFactory::OverlayMode overlay_mode =
       VideoFrameFactory::OverlayMode::kDontRequestPromotionHints;
@@ -589,16 +585,14 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
 
   // Overlays are disabled when |enable_threaded_texture_mailboxes| is true
   // (http://crbug.com/582170).
-  if (enable_threaded_texture_mailboxes_ ||
-      !device_info_->SupportsOverlaySurfaces() || !allowed_for_experiment) {
+  if (enable_threaded_texture_mailboxes_ || !allowed_for_experiment) {
     OnSurfaceChosen(nullptr);
     return;
   }
 
   // Request OverlayInfo updates. Initialization continues on the first one.
-  bool restart_for_transitions = !device_info_->IsSetOutputSurfaceSupported();
   std::move(request_overlay_info_cb_)
-      .Run(restart_for_transitions,
+      .Run(/*restart_for_transitions=*/false,
            base::BindRepeating(&MediaCodecVideoDecoder::OnOverlayInfoChanged,
                                weak_factory_.GetWeakPtr()));
 }
@@ -607,7 +601,6 @@ void MediaCodecVideoDecoder::OnOverlayInfoChanged(
     const OverlayInfo& overlay_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
-  DCHECK(device_info_->SupportsOverlaySurfaces());
   DCHECK(!enable_threaded_texture_mailboxes_);
   if (InTerminalState())
     return;
@@ -626,8 +619,6 @@ void MediaCodecVideoDecoder::OnSurfaceChosen(
     std::unique_ptr<AndroidOverlay> overlay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
-  DCHECK(state_ == State::kInitializing ||
-         device_info_->IsSetOutputSurfaceSupported());
   TRACE_EVENT1("media", "MediaCodecVideoDecoder::OnSurfaceChosen", "overlay",
                overlay ? "yes" : "no");
 
@@ -653,18 +644,6 @@ void MediaCodecVideoDecoder::OnSurfaceDestroyed(AndroidOverlay* overlay) {
   DVLOG(2) << __func__;
   DCHECK_NE(state_, State::kInitializing);
   TRACE_EVENT0("media", "MediaCodecVideoDecoder::OnSurfaceDestroyed");
-
-  // If SetOutputSurface() is not supported we only ever observe destruction of
-  // a single overlay so this must be the one we're using. In this case it's
-  // the responsibility of our consumer to destroy us for surface transitions.
-  // TODO(liberato): This might not be true for L1 / L3, since our caller has
-  // no idea that this has happened.  We should unback the frames here.  This
-  // might work now that we have CodecImageGroup -- verify this.
-  if (!device_info_->IsSetOutputSurfaceSupported()) {
-    EnterTerminalState(State::kSurfaceDestroyed,
-                       {DecoderStatus::Codes::kFailed, "Surface destroyed"});
-    return;
-  }
 
   // Reset the target bundle if it is the one being destroyed.
   if (target_surface_bundle_ && target_surface_bundle_->overlay() == overlay)
@@ -699,7 +678,6 @@ void MediaCodecVideoDecoder::TransitionToTargetSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(SurfaceTransitionPending());
-  DCHECK(device_info_->IsSetOutputSurfaceSupported());
 
   if (!codec_->SetSurface(target_surface_bundle_)) {
     video_frame_factory_->SetSurfaceBundle(nullptr);

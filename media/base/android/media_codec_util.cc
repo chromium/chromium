@@ -232,38 +232,6 @@ bool MediaCodecUtil::IsAACEncoderAvailable() {
 }
 
 // static
-bool MediaCodecUtil::IsSurfaceViewOutputSupported() {
-  // Disable SurfaceView output for the Samsung Galaxy S3; it does not work
-  // well enough for even 360p24 H264 playback.  http://crbug.com/602870.
-  //
-  // Notably this is codec agnostic at present, so any devices added to the
-  // disabled list will avoid trying to play any codecs on SurfaceView.  If
-  // needed in the future this can be expanded to be codec specific.
-  constexpr const char* kDisabledModels[] = {// Exynos 4 (Mali-400)
-                                             "GT-I9300", "GT-I9305", "SHV-E210",
-                                             // Snapdragon S4 (Adreno-225)
-                                             "SCH-I535", "SCH-J201", "SCH-R530",
-                                             "SCH-I960", "SCH-S968", "SGH-T999",
-                                             "SGH-I747", "SGH-N064"};
-
-  std::string model(base::android::android_info::model());
-  for (auto* disabled_model : kDisabledModels) {
-    if (base::StartsWith(model, disabled_model,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// static
-bool MediaCodecUtil::IsSetOutputSurfaceSupported() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_MediaCodecUtil_isSetOutputSurfaceSupported(env);
-}
-
-// static
 std::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
     std::string_view name,
     std::optional<int> host_sdk_int) {
