@@ -22,6 +22,9 @@ source_set("banners") {
   }
 }
 
+# TODO(crbug.com/353332589): :banners and :impl can be merged once
+# c/b/ui/tabs_helpers.cc ever gets built out of //c/b/ui:ui, otherwise
+# it causes circular dependencies.
 source_set("impl") {
   sources = []
   deps = [

@@ -3624,6 +3624,8 @@ static_library("browser") {
       # c/b/net/qwac_web_contents_observer.h gets modularized.
       "//chrome/browser/android:tabs_impl",
 
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/android/resource_mapper.h gets modularized.
       "//chrome/browser/ui/android/hats:impl",
 
       # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
@@ -6152,7 +6154,8 @@ static_library("browser") {
       "//chrome/browser/ui/webui/nearby_share",
       "//chrome/browser/ui/webui/signin/ash",
 
-      # TODO(b/215757706): Find a way to avoid the circular include.
+      # TODO(crbug.com/215757706): Remove this circular dependency when
+      # c/b/profiles/profile_manager.h gets componentized.
       "//chrome/browser/ui/ash/quick_answers",
 
       # browser_interop's use of ProfileNetworkContextService causes a circular
@@ -6344,11 +6347,6 @@ static_library("browser") {
       "accessibility/caption_settings_dialog_win.cc",
       "accessibility/live_caption/live_caption_unavailability_notifier.cc",
       "accessibility/live_caption/live_caption_unavailability_notifier.h",
-      "browser_switcher/alternative_browser_driver_win.cc",
-      "browser_switcher/browser_switcher_policy_migrator.cc",
-      "browser_switcher/browser_switcher_policy_migrator.h",
-      "browser_switcher/browser_switcher_service_win.cc",
-      "browser_switcher/browser_switcher_service_win.h",
       "chrome_browser_main_win.cc",
       "chrome_browser_main_win.h",
       "component_updater/recovery_improved_component_installer_win.cc",
@@ -7161,8 +7159,19 @@ static_library("browser") {
     ]
   }
 
-  if (is_mac || is_linux) {
-    sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
+  if (is_win || is_mac || is_linux) {
+    deps += [
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/browser_switcher:impl",
+    ]
+
+    allow_circular_includes_from += [
+      # TODO(crbug.com/353332589): Remove this circular dependency when:
+      # - c/b/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h
+      # - c/b/policy/profile_policy_connector.h
+      # get componentized.
+      "//chrome/browser/browser_switcher:impl",
+    ]
   }
 
   if (enable_downgrade_processing) {
@@ -9379,6 +9388,7 @@ if (is_win || is_mac || is_linux) {
     deps = [
       ":browser",
       "//base",
+      "//chrome/browser/browser_switcher",
       "//mojo/core/embedder",
       "//services/data_decoder/public/cpp:test_support",
     ]

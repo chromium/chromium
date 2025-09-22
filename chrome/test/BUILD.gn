@@ -5801,13 +5801,14 @@ if (!is_android) {
 
     if (is_mac || is_win || is_linux) {
       sources += [
-        "../browser/browser_switcher/browser_switcher_browsertest.cc",
-        "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
         "../browser/enterprise/signin/enterprise_signin_service_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
-      deps += [ "//chrome/browser/ui/webui/signin:browser_tests" ]
+      deps += [
+        "//chrome/browser/browser_switcher:browser_tests",
+        "//chrome/browser/ui/webui/signin:browser_tests",
+      ]
     }
     if (is_linux || is_mac) {
       sources +=
@@ -10083,13 +10084,6 @@ test("unit_tests") {
   if (is_linux || is_mac || is_win) {
     sources += [
       "../browser/accessibility/soda_installer_impl_unittest.cc",
-      "../browser/browser_switcher/alternative_browser_driver_unittest.cc",
-      "../browser/browser_switcher/browser_switcher_navigation_throttle_unittest.cc",
-      "../browser/browser_switcher/browser_switcher_prefs_unittest.cc",
-      "../browser/browser_switcher/browser_switcher_sitelist_unittest.cc",
-      "../browser/browser_switcher/ieem_sitelist_parser_unittest.cc",
-      "../browser/browser_switcher/mock_alternative_browser_driver.cc",
-      "../browser/browser_switcher/mock_alternative_browser_driver.h",
       "../browser/enterprise/connectors/device_trust/attestation/browser/browser_attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/device_attester_unittest.cc",
       "../browser/enterprise/connectors/device_trust/attestation/browser/profile_attester_unittest.cc",
@@ -10127,6 +10121,8 @@ test("unit_tests") {
       "../browser/ui/webui/password_manager:mojo_bindings",
       "../browser/ui/webui/password_manager:unit_tests",
       "../browser/ui/webui/whats_new:mojo_bindings",
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/browser_switcher:unit_tests",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/user_education/webui",
     ]
