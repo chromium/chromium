@@ -363,6 +363,7 @@ targets.binaries.windowed_test_launcher(
     args = [
         "--disable-extensions",
     ],
+    module_scheme = "gtest",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -802,6 +803,7 @@ targets.binaries.script(
     label = "//build/fuchsia/test:component_storage_test",
     script = "//build/fuchsia/test/component_storage_test.py",
     skip_usage_check = True,
+    module_scheme = "single",
 )
 
 targets.binaries.windowed_test_launcher(
@@ -1961,6 +1963,7 @@ targets.binaries.script(
         "../../content/test/gpu/run_telemetry_benchmark_fuchsia.py",
         "--per-test-logs-dir",
     ],
+    module_scheme = "single",
 )
 
 targets.binaries.script(
@@ -2504,6 +2507,7 @@ targets.binaries.console_test_launcher(
 targets.binaries.generated_script(
     name = "variations_desktop_smoke_tests",
     label = "//chrome/test/variations:variations_desktop_smoke_tests",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
@@ -2879,6 +2883,7 @@ targets.binaries.generated_script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(

@@ -1610,6 +1610,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//build/fuchsia/test:component_storage_test",
+        "module_scheme": "single",
         "name": "component_storage_test",
         "resultdb": {
           "enable": true,

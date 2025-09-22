@@ -2405,6 +2405,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//testing:xvfb_py_unittests",
+        "module_scheme": "single",
         "name": "xvfb_py_unittests",
         "resultdb": {
           "enable": true
