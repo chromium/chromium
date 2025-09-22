@@ -46,6 +46,7 @@
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/update_client_metrics.h"
+#include "components/update_client/utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -428,7 +429,7 @@ class BackgroundDownloaderSharedSessionImpl {
           base::File::Info info;
           if (base::GetFileInfo(download, &info) &&
               base::Time::Now() - info.creation_time > kMaxCachedDownloadAge) {
-            base::DeleteFile(download);
+            RetryFileOperation(&base::DeleteFile, download);
           }
         });
 

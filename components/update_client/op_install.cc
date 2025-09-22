@@ -182,7 +182,11 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
            const Unpacker::Result& result) {
           base::ThreadPool::PostTaskAndReply(
               FROM_HERE, kTaskTraits,
-              base::BindOnce(IgnoreResult(&base::DeleteFile), crx_file),
+              base::BindOnce(
+                  [](const base::FilePath& crx_file) {
+                    RetryFileOperation(&base::DeleteFile, crx_file);
+                  },
+                  crx_file),
               base::BindOnce(std::move(callback), result));
         },
         crx_file, std::move(callback));

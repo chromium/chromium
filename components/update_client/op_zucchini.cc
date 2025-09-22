@@ -69,9 +69,9 @@ void VerifyAndCleanUp(
     const base::FilePath& new_file,
     const std::string& output_hash,
     int result) {
-  base::DeleteFile(patch_file);
+  RetryFileOperation(&base::DeleteFile, patch_file);
   if (result) {
-    base::DeleteFile(new_file);
+    RetryFileOperation(&base::DeleteFile, new_file);
     std::move(callback).Run(base::unexpected<CategorizedError>(
         {.category = ErrorCategory::kUnpack,
          .code = static_cast<int>(UnpackerError::kDeltaOperationFailure),
@@ -80,7 +80,7 @@ void VerifyAndCleanUp(
   }
 
   if (!VerifyFileHash256(new_file, output_hash)) {
-    base::DeleteFile(new_file);
+    RetryFileOperation(&base::DeleteFile, new_file);
     std::move(callback).Run(base::unexpected<CategorizedError>(
         {.category = ErrorCategory::kUnpack,
          .code = static_cast<int>(UnpackerError::kPatchOutHashMismatch)}));
@@ -124,7 +124,11 @@ void CacheLookupDone(
   if (!cache_result.has_value()) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&base::DeleteFile), patch_file),
+        base::BindOnce(
+            [](const base::FilePath& patch_file) {
+              RetryFileOperation(&base::DeleteFile, patch_file);
+            },
+            patch_file),
         base::BindOnce(std::move(callback),
                        base::unexpected<CategorizedError>(
                            {.category = ErrorCategory::kUnpack,

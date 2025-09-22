@@ -116,7 +116,7 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
                 &found_basenames](const base::FilePath& file_path) {
         if (!base::Contains(expected_basenames,
                             file_path.BaseName().AsUTF8Unsafe())) {
-          base::DeleteFile(file_path);
+          RetryFileOperation(&base::DeleteFile, file_path);
         } else {
           found_basenames.insert(file_path.BaseName().AsUTF8Unsafe());
         }
@@ -248,7 +248,7 @@ void CrxCacheImpl::RemoveIfNot(const std::vector<std::string>& app_ids) {
 
 void CrxCacheImpl::Remove(const std::string& hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::DeleteFile(cache_root_.AppendUTF8(hash));
+  RetryFileOperation(&base::DeleteFile, cache_root_.AppendUTF8(hash));
   metadata_->RemoveValue(base::StrCat({"hashes.", hash}), 0);
 }
 
