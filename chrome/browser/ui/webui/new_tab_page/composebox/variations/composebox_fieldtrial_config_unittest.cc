@@ -80,6 +80,11 @@ TEST_F(NtpComposeboxFieldTrialConfigTest,
             l10n_util::GetStringUTF8(IDS_NTP_COMPOSE_PLACEHOLDER_TEXT));
   EXPECT_EQ(composebox.is_pdf_upload_enabled(), true);
 
+  auto placeholder_config = composebox.placeholder_config();
+  EXPECT_EQ(placeholder_config.change_text_animation_interval_ms(), 4000u);
+  EXPECT_EQ(placeholder_config.fade_text_animation_duration_ms(), 250u);
+  EXPECT_EQ(placeholder_config.placeholders().size(), 6);
+
   histogram_tester.ExpectTotalCount(kConfigParamParseSuccessHistogram, 0);
 }
 

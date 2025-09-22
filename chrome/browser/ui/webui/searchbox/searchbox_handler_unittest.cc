@@ -261,6 +261,16 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   }
 }
 
+TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
+  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
+  handler_->GetPlaceholderConfig(future.GetCallback());
+  auto config = future.Take();
+
+  ASSERT_TRUE(config->texts.size() > 0);
+  ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 4000u);
+  ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
+}
+
 class RealboxHandlerTabsTest : public RealboxHandlerTest {
  public:
   RealboxHandlerTabsTest() = default;

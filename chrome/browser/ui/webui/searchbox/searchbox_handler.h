@@ -69,6 +69,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
+  void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
 
  protected:

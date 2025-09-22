@@ -7602,6 +7602,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_GOOGLE_LENS_SEARCH_BOX_EMPTY_HINT" desc="The text displayed in the lens searchboxes when they are empty.">
         Search
       </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Ask Google
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_PLAN" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Make a plan
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_COMPARE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Make a comparison
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Research a topic
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Teach me a new skill
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Write something new
+      </message>
       <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TOOLTIP" desc="The tooltip for adding a custom link shortcut. (On the New Tab Page)">
         Add shortcut
       </message>

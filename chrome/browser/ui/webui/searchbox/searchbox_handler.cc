@@ -896,6 +896,59 @@ void SearchboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   autocomplete_controller()->DeleteMatch(*match);
 }
 
+void SearchboxHandler::GetPlaceholderConfig(
+    GetPlaceholderConfigCallback callback) {
+  const auto placeholder_config = ntp_composebox::FeatureConfig::Get()
+                                      .config.composebox()
+                                      .placeholder_config();
+  std::vector<std::u16string> placeholders = {};
+  for (auto& text : placeholder_config.placeholders()) {
+    switch (text) {
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_ASK:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
+        break;
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_PLAN:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_PLAN));
+        break;
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_COMPARE:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_COMPARE));
+        break;
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_RESEARCH:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH));
+        break;
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_TEACH:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH));
+        break;
+      case omnibox::
+          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_WRITE:
+        placeholders.emplace_back(l10n_util::GetStringUTF16(
+            IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  searchbox::mojom::PlaceholderConfigPtr config =
+      searchbox::mojom::PlaceholderConfig::New();
+  config->texts = std::move(placeholders);
+  config->change_text_animation_interval = base::Milliseconds(
+      placeholder_config.change_text_animation_interval_ms());
+  config->fade_text_animation_duration =
+      base::Milliseconds(placeholder_config.fade_text_animation_duration_ms());
+  std::move(callback).Run(std::move(config));
+}
+
 void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
 

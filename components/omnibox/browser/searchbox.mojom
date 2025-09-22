@@ -136,6 +136,14 @@ struct OmniboxPopupSelection {
   uint8 action_index;
 };
 
+// Configuration for the cycling placeholder texts that appear on the searchbox
+// UI.
+struct PlaceholderConfig {
+  array<mojo_base.mojom.String16> texts;
+  mojo_base.mojom.TimeDelta change_text_animation_interval;
+  mojo_base.mojom.TimeDelta fade_text_animation_duration;
+};
+
 // Browser-side handler for requests from WebUI page. The web pages that embed
 // searchboxes which communicate with this interface are chrome://new-tab-page
 // and two chrome-untrusted://lens pages.
@@ -198,6 +206,10 @@ interface PageHandler {
 
   // Notifies browser that thumbnail has been removed.
   OnThumbnailRemoved();
+
+  // Returns configuration data leveraged when displaying cycling placeholder
+  // texts on the searchbox UI.
+  GetPlaceholderConfig() => (PlaceholderConfig config);
 
   // Returns information about recent tabs.
   GetRecentTabs() => (array<TabInfo> tabs);
