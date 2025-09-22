@@ -50,7 +50,13 @@ class ArcAppTest {
 
   virtual ~ArcAppTest();
 
+  // Perform initialization that's supposed to be done before profile creation.
+  void PreProfileSetUp();
+
+  // Perform initialization that's supposed to be done after profile creation.
+  // This triggers `PreProfileSetUp` if needed.
   void SetUp(Profile* profile);
+
   void TearDown();
 
   // Public methods to modify AppInstance for unit_tests.
@@ -188,6 +194,8 @@ class ArcAppTest {
   std::vector<arc::mojom::ShortcutInfo> fake_shortcuts_;
 
   bool concierge_client_initialized_ = false;
+
+  bool is_pre_profile_setup_called_ = false;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_TEST_H_

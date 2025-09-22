@@ -100,23 +100,44 @@ ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
 
 ArcAppTest::~ArcAppTest() = default;
 
-void ArcAppTest::SetUp(Profile* profile) {
+void ArcAppTest::PreProfileSetUp() {
+  is_pre_profile_setup_called_ = true;
+
+  arc::SetArcAvailableCommandLineForTesting(
+      base::CommandLine::ForCurrentProcess());
+
+  // ChromeMainDelegate::PostEarlyInitialization:
   if (!ash::ConciergeClient::Get()) {
     concierge_client_initialized_ = true;
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
-  arc::SetArcAvailableCommandLineForTesting(
-      base::CommandLine::ForCurrentProcess());
-  DCHECK(!profile_);
-  profile_ = profile;
 
+  // ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop:
   if (!session_manager::SessionManager::Get()) {
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
   }
 
-  arc::ResetArcAllowedCheckForTesting(profile_);
+  // ChromeBrowserMainPartsAsh::PreMainMessageLoopRun:
+  arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+  arc_session_manager_ =
+      arc::CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
+          base::BindRepeating(arc::FakeArcSession::Create)));
+  DCHECK(arc::ArcSessionManager::Get());
+  arc::ArcSessionManager::SetUiEnabledForTesting(false);
+}
 
+void ArcAppTest::SetUp(Profile* profile) {
+  // TODO(crbug.com/442761233): Update tests that use ArcAppTest to call
+  // PreProfileSetUp and replace this with a CHECK.
+  if (!is_pre_profile_setup_called_) {
+    PreProfileSetUp();
+  }
+
+  DCHECK(!profile_);
+  profile_ = profile;
+
+  // Set up user.
   if (fake_user_manager_.Get()) {
     const user_manager::User* user = CreateUserAndLogin();
 
@@ -127,37 +148,44 @@ void ArcAppTest::SetUp(Profile* profile) {
                                                                  profile_);
   }
 
-  // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and the
-  // ARC auth service.
-  arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
-  if (!arc_app_list_pref_) {
-    ArcAppListPrefsFactory::GetInstance()->RecreateServiceInstanceForTesting(
-        profile_);
-  }
-  arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-  arc_session_manager_ =
-      arc::CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-          base::BindRepeating(arc::FakeArcSession::Create)));
-  DCHECK(arc::ArcSessionManager::Get());
-  arc::ArcSessionManager::SetUiEnabledForTesting(false);
+  arc::ResetArcAllowedCheckForTesting(profile_);
+
+  // ArcServiceLauncher::MaybeSetProfile:
+  CHECK(arc_session_manager_);
   arc_session_manager_->SetProfile(profile_);
-  arc_session_manager_->Initialize();
-  arc_play_store_enabled_preference_handler_ =
-      std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
-          profile_, arc_session_manager_.get());
-  arc_play_store_enabled_preference_handler_->Start();
 
-  if (initialize_real_intent_helper_bridge_) {
-    arc::ArcIntentHelperBridge::GetForBrowserContextForTesting(profile_);
-    intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
-    arc_service_manager_->arc_bridge_service()->intent_helper()->SetInstance(
-        intent_helper_instance_.get());
-    WaitForInstanceReady(
-        arc_service_manager_->arc_bridge_service()->intent_helper());
+  // ArcServiceLauncher::OnPrimaryUserProfilePrepared:
+  {
+    // Create keyed-services.
+
+    // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and
+    // the ARC auth service.
+    arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
+    CHECK(arc_app_list_pref_);
+
+    if (initialize_real_intent_helper_bridge_) {
+      arc::ArcIntentHelperBridge::GetForBrowserContextForTesting(profile_);
+      intent_helper_instance_ =
+          std::make_unique<arc::FakeIntentHelperInstance>();
+      arc_service_manager_->arc_bridge_service()->intent_helper()->SetInstance(
+          intent_helper_instance_.get());
+      WaitForInstanceReady(
+          arc_service_manager_->arc_bridge_service()->intent_helper());
+    }
+
+    if (start_app_service_publisher_) {
+      // Ensure that the singleton apps::ArcApps is constructed.
+      apps::ArcAppsFactory::GetForProfile(profile_);
+    }
+
+    arc_session_manager_->Initialize();
+
+    arc_play_store_enabled_preference_handler_ =
+        std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
+            profile_, arc_session_manager_.get());
+    arc_play_store_enabled_preference_handler_->Start();
   }
 
-  arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_app_list_pref_);
   if (wait_default_apps_)
     WaitForDefaultApps();
   WaitForRemoveAllApps();
@@ -192,11 +220,6 @@ void ArcAppTest::SetUp(Profile* profile) {
       WaitForInstanceReady(
           arc_service_manager_->arc_bridge_service()->compatibility_mode());
     }
-  }
-
-  if (start_app_service_publisher_) {
-    // Ensure that the singleton apps::ArcApps is constructed.
-    apps::ArcAppsFactory::GetForProfile(profile_);
   }
 }
 
@@ -327,8 +350,6 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
 }
 
 void ArcAppTest::TearDown() {
-  if (start_app_service_publisher_)
-    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
   if (compatibility_mode_instance_) {
     compatibility_mode_instance_.reset();
   }
@@ -346,6 +367,11 @@ void ArcAppTest::TearDown() {
   if (!persist_service_manager_)
     arc_service_manager_.reset();
   arc::ResetArcAllowedCheckForTesting(profile_);
+
+  if (start_app_service_publisher_) {
+    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
+  }
+
   // ConciergeClient may be initialized from other testing utility, such as
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
   // ArcAppTest::SetUp().
@@ -355,6 +381,8 @@ void ArcAppTest::TearDown() {
   }
   profile_ = nullptr;
   session_manager_.reset();
+
+  is_pre_profile_setup_called_ = false;
 }
 
 void ArcAppTest::StopArcInstance() {
