@@ -19,7 +19,8 @@ class RoundedOmniboxResultsFrame : public views::View {
 
  public:
   RoundedOmniboxResultsFrame(views::View* contents,
-                             LocationBarView* location_bar);
+                             LocationBarView* location_bar,
+                             bool is_webui = false);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;
   RoundedOmniboxResultsFrame& operator=(const RoundedOmniboxResultsFrame&) =
       delete;
@@ -47,9 +48,12 @@ class RoundedOmniboxResultsFrame : public views::View {
 #endif  // !USE_AURA
 
  private:
+  gfx::Insets GetContentInsets();
+
   raw_ptr<views::View> top_background_ = nullptr;
   raw_ptr<views::View> contents_host_ = nullptr;
   raw_ptr<views::View> contents_;
+  bool is_webui_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

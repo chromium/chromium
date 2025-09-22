@@ -64,8 +64,8 @@ void OmniboxPopupPresenter::Show() {
 
     widget_->ShowInactive();
 
-    widget_->SetContentsView(
-        std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
+    widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
+        this, location_bar_view_, /*is_webui=*/true));
     widget_->AddObserver(this);
   }
   RealboxHandler* handler = GetHandler();
