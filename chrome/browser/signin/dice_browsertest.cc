@@ -25,6 +25,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
@@ -1832,6 +1833,153 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
   // Should still count as an explicit sign in since the choice was explicit
   // set.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
+class DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos
+    : public DiceBrowserTestWithExplicitSignin {
+ public:
+  DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos() {
+    scoped_feature_list_with_set_disabled.InitWithFeatures(
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{switches::kBrowserSigninInSyncHeaderOnGaiaIntegration});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_with_set_disabled;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos,
+    SigninWhenAccountAllowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
+
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+  SimulateWebSigninMainAccount();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      true);
+  EXPECT_EQ(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
+      false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithLegacyGaiaAndReplaceSyncPromosWithSignInPromos,
+    SigninDisallowedWhenAccountNotAllowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");
+
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+  SimulateWebSigninMainAccount();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      false);
+  EXPECT_EQ(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
+      true);
+}
+
+class DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos
+    : public DiceBrowserTestWithExplicitSignin {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    AutoSigninWhenAccountAllowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
+
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+  SimulateWebSigninMainAccount();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      true);
+  // In auto signin, we don't show a modal, just fail silently
+  EXPECT_EQ(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
+      false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    SigninDisallowedWithSilentFailureWhenAccountNotAllowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");
+
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+  SimulateWebSigninMainAccount();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      false);
+  // In auto signin, we don't show a modal, just fail silently
+  EXPECT_EQ(
+      browser()->GetFeatures().signin_view_controller()->ShowsModalDialog(),
+      false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    SetPrimaryAccountAfterEnableSyncWhenAccountAllowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@gmail.com");
+
+  // Signin using the Chrome Sync endpoint.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSettings;
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
+
+  SendRefreshTokenResponse();
+  SendEnableSyncResponse();
+  WaitForSigninSucceeded();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      true);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos,
+    NoPrimaryAccountChangeAfterEnableSyncWhenAccountDisallowedByPattern) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGoogleServicesUsernamePattern, ".*@restricted.com");
+
+  // Signin using the Chrome Sync endpoint.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSettings;
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
+
+  // Receive token.
+  SendRefreshTokenResponse();
+
+  base::test::TestFuture<Profile*, content::WebContents*, const SigninUIError&>
+      show_signin_error_future;
+  DiceTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->UpdateSigninErrorCallback(
+          show_signin_error_future.GetRepeatingCallback());
+
+  // Receive ENABLE_SYNC.
+  SendEnableSyncResponse();
+
+  std::ignore = show_signin_error_future.Wait();
+
+  EXPECT_EQ(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+      false);
 }
 
 class DiceBrowserTestWithAutoAcceptFlag

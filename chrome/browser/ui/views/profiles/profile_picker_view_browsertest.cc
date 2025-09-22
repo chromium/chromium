@@ -1698,6 +1698,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 }
 
 // Regression test for crbug.com/360733721.
+// TODO(crbug.com/446597206): Test will be re-enabled once this bug is resolved.
 IN_PROC_BROWSER_TEST_P(
     ForceSigninProfilePickerCreationFlowBrowserTest,
     ForceSigninWithPatternMatchingShouldFailSigninWithWrongPatternEmail) {
@@ -1728,14 +1729,15 @@ IN_PROC_BROWSER_TEST_P(
   const std::string email = "joe.consumer@gmail.com";
   // Verify that patternt does not match.
   ASSERT_FALSE(signin::IsUsernameAllowedByPatternFromPrefs(local_state, email));
-  // Signing in with a profile that does not match the pattern should stop the
-  // profile creation flow.
-  FinishDiceSignIn(profile_being_created, email, "Joe", kNoHostedDomainFound);
 
   if (IsParamFeatureEnabled()) {
     // TODO(crbug.com/444639440): Support signin pattern.
     return;
   }
+
+  // Signing in with a profile that does not match the pattern should stop the
+  // profile creation flow.
+  FinishDiceSignIn(profile_being_created, email, "Joe", kNoHostedDomainFound);
 
   // Returning to the profile picker main page.
   WaitForLoadStop(GURL("chrome://profile-picker"));

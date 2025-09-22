@@ -19,6 +19,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -64,77 +65,6 @@ void RecordLegacyGaiaIntegrationStageMetrics(bool should_auto_sign_in,
   base::UmaHistogramEnumeration(
       "Signin.SigninManager.SetPrimaryAccountSigninInStage",
       PrimaryAccountSettingGaiaIntegrationState::kOnTokenExchangeSuccess);
-}
-
-// Should Sign in to Chrome for all access points when Uno is enabled. Except
-// for Web Signin where we first check the user choice first on whether to
-// automatically sign in or not.
-// TODO(crbug.com/425645725): Rename using a more appropriate name once the
-// signin to browser is cleaned-up.
-void AttemptChromeSignin(CoreAccountId account_id,
-                         Profile& profile,
-                         signin_metrics::AccessPoint access_point) {
-  CHECK(!account_id.empty());
-
-  // Do not sign in if the access point is unknown.
-  if (access_point == signin_metrics::AccessPoint::kUnknown) {
-    return;
-  }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile);
-  bool should_auto_sign_in = false;
-  if (access_point == signin_metrics::AccessPoint::kWebSignin) {
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-
-    // When automation is enabled, automatically promote web sign in to Chrome
-    // sign in.
-    const bool auto_accept_signin =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kBrowserSigninAutoAccept);
-
-    // If the user did not choose the signin choice, do not proceed with a
-    // sign in from a Web Signin.
-    should_auto_sign_in =
-        auto_accept_signin ||
-        SigninPrefs(*profile.GetPrefs())
-                .GetChromeSigninInterceptionUserChoice(account_info.gaia) ==
-            ChromeSigninUserChoice::kSignin;
-    if (!should_auto_sign_in) {
-      return;
-    }
-
-    // Proceed with the access point as the choice remembered.
-    access_point = signin_metrics::AccessPoint::kSigninChoiceRemembered;
-  }
-
-  // This access point should only be used as a result of a non Uno flow.
-  CHECK_NE(signin_metrics::AccessPoint::kDesktopSigninManager, access_point);
-
-  bool has_primary_account =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  if (base::FeatureList::IsEnabled(
-          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
-    if (should_auto_sign_in && !has_primary_account) {
-      // Sign-in the user in the browser.
-      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_id, signin::ConsentLevel::kSignin, access_point);
-    }
-    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
-                                            has_primary_account);
-    return;
-  }
-  // Legacy Gaia flow integration.
-  if (!has_primary_account) {
-    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
-                                  access_point);
-    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-        account_id, signin::ConsentLevel::kSignin, access_point);
-
-    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
-                                            has_primary_account);
-  }
 }
 
 void RetryInterceptionBubble(base::WeakPtr<content::WebContents> web_contents,
@@ -281,10 +211,100 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
   return true;
 }
 
+bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
+    const CoreAccountInfo& account_info,
+    bool show_signin_error) {
+  const SigninUIError error = CanOfferSignin(
+      &profile_.get(), account_info.gaia, account_info.email,
+      /*allow_account_from_other_profile=*/true);
+  if (error.IsOk() ||
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(&profile_.get());
+    identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        account_info.account_id, signin::ConsentLevel::kSignin, access_point_);
+    return true;
+  }
+
+  if (show_signin_error) {
+    CHECK(show_signin_error_callback_);
+    std::move(show_signin_error_callback_)
+        .Run(&profile_.get(), web_contents_.get(), error);
+  }
+  return false;
+}
+
+// Should Sign in to Chrome for all access points when Uno is enabled. Except
+// for Web Signin where we first check the user choice first on whether to
+// automatically sign in or not.
+// TODO(crbug.com/425645725): Rename using a more appropriate name once the
+// signin to browser is cleaned-up.
+void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
+    CoreAccountId account_id) {
+  CHECK(!account_id.empty());
+
+  // Do not sign in if the access point is unknown.
+  if (access_point_ == signin_metrics::AccessPoint::kUnknown) {
+    return;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile_.get());
+  bool should_auto_sign_in = false;
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  if (access_point_ == signin_metrics::AccessPoint::kWebSignin) {
+    // When automation is enabled, automatically promote web sign in to Chrome
+    // sign in.
+    const bool auto_accept_signin =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kBrowserSigninAutoAccept);
+
+    // If the user did not choose the signin choice, do not proceed with a
+    // sign in from a Web Signin.
+    should_auto_sign_in =
+        auto_accept_signin ||
+        SigninPrefs(*profile_.get().GetPrefs())
+                .GetChromeSigninInterceptionUserChoice(account_info.gaia) ==
+            ChromeSigninUserChoice::kSignin;
+    if (!should_auto_sign_in) {
+      return;
+    }
+
+    // Proceed with the access point as the choice remembered.
+    access_point_ = signin_metrics::AccessPoint::kSigninChoiceRemembered;
+  }
+
+  // This access point should only be used as a result of a non Uno flow.
+  CHECK_NE(signin_metrics::AccessPoint::kDesktopSigninManager, access_point_);
+
+  const bool has_primary_account =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  if (base::FeatureList::IsEnabled(
+          switches::kBrowserSigninInSyncHeaderOnGaiaIntegration)) {
+    if (should_auto_sign_in && !has_primary_account) {
+      // Sign-in the user in the browser if user can sign. If not, we fail
+      // silently as the signin attempt was not an explicit user action.
+      AttemptSettingPrimaryAccount(account_info, /*show_signin_error=*/false);
+    }
+    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
+                                            has_primary_account);
+    return;
+  }
+  // Legacy Gaia flow integration.
+  if (!has_primary_account) {
+    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                  access_point_);
+    AttemptSettingPrimaryAccount(account_info);
+    RecordLegacyGaiaIntegrationStageMetrics(should_auto_sign_in,
+                                            has_primary_account);
+  }
+}
+
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
     CoreAccountId account_id,
     bool is_new_account) {
-  AttemptChromeSignin(account_id, profile_.get(), access_point_);
+  AttemptChromeSignin(account_id);
 
   // is_sync_signin_tab_ tells whether the current signin is happening in a tab
   // that was opened from a "Enable Sync" Chrome UI. Usually this is indeed a
@@ -319,12 +339,11 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
     if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
                                     access_point_);
-      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account_info.account_id, signin::ConsentLevel::kSignin,
-          access_point_);
-
-      // Record an entry marks the place where the user is signed-in in the new
-      // Gaia integration flow.
+      if (!AttemptSettingPrimaryAccount(account_info)) {
+        return;
+      }
+      // Record an entry marks the place where the user is signed-in in the
+      // new Gaia integration flow.
       base::UmaHistogramEnumeration(
           "Signin.SigninManager.SetPrimaryAccountSigninInStage",
           PrimaryAccountSettingGaiaIntegrationState::kOnSyncHeaderReceived);
@@ -377,6 +396,7 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
 
   // Show the error even if the WebContents was closed, because the user may be
   // signed out of the web.
+  CHECK(show_signin_error_callback_);
   std::move(show_signin_error_callback_)
       .Run(&profile_.get(), web_contents,
            SigninUIError::FromGoogleServiceAuthError(email, error));
