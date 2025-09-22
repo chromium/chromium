@@ -521,10 +521,11 @@ void NativeWidgetNSWindowBridge::InitWindow(
   is_translucent_window_ = params->is_translucent;
   pending_restoration_data_ = params->state_restoration_data;
 
-  if (params->is_headless_mode_window)
+  if (display::Screen::Get()->IsHeadless()) {
     headless_mode_window_ = std::make_optional<HeadlessModeWindow>();
+  }
 
-  [window_ setIsHeadless:params->is_headless_mode_window];
+  [window_ setIsHeadless:headless_mode_window_.has_value()];
 
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is

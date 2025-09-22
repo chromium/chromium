@@ -455,7 +455,6 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   if (!is_tooltip) {
     tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
   }
-  is_headless_mode_window_ = display::Screen::Get()->IsHeadless();
 
   if (params.workspace.length()) {
     std::string restoration_data;
@@ -473,7 +472,6 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->modal_type = widget->widget_delegate()->GetModalType();
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
-    window_params->is_headless_mode_window = is_headless_mode_window_;
     window_params->is_tooltip = is_tooltip;
 
     // macOS likes to put shadows on most things. However, frameless windows
@@ -656,7 +654,7 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   // frames for screenshooting and screencasting.
   UpdateCompositorProperties();
   layer()->SetVisible(is_visible_);
-  if (is_visible_ || is_headless_mode_window_) {
+  if (is_visible_ || display::Screen::Get()->IsHeadless()) {
     compositor_->Unsuspend();
   }
 
