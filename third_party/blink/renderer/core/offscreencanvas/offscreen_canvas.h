@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
