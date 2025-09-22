@@ -225,6 +225,8 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
   if (GetString(dict, schema_constants::kToolbarPin, &toolbar_pin_str)) {
     if (toolbar_pin_str == schema_constants::kDefaultUnpinned) {
       toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
+    } else if (toolbar_pin_str == schema_constants::kDefaultPinned) {
+      toolbar_pin = ManagedToolbarPinMode::kDefaultPinned;
     } else if (toolbar_pin_str == schema_constants::kForcePinned) {
       toolbar_pin = ManagedToolbarPinMode::kForcePinned;
     } else {
@@ -250,6 +252,7 @@ void IndividualSettings::Reset() {
   policy_blocked_hosts.ClearPatterns();
   policy_allowed_hosts.ClearPatterns();
   blocked_install_message.clear();
+  toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
 }
 
 GlobalSettings::GlobalSettings() = default;

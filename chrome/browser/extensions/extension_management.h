@@ -37,6 +37,7 @@ class BrowserContext;
 
 namespace extensions {
 
+enum class ManagedToolbarPinMode;
 namespace internal {
 
 struct IndividualSettings;
@@ -234,6 +235,10 @@ class ExtensionManagement : public KeyedService {
 
   // Returns if an extension with `id` can navigate to file URLs.
   bool IsFileUrlNavigationAllowed(const ExtensionId& id);
+
+  // Returns the toolbar pin mode for `extension_id`.
+  extensions::ManagedToolbarPinMode GetToolbarPinMode(
+      const ExtensionId& extension_id);
 
  private:
   using SettingsIdMap =

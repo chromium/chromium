@@ -11,11 +11,13 @@ namespace extensions {
 // menu, default is kDefaultUnpinned.
 // * kDefaultUnpinned: Extension starts unpinned, but the user can still pin
 //                     it afterwards.
+// * kDefaultPinned: Extension starts pinned, but the user can still unpin it
+//                   afterwards.
 // * kForcePinned: Extension starts pinned to the toolbar, and the user
 //                 cannot unpin it.
-// TODO(crbug.com/40126725): Add kDefaultPinned state.
 enum class ManagedToolbarPinMode {
   kDefaultUnpinned = 0,
+  kDefaultPinned,
   kForcePinned,
 };
 

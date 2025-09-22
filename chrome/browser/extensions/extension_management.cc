@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
@@ -624,6 +625,15 @@ ExtensionIdSet ExtensionManagement::GetForcePinnedList() const {
 bool ExtensionManagement::IsFileUrlNavigationAllowed(const ExtensionId& id) {
   auto* setting = GetSettingsForId(id);
   return setting && setting->file_url_navigation_allowed;
+}
+
+extensions::ManagedToolbarPinMode ExtensionManagement::GetToolbarPinMode(
+    const ExtensionId& extension_id) {
+  auto* setting = GetSettingsForId(extension_id);
+  if (setting) {
+    return setting->toolbar_pin;
+  }
+  return extensions::ManagedToolbarPinMode::kDefaultUnpinned;
 }
 
 bool ExtensionManagement::CheckMinimumVersion(const Extension* extension,

@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -558,13 +559,12 @@ TEST_F(ToolbarActionsModelUnitTest,
 TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   Init();
 
-  static constexpr char kManifest[] =
-      "{"
-      "  \"name\": \"%s\","
-      "  \"version\": \"1.0\","
-      "  \"manifest_version\": 2,"
-      "  \"browser_action\": {}"
-      "}";
+  static constexpr char kManifest[] = R"({
+    "name": "%s",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {}
+  })";
 
   // For this test, we need to have "real" extension files, because we need to
   // be able to reload them during the incognito process. Since the toolbar
@@ -1105,6 +1105,72 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
               testing::ElementsAre(id_b, id_c, id_a));
   EXPECT_THAT(toolbar_model()->pinned_action_ids(),
               testing::ElementsAre(id_b, id_c, id_a, extension_id));
+}
+
+TEST_F(ToolbarActionsModelUnitTest, DefaultPinnedByPolicy) {
+  Init();
+
+  extensions::TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {}
+  })");
+
+  base::FilePath path_for_id = base::MakeAbsoluteFilePath(dir.UnpackedPath());
+  std::string extension_id = crx_file::id_util::GenerateIdForPath(path_for_id);
+
+  // Set the extension to default-pin via enterprise policy.
+  std::string json = base::StringPrintf(
+      R"({
+        "%s": {
+          "toolbar_pin": "default_pinned"
+        }
+      })",
+      extension_id.c_str());
+  auto parsed = base::JSONReader::Read(json);
+  ASSERT_TRUE(parsed);
+  policy::PolicyMap map;
+  map.Set("ExtensionSettings", policy::POLICY_LEVEL_MANDATORY,
+          policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+          std::move(*parsed), nullptr);
+  policy_provider()->UpdateChromePolicy(map);
+  base::RunLoop().RunUntilIdle();
+
+  // On first install, the extension should be pinned by policy.
+  {
+    extensions::TestExtensionRegistryObserver observer(registry(),
+                                                       extension_id);
+    extensions::UnpackedInstaller::Create(profile())->Load(dir.UnpackedPath());
+    observer.WaitForExtensionLoaded();
+  }
+
+  const extensions::Extension* extension =
+      registry()->enabled_extensions().GetByID(extension_id);
+  ASSERT_TRUE(extension);
+
+  EXPECT_TRUE(toolbar_model()->IsActionPinned(extension->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension->id()));
+
+  // Now, the user unpins the extension.
+  toolbar_model()->SetActionVisibility(extension->id(), false);
+  EXPECT_FALSE(toolbar_model()->IsActionPinned(extension->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
+
+  // Reload the extension to ensure the state is preserved and not re-pinned.
+  {
+    extensions::TestExtensionRegistryObserver observer(registry(),
+                                                       extension_id);
+    registrar()->DisableExtension(
+        extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
+    registrar()->EnableExtension(extension_id);
+    observer.WaitForExtensionLoaded();
+  }
+
+  EXPECT_FALSE(toolbar_model()->IsActionPinned(extension->id()));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
 }
 
 // Tests that the pin state (and position) for extensions that are unloaded

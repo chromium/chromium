@@ -172,10 +172,11 @@ class ExtensionManagementServiceTest : public testing::Test {
   void SetPref(bool managed,
                const char* path,
                std::unique_ptr<base::Value> value) {
-    if (managed)
+    if (managed) {
       pref_service_->SetManagedPref(path, std::move(value));
-    else
+    } else {
       pref_service_->SetUserPref(path, std::move(value));
+    }
   }
 
   void SetPref(bool managed, const char* path, base::Value value) {
@@ -187,10 +188,11 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
   void RemovePref(bool managed, const char* path) {
-    if (managed)
+    if (managed) {
       pref_service_->RemoveManagedPref(path);
-    else
+    } else {
       pref_service_->RemoveUserPref(path);
+    }
   }
 
   const internal::GlobalSettings* ReadGlobalSettings() {
@@ -368,6 +370,10 @@ class ExtensionManagementServiceTest : public testing::Test {
     return extension_management_->IsFileUrlNavigationAllowed(extension_id);
   }
 
+  extensions::ManagedToolbarPinMode GetToolbarPinMode(const ExtensionId& id) {
+    return extension_management_->GetToolbarPinMode(id);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -451,9 +457,10 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 bool ExtensionAdminPolicyTest::BlocklistedByDefault(
     const base::Value::List* blocklist) {
   SetUpPolicyProvider();
-  if (blocklist)
+  if (blocklist) {
     SetPref(true, pref_names::kInstallDenyList,
             base::Value(blocklist->Clone()));
+  }
   return extension_management_->BlocklistedByDefault();
 }
 
@@ -464,15 +471,18 @@ bool ExtensionAdminPolicyTest::UserMayLoad(
     const Extension* extension,
     std::u16string* error) {
   SetUpPolicyProvider();
-  if (blocklist)
+  if (blocklist) {
     SetPref(true, pref_names::kInstallDenyList,
             base::Value(blocklist->Clone()));
-  if (allowlist)
+  }
+  if (allowlist) {
     SetPref(true, pref_names::kInstallAllowList,
             base::Value(allowlist->Clone()));
-  if (allowed_types)
+  }
+  if (allowed_types) {
     SetPref(true, pref_names::kAllowedTypes,
             base::Value(allowed_types->Clone()));
+  }
   return provider_->UserMayLoad(extension, error);
 }
 
@@ -706,8 +716,9 @@ TEST_F(ExtensionManagementServiceTest, HostsMaximumExceeded) {
       "}";
 
   std::string urls;
-  for (size_t i = 0; i < 200; ++i)
+  for (size_t i = 0; i < 200; ++i) {
     urls.append("\"*://example" + base::NumberToString(i) + ".com\",");
+  }
 
   std::string policy =
       base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
@@ -1094,8 +1105,8 @@ TEST_F(ExtensionManagementServiceTest, NewInstallForcelist) {
   // Set the new dictionary preference.
   {
     PrefUpdater updater(pref_service_.get());
-    updater.SetIndividualExtensionAutoInstalled(
-        kTargetExtension, kExampleUpdateUrl, true);
+    updater.SetIndividualExtensionAutoInstalled(kTargetExtension,
+                                                kExampleUpdateUrl, true);
   }
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ManagedInstallationMode::kForced);
@@ -1111,7 +1122,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
   // Constant name indicates the installation_mode of extensions in example
   // preference.
   const char* allowed = kTargetExtension;
-  const char* forced  = kTargetExtension2;
+  const char* forced = kTargetExtension2;
   const char* recommended = kTargetExtension3;
   const char* blocked = kTargetExtension4;
   const char* removed = kTargetExtension9;
@@ -1451,6 +1462,56 @@ TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
       kTargetExtension));
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension), true);
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
+}
+
+TEST_F(ExtensionManagementServiceTest, ToolbarPinModeParsing) {
+  const char kToolbarPinPref[] = R"(
+{
+  "%s": {
+    "toolbar_pin": "%s"
+  },
+  "%s": {
+    "toolbar_pin": "%s"
+  },
+  "%s": {
+    "toolbar_pin": "%s"
+  }
+})";
+
+  // Test valid values.
+  SetExampleDictPref(base::StringPrintf(
+      kToolbarPinPref, kTargetExtension, "default_unpinned", kTargetExtension2,
+      "default_pinned", kTargetExtension3, "force_pinned"));
+
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension),
+            extensions::ManagedToolbarPinMode::kDefaultUnpinned);
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension2),
+            extensions::ManagedToolbarPinMode::kDefaultPinned);
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension3),
+            extensions::ManagedToolbarPinMode::kForcePinned);
+
+  // Test with no value set, should default to kDefaultUnpinned.
+  SetExampleDictPref(base::StringPrintf(R"({
+    "%s": {}
+  })",
+                                        kTargetExtension5));
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension5),
+            extensions::ManagedToolbarPinMode::kDefaultUnpinned);
+}
+
+TEST_F(ExtensionManagementServiceTest, ToolbarPinModeParsingFailsForInvalid) {
+  // An invalid value for `toolbar_pin` should fail to parse.
+  SetExampleDictPref(base::StringPrintf(R"({
+    "%s": {
+      "toolbar_pin": "invalid_value",
+      "installation_mode": "blocked"
+    }
+  })",
+                                        kTargetExtension));
+  // Because parsing failed, the installation_mode was not applied, therefore
+  // it should fall back to the default (kAllowed).
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ManagedInstallationMode::kAllowed);
 }
 
 TEST_F(ExtensionManagementServiceTest, IsAllowedByUnpackedDeveloperModePolicy) {

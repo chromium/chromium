@@ -100,6 +100,7 @@ schema:
           enum:
           - force_pinned
           - default_unpinned
+          - default_pinned
           type: string
         update_url:
           type: string

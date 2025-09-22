@@ -7,10 +7,12 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 
@@ -45,8 +47,9 @@ extern const char kMinimumVersionRequired[];
 extern const char kUpdateUrlPrefix[];
 
 extern const char kToolbarPin[];
-extern const char kForcePinned[];
-extern const char kDefaultUnpinned[];
+inline constexpr char kForcePinned[] = "force_pinned";
+inline constexpr char kDefaultPinned[] = "default_pinned";
+inline constexpr char kDefaultUnpinned[] = "default_unpinned";
 
 extern const char kFileUrlNavigationAllowed[];
 
@@ -65,9 +68,9 @@ inline constexpr auto kAllowedTypesMap =
         {"chromeos_system_extension", Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION},
     });
 
-// Helper function over `kAllowedTypesMap`, returns Manifest::TYPE_UNKNOWN if
-// not found.
-Manifest::Type GetManifestType(const std::string& name);
+// Return the `Manifest::Type` for `name`, or `Manifest::TYPE_UNKNOWN` if
+// invalid.
+Manifest::Type GetManifestType(std::string_view name);
 
 }  // namespace schema_constants
 }  // namespace extensions
