@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_LINKED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ISSUER_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
@@ -532,6 +533,7 @@ class TouchToFillPaymentMethodViewBinder {
 
     static void bindBnplIssuerItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView issuerName = view.findViewById(R.id.bnpl_issuer_name);
+        TextView linkedStatusPill = view.findViewById(R.id.bnpl_issuer_linked_status_pill);
         ImageView issuerIcon = view.findViewById(R.id.bnpl_issuer_icon);
         // TODO(crbug.com/430575808): Handle `ISSUER_SELECTION_TEXT` property
         // keys once we get this value from the native side.
@@ -542,6 +544,8 @@ class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == ISSUER_ICON_ID) {
             issuerIcon.setImageDrawable(
                     AppCompatResources.getDrawable(view.getContext(), model.get(ISSUER_ICON_ID)));
+        } else if (propertyKey == ISSUER_LINKED) {
+            linkedStatusPill.setVisibility(model.get(ISSUER_LINKED) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == ON_ISSUER_CLICK_ACTION) {
             view.setOnClickListener(v -> model.get(ON_ISSUER_CLICK_ACTION).run());
         } else {

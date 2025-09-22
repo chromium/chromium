@@ -377,8 +377,36 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* shouldDisplayTermsAvailable= */ false,
                     /* guid= */ "",
                     /* isLocalPaymentsMethod= */ false);
-    private static final BnplIssuer BNPL_ISSUER_AFFIRM =
-            new BnplIssuer(/* displayName= */ "Affirm", /* iconId= */ R.drawable.affirm_linked);
+    private static final BnplIssuer BNPL_ISSUER_AFFIRM_LINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Affirm",
+                    /* iconId= */ R.drawable.affirm_linked,
+                    /* isLinked= */ true);
+    private static final BnplIssuer BNPL_ISSUER_AFFIRM_UNLINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Affirm",
+                    /* iconId= */ R.drawable.affirm_unlinked,
+                    /* isLinked= */ false);
+    private static final BnplIssuer BNPL_ISSUER_KLARNA_LINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Klarna",
+                    /* iconId= */ R.drawable.klarna_linked,
+                    /* isLinked= */ true);
+    private static final BnplIssuer BNPL_ISSUER_KLARNA_UNLINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Klarna",
+                    /* iconId= */ R.drawable.klarna_unlinked,
+                    /* isLinked= */ false);
+    private static final BnplIssuer BNPL_ISSUER_ZIP_LINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Zip",
+                    /* iconId= */ R.drawable.zip_linked,
+                    /* isLinked= */ true);
+    private static final BnplIssuer BNPL_ISSUER_ZIP_UNLINKED =
+            new BnplIssuer(
+                    /* displayName= */ "Zip",
+                    /* iconId= */ R.drawable.zip_unlinked,
+                    /* isLinked= */ false);
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -699,15 +727,40 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testShowsBnplIssuerSelectionScreen() throws IOException {
+    public void testShowsBnplIssuerSelectionScreenWithLinkedIssuers() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showBnplIssuers(List.of(BNPL_ISSUER_AFFIRM));
+                    mCoordinator.showBnplIssuers(
+                            List.of(
+                                    BNPL_ISSUER_AFFIRM_LINKED,
+                                    BNPL_ISSUER_KLARNA_LINKED,
+                                    BNPL_ISSUER_ZIP_LINKED));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
-        mRenderTestRule.render(bottomSheetView, "touch_to_fill_bnpl_issuer_selection_screen");
+        mRenderTestRule.render(
+                bottomSheetView, "touch_to_fill_bnpl_issuer_selection_screen_with_linked_issuers");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsBnplIssuerSelectionScreenWithUnlinkedIssuers() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showBnplIssuers(
+                            List.of(
+                                    BNPL_ISSUER_AFFIRM_UNLINKED,
+                                    BNPL_ISSUER_KLARNA_UNLINKED,
+                                    BNPL_ISSUER_ZIP_UNLINKED));
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(
+                bottomSheetView,
+                "touch_to_fill_bnpl_issuer_selection_screen_with_unlinked_issuers");
     }
 
     @Test

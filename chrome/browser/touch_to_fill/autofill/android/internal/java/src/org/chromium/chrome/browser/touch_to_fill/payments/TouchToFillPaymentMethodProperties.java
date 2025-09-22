@@ -274,11 +274,13 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("issuer_name");
         static final PropertyModel.ReadableIntPropertyKey ISSUER_ICON_ID =
                 new PropertyModel.ReadableIntPropertyKey("issuer_icon_id");
+        static final PropertyModel.ReadableBooleanPropertyKey ISSUER_LINKED =
+                new PropertyModel.ReadableBooleanPropertyKey("issuer_linked");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_ISSUER_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_issuer_click_action");
 
         static final PropertyKey[] NON_TRANSFORMING_BNPL_ISSUER_SUGGESTION_KEYS = {
-            ISSUER_NAME, ISSUER_ICON_ID, ON_ISSUER_CLICK_ACTION
+            ISSUER_NAME, ISSUER_ICON_ID, ISSUER_LINKED, ON_ISSUER_CLICK_ACTION
         };
 
         private BnplIssuerProperties() {}

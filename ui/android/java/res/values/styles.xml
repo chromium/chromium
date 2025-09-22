@@ -123,6 +123,11 @@ found in the LICENSE file.
         <item name="leading">@dimen/text_size_small_leading</item>
     </style>
 
+    <style name="TextAppearance.TextXsmall">
+        <item name="android:textSize">@dimen/text_size_xsmall</item>
+        <item name="leading">@dimen/text_size_xsmall_leading</item>
+    </style>
+
     <!-- Non Adaptive Text Styles -->
     <!--  Light version  -->
     <style name="TextAppearance.Headline.Primary.Baseline.Light" tools:ignore="UnusedResources">
@@ -351,6 +356,11 @@ found in the LICENSE file.
     <!-- Toast UI -->
     <style name="TextAppearance.Toast" parent="TextAppearance.TextSmall">
         <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+
+    <!-- Pill UI -->
+    <style name="TextAppearance.Pill" parent="TextAppearance.TextXsmall">
+        <item name="android:textColor">@color/baseline_primary_10</item>
     </style>
 
     <!-- Dividers -->

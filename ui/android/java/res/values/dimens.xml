@@ -11,6 +11,7 @@ found in the LICENSE file.
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="text_size_medium">14sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_xsmall">11sp</dimen>
 
     <dimen name="text_size_large_desktop">14sp</dimen>
 
@@ -19,6 +20,7 @@ found in the LICENSE file.
     <dimen name="text_size_large_leading" tools:ignore="UnusedResources">24sp</dimen>
     <dimen name="text_size_medium_leading" tools:ignore="UnusedResources">20sp</dimen>
     <dimen name="text_size_small_leading" tools:ignore="UnusedResources">16sp</dimen>
+    <dimen name="text_size_xsmall_leading" tools:ignore="UnusedResources">13sp</dimen>
 
     <dimen name="text_size_large_leading_desktop" tools:ignore="UnusedResources">20sp</dimen>
 

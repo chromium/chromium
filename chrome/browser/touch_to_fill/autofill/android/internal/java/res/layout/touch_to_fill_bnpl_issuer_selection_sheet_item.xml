@@ -32,4 +32,24 @@ found in the LICENSE file.
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:ellipsize="end"/>
+
+    <!-- This Space view is used to push the linked status pill to the end of the
+         LinearLayout in both LTR and RTL layouts. By giving it a layout_weight
+         of 1, it will expand to fill all the available horizontal space. -->
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/bnpl_issuer_linked_status_pill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/touch_to_fill_bnpl_issuer_linked_background"
+        android:text="@string/autofill_card_bnpl_linked_issuer_pill_label"
+        android:textAppearance="@style/TextAppearance.Pill"
+        android:paddingHorizontal="@dimen/bnpl_issuer_linked_status_pill_padding_horizontal"
+        android:paddingVertical="@dimen/bnpl_issuer_linked_status_pill_padding_vertical"
+        android:visibility="gone"/>
 </LinearLayout>
