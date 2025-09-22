@@ -713,9 +713,21 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
   // Search child widgets first, since they're on top in the z-order.
   for (Widget* child_widget : GetChildWidgets().child_widgets) {
     View* child_root_view = child_widget->GetRootView();
-    View::ConvertPointFromScreen(child_root_view, &point);
-    if (child_root_view->HitTestPoint(point)) {
-      return child_root_view->GetNativeViewAccessible();
+    if (features::IsAccessibilityHitTestPointCopyEnabled()) {
+      // Use a per-iteration copy; don't mutate `point` so later iterations and
+      // the view() hit test use the original ScreenToDIPPoint result.
+      gfx::Point point_for_child = point;
+      View::ConvertPointFromScreen(child_root_view, &point_for_child);
+      if (child_root_view->HitTestPoint(point_for_child)) {
+        return child_root_view->GetNativeViewAccessible();
+      }
+    } else {
+      // Legacy path (pre-fix to https://crbug.com/440293932):
+      // ConvertPointFromScreen mutates shared point.
+      View::ConvertPointFromScreen(child_root_view, &point);
+      if (child_root_view->HitTestPoint(point)) {
+        return child_root_view->GetNativeViewAccessible();
+      }
     }
   }
 
