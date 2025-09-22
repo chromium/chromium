@@ -1135,13 +1135,8 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testJournal) {
   ExecuteJsTest();
 }
 
-// TODO(crbug.com/438812885): This is flaky on MSAN.
-#if defined(SLOW_BINARY)
-#define MAYBE_testMetrics DISABLED_testMetrics
-#else
-#define MAYBE_testMetrics testMetrics
-#endif
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, MAYBE_testMetrics) {
+// TODO(crbug.com/438812885): This is flaky.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kGlicClosedCaptioningEnabled, true);
 
