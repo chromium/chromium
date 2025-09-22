@@ -1402,9 +1402,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_SEARCH_TABS" desc="The text label of the Search Tabs... menu item">
           Search tabs...
           </message>
-          <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
-            C&amp;ustomize your Chrome
-          </message>
           <message name="IDS_CLOSE_PROFILE" desc="The text label of the Close profile menu item with one or more windows currently opened [ICU Syntax]">
             {NUM_PROFILES, plural, =1 {&amp;Close this profile} other {&amp;Close this profile (# windows)}}
           </message>
@@ -1552,9 +1549,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_SEARCH_TABS" desc="In Title Case:The text label of the Search Tabs... menu item">
           Search Tabs...
-          </message>
-          <message name="IDS_CUSTOMIZE_CHROME" desc="In Title Case: The text label of the Customize Chrome menu item">
-            C&amp;ustomize Your Chrome
           </message>
           <message name="IDS_CLOSE_PROFILE" desc="In Title Case: The text label of the Close profile menu item with one or more windows currently opened [ICU Syntax]">
             {NUM_PROFILES, plural, =1 {&amp;Close This Profile} other {&amp;Close This Profile (# Windows)}}
