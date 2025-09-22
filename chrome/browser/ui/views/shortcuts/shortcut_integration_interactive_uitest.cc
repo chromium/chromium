@@ -250,6 +250,13 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
                        LaunchInCorrectProfile) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile1NewTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfile2NewTabId);
 

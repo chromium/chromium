@@ -113,6 +113,13 @@ class GlicWindowResizeAnimationTest : public test::InteractiveGlicTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(GlicWindowResizeAnimationTest, ExpandsWidgetSize) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+#if BUILDFLAG(IS_MAC)
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   gfx::Rect test_initial_bounds = GetWidgetBounds();
   gfx::Rect test_new_bounds;
   test_new_bounds.set_origin(test_initial_bounds.origin());
