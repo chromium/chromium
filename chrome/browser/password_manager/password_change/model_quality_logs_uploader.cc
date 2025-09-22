@@ -365,6 +365,13 @@ void ModelQualityLogsUploader::SetVerifySubmissionQuality(
           ComputeRequestLatencyMs(server_request_start_time));
 }
 
+void ModelQualityLogsUploader::LoginCheckSkipped() {
+  final_log_data_.mutable_password_change_submission()
+      ->mutable_quality()
+      ->mutable_logged_in_check()
+      ->set_classification_overridden_by_user(true);
+}
+
 // static
 void ModelQualityLogsUploader::RecordLoginAttemptQuality(
     optimization_guide::ModelQualityLogsUploaderService* mqls_service,

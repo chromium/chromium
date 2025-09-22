@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -352,26 +353,6 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   UpdateState(State::kChangePasswordFormNotFound);
 }
 
-void PasswordChangeDelegateImpl::ProceedToChangePassword() {
-  login_state_checker_.reset();
-  UpdateState(State::kWaitingForChangePasswordForm);
-
-  executor_ = CreateWebContents(profile_, change_password_url_);
-  CHECK(executor_);
-  auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
-
-  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
-      executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
-      base::BindOnce(
-          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
-          weak_ptr_factory_.GetWeakPtr()));
-  form_finder_ = std::make_unique<ChangePasswordFormFinder>(
-      executor_.get(), client, logs_uploader_.get(),
-      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
-                     weak_ptr_factory_.GetWeakPtr()));
-  otp_observation_.Observe(client->GetOtpManager());
-}
-
 void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
   if (auto logger = GetLoggerIfAvailable(executor_.get())) {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
@@ -547,16 +528,6 @@ void PasswordChangeDelegateImpl::OpenPasswordDetails() {
   }
 }
 
-void PasswordChangeDelegateImpl::AddObserver(
-    PasswordChangeDelegate::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void PasswordChangeDelegateImpl::RemoveObserver(
-    PasswordChangeDelegate::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
   if (auto logger = GetLoggerIfAvailable(originator_)) {
     logger->LogMessage(
@@ -588,6 +559,41 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
       base::BindOnce(&OnLeakDialogHidden,
                      ManagePasswordsUIController::FromWebContents(originator_)
                          ->GetModelDelegateProxy()));
+}
+
+void PasswordChangeDelegateImpl::OnUserSkippedLoginCheck() {
+  logs_uploader_->LoginCheckSkipped();
+  ProceedToChangePassword();
+}
+
+void PasswordChangeDelegateImpl::AddObserver(
+    PasswordChangeDelegate::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::RemoveObserver(
+    PasswordChangeDelegate::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void PasswordChangeDelegateImpl::ProceedToChangePassword() {
+  login_state_checker_.reset();
+  UpdateState(State::kWaitingForChangePasswordForm);
+
+  executor_ = CreateWebContents(profile_, change_password_url_);
+  CHECK(executor_);
+  auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());
+
+  navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
+      executor_.get(), AffiliationServiceFactory::GetForProfile(profile_),
+      base::BindOnce(
+          &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
+          weak_ptr_factory_.GetWeakPtr()));
+  form_finder_ = std::make_unique<ChangePasswordFormFinder>(
+      executor_.get(), client, logs_uploader_.get(),
+      base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
+                     weak_ptr_factory_.GetWeakPtr()));
+  otp_observation_.Observe(client->GetOtpManager());
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {

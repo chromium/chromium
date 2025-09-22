@@ -514,7 +514,7 @@ void PasswordChangeUIController::SkipLoginCheck() {
   LogToastEvent(
       PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue,
       PasswordChangeToastEvent::kContinue);
-  password_change_delegate_->ProceedToChangePassword();
+  password_change_delegate_->OnUserSkippedLoginCheck();
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

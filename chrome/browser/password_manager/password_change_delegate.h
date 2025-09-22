@@ -145,9 +145,10 @@ class PasswordChangeDelegate {
   // Called when the user declines the initial dialog offering password change.
   virtual void OnPasswordChangeDeclined() = 0;
 
-  // Stops checking whether user is signed-in, and proceeds to changing a
+  // Called when the user chooses to skip the login check (by clicking
+  // 'continue' on the toast) and intends to proceed with changing their
   // password.
-  virtual void ProceedToChangePassword() = 0;
+  virtual void OnUserSkippedLoginCheck() = 0;
 
   // Adds/removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

@@ -92,6 +92,11 @@ class ModelQualityLogsUploader {
       std::unique_ptr<LoggingData> logging_data,
       base::Time server_request_start_time);
 
+  // Called when the user clicks 'continue' during the login check step
+  // to begin the password change flow, which may indicate an incorrect
+  // classification of the user's login state by the model.
+  void LoginCheckSkipped();
+
   // Records the outcome of the first login attempt
   // using a previously saved APC-password and immediately
   // uploads it to the server.

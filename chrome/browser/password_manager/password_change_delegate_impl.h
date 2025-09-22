@@ -92,9 +92,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
-  void ProceedToChangePassword() override;
+  void OnUserSkippedLoginCheck() override;
   void AddObserver(PasswordChangeDelegate::Observer* observer) override;
   void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
+
+  void ProceedToChangePassword();
 
   void OnOtpNotFound();
 

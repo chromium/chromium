@@ -43,9 +43,15 @@ namespace {
 
 constexpr char kChangePasswordURL[] = "https://example.com/password/";
 
-void VerifyRetryCountForLoginCheck(
+void VerifyLoginCheckStep(
     const optimization_guide::proto::LogAiDataRequest& log,
-    const int expected_retry_count) {
+    const int expected_retry_count,
+    bool was_skipped) {
+  EXPECT_EQ(log.password_change_submission()
+                .quality()
+                .logged_in_check()
+                .classification_overridden_by_user(),
+            was_skipped);
   EXPECT_EQ(log.password_change_submission()
                 .quality()
                 .logged_in_check()
@@ -388,18 +394,31 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormTargetElementNotFound) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
+TEST_F(ModelQualityLogsUploaderTest, LoginCheckSkipped) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  logs_uploader.LoginCheckSkipped();
+  VerifyLoginCheckStep(logs_uploader.GetFinalLog(), /*expected_retry_count=*/0,
+                       /*was_skipped=*/true);
+}
+
 TEST_F(ModelQualityLogsUploaderTest, LoginCheckRetryCountSet) {
   const int login_state_checks = 3;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   logs_uploader.SetLoggedInCheckQuality(login_state_checks);
-  VerifyRetryCountForLoginCheck(logs_uploader.GetFinalLog(),
-                                login_state_checks - 1);
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  VerifyLoginCheckStep(logs_uploader.GetFinalLog(),
+                       /*expected_retry_count=*/login_state_checks - 1,
+                       /*was_skipped=*/false);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, NoLoginCheckPerformed) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   logs_uploader.SetLoggedInCheckQuality(0);
-  VerifyRetryCountForLoginCheck(logs_uploader.GetFinalLog(), 0);
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  VerifyLoginCheckStep(logs_uploader.GetFinalLog(), /*expected_retry_count=*/0,
+                       /*was_skipped=*/false);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
