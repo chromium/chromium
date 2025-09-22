@@ -112,4 +112,24 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     public boolean shouldUseSlider() {
         return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
     }
+
+    /**
+     * Checks if the caret browsing feature is currently enabled for the associated profile.
+     *
+     * @return True if caret browsing is enabled, false otherwise.
+     */
+    @Override
+    public boolean isCaretBrowsingEnabled() {
+        return AccessibilitySettingsBridge.isCaretBrowsingEnabled(mProfile);
+    }
+
+    /**
+     * Sets the enabled state of the caret browsing feature for the associated profile.
+     *
+     * @param enabled True to enable caret browsing, false to disable it.
+     */
+    @Override
+    public void setCaretBrowsingEnabled(boolean enabled) {
+        AccessibilitySettingsBridge.setCaretBrowsingEnabled(mProfile, enabled);
+    }
 }

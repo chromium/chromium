@@ -3387,6 +3387,7 @@ static_library("browser") {
       ":usage_stats_proto",
       "//cc/slim",
       "//chrome/android:jni_headers",
+      "//chrome/browser/accessibility/settings",
       "//chrome/browser/android:tabs_impl",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/android/content:jni_headers",

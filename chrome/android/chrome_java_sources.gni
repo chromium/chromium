@@ -55,6 +55,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/about_settings/LongClickCopySummaryPreference.java",
   "java/src/org/chromium/chrome/browser/accessibility/AccessibilityTabHelper.java",
   "java/src/org/chromium/chrome/browser/accessibility/PageZoomIphController.java",
+  "java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridge.java",
   "java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java",
   "java/src/org/chromium/chrome/browser/ai/AiAssistantService.java",
   "java/src/org/chromium/chrome/browser/ai/PageSummaryButtonController.java",

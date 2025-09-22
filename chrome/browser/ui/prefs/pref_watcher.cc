@@ -116,11 +116,8 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
-
-#if !BUILDFLAG(IS_ANDROID)
   profile_pref_change_registrar_.Add(prefs::kCaretBrowsingEnabled,
                                      renderer_callback);
-#endif
 
 #if !BUILDFLAG(IS_MAC)
   profile_pref_change_registrar_.Add(prefs::kFullscreenAllowed,
