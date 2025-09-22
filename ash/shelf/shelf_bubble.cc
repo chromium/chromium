@@ -92,11 +92,10 @@ void ShelfBubble::CreateBubble() {
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 }
 
-std::unique_ptr<views::FrameView> ShelfBubble::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> ShelfBubble::CreateFrameView(
     views::Widget* widget) {
-  auto frame = for_tooltip_
-                   ? std::make_unique<ShelfTooltipBubbleFrameView>()
-                   : BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = for_tooltip_ ? std::make_unique<ShelfTooltipBubbleFrameView>()
+                            : BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->set_use_anchor_window_bounds(false);
 

@@ -70,8 +70,8 @@ QuickInsertSubmenuView::QuickInsertSubmenuView(
 
 QuickInsertSubmenuView::~QuickInsertSubmenuView() = default;
 
-std::unique_ptr<views::FrameView>
-QuickInsertSubmenuView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> QuickInsertSubmenuView::CreateFrameView(
+    views::Widget* widget) {
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());
   frame->SetBubbleBorder(CreateBorder());

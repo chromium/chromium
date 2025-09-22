@@ -83,14 +83,14 @@ TEST_F(WidgetDelegateTest, FrameViewFactoryCanReplaceFrameView) {
   ViewTracker tracker;
 
   auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetNonClientFrameViewFactory(
+  delegate->SetFrameViewFactory(
       base::BindLambdaForTesting([&tracker](Widget* widget) {
         auto view = std::make_unique<FrameView>();
         tracker.SetView(view.get());
         return view;
       }));
 
-  auto nonclient = delegate->CreateNonClientFrameView(nullptr);
+  auto nonclient = delegate->CreateFrameView(nullptr);
   EXPECT_EQ(tracker.view(), nonclient.get());
 }
 

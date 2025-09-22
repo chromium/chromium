@@ -923,12 +923,12 @@ void ShellSurface::ShowWidget(bool activate) {
   occlusion_observer_->MaybeConfigure(root_surface()->window());
 }
 
-std::unique_ptr<views::FrameView> ShellSurface::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> ShellSurface::CreateFrameView(
     views::Widget* widget) {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget->GetNativeWindow());
   window_state->SetDelegate(std::make_unique<CustomWindowStateDelegate>(this));
-  return CreateNonClientFrameViewInternal(widget);
+  return CreateFrameViewInternal(widget);
 }
 
 void ShellSurface::SetRootSurface(Surface* root_surface) {

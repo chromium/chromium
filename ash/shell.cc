@@ -502,7 +502,7 @@ void Shell::UntrackTrackInputMethodBounds(
       ->RemoveInputMethodBoundsTrackerObserver(tracker);
 }
 
-std::unique_ptr<views::FrameView> Shell::CreateDefaultNonClientFrameView(
+std::unique_ptr<views::FrameView> Shell::CreateDefaultFrameView(
     views::Widget* widget) {
   // Use translucent-style window frames for dialogs.
   return std::make_unique<FrameViewAsh>(widget);

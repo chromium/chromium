@@ -1370,9 +1370,9 @@ views::ClientView* ShellSurfaceBase::CreateClientView(views::Widget* widget) {
   return new CustomClientView(widget, this);
 }
 
-std::unique_ptr<views::FrameView> ShellSurfaceBase::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> ShellSurfaceBase::CreateFrameView(
     views::Widget* widget) {
-  return CreateNonClientFrameViewInternal(widget);
+  return CreateFrameViewInternal(widget);
 }
 
 bool ShellSurfaceBase::ShouldSaveWindowPlacement() const {
@@ -2238,8 +2238,8 @@ void ShellSurfaceBase::InstallCustomWindowTargeter() {
   window->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
 }
 
-std::unique_ptr<views::FrameView>
-ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ShellSurfaceBase::CreateFrameViewInternal(
+    views::Widget* widget) {
   aura::Window* window = widget_->GetNativeWindow();
   // ShellSurfaces always use immersive mode.
   window->SetProperty(chromeos::kImmersiveIsActive, true);

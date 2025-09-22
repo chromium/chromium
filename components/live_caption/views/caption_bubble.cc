@@ -882,7 +882,7 @@ bool CaptionBubble::ShouldShowCloseButton() const {
   return false;
 }
 
-std::unique_ptr<views::FrameView> CaptionBubble::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> CaptionBubble::CreateFrameView(
     views::Widget* widget) {
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
   if (IsTranslateHeaderEnabled()) {

@@ -131,7 +131,7 @@ class ScreenCaptureNotificationUIViews : public views::WidgetDelegateView,
 
   // views::WidgetDelegateView:
   views::ClientView* CreateClientView(views::Widget* widget) override;
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 
   // views::ViewObserver:
@@ -246,8 +246,7 @@ views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
 }
 
 std::unique_ptr<views::FrameView>
-ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
-    views::Widget* widget) {
+ScreenCaptureNotificationUIViews::CreateFrameView(views::Widget* widget) {
   constexpr auto kPadding = gfx::Insets::VH(5, 10);
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);

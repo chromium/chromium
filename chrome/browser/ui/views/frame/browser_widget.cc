@@ -386,7 +386,7 @@ views::internal::RootView* BrowserWidget::CreateRootView() {
   return root_view_;
 }
 
-std::unique_ptr<views::FrameView> BrowserWidget::CreateNonClientFrameView() {
+std::unique_ptr<views::FrameView> BrowserWidget::CreateFrameView() {
   auto browser_frame_view = chrome::CreateBrowserFrameView(this, browser_view_);
   browser_frame_view_ = browser_frame_view.get();
   return browser_frame_view;

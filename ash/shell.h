@@ -381,7 +381,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // Creates a default views::FrameView for use by windows in the
   // Ash environment.
-  std::unique_ptr<views::FrameView> CreateDefaultNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateDefaultFrameView(
       views::Widget* widget);
 
   // Called when a casting session is started or stopped.

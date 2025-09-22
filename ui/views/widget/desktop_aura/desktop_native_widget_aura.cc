@@ -721,8 +721,8 @@ void DesktopNativeWidgetAura::ReparentNativeViewImpl(
                  : gfx::kNullAcceleratedWidget);
 }
 
-std::unique_ptr<FrameView> DesktopNativeWidgetAura::CreateNonClientFrameView() {
-  return desktop_window_tree_host_->CreateNonClientFrameView();
+std::unique_ptr<FrameView> DesktopNativeWidgetAura::CreateFrameView() {
+  return desktop_window_tree_host_->CreateFrameView();
 }
 
 bool DesktopNativeWidgetAura::ShouldUseNativeFrame() const {

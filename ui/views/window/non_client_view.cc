@@ -79,7 +79,7 @@ void NonClientView::WindowClosing() {
 
 void NonClientView::UpdateFrame() {
   Widget* widget = GetWidget();
-  SetFrameView(widget->CreateNonClientFrameView());
+  SetFrameView(widget->CreateFrameView());
   widget->ThemeChanged();
   InvalidateLayout();
   SchedulePaint();

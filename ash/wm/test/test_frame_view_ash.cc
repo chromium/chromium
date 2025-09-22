@@ -12,8 +12,8 @@ TestWidgetDelegateAsh::TestWidgetDelegateAsh() {
 
 TestWidgetDelegateAsh::~TestWidgetDelegateAsh() {}
 
-std::unique_ptr<views::FrameView>
-TestWidgetDelegateAsh::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> TestWidgetDelegateAsh::CreateFrameView(
+    views::Widget* widget) {
   return std::make_unique<TestFrameViewAsh>(widget);
 }
 

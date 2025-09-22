@@ -175,7 +175,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
   test::ConfigurableTestNativeFrameView* frame_view() { return frame_view_; }
 
   // WidgetDelegate:
-  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override {
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
     DCHECK(!frame_view_);
     auto frame_view =
         std::make_unique<test::ConfigurableTestNativeFrameView>(widget);

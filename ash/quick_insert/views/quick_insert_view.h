@@ -85,7 +85,7 @@ class ASH_EXPORT QuickInsertView
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;

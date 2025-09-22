@@ -253,7 +253,7 @@ class ClientControlledStateTestWidgetDelegate
     GetWidget()->OnSizeConstraintsChanged();
   }
 
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override {
     return std::make_unique<FrameViewAsh>(widget);
   }

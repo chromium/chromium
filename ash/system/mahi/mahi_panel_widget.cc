@@ -180,7 +180,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
-    delegate->SetNonClientFrameViewFactory(base::BindRepeating(
+    delegate->SetFrameViewFactory(base::BindRepeating(
         [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
           return std::make_unique<MahiFrameView>(widget);
         }));

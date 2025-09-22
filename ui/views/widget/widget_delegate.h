@@ -273,14 +273,14 @@ class VIEWS_EXPORT WidgetDelegate {
       base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
 
-  // NonClientFrameViewFactory is a RepeatingCallback because the
+  // FrameViewFactory is a RepeatingCallback because the
   // FrameView is rebuilt on Aura platforms when WindowTreeHost
   // properties that might affect its appearance change. Rebuilding the entire
   // FrameView is a pretty big hammer for that but it's the one we
   // have.
   // TODO(b:387350163): Investigate if FrameView can handle these
   // changes in a more granular way.
-  using NonClientFrameViewFactory =
+  using FrameViewFactory =
       base::RepeatingCallback<std::unique_ptr<FrameView>(Widget*)>;
 
   struct Params {
@@ -695,7 +695,7 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // Called by the Widget to create the NonClient Frame View for this widget.
   // Return NULL to use the default one.
-  virtual std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget);
+  virtual std::unique_ptr<FrameView> CreateFrameView(Widget* widget);
 
   // Called by the Widget to create the overlay View for this widget. Return
   // NULL for no overlay. The overlay View will fill the Widget and sit on top
@@ -784,7 +784,7 @@ class VIEWS_EXPORT WidgetDelegate {
                                       base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
-  void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);
+  void SetFrameViewFactory(FrameViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
 
   // Returns true if the title text should be centered.
@@ -881,7 +881,7 @@ class VIEWS_EXPORT WidgetDelegate {
   ClosureVector delete_delegate_callbacks_;
 
   ClientViewFactory client_view_factory_;
-  NonClientFrameViewFactory non_client_frame_view_factory_;
+  FrameViewFactory non_client_frame_view_factory_;
   OverlayViewFactory overlay_view_factory_;
 
   TitleChangedCallback title_changed_callback_;

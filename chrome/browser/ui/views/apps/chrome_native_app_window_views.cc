@@ -210,7 +210,7 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
 
 std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViews::CreateStandardDesktopAppFrame() {
-  return views::WidgetDelegateView::CreateNonClientFrameView(widget());
+  return views::WidgetDelegateView::CreateFrameView(widget());
 }
 
 bool ChromeNativeAppWindowViews::ShouldRemoveStandardFrame() {
@@ -286,8 +286,8 @@ ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
   return ui::ImageModel();
 }
 
-std::unique_ptr<views::FrameView>
-ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ChromeNativeAppWindowViews::CreateFrameView(
+    views::Widget* widget) {
   return (IsFrameless() || has_frame_color_) ? CreateNonStandardAppFrame()
                                              : CreateStandardDesktopAppFrame();
 }

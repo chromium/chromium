@@ -904,8 +904,8 @@ bool ClientControlledShellSurface::CanMaximize() const {
   return can_maximize_;
 }
 
-std::unique_ptr<views::FrameView>
-ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ClientControlledShellSurface::CreateFrameView(
+    views::Widget* widget) {
   ash::WindowState* window_state = GetWindowState();
   std::unique_ptr<ash::ClientControlledState::Delegate> delegate =
       GetFactoryForTesting()
@@ -919,7 +919,7 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   client_controlled_state_ = state.get();
   window_state->SetStateObject(std::move(state));
   window_state->SetDelegate(std::move(window_delegate));
-  auto frame_view = CreateNonClientFrameViewInternal(widget);
+  auto frame_view = CreateFrameViewInternal(widget);
   immersive_fullscreen_controller_ =
       std::make_unique<chromeos::ImmersiveFullscreenController>();
   static_cast<ash::FrameViewAsh*>(frame_view.get())

@@ -61,7 +61,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
   gfx::Rect GetBubbleBounds() override;
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,

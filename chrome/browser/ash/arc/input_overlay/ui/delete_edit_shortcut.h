@@ -57,7 +57,7 @@ class DeleteEditShortcut : public views::BubbleDialogDelegateView {
   void OnDeleteButtonPressed();
 
   // views::DialogDelegate:
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 
   // views::View:

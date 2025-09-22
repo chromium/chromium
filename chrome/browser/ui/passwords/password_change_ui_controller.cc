@@ -391,7 +391,7 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   toast_delegate->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
   toast_delegate->SetAccessibleTitle(title);
   toast_delegate->SetShowCloseButton(false);
-  toast_delegate->SetNonClientFrameViewFactory(
+  toast_delegate->SetFrameViewFactory(
       base::BindRepeating(&CreateToastFrameView));
   toast_delegate_ = std::move(toast_delegate);
 

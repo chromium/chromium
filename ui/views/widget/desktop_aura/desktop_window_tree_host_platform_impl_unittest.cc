@@ -63,7 +63,7 @@ class ShapedWidgetDelegate : public WidgetDelegateView {
   ~ShapedWidgetDelegate() override = default;
 
   // WidgetDelegateView:
-  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override {
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
     // Create a FrameView with a window mask with the bottom right
     // corner cut out.
     auto frame_view = std::make_unique<test::ConfigurableTestCustomFrameView>();

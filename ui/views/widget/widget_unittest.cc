@@ -1370,9 +1370,8 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, CloseWithReason) {
   widget()->CloseWithReason(Widget::ClosedReason::kUnspecified);
 }
 
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
-       CreateNonClientFrameView) {
-  widget()->CreateNonClientFrameView();
+TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, CreateFrameView) {
+  widget()->CreateFrameView();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Deactivate) {
@@ -5810,7 +5809,7 @@ TEST_F(WidgetTest, NativeWidgetNotifiedOfWidgetDestructionForClientOwnsWidget) {
 
   auto native_widget =
       std::make_unique<testing::NiceMock<MockNativeWidget>>(widget.get());
-  ON_CALL(*native_widget, CreateNonClientFrameView).WillByDefault([]() {
+  ON_CALL(*native_widget, CreateFrameView).WillByDefault([]() {
     return std::make_unique<FrameView>();
   });
   params.native_widget = native_widget.get();
@@ -5839,7 +5838,7 @@ class WidgetSetAspectRatioTest
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     native_widget_ = std::make_unique<MockNativeWidget>(widget());
-    ON_CALL(*native_widget(), CreateNonClientFrameView).WillByDefault([this]() {
+    ON_CALL(*native_widget(), CreateFrameView).WillByDefault([this]() {
       auto frame_view_with_fixed_margin =
           std::make_unique<test::ConfigurableTestNativeFrameView>(
               widget_.get());

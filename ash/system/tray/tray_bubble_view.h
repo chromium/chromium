@@ -225,7 +225,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   bool is_gesture_dragging() const { return is_gesture_dragging_; }
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool WidgetHasHitTestMask() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;

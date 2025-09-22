@@ -1185,7 +1185,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // WidgetDelegate is given the first opportunity to create one, followed by
   // the NativeWidget implementation. If both return NULL, a default one is
   // created.
-  virtual std::unique_ptr<FrameView> CreateNonClientFrameView();
+  virtual std::unique_ptr<FrameView> CreateFrameView();
 
   // Whether we should be using a native frame.
   bool ShouldUseNativeFrame() const;

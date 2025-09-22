@@ -152,8 +152,7 @@ class VIEWS_EXPORT ViewsDelegate {
   //
   // Defaults to `DefaultFrameView`. This method should never return null, as a
   // fallback is needed on all platforms.
-  virtual std::unique_ptr<FrameView> CreateDefaultNonClientFrameView(
-      Widget* widget);
+  virtual std::unique_ptr<FrameView> CreateDefaultFrameView(Widget* widget);
 
   // AddRef/ReleaseRef are invoked while a menu is visible. They are used to
   // ensure we don't attempt to exit while a menu is showing.

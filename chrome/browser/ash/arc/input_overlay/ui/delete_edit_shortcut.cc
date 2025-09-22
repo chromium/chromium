@@ -141,7 +141,7 @@ void DeleteEditShortcut::OnDeleteButtonPressed() {
   }
 }
 
-std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateFrameView(
     views::Widget* widget) {
   // Create the customized bubble border.
   auto bubble_border =
@@ -154,8 +154,7 @@ std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateNonClientFrameView(
   bubble_border->set_insets(
       gfx::Insets::VH(0, kSpaceToEditingList + kEditingListInsideBorderInsets));
 
-  auto frame =
-      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
   if (auto* frame_view =
           views::AsViewClass<views::BubbleFrameView>(frame.get())) {
     frame_view->SetBubbleBorder(std::move(bubble_border));

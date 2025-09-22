@@ -79,7 +79,7 @@ class FrameViewAshTestWidgetDelegate : public views::WidgetDelegateView {
 
   ~FrameViewAshTestWidgetDelegate() override = default;
 
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override {
     auto non_client_frame_view = std::make_unique<FrameViewAsh>(widget);
     non_client_frame_view_ = non_client_frame_view.get();
@@ -875,13 +875,13 @@ class TestWidgetDelegate : public TestWidgetConstraintsDelegate {
   ~TestWidgetDelegate() override = default;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override {
     if (custom_) {
       WindowState* window_state = WindowState::Get(widget->GetNativeWindow());
       window_state->SetDelegate(std::make_unique<WindowStateDelegate>());
     }
-    return TestWidgetConstraintsDelegate::CreateNonClientFrameView(widget);
+    return TestWidgetConstraintsDelegate::CreateFrameView(widget);
   }
 
  private:

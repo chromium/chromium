@@ -90,7 +90,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
 
   // Returns a FrameView for the widget's NonClientView, or NULL if
   // the NativeWidget wants no special FrameView.
-  virtual std::unique_ptr<FrameView> CreateNonClientFrameView() = 0;
+  virtual std::unique_ptr<FrameView> CreateFrameView() = 0;
 
   virtual bool ShouldUseNativeFrame() const = 0;
   virtual bool ShouldWindowContentsBeTransparent() const = 0;

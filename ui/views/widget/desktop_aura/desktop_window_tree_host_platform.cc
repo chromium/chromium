@@ -736,8 +736,7 @@ void DesktopWindowTreeHostPlatform::SetVisibilityChangedAnimationsEnabled(
   }
 }
 
-std::unique_ptr<FrameView>
-DesktopWindowTreeHostPlatform::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> DesktopWindowTreeHostPlatform::CreateFrameView() {
   return ShouldUseNativeFrame() ? std::make_unique<NativeFrameView>(GetWidget())
                                 : nullptr;
 }

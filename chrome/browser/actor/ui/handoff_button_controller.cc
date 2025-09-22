@@ -238,7 +238,7 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   widget_delegate->SetModalType(::ui::mojom::ModalType::kNone);
   widget_delegate->SetAccessibleWindowRole(ax::mojom::Role::kAlert);
   widget_delegate->SetShowCloseButton(false);
-  widget_delegate->SetNonClientFrameViewFactory(
+  widget_delegate->SetFrameViewFactory(
       base::BindRepeating(&CreateHandoffButtonFrameView));
   delegate_ = std::move(widget_delegate);
 

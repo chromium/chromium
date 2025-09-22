@@ -251,15 +251,14 @@ views::ClientView* WebDialogView::CreateClientView(views::Widget* widget) {
   return this;
 }
 
-std::unique_ptr<FrameView> WebDialogView::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> WebDialogView::CreateFrameView(Widget* widget) {
   if (!delegate_) {
-    return WidgetDelegate::CreateNonClientFrameView(widget);
+    return WidgetDelegate::CreateFrameView(widget);
   }
 
   switch (delegate_->GetWebDialogFrameKind()) {
     case WebDialogDelegate::FrameKind::kNonClient:
-      return WidgetDelegate::CreateNonClientFrameView(widget);
+      return WidgetDelegate::CreateFrameView(widget);
     case WebDialogDelegate::FrameKind::kDialog:
       return DialogDelegate::CreateDialogFrameView(widget);
     default:

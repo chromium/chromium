@@ -246,7 +246,7 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate:
-std::unique_ptr<views::FrameView> AutoPipSettingView::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> AutoPipSettingView::CreateFrameView(
     views::Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<views::BubbleBorder> bubble_border =
@@ -257,7 +257,7 @@ std::unique_ptr<views::FrameView> AutoPipSettingView::CreateNonClientFrameView(
   bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
   bubble_border->set_draw_border_stroke(true);
 
-  auto frame = BubbleDialogDelegate::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegate::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;

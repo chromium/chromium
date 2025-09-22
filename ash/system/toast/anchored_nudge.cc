@@ -200,7 +200,7 @@ void AnchoredNudge::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
       kShellWindowId_SettingBubbleContainer);
 }
 
-std::unique_ptr<views::FrameView> AnchoredNudge::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> AnchoredNudge::CreateFrameView(
     views::Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<views::BubbleBorder> bubble_border =
@@ -209,7 +209,7 @@ std::unique_ptr<views::FrameView> AnchoredNudge::CreateNonClientFrameView(
   bubble_border->set_avoid_shadow_overlap(true);
   bubble_border->set_insets(kBubbleBorderInsets);
 
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;

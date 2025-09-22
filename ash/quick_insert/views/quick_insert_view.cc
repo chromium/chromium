@@ -338,7 +338,7 @@ bool QuickInsertView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   }
 }
 
-std::unique_ptr<views::FrameView> QuickInsertView::CreateNonClientFrameView(
+std::unique_ptr<views::FrameView> QuickInsertView::CreateFrameView(
     views::Widget* widget) {
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());

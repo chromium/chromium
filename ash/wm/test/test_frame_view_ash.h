@@ -28,7 +28,7 @@ class TestWidgetDelegateAsh : public views::WidgetDelegateView {
   ~TestWidgetDelegateAsh() override;
 
   // views::WidgetDelegateView:
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 };
 

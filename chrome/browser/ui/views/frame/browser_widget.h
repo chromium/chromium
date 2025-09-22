@@ -129,7 +129,7 @@ class BrowserWidget : public views::Widget,
 
   // views::Widget:
   views::internal::RootView* CreateRootView() override;
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView() override;
+  std::unique_ptr<views::FrameView> CreateFrameView() override;
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;

@@ -91,7 +91,7 @@ class ChromeNativeAppWindowViewsAuraAsh
       ui::mojom::MenuSourceType source_type) override;
 
   // WidgetDelegate:
-  std::unique_ptr<views::FrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   ui::ImageModel GetWindowIcon() override;

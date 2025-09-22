@@ -307,10 +307,9 @@ ClientView* DialogDelegate::CreateClientView(Widget* widget) {
   return new DialogClientView(widget, TransferOwnershipOfContentsView());
 }
 
-std::unique_ptr<FrameView> DialogDelegate::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> DialogDelegate::CreateFrameView(Widget* widget) {
   return use_custom_frame() ? CreateDialogFrameView(widget)
-                            : WidgetDelegate::CreateNonClientFrameView(widget);
+                            : WidgetDelegate::CreateFrameView(widget);
 }
 
 void DialogDelegate::WindowWillClose() {

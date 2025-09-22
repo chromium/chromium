@@ -377,7 +377,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   View* GetInitiallyFocusedView() override;
   DialogDelegate* AsDialogDelegate() override;
   ClientView* CreateClientView(Widget* widget) override;
-  std::unique_ptr<FrameView> CreateNonClientFrameView(Widget* widget) override;
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override;
 
   static std::unique_ptr<FrameView> CreateDialogFrameView(Widget* widget);
 
@@ -605,7 +605,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   const Params& GetParams() const { return params_; }
 
   // Return ownership of the footnote view for this dialog. Only use this in
-  // subclass overrides of CreateNonClientFrameView.
+  // subclass overrides of CreateFrameView.
   std::unique_ptr<View> DisownFootnoteView();
 
  private:

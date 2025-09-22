@@ -549,7 +549,7 @@ void Widget::Init(InitParams params) {
   if (RequiresNonClientView(type)) {
     non_client_view_ =
         new NonClientView(widget_delegate_->CreateClientView(this));
-    non_client_view_->SetFrameView(CreateNonClientFrameView());
+    non_client_view_->SetFrameView(CreateFrameView());
     non_client_view_->SetOverlayView(widget_delegate_->CreateOverlayView());
 
     // Bypass the layout that happens in Widget::SetContentsView().
@@ -1491,17 +1491,16 @@ void Widget::ClearNativeFocus() {
   }
 }
 
-std::unique_ptr<FrameView> Widget::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> Widget::CreateFrameView() {
   if (!native_widget_) {
     return nullptr;
   }
-  auto frame_view = widget_delegate_->CreateNonClientFrameView(this);
+  auto frame_view = widget_delegate_->CreateFrameView(this);
   if (!frame_view) {
-    frame_view = native_widget_->CreateNonClientFrameView();
+    frame_view = native_widget_->CreateFrameView();
   }
   if (!frame_view) {
-    frame_view =
-        ViewsDelegate::GetInstance()->CreateDefaultNonClientFrameView(this);
+    frame_view = ViewsDelegate::GetInstance()->CreateDefaultFrameView(this);
   }
   CHECK(frame_view);
   return frame_view;

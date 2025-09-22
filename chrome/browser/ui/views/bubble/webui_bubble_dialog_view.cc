@@ -175,11 +175,11 @@ gfx::Rect WebUIBubbleDialogView::GetBubbleBounds() {
   return bubble_bounds;
 }
 
-std::unique_ptr<views::FrameView>
-WebUIBubbleDialogView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> WebUIBubbleDialogView::CreateFrameView(
+    views::Widget* widget) {
   // TODO(tluk): Improve the current pattern used to compose functionality on
   // bubble frames and eliminate the need for static cast.
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->set_non_client_hit_test_cb(base::BindRepeating(
           &WebUIBubbleDialogView::NonClientHitTest, base::Unretained(this)));

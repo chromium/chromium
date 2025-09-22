@@ -549,8 +549,7 @@ void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
   Shell::Get()->system_tray_notifier()->NotifyTrayBubbleBoundsChanged(this);
 }
 
-std::unique_ptr<FrameView> TrayBubbleView::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> TrayBubbleView::CreateFrameView(Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
@@ -564,7 +563,7 @@ std::unique_ptr<FrameView> TrayBubbleView::CreateNonClientFrameView(
     bubble_border->set_insets(params_.insets.value());
   }
 
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->SetBubbleBorder(std::move(bubble_border));
   if (params_.anchor_mode == AnchorMode::kView) {

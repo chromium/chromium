@@ -375,8 +375,7 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
 ///////////////////////////////////////////////////////////////////////////////
 // WidgetDelegate implementation:
 std::unique_ptr<views::FrameView>
-ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
-    views::Widget* widget) {
+ChromeNativeAppWindowViewsAuraAsh::CreateFrameView(views::Widget* widget) {
   if (IsFrameless()) {
     return CreateNonStandardAppFrame();
   }

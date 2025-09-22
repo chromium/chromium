@@ -42,9 +42,9 @@ bool ChromeViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   return !ChromeCaptureModeDelegate::Get()->is_session_active();
 }
 
-std::unique_ptr<views::FrameView>
-ChromeViewsDelegate::CreateDefaultNonClientFrameView(views::Widget* widget) {
-  return ash::Shell::Get()->CreateDefaultNonClientFrameView(widget);
+std::unique_ptr<views::FrameView> ChromeViewsDelegate::CreateDefaultFrameView(
+    views::Widget* widget) {
+  return ash::Shell::Get()->CreateDefaultFrameView(widget);
 }
 
 void ChromeViewsDelegate::AdjustSavedWindowPlacementChromeOS(
