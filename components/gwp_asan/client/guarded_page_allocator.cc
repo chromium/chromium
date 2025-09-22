@@ -27,14 +27,11 @@
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/gwp_asan_support.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "components/crash/core/app/crashpad.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
-#include "partition_alloc/gwp_asan_support.h"  // nogncheck
 #endif
 
 namespace gwp_asan {
