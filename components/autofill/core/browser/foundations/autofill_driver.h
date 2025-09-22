@@ -295,7 +295,7 @@ class AutofillDriver {
   virtual void SendTypePredictionsToRenderer(const FormStructure& forms) = 0;
 
   // Exposes DOM Node IDs in an attribute "dom-node-id".
-  virtual void ExposeDomNodeIDs() = 0;
+  virtual void ExposeDomNodeIdsInAllFrames() = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(

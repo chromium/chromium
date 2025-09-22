@@ -290,7 +290,7 @@ void InternalsUIHandler::SetDomNodeId(const base::Value::List& args) {
           ContentAutofillDriver::GetForRenderFrameHost(
               web_contents->GetPrimaryMainFrame());
       if (driver) {
-        driver->ExposeDomNodeIDs();
+        driver->ExposeDomNodeIdsInAllFrames();
       }
     }
   }

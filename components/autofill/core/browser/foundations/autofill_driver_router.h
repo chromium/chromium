@@ -253,6 +253,7 @@ class AutofillDriverRouter {
       RoutedCallback<FieldRendererId, const std::string&> callback,
       const FieldGlobalId& field_id,
       const std::string& presentation_token);
+  void ExposeDomNodeIdsInAllFrames(RoutedCallback<> callback);
   using BrowserFormHandler = AutofillDriver::BrowserFormHandler;
   using RendererFormHandler =
       base::OnceCallback<void(const std::optional<FormData>&)>;

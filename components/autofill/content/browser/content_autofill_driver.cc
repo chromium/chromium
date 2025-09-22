@@ -498,8 +498,9 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
       form_id, WithNewVersion(std::move(final_handler)));
 }
 
-void ContentAutofillDriver::ExposeDomNodeIDs() {
-  GetAutofillAgent()->ExposeDomNodeIDs();
+void ContentAutofillDriver::ExposeDomNodeIdsInAllFrames() {
+  RouteToAgent(router(), &AutofillDriverRouter::ExposeDomNodeIdsInAllFrames,
+               &mojom::AutofillAgent::ExposeDomNodeIds);
 }
 
 void ContentAutofillDriver::SendTypePredictionsToRenderer(

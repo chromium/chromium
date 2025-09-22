@@ -270,7 +270,7 @@ void AutofillDriverIOS::ExtractForm(
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::ExposeDomNodeIDs() {}
+void AutofillDriverIOS::ExposeDomNodeIdsInAllFrames() {}
 
 void AutofillDriverIOS::SendTypePredictionsToRenderer(
     const FormStructure& form) {

@@ -58,8 +58,8 @@ interface AutofillAgent {
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
   // For all elements the DOM Node ID will be exposed on the DOM
-  // as attribute "dom-node-id".This is done for data collection purposes.
-  ExposeDomNodeIDs();
+  // as attribute "dom-node-id". This is done for data collection purposes.
+  ExposeDomNodeIds();
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();

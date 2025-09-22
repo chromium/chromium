@@ -180,7 +180,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       uint32_t number_of_ancestor_levels_to_search,
       base::OnceCallback<void(const std::string&)> callback) override;
 
-  void ExposeDomNodeIDs() override;
+  void ExposeDomNodeIds() override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   // Besides cases that "actually" clear the form, this function needs to be

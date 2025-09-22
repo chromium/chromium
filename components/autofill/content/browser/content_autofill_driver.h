@@ -201,6 +201,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (1a): browser -> renderer events, broadcast (see comment above).
   // autofill::AutofillDriver:
+  void ExposeDomNodeIdsInAllFrames() override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)> form_extraction_finished_callback)
       override;
@@ -234,7 +235,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
-  void ExposeDomNodeIDs() override;
 
   // Group (1c): browser -> renderer events, directed to this driver's main
   // frame's agent (see comment above).

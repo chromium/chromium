@@ -659,6 +659,11 @@ void AutofillDriverRouter::DispatchEmailVerifiedEvent(
   }
 }
 
+void AutofillDriverRouter::ExposeDomNodeIdsInAllFrames(
+    RoutedCallback<> callback) {
+  ForEachFrame(form_forest_, callback);
+}
+
 void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
     RoutedCallback<FieldRendererId, mojom::AutofillSuggestionAvailability>
         callback,

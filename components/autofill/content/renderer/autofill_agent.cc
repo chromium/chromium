@@ -1230,8 +1230,8 @@ void AutofillAgent::FieldTypePredictionsAvailable(
 }
 
 // For all elements the DOM Node ID will be exposed on the DOM
-// as attribute "dom-node-id".This is done for data collection purposes.
-void AutofillAgent::ExposeDomNodeIDs() {
+// as attribute "dom-node-id". This is done for data collection purposes.
+void AutofillAgent::ExposeDomNodeIds() {
   CHECK(base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs));
   WebDocument document = GetDocument();
   if (!document) {
