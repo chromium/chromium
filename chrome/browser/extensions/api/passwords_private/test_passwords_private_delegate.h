@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/passwords_private.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 
 namespace extensions {
 // A test PasswordsPrivateDelegate implementation which uses mock data.
@@ -24,6 +25,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   TestPasswordsPrivateDelegate();
 
   // PasswordsPrivateDelegate implementation.
+  password_manager::PasswordsProvider* GetPasswordsProvider() override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
@@ -121,6 +123,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void SetProfile(Profile* profile);
   void SetAccountStorageEnabled(bool enabled);
   void AddCompromisedCredential(int id);
+  void SetPasswordsProvider(
+      std::unique_ptr<password_manager::PasswordsProvider> provider);
 
   void ClearSavedPasswordsList() { current_entries_.clear(); }
   void ResetPlaintextPassword() { plaintext_password_.reset(); }
@@ -249,6 +253,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `RemoveBackupPassword` was called.
   bool remove_backup_password_ = false;
+
+  std::unique_ptr<password_manager::PasswordsProvider> passwords_provider_;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

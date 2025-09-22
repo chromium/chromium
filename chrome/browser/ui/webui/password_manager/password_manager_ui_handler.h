@@ -41,6 +41,9 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
 
   void RemoveBackupPassword(int id) override;
 
+  void GetActorLoginPermissions(
+      GetActorLoginPermissionsCallback callback) override;
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   scoped_refptr<extensions::PasswordsPrivateDelegate>

@@ -436,6 +436,19 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
   return passwords_grouper_->GetBlockedSites();
 }
 
+base::flat_set<ActorLoginPermission>
+SavedPasswordsPresenter::GetActorLoginPermissions() const {
+  std::vector<ActorLoginPermission> permissions;
+  for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
+    for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+      if (form.actor_login_approved) {
+        permissions.emplace_back(form.url, form.username_value);
+      }
+    }
+  }
+  return base::flat_set<ActorLoginPermission>(std::move(permissions));
+}
+
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
     const CredentialUIEntry& credential) const {

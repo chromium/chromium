@@ -1900,6 +1900,80 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
       "PasswordManager.PasswordsGrouping.Time", base::Milliseconds(kDelay), 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
+
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+              UnorderedElementsAre(ActorLoginPermission{
+                  .url = form_1.url, .username = form_1.username_value}));
+}
+
+TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 = form_1;
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+              UnorderedElementsAre(ActorLoginPermission{
+                  .url = form_1.url, .username = form_1.username_value}));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       GetAllowedActorLoginSites_MultipleSitesDifferentCredentials) {
+  PasswordForm form_1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form_1.actor_login_approved = true;
+
+  PasswordForm form_2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form_2.actor_login_approved = true;
+  store().AddLogins({form_1, form_2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+              UnorderedElementsAre(
+                  ActorLoginPermission{.url = form_1.url,
+                                       .username = form_1.username_value},
+                  ActorLoginPermission{.url = form_2.url,
+                                       .username = form_2.username_value}));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       GetAllowedActorLoginSites_SameUsernameDifferentURLs) {
+  PasswordForm form1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form1.actor_login_approved = true;
+  form1.username_value = u"shared_user";
+
+  PasswordForm form2 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  form2.actor_login_approved = true;
+  form2.username_value = u"shared_user";
+  store().AddLogins({form1, form2});
+  RunUntilIdle();
+
+  EXPECT_THAT(presenter().GetActorLoginPermissions(),
+              UnorderedElementsAre(
+                  ActorLoginPermission{.url = form1.url,
+                                       .username = form1.username_value},
+                  ActorLoginPermission{.url = form2.url,
+                                       .username = form2.username_value}));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Prefixes like [m, mobile, www] are considered as "same-site".
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
        GetSavedCredentialsGroupsSameSites) {

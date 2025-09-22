@@ -31,7 +31,7 @@
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "extensions/browser/extension_function.h"
@@ -68,6 +68,7 @@ class PasswordsPrivateDelegateImpl
       delete;
 
   // PasswordsPrivateDelegate implementation.
+  password_manager::PasswordsProvider* GetPasswordsProvider() override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;

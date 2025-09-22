@@ -12,14 +12,18 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
 namespace {
+
+using testing::Return;
 
 class MockPage : public mojom::Page {
  public:
@@ -36,6 +40,18 @@ class MockPage : public mojom::Page {
   mojo::Receiver<mojom::Page> receiver_{this};
 };
 
+class MockPasswordsProvider : public PasswordsProvider {
+ public:
+  MOCK_METHOD(base::flat_set<ActorLoginPermission>,
+              GetActorLoginPermissions,
+              (),
+              (const, override));
+  MOCK_METHOD(std::vector<CredentialUIEntry>,
+              GetSavedCredentials,
+              (),
+              (const, override));
+};
+
 }  // namespace
 
 class PasswordManagerUIHandlerUnitTest : public testing::Test {
@@ -48,6 +64,10 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
   void SetUp() override {
     auto delegate =
         base::MakeRefCounted<extensions::TestPasswordsPrivateDelegate>();
+    auto presenter =
+        std::make_unique<testing::NiceMock<MockPasswordsProvider>>();
+    presenter_ = presenter.get();
+    delegate->SetPasswordsProvider(std::move(presenter));
     test_delegate_ = delegate.get();
 
     handler_ = std::make_unique<PasswordManagerUIHandler>(
@@ -66,6 +86,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
   extensions::TestPasswordsPrivateDelegate& test_delegate() {
     return *test_delegate_;
   }
+  MockPasswordsProvider& presenter() { return *presenter_; }
 
  protected:
   raw_ptr<extensions::TestPasswordsPrivateDelegate> test_delegate_;
@@ -77,6 +98,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
   raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<PasswordManagerUIHandler> handler_;
+  raw_ptr<MockPasswordsProvider> presenter_;
 };
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
@@ -107,6 +129,17 @@ TEST_F(PasswordManagerUIHandlerUnitTest, RemoveBackupPassword_CallsDelegate) {
   handler().RemoveBackupPassword(0);
 
   EXPECT_TRUE(test_delegate().remove_backup_password());
+}
+
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       GetActorLoginPermissionSites_CallsPresenter) {
+  base::test::TestFuture<std::vector<mojom::ActorLoginPermissionPtr>> future;
+  base::flat_set<ActorLoginPermission> sites;
+  sites.insert({.url = GURL("https://test.com"), .username = u"testuser"});
+  EXPECT_CALL(presenter(), GetActorLoginPermissions)
+      .WillOnce(Return(std::move(sites)));
+  handler().GetActorLoginPermissions(future.GetCallback());
+  EXPECT_EQ(future.Get().size(), 1u);
 }
 
 }  // namespace password_manager

@@ -25,6 +25,10 @@ namespace content {
 class WebContents;
 }
 
+namespace password_manager {
+class PasswordsProvider;
+}
+
 namespace extensions {
 
 // Delegate used by the chrome.passwordsPrivate API to facilitate working with
@@ -48,6 +52,8 @@ class PasswordsPrivateDelegate
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
   using AuthenticationCallback = base::OnceCallback<void(bool)>;
+
+  virtual password_manager::PasswordsProvider* GetPasswordsProvider() = 0;
 
   // Gets the saved passwords list.
   using UiEntries = std::vector<api::passwords_private::PasswordUiEntry>;

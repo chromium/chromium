@@ -24,6 +24,7 @@ source_set("credential_ui_entry") {
 
 source_set("ui") {
   sources = [
+    "actor_login_permission.h",
     "affiliated_group.cc",
     "affiliated_group.h",
     "credential_provider_interface.h",
