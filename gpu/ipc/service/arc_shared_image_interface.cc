@@ -14,6 +14,29 @@
 
 namespace gpu {
 
+namespace {
+
+bool MakeContextCurrentOnGpuThread(SharedContextState* context_state,
+                                   bool needs_gl /*=false*/) {
+  if (!context_state) {
+    return false;
+  }
+
+  if (context_state->context_lost()) {
+    return false;
+  }
+
+  // |shared_image_factory_| never writes to the surface, so pass nullptr to
+  // improve performance. https://crbug.com/457431
+  auto* context = context_state->real_context();
+  if (context->IsCurrent(nullptr)) {
+    return !context_state->CheckResetStatus(needs_gl);
+  }
+  return context_state->MakeCurrent(/*surface=*/nullptr, needs_gl);
+}
+
+}  // namespace
+
 // static
 scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
     GpuChannelManager* gpu_channel_manager,
@@ -24,7 +47,9 @@ scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
   scoped_refptr<SharedContextState> context_state =
       gpu_channel_manager->GetSharedContextState(&result);
 
-  if (!context_state) {
+  // Some of the backings require a current GL context to be created.
+  if (!::gpu::MakeContextCurrentOnGpuThread(context_state.get(),
+                                            /*needs_gl=*/true)) {
     return nullptr;
   }
 
@@ -211,22 +236,8 @@ const SharedImageCapabilities& ArcSharedImageInterface::GetCapabilities() {
 
 bool ArcSharedImageInterface::MakeContextCurrentOnGpuThread(
     bool needs_gl /*=false*/) {
-  auto* context_state = shared_image_factory_->shared_context_state();
-  if (!context_state) {
-    return false;
-  }
-
-  if (context_state->context_lost()) {
-    return false;
-  }
-
-  // |shared_image_factory_| never writes to the surface, so pass nullptr to
-  // improve performance. https://crbug.com/457431
-  auto* context = context_state->real_context();
-  if (context->IsCurrent(nullptr)) {
-    return !context_state->CheckResetStatus(needs_gl);
-  }
-  return context_state->MakeCurrent(/*surface=*/nullptr, needs_gl);
+  return ::gpu::MakeContextCurrentOnGpuThread(
+      shared_image_factory_->shared_context_state(), needs_gl);
 }
 
 }  // namespace gpu
