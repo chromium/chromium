@@ -99,6 +99,7 @@ vs-chromium-project.txt
 /_chrome
 /_out
 /android_emulator_sdk
+/android_webview/tools/orderfiles/
 /ash/ash_unittests_run.xml
 /ash/webui/boca_ui/resources/prod
 /ash/webui/boca_receiver_app_ui/resources/prod
