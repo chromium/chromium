@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/gap_data_list.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
@@ -15,9 +16,8 @@ namespace blink {
 class ComputedStyle;
 class CSSPropertyValue;
 class CSSValueList;
-template <typename T>
-class GapDataList;
 class StyleColor;
+class StyleResolverState;
 
 enum class CSSGapDecorationPropertyType : int {
   kColor,
@@ -51,6 +51,14 @@ class CORE_EXPORT CSSGapDecorationUtils {
 
   static BoxSide BoxSideFromDirection(const ComputedStyle& style,
                                       GridTrackSizingDirection direction);
+
+  // Creates and returns a vector with the expanded gap data values of repeaters
+  // present. Auto repeaters are not expanded.
+  static GapDataList<int>::GapDataVector GetExpandedGapDataWidthList(
+      const GapDataList<int>& gap_data_list);
+  static CSSValueList* GetExpandedGapDataWidthList(
+      const CSSValueList& list,
+      const StyleResolverState& state);
 };
 
 }  // namespace blink

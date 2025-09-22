@@ -76,57 +76,6 @@ class CORE_EXPORT InterpolableGapDataRepeater : public InterpolableValue {
   const Member<const ValueRepeater<T>> repeater_;
 };
 
-class InterpolableGapLengthRepeater final
-    : public InterpolableGapDataRepeater<int> {
- public:
-  InterpolableGapLengthRepeater(InterpolableList* values,
-                                const ValueRepeater<int>* repeater)
-      : InterpolableGapDataRepeater<int>(values, repeater) {}
-
-  static InterpolableGapLengthRepeater* Create(
-      const ValueRepeater<int>* repeater,
-      const CSSProperty& property,
-      float zoom);
-
-  bool IsGapLengthRepeater() const final { return true; }
-
-  void AssertCanInterpolateWith(const InterpolableValue& other) const final;
-
-  // Interpolable gap data repeaters are compatible when the lengths of the
-  // values and the repeat count of their `ValueRepeater` are equal.
-  bool IsCompatibleWith(const InterpolableValue& other) const override;
-
-  GapData<int> CreateGapData(const CSSToLengthConversionData& conversion_data,
-                             Length::ValueRange value_range) const;
-
-  static InterpolableValue* CreateItem(int value,
-                                       const CSSProperty& property,
-                                       float zoom) {
-    return InterpolableLength::MaybeConvertLength(
-        Length(value, Length::Type::kFixed), property, zoom, std::nullopt);
-  }
-
- private:
-  InterpolableGapLengthRepeater* RawClone() const final {
-    InterpolableList* values(values_->Clone());
-    return MakeGarbageCollected<InterpolableGapLengthRepeater>(values,
-                                                               repeater_);
-  }
-
-  InterpolableGapLengthRepeater* RawCloneAndZero() const final {
-    InterpolableList* values(values_->CloneAndZero());
-    return MakeGarbageCollected<InterpolableGapLengthRepeater>(values,
-                                                               repeater_);
-  }
-};
-
-template <>
-struct DowncastTraits<InterpolableGapLengthRepeater> {
-  static bool AllowFrom(const InterpolableValue& interpolable_value) {
-    return interpolable_value.IsGapLengthRepeater();
-  }
-};
-
 class InterpolableGapColorRepeater final
     : public InterpolableGapDataRepeater<StyleColor> {
  public:
@@ -171,13 +120,6 @@ template <>
 struct DowncastTraits<InterpolableGapColorRepeater> {
   static bool AllowFrom(const InterpolableValue& interpolable_value) {
     return interpolable_value.IsGapColorRepeater();
-  }
-};
-
-template <>
-struct DowncastTraits<InterpolableGapDataRepeater<int>> {
-  static bool AllowFrom(const InterpolableValue& interpolable_value) {
-    return interpolable_value.IsGapLengthRepeater();
   }
 };
 
