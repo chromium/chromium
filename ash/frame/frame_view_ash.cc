@@ -150,14 +150,14 @@ class FrameViewAshImmersiveHelper : public WindowStateObserver,
   display::ScopedDisplayObserver display_observer_{this};
 };
 
-FrameViewAsh::FrameViewAsh(views::Widget* frame)
-    : chromeos::FrameViewChromeOS(frame),
+FrameViewAsh::FrameViewAsh(views::Widget* widget)
+    : chromeos::FrameViewChromeOS(widget),
       frame_context_menu_controller_(
-          std::make_unique<FrameContextMenuController>(frame, this)) {
+          std::make_unique<FrameContextMenuController>(widget, this)) {
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
       &FrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr()));
 
-  aura::Window* frame_window = frame->GetNativeWindow();
+  aura::Window* frame_window = widget->GetNativeWindow();
   window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
 
   // A delegate may be set which takes over the responsibilities of the
@@ -169,7 +169,7 @@ FrameViewAsh::FrameViewAsh(views::Widget* frame)
   // child. Investigate if we can remove this check.
   if (window_state && !window_state->HasDelegate()) {
     immersive_helper_ =
-        std::make_unique<FrameViewAshImmersiveHelper>(frame, this);
+        std::make_unique<FrameViewAshImmersiveHelper>(widget, this);
   }
 
   frame_window->SetProperty(kFrameViewAshKey, this);
@@ -195,13 +195,13 @@ FrameViewAsh* FrameViewAsh::Get(aura::Window* window) {
 
 void FrameViewAsh::InitImmersiveFullscreenControllerForView(
     ImmersiveFullscreenController* immersive_fullscreen_controller) {
-  immersive_fullscreen_controller->Init(GetHeaderView(), frame_,
+  immersive_fullscreen_controller->Init(GetHeaderView(), widget_,
                                         GetHeaderView());
 }
 
 void FrameViewAsh::SetFrameColors(SkColor active_frame_color,
                                   SkColor inactive_frame_color) {
-  aura::Window* frame_window = frame_->GetNativeWindow();
+  aura::Window* frame_window = widget_->GetNativeWindow();
   frame_window->SetProperty(kTrackDefaultFrameColors, false);
   frame_window->SetProperty(kFrameActiveColorKey, active_frame_color);
   frame_window->SetProperty(kFrameInactiveColorKey, inactive_frame_color);
@@ -253,11 +253,11 @@ const views::View* FrameViewAsh::GetAvatarIconViewForTest() const {
 }
 
 SkColor FrameViewAsh::GetActiveFrameColorForTest() const {
-  return frame_->GetNativeWindow()->GetProperty(kFrameActiveColorKey);
+  return widget_->GetNativeWindow()->GetProperty(kFrameActiveColorKey);
 }
 
 SkColor FrameViewAsh::GetInactiveFrameColorForTest() const {
-  return frame_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
+  return widget_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
 }
 
 void FrameViewAsh::SetFrameEnabled(bool enabled) {
@@ -290,7 +290,7 @@ void FrameViewAsh::SetFrameOverlapped(bool overlapped) {
     // whole rect, including the two upper corners.
     // Therefore, the header view layer also needs to be non-opaque to prevent
     // visual artifacts from appearing around the upper corners.
-    const aura::Window* window = frame_->GetNativeWindow();
+    const aura::Window* window = widget_->GetNativeWindow();
     if (WindowState::Get(window)->ShouldWindowHaveRoundedCorners()) {
       fills_bounds_opaquely = false;
     }
@@ -397,11 +397,11 @@ FrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
 }
 
 void FrameViewAsh::UpdateDefaultFrameColors() {
-  aura::Window* frame_window = frame_->GetNativeWindow();
+  aura::Window* frame_window = widget_->GetNativeWindow();
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
 
-  auto* color_provider = frame_->GetColorProvider();
+  auto* color_provider = widget_->GetColorProvider();
   const SkColor dialog_title_bar_color =
       color_provider->GetColor(cros_tokens::kDialogTitleBarColor);
 

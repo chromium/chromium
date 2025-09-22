@@ -61,10 +61,10 @@ bool FrameViewChromeOS::OverlayView::DoesIntersectRect(
 BEGIN_METADATA(FrameViewChromeOS, OverlayView)
 END_METADATA
 
-FrameViewChromeOS::FrameViewChromeOS(views::Widget* frame) : frame_(frame) {
-  DCHECK(frame_);
+FrameViewChromeOS::FrameViewChromeOS(views::Widget* widget) : widget_(widget) {
+  DCHECK(widget_);
 
-  auto header_view = std::make_unique<HeaderView>(frame_, this);
+  auto header_view = std::make_unique<HeaderView>(widget_, this);
   header_view->Init();
 
   auto overlay_view = std::make_unique<OverlayView>(header_view.get());
@@ -77,7 +77,7 @@ FrameViewChromeOS::FrameViewChromeOS(views::Widget* frame) : frame_(frame) {
   // would avoid the need to expose an "overlay view" concept on the
   // cross-platform class, and might allow for simpler creation/ownership/
   // plumbing.
-  frame->non_client_view()->SetOverlayView(overlay_view.release());
+  widget_->non_client_view()->SetOverlayView(overlay_view.release());
 
   UpdateDefaultFrameColors();
 }
@@ -89,7 +89,7 @@ HeaderView* FrameViewChromeOS::GetHeaderView() {
 }
 
 int FrameViewChromeOS::NonClientTopBorderHeight() const {
-  const aura::Window* frame_window = frame_->GetNativeWindow();
+  const aura::Window* frame_window = widget_->GetNativeWindow();
   const WindowStateType window_state_type =
       frame_window->GetProperty(kWindowStateTypeKey);
   const bool is_in_tablet_mode = display::Screen::Get()->InTabletMode();
@@ -100,7 +100,7 @@ int FrameViewChromeOS::NonClientTopBorderHeight() const {
   // not visible, disabled, in immersive mode or in tablet mode.
   // TODO(crbug.com/40879470): Support FrameViewAshImmersiveHelper on
   // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
-  if (frame_->IsFullscreen() || !GetFrameEnabled() ||
+  if (widget_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode() ||
       (is_in_tablet_mode && !should_have_frame_in_tablet)) {
     return 0;
@@ -148,9 +148,9 @@ views::View::Views FrameViewChromeOS::GetChildrenInZOrder() {
 
 gfx::Size FrameViewChromeOS::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  gfx::Size pref = frame_->client_view()->GetPreferredSize(available_size);
+  gfx::Size pref = widget_->client_view()->GetPreferredSize(available_size);
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
-  return frame_->non_client_view()
+  return widget_->non_client_view()
       ->GetWindowBoundsForClientBounds(bounds)
       .size();
 }
@@ -159,7 +159,7 @@ void FrameViewChromeOS::Layout(PassKey) {
   LayoutSuperclass<views::FrameView>(this);
   if (!GetFrameEnabled())
     return;
-  aura::Window* frame_window = frame_->GetNativeWindow();
+  aura::Window* frame_window = widget_->GetNativeWindow();
   frame_window->SetProperty(aura::client::kTopViewInset,
                             NonClientTopBorderHeight());
 }
@@ -168,14 +168,14 @@ gfx::Size FrameViewChromeOS::GetMinimumSize() const {
   if (!GetFrameEnabled())
     return gfx::Size();
 
-  gfx::Size min_client_view_size(frame_->client_view()->GetMinimumSize());
+  gfx::Size min_client_view_size(widget_->client_view()->GetMinimumSize());
   return gfx::Size(
       std::max(header_view_->GetMinimumWidth(), min_client_view_size.width()),
       NonClientTopBorderHeight() + min_client_view_size.height());
 }
 
 gfx::Size FrameViewChromeOS::GetMaximumSize() const {
-  gfx::Size max_client_size(frame_->client_view()->GetMaximumSize());
+  gfx::Size max_client_size(widget_->client_view()->GetMaximumSize());
   int width = 0;
   int height = 0;
 
@@ -193,11 +193,11 @@ void FrameViewChromeOS::OnThemeChanged() {
 }
 
 void FrameViewChromeOS::UpdateDefaultFrameColors() {
-  aura::Window* frame_window = frame_->GetNativeWindow();
+  aura::Window* frame_window = widget_->GetNativeWindow();
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
 
-  auto* color_provider = frame_->GetColorProvider();
+  auto* color_provider = widget_->GetColorProvider();
 
   frame_window->SetProperty(kFrameActiveColorKey,
                             color_provider->GetColor(ui::kColorFrameActive));
@@ -215,16 +215,16 @@ bool FrameViewChromeOS::DoesIntersectRect(const views::View* target,
 
   // Handle the event if it's within the bounds of the ClientView.
   gfx::RectF rect_in_client_view_coords_f(rect);
-  View::ConvertRectToTarget(this, frame_->client_view(),
+  View::ConvertRectToTarget(this, widget_->client_view(),
                             &rect_in_client_view_coords_f);
   gfx::Rect rect_in_client_view_coords =
       gfx::ToEnclosingRect(rect_in_client_view_coords_f);
-  return frame_->client_view()->HitTestRect(rect_in_client_view_coords);
+  return widget_->client_view()->HitTestRect(rect_in_client_view_coords);
 }
 
 void FrameViewChromeOS::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
-  frame_->non_client_view()->DeprecatedLayoutImmediately();
+  widget_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
 void FrameViewChromeOS::OnDisplayTabletStateChanged(

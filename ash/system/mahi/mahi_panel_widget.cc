@@ -111,7 +111,7 @@ std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
 // TODO(zoraiznaem): Investigate if MahiFrameView needs FrameViewAsh.
 class MahiFrameView : public FrameViewAsh {
  public:
-  explicit MahiFrameView(views::Widget* frame) : FrameViewAsh(frame) {
+  explicit MahiFrameView(views::Widget* widget) : FrameViewAsh(widget) {
     SetFrameEnabled(false);
     SetShouldPaintHeader(false);
   }

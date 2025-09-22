@@ -167,7 +167,7 @@ void CompatModeButtonController::ShowResizeToggleMenu(
   DCHECK(frame_view)
       << "Invalid frame view. Unable to display resize toggle menu.";
   resize_toggle_menu_ = std::make_unique<ResizeToggleMenu>(
-      std::move(on_bubble_widget_closing_callback), frame_view->frame(),
+      std::move(on_bubble_widget_closing_callback), frame_view->widget(),
       pref_delegate_);
 }
 

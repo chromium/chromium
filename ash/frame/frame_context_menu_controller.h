@@ -40,7 +40,7 @@ class ASH_EXPORT FrameContextMenuController
     virtual ~Delegate() = default;
   };
 
-  FrameContextMenuController(views::Widget* frame, Delegate* delegate);
+  FrameContextMenuController(views::Widget* widget, Delegate* delegate);
   FrameContextMenuController(const FrameContextMenuController&) = delete;
   FrameContextMenuController& operator=(const FrameContextMenuController&) =
       delete;
@@ -54,7 +54,7 @@ class ASH_EXPORT FrameContextMenuController
 
  private:
   // The widget that `this` controls the context menu for.
-  raw_ptr<views::Widget> frame_;
+  raw_ptr<views::Widget> widget_;
 
   // A delegate who is responsible for determining whether the context menu
   // should be shown at a point.

@@ -127,8 +127,8 @@ double CapAnimationValue(double value) {
 // to determine if each button should be visible and enabled.
 class DefaultCaptionButtonModel : public CaptionButtonModel {
  public:
-  DefaultCaptionButtonModel(views::Widget* frame, bool is_close_button_enabled)
-      : frame_(frame), is_close_button_enabled_(is_close_button_enabled) {}
+  DefaultCaptionButtonModel(views::Widget* widget, bool is_close_button_enabled)
+      : widget_(widget), is_close_button_enabled_(is_close_button_enabled) {}
   DefaultCaptionButtonModel(const DefaultCaptionButtonModel&) = delete;
   DefaultCaptionButtonModel& operator=(const DefaultCaptionButtonModel&) =
       delete;
@@ -138,10 +138,10 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   bool IsVisible(views::CaptionButtonIcon type) const override {
     switch (type) {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
-        return frame_->widget_delegate()->CanMinimize() &&
+        return widget_->widget_delegate()->CanMinimize() &&
                !display::Screen::Get()->InTabletMode();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE: {
-        if (!frame_->widget_delegate()->CanMaximize()) {
+        if (!widget_->widget_delegate()->CanMaximize()) {
           return false;
         }
 
@@ -150,19 +150,19 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         }
 
         // In tablet mode, only show the size button if the window is floated.
-        return frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
+        return widget_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
                WindowStateType::kFloated;
       }
       // Resizable widget can be snapped.
       case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
       case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
-        return frame_->widget_delegate()->CanResize();
+        return widget_->widget_delegate()->CanResize();
       case views::CAPTION_BUTTON_ICON_CLOSE:
-        return frame_->widget_delegate()->ShouldShowCloseButton();
+        return widget_->widget_delegate()->ShouldShowCloseButton();
       case views::CAPTION_BUTTON_ICON_CUSTOM:
         return true;
       case views::CAPTION_BUTTON_ICON_FLOAT: {
-        if (!frame_->IsNativeWidgetInitialized()) {
+        if (!widget_->IsNativeWidgetInitialized()) {
           return false;
         }
         if (display::Screen::Get()->InTabletMode()) {
@@ -173,7 +173,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
         if (IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE)) {
           return false;
         }
-        return chromeos::wm::CanFloatWindow(frame_->GetNativeWindow());
+        return chromeos::wm::CanFloatWindow(widget_->GetNativeWindow());
       }
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
@@ -206,7 +206,7 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   }
 
  private:
-  raw_ptr<views::Widget> frame_;
+  raw_ptr<views::Widget> widget_;
 
   // Configures whether the close button is enabled.
   bool is_close_button_enabled_ = true;
@@ -217,14 +217,14 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
 }  // namespace
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
-    views::Widget* frame,
+    views::Widget* widget,
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
-    : views::AnimationDelegateViews(frame->GetRootView()), frame_(frame) {
+    : views::AnimationDelegateViews(widget->GetRootView()), widget_(widget) {
   SetID(ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
 
   auto default_caption_button_model =
-      std::make_unique<DefaultCaptionButtonModel>(frame,
+      std::make_unique<DefaultCaptionButtonModel>(widget,
                                                   is_close_button_enabled);
   on_close_button_enabled_changed_callback_ =
       base::BindRepeating(&DefaultCaptionButtonModel::SetCloseButtonEnabled,
@@ -300,17 +300,17 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
 
   // The float button relies on minimum size to know if it can be floated, which
   // can only be checked after the widget has been initialized.
-  if (frame->IsNativeWidgetInitialized()) {
+  if (widget->IsNativeWidgetInitialized()) {
     UpdateCaptionButtonState(/*animate=*/false);
   } else {
-    frame->widget_delegate()->RegisterWidgetInitializedCallback(base::BindOnce(
+    widget->widget_delegate()->RegisterWidgetInitializedCallback(base::BindOnce(
         &FrameCaptionButtonContainerView::UpdateCaptionButtonState,
         // base::Unretained is safe as the container and widget delegate are
         // destroyed when the widget is destroyed.
         base::Unretained(this), /*animate=*/false));
   }
 
-  frame_observer_.Observe(frame_);
+  frame_observer_.Observe(widget_);
 }
 
 FrameCaptionButtonContainerView::~FrameCaptionButtonContainerView() = default;
@@ -523,7 +523,7 @@ void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
 void FrameCaptionButtonContainerView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
-  // This ensures that the first frame of the animation to show the size button
+  // This ensures that the first widget of the animation to show the size button
   // pushes the buttons to the left of the size button into the center.
   if (tablet_mode_animation_->is_animating()) {
     AnimationProgressed(tablet_mode_animation_.get());
@@ -625,7 +625,7 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
 
 void FrameCaptionButtonContainerView::UpdateSizeButton() {
   const bool use_zoom_icons = model_->InZoomMode();
-  const bool floated = frame_->GetNativeWindow()->GetProperty(
+  const bool floated = widget_->GetNativeWindow()->GetProperty(
                            kWindowStateTypeKey) == WindowStateType::kFloated;
 
   const gfx::VectorIcon& restore_icon = use_zoom_icons
@@ -636,7 +636,7 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
                      : (floated ? chromeos::kUnfloatButtonIcon
                                 : views::kWindowControlMaximizeIcon);
 
-  const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(frame_);
+  const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(widget_);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
                  use_restore_frame ? maximize_icon : restore_icon);
 
@@ -662,7 +662,7 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
 void FrameCaptionButtonContainerView::UpdateSnapButtons() {
   const bool is_landscape =
       display::Screen::Get()
-          ->GetDisplayNearestWindow(frame_->GetNativeWindow())
+          ->GetDisplayNearestWindow(widget_->GetNativeWindow())
           .is_landscape();
   SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
                  is_landscape ? chromeos::kWindowControlLeftSnappedIcon
@@ -677,7 +677,7 @@ void FrameCaptionButtonContainerView::UpdateFloatButton() {
     return;
   }
 
-  const bool floated = frame_->GetNativeWindow()->GetProperty(
+  const bool floated = widget_->GetNativeWindow()->GetProperty(
                            kWindowStateTypeKey) == WindowStateType::kFloated;
   SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
                  floated ? chromeos::kWindowControlUnfloatIcon
@@ -697,7 +697,7 @@ void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(Animate::kNo);
 
-  frame_->Minimize();
+  widget_->Minimize();
   base::RecordAction(base::UserMetricsAction("MinButton_Clk"));
 }
 
@@ -708,18 +708,18 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
   if (on_size_button_pressed_callback_ &&
       on_size_button_pressed_callback_.Run()) {
     // no-op if the override callback returned true.
-  } else if (frame_->IsFullscreen()) {
+  } else if (widget_->IsFullscreen()) {
     // Can be clicked in immersive fullscreen.
-    frame_->Restore();
+    widget_->Restore();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_ExitFS"));
-  } else if (frame_->IsMaximized()) {
-    frame_->Restore();
+  } else if (widget_->IsMaximized()) {
+    widget_->Restore();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Restore"));
-  } else if (frame_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
+  } else if (widget_->GetNativeWindow()->GetProperty(kWindowStateTypeKey) ==
              WindowStateType::kFloated) {
-    FloatControllerBase::Get()->UnsetFloat(frame_->GetNativeWindow());
+    FloatControllerBase::Get()->UnsetFloat(widget_->GetNativeWindow());
   } else {
-    frame_->Maximize();
+    widget_->Maximize();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_Maximize"));
   }
 }
@@ -728,7 +728,7 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(Animate::kNo);
 
-  frame_->Close();
+  widget_->Close();
   if (display::Screen::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("Tablet_WindowCloseFromCaptionButton"));
@@ -892,19 +892,19 @@ void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
 }
 
 bool FrameCaptionButtonContainerView::CanSnap() {
-  return SnapController::Get()->CanSnap(frame_->GetNativeWindow());
+  return SnapController::Get()->CanSnap(widget_->GetNativeWindow());
 }
 
 void FrameCaptionButtonContainerView::ShowSnapPreview(
     SnapDirection snap,
     bool allow_haptic_feedback) {
-  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap,
+  SnapController::Get()->ShowSnapPreview(widget_->GetNativeWindow(), snap,
                                          allow_haptic_feedback);
 }
 
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
   SnapController::Get()->CommitSnap(
-      frame_->GetNativeWindow(), snap, kDefaultSnapRatio,
+      widget_->GetNativeWindow(), snap, kDefaultSnapRatio,
       SnapController::SnapRequestSource::kSnapButton);
 }
 

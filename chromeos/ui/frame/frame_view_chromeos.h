@@ -29,7 +29,7 @@ class FrameViewChromeOS : public views::FrameView,
   METADATA_HEADER(FrameViewChromeOS, views::FrameView)
 
  public:
-  explicit FrameViewChromeOS(views::Widget* frame);
+  explicit FrameViewChromeOS(views::Widget* widget);
   FrameViewChromeOS(const FrameViewChromeOS&) = delete;
   FrameViewChromeOS& operator=(const FrameViewChromeOS&) = delete;
   ~FrameViewChromeOS() override;
@@ -68,7 +68,7 @@ class FrameViewChromeOS : public views::FrameView,
   // views::FrameView:
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
-  const raw_ptr<views::Widget> frame_;
+  const raw_ptr<views::Widget> widget_;
 
   // View which contains the title and window controls.
   raw_ptr<HeaderView> header_view_ = nullptr;
@@ -78,11 +78,11 @@ class FrameViewChromeOS : public views::FrameView,
   bool frame_enabled_ = true;
 
  private:
-  // Called when |frame_|'s "paint as active" state has changed.
+  // Called when |widget_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();
 
   base::CallbackListSubscription paint_as_active_subscription_ =
-      frame_->RegisterPaintAsActiveChangedCallback(
+      widget_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&FrameViewChromeOS::PaintAsActiveChanged,
                               base::Unretained(this)));
 

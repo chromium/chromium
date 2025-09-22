@@ -24,12 +24,12 @@ TestFrameViewAsh::~TestFrameViewAsh() {}
 
 void TestFrameViewAsh::SetMaximumSize(const gfx::Size& size) {
   maximum_size_ = size;
-  frame()->OnSizeConstraintsChanged();
+  widget()->OnSizeConstraintsChanged();
 }
 
 void TestFrameViewAsh::SetMinimumSize(const gfx::Size& size) {
   minimum_size_ = size;
-  frame()->OnSizeConstraintsChanged();
+  widget()->OnSizeConstraintsChanged();
 }
 
 gfx::Size TestFrameViewAsh::GetMaximumSize() const {

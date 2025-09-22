@@ -47,7 +47,7 @@ class ASH_EXPORT FrameViewAsh : public chromeos::FrameViewChromeOS,
   // created for the FrameViewAsh; if true and a WindowStateDelegate
   // has not been set on the WindowState associated with |frame|, then an
   // ImmersiveFullscreenController is created.
-  explicit FrameViewAsh(views::Widget* frame);
+  explicit FrameViewAsh(views::Widget* widget);
   FrameViewAsh(const FrameViewAsh&) = delete;
   FrameViewAsh& operator=(const FrameViewAsh&) = delete;
   ~FrameViewAsh() override;
@@ -91,7 +91,7 @@ class ASH_EXPORT FrameViewAsh : public chromeos::FrameViewChromeOS,
   SkColor GetActiveFrameColorForTest() const;
   SkColor GetInactiveFrameColorForTest() const;
 
-  views::Widget* frame() { return frame_; }
+  views::Widget* widget() { return widget_; }
 
   bool GetFrameEnabled() const { return frame_enabled_; }
   bool GetFrameOverlapped() const { return frame_overlapped_; }

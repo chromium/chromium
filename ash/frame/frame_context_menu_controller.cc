@@ -13,9 +13,9 @@
 
 namespace ash {
 
-FrameContextMenuController::FrameContextMenuController(views::Widget* frame,
+FrameContextMenuController::FrameContextMenuController(views::Widget* widget,
                                                        Delegate* delegate)
-    : frame_(frame), delegate_(delegate) {}
+    : widget_(widget), delegate_(delegate) {}
 
 FrameContextMenuController::~FrameContextMenuController() = default;
 
@@ -24,7 +24,7 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
   if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
-          frame_->GetNativeWindow())) {
+          widget_->GetNativeWindow())) {
     return;
   }
 
@@ -35,7 +35,7 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
   if (!move_to_desks_menu_model_) {
     move_to_desks_menu_model_ =
         std::make_unique<chromeos::MoveToDesksMenuModel>(
-            std::make_unique<chromeos::MoveToDesksMenuDelegate>(frame_),
+            std::make_unique<chromeos::MoveToDesksMenuDelegate>(widget_),
             /*add_title=*/true);
   }
 
@@ -43,7 +43,7 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
   // `move_to_desks_menu_model_` will be updated.
   menu_runner_ = std::make_unique<views::MenuRunner>(
       move_to_desks_menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
-  menu_runner_->RunMenuAt(frame_, /*button_controller=*/nullptr,
+  menu_runner_->RunMenuAt(widget_, /*button_controller=*/nullptr,
                           gfx::Rect(point, gfx::Size()),
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
