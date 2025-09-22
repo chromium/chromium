@@ -8,6 +8,8 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
@@ -40,14 +42,25 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
                                SessionID session_id) override;
   std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
       SessionID session_id) const override;
+  void AddObserver(ContextualTasksService::Observer* observer) override;
+  void RemoveObserver(ContextualTasksService::Observer* observer) override;
 
   size_t GetSessionIdMapSizeForTesting() const;
 
  private:
+  void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
+  void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);
+  void NotifyTaskRemoved(const base::Uuid& task_id, TriggerSource source);
+
   // The set of all tasks currently managed by the service, indexed by their
   // unique task ID for efficient lookup.
   std::map<base::Uuid, ContextualTask> tasks_;
   std::map<SessionID, base::Uuid> session_to_task_;
+
+  // Obsevers of the model.
+  base::ObserverList<ContextualTasksService::Observer> observers_;
+
+  base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace contextual_tasks

@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sessions/core/session_id.h"
@@ -15,11 +16,20 @@
 namespace contextual_tasks {
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl() = default;
-ContextualTasksServiceImpl::~ContextualTasksServiceImpl() = default;
+
+ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
+  for (auto& observer : observers_) {
+    observer.OnWillBeDestroyed();
+  }
+}
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   auto it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                weak_ptr_factory_.GetWeakPtr(), it->second,
+                                TriggerSource::kLocal));
   return it->second;
 }
 
@@ -52,17 +62,35 @@ void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
   }
 
   tasks_.erase(task_it);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskRemoved,
+                                weak_ptr_factory_.GetWeakPtr(), task_id,
+                                TriggerSource::kLocal));
 }
 
 void ContextualTasksServiceImpl::AddThreadToTask(const base::Uuid& task_id,
                                                  const Thread& thread) {
   auto it = tasks_.find(task_id);
-  if (it == tasks_.end()) {
+  bool is_new_task = (it == tasks_.end());
+  if (is_new_task) {
     // Task not found, but we have a task ID. Create the task on the fly.
     it = tasks_.emplace(task_id, ContextualTask(task_id)).first;
   }
 
   it->second.AddThread(thread);
+
+  if (is_new_task) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                  weak_ptr_factory_.GetWeakPtr(), it->second,
+                                  TriggerSource::kLocal));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                       weak_ptr_factory_.GetWeakPtr(), it->second,
+                       TriggerSource::kLocal));
+  }
 }
 
 void ContextualTasksServiceImpl::RemoveThreadFromTask(
@@ -72,6 +100,11 @@ void ContextualTasksServiceImpl::RemoveThreadFromTask(
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.RemoveThread(type, server_id);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                       weak_ptr_factory_.GetWeakPtr(), it->second,
+                       TriggerSource::kLocal));
   }
 }
 
@@ -80,6 +113,11 @@ void ContextualTasksServiceImpl::AttachUrlToTask(const base::Uuid& task_id,
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.AddUrl(url);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                       weak_ptr_factory_.GetWeakPtr(), it->second,
+                       TriggerSource::kLocal));
   }
 }
 
@@ -88,6 +126,11 @@ void ContextualTasksServiceImpl::DetachUrlFromTask(const base::Uuid& task_id,
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.RemoveUrl(url);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
+                       weak_ptr_factory_.GetWeakPtr(), it->second,
+                       TriggerSource::kLocal));
   }
 }
 
@@ -124,8 +167,37 @@ ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
   return std::nullopt;
 }
 
+void ContextualTasksServiceImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ContextualTasksServiceImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 size_t ContextualTasksServiceImpl::GetSessionIdMapSizeForTesting() const {
   return session_to_task_.size();
+}
+
+void ContextualTasksServiceImpl::NotifyTaskAdded(const ContextualTask& task,
+                                                 TriggerSource source) {
+  for (auto& observer : observers_) {
+    observer.OnTaskAdded(task, source);
+  }
+}
+
+void ContextualTasksServiceImpl::NotifyTaskUpdated(const ContextualTask& task,
+                                                   TriggerSource source) {
+  for (auto& observer : observers_) {
+    observer.OnTaskUpdated(task, source);
+  }
+}
+
+void ContextualTasksServiceImpl::NotifyTaskRemoved(const base::Uuid& task_id,
+                                                   TriggerSource source) {
+  for (auto& observer : observers_) {
+    observer.OnTaskRemoved(task_id, source);
+  }
 }
 
 }  // namespace contextual_tasks
