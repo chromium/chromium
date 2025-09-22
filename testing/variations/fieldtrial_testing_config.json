@@ -25224,25 +25224,6 @@
             ]
         }
     ],
-    "TrackingProtection3pcd": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TrackingProtection3pcd"
-                    ]
-                }
-            ]
-        }
-    ],
     "TranslateBubbleOpenSettings": [
         {
             "platforms": [
