@@ -56,6 +56,10 @@ BASE_FEATURE(kAVFoundationCaptureSonomaRestartStalledCamera,
              "AVFoundationCaptureSonomaRestartStalledCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAVFoundationCaptureAccept420FullRange,
+             "AVFoundationCaptureAccept420FullRange",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Logitech 4K Pro
@@ -279,14 +283,24 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 + (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code {
   switch (code) {
+    // Mac fourcc: "420f".
+    case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
+      return base::FeatureList::IsEnabled(
+                 kAVFoundationCaptureAccept420FullRange)
+                 ? media::PIXEL_FORMAT_NV12
+                 : media::PIXEL_FORMAT_UNKNOWN;
+    // Mac fourcc: "420v".
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-      return media::PIXEL_FORMAT_NV12;  // Mac fourcc: "420v".
+      return media::PIXEL_FORMAT_NV12;
+    // Mac fourcc: "2vuy".
     case kCVPixelFormatType_422YpCbCr8:
-      return media::PIXEL_FORMAT_UYVY;  // Mac fourcc: "2vuy".
+      return media::PIXEL_FORMAT_UYVY;
+    // Mac fourcc: "yuvs".
     case kCMPixelFormat_422YpCbCr8_yuvs:
       return media::PIXEL_FORMAT_YUY2;
+    // Mac fourcc: "dmb1".
     case kCMVideoCodecType_JPEG_OpenDML:
-      return media::PIXEL_FORMAT_MJPEG;  // Mac fourcc: "dmb1".
+      return media::PIXEL_FORMAT_MJPEG;
     default:
       return media::PIXEL_FORMAT_UNKNOWN;
   }
