@@ -31,6 +31,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('virtual_keyboard.idl', 'virtual_keyboard.webidl'),
         ('webcam_private.idl', 'webcam_private.webidl'),
         ('extension_options_internal.idl', 'extension_options_internal.webidl'),
+        ('system_cpu.idl', 'system_cpu.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
