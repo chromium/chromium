@@ -1629,15 +1629,6 @@ static_library("browser") {
     "webdata_services/web_data_service_factory.cc",
   ]
 
-  if (is_chromeos) {
-    sources += [
-      "component_updater/chrome_apps_deprecation_allowlist_component_installer.cc",
-      "component_updater/chrome_apps_deprecation_allowlist_component_installer.h",
-      "component_updater/lacros_component_remover.cc",
-      "component_updater/lacros_component_remover.h",
-    ]
-  }
-
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
@@ -2664,26 +2655,6 @@ static_library("browser") {
     # componentized.
     "//chrome/browser/ui/webauthn:impl",
   ]
-
-  if (is_win && is_chrome_branded) {
-    deps += [
-      "//chrome/browser/win/installer_downloader:controller",
-      "//chrome/browser/win/installer_downloader:infobar",
-      "//chrome/browser/win/installer_downloader:infobar_impl",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    deps += [
-      "//chrome/browser/ui/views/session_restore_infobar",
-      "//components/services/on_device_translation/public/cpp",
-      "//components/themes:policy",
-    ]
-  }
-
-  if (is_mac || is_win || is_linux || is_chromeos) {
-    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
-  }
 
   # Platforms that have a network diagnostics dialog. All others fall through
   # to the stub which is not implemented.
@@ -4836,10 +4807,6 @@ static_library("browser") {
       }
     }
 
-    if (enable_dice_support) {
-      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
-    }
-
     if (use_minikin_hyphenation) {
       sources += [
         "component_updater/hyphenation_component_installer.cc",
@@ -4903,8 +4870,12 @@ static_library("browser") {
       "certificate_provider/thread_safe_certificate_map.h",
       "component_updater/app_provisioning_component_installer.cc",
       "component_updater/app_provisioning_component_installer.h",
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.cc",
+      "component_updater/chrome_apps_deprecation_allowlist_component_installer.h",
       "component_updater/cros_component_installer_chromeos.cc",
       "component_updater/cros_component_installer_chromeos.h",
+      "component_updater/lacros_component_remover.cc",
+      "component_updater/lacros_component_remover.h",
       "component_updater/metadata_table_chromeos.cc",
       "component_updater/metadata_table_chromeos.h",
       "component_updater/smart_dim_component_installer.cc",
@@ -5008,8 +4979,28 @@ static_library("browser") {
       "metrics/perf/windowed_incognito_observer.h",
       "metrics/profile_pref_names.cc",
       "metrics/profile_pref_names.h",
+      "metrics/structured/arena_event_buffer.cc",
+      "metrics/structured/arena_event_buffer.h",
+      "metrics/structured/ash_event_storage.cc",
+      "metrics/structured/ash_event_storage.h",
+      "metrics/structured/ash_structured_metrics_delegate.cc",
+      "metrics/structured/ash_structured_metrics_delegate.h",
+      "metrics/structured/ash_structured_metrics_recorder.cc",
+      "metrics/structured/ash_structured_metrics_recorder.h",
+      "metrics/structured/cros_events_processor.cc",
+      "metrics/structured/cros_events_processor.h",
+      "metrics/structured/key_data_provider_ash.cc",
+      "metrics/structured/key_data_provider_ash.h",
+      "metrics/structured/metadata_processor_ash.cc",
+      "metrics/structured/metadata_processor_ash.h",
       "metrics/structured/oobe_structured_metrics_watcher.cc",
       "metrics/structured/oobe_structured_metrics_watcher.h",
+      "metrics/structured/profile_observer.cc",
+      "metrics/structured/profile_observer.h",
+      "metrics/structured/storage_manager_impl.cc",
+      "metrics/structured/storage_manager_impl.h",
+      "metrics/structured/structured_metrics_key_events_observer.cc",
+      "metrics/structured/structured_metrics_key_events_observer.h",
       "metrics/update_engine_metrics_provider.cc",
       "metrics/update_engine_metrics_provider.h",
       "metrics/usertype_by_devicetype_metrics_provider.cc",
@@ -5808,6 +5799,8 @@ static_library("browser") {
       "//components/metrics",
       "//components/metrics/structured",
       "//components/metrics/structured:external_metrics",
+      "//components/metrics/structured:structured_metrics_validator",
+      "//components/metrics/structured/lib",
       "//components/pref_registry",
       "//components/prefs",
       "//components/quirks",
@@ -6236,6 +6229,8 @@ static_library("browser") {
       "enterprise/reporting/cloud_profile_reporting_service_factory.cc",
       "enterprise/reporting/cloud_profile_reporting_service_factory.h",
       "fullscreen.h",
+      "metrics/family_link_user_metrics_provider.cc",
+      "metrics/family_link_user_metrics_provider.h",
       "policy/browser_signin_policy_handler.cc",
       "policy/browser_signin_policy_handler.h",
       "policy/cloud/user_policy_signin_service_factory.cc",
@@ -6304,6 +6299,12 @@ static_library("browser") {
       "recovery/recovery_install_global_error_factory.h",
     ]
 
+    # Support for the recovery improved component.
+    sources += [
+      "component_updater/updater_state.cc",
+      "component_updater/updater_state.h",
+    ]
+
     deps += [
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
@@ -6320,19 +6321,6 @@ static_library("browser") {
       # * `//chrome/browser/dock.h` (MacOS)
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
     ]
-
-    # Support for the recovery improved component.
-    sources += [
-      "component_updater/updater_state.cc",
-      "component_updater/updater_state.h",
-    ]
-    deps += [ "//chrome/updater:browser_sources" ]
-    if (is_mac) {
-      sources += [ "component_updater/updater_state_mac.mm" ]
-    }
-    if (is_win) {
-      sources += [ "component_updater/updater_state_win.cc" ]
-    }
   } else {
     # On other platforms, use the generic implementation.
     sources += [ "hang_monitor/hang_crash_dump.cc" ]
@@ -6348,6 +6336,9 @@ static_library("browser") {
     sources += [
       "accessibility/caption_settings_dialog.h",
       "accessibility/caption_settings_dialog_win.cc",
+      "accessibility/live_caption/live_caption_unavailability_notifier.cc",
+      "accessibility/live_caption/live_caption_unavailability_notifier.h",
+      "browser_switcher/alternative_browser_driver_win.cc",
       "browser_switcher/browser_switcher_policy_migrator.cc",
       "browser_switcher/browser_switcher_policy_migrator.h",
       "browser_switcher/browser_switcher_service_win.cc",
@@ -6355,6 +6346,7 @@ static_library("browser") {
       "chrome_browser_main_win.cc",
       "chrome_browser_main_win.h",
       "component_updater/recovery_improved_component_installer_win.cc",
+      "component_updater/updater_state_win.cc",
       "device_reauth/win/authenticator_win.cc",
       "device_reauth/win/authenticator_win.h",
       "device_reauth/win/device_authenticator_win.cc",
@@ -6380,6 +6372,10 @@ static_library("browser") {
       "install_verification/win/module_list.h",
       "install_verification/win/module_verification_common.cc",
       "install_verification/win/module_verification_common.h",
+      "media/cdm_pref_service_helper.cc",
+      "media/cdm_pref_service_helper.h",
+      "media/media_foundation_service_monitor.cc",
+      "media/media_foundation_service_monitor.h",
       "media_galleries/win/mtp_device_delegate_impl_win.cc",
       "media_galleries/win/mtp_device_delegate_impl_win.h",
       "media_galleries/win/mtp_device_object_entry.cc",
@@ -6524,7 +6520,10 @@ static_library("browser") {
       "//components/app_launch_prefetch",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
+      "//components/device_signals/core/browser/win",
+      "//components/live_caption:utils",
       "//components/os_crypt/async/browser:dpapi_key_provider",
+      "//components/stylus_handwriting/win",
       "//sandbox/win:sandbox",
       "//services/proxy_resolver_win/public/mojom",
       "//third_party/crashpad/crashpad/client",
@@ -6542,11 +6541,20 @@ static_library("browser") {
     if (is_chrome_branded) {
       deps += [
         "//chrome/browser/platform_experience/installer:installer_win",
+        "//chrome/browser/win/installer_downloader:controller",
+        "//chrome/browser/win/installer_downloader:infobar",
+        "//chrome/browser/win/installer_downloader:infobar_impl",
         "//chrome/updater/app/server/win:updater_legacy_idl",
       ]
       sources += [
         "policy/status_provider/updater_status_and_value_provider.cc",
         "policy/status_provider/updater_status_and_value_provider.h",
+      ]
+    }
+    if (enable_media_foundation_widevine_cdm) {
+      sources += [
+        "component_updater/media_foundation_widevine_cdm_component_installer.cc",
+        "component_updater/media_foundation_widevine_cdm_component_installer.h",
       ]
     }
   } else {
@@ -6576,6 +6584,7 @@ static_library("browser") {
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
       "component_updater/recovery_improved_component_installer_mac.cc",
+      "component_updater/updater_state_mac.mm",
       "device_reauth/mac/authenticator_mac.h",
       "device_reauth/mac/authenticator_mac.mm",
       "device_reauth/mac/device_authenticator_mac.h",
@@ -6659,6 +6668,7 @@ static_library("browser") {
     deps += [
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/renderer_host:history_swiper",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib",
@@ -6667,6 +6677,7 @@ static_library("browser") {
       "//chrome/services/mac_notifications/public/cpp",
       "//chrome/services/mac_notifications/public/mojom",
       "//components/crash/core/app",
+      "//components/device_signals/core/browser/mac",
       "//components/metal_util",
       "//components/policy/core/common:common_constants",
       "//components/remote_cocoa/app_shim:features",
@@ -6718,6 +6729,7 @@ static_library("browser") {
     ]
     deps += [
       "//chrome/browser/enterprise/watermark:watermark_view_lib",
+      "//chrome/browser/ui/webui/watermark",
       "//components/enterprise/watermarking",
       "//components/enterprise/watermarking/content",
     ]
@@ -6795,6 +6807,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/signals/signals_service_factory.h",
       "enterprise/connectors/device_trust/signals/signals_service_impl.cc",
       "enterprise/connectors/device_trust/signals/signals_service_impl.h",
+      "metrics/structured/chrome_structured_metrics_delegate.cc",
+      "metrics/structured/chrome_structured_metrics_delegate.h",
 
       # These policies are only supported on desktop
       "performance_manager/user_tuning/memory_saver_policy_handler.cc",
@@ -6812,7 +6826,12 @@ static_library("browser") {
       "//components/device_signals/core/common",
       "//components/enterprise/core",
       "//components/enterprise/device_trust",
+      "//components/metrics",
+      "//components/metrics/structured",
+      "//components/metrics/structured:structured_metrics_validator",
       "//components/policy/proto",
+      "//components/power_metrics",
+      "//components/webapps/isolated_web_apps:scheme",
       "//services/data_decoder/public/cpp",
     ]
   }
@@ -6918,6 +6937,19 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac) {
     sources += [
+      "browser_switcher/alternative_browser_driver.h",
+      "browser_switcher/browser_switcher_navigation_throttle.cc",
+      "browser_switcher/browser_switcher_navigation_throttle.h",
+      "browser_switcher/browser_switcher_prefs.cc",
+      "browser_switcher/browser_switcher_prefs.h",
+      "browser_switcher/browser_switcher_service.cc",
+      "browser_switcher/browser_switcher_service.h",
+      "browser_switcher/browser_switcher_service_factory.cc",
+      "browser_switcher/browser_switcher_service_factory.h",
+      "browser_switcher/browser_switcher_sitelist.cc",
+      "browser_switcher/browser_switcher_sitelist.h",
+      "browser_switcher/ieem_sitelist_parser.cc",
+      "browser_switcher/ieem_sitelist_parser.h",
       "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
       "enterprise/chrome_browser_main_extra_parts_enterprise.h",
       "enterprise/connectors/device_trust/attestation/browser/attestation_switches.cc",
@@ -7018,23 +7050,16 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
+      "//chrome/browser/headless:metrics",
+      "//chrome/browser/ui/views/session_restore_infobar",
       "//chrome/browser/ui/webui/app_settings",
       "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/signin/history_sync_optin:mojo_bindings",
       "//chrome/services/system_signals/public/cpp/browser",
+      "//components/services/on_device_translation/public/cpp",
       "//components/supervised_user/core/common:features",
+      "//components/themes:policy",
     ]
-
-    if (is_win) {
-      deps += [ "//components/device_signals/core/browser/win" ]
-    }
-
-    if (is_mac) {
-      deps += [
-        "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
-        "//components/device_signals/core/browser/mac",
-      ]
-    }
   }
 
   if (is_linux || is_chromeos) {
@@ -7112,6 +7137,10 @@ static_library("browser") {
 
   if (is_win || is_linux || is_chromeos) {
     sources += [
+      "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event.h",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
+      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
       "renderer_context_menu/spelling_options_submenu_observer.cc",
       "renderer_context_menu/spelling_options_submenu_observer.h",
     ]
@@ -7126,36 +7155,8 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "browser_switcher/alternative_browser_driver.h",
-      "browser_switcher/browser_switcher_navigation_throttle.cc",
-      "browser_switcher/browser_switcher_navigation_throttle.h",
-      "browser_switcher/browser_switcher_prefs.cc",
-      "browser_switcher/browser_switcher_prefs.h",
-      "browser_switcher/browser_switcher_service.cc",
-      "browser_switcher/browser_switcher_service.h",
-      "browser_switcher/browser_switcher_service_factory.cc",
-      "browser_switcher/browser_switcher_service_factory.h",
-      "browser_switcher/browser_switcher_sitelist.cc",
-      "browser_switcher/browser_switcher_sitelist.h",
-      "browser_switcher/ieem_sitelist_parser.cc",
-      "browser_switcher/ieem_sitelist_parser.h",
-    ]
-    if (is_win) {
-      sources += [ "browser_switcher/alternative_browser_driver_win.cc" ]
-    }
-    if (is_mac || is_linux) {
-      sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
-    }
-  }
-
-  # General Structured Metrics Dependencies needed by these platforms.
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [
-      "metrics/structured/chrome_structured_metrics_delegate.cc",
-      "metrics/structured/chrome_structured_metrics_delegate.h",
-    ]
+  if (is_mac || is_linux) {
+    sources += [ "browser_switcher/alternative_browser_driver_posix.cc" ]
   }
 
   if (enable_downgrade_processing) {
@@ -7248,23 +7249,6 @@ static_library("browser") {
       "//ui/events/ozone",
       "//ui/ozone",
     ]
-  }
-
-  if (is_win || is_linux || is_chromeos) {
-    sources += [
-      "policy/messaging_layer/util/manual_test_heartbeat_event.cc",
-      "policy/messaging_layer/util/manual_test_heartbeat_event.h",
-      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.cc",
-      "policy/messaging_layer/util/manual_test_heartbeat_event_factory.h",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [ "//components/power_metrics" ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    deps += [ "//chrome/browser/headless:metrics" ]
   }
 
   if (enable_click_to_call) {
@@ -7497,6 +7481,10 @@ static_library("browser") {
         "signin/signin_util_win.h",
       ]
     }
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
+    }
+
     public_deps += [
       "//chrome/browser/profiles/batch_upload",
       "//chrome/browser/profiles/batch_upload:impl",
@@ -7588,6 +7576,13 @@ static_library("browser") {
       "speech/extension_api/tts_extension_api.cc",
       "speech/extension_api/tts_extension_api.h",
       "speech/extension_api/tts_extension_api_constants.h",
+      "supervised_user/extension_icon_loader.cc",
+      "supervised_user/extension_icon_loader.h",
+      "supervised_user/supervised_user_extensions_delegate_impl.cc",
+      "supervised_user/supervised_user_extensions_delegate_impl.h",
+      "supervised_user/supervised_user_extensions_manager.cc",
+      "supervised_user/supervised_user_extensions_manager.h",
+      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
     ]
 
     # Any circular includes must depend on the target
@@ -7612,6 +7607,8 @@ static_library("browser") {
       "//chrome/browser/enterprise/incognito",
       "//chrome/browser/extensions/api/browsing_data",
       "//chrome/browser/resources:component_extension_resources",
+      "//chrome/browser/supervised_user",
+      "//chrome/browser/ui/extensions",
 
       # This dependency should be removed when //chrome/browser/notifications
       # is modularized.
@@ -7791,10 +7788,11 @@ static_library("browser") {
     # "browser_public_dependencies".
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/ui/extensions:impl",
 
       # TODO(crbug.com/40593486): This is unfortunate, but not easy to
       # fix. Ideally, //chrome/browser:browser shouldn't depend on these APIs
-      #(though the APIs likely will depend on //chrome/browser), but we need
+      # (though the APIs likely will depend on //chrome/browser), but we need
       # to pull them in here to allow registration of keyed services.
       "//chrome/browser/apps/platform_apps/api",
 
@@ -7815,19 +7813,33 @@ static_library("browser") {
       "//components/drive",
       "//components/guest_view/browser",
       "//extensions/browser/api/content_settings",
-      "//extensions/common:mojom",
-      "//media/cast:sender",
-
-      # TODO(crbug.com/41410773): mirroring shouldn't depend on enable_extensions.
-      "//components/mirroring/browser",
-      "//components/mirroring/mojom:service",
-      "//components/mirroring/service:mirroring_service",
       "//extensions/common:common_constants",
+      "//extensions/common:mojom",
       "//extensions/components/javascript_dialog_extensions_client",
       "//google_apis/calendar",
       "//google_apis/common",
       "//google_apis/drive",
+      "//media/cast:sender",
     ]
+    deps += [
+      # TODO(crbug.com/41410773): mirroring shouldn't depend on enable_extensions.
+      "//components/mirroring/browser",
+      "//components/mirroring/mojom:service",
+      "//components/mirroring/service:mirroring_service",
+    ]
+    deps += [
+      # TODO(crbug.com/402488726): Support supervised user UI on desktop
+      # Android.
+      "//chrome/browser/ui/supervised_user",
+
+      # TODO(crbug.com/420905611): Remove this circular dependency when:
+      # - c/b/app_mode/app_mode_utils.h,
+      # - c/b/supervised_user/supervised_user_browser_utils.h and
+      # - c/b/signin/signin_promo_util.h
+      # ... get modularized.
+      "//chrome/browser/ui/extensions:impl",
+    ]
+
     if (is_chromeos) {
       sources += [
         "accessibility/accessibility_extension_api_ash.cc",
@@ -7842,6 +7854,8 @@ static_library("browser") {
         "speech/extension_api/tts_engine_extension_observer_chromeos.h",
         "speech/extension_api/tts_engine_extension_observer_chromeos_factory.cc",
         "speech/extension_api/tts_engine_extension_observer_chromeos_factory.h",
+        "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
+        "supervised_user/chromeos/parent_access_extension_approvals_manager.h",
       ]
       deps += [
         "//chromeos/services/tts/public/mojom",
@@ -7864,13 +7878,6 @@ static_library("browser") {
         "//chrome/browser/extensions/api/enterprise_login",
       ]
     }
-  }
-
-  if (enterprise_watermark) {
-    deps += [
-      "//chrome/browser/enterprise/watermark:watermark_view_lib",
-      "//chrome/browser/ui/webui/watermark",
-    ]
   }
 
   # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
@@ -7942,28 +7949,6 @@ static_library("browser") {
       "media/cdm_document_service_impl.cc",
       "media/cdm_document_service_impl.h",
     ]
-  }
-
-  if (is_win) {
-    sources += [
-      "accessibility/live_caption/live_caption_unavailability_notifier.cc",
-      "accessibility/live_caption/live_caption_unavailability_notifier.h",
-      "media/cdm_pref_service_helper.cc",
-      "media/cdm_pref_service_helper.h",
-      "media/media_foundation_service_monitor.cc",
-      "media/media_foundation_service_monitor.h",
-    ]
-    deps += [
-      "//components/live_caption:utils",
-      "//components/stylus_handwriting/win",
-    ]
-
-    if (enable_media_foundation_widevine_cdm) {
-      sources += [
-        "component_updater/media_foundation_widevine_cdm_component_installer.cc",
-        "component_updater/media_foundation_widevine_cdm_component_installer.h",
-      ]
-    }
   }
 
   if (enable_chrome_notifications) {
@@ -8270,52 +8255,6 @@ static_library("browser") {
     }
   }
 
-  if (!is_chromeos) {
-    sources += [
-      "metrics/family_link_user_metrics_provider.cc",
-      "metrics/family_link_user_metrics_provider.h",
-    ]
-  }
-
-  if (enable_extensions_core) {
-    sources += [
-      "supervised_user/extension_icon_loader.cc",
-      "supervised_user/extension_icon_loader.h",
-      "supervised_user/supervised_user_extensions_delegate_impl.cc",
-      "supervised_user/supervised_user_extensions_delegate_impl.h",
-      "supervised_user/supervised_user_extensions_manager.cc",
-      "supervised_user/supervised_user_extensions_manager.h",
-      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
-    ]
-    deps += [
-      "//chrome/browser/supervised_user",
-      "//chrome/browser/ui/extensions",
-    ]
-  }
-
-  if (enable_extensions) {
-    deps += [
-      # TODO(crbug.com/402488726): Support supervised user UI on desktop
-      # Android.
-      "//chrome/browser/ui/supervised_user",
-
-      # TODO(crbug.com/420905611): Remove this circular dependency when:
-      # - c/b/app_mode/app_mode_utils.h,
-      # - c/b/supervised_user/supervised_user_browser_utils.h and
-      # - c/b/signin/signin_promo_util.h
-      # ... get modularized.
-      "//chrome/browser/ui/extensions:impl",
-    ]
-    allow_circular_includes_from += [ "//chrome/browser/ui/extensions:impl" ]
-
-    if (is_chromeos) {
-      sources += [
-        "supervised_user/chromeos/parent_access_extension_approvals_manager.cc",
-        "supervised_user/chromeos/parent_access_extension_approvals_manager.h",
-      ]
-    }
-  }
-
   if (enable_video_effects) {
     sources += [
       "media_effects/media_effects_manager_binder.cc",
@@ -8452,46 +8391,6 @@ static_library("browser") {
       "//services/metrics/public/cpp:metrics_cpp",
       "//services/metrics/public/cpp:ukm_builders",
     ]
-  }
-
-  if (is_chromeos || is_win || is_linux || is_mac) {
-    deps += [
-      "//components/metrics",
-      "//components/metrics/structured",
-      "//components/metrics/structured:structured_metrics_validator",
-    ]
-
-    if (is_chromeos) {
-      sources += [
-        "metrics/structured/arena_event_buffer.cc",
-        "metrics/structured/arena_event_buffer.h",
-        "metrics/structured/ash_event_storage.cc",
-        "metrics/structured/ash_event_storage.h",
-        "metrics/structured/ash_structured_metrics_delegate.cc",
-        "metrics/structured/ash_structured_metrics_delegate.h",
-        "metrics/structured/ash_structured_metrics_recorder.cc",
-        "metrics/structured/ash_structured_metrics_recorder.h",
-        "metrics/structured/cros_events_processor.cc",
-        "metrics/structured/cros_events_processor.h",
-        "metrics/structured/key_data_provider_ash.cc",
-        "metrics/structured/key_data_provider_ash.h",
-        "metrics/structured/metadata_processor_ash.cc",
-        "metrics/structured/metadata_processor_ash.h",
-        "metrics/structured/profile_observer.cc",
-        "metrics/structured/profile_observer.h",
-        "metrics/structured/storage_manager_impl.cc",
-        "metrics/structured/storage_manager_impl.h",
-        "metrics/structured/structured_metrics_key_events_observer.cc",
-        "metrics/structured/structured_metrics_key_events_observer.h",
-      ]
-
-      deps += [
-        "//components/metrics",
-        "//components/metrics/structured:external_metrics",
-        "//components/metrics/structured:structured_metrics_validator",
-        "//components/metrics/structured/lib",
-      ]
-    }
   }
 
   if (is_chrome_for_testing) {
