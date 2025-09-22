@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,8 @@
 struct CoreAccountInfo;
 class DiceTabHelper;
 class ProfilePickerWebContentsHost;
+
+BASE_DECLARE_FEATURE(kProfilePickerGaiaBlankContinueUrl);
 
 namespace content {
 struct ContextMenuParams;

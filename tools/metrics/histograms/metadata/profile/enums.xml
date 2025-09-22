@@ -523,6 +523,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Timeout: Sign in error"/>
 </enum>
 
+<enum name="ProfilePickerSignInProviderStep">
+  <int value="0" label="Switch to signin screen"/>
+  <int value="1" label="Navigation to the Gaia blank page"/>
+  <int value="2" label="Finish flow: SAML"/>
+  <int value="3" label="Finish flow: Sync conformation"/>
+  <int value="4" label="Finish flow: History optin"/>
+</enum>
+
 <enum name="ProfileSignedInFlowOutcome">
   <int value="0" label="A consumer account is added and syncing"/>
   <int value="1" label="A consumer account is added without sync"/>
