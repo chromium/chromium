@@ -34,6 +34,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
+#include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -75,6 +76,7 @@
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_uploader.h"
+#include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/metrics/metrics_service.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
@@ -500,8 +502,19 @@ class JournalHandler {
               .email);
     }
 
-    feedback_data->CompressSystemInfo();
-    feedback_data->OnFeedbackPageDataComplete();
+    system_logs::BuildChromeSystemLogsFetcher(
+        actor_keyed_service_->GetProfile(), /*scrub_data=*/false)
+        ->Fetch(base::BindOnce(
+            [](scoped_refptr<::feedback::FeedbackData> feedback_data,
+               std::unique_ptr<system_logs::SystemLogsResponse>
+                   system_logs_response) {
+              if (system_logs_response) {
+                feedback_data->AddLogs(*system_logs_response);
+              }
+              feedback_data->CompressSystemInfo();
+              feedback_data->OnFeedbackPageDataComplete();
+            },
+            std::move(feedback_data)));
   }
 
   void FileInitDone(bool success) {
