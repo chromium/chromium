@@ -1077,6 +1077,61 @@ ci.builder(
     experimental = True,
 )
 
+ci.builder(
+    name = "linux-blink-tracing-rel",
+    description_html = "Runs {} with <code>blink*</code> traces added to test results.".format(
+        linkify("https://web-platform-tests.org/", "web platform tests"),
+    ),
+    schedule = "with 24h interval",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "remoteexec",
+            "linux",
+            "x64",
+            # Instrument binaries with `blink.bindings` trace events.
+            "extended_tracing",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "headless_shell_wpt_tests_tracing",
+        ],
+        mixins = [
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "headless_shell_wpt_tests_tracing": targets.mixin(
+                # This builder isn't latency-sensitive, so use fewer shards than
+                # the base test suite.
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+        },
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|blink",
+        short_name = "trace",
+    ),
+    contact_team_email = "chrome-product-engprod@google.com",
+)
+
 fyi_ios_builder(
     name = "ios-wpt-fyi-rel",
     schedule = "with 5h interval",

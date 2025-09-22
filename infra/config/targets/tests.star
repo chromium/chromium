@@ -712,6 +712,23 @@ targets.tests.isolated_script_test(
     binary = "headless_shell_wpt",
 )
 
+targets.tests.isolated_script_test(
+    name = "headless_shell_wpt_tests_tracing",
+    mixins = [
+        "has_native_resultdb_integration",
+        "web-test-coverage",
+    ],
+    args = [
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
+        "--enable-per-test-tracing=blink*",
+    ],
+    binary = "headless_shell_wpt",
+)
+
 targets.tests.gtest_test(
     name = "highway_tests",
 )

@@ -2385,6 +2385,18 @@ targets.mixin(
     ),
 )
 
+# Common options for gathering code coverage or other FYI data. Run all tests
+# exactly once, and don't fail the suite for unexpected results.
+targets.mixin(
+    name = "web-test-coverage",
+    generate_pyl_entry = False,
+    args = [
+        "--skipped=ignore",
+        "--no-retry-failures",
+        "--no-expectations",
+    ],
+)
+
 targets.mixin(
     name = "web-test-leak",
     generate_pyl_entry = False,

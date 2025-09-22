@@ -127,6 +127,15 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-blink-tracing-rel",
+    mirrors = ["ci/linux-blink-tracing-rel"],
+    gn_args = "ci/linux-blink-tracing-rel",
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-product-engprod@google.com",
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "win10-wpt-chromium-rel",
     mirrors = ["ci/win10-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(

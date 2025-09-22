@@ -347,6 +347,7 @@
     "ios26-sdk-simulator": "ci/ios26-sdk-simulator/gn-args.json",
     "linux-annotator-rel": "ci/linux-annotator-rel/gn-args.json",
     "linux-blink-heap-verification": "ci/linux-blink-heap-verification/gn-args.json",
+    "linux-blink-tracing-rel": "ci/linux-blink-tracing-rel/gn-args.json",
     "linux-blink-wpt-reset-rel": "ci/linux-blink-wpt-reset-rel/gn-args.json",
     "linux-chromeos-annotator-rel": "ci/linux-chromeos-annotator-rel/gn-args.json",
     "linux-crossbench": "ci/linux-crossbench/gn-args.json",
@@ -521,6 +522,7 @@
   "tryserver.blink": {
     "android-15-chrome-blink-rel": "try/android-15-chrome-blink-rel/gn-args.json",
     "linux-blink-rel": "try/linux-blink-rel/gn-args.json",
+    "linux-blink-tracing-rel": "try/linux-blink-tracing-rel/gn-args.json",
     "linux-wpt-chromium-rel": "try/linux-wpt-chromium-rel/gn-args.json",
     "mac-skia-alt-arm64-blink-rel": "try/mac-skia-alt-arm64-blink-rel/gn-args.json",
     "mac12.0-blink-rel": "try/mac12.0-blink-rel/gn-args.json",
