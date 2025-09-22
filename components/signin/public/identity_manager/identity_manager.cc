@@ -233,6 +233,10 @@ void IdentityManager::RemoveAccessTokenFromCache(
     const CoreAccountId& account_id,
     const ScopeSet& scopes,
     const std::string& access_token) {
+  if (account_id.empty() || access_token.empty()) {
+    return;
+  }
+
   token_service_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
@@ -240,6 +244,10 @@ void IdentityManager::RemoveAccessTokenFromCache(
     const CoreAccountId& account_id,
     OAuthConsumerId oauth_consumer_id,
     const std::string& access_token) {
+  if (account_id.empty() || access_token.empty()) {
+    return;
+  }
+
   ScopeSet scopes = GetOAuthConsumerFromId(oauth_consumer_id).GetScopes();
   token_service_->InvalidateAccessToken(account_id, scopes, access_token);
 }

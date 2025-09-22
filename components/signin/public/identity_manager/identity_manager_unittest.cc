@@ -2226,6 +2226,16 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()->BatchChangeRecords().at(0).at(0));
 }
 
+// Verifies that passing an empty access token does not crash.
+TEST_F(IdentityManagerTest, RevokeEmptyAccessToken) {
+  account_tracker()->SeedAccountInfo(kTestGaiaId, kTestEmail);
+  identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      primary_account_id(), ConsentLevel::kSync,
+      signin_metrics::AccessPoint::kUnknown);
+  identity_manager()->RemoveAccessTokenFromCache(
+      primary_account_id(), signin::OAuthConsumerId::kSync, std::string());
+}
+
 // Check that FindExtendedAccountInfo returns a valid account info iff the
 // account is known, and all the extended information is available.
 TEST_F(IdentityManagerTest, FindExtendedAccountInfo) {

@@ -241,6 +241,9 @@ void ProfileOAuth2TokenService::InvalidateAccessToken(
     const CoreAccountId& account_id,
     const OAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
+  CHECK(!account_id.empty(), base::NotFatalUntil::M145);
+  CHECK(!access_token.empty(), base::NotFatalUntil::M145);
+
   token_manager_->InvalidateAccessToken(account_id, scopes, access_token);
 }
 
