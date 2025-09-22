@@ -185,7 +185,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
             test_file_location=self.path_finder.path_from_web_tests(
                 'external', 'wpt', 'reftest.html'),
             html_summary=None,
-            additional_tags=mock.ANY)
+            additional_tags=mock.ANY,
+            properties=None)
 
         result = report_mock.call_args.kwargs['result']
         self.assertEqual(result.name, 'external/wpt/reftest.html')
@@ -227,7 +228,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
             test_file_location=self.path_finder.path_from_web_tests(
                 'wpt_internal', 'reftest.html'),
             html_summary=mock.ANY,
-            additional_tags=mock.ANY)
+            additional_tags=mock.ANY,
+            properties=None)
 
         result = report_mock.call_args.kwargs['result']
         self.assertEqual(result.name, 'wpt_internal/reftest.html')
@@ -284,7 +286,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                       test_file_location=self.path_finder.path_from_web_tests(
                           'external', 'wpt', 'variant.html'),
                       html_summary=mock.ANY,
-                      additional_tags=mock.ANY),
+                      additional_tags=mock.ANY,
+                      properties=None),
         ] * 2)
 
         fail, ok = [
@@ -573,6 +576,51 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.actual, 'SKIP')
         self.assertEqual(result.expected, {'SKIP'})
         self.assertFalse(result.unexpected)
+
+    def test_report_bcd_features(self):
+        trace_events = [{
+            'cat': 'blink.bindings',
+            'name': 'AbortSignal.aborted.get',
+        }, {
+            'cat': 'blink.bindings',
+            'name': 'AbortSignal.aborted.set',
+        }, {
+            'cat': 'blink.bindings',
+            'name': 'AbortSignal.onabort.set',
+        }, {
+            'cat': 'cc',
+            'name': 'unrelated',
+        }, {
+            'cat': 'blink.bindings',
+            'name': 'AbortController.constructor',
+        }, {
+            'cat': 'blink.bindings',
+            'name': 'IDBKeyRange.only',
+        }]
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='OK',
+                    extra={'trace': trace_events})
+
+        properties = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'properties']
+        self.assertEqual(
+            {
+                'bcd_counters': [{
+                    'f': 'AbortController.AbortController',
+                    'c': 1
+                }, {
+                    'f': 'AbortSignal.abort_event',
+                    'c': 1
+                }, {
+                    'f': 'AbortSignal.aborted',
+                    'c': 2
+                }, {
+                    'f': 'IDBKeyRange.only',
+                    'c': 1
+                }],
+            }, properties)
 
     def test_extract_text(self):
         self.fs.write_text_file(
@@ -1399,7 +1447,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
             test_file_location=self.path_finder.path_from_web_tests(
                 'external', 'wpt', 'reftest.html'),
             html_summary=mock.ANY,
-            additional_tags=mock.ANY)
+            additional_tags=mock.ANY,
+            properties=None)
         result = report_mock.call_args.kwargs['result']
         self.assertEqual(result.name, 'external/wpt/reftest.html')
         self.assertEqual(result.actual, 'SKIP')
