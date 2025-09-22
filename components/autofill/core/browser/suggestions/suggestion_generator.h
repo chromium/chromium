@@ -50,16 +50,18 @@ class SuggestionGenerator {
   // suggestion. One `FillingProduct` may be able to generate different kinds of
   // `SuggestionDataSource`, but cannot fetch data for more than one.
   enum class SuggestionDataSource {
-    kAutofillAi = 0,
-    kAddress = 1,
-    kCreditCard = 2,
-    kIban = 3,
-    kMerchantPromoCode = 4,
-    kAutocomplete = 5,
-    kLoyaltyCard = 6,
-    kIdentityCredential = 7,
-    kPasskey = 8,
-    kCompose = 9,
+    kAutofillAi,
+    kAddress,
+    kCreditCard,
+    kVirtualStandaloneCvc,
+    kSaveAndFillPromo,
+    kIban,
+    kMerchantPromoCode,
+    kAutocomplete,
+    kLoyaltyCard,
+    kIdentityCredential,
+    kPasskey,
+    kCompose,
     kMaxValue = kCompose
   };
 
