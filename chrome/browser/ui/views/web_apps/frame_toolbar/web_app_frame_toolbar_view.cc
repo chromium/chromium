@@ -391,7 +391,8 @@ WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
 }
 
 void WebAppFrameToolbarView::UpdateCachedColors() {
-  const BrowserFrameView* frame_view = browser_view_->frame()->GetFrameView();
+  const BrowserFrameView* frame_view =
+      browser_view_->browser_widget()->GetFrameView();
   DCHECK(frame_view);
 
   active_background_color_ =

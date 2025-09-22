@@ -17,10 +17,10 @@
 #include "ui/views/background.h"
 
 PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
-    BrowserWidget* frame,
+    BrowserWidget* browser_widget,
     BrowserView* browser_view)
-    : PictureInPictureBrowserFrameView(frame, browser_view) {
-  aura::Window* frame_window = frame->GetNativeWindow();
+    : PictureInPictureBrowserFrameView(browser_widget, browser_view) {
+  aura::Window* frame_window = browser_widget->GetNativeWindow();
   ash::window_util::SetChildrenUseExtendedHitRegionForWindow(
       frame_window->parent());
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
@@ -55,7 +55,7 @@ void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
 
 void PictureInPictureBrowserFrameViewAsh::OnWindowDestroyed(
     aura::Window* window) {
-  DCHECK(window_observation_.IsObservingSource(frame()->GetNativeWindow()));
+  DCHECK(window_observation_.IsObservingSource(GetWidget()->GetNativeWindow()));
   window_observation_.Reset();
 }
 

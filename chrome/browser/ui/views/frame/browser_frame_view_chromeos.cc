@@ -228,7 +228,7 @@ void BrowserFrameViewChromeOS::Init() {
 
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
-          frame(), is_close_button_enabled));
+          browser_widget(), is_close_button_enabled));
 
   // Initializing the TabIconView is expensive, so only do it if we need to.
   if (browser_view()->ShouldShowWindowIcon()) {
@@ -252,7 +252,7 @@ void BrowserFrameViewChromeOS::Init() {
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
   if (browser->profile()->IsOffTheRecord()) {
-    frame()->GetNativeWindow()->SetProperty(
+    browser_widget()->GetNativeWindow()->SetProperty(
         chromeos::kBlockedForAssistantSnapshotKey, true);
   }
 
@@ -289,7 +289,8 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
 gfx::Rect BrowserFrameViewChromeOS::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
   const int left_inset = GetTabStripLeftInset();
-  const bool restored = !frame()->IsMaximized() && !frame()->IsFullscreen();
+  const bool restored =
+      !browser_widget()->IsMaximized() && !browser_widget()->IsFullscreen();
   return gfx::Rect(left_inset, GetTopInset(restored),
                    std::max(0, width() - left_inset - GetTabStripRightInset()),
                    tabstrip_minimum_size.height());
@@ -331,7 +332,7 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
     // The header isn't painted for restored popup/app windows in overview mode,
     // but the inset is still calculated below, so the overview code can align
     // the window content with a fake header.
-    if (!GetOverviewMode() || frame()->IsFullscreen() ||
+    if (!GetOverviewMode() || browser_widget()->IsFullscreen() ||
         browser_view()->GetTabStripVisible() ||
         browser_view()->webui_tab_strip()) {
       return 0;
@@ -444,12 +445,14 @@ int BrowserFrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
   // When the window is restored (and not in tablet split-view mode) we want a
   // large click target above the tabs to drag the window, so redirect clicks in
   // the tab's shadow to caption.
-  if (hit_test == HTCLIENT && !frame()->IsMaximized() &&
-      !frame()->IsFullscreen() && !display::Screen::Get()->InTabletMode()) {
+  if (hit_test == HTCLIENT && !browser_widget()->IsMaximized() &&
+      !browser_widget()->IsFullscreen() &&
+      !display::Screen::Get()->InTabletMode()) {
     // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
-    View::ConvertPointToTarget(this, frame()->client_view(), &client_point);
+    View::ConvertPointToTarget(this, browser_widget()->client_view(),
+                               &client_point);
     gfx::Rect tabstrip_shadow_bounds(
         browser_view()
             ->tab_strip_view()
@@ -484,11 +487,11 @@ void BrowserFrameViewChromeOS::UpdateWindowIcon() {
 }
 
 void BrowserFrameViewChromeOS::UpdateWindowTitle() {
-  if (!frame()->IsFullscreen() && frame_header_) {
+  if (!browser_widget()->IsFullscreen() && frame_header_) {
     frame_header_->SchedulePaintForTitle();
   }
 
-  frame()->GetNativeWindow()->SetProperty(
+  browser_widget()->GetNativeWindow()->SetProperty(
       chromeos::kWindowOverviewTitleKey,
       browser_view()->browser()->GetWindowTitleForCurrentTab(
           /*include_app_name=*/false));
@@ -571,7 +574,8 @@ gfx::Size BrowserFrameViewChromeOS::GetMinimumSize() const {
     return highlight_border_overlay_->CalculateImageSourceSize();
   }
 
-  gfx::Size min_client_view_size(frame()->client_view()->GetMinimumSize());
+  gfx::Size min_client_view_size(
+      browser_widget()->client_view()->GetMinimumSize());
   const int min_frame_width =
       frame_header_ ? frame_header_->GetMinimumHeaderWidth() : 0;
   int min_width = std::max(min_frame_width, min_client_view_size.width());
@@ -616,7 +620,7 @@ void BrowserFrameViewChromeOS::OnThemeChanged() {
 void BrowserFrameViewChromeOS::ChildPreferredSizeChanged(views::View* child) {
   if (browser_view()->initialized()) {
     InvalidateLayout();
-    frame()->GetRootView()->DeprecatedLayoutImmediately();
+    browser_widget()->GetRootView()->DeprecatedLayoutImmediately();
   }
 }
 
@@ -725,11 +729,11 @@ void BrowserFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
 
   InvalidateLayout();
   // Can be null in tests.
-  if (frame()->client_view()) {
-    frame()->client_view()->InvalidateLayout();
+  if (browser_widget()->client_view()) {
+    browser_widget()->client_view()->InvalidateLayout();
   }
-  if (frame()->GetRootView()) {
-    frame()->GetRootView()->DeprecatedLayoutImmediately();
+  if (browser_widget()->GetRootView()) {
+    browser_widget()->GetRootView()->DeprecatedLayoutImmediately();
   }
 }
 
@@ -747,7 +751,7 @@ bool BrowserFrameViewChromeOS::ShouldTabIconViewAnimate() const {
 }
 
 ui::ImageModel BrowserFrameViewChromeOS::GetFaviconForTabIconView() {
-  views::WidgetDelegate* delegate = frame()->widget_delegate();
+  views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   return delegate ? delegate->GetWindowIcon() : ui::ImageModel();
 }
 
@@ -782,8 +786,8 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
     // The client view (in particular the tab strip) has different layout in
     // restored vs. maximized/fullscreen. Invalidate the layout because the
     // window bounds may not have changed. https://crbug.com/1342414
-    if (frame()->client_view()) {
-      frame()->client_view()->InvalidateLayout();
+    if (browser_widget()->client_view()) {
+      browser_widget()->client_view()->InvalidateLayout();
     }
   }
 
@@ -802,7 +806,7 @@ void BrowserFrameViewChromeOS::OnWindowPropertyChanged(aura::Window* window,
       frame_header_->OnFloatStateChanged();
     }
 
-    const bool is_fullscreen = frame()->IsFullscreen();
+    const bool is_fullscreen = browser_widget()->IsFullscreen();
     const bool was_fullscreen = chromeos::IsFullscreenOrPinnedWindowStateType(
         static_cast<chromeos::WindowStateType>(old));
     // Additionally updates immersive mode when the state is transitioning
@@ -895,7 +899,7 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
     return false;
   }
   if (display::Screen::Get()->InTabletMode() &&
-      (IsSnapped() || frame()->IsMaximized())) {
+      (IsSnapped() || browser_widget()->IsMaximized())) {
     // Snapped or maximized browser windows that doesn't have tabstrip uses
     // immersive frame to hide frame in tablet mode.
     return !browser_view()->GetSupportsTabStrip();
@@ -908,7 +912,7 @@ bool BrowserFrameViewChromeOS::ShouldEnableImmersiveModeController() const {
                                           ->fullscreen_controller();
   // For other scnarios, use immersive if the browser is in fullscreen, and it
   // is NOT requested via extension or HTML API `requestFullscreen()`.
-  return frame()->IsFullscreen() &&
+  return browser_widget()->IsFullscreen() &&
          !fullscreen_controller->IsExtensionFullscreenOrPending() &&
          fullscreen_controller->IsFullscreenForBrowser();
 }
@@ -920,7 +924,8 @@ bool BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(
 }
 
 bool BrowserFrameViewChromeOS::IsTrustedPinned() const {
-  return ash::WindowState::Get(frame()->GetNativeWindow())->IsTrustedPinned();
+  return ash::WindowState::Get(browser_widget()->GetNativeWindow())
+      ->IsTrustedPinned();
 }
 
 void BrowserFrameViewChromeOS::PaintAsActiveChanged() {
@@ -1032,7 +1037,7 @@ bool BrowserFrameViewChromeOS::GetShouldPaint() const {
     return immersive_mode_controller->IsRevealed();
   }
 
-  return !frame()->IsFullscreen();
+  return !browser_widget()->IsFullscreen();
 }
 
 void BrowserFrameViewChromeOS::OnAddedToOrRemovedFromOverview() {
@@ -1051,10 +1056,10 @@ BrowserFrameViewChromeOS::CreateFrameHeader() {
   Browser* browser = browser_view()->browser();
   if (!UsePackagedAppHeaderStyle(browser)) {
     header = std::make_unique<BrowserFrameHeaderChromeOS>(
-        frame(), this, this, caption_button_container_);
+        browser_widget(), this, this, caption_button_container_);
   } else {
     header = std::make_unique<chromeos::DefaultFrameHeader>(
-        frame(), this, caption_button_container_);
+        browser_widget(), this, caption_button_container_);
   }
 
   header->SetLeftHeaderView(window_icon_);
@@ -1071,7 +1076,8 @@ void BrowserFrameViewChromeOS::UpdateTopViewInset() {
                       browser_view()->IsBorderlessModeEnabled()))
                         ? 0
                         : GetTopInset(/*restored=*/false);
-  frame()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, inset);
+  browser_widget()->GetNativeWindow()->SetProperty(aura::client::kTopViewInset,
+                                                   inset);
 }
 
 bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
@@ -1100,7 +1106,7 @@ bool BrowserFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
 }
 
 void BrowserFrameViewChromeOS::UpdateProfileIcons() {
-  View* root_view = frame()->GetRootView();
+  View* root_view = browser_widget()->GetRootView();
   if (GetShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
     if (!profile_indicator_icon_) {
@@ -1176,7 +1182,7 @@ bool BrowserFrameViewChromeOS::GetOverviewMode() const {
 }
 
 bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {
-  if (!frame()->IsFullscreen()) {
+  if (!browser_widget()->IsFullscreen()) {
     return false;
   }
 
@@ -1191,7 +1197,7 @@ bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {
 }
 
 void BrowserFrameViewChromeOS::OnUpdateFrameColor() {
-  aura::Window* window = frame()->GetNativeWindow();
+  aura::Window* window = browser_widget()->GetNativeWindow();
   window->SetProperty(chromeos::kFrameActiveColorKey,
                       GetFrameColor(BrowserFrameActiveState::kActive));
   window->SetProperty(chromeos::kFrameInactiveColorKey,
@@ -1273,11 +1279,13 @@ void BrowserFrameViewChromeOS::MaybeAnimateThemeChanged() {
 }
 
 bool BrowserFrameViewChromeOS::IsFloated() const {
-  return ash::WindowState::Get(frame()->GetNativeWindow())->IsFloated();
+  return ash::WindowState::Get(browser_widget()->GetNativeWindow())
+      ->IsFloated();
 }
 
 bool BrowserFrameViewChromeOS::IsSnapped() const {
-  return ash::WindowState::Get(frame()->GetNativeWindow())->IsSnapped();
+  return ash::WindowState::Get(browser_widget()->GetNativeWindow())
+      ->IsSnapped();
 }
 
 bool BrowserFrameViewChromeOS::UseWebUITabStrip() const {
@@ -1291,7 +1299,7 @@ const aura::Window* BrowserFrameViewChromeOS::GetFrameWindow() const {
 }
 
 aura::Window* BrowserFrameViewChromeOS::GetFrameWindow() {
-  return frame()->GetNativeWindow();
+  return browser_widget()->GetNativeWindow();
 }
 
 BEGIN_METADATA(BrowserFrameViewChromeOS)

@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   // Retrieve system menu.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Verify system menu command availability.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));
@@ -94,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   // Retrieve system menu.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Verify system menu command availability.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));
@@ -147,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Retrieve the system menu so we can verify command availability.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(settings_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Standard WebUI commands are available.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));

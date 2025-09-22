@@ -18,7 +18,7 @@ class PictureInPictureBrowserFrameViewAsh
     : public PictureInPictureBrowserFrameView,
       public aura::WindowObserver {
  public:
-  PictureInPictureBrowserFrameViewAsh(BrowserWidget* frame,
+  PictureInPictureBrowserFrameViewAsh(BrowserWidget* browser_widget,
                                       BrowserView* browser_view);
 
   PictureInPictureBrowserFrameViewAsh(

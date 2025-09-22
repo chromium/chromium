@@ -152,12 +152,12 @@ int32_t BrowserNativeWidgetMac::SheetOffsetY() {
 void BrowserNativeWidgetMac::GetWindowFrameTitlebarHeight(
     bool* override_titlebar_height,
     float* titlebar_height) {
-  if (browser_view_ && browser_view_->frame() &&
-      browser_view_->frame()->GetFrameView()) {
+  if (browser_view_ && browser_view_->browser_widget() &&
+      browser_view_->browser_widget()->GetFrameView()) {
     *override_titlebar_height = true;
     *titlebar_height =
         browser_view_->GetTabStripHeight() +
-        browser_view_->frame()->GetFrameView()->GetTopInset(true);
+        browser_view_->browser_widget()->GetFrameView()->GetTopInset(true);
     if (!browser_view_->ShouldDrawTabStrip()) {
       *titlebar_height +=
           browser_view_->GetWebAppFrameToolbarPreferredSize().height() +

@@ -4288,8 +4288,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   const BrowserView* const browser_view2 =
       BrowserView::GetBrowserViewForBrowser(browser2);
   const gfx::Rect tabstrip_region2_bounds =
-      browser_view2->frame()->GetFrameView()->GetBoundsForTabStripRegion(
-          browser_view2->tab_strip_view()->GetMinimumSize());
+      browser_view2->browser_widget()
+          ->GetFrameView()
+          ->GetBoundsForTabStripRegion(
+              browser_view2->tab_strip_view()->GetMinimumSize());
   gfx::Rect bounds = initial_bounds;
   bounds.Offset(0, tabstrip_region2_bounds.bottom());
   browser()->window()->SetBounds(bounds);

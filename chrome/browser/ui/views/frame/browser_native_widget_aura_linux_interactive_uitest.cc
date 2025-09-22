@@ -28,7 +28,7 @@ gfx::Size GetWindowSize(Browser* browser) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   const BrowserNativeWidget* const native_widget =
-      browser_view->frame()->browser_native_widget();
+      browser_view->browser_widget()->browser_native_widget();
   gfx::Rect bounds;
   ui::mojom::WindowShowState show_state;
   native_widget->GetWindowPlacement(&bounds, &show_state);
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame) {
       BrowserView::GetBrowserViewForBrowser(browser());
   const BrowserNativeWidgetAuraLinux* const native_widget =
       static_cast<BrowserNativeWidgetAuraLinux*>(
-          browser_view->frame()->browser_native_widget());
+          browser_view->browser_widget()->browser_native_widget());
   auto* pref_service = browser_view->browser()->profile()->GetPrefs();
 
   // Try overriding the runtime platform property that indicates whether the

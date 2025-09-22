@@ -104,7 +104,7 @@ gfx::Rect PictureInPictureBrowserFrameViewLinux::GetHitRegion() const {
   gfx::Rect hit_region = GetLocalBounds();
   if (ShouldDrawFrameShadow()) {
     gfx::Insets insets = RestoredMirroredFrameBorderInsets();
-    if (frame()->tiled()) {
+    if (browser_widget()->tiled()) {
       insets = gfx::Insets();
     }
 
@@ -128,7 +128,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
     CHECK(frame_background_);
     frame_background_->set_frame_color(
         GetColorProvider()->GetColor(kColorPipWindowTopBarBackground));
-    frame_background_->set_use_custom_frame(frame()->UseCustomFrame());
+    frame_background_->set_use_custom_frame(browser_widget()->UseCustomFrame());
     frame_background_->set_is_active(ShouldPaintAsActive());
     frame_background_->set_theme_image(GetFrameImage());
 
@@ -140,7 +140,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
         *canvas, *this, frame_background_.get(), GetRestoredClipRegion(),
         ShouldDrawFrameShadow(), ShouldPaintAsActive(),
         RestoredMirroredFrameBorderInsets(), GetShadowValues(),
-        frame()->tiled());
+        browser_widget()->tiled());
   }
 
   BrowserFrameView::OnPaint(canvas);
@@ -148,7 +148,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
 
 bool PictureInPictureBrowserFrameViewLinux::ShouldDrawFrameShadow() const {
   return static_cast<BrowserNativeWidgetAuraLinux*>(
-             frame()->browser_native_widget())
+             browser_widget()->browser_native_widget())
       ->ShouldDrawRestoredFrameShadow();
 }
 
@@ -162,7 +162,7 @@ gfx::Insets PictureInPictureBrowserFrameViewLinux::ResizeBorderInsets() const {
 gfx::Insets PictureInPictureBrowserFrameViewLinux::FrameBorderInsets() const {
   if (window_frame_provider_) {
     const auto insets = window_frame_provider_->GetFrameThicknessDip();
-    const bool tiled = frame()->tiled();
+    const bool tiled = browser_widget()->tiled();
 
     // If edges of the window are tiled and snapped to the edges of the desktop,
     // window_frame_provider_ will skip drawing.

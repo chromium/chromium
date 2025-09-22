@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, SystemThemeColor) {
   // Read unthemed native frame color.
   SkColor native_frame_color =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->frame()
+          ->browser_widget()
           ->GetFrameView()
           ->GetFrameColor(BrowserFrameActiveState::kActive);
   SkColor expected_caption_color =
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
     GTEST_SKIP();
   }
 
-  opaque_browser_frame_view_->frame()->SetFullscreen(true);
+  opaque_browser_frame_view_->browser_widget()->SetFullscreen(true);
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Verify that all children except the ClientView are hidden when the window

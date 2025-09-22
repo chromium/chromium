@@ -534,7 +534,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
             child_web_contents->GetTopLevelNativeWindow()) {
       if (auto* browser_view =
               BrowserView::GetBrowserViewForNativeWindow(native_window)) {
-        if (browser_view->frame()->IsActive()) {
+        if (browser_view->GetWidget()->IsActive()) {
           ui_web_contents = child_web_contents;
         }
       }

@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
     GTEST_SKIP() << "Chrome is not using a custom titlebar";
   }
 
-  frame_view->frame()->Maximize();
+  frame_view->browser_widget()->Maximize();
 
   auto* maximize_button = GetMaximizeButton();
 
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
     GTEST_SKIP() << "Chrome is not using a custom titlebar";
   }
 
-  frame_view->frame()->Maximize();
+  frame_view->browser_widget()->Maximize();
 
   auto* maximize_button = GetMaximizeButton();
   EXPECT_FALSE(maximize_button->GetVisible());
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, NoThemeColor) {
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, MaximizedLayout) {
   InstallAndLaunchWebApp();
-  frame_view_->frame()->Maximize();
+  frame_view_->browser_widget()->Maximize();
   RunScheduledLayouts();
 
   views::View* const window_title =
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, RTLTopRightHitTest) {
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, Fullscreen) {
   InstallAndLaunchWebApp();
-  frame_view_->frame()->SetFullscreen(true);
+  frame_view_->browser_widget()->SetFullscreen(true);
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Verify that all children except the ClientView are hidden when the window
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ContainerHeight) {
   EXPECT_EQ(web_app_frame_toolbar_->height(),
             frame_view_->caption_button_container_for_testing()->height());
 
-  frame_view_->frame()->Maximize();
+  frame_view_->browser_widget()->Maximize();
 
   EXPECT_EQ(web_app_frame_toolbar_->height(),
             frame_view_->caption_button_container_for_testing()->height());
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   EXPECT_EQ(browser_view_->web_app_frame_toolbar_for_testing()->height(),
             frame_view_->caption_button_container_for_testing()->height());
 
-  frame_view_->frame()->Maximize();
+  frame_view_->browser_widget()->Maximize();
 
   EXPECT_EQ(browser_view_->web_app_frame_toolbar_for_testing()->height(),
             frame_view_->caption_button_container_for_testing()->height());
@@ -444,14 +444,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
 
   EXPECT_GT(frame_view_->GetBoundsForClientView().y(), 0);
 
-  frame_view_->frame()->SetFullscreen(true);
+  frame_view_->browser_widget()->SetFullscreen(true);
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // ClientView should be covering the entire screen.
   EXPECT_EQ(frame_view_->GetBoundsForClientView().y(), 0);
 
   // Exit full screen.
-  frame_view_->frame()->SetFullscreen(false);
+  frame_view_->browser_widget()->SetFullscreen(false);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,

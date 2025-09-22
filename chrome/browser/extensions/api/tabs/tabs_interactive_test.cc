@@ -254,7 +254,7 @@ void ExtensionWindowLastFocusedTest::SetUpOnMainThread() {
 void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_NE(nullptr, view);
-  views::Widget* widget = view->frame();
+  views::Widget* widget = view->GetWidget();
   EXPECT_NE(nullptr, widget);
   WidgetActivatedWaiter waiter(widget);
   waiter.ActivateAndWait();
@@ -512,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // correct, this means we don't have a good regression test for it.
   // TODO(crbug.com/40058935): Fix this.
   // EXPECT_TRUE(views::test::WidgetTest::IsWindowStackedAbove(
-  //     BrowserView::GetBrowserViewForBrowser(browser())->frame(),
-  //     BrowserView::GetBrowserViewForBrowser(new_browser)->frame()));
+  //     BrowserView::GetBrowserViewForBrowser(browser())->browser_widget(),
+  //     BrowserView::GetBrowserViewForBrowser(new_browser)->browser_widget()));
 }
 
 // Test for crbug.com/405283740

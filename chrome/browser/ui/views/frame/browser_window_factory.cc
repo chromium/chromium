@@ -57,11 +57,11 @@ BrowserWindow::CreateBrowserWindow(Browser* browser,
   view = new BrowserView(browser);
 #endif
   auto browser_widget = std::make_unique<BrowserWidget>(view);
-  view->set_frame(std::move(browser_widget));
+  view->set_browser_widget(std::move(browser_widget));
   if (in_tab_dragging) {
-    view->frame()->SetTabDragKind(TabDragKind::kAllTabs);
+    view->browser_widget()->SetTabDragKind(TabDragKind::kAllTabs);
   }
-  view->frame()->InitBrowserWidget();
+  view->browser_widget()->InitBrowserWidget();
 
 #if BUILDFLAG(IS_MAC)
   if (view->UsesImmersiveFullscreenMode()) {

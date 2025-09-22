@@ -72,8 +72,10 @@ namespace {
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
   gfx::Rect tabstrip_bounds(
-      browser_view->frame()->GetFrameView()->GetBoundsForTabStripRegion(
-          browser_view->tab_strip_view()->GetMinimumSize()));
+      browser_view->browser_widget()
+          ->GetFrameView()
+          ->GetBoundsForTabStripRegion(
+              browser_view->tab_strip_view()->GetMinimumSize()));
   gfx::Point tabstrip_region_origin(tabstrip_bounds.origin());
   views::View::ConvertPointToTarget(browser_view->parent(), browser_view,
                                     &tabstrip_region_origin);
@@ -732,13 +734,14 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
 
   gfx::Point header_offset;
   views::View::ConvertPointToTarget(
-      browser_view(), browser_view()->frame()->non_client_view()->frame_view(),
+      browser_view(),
+      browser_view()->browser_widget()->non_client_view()->frame_view(),
       &header_offset);
 
   // The position of the bottom of the header (the bar with the window
   // controls) in the coordinates of BrowserView.
   int bottom_of_header =
-      browser_view()->frame()->GetTopInset() - header_offset.y();
+      browser_view()->browser_widget()->GetTopInset() - header_offset.y();
 
   // The web contents should be flush with the bottom of the header.
   EXPECT_EQ(bottom_of_header, contents_container->y());
@@ -746,7 +749,7 @@ TEST_F(BrowserViewHostedAppTest, Layout) {
   // The find bar should butt against the 1px header/web-contents separator at
   // the bottom of the header.
   EXPECT_EQ(browser_view()->GetFindBarBoundingBox().y(),
-            browser_view()->frame()->GetTopInset());
+            browser_view()->browser_widget()->GetTopInset());
 }
 
 using BrowserViewWindowTypeTest = BrowserWithTestWindowTest;
@@ -770,12 +773,12 @@ TEST_F(TestWithBrowserView, LoadingAnimationNotRenderedWhenWindowHidden) {
       GURL("about:blank"), web_contents);
   navigation->SetKeepLoading(true);
 
-  browser_view()->frame()->Show();
+  browser_view()->browser_widget()->Show();
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
   EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
 
-  browser_view()->frame()->Hide();
+  browser_view()->browser_widget()->Hide();
 
   EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
   EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());

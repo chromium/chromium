@@ -56,7 +56,7 @@ int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
   }
 #endif
 
-  return browser_view_->frame()->GetTopInset() - browser_view_->y();
+  return browser_view_->browser_widget()->GetTopInset() - browser_view_->y();
 }
 
 bool BrowserViewLayoutDelegateImplBase::IsToolbarVisible() const {
@@ -169,7 +169,7 @@ int BrowserViewLayoutDelegateImplBase::GetExtraInfobarOffset() const {
 
 const BrowserFrameView* BrowserViewLayoutDelegateImplBase::GetFrameView()
     const {
-  return browser_view_->frame()->GetFrameView();
+  return browser_view_->browser_widget()->GetFrameView();
 }
 
 BrowserViewLayoutDelegateImplOld::BrowserViewLayoutDelegateImplOld(

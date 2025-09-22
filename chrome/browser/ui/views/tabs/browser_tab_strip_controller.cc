@@ -652,13 +652,13 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
             ImmersiveModeController::ANIMATE_REVEAL_NO);
   }
 
-  browser_view_->frame()->SetTabDragKind(dragging_window ? TabDragKind::kAllTabs
-                                                         : TabDragKind::kTab);
+  browser_view_->browser_widget()->SetTabDragKind(
+      dragging_window ? TabDragKind::kAllTabs : TabDragKind::kTab);
   // We also use fast resize for the source browser window as the source browser
   // window may also change bounds during dragging.
   BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
   if (source_browser_view && source_browser_view != browser_view_) {
-    source_browser_view->frame()->SetTabDragKind(TabDragKind::kTab);
+    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kTab);
 #if BUILDFLAG(IS_CHROMEOS)
     browser_view_->GetWidget()->GetNativeWindow()->SetProperty(
         ash::kTabDraggingSourceWindowKey,
@@ -679,10 +679,10 @@ void BrowserTabStripController::OnStoppedDragging() {
   // Only reset the source window's fast resize bit after the entire drag
   // ends.
   if (browser_view_ != source_browser_view) {
-    browser_view_->frame()->SetTabDragKind(TabDragKind::kNone);
+    browser_view_->browser_widget()->SetTabDragKind(TabDragKind::kNone);
   }
   if (source_browser_view && !TabDragController::IsActive()) {
-    source_browser_view->frame()->SetTabDragKind(TabDragKind::kNone);
+    source_browser_view->browser_widget()->SetTabDragKind(TabDragKind::kNone);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1048,11 +1048,11 @@ void BrowserTabStripController::OnSplitTabChanged(
 }
 
 BrowserFrameView* BrowserTabStripController::GetFrameView() {
-  return browser_view_->frame()->GetFrameView();
+  return browser_view_->browser_widget()->GetFrameView();
 }
 
 const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
-  return browser_view_->frame()->GetFrameView();
+  return browser_view_->browser_widget()->GetFrameView();
 }
 
 void BrowserTabStripController::SetTabDataAt(content::WebContents* web_contents,

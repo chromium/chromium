@@ -56,9 +56,9 @@ void TopContainerView::PaintChildren(const views::PaintInfo& paint_info) {
     // responsible for its painting. To call paint on BrowserFrameView, we need
     // to generate a new PaintInfo that shares a DisplayItemList with
     // TopContainerView.
-    browser_view_->frame()->GetFrameView()->Paint(
+    browser_view_->browser_widget()->GetFrameView()->Paint(
         views::PaintInfo::CreateRootPaintInfo(
-            context, browser_view_->frame()->GetFrameView()->size()));
+            context, browser_view_->browser_widget()->GetFrameView()->size()));
   }
 #endif
   View::PaintChildren(paint_info);

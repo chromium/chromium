@@ -746,7 +746,8 @@ class BorderlessIsolatedWebAppBrowserTest
                            gfx::Size& expected_outer_size) {
     auto* web_contents = browser_view->GetActiveWebContents();
 
-    const auto& client_view_size = browser_view->frame()->client_view()->size();
+    const auto& client_view_size =
+        browser_view->browser_widget()->client_view()->size();
 
     return client_view_size.height() == expected_inner_size.height() &&
            client_view_size.width() == expected_inner_size.width() &&
@@ -1447,8 +1448,10 @@ IN_PROC_BROWSER_TEST_P(
   int frame_view_height = frame_view_cros->GetMinimumSize().height();
   int caption_container_height =
       frame_view_cros->caption_button_container()->size().height();
-  int client_view_height =
-      frame_view_cros->frame()->client_view()->GetMinimumSize().height();
+  int client_view_height = frame_view_cros->browser_widget()
+                               ->client_view()
+                               ->GetMinimumSize()
+                               .height();
 
   // Frame view minimum height also includes radius of window to ensure correct
   // rounding of window. See b/294588040.
@@ -2352,7 +2355,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
-  auto* client_view = browser_view->frame()->client_view();
+  auto* client_view = browser_view->browser_widget()->client_view();
 
   browser_view->SetCanResize(true);
 

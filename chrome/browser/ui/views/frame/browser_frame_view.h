@@ -128,13 +128,13 @@ class BrowserFrameView : public views::FrameView {
   METADATA_HEADER(BrowserFrameView, views::FrameView)
 
  public:
-  BrowserFrameView(BrowserWidget* frame, BrowserView* browser_view);
+  BrowserFrameView(BrowserWidget* browser_widget, BrowserView* browser_view);
   BrowserFrameView(const BrowserFrameView&) = delete;
   BrowserFrameView& operator=(const BrowserFrameView&) = delete;
   ~BrowserFrameView() override;
 
   BrowserView* browser_view() const { return browser_view_; }
-  BrowserWidget* frame() const { return frame_; }
+  BrowserWidget* browser_widget() const { return browser_widget_; }
 
   // Called after BrowserView has initialized its child views. This is a useful
   // hook for performing final setup that depends on other child views, like
@@ -321,7 +321,7 @@ class BrowserFrameView : public views::FrameView {
 #endif  // BUILDFLAG(IS_WIN)
 
   // The BrowserWidget that owns this view.
-  const raw_ptr<BrowserWidget, DanglingUntriaged> frame_;
+  const raw_ptr<BrowserWidget, DanglingUntriaged> browser_widget_;
 
   // The BrowserView hosted within `frame_`.
   const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
@@ -329,7 +329,7 @@ class BrowserFrameView : public views::FrameView {
   // Subscription to receive notifications when the frame's PaintAsActive state
   // changes.
   base::CallbackListSubscription paint_as_active_subscription_ =
-      frame_->RegisterPaintAsActiveChangedCallback(
+      browser_widget_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&BrowserFrameView::PaintAsActiveChanged,
                               base::Unretained(this)));
 };
@@ -340,7 +340,7 @@ namespace chrome {
 // implementations should define this in their respective
 // browser_view_factor_*.cc files.
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserWidget* browser_widget,
     BrowserView* browser_view);
 
 }  // namespace chrome

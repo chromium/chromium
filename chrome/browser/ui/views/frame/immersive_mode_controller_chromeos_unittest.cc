@@ -266,7 +266,7 @@ TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
 TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
   ASSERT_FALSE(controller()->IsEnabled());
   chromeos::ImmersiveFullscreenController::EnableForWidget(
-      browser_view()->frame(), /*enabled=*/true);
+      browser_view()->browser_widget(), /*enabled=*/true);
   ASSERT_TRUE(controller()->IsEnabled());
   controller()->SetEnabled(/*enabled=*/false);
   ASSERT_FALSE(controller()->IsEnabled());

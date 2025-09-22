@@ -145,13 +145,14 @@ class BrowserView : public BrowserWindow,
   BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
 
-  void set_frame(std::unique_ptr<BrowserWidget> frame) {
-    frame_ = std::move(frame);
+  void set_browser_widget(std::unique_ptr<BrowserWidget> widget) {
+    browser_widget_ = std::move(widget);
     paint_as_active_subscription_ =
-        frame_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-            &BrowserView::PaintAsActiveChanged, base::Unretained(this)));
+        browser_widget_->RegisterPaintAsActiveChangedCallback(
+            base::BindRepeating(&BrowserView::PaintAsActiveChanged,
+                                base::Unretained(this)));
   }
-  BrowserWidget* frame() const { return frame_.get(); }
+  BrowserWidget* browser_widget() const { return browser_widget_.get(); }
 
   // Returns a pointer to the BrowserView* interface implementation (an
   // instance of this object, typically) for a given native window, or null if
@@ -1115,7 +1116,7 @@ class BrowserView : public BrowserWindow,
   bool IsBrowserAWebApp() const;
 
   // The BrowserWidget that owns this view.
-  std::unique_ptr<BrowserWidget> frame_;
+  std::unique_ptr<BrowserWidget> browser_widget_;
 
   // The owning Browser object. `browser_` will outlive this.
   const raw_ptr<Browser> browser_;

@@ -843,7 +843,8 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
   }
 
   // Allow interacting with the web contents.
-  int frame_component = frame()->client_view()->NonClientHitTest(point);
+  int frame_component =
+      browser_widget()->client_view()->NonClientHitTest(point);
   if (frame_component != HTNOWHERE) {
     return frame_component;
   }
@@ -1044,7 +1045,7 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
     return;
   }
   bounds_change_animation_ =
-      std::make_unique<PictureInPictureBoundsChangeAnimation>(*frame(),
+      std::make_unique<PictureInPictureBoundsChangeAnimation>(*browser_widget(),
                                                               adjusted_bounds);
   bounds_change_animation_->Start();
 }

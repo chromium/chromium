@@ -326,7 +326,7 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
     ASSERT_TRUE(browser_view->browser()->is_type_picture_in_picture());
 
     pip_frame_view_ = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
     ASSERT_TRUE(pip_frame_view_);
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(

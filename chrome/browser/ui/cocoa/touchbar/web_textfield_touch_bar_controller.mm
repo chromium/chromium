@@ -25,7 +25,7 @@
   }
 
   BrowserNativeWidgetMac* native_widget = static_cast<BrowserNativeWidgetMac*>(
-      browser_view->frame()->browser_native_widget());
+      browser_view->browser_widget()->browser_native_widget());
   return [native_widget->GetTouchBarController() webTextfieldTouchBar];
 }
 

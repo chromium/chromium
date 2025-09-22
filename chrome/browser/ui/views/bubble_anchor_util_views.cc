@@ -59,7 +59,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
   if (anchor == Anchor::kLocationBar &&
       browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
     return {frame_view->GetLocationIconView(),
             frame_view->GetLocationIconView(), views::BubbleBorder::TOP_LEFT};
   }

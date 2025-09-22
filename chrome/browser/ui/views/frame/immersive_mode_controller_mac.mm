@@ -98,7 +98,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     if (separate_tab_strip_) {
       tab_widget_height_ = browser_view_->tab_strip_view()->height();
       tab_widget_height_ += static_cast<BrowserFrameViewMac*>(
-                                browser_view_->frame()->GetFrameView())
+                                browser_view_->browser_widget()->GetFrameView())
                                 ->GetTopInset(false);
 
       browser_view_->tab_overlay_widget()->SetSize(gfx::Size(
@@ -242,7 +242,9 @@ gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
 
   // Without this +1 top inset the tabs sit 1px too high. I assume this is
   // because in fullscreen there is no resize handle.
-  return browser_view_->frame()->GetFrameView()->CaptionButtonsOnLeadingEdge()
+  return browser_view_->browser_widget()
+                 ->GetFrameView()
+                 ->CaptionButtonsOnLeadingEdge()
              ? gfx::Insets::TLBR(1, right_left_inset, 0, 0)
              : gfx::Insets::TLBR(1, 0, 0, right_left_inset);
 }

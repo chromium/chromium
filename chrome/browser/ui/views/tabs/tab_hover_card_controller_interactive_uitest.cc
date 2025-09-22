@@ -305,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   // inactive.
   BrowserView::GetBrowserViewForBrowser(active_window)->Activate();
   views::test::WaitForWidgetActive(
-      BrowserView::GetBrowserViewForBrowser(inactive_window)->frame(), false);
+      BrowserView::GetBrowserViewForBrowser(inactive_window)->GetWidget(),
+      false);
   ASSERT_FALSE(
       BrowserView::GetBrowserViewForBrowser(inactive_window)->IsActive());
 

@@ -289,7 +289,7 @@ gfx::Rect BrowserFrameViewWin::GetBoundsForClientView() const {
 
 gfx::Rect BrowserFrameViewWin::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-  HWND hwnd = views::HWNDForWidget(frame());
+  HWND hwnd = views::HWNDForWidget(browser_widget());
   if (!browser_view()->GetTabStripVisible() && hwnd) {
     // If we don't have a tabstrip, we're either a popup or an app window, in
     // which case we have a standard size non-client area and can just use
@@ -337,9 +337,10 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
       top_border_thickness, kResizeCornerWidth - FrameBorderThickness(),
-      frame()->widget_delegate()->CanResize());
+      browser_widget()->widget_delegate()->CanResize());
 
-  const int frame_component = frame()->client_view()->NonClientHitTest(point);
+  const int frame_component =
+      browser_widget()->client_view()->NonClientHitTest(point);
 
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
@@ -380,7 +381,7 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // cursor while hovering over the caption buttons, thus giving the incorrect
   // impression that the user can resize the window.
   RECT button_bounds = {0};
-  if (SUCCEEDED(DwmGetWindowAttribute(views::HWNDForWidget(frame()),
+  if (SUCCEEDED(DwmGetWindowAttribute(views::HWNDForWidget(browser_widget()),
                                       DWMWA_CAPTION_BUTTON_BOUNDS,
                                       &button_bounds, sizeof(button_bounds)))) {
     gfx::RectF button_bounds_in_dips = gfx::ConvertRectToDips(
@@ -456,11 +457,11 @@ bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
 
 ui::ImageModel BrowserFrameViewWin::GetFaviconForTabIconView() {
   DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
-  return frame()->widget_delegate()->GetWindowIcon();
+  return browser_widget()->widget_delegate()->GetWindowIcon();
 }
 
 bool BrowserFrameViewWin::IsMaximized() const {
-  return frame()->IsMaximized();
+  return browser_widget()->IsMaximized();
 }
 
 bool BrowserFrameViewWin::IsWebUITabStrip() const {
@@ -493,7 +494,7 @@ void BrowserFrameViewWin::Layout(PassKey) {
 // BrowserFrameViewWin, private:
 
 int BrowserFrameViewWin::FrameBorderThickness() const {
-  return (IsMaximized() || frame()->IsFullscreen())
+  return (IsMaximized() || browser_widget()->IsFullscreen())
              ? 0
              : display::win::GetScreenWin()->GetSystemMetricsInDIP(
                    SM_CXSIZEFRAME);
@@ -501,7 +502,7 @@ int BrowserFrameViewWin::FrameBorderThickness() const {
 
 int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
   const bool is_fullscreen =
-      (frame()->IsFullscreen() || IsMaximized()) && !restored;
+      (browser_widget()->IsFullscreen() || IsMaximized()) && !restored;
   if (!is_fullscreen) {
     if (browser_view()->GetTabStripVisible()) {
       // Restored windows have a smaller top resize handle than the system
@@ -538,8 +539,8 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
   // See comments in BrowserDesktopWindowTreeHostWin::GetClientAreaInsets().
   const bool needs_no_border =
       (ShouldBrowserCustomDrawTitlebar(browser_view()) &&
-       frame()->IsMaximized()) ||
-      frame()->IsFullscreen();
+       browser_widget()->IsMaximized()) ||
+      browser_widget()->IsFullscreen();
   if (needs_no_border && !restored) {
     return 0;
   }
@@ -552,7 +553,7 @@ int BrowserFrameViewWin::FrameTopBorderThicknessPx(bool restored) const {
 }
 
 int BrowserFrameViewWin::TopAreaHeight(bool restored) const {
-  if (frame()->IsFullscreen() && !restored) {
+  if (browser_widget()->IsFullscreen() && !restored) {
     return 0;
   }
 
@@ -587,7 +588,7 @@ int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
 }
 
 int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
-  if (frame()->IsFullscreen() && !restored) {
+  if (browser_widget()->IsFullscreen() && !restored) {
     return 0;
   }
 
@@ -625,14 +626,15 @@ int BrowserFrameViewWin::WindowTopY() const {
 int BrowserFrameViewWin::CaptionButtonsRegionWidth() const {
   std::optional<int> system_caption_buttons_width;
   if (!base::FeatureList::IsEnabled(kAvoidUnnecessaryGetMinimizeButtonOffset)) {
-    system_caption_buttons_width = width() - frame()->GetMinimizeButtonOffset();
+    system_caption_buttons_width =
+        width() - browser_widget()->GetMinimizeButtonOffset();
   }
 
   int total_width = caption_button_container_->size().width();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
     if (!system_caption_buttons_width.has_value()) {
       system_caption_buttons_width =
-          width() - frame()->GetMinimizeButtonOffset();
+          width() - browser_widget()->GetMinimizeButtonOffset();
     }
     total_width += system_caption_buttons_width.value();
   }
@@ -649,7 +651,7 @@ bool BrowserFrameViewWin::ShouldShowWindowIcon(TitlebarType type) const {
       ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (frame()->IsFullscreen()) {
+  if (browser_widget()->IsFullscreen()) {
     return false;
   }
   return browser_view()->ShouldShowWindowIcon();
@@ -664,7 +666,7 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
       ShouldBrowserCustomDrawTitlebar(browser_view())) {
     return false;
   }
-  if (frame()->IsFullscreen()) {
+  if (browser_widget()->IsFullscreen()) {
     return false;
   }
   return browser_view()->ShouldShowWindowTitle();
@@ -679,16 +681,16 @@ void BrowserFrameViewWin::TabletModeChanged() {
 void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
   CHECK(SystemTitlebarCanUseMicaMaterial());
 
-  const BOOL dark_titlebar_enabled =
-      frame()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+  const BOOL dark_titlebar_enabled = browser_widget()->GetColorMode() ==
+                                     ui::ColorProviderKey::ColorMode::kDark;
+  DwmSetWindowAttribute(views::HWNDForWidget(browser_widget()),
                         DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
                         sizeof(dark_titlebar_enabled));
 
   const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
       browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
                                            : DWMSBT_MAINWINDOW;
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+  DwmSetWindowAttribute(views::HWNDForWidget(browser_widget()),
                         DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
                         sizeof(dwm_backdrop_type));
 }
@@ -717,9 +719,9 @@ void BrowserFrameViewWin::PaintTitlebar(gfx::Canvas* canvas) const {
   //
   // We could ask the DWM to draw the top accent border in the client area (by
   // calling DwmExtendFrameIntoClientArea() in
-  // BrowserDesktopWindowTreeHostWin::UpdateDWMFrame()), but this requires
-  // that we leave part of the client surface transparent. If we draw this
-  // ourselves, we can make the client surface fully opaque and avoid the
+  // BrowserDesktopWindowTreeHostWin::UpdateDWMbrowser_widget()), but this
+  // requires that we leave part of the client surface transparent. If we draw
+  // this ourselves, we can make the client surface fully opaque and avoid the
   // power consumption needed for DWM to blend the window contents.
   //
   // So the accent border also has to be opaque. We can blend the titlebar
@@ -812,7 +814,7 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   if (show_title && window_title_) {
     window_title_->SetText(browser_view()->GetWindowTitle());
     const int max_text_width = std::max(0, next_trailing_x - next_leading_x);
-    frame()->LayoutWebAppWindowTitle(
+    browser_widget()->LayoutWebAppWindowTitle(
         gfx::Rect(next_leading_x, window_icon_bounds.y(), max_text_width,
                   window_icon_bounds.height()),
         *window_title_);
@@ -822,7 +824,7 @@ void BrowserFrameViewWin::LayoutTitleBar() {
 void BrowserFrameViewWin::LayoutCaptionButtons() {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::LayoutCaptionButtons");
 
-  caption_button_container_->SetVisible(!frame()->IsFullscreen());
+  caption_button_container_->SetVisible(!browser_widget()->IsFullscreen());
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();
@@ -830,7 +832,7 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
   const int system_caption_buttons_width =
       ShouldBrowserCustomDrawTitlebar(browser_view())
           ? 0
-          : width() - frame()->GetMinimizeButtonOffset();
+          : width() - browser_widget()->GetMinimizeButtonOffset();
 
   const int height =
       !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()
@@ -849,7 +851,7 @@ void BrowserFrameViewWin::LayoutClientView() {
   int top_inset = GetTopInset(false);
   if (browser_view()->IsWindowControlsOverlayEnabled() ||
       !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
-    top_inset = frame()->IsFullscreen() ? 0 : WindowTopY();
+    top_inset = browser_widget()->IsFullscreen() ? 0 : WindowTopY();
   }
   client_view_bounds_.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
 }
@@ -860,7 +862,7 @@ void BrowserFrameViewWin::StartThrobber() {
     throbber_running_ = true;
     throbber_frame_ = 0;
     InitThrobberIcons();
-    SendMessage(views::HWNDForWidget(frame()), WM_SETICON,
+    SendMessage(views::HWNDForWidget(browser_widget()), WM_SETICON,
                 static_cast<WPARAM>(ICON_SMALL),
                 reinterpret_cast<LPARAM>(throbber_icons_[throbber_frame_]));
   }
@@ -896,22 +898,22 @@ void BrowserFrameViewWin::StopThrobber() {
 
     // Fallback to class icon.
     if (!small_icon) {
-      small_icon = reinterpret_cast<HICON>(
-          GetClassLongPtr(views::HWNDForWidget(frame()), GCLP_HICONSM));
+      small_icon = reinterpret_cast<HICON>(GetClassLongPtr(
+          views::HWNDForWidget(browser_widget()), GCLP_HICONSM));
     }
     if (!big_icon) {
       big_icon = reinterpret_cast<HICON>(
-          GetClassLongPtr(views::HWNDForWidget(frame()), GCLP_HICON));
+          GetClassLongPtr(views::HWNDForWidget(browser_widget()), GCLP_HICON));
     }
 
     // This will reset the icon which we set in the throbber code.
     // WM_SETICON with null icon restores the icon for title bar but not
     // for taskbar. See http://crbug.com/29996
-    SendMessage(views::HWNDForWidget(frame()), WM_SETICON,
+    SendMessage(views::HWNDForWidget(browser_widget()), WM_SETICON,
                 static_cast<WPARAM>(ICON_SMALL),
                 reinterpret_cast<LPARAM>(small_icon));
 
-    SendMessage(views::HWNDForWidget(frame()), WM_SETICON,
+    SendMessage(views::HWNDForWidget(browser_widget()), WM_SETICON,
                 static_cast<WPARAM>(ICON_BIG),
                 reinterpret_cast<LPARAM>(big_icon));
   }
@@ -919,7 +921,7 @@ void BrowserFrameViewWin::StopThrobber() {
 
 void BrowserFrameViewWin::DisplayNextThrobberFrame() {
   throbber_frame_ = (throbber_frame_ + 1) % kThrobberIconCount;
-  SendMessage(views::HWNDForWidget(frame()), WM_SETICON,
+  SendMessage(views::HWNDForWidget(browser_widget()), WM_SETICON,
               static_cast<WPARAM>(ICON_SMALL),
               reinterpret_cast<LPARAM>(throbber_icons_[throbber_frame_]));
 }

@@ -48,7 +48,8 @@ BrowserActivationWaiter::BrowserActivationWaiter(
     return;
   }
 
-  BrowserView::GetBrowserViewForBrowser(browser)->frame()->AddObserver(this);
+  BrowserView::GetBrowserViewForBrowser(browser)->GetWidget()->AddObserver(
+      this);
 }
 
 BrowserActivationWaiter::~BrowserActivationWaiter() = default;

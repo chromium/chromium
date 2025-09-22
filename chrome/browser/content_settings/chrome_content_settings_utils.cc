@@ -43,7 +43,7 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
   if (browser->is_type_picture_in_picture()) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
     frame_view->UpdateContentSettingsIcons();
   }
 #endif

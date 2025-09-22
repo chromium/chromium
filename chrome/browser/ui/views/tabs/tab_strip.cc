@@ -1875,7 +1875,7 @@ bool TabStrip::ShouldCompactLeadingEdge() const {
          !controller_->GetBrowser()
               ->window()
               ->AsBrowserView()
-              ->frame()
+              ->browser_widget()
               ->GetFrameView()
               ->CaptionButtonsOnLeadingEdge() &&
          tabs::GetTabSearchTrailingTabstrip(controller_->GetProfile());

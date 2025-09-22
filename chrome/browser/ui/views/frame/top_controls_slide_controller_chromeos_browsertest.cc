@@ -394,7 +394,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     const int top_controls_height = browser_view->GetTopControlsHeight();
     EXPECT_NE(top_controls_height, 0);
 
-    ui::Layer* root_view_layer = browser_view->frame()->GetRootView()->layer();
+    ui::Layer* root_view_layer =
+        browser_view->browser_widget()->GetRootView()->layer();
 
     // The fully-shown and fully-hidden states are terminal states. We check
     // when we reach the steady state. The root view should not have a layer
@@ -430,7 +431,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
                 browser_view->contents_container()->height());
 
       // Widget should not allow things to show outside its bounds.
-      EXPECT_TRUE(browser_view->frame()->GetLayer()->GetMasksToBounds());
+      EXPECT_TRUE(
+          browser_view->browser_widget()->GetLayer()->GetMasksToBounds());
 
       // The browser controls doesn't shrink the blink viewport size.
       EXPECT_FALSE(browser_view->DoBrowserControlsShrinkRendererSize(
@@ -444,7 +446,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
       EXPECT_EQ(browser_view->height() - top_controls_height,
                 browser_view->contents_container()->height());
 
-      EXPECT_FALSE(browser_view->frame()->GetLayer()->GetMasksToBounds());
+      EXPECT_FALSE(
+          browser_view->browser_widget()->GetLayer()->GetMasksToBounds());
 
       // The browser controls does shrink the blink viewport size.
       EXPECT_TRUE(browser_view->DoBrowserControlsShrinkRendererSize(
@@ -477,7 +480,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     EXPECT_NE(top_controls_height, 0);
 
     ui::Layer* root_view_layer =
-        browser_view()->frame()->GetRootView()->layer();
+        browser_view()->browser_widget()->GetRootView()->layer();
 
     // While sliding is in progress, the root view paints to a layer.
     ASSERT_TRUE(root_view_layer);
@@ -915,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
   // Maximizing the browser window makes the browser view layout more
   // predictable with display rotation, as it's just resized to match the
   // display bounds.
-  browser_view()->frame()->Maximize();
+  browser_view()->browser_widget()->Maximize();
 
   // Navigate to our scrollable test page, scroll with touch gestures so that
   // top-chrome is fully hidden.
@@ -1041,7 +1044,7 @@ class PageStateUpdateWaiter : content::WebContentsObserver {
 // the main frame (such as widgets of the drop-down menus in web pages).
 // https://crbug.com/891471.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
-  browser_view()->frame()->Maximize();
+  browser_view()->browser_widget()->Maximize();
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
@@ -1104,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(
   // BrowserView::GetTopControlsHeight() now returns a non-zero value). We must
   // make sure that we synchronize the visual properties manually, otherwise
   // the renderer will never get the new top-controls height.
-  browser_view()->frame()->Maximize();
+  browser_view()->browser_widget()->Maximize();
 
   // Navigate to our test scrollable page.
   NavigateActiveTabToUrl(

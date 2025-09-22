@@ -189,20 +189,23 @@ void OpaqueBrowserFrameView::InitViews() {
   }
   InitWindowCaptionButton(
       minimize_button_,
-      base::BindRepeating(&BrowserWidget::Minimize, base::Unretained(frame())),
+      base::BindRepeating(&BrowserWidget::Minimize,
+                          base::Unretained(browser_widget())),
       IDS_ACCNAME_MINIMIZE, VIEW_ID_MINIMIZE_BUTTON);
   InitWindowCaptionButton(
       maximize_button_,
-      base::BindRepeating(&BrowserWidget::Maximize, base::Unretained(frame())),
+      base::BindRepeating(&BrowserWidget::Maximize,
+                          base::Unretained(browser_widget())),
       IDS_ACCNAME_MAXIMIZE, VIEW_ID_MAXIMIZE_BUTTON);
   InitWindowCaptionButton(
       restore_button_,
-      base::BindRepeating(&BrowserWidget::Restore, base::Unretained(frame())),
+      base::BindRepeating(&BrowserWidget::Restore,
+                          base::Unretained(browser_widget())),
       IDS_ACCNAME_RESTORE, VIEW_ID_RESTORE_BUTTON);
   InitWindowCaptionButton(
       close_button_,
       base::BindRepeating(&BrowserWidget::CloseWithReason,
-                          base::Unretained(frame()),
+                          base::Unretained(browser_widget()),
                           views::Widget::ClosedReason::kCloseButtonClicked),
       IDS_ACCNAME_CLOSE, VIEW_ID_CLOSE_BUTTON);
 
@@ -331,7 +334,8 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     return HTNOWHERE;
   }
 
-  int frame_component = frame()->client_view()->NonClientHitTest(point);
+  int frame_component =
+      browser_widget()->client_view()->NonClientHitTest(point);
 
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
@@ -385,7 +389,7 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     return HTCAPTION;
   }
 
-  views::WidgetDelegate* delegate = frame()->widget_delegate();
+  views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   if (!delegate) {
     LOG(WARNING) << "delegate is null, returning safe default.";
     return HTCAPTION;
@@ -435,7 +439,7 @@ void OpaqueBrowserFrameView::UpdateWindowIcon() {
 }
 
 void OpaqueBrowserFrameView::UpdateWindowTitle() {
-  if (!frame()->IsFullscreen() && ShouldShowWindowTitle()) {
+  if (!browser_widget()->IsFullscreen() && ShouldShowWindowTitle()) {
     DeprecatedLayoutImmediately();
     if (window_title_) {
       window_title_->SchedulePaint();
@@ -455,7 +459,7 @@ bool OpaqueBrowserFrameView::ShouldTabIconViewAnimate() const {
 }
 
 ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
-  views::WidgetDelegate* delegate = frame()->widget_delegate();
+  views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   if (!delegate) {
     LOG(WARNING) << "delegate is null, returning safe default.";
     return ui::ImageModel();
@@ -467,7 +471,7 @@ ui::ImageModel OpaqueBrowserFrameView::GetFaviconForTabIconView() {
 // OpaqueBrowserFrameView, OpaqueBrowserFrameViewLayoutDelegate implementation:
 
 bool OpaqueBrowserFrameView::ShouldShowWindowIcon() const {
-  views::WidgetDelegate* delegate = frame()->widget_delegate();
+  views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   return GetShowWindowTitleBar() && delegate &&
          delegate->ShouldShowWindowIcon();
 }
@@ -476,13 +480,13 @@ bool OpaqueBrowserFrameView::ShouldShowWindowTitle() const {
   // |delegate| may be null if called from callback of InputMethodChanged while
   // a window is being destroyed.
   // See more discussion at http://crosbug.com/8958
-  views::WidgetDelegate* delegate = frame()->widget_delegate();
+  views::WidgetDelegate* delegate = browser_widget()->widget_delegate();
   return GetShowWindowTitleBar() && delegate &&
          delegate->ShouldShowWindowTitle();
 }
 
 std::u16string OpaqueBrowserFrameView::GetWindowTitle() const {
-  return frame()->widget_delegate()->GetWindowTitle();
+  return browser_widget()->widget_delegate()->GetWindowTitle();
 }
 
 int OpaqueBrowserFrameView::GetIconSize() const {
@@ -518,15 +522,15 @@ bool OpaqueBrowserFrameView::CanMinimize() const {
 }
 
 bool OpaqueBrowserFrameView::IsMaximized() const {
-  return frame()->IsMaximized();
+  return browser_widget()->IsMaximized();
 }
 
 bool OpaqueBrowserFrameView::IsMinimized() const {
-  return frame()->IsMinimized();
+  return browser_widget()->IsMinimized();
 }
 
 bool OpaqueBrowserFrameView::IsFullscreen() const {
-  return frame()->IsFullscreen();
+  return browser_widget()->IsFullscreen();
 }
 
 bool OpaqueBrowserFrameView::IsTabStripVisible() const {
@@ -567,7 +571,7 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
 }
 
 bool OpaqueBrowserFrameView::UseCustomFrame() const {
-  return frame()->UseCustomFrame();
+  return browser_widget()->UseCustomFrame();
 }
 
 bool OpaqueBrowserFrameView::IsFrameCondensed() const {
@@ -601,7 +605,7 @@ bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
 
 #if BUILDFLAG(IS_LINUX)
 bool OpaqueBrowserFrameView::IsTiled() const {
-  return frame()->tiled();
+  return browser_widget()->tiled();
 }
 #endif
 
@@ -615,7 +619,7 @@ int OpaqueBrowserFrameView::WebAppButtonHeight() const {
 // views::View:
 void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   TRACE_EVENT0("views.frame", "OpaqueBrowserFrameView::OnPaint");
-  if (frame()->IsFullscreen()) {
+  if (browser_widget()->IsFullscreen()) {
     return;  // Nothing is visible, so don't bother to paint.
   }
 
@@ -627,7 +631,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     window_title_->SetBackgroundColor(frame_color);
   }
   frame_background_->set_frame_color(frame_color);
-  frame_background_->set_use_custom_frame(frame()->UseCustomFrame());
+  frame_background_->set_use_custom_frame(browser_widget()->UseCustomFrame());
   frame_background_->set_is_active(active);
   frame_background_->set_theme_image(GetFrameImage());
   frame_background_->set_theme_image_inset(
@@ -717,7 +721,7 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
                                                          ViewID view_id) {
   views::ImageButton* button =
       new views::ImageButton(views::Button::PressedCallback());
-  const ui::ThemeProvider* tp = frame()->GetThemeProvider();
+  const ui::ThemeProvider* tp = browser_widget()->GetThemeProvider();
   button->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromImageSkia(*tp->GetImageSkiaNamed(normal_image_id)));
@@ -740,7 +744,8 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
     // (&processed_bg_image) to create a local copy, so it's safe for this
     // to be locally scoped.
     button->SetBackgroundImage(
-        frame()->GetColorProvider()->GetColor(kColorCaptionButtonBackground),
+        browser_widget()->GetColorProvider()->GetColor(
+            kColorCaptionButtonBackground),
         (processed_bg_image.isNull() ? nullptr : &processed_bg_image),
         tp->GetImageSkiaNamed(mask_image_id));
   }
@@ -760,7 +765,7 @@ void OpaqueBrowserFrameView::InitWindowCaptionButton(
 }
 
 gfx::Size OpaqueBrowserFrameView::GetThemeImageSize(int image_id) {
-  const ui::ThemeProvider* tp = frame()->GetThemeProvider();
+  const ui::ThemeProvider* tp = browser_widget()->GetThemeProvider();
   const gfx::ImageSkia* image = tp->GetImageSkiaNamed(image_id);
 
   return (image ? image->size() : gfx::Size());
@@ -798,7 +803,7 @@ OpaqueBrowserFrameView::GetProcessedBackgroundImageForCaptionButon(
   // that happens in RTL mode.  This is accomplished using a custom
   // ImageSource (defined at the top of the file).
 
-  const ui::ThemeProvider* tp = frame()->GetThemeProvider();
+  const ui::ThemeProvider* tp = browser_widget()->GetThemeProvider();
   const gfx::ImageSkia* bg_image =
       tp->GetImageSkiaNamed(IDR_THEME_WINDOW_CONTROL_BACKGROUND);
 
@@ -834,7 +839,7 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
   // Chrome OS doesn't show the window icon, and Windows handles this on its own
   // due to the hit test being HTSYSMENU.
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      frame()->GetSystemMenuModel(), views::MenuRunner::HAS_MNEMONICS);
+      browser_widget()->GetSystemMenuModel(), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(
       browser_view()->GetWidget(), window_icon_->button_controller(),
       window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
@@ -844,11 +849,11 @@ void OpaqueBrowserFrameView::WindowIconPressed() {
 
 bool OpaqueBrowserFrameView::GetShowWindowTitleBar() const {
   // Do not show the custom title bar if the system title bar option is enabled.
-  if (!frame()->UseCustomFrame()) {
+  if (!browser_widget()->UseCustomFrame()) {
     return false;
   }
 
-  if (frame()->IsFullscreen()) {
+  if (browser_widget()->IsFullscreen()) {
     return false;
   }
 

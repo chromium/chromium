@@ -56,7 +56,7 @@ class ShowBrowserFrameRegionsView : public views::View {
   METADATA_HEADER(ShowBrowserFrameRegionsView, views::View)
  public:
   explicit ShowBrowserFrameRegionsView(BrowserFrameView& frame)
-      : frame_(frame) {
+      : browser_widget_(frame) {
     SetCanProcessEventsWithinSubtree(false);
     GetViewAccessibility().SetIsIgnored(true);
     SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -74,7 +74,7 @@ class ShowBrowserFrameRegionsView : public views::View {
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
-    const auto params = frame_->GetBrowserLayoutParams();
+    const auto params = browser_widget_->GetBrowserLayoutParams();
     const gfx::RectF rect(params.visual_client_area);
     canvas->DrawRect(rect, SK_ColorCYAN);
     if (!params.leading_exclusion.IsEmpty()) {
@@ -100,7 +100,7 @@ class ShowBrowserFrameRegionsView : public views::View {
   }
 
  private:
-  const raw_ref<BrowserFrameView> frame_;
+  const raw_ref<BrowserFrameView> browser_widget_;
 };
 
 BEGIN_METADATA(ShowBrowserFrameRegionsView)
@@ -113,10 +113,10 @@ gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
   return gfx::ToEnclosingRect(temp);
 }
 
-BrowserFrameView::BrowserFrameView(BrowserWidget* frame,
+BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
                                    BrowserView* browser_view)
-    : frame_(frame), browser_view_(browser_view) {
-  DCHECK(frame_);
+    : browser_widget_(browser_widget), browser_view_(browser_view) {
+  DCHECK(browser_widget_);
   DCHECK(browser_view_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kShowBrowserFrameRegionsCommandLineSwitch)) {
@@ -167,7 +167,7 @@ bool BrowserFrameView::CaptionButtonsOnLeadingEdge() const {
 void BrowserFrameView::UpdateFullscreenTopUI() {}
 
 bool BrowserFrameView::ShouldHideTopUIForFullscreen() const {
-  return frame_->IsFullscreen();
+  return browser_widget_->IsFullscreen();
 }
 
 bool BrowserFrameView::CanUserExitFullscreen() const {
@@ -175,7 +175,7 @@ bool BrowserFrameView::CanUserExitFullscreen() const {
 }
 
 bool BrowserFrameView::IsFrameCondensed() const {
-  return frame_->IsMaximized() || frame_->IsFullscreen();
+  return browser_widget_->IsMaximized() || browser_widget_->IsFullscreen();
 }
 
 bool BrowserFrameView::HasVisibleBackgroundTabShapes(
@@ -289,7 +289,7 @@ int BrowserFrameView::GetTranslucentTopAreaHeight() const {
 }
 
 void BrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
-  frame_->SetBounds(bounds);
+  browser_widget_->SetBounds(bounds);
 }
 
 void BrowserFrameView::PaintAsActiveChanged() {

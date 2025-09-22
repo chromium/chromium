@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, TogglePinning) {
   glic::ForceSigninAndModelExecutionCapability(browser()->profile());
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
-                            ->frame()
+                            ->browser_widget()
                             ->GetSystemMenuModel();
 
   profile_prefs->SetInteger(

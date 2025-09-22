@@ -36,8 +36,8 @@ bool FocusWidgetAndWait(content::WebContents* contents) {
   }
 
   return base::test::RunUntil([browser_view]() {
-    browser_view->frame()->Activate();
-    return browser_view->frame()->IsActive();
+    browser_view->browser_widget()->Activate();
+    return browser_view->browser_widget()->IsActive();
   });
 }
 

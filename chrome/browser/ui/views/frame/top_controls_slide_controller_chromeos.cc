@@ -281,7 +281,7 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
     BrowserView* browser_view)
     : browser_view_(browser_view) {
   DCHECK(browser_view);
-  DCHECK(browser_view->frame());
+  DCHECK(browser_view->browser_widget());
   DCHECK(browser_view->browser());
   DCHECK(browser_view->GetIsNormalType());
   DCHECK(browser_view->browser()->tab_strip_model());
@@ -688,7 +688,8 @@ void TopControlsSlideControllerChromeOS::Refresh() {
   gfx::Transform trans;
   trans.Translate(0, y_translation);
 
-  ui::Layer* root_layer = browser_view_->frame()->GetRootView()->layer();
+  ui::Layer* root_layer =
+      browser_view_->browser_widget()->GetRootView()->layer();
   std::vector<ui::Layer*> layers = {root_layer};
   // We need to transform all the native views' containers of all the attached
   // NativeViewHosts to this BrowserView, rather than the NativeViewHosts
@@ -731,7 +732,7 @@ void TopControlsSlideControllerChromeOS::OnBeginSliding() {
 
   is_sliding_in_progress_ = true;
 
-  BrowserWidget* browser_widget = browser_view_->frame();
+  BrowserWidget* browser_widget = browser_view_->browser_widget();
   views::View* root_view = browser_widget->GetRootView();
   // We paint to layer to be able to efficiently translate the browser
   // top-controls without having to adjust the bounds of the views which trigger
@@ -810,7 +811,7 @@ void TopControlsSlideControllerChromeOS::OnEndSliding() {
         identity_transform);
   }
 
-  BrowserWidget* browser_widget = browser_view_->frame();
+  BrowserWidget* browser_widget = browser_view_->browser_widget();
   views::View* root_view = browser_widget->GetRootView();
   root_view->DestroyLayer();
 

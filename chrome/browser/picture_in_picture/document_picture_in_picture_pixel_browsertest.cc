@@ -152,7 +152,7 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
         BrowserWindow::FindBrowserWindowWithWebContents(
             window_controller()->GetChildWebContents()));
     auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
