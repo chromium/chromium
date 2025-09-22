@@ -406,7 +406,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                        gpu::Mailbox mailbox);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
-  void TearDownSkSurface();
 
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
