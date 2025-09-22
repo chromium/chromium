@@ -110,10 +110,6 @@ mod ffi {
             history_size_threshold: usize,
         );
     }
-
-    // TODO(crbug.com/442573455): This shouldn't be needed - remove once the underlying cxx bug(?)
-    // is fixed.
-    impl UniquePtr<StablePortabilityHistoryCallbackFromRust> {}
 }
 
 /// Attempts to parse a file in the stable portability data format. Returns true
