@@ -12,13 +12,21 @@ namespace {
 // Timeout images after 250ms, whether or not they've been used. This prevents
 // unbounded cache usage.
 const int64_t kTimeoutDurationMs = 250;
+
+// Timeout for speculative image decodes. This is longer than the regular
+// timeout because during load, when there tends to be a lot of slow tasks
+// and the rendering workload is heavy, it's easy for these decodes to expire
+// before the LCP frame reaches commit.
+// TODO: It probably makes more sense for the expiration to expressed as a
+// number of subsequent commits (2-3 probably) rather than a timer.
+const int64_t kSpeculativeDecodeTimeoutDurationMs = 1000;
 }  // namespace
 
 DecodedImageTracker::ImageLock::ImageLock(
     DecodedImageTracker* tracker,
     ImageController::ImageDecodeRequestId request_id,
-    base::TimeTicks lock_time)
-    : tracker_(tracker), request_id_(request_id), lock_time_(lock_time) {}
+    base::TimeTicks expiration)
+    : tracker_(tracker), request_id_(request_id), expiration_(expiration) {}
 
 DecodedImageTracker::ImageLock::~ImageLock() {
   tracker_->image_controller_->UnlockImageDecode(request_id_);
@@ -51,7 +59,7 @@ void DecodedImageTracker::QueueImageDecode(
       image,
       base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
                      base::Unretained(this), std::move(callback),
-                     image.paint_image().stable_id()),
+                     image.paint_image().stable_id(), speculative),
       speculative);
 }
 
@@ -68,6 +76,7 @@ void DecodedImageTracker::OnImagesUsedInDraw(
 void DecodedImageTracker::ImageDecodeFinished(
     base::OnceCallback<void(bool)> callback,
     PaintImage::Id image_id,
+    bool speculative,
     ImageController::ImageDecodeRequestId request_id,
     ImageController::ImageDecodeResult result) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -77,9 +86,11 @@ void DecodedImageTracker::ImageDecodeFinished(
     // If this image already exists, just replace it with the new (latest)
     // decode.
     locked_images_.erase(image_id);
+    auto timeout = base::Milliseconds(
+        speculative ? kSpeculativeDecodeTimeoutDurationMs : kTimeoutDurationMs);
     locked_images_.emplace(
-        image_id,
-        std::make_unique<ImageLock>(this, request_id, tick_clock_->NowTicks()));
+        image_id, std::make_unique<ImageLock>(
+                      this, request_id, tick_clock_->NowTicks() + timeout));
     EnqueueTimeout();
   }
   bool decode_succeeded =
@@ -94,10 +105,9 @@ void DecodedImageTracker::OnTimeoutImages() {
     return;
 
   auto now = tick_clock_->NowTicks();
-  auto timeout = base::Milliseconds(kTimeoutDurationMs);
   for (auto it = locked_images_.begin(); it != locked_images_.end();) {
     auto& image = it->second;
-    if (now - image->lock_time() < timeout) {
+    if (now < image->expiration()) {
       ++it;
       continue;
     }

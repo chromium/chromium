@@ -65,6 +65,7 @@ class CC_EXPORT DecodedImageTracker {
 
   void ImageDecodeFinished(base::OnceCallback<void(bool)> callback,
                            PaintImage::Id image_id,
+                           bool speculative,
                            ImageController::ImageDecodeRequestId request_id,
                            ImageController::ImageDecodeResult result);
   void OnTimeoutImages();
@@ -78,17 +79,17 @@ class CC_EXPORT DecodedImageTracker {
    public:
     ImageLock(DecodedImageTracker* tracker,
               ImageController::ImageDecodeRequestId request_id,
-              base::TimeTicks lock_time);
+              base::TimeTicks expiration);
     ImageLock(const ImageLock&) = delete;
     ~ImageLock();
 
     ImageLock& operator=(const ImageLock&) = delete;
-    base::TimeTicks lock_time() const { return lock_time_; }
+    base::TimeTicks expiration() const { return expiration_; }
 
    private:
-    raw_ptr<DecodedImageTracker> tracker_;
-    ImageController::ImageDecodeRequestId request_id_;
-    base::TimeTicks lock_time_;
+    const raw_ptr<DecodedImageTracker> tracker_;
+    const ImageController::ImageDecodeRequestId request_id_;
+    const base::TimeTicks expiration_;
   };
   base::flat_map<PaintImage::Id, std::unique_ptr<ImageLock>> locked_images_;
   bool timeout_pending_ = false;
