@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/one_time_tokens/TouchToFillOneTimeTokensBridge.java" ]
+}
+
+android_library("java") {
+  deps = [
+    "//content/public/android:content_full_java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/one_time_tokens/TouchToFillOneTimeTokensBridge.java" ]
+
+  resources_package =
+      "org.chromium.chrome.browser.touch_to_fill.one_time_tokens"
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package =
+      "org.chromium.chrome.browser.touch_to_fill.password_generation"
+
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/one_time_tokens/TouchToFillOneTimeTokensBridgeTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/android:content_full_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}
