@@ -58,6 +58,10 @@ class GlicInstanceCoordinatorImpl
   void AttachInstance(GlicInstance* instance) override;
   void DetachInstance(GlicInstance* instance) override;
   void OnInstanceOrphaned(GlicInstance* instance) override;
+  void SwitchConversation(
+      tabs::TabInterface* tab,
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;

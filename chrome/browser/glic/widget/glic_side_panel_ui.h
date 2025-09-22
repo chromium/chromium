@@ -20,8 +20,6 @@ class TabInterface;
 
 namespace glic {
 
-class GlicInstance;
-
 // Implementation of GlicUiEmbedder for side panel UIs.
 class GlicSidePanelUi : public GlicUiEmbedder,
                         public Host::Delegate,
@@ -29,7 +27,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
  public:
   GlicSidePanelUi(Profile* profile,
                   base::WeakPtr<tabs::TabInterface> tab,
-                  GlicInstance& instance);
+                  GlicUiEmbedder::Delegate& delegate);
   ~GlicSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -51,6 +49,9 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
+  void SwitchConversation(
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // GlicSidePanelCoordinator::StateObserver
   void VisibilityChanged(bool visible) override;
@@ -63,8 +64,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
 
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
-  // Owns this.
-  raw_ref<GlicInstance> instance_;
+  raw_ref<GlicUiEmbedder::Delegate> delegate_;
 };
 
 }  // namespace glic

@@ -39,6 +39,9 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
+  void SwitchConversation(
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:
   mojom::PanelState panel_state_;

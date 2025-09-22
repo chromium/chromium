@@ -70,4 +70,10 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }
 
+void GlicFloatingUi::SwitchConversation(
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace glic

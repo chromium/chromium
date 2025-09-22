@@ -425,4 +425,43 @@ bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
   return false;
 }
 
+void GlicInstanceCoordinatorImpl::SwitchConversation(
+    tabs::TabInterface* tab,
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  GlicInstanceImpl* current_instance = GetInstanceImplForTab(tab);
+
+  GlicInstanceImpl* target_instance = nullptr;
+  if (conversation_id.empty()) {
+    target_instance = CreateGlicInstance();
+  } else {
+    for (const auto& [id, instance] : instances_) {
+      if (instance->conversation_id().has_value() &&
+          instance->conversation_id().value() == conversation_id) {
+        target_instance = instance.get();
+        break;
+      }
+    }
+    if (!target_instance) {
+      // If no instance is found for the conversation, create a new one.
+      // The web client is expected to call RegisterConversation on this new
+      // instance.
+      target_instance = CreateGlicInstance();
+    }
+  }
+
+  CHECK(target_instance);
+  if (current_instance && current_instance != target_instance) {
+    current_instance->DisassociateFromTab(tab);
+  }
+
+  auto* helper = GlicInstanceHelper::From(tab);
+  CHECK(helper);
+  helper->SetInstanceId(target_instance->id());
+
+  target_instance->Toggle(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
+
+  std::move(callback).Run(std::nullopt);
+}
+
 }  // namespace glic

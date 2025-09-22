@@ -580,15 +580,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // glic::mojom::WebClientHandler implementation.
   void SwitchConversation(const std::string& conversation_id,
                           SwitchConversationCallback callback) override {
-    // TODO(crbug.com/443793992): Plumb the conversation switch into
-    // `GlicInstanceCoordinator`.
-    NOTIMPLEMENTED() << "SwitchConversation called with: " << conversation_id;
     if (conversation_id.empty()) {
       receiver_.ReportBadMessage(
           "DetachPanel cannot be called when always detached mode is enabled.");
     }
-    std::move(callback).Run(
-        glic::mojom::SwitchConversationErrorReason::kUnknown);
+    page_handler_->host().SwitchConversation(conversation_id,
+                                             std::move(callback));
   }
 
   void RegisterConversation(const std::string& conversation_id,

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
@@ -20,8 +21,8 @@ namespace glic {
 
 GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
-                                 GlicInstance& instance)
-    : profile_(profile), tab_(tab), instance_(instance) {
+                                 GlicUiEmbedder::Delegate& delegate)
+    : profile_(profile), tab_(tab), delegate_(delegate) {
   if (tab_) {
     coordinator_observation_.Observe(
         tab_->GetTabFeatures()->glic_side_panel_coordinator());
@@ -73,6 +74,14 @@ bool GlicSidePanelUi::IsShowing() const {
   return panel_state_.kind == mojom::PanelState_Kind::kAttached;
 }
 
+void GlicSidePanelUi::SwitchConversation(
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  delegate_->SwitchConversation(tab_.get(), conversation_id,
+                                std::move(callback));
+}
+
+// TODO(crbug.com/444293841): Support closing multi instance.
 void GlicSidePanelUi::VisibilityChanged(bool visible) {
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
@@ -105,7 +114,7 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
   auto glic_view = std::make_unique<GlicView>(
       profile_, GlicWidget::GetInitialSize(), nullptr);
   // TODO(refactor): use the right host when we have multiple hosts
-  glic_view->SetWebContents(instance_->host().webui_contents());
+  glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   return glic_view;
 }

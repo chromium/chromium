@@ -142,6 +142,9 @@ class GlicWindowControllerImpl
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
+  void SwitchConversation(
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // display::DisplayObserver implementation
   void OnDisplayMetricsChanged(const display::Display& display,

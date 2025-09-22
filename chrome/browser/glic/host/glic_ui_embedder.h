@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/host.h"
 #include "ui/views/view.h"
 
@@ -14,10 +15,24 @@ namespace views {
 class View;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace glic {
 
 class GlicUiEmbedder {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void SwitchConversation(
+        tabs::TabInterface* tab,
+        const std::string& conversation_id,
+        mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
+    virtual Host& host() = 0;
+  };
+
   virtual ~GlicUiEmbedder() = default;
 
   // Returns the Host::Delegate if this embedder uses one.

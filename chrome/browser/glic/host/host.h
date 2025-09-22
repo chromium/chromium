@@ -63,6 +63,10 @@ class Host : public GlicSharingManagerProvider {
     virtual void SetMinimumWidgetSize(const gfx::Size& size) = 0;
     // Returns true if the glic widget is visible.
     virtual bool IsShowing() const = 0;
+
+    virtual void SwitchConversation(
+        const std::string& conversation_id,
+        mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
 
   // Interface for methods that the host can call on an instance.
@@ -135,6 +139,10 @@ class Host : public GlicSharingManagerProvider {
                      PanelWillOpenOptions options);
 
   void PanelWasClosed();
+
+  void SwitchConversation(
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback);
 
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();
@@ -331,6 +339,9 @@ class DummyHostDelegate : public Host::Delegate {
   void Detach() override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
   bool IsShowing() const override;
+  void SwitchConversation(
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:
   mojom::PanelState panel_state_ =

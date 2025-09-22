@@ -227,6 +227,15 @@ void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
   std::move(callback).Run(std::move(suggestions));
 }
 
+const std::optional<std::string>& GlicInstanceImpl::conversation_id() const {
+  return conversation_id_;
+}
+
+void GlicInstanceImpl::set_conversation_id(const std::string& conversation_id) {
+  CHECK(!conversation_id_);
+  conversation_id_ = conversation_id;
+}
+
 GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(
     EmbedderType type,
     tabs::TabInterface* tab) {
@@ -312,6 +321,18 @@ void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
   DisassociateFromTab(tab);
   if (IsOrphaned() && attachment_delegate_) {
     attachment_delegate_->OnInstanceOrphaned(this);
+  }
+}
+
+void GlicInstanceImpl::SwitchConversation(
+    tabs::TabInterface* tab,
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  if (attachment_delegate_) {
+    attachment_delegate_->SwitchConversation(tab, conversation_id,
+                                             std::move(callback));
+  } else {
+    std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
   }
 }
 

@@ -40,6 +40,12 @@ void DummyHostDelegate::Resize(const gfx::Size& size,
   std::move(callback).Run();
 }
 
+void DummyHostDelegate::SwitchConversation(
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  std::move(callback).Run(std::nullopt);
+}
+
 Host::PageHandlerInfo::PageHandlerInfo() = default;
 Host::PageHandlerInfo::~PageHandlerInfo() = default;
 Host::PageHandlerInfo::PageHandlerInfo(PageHandlerInfo&&) = default;
@@ -110,6 +116,12 @@ void Host::PanelWasClosed() {
     handler_info_->web_client->PanelWasClosed(base::DoNothing());
     handler_info_->open_complete = false;
   }
+}
+
+void Host::SwitchConversation(
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  delegate_->SwitchConversation(conversation_id, std::move(callback));
 }
 
 void Host::AddObserver(Observer* observer) {

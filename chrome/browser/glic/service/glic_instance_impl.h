@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -37,8 +39,10 @@ class GlicUiEmbedder;
 // even if it has no GlicUiEmbedder showing the UI. A host could have many
 // different GlicUiEmbedders during its lifetime.
 class GlicInstanceImpl : public GlicInstance,
+
                          public Host::InstanceDelegate,
-                         public GlicSharingManagerProvider {
+                         public GlicSharingManagerProvider,
+                         public GlicUiEmbedder::Delegate {
  public:
   enum class EmbedderType {
     kSidePanel,
@@ -51,6 +55,10 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void AttachInstance(GlicInstance* instance) = 0;
     virtual void DetachInstance(GlicInstance* instance) = 0;
     virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
+    virtual void SwitchConversation(
+        tabs::TabInterface* tab,
+        const std::string& conversation_id,
+        mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
 
   GlicInstanceImpl(Profile* profile,
@@ -87,6 +95,8 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicInstance:
   Host& host() override;
   const InstanceId& id() const override;
+  const std::optional<std::string>& conversation_id() const;
+  void set_conversation_id(const std::string& conversation_id);
 
   // Host::InstanceDelegate:
   void CreateTab() override;
@@ -102,6 +112,12 @@ class GlicInstanceImpl : public GlicInstance,
       std::optional<std::vector<std::string>> supported_tools,
       glic::mojom::WebClientHandler::
           GetZeroStateSuggestionsForFocusedTabCallback callback) override;
+
+  // GlicUiEmbedder::Delegate:
+  void SwitchConversation(
+      tabs::TabInterface* tab,
+      const std::string& conversation_id,
+      mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:
   // A tag type to represent the floating embedder key.
@@ -153,6 +169,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<EmbedderKey> active_embedder_key_;
 
   std::unique_ptr<Host> host_;
+  std::optional<std::string> conversation_id_;
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 

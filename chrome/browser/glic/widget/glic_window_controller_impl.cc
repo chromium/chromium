@@ -1497,6 +1497,12 @@ bool GlicWindowControllerImpl::IsShowing() const {
   return !(state_ == State::kClosed);
 }
 
+void GlicWindowControllerImpl::SwitchConversation(
+    const std::string& conversation_id,
+    mojom::WebClientHandler::SwitchConversationCallback callback) {
+  std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
+}
+
 bool GlicWindowControllerImpl::IsAttached() const {
   return IsShowing() && attached_browser_;
 }
