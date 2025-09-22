@@ -85,8 +85,9 @@ void OnURLLoadComplete(
     proto::LogAiDataRequest::FeatureCase feature,
     std::unique_ptr<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
-  TRACE_EVENT1("browser", "ModelQualityLogsUploaderService::OnURLLoadComplete",
-               "feature", feature);
+  TRACE_EVENT("optimization_guide",
+              "ModelQualityLogsUploaderService::OnURLLoadComplete", "feature",
+              feature);
 
   auto net_error = active_url_loader->NetError();
   int response_code = -1;

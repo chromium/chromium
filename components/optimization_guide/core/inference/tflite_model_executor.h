@@ -45,8 +45,7 @@ class ScopedExecutionStatusResultRecorder {
   ~ScopedExecutionStatusResultRecorder() {
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ModelExecutor.ExecutionStatus." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         status_);
   }
 
@@ -140,6 +139,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
            execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    TRACE_EVENT("optimization_guide", "TFLiteModelExecutor::UpdateModelFile",
+                "target",
+                GetStringNameForOptimizationTarget(optimization_target_));
+
     UnloadModel();
     DCHECK(!loaded_model_);
     DCHECK(!model_fb_);
@@ -155,8 +158,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // names, so factory create the local histogram (used in testing).
     base::HistogramBase* histogram = base::BooleanHistogram::FactoryGet(
         "OptimizationGuide.ModelExecutor.ModelFileUpdated." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         base::Histogram::kNoFlags);
     histogram->Add(true);
 
@@ -200,10 +202,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // Clears the loaded model from memory if it is loaded. Safe to call when the
   // model is already unloaded, and becomes a no-op.
   void UnloadModel() override {
-    TRACE_EVENT1("browser", "OptGuideModelExecutor::UnloadModel",
-                 "OptimizationTarget",
-                 optimization_guide::GetStringNameForOptimizationTarget(
-                     optimization_target_));
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -247,8 +245,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         base::TimeTicks::Now() - start_time;
     base::UmaHistogramMediumTimes(
         "OptimizationGuide.ModelExecutor.TaskSchedulingLatency." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         task_scheduling_latency);
 
     // Load the model file in the background thread if not loaded yet, and
@@ -333,10 +330,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // model file loaded in memory on the model execution thread.
   void LoadModelFile(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback) {
-    TRACE_EVENT1("browser", "OptGuideModelExecutor::LoadModelFile",
-                 "OptimizationTarget",
-                 optimization_guide::GetStringNameForOptimizationTarget(
-                     optimization_target_));
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -357,41 +350,41 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         // Anomynous model file loading function to be called on the background
         // thread, which returns the memory-mapped model file or nullptr if
         // failed to load.
-        base::BindOnce(
-            [](const std::optional<base::FilePath> model_file_path,
-               proto::OptimizationTarget optimization_target,
-               scoped_refptr<base::SequencedTaskRunner>
-                   model_loading_task_runner)
-                -> base::expected<FileDeleteOnTaskRunner, ExecutionStatus> {
-              base::TimeTicks loading_start_time = base::TimeTicks::Now();
-              if (!model_file_path) {
-                return base::unexpected(
-                    ExecutionStatus::kErrorModelFileNotAvailable);
-              }
-
-              FileDeleteOnTaskRunner model_fb(
-                  new base::File(*model_file_path,
-                                 base::File::FLAG_OPEN | base::File::FLAG_READ),
-                  base::OnTaskRunnerDeleter(
-                      std::move(model_loading_task_runner)));
-              if (!model_fb->IsValid()) {
-                return base::unexpected(
-                    ExecutionStatus::kErrorModelFileNotValid);
-              }
-
-              // We only want to record successful loading times.
-              base::UmaHistogramTimes(
-                  "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
-                      optimization_guide::GetStringNameForOptimizationTarget(
-                          optimization_target),
-                  base::TimeTicks::Now() - loading_start_time);
-
-              return std::move(model_fb);
-            },
-            model_file_path_, optimization_target_, model_loading_task_runner_),
+        base::BindOnce(&TFLiteModelExecutor::OpenModelFile, model_file_path_,
+                       optimization_target_, model_loading_task_runner_),
         base::BindOnce(&TFLiteModelExecutor::OnModelFileLoadedInMemory,
                        GetWeakPtrForExecutionThread(),
                        std::move(model_loaded_callback)));
+  }
+
+  static base::expected<FileDeleteOnTaskRunner, ExecutionStatus> OpenModelFile(
+      const std::optional<base::FilePath> model_file_path,
+      proto::OptimizationTarget optimization_target,
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner) {
+    TRACE_EVENT("optimization_guide", "TFLiteModelExecutor::OpenModelFile",
+                "target",
+                GetStringNameForOptimizationTarget(optimization_target));
+
+    base::TimeTicks loading_start_time = base::TimeTicks::Now();
+    if (!model_file_path) {
+      return base::unexpected(ExecutionStatus::kErrorModelFileNotAvailable);
+    }
+
+    FileDeleteOnTaskRunner model_fb(
+        new base::File(*model_file_path,
+                       base::File::FLAG_OPEN | base::File::FLAG_READ),
+        base::OnTaskRunnerDeleter(std::move(model_loading_task_runner)));
+    if (!model_fb->IsValid()) {
+      return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
+    }
+
+    // We only want to record successful loading times.
+    base::UmaHistogramTimes(
+        "OptimizationGuide.ModelExecutor.ModelLoadingDuration2." +
+            GetStringNameForOptimizationTarget(optimization_target),
+        base::TimeTicks::Now() - loading_start_time);
+
+    return std::move(model_fb);
   }
 
   // Called on model file loaded in memory. Builds the model execution task from
@@ -420,8 +413,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // Local histogram used in integration testing.
     base::BooleanHistogram::FactoryGet(
         "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
-            optimization_guide::GetStringNameForOptimizationTarget(
-                optimization_target_),
+            GetStringNameForOptimizationTarget(optimization_target_),
         base::Histogram::kNoFlags)
         ->Add(!!loaded_model_);
 
@@ -474,10 +466,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         watchdog_->ArmWithTask(MakeCancelClosure());
       }
       {
-        TRACE_EVENT1("browser", "OptGuideModelExecutor::Execute",
-                     "OptimizationTarget",
-                     optimization_guide::GetStringNameForOptimizationTarget(
-                         optimization_target_));
+        TRACE_EVENT("optimization_guide",
+                    "TFLiteModelExecutor::BatchExecuteLoadedModel", "target",
+                    GetStringNameForOptimizationTarget(optimization_target_));
         base::ElapsedThreadTimer execution_timer;
         base::ElapsedTimer elapsed_timer;
         std::optional<OutputType> output = Execute(
