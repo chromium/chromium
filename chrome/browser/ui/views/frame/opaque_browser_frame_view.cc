@@ -124,10 +124,10 @@ bool HitTestCaptionButton(views::Button* button, const gfx::Point& point) {
 // OpaqueBrowserFrameView, public:
 
 OpaqueBrowserFrameView::OpaqueBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view,
     OpaqueBrowserFrameViewLayout* layout)
-    : BrowserFrameView(frame, browser_view),
+    : BrowserFrameView(widget, browser_view),
       layout_(layout),
       window_icon_(nullptr),
       window_title_(nullptr),

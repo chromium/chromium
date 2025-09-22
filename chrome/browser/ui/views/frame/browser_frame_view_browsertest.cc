@@ -226,8 +226,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, IncognitoIsCorrectColor) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
 
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
-  BrowserWidget* frame = view->browser_widget();
-  BrowserFrameView* frame_view = frame->GetFrameView();
+  BrowserWidget* widget = view->browser_widget();
+  BrowserFrameView* frame_view = widget->GetFrameView();
 
   color_utils::HSL frame_color_hsl;
   SkColorToHSL(frame_view->GetFrameColor(BrowserFrameActiveState::kActive),

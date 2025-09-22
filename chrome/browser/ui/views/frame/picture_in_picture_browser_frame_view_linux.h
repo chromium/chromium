@@ -22,7 +22,7 @@ class PictureInPictureBrowserFrameViewLinux
   // shadows are not drawn.
   static gfx::ShadowValues GetShadowValues();
 
-  PictureInPictureBrowserFrameViewLinux(BrowserWidget* frame,
+  PictureInPictureBrowserFrameViewLinux(BrowserWidget* widget,
                                         BrowserView* browser_view);
 
   PictureInPictureBrowserFrameViewLinux(

@@ -727,9 +727,9 @@ void StatusBubbleViews::InitPopup() {
 #endif
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.accept_events = false;
-    views::Widget* frame = base_view_->GetWidget();
-    params.parent = frame->GetNativeView();
-    params.context = frame->GetNativeWindow();
+    views::Widget* widget = base_view_->GetWidget();
+    params.parent = widget->GetNativeView();
+    params.context = widget->GetNativeWindow();
     params.name = "StatusBubble";
 #if BUILDFLAG(IS_CHROMEOS)
     params.init_properties_container.SetProperty(ash::kHideInOverviewKey, true);
@@ -1024,18 +1024,18 @@ void StatusBubbleViews::AvoidMouse(const gfx::Point& location) {
 }
 
 bool StatusBubbleViews::IsFrameVisible() {
-  views::Widget* frame = base_view_->GetWidget();
-  if (!frame->IsVisible()) {
+  views::Widget* widget = base_view_->GetWidget();
+  if (!widget->IsVisible()) {
     return false;
   }
 
-  views::Widget* window = frame->GetTopLevelWidget();
+  views::Widget* window = widget->GetTopLevelWidget();
   return !window || !window->IsMinimized();
 }
 
 bool StatusBubbleViews::IsFrameMaximized() {
-  views::Widget* frame = base_view_->GetWidget();
-  views::Widget* window = frame->GetTopLevelWidget();
+  views::Widget* widget = base_view_->GetWidget();
+  views::Widget* window = widget->GetTopLevelWidget();
   return window && window->IsMaximized();
 }
 

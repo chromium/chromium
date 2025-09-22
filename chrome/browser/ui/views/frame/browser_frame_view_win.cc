@@ -95,9 +95,9 @@ constexpr int kIconTitleSpacing = 5;
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewWin, public:
 
-BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* frame,
+BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
                                          BrowserView* browser_view)
-    : BrowserFrameView(frame, browser_view) {
+    : BrowserFrameView(widget, browser_view) {
   // We initialize all fields despite some of them being unused in some modes,
   // since it's possible for modes to flip dynamically (e.g. if the user enables
   // a high-contrast theme). Throbber icons are only used when ShowSystemIcon()

@@ -18,7 +18,7 @@ class VIEWS_EXPORT NativeFrameView : public FrameView {
   METADATA_HEADER(NativeFrameView, FrameView)
 
  public:
-  explicit NativeFrameView(Widget* frame);
+  explicit NativeFrameView(Widget* widget);
   NativeFrameView(const NativeFrameView&) = delete;
   NativeFrameView& operator=(const NativeFrameView&) = delete;
   ~NativeFrameView() override;
@@ -37,7 +37,7 @@ class VIEWS_EXPORT NativeFrameView : public FrameView {
 
  private:
   // Our containing frame.
-  raw_ptr<Widget> frame_;
+  raw_ptr<Widget> widget_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, FrameView)

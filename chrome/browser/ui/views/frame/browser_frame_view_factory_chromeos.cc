@@ -9,15 +9,15 @@
 namespace chrome {
 
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
-    return std::make_unique<PictureInPictureBrowserFrameViewAsh>(frame,
+    return std::make_unique<PictureInPictureBrowserFrameViewAsh>(widget,
                                                                  browser_view);
   }
 
   auto frame_view =
-      std::make_unique<BrowserFrameViewChromeOS>(frame, browser_view);
+      std::make_unique<BrowserFrameViewChromeOS>(widget, browser_view);
   frame_view->Init();
   return frame_view;
 }

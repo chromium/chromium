@@ -27,10 +27,10 @@ constexpr int kResizeTopBorderThickness = 4;
 }  // namespace
 
 BrowserFrameViewLinux::BrowserFrameViewLinux(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout)
-    : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
+    : OpaqueBrowserFrameView(widget, browser_view, layout), layout_(layout) {
   layout->set_view(this);
   if (auto* linux_ui = ui::LinuxUi::instance()) {
     window_button_order_observation_.Observe(linux_ui);

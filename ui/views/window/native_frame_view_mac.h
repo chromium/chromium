@@ -31,7 +31,7 @@ class VIEWS_EXPORT NativeFrameViewMac : public NativeFrameView {
   METADATA_HEADER(NativeFrameViewMac, NativeFrameView)
 
  public:
-  NativeFrameViewMac(Widget* frame, NativeFrameViewMacClient* client);
+  NativeFrameViewMac(Widget* widget, NativeFrameViewMacClient* client);
   NativeFrameViewMac(const NativeFrameViewMac&) = delete;
   NativeFrameViewMac& operator=(const NativeFrameViewMac&) = delete;
   ~NativeFrameViewMac() override;

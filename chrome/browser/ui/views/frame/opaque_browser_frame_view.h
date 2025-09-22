@@ -45,7 +45,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
 
  public:
   // Constructs a non-client view for an BrowserWidget.
-  OpaqueBrowserFrameView(BrowserWidget* frame,
+  OpaqueBrowserFrameView(BrowserWidget* widget,
                          BrowserView* browser_view,
                          OpaqueBrowserFrameViewLayout* layout);
   OpaqueBrowserFrameView(const OpaqueBrowserFrameView&) = delete;

@@ -493,9 +493,9 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
 }
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view)
-    : BrowserFrameView(frame, browser_view),
+    : BrowserFrameView(widget, browser_view),
       top_bar_color_animation_(this),
       move_camera_button_to_left_animation_(this),
       move_camera_button_to_right_animation_(gfx::MultiAnimation::Parts{

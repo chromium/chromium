@@ -191,13 +191,13 @@ class BrowserFrameViewChromeOS::ProfileChangeObserver
       profile_observation_{this};
 };
 
-BrowserFrameViewChromeOS::BrowserFrameViewChromeOS(BrowserWidget* frame,
+BrowserFrameViewChromeOS::BrowserFrameViewChromeOS(BrowserWidget* widget,
                                                    BrowserView* browser_view)
-    : BrowserFrameView(frame, browser_view) {
+    : BrowserFrameView(widget, browser_view) {
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
-      frame->GetNativeWindow());
+      widget->GetNativeWindow());
 
-  aura::Window* frame_window = frame->GetNativeWindow();
+  aura::Window* frame_window = widget->GetNativeWindow();
   frame_window->SetProperty(kBrowserFrameViewChromeOSKey, this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);

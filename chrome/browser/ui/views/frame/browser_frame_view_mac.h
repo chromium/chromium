@@ -33,7 +33,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
                             public web_app::WebAppRegistrarObserver {
  public:
   // Mac implementation of BrowserFrameView.
-  BrowserFrameViewMac(BrowserWidget* frame, BrowserView* browser_view);
+  BrowserFrameViewMac(BrowserWidget* widget, BrowserView* browser_view);
 
   BrowserFrameViewMac(const BrowserFrameViewMac&) = delete;
   BrowserFrameViewMac& operator=(const BrowserFrameViewMac&) = delete;

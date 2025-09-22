@@ -23,7 +23,7 @@ class Widget;
 class NativeAppWindowFrameViewMacClient
     : public views::NativeFrameViewMacClient {
  public:
-  NativeAppWindowFrameViewMacClient(views::Widget* frame,
+  NativeAppWindowFrameViewMacClient(views::Widget* widget,
                                     extensions::NativeAppWindow* window);
   ~NativeAppWindowFrameViewMacClient() override;
 
@@ -36,7 +36,7 @@ class NativeAppWindowFrameViewMacClient
   std::optional<int> NonClientHitTest(const gfx::Point& point) override;
 
  private:
-  const raw_ptr<views::Widget> frame_;
+  const raw_ptr<views::Widget> widget_;
   // Weak. Owned by extensions::AppWindow (which manages our Widget via its
   // WebContents).
   const raw_ptr<extensions::NativeAppWindow, DanglingUntriaged>

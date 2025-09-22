@@ -131,11 +131,11 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
 
 class ChromeNativeAppClientView : public views::ClientView {
  public:
-  ChromeNativeAppClientView(views::Widget* frame,
+  ChromeNativeAppClientView(views::Widget* widget,
                             ChromeNativeAppWindowViewsAuraAsh* app_window,
                             bool has_non_standard_frame,
                             bool draw_non_standard_frame)
-      : views::ClientView(frame, app_window),
+      : views::ClientView(widget, app_window),
         has_non_standard_frame_(has_non_standard_frame),
         draw_non_standard_frame_(draw_non_standard_frame) {}
 

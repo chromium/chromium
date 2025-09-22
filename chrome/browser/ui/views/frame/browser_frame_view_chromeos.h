@@ -45,7 +45,7 @@ class BrowserFrameViewChromeOS
   METADATA_HEADER(BrowserFrameViewChromeOS, BrowserFrameView)
 
  public:
-  BrowserFrameViewChromeOS(BrowserWidget* frame, BrowserView* browser_view);
+  BrowserFrameViewChromeOS(BrowserWidget* widget, BrowserView* browser_view);
   BrowserFrameViewChromeOS(const BrowserFrameViewChromeOS&) = delete;
   BrowserFrameViewChromeOS& operator=(const BrowserFrameViewChromeOS&) = delete;
   ~BrowserFrameViewChromeOS() override;

@@ -12,16 +12,16 @@
 #include "ui/views/widget/widget.h"
 
 NativeAppWindowFrameViewMacClient::NativeAppWindowFrameViewMacClient(
-    views::Widget* frame,
+    views::Widget* widget,
     extensions::NativeAppWindow* window)
-    : frame_(frame), native_app_window_(window) {}
+    : widget_(widget), native_app_window_(window) {}
 
 NativeAppWindowFrameViewMacClient::~NativeAppWindowFrameViewMacClient() =
     default;
 
 std::optional<int> NativeAppWindowFrameViewMacClient::NonClientHitTest(
     const gfx::Point& point) {
-  if (frame_->IsFullscreen()) {
+  if (widget_->IsFullscreen()) {
     return HTCLIENT;
   }
 

@@ -32,21 +32,21 @@ gfx::ShadowValues PictureInPictureBrowserFrameViewLinux::GetShadowValues() {
 }
 
 PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view)
-    : PictureInPictureBrowserFrameView(frame, browser_view) {
+    : PictureInPictureBrowserFrameView(widget, browser_view) {
   auto* profile = browser_view->browser()->profile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {
     bool solid_frame = !static_cast<BrowserNativeWidgetAuraLinux*>(
-                            frame->browser_native_widget())
+                            widget->browser_native_widget())
                             ->ShouldDrawRestoredFrameShadow();
 
     // This may return null, but that's handled below.
     window_frame_provider_ = linux_ui_theme->GetWindowFrameProvider(
         solid_frame, /*tiled=*/false,
-        /*maximized=*/frame->IsMaximized());
+        /*maximized=*/widget->IsMaximized());
   }
 
   // On Linux the top bar background will be drawn in OnPaint().

@@ -59,7 +59,7 @@ class PictureInPictureBrowserFrameView
   METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserFrameView)
 
  public:
-  PictureInPictureBrowserFrameView(BrowserWidget* frame,
+  PictureInPictureBrowserFrameView(BrowserWidget* widget,
                                    BrowserView* browser_view);
   PictureInPictureBrowserFrameView(const PictureInPictureBrowserFrameView&) =
       delete;

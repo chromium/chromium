@@ -26,7 +26,7 @@ class ConfigurableTestNativeFrameView : public NativeFrameView {
   METADATA_HEADER(ConfigurableTestNativeFrameView, NativeFrameView)
 
  public:
-  explicit ConfigurableTestNativeFrameView(Widget* frame);
+  explicit ConfigurableTestNativeFrameView(Widget* widget);
   ~ConfigurableTestNativeFrameView() override;
 
   ConfigurableTestNativeFrameView(const ConfigurableTestNativeFrameView&) =

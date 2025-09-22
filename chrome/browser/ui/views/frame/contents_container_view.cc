@@ -367,9 +367,9 @@ void ContentsContainerView::CreateCaptureContentsBorder() {
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  views::Widget* frame = GetWidget();
-  params.parent = frame->GetNativeView();
-  params.context = frame->GetNativeWindow();
+  views::Widget* widget = GetWidget();
+  params.parent = widget->GetNativeView();
+  params.context = widget->GetNativeWindow();
   // Make the widget non-top level.
   params.child = true;
   params.name = "TabSharingContentsBorder";

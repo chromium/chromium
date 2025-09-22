@@ -34,7 +34,7 @@ namespace {
 
 #if BUILDFLAG(IS_LINUX)
 std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view) {
   auto* profile = browser_view->browser()->profile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
@@ -55,7 +55,7 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
     auto nav_button_provider = linux_ui_theme->CreateNavButtonProvider();
     if (nav_button_provider) {
       auto* native_widget = static_cast<BrowserNativeWidgetAuraLinux*>(
-          frame->browser_native_widget());
+          widget->browser_native_widget());
       auto* layout = new BrowserFrameViewLayoutLinuxNative(
           nav_button_provider.get(),
           base::BindRepeating(
@@ -68,23 +68,23 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
               },
               native_widget, linux_ui_theme));
       return std::make_unique<BrowserFrameViewLinuxNative>(
-          frame, browser_view, layout, std::move(nav_button_provider));
+          widget, browser_view, layout, std::move(nav_button_provider));
     }
   }
   return std::make_unique<BrowserFrameViewLinux>(
-      frame, browser_view, new BrowserFrameViewLayoutLinux());
+      widget, browser_view, new BrowserFrameViewLayoutLinux());
 }
 
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameViewLinux(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
     return std::make_unique<PictureInPictureBrowserFrameViewLinux>(
-        frame, browser_view);
+        widget, browser_view);
   }
 
   auto opaque_browser_view =
-      CreateOpaqueBrowserFrameViewLinux(frame, browser_view);
+      CreateOpaqueBrowserFrameViewLinux(widget, browser_view);
   opaque_browser_view->InitViews();
 
   return opaque_browser_view;
@@ -93,19 +93,19 @@ std::unique_ptr<BrowserFrameView> CreateBrowserFrameViewLinux(
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameViewWin(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view) {
   if (browser_view->browser()->is_type_picture_in_picture()) {
-    return std::make_unique<PictureInPictureBrowserFrameView>(frame,
+    return std::make_unique<PictureInPictureBrowserFrameView>(widget,
                                                               browser_view);
   }
 
-  if (frame->ShouldUseNativeFrame()) {
-    return std::make_unique<BrowserFrameViewWin>(frame, browser_view);
+  if (widget->ShouldUseNativeFrame()) {
+    return std::make_unique<BrowserFrameViewWin>(widget, browser_view);
   }
 
   auto opaque_browser_view = std::make_unique<OpaqueBrowserFrameView>(
-      frame, browser_view, new OpaqueBrowserFrameViewLayout());
+      widget, browser_view, new OpaqueBrowserFrameViewLayout());
   opaque_browser_view->InitViews();
 
   return opaque_browser_view;
@@ -115,12 +115,12 @@ std::unique_ptr<BrowserFrameView> CreateBrowserFrameViewWin(
 }  // anonymous namespace
 
 std::unique_ptr<BrowserFrameView> CreateBrowserFrameView(
-    BrowserWidget* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view) {
 #if BUILDFLAG(IS_WIN)
-  return CreateBrowserFrameViewWin(frame, browser_view);
+  return CreateBrowserFrameViewWin(widget, browser_view);
 #else
-  return CreateBrowserFrameViewLinux(frame, browser_view);
+  return CreateBrowserFrameViewLinux(widget, browser_view);
 #endif
 }
 

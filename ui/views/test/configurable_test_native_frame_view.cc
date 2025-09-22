@@ -12,8 +12,8 @@
 
 namespace views::test {
 
-ConfigurableTestNativeFrameView::ConfigurableTestNativeFrameView(Widget* frame)
-    : NativeFrameView(frame) {}
+ConfigurableTestNativeFrameView::ConfigurableTestNativeFrameView(Widget* widget)
+    : NativeFrameView(widget) {}
 ConfigurableTestNativeFrameView::~ConfigurableTestNativeFrameView() = default;
 
 gfx::Size ConfigurableTestNativeFrameView::GetMinimumSize() const {
