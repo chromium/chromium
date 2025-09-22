@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.os.Handler;
 import android.os.IBinder;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
@@ -113,6 +114,15 @@ import java.util.concurrent.Executor;
     public void retire() {
         mDelegate = null;
         unbindServiceConnection(null);
+    }
+
+    @SuppressWarnings("NewApi")
+    @Override
+    public void rebindService(int bindFlags) {
+        final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            delegate.rebindService(mContext, this, Context.BindServiceFlags.of(bindFlags));
+        }
     }
 
     @Override

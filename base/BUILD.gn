@@ -4585,6 +4585,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":build_info_java",
+      ":flagged_apis_java",
       "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -4608,6 +4609,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/process_launcher/ChildServiceConnectionImpl.java",
       "android/java/src/org/chromium/base/process_launcher/LegacyChildServiceConnectionController.java",
       "android/java/src/org/chromium/base/process_launcher/RebindServiceConnection.java",
+      "android/java/src/org/chromium/base/process_launcher/RebindingChildServiceConnectionController.java",
     ]
   }
 

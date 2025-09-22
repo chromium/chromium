@@ -124,6 +124,11 @@ BASE_FEATURE(kPostPowerMonitorBroadcastReceiverInitToBackground,
 // If enabled, getMyMemoryState IPC will be posted to background.
 BASE_FEATURE(kPostGetMyMemoryStateToBackground, FEATURE_ENABLED_BY_DEFAULT);
 
+// Use a single connection and rebindService() to manage the binding to a child
+// process service.
+BASE_FEATURE(kRebindingChildServiceConnectionController,
+             FEATURE_DISABLED_BY_DEFAULT);
+
 // Update child process binding state before unbinding.
 BASE_FEATURE(kUpdateStateBeforeUnbinding, FEATURE_DISABLED_BY_DEFAULT);
 

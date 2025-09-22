@@ -6,6 +6,9 @@ package org.chromium.base;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.content.Context;
+import android.content.Context.BindServiceFlags;
+import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
@@ -115,4 +118,20 @@ public interface AconfigFlaggedApiDelegate {
     default boolean setKeyboardCaptureEnabled(Window window, boolean hasCapture) {
         return false;
     }
+
+    /** Returns whether rebindService() is available or not. */
+    default boolean isUpdateServiceBindingApiAvailable() {
+        return false;
+    }
+
+    /**
+     * Calls the {@link android.content.Context#rebindService(ServiceConnection, BindServiceFlags)}
+     * method if supported.
+     *
+     * @param context {@link android.content.Context} on which the method should be called.
+     * @param connection {@link android.content.ServiceConnection} The connection to rebind.
+     * @param flags {@link android.content.Context.BindServiceFlags} The flags to use when binding.
+     */
+    default void rebindService(
+            Context context, ServiceConnection connection, BindServiceFlags flags) {}
 }

@@ -45,6 +45,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kEffectiveBindingState);
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPostGetMyMemoryStateToBackground);
+BASE_EXPORT BASE_DECLARE_FEATURE(kRebindingChildServiceConnectionController);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateStateBeforeUnbinding);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseSharedRebindServiceConnection);
 

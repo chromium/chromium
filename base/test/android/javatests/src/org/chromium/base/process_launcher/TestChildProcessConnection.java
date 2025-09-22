@@ -41,6 +41,9 @@ public class TestChildProcessConnection extends ChildProcessConnection {
 
         @Override
         public void retire() {}
+
+        @Override
+        public void rebindService(int bindFlags) {}
     }
 
     private int mPid;

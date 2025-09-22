@@ -96,6 +96,9 @@ public class ChildProcessConnectionTest {
             mBound = false;
         }
 
+        @Override
+        public void rebindService(int bindFlags) {}
+
         public void setBindResult(boolean result) {
             mBindResult = result;
         }

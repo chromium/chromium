@@ -318,7 +318,7 @@ public class ChildProcessConnection {
     //
     // The feature status has to stay consistent throughout the lifetime of this object, and can't
     // have it flip half way in the middle.
-    private @Nullable Boolean mIsEffectiveBindingStateEnabled;
+    private final boolean mIsEffectiveBindingStateEnabled;
 
     public ChildProcessConnection(
             Context context,
@@ -369,6 +369,7 @@ public class ChildProcessConnection {
         mBindToCaller = bindToCaller;
         mIndependentFallback = independentFallback;
         mIsSandboxedForHistograms = isSandboxedForHistograms;
+        mIsEffectiveBindingStateEnabled = BaseFeatureList.sEffectiveBindingState.isEnabled();
 
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
@@ -430,15 +431,27 @@ public class ChildProcessConnection {
         if (mServiceBundle != null) {
             bindIntent.putExtras(mServiceBundle);
         }
-
-        mConnectionController =
-                new LegacyChildServiceConnectionController(
-                        connectionFactory,
-                        bindIntent,
-                        defaultBindFlags,
-                        connectionDelegate,
-                        new CountOnServiceConnectedDecorator(connectionDelegate, mLauncherHandler),
-                        instanceName);
+        if (mIsEffectiveBindingStateEnabled
+                && RebindingChildServiceConnectionController.isEnabled()) {
+            mConnectionController =
+                    new RebindingChildServiceConnectionController(
+                            connectionFactory,
+                            bindIntent,
+                            defaultBindFlags,
+                            new CountOnServiceConnectedDecorator(
+                                    connectionDelegate, mLauncherHandler),
+                            instanceName);
+        } else {
+            mConnectionController =
+                    new LegacyChildServiceConnectionController(
+                            connectionFactory,
+                            bindIntent,
+                            defaultBindFlags,
+                            connectionDelegate,
+                            new CountOnServiceConnectedDecorator(
+                                    connectionDelegate, mLauncherHandler),
+                            instanceName);
+        }
     }
 
     public final @Nullable IChildProcessService getService() {
@@ -971,7 +984,7 @@ public class ChildProcessConnection {
             return;
         }
         mStrongBindingCount++;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mStrongBindingCount == 1) {
             mConnectionController.setStrongBinding();
@@ -985,7 +998,7 @@ public class ChildProcessConnection {
         }
         assert mStrongBindingCount > 0;
         mStrongBindingCount--;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mStrongBindingCount == 0) {
             mConnectionController.unsetStrongBinding();
@@ -1009,7 +1022,7 @@ public class ChildProcessConnection {
             return;
         }
         mVisibleBindingCount++;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mVisibleBindingCount == 1) {
             mConnectionController.setVisibleBinding();
@@ -1023,7 +1036,7 @@ public class ChildProcessConnection {
         }
         assert mVisibleBindingCount > 0;
         mVisibleBindingCount--;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mVisibleBindingCount == 0) {
             mConnectionController.unsetVisibleBinding();
@@ -1042,7 +1055,7 @@ public class ChildProcessConnection {
             return;
         }
         mNotPerceptibleBindingCount++;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mNotPerceptibleBindingCount == 1) {
             mConnectionController.setNotPerceptibleBinding();
@@ -1056,7 +1069,7 @@ public class ChildProcessConnection {
         }
         assert mNotPerceptibleBindingCount > 0;
         mNotPerceptibleBindingCount--;
-        if (isEffectiveBindingStateEnabled()) {
+        if (mIsEffectiveBindingStateEnabled) {
             applyEffectiveBindingState();
         } else if (mNotPerceptibleBindingCount == 0) {
             mConnectionController.unsetNotPerceptibleBinding();
@@ -1187,13 +1200,5 @@ public class ChildProcessConnection {
         } catch (RemoteException ex) {
             // Ignore
         }
-    }
-
-    private boolean isEffectiveBindingStateEnabled() {
-        if (mIsEffectiveBindingStateEnabled != null) {
-            return mIsEffectiveBindingStateEnabled;
-        }
-        mIsEffectiveBindingStateEnabled = BaseFeatureList.sEffectiveBindingState.isEnabled();
-        return mIsEffectiveBindingStateEnabled;
     }
 }

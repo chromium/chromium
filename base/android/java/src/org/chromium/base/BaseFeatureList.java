@@ -21,6 +21,12 @@ public class BaseFeatureList {
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(), BaseFeatures.EFFECTIVE_BINDING_STATE, false);
 
+    public static final MutableFlagWithSafeDefault sRebindingChildServiceConnectionController =
+            new MutableFlagWithSafeDefault(
+                    BaseFeatureMap.getInstance(),
+                    BaseFeatures.REBINDING_CHILD_SERVICE_CONNECTION_CONTROLLER,
+                    false);
+
     public static final MutableFlagWithSafeDefault sUpdateStateBeforeUnbinding =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),
