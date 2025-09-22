@@ -368,8 +368,9 @@ function addStandardStats(data) {
     statsRatesCalculator = new StatsRatesCalculator();
     statsRatesCalculatorById.set(pcId, statsRatesCalculator);
   }
-  // Create a map from the stats entries so it behaves like a getStats maplike.
-  const stats = new Map(data.reports);
+  // Create a map from the stats entries so it behaves like a getStats maplike
+  // and then sort it.
+  const stats = sortStatsReport(new Map(data.reports));
   stats.forEach(report => {
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report);
@@ -496,4 +497,64 @@ function eventLogRecordingsFileSelectionCancelled() {
 
 function dataChannelRecordingsFileSelectionCancelled() {
   dumpCreator.clearDataChannelRecordingsCheckbox();
+}
+
+// Returns a sorted version of the stats report as a Map.
+// 1. outbound-rtps, sorted by encodingIndex
+// 2. inbound-rtps
+// 3. everything else
+function sortStatsReport(report) {
+  const getOutboundRtpsForMid = (report, mid) => {
+    const outboundRtpsByEncodingIndex = new Map();
+    for (const stats of report.values()) {
+      if (stats.type !== 'outbound-rtp' || stats.mid !== mid) {
+        continue;
+      }
+      let encodingIndex = stats.encodingIndex ? Number(stats.encodingIndex) : 0;
+      outboundRtpsByEncodingIndex.set(encodingIndex, stats);
+    }
+    const orderedOutboundRtps = [];
+    for (let i = 0; i < outboundRtpsByEncodingIndex.size; ++i) {
+      orderedOutboundRtps.push(outboundRtpsByEncodingIndex.get(i));
+    }
+    return orderedOutboundRtps;
+  }
+  // Categorize into outbound-rtp, inbound-rtp and other categories.
+  let outboundRtps = [];
+  let inboundRtps = [];
+  let otherStats = [];
+  const midsIncluded = new Set();
+  for (const stats of report.values()) {
+    if (stats.type === 'outbound-rtp') {
+      if (stats.mid !== undefined) {
+        if (midsIncluded.has(stats.mid)) {
+          continue;  // This outbound-rtp has already been included.
+        }
+        midsIncluded.add(stats.mid);
+        // Add all outbound-rtps for this mid in encodingIndex order.
+        outboundRtps = outboundRtps.concat(
+            getOutboundRtpsForMid(report, stats.mid));
+      } else {
+        // It's unexpected that an outbound-rtp does not have a mid due to
+        // outbound-rtps being created after O/A, but just in case...
+        outboundRtps.push(stats);
+      }
+    } else if (stats.type === 'inbound-rtp') {
+      inboundRtps.push(stats);
+    } else {
+      otherStats.push(stats);
+    }
+  }
+  // Re-build the internal reports in our new preferred order.
+  const sortedReport = new Map();
+  for (const outboundRtp of outboundRtps) {
+    sortedReport.set(outboundRtp.id, outboundRtp);
+  }
+  for (const inboundRtp of inboundRtps) {
+    sortedReport.set(inboundRtp.id, inboundRtp);
+  }
+  for (const other of otherStats) {
+    sortedReport.set(other.id, other);
+  }
+  return sortedReport;
 }
