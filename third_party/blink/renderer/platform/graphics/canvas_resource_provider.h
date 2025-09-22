@@ -323,10 +323,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
 
-  // Notifies the provider when the texture params associated with |resource|
-  // are modified externally from the provider's SkSurface.
-  virtual void NotifyTexParamsModified(const CanvasResource* resource) {}
-
   void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
@@ -554,7 +550,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return num_inflight_resources_;
   }
 
-  void NotifyTexParamsModified(const CanvasResource* resource) override;
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;
   bool IsValid() const override;

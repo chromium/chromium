@@ -273,23 +273,6 @@ CanvasResourceProviderSharedImage::CreateResource() {
       shared_image_usage_flags_);
 }
 
-void CanvasResourceProviderSharedImage::NotifyTexParamsModified(
-    const CanvasResource* resource) {
-  if (!is_accelerated_ || use_oop_rasterization_) {
-    return;
-  }
-
-  if (resource_.get() == resource) {
-    DCHECK(!current_resource_has_write_access_);
-    // Note that the call below is guarenteed to not issue any GPU work for
-    // the backend texture since we ensure that all skia work on the resource
-    // is issued before releasing write access.
-    auto tex = SkSurfaces::GetBackendTexture(
-        surface_.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
-    GrBackendTextures::GLTextureParametersModified(&tex);
-  }
-}
-
 void CanvasResourceProviderSharedImage::OnContextLost() {
   if (notified_context_lost_) {
     return;

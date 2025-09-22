@@ -119,9 +119,6 @@ static void ReleaseFrameResources(
 
   resource->WaitSyncToken(sync_token);
 
-  if (resource_provider)
-    resource_provider->NotifyTexParamsModified(resource.get());
-
   // TODO(khushalsagar): If multiple readers had access to this resource, losing
   // it once should make sure subsequent releases don't try to recycle this
   // resource.
@@ -593,9 +590,6 @@ void CanvasResourceSharedImage::VerifySyncToken() {
 
 void CanvasResourceSharedImage::NotifyResourceLost() {
   owning_thread_data().is_lost = true;
-
-  if (WeakProvider())
-    Provider()->NotifyTexParamsModified(this);
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
