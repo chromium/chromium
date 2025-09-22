@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -108,13 +109,21 @@ public class ReaderModeBottomSheetCoordinator {
         // Only try to show the bottom sheet if it's not already showing. BottomSheetController
         // makes a copy of the sheet content, so equals comparison isn't useful here.
         boolean showing =
-                mBottomSheetController.getCurrentSheetContent()
-                        instanceof ReaderModeBottomSheetContent;
-        if (!showing) {
-            ReaderModeMetrics.reportReaderModePrefsOpened();
-            showing =
-                    mBottomSheetController.requestShowContent(
+                mBottomSheetController.getCurrentSheetContent() == mBottomSheetContent;
+
+        // Workaround for a bug where the bottom sheet will get stuck in the NONE state after the
+        // activity is recreated by a theme change.
+        if (showing && mBottomSheetController.getTargetSheetState() == SheetState.NONE) {
+            mBottomSheetController.hideContent(mBottomSheetContent, /*animate=*/ false);
+            mBottomSheetController.requestShowContent(
+                            mBottomSheetContent, /*animate=*/ false);
+            mBottomSheetController.collapseSheet(/*animate=*/ false);
+        } else if (!showing) {
+            showing = mBottomSheetController.requestShowContent(
                             mBottomSheetContent, /* animate= */ true);
+            if (showing) {
+                ReaderModeMetrics.reportReaderModePrefsOpened();
+            }
         }
     }
 
@@ -163,8 +172,13 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean canSuppressInAnyState() {
-            return true;
+        public boolean swipeToDismissEnabled() {
+            return false;
+        }
+
+        @Override
+        public int getPeekHeight() {
+            return ((ReaderModeBottomSheetView) mContentView).getPeekHeight();
         }
 
         @Override
@@ -173,8 +187,8 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean swipeToDismissEnabled() {
-            return false;
+        public boolean hideOnScroll() {
+            return true;
         }
 
         @Override
@@ -198,22 +212,7 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean hasCustomScrimLifecycle() {
-            return false;
-        }
-
-        @Override
-        public boolean hasCustomLifecycle() {
-            return true;
-        }
-
-        @Override
-        public int getPeekHeight() {
-            return ((ReaderModeBottomSheetView) mContentView).getPeekHeight();
-        }
-
-        @Override
-        public boolean hideOnScroll() {
+        public boolean canSuppressInAnyState() {
             return true;
         }
 

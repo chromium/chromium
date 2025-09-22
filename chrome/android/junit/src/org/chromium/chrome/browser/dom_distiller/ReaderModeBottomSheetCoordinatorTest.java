@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.dom_distiller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,6 +81,7 @@ public class ReaderModeBottomSheetCoordinatorTest {
 
     @Test
     public void testShow() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mCoordinator.show(mTab);
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
