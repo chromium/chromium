@@ -460,7 +460,13 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
+// TODO(crbug.com/40212918): Test is failing on iPad device (iOS).
+#if PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
+#else
+#define MAYBE_ReadExecutePages ReadExecutePages
+#endif  // PA_BUILDFLAG(IS_IOS) && !TARGET_IPHONE_SIMULATOR
+TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(
