@@ -22,6 +22,9 @@
     <message name="IDS_PDF_PASSWORD_INVALID" desc="Error message when an invalid password is entered">
       Incorrect password
     </message>
+    <message name="IDS_PDF_SIDEBAR_LABEL" desc="Label for the thumbnails and bookmarks sidebar menu button">
+      Toggle sidebar
+    </message>
 
     <message name="IDS_PDF_PAGE_LOADING" desc="A message displayed on the PDF page while page is loading.">
       Loading...
