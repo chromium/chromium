@@ -922,10 +922,6 @@ class CC_EXPORT GpuImageDecodeCache
   bool TryFlushPendingWork() NO_THREAD_SAFETY_ANALYSIS;
   void PurgeOldCacheEntriesCallback() LOCKS_EXCLUDED(lock_);
 
-  // Adds mips to an image if required.
-  void UpdateMipsIfNeeded(const DrawImage& draw_image, ImageData* image_data)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   static scoped_refptr<TileTask> GetTaskFromMapForClientId(
       const ClientId client_id,
       const ImageTaskMap& task_map);

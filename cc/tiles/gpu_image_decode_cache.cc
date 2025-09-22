@@ -2546,7 +2546,10 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
 
   // Ensure the mip status is correct before returning the locked upload or
   // preparing to upload a new image.
-  UpdateMipsIfNeeded(draw_image, image_data);
+  if (!image_data->needs_mips) {
+    image_data->needs_mips = ShouldGenerateMips(
+        draw_image, AuxImage::kDefault, image_data->upload_scale_mip_level);
+  }
 
   // If we have uploaded data at this point, it is locked with correct mips,
   // just return.
@@ -3544,25 +3547,6 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
   }
 
   return yuva_image;
-}
-
-void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
-                                             ImageData* image_data) {
-  CheckContextLockAcquiredIfNecessary();
-  // If we already have mips, nothing to do.
-  if (image_data->needs_mips)
-    return;
-
-  bool needs_mips = ShouldGenerateMips(draw_image, AuxImage::kDefault,
-                                       image_data->upload_scale_mip_level);
-  if (!needs_mips)
-    return;
-
-  image_data->needs_mips = true;
-
-  // There is nothing to do here post-OOP-C.
-  // TODO(crbug.com/391648152): Remove this method entirely if/once
-  // `ImageData::needs_mips` is no longer used.
 }
 
 // static
