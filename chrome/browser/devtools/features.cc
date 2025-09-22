@@ -175,4 +175,8 @@ BASE_FEATURE(kDevToolsIndividualRequestThrottling,
 // is available in DevTools.
 BASE_FEATURE(kDevToolsAiPromptApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether showing animation styles in the styles tab is enabled.
+BASE_FEATURE(kDevToolsStartingStyleDebugging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

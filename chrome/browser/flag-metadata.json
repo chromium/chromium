@@ -2314,6 +2314,11 @@
     "expiry_milestone": 200
   },
   {
+    "name": "devtools-starting-style-debugging",
+    "owners": [ "bramus@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "diamond-prototype",
     "owners": ["gambard@chromium.com", "ewannpv@chromium.org"],
     "expiry_milestone": 145

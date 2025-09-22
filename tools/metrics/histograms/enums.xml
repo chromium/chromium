@@ -12950,6 +12950,7 @@ from previous Chrome versions.
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-424125732" label="FlossIsAvailabilityCheckNeeded:disabled"/>
   <int value="-423134304" label="VirtualKeyboardMultitouch:disabled"/>
+  <int value="-422670273" label="DevToolsStartingStyleDebugging:enabled"/>
   <int value="-421655506" label="RedInterstitialFacelift:disabled"/>
   <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
   <int value="-421314301" label="ForceShowContinueSection:enabled"/>
@@ -19887,6 +19888,7 @@ from previous Chrome versions.
   <int value="2043184476"
       label="SecurePaymentConfirmationAvailabilityAPI:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
+  <int value="2043419490" label="DevToolsStartingStyleDebugging:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
   <int value="2043970520" label="AppToAppLinkCapturingWorkspaceApps:disabled"/>
   <int value="2044243615"

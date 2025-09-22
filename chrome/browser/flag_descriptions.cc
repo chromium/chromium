@@ -497,6 +497,13 @@ const char kDevToolsProjectSettingsDescription[] =
     "on local debugging targets.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kDevToolsStartingStyleDebuggingName[] =
+    "DevTools @starting-style debugging";
+const char kDevToolsStartingStyleDebuggingDescription[] =
+    "Enables the debugging of @starting-style in the elements panel.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 const char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
 const char kEnableSeamlessSigninDescription[] =

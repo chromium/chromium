@@ -1995,6 +1995,13 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
           "enabled", base::FeatureList::IsEnabled(
                          ::features::kDevToolsIndividualRequestThrottling)));
 
+  base::Value::Dict starting_style_debugging;
+  starting_style_debugging.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsStartingStyleDebugging));
+  response_dict.Set("devToolsStartingStyleDebugging",
+                    std::move(starting_style_debugging));
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }

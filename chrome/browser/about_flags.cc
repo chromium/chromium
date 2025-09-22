@@ -12091,6 +12091,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsProjectSettingsName,
      flag_descriptions::kDevToolsProjectSettingsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDevToolsWellKnown)},
+    {"devtools-starting-style-debugging",
+     flag_descriptions::kDevToolsStartingStyleDebuggingName,
+     flag_descriptions::kDevToolsStartingStyleDebuggingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kDevToolsStartingStyleDebugging)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

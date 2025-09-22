@@ -330,6 +330,11 @@ extern const char kDevToolsProjectSettingsName[];
 extern const char kDevToolsProjectSettingsDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kDevToolsStartingStyleDebuggingName[];
+extern const char kDevToolsStartingStyleDebuggingDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];
