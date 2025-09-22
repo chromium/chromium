@@ -792,6 +792,9 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kPasswordSharingName[];
 extern const char kPasswordSharingDescription[];
 
+extern const char kPersistTabContextName[];
+extern const char kPersistTabContextDescription[];
+
 extern const char kPriceTrackingPromoName[];
 extern const char kPriceTrackingPromoDescription[];
 

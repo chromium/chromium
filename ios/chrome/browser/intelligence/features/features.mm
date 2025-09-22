@@ -141,3 +141,12 @@ BASE_FEATURE(kSmartTabGrouping, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsSmartTabGroupingEnabled() {
   return base::FeatureList::IsEnabled(kSmartTabGrouping);
 }
+
+BASE_FEATURE(kPersistTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPersistTabContextEnabled() {
+  if (IsSmartTabGroupingEnabled()) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(kPersistTabContext);
+}

@@ -1346,6 +1346,11 @@ const char kPasswordSharingName[] = "Enables password sharing";
 const char kPasswordSharingDescription[] =
     "Enables password sharing between members of the same family.";
 
+const char kPersistTabContextName[] = "Persist Tab APC and Inner Text";
+const char kPersistTabContextDescription[] =
+    "Enables persisting tab APC and inner text in storage for fast access to "
+    "multi-tab context.";
+
 const char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";
 const char kPriceTrackingPromoDescription[] =

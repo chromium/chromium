@@ -118,4 +118,10 @@ BASE_DECLARE_FEATURE(kSmartTabGrouping);
 // Returns true if smart tab grouping is enabled.
 bool IsSmartTabGroupingEnabled();
 
+// Returns true if tab context persisting is enabled.
+bool IsPersistTabContextEnabled();
+
+// Feature flag to persist tab context.
+BASE_DECLARE_FEATURE(kPersistTabContext);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

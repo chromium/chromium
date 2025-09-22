@@ -2947,7 +2947,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kIOSOmniboxUseTextView)},
     {"smart-tab-grouping", flag_descriptions::kSmartTabGroupingName,
      flag_descriptions::kSmartTabGroupingDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSmartTabGrouping)}};
+     FEATURE_VALUE_TYPE(kSmartTabGrouping)},
+    {"persist-tab-context", flag_descriptions::kPersistTabContextName,
+     flag_descriptions::kPersistTabContextDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPersistTabContext)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
