@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/ios_sdk.gni")
 import("//ios/build/config.gni")
 
 source_set("common") {
@@ -48,13 +49,15 @@ source_set("features") {
   ]
 }
 
-source_set("uikit") {
-  sources = [
-    "uikit_ui_util.h",
-    "uikit_ui_util.mm",
-  ]
+if (!ios_is_app_extension) {
+  source_set("uikit") {
+    sources = [
+      "uikit_ui_util.h",
+      "uikit_ui_util.mm",
+    ]
 
-  deps = [ "//base" ]
+    deps = [ "//base" ]
+  }
 }
 
 source_set("web_view_creation_util") {
