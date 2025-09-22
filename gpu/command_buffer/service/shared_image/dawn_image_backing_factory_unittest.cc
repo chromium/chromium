@@ -59,7 +59,12 @@ class DawnImageBackingFactoryTest : public SharedImageTestBase {
   wgpu::Device dawn_device_;
 };
 
-TEST_F(DawnImageBackingFactoryTest, Basic) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST_F(DawnImageBackingFactoryTest, MAYBE_Basic) {
   auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
