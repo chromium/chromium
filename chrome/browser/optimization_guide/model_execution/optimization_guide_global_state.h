@@ -98,6 +98,8 @@ class OptimizationGuideGlobalFeature {
 
   OptimizationGuideGlobalState& Get();
 
+  OptimizationGuideModelProvider& GetModelProvider();
+
  private:
   scoped_refptr<OptimizationGuideGlobalState> global_state_;
 };

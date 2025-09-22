@@ -59,7 +59,8 @@ class ProfileDownloadServiceTracker;
 // A PredictionManager supported by the optimization guide that makes an
 // OptimizationTargetDecision by evaluating the corresponding prediction model
 // for an OptimizationTarget.
-class PredictionManager : public PredictionModelDownloadObserver {
+class PredictionManager : public PredictionModelDownloadObserver,
+                          public OptimizationGuideModelProvider {
  public:
   PredictionManager(
       PredictionModelStore* prediction_model_store,
@@ -73,24 +74,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   PredictionManager& operator=(const PredictionManager&) = delete;
 
   ~PredictionManager() override;
-
-  // Adds an observer for updates to the model for |optimization_target|.
-  //
-  // It is assumed that any model retrieved this way will be passed to the
-  // Machine Learning Service for inference.
-  void AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      const std::optional<proto::Any>& model_metadata,
-      OptimizationTargetModelObserver* observer);
-
-  // Removes an observer for updates to the model for |optimization_target|.
-  //
-  // If |observer| is registered for multiple targets, |observer| must be
-  // removed for all observed targets for in order for it to be fully
-  // removed from receiving any calls.
-  void RemoveObserverForOptimizationTargetModel(
-      proto::OptimizationTarget optimization_target,
-      OptimizationTargetModelObserver* observer);
 
   // Set the prediction model fetcher for testing.
   void SetPredictionModelFetcherForTesting(
@@ -145,6 +128,15 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   void SetUrlLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // OptimizationGuideModelProvider:
+  void AddObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      const std::optional<proto::Any>& model_metadata,
+      OptimizationTargetModelObserver* observer) override;
+  void RemoveObserverForOptimizationTargetModel(
+      proto::OptimizationTarget optimization_target,
+      OptimizationTargetModelObserver* observer) override;
 
  protected:
   // Process `prediction_models` to be stored in the in memory optimization

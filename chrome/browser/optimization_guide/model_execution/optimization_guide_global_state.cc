@@ -225,4 +225,9 @@ OptimizationGuideGlobalState& OptimizationGuideGlobalFeature::Get() {
   return *global_state_;
 }
 
+OptimizationGuideModelProvider&
+OptimizationGuideGlobalFeature::GetModelProvider() {
+  return Get().prediction_manager();
+}
+
 }  // namespace optimization_guide
