@@ -75,9 +75,10 @@ const base::FilePath& GetTestDataDir() {
 
 + (BOOL)forceVariationID:(int)variationID {
   return variations::VariationsIdsProvider::ForceIdsResult::SUCCESS ==
-         variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-             /*variation_ids=*/{base::NumberToString(variationID)},
-             /*command_line_variation_ids=*/"");
+         variations::VariationsIdsProvider::GetInstance()
+             ->ForceVariationIdsForTesting(
+                 /*variation_ids=*/{base::NumberToString(variationID)},
+                 /*command_line_variation_ids=*/"");
 }
 
 + (void)blockURLFromTopSites:(NSString*)URL {

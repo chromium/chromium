@@ -53,7 +53,7 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            provider.ForceVariationIds({"12", "456", "t789"}, ""));
+            provider.ForceVariationIdsForTesting({"12", "456", "t789"}, ""));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   ASSERT_TRUE(headers);
@@ -76,7 +76,7 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            provider.ForceVariationIds({"12"}, "456,t789"));
+            provider.ForceVariationIdsForTesting({"12"}, "456,t789"));
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   ASSERT_TRUE(headers);

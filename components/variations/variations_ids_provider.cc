@@ -183,6 +183,13 @@ VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
   return ForceIdsResult::SUCCESS;
 }
 
+VariationsIdsProvider::ForceIdsResult
+VariationsIdsProvider::ForceVariationIdsForTesting(
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  return ForceVariationIds(variation_ids, command_line_variation_ids);
+}
+
 bool VariationsIdsProvider::ForceDisableVariationIds(
     const std::string& command_line_variation_ids) {
   base::AutoLock scoped_lock(lock_);

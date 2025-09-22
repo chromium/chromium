@@ -153,12 +153,20 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
     INVALID_SWITCH_ENTRY,  // Invalid entry in `command_line_variation_ids`.
   };
 
+  // TODO: b/315411418 - Restrict access to approved call sites.
   // Sets *additional* variation ids and trigger variation ids to be encoded in
   // the X-Client-Data request header. This is intended for development use to
   // force a server side experiment id. `variation_ids` should be a list of
   // strings of numeric experiment ids. Ids explicitly passed in `variation_ids`
   // and those in the comma-separated `command_line_variation_ids` are added.
   ForceIdsResult ForceVariationIds(
+      const std::vector<std::string>& variation_ids,
+      const std::string& command_line_variation_ids);
+
+  // Alias for the above function, but for testing. All test uses should be via
+  // this function. Once that is the case, the above function will be restricted
+  // to call sites that are approved to use it.
+  ForceIdsResult ForceVariationIdsForTesting(
       const std::vector<std::string>& variation_ids,
       const std::string& command_line_variation_ids);
 

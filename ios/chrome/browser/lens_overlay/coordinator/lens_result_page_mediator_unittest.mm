@@ -183,9 +183,11 @@ class LensResultPageMediatorTest : public PlatformTest {
 
 // Tests that the mediator starts a navigation when loadResultsURL is called.
 TEST_F(LensResultPageMediatorTest, ShouldStartNavigationWhenLoadingResultsURL) {
-  ASSERT_EQ(variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-                /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
+  ASSERT_EQ(
+      variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
+      variations::VariationsIdsProvider::GetInstance()
+          ->ForceVariationIdsForTesting(
+              /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
   AttachFakeWebState();
   GURL result_url = GURL("https://www.google.com");
   NSDictionary<NSString*, NSString*>* http_headers =

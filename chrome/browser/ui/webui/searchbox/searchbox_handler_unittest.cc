@@ -80,8 +80,9 @@ class SearchboxHandlerTest : public ::testing::Test {
 
     ASSERT_EQ(
         variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
-        variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-            /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
+        variations::VariationsIdsProvider::GetInstance()
+            ->ForceVariationIdsForTesting(
+                /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
   }
 
   void TearDown() override {

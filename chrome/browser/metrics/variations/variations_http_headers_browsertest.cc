@@ -183,7 +183,7 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
   void PostEarlyInitialization() override {
     // Set up some fake variations.
     auto* variations_provider = VariationsIdsProvider::GetInstance();
-    variations_provider->ForceVariationIds(
+    variations_provider->ForceVariationIdsForTesting(
         {base::NumberToString(kGenericExperimentGroupId),
          "t" + base::NumberToString(kGenericExperimentGroupTriggerId)},
         "");

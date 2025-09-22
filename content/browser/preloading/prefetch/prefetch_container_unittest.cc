@@ -226,8 +226,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(kTestEligibleUrl);
-  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
-                                                                      {"2"});
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"1"}, {"2"});
 
   prefetch_container->MakeResourceRequest();
   auto* request = prefetch_container->GetResourceRequest();
@@ -243,8 +243,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(kTestNonEligibleUrl);
-  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
-                                                                      {"2"});
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"1"}, {"2"});
 
   prefetch_container->MakeResourceRequest();
   auto* request = prefetch_container->GetResourceRequest();
@@ -260,8 +260,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(kTestNonEligibleUrl);
-  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
-                                                                      {"2"});
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"1"}, {"2"});
 
   prefetch_container->MakeResourceRequest();
   auto* request = prefetch_container->GetResourceRequest();
@@ -282,8 +282,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(kTestNonEligibleUrl1);
-  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
-                                                                      {"2"});
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"1"}, {"2"});
 
   prefetch_container->MakeResourceRequest();
   auto* request = prefetch_container->GetResourceRequest();
@@ -305,8 +305,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
 
   auto prefetch_container = CreateBrowserContextPrefetchContainer(
       kTestEligibleUrl, additional_headers, false);
-  variations::VariationsIdsProvider::GetInstance()->ForceVariationIds({"1"},
-                                                                      {"2"});
+  variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
+      {"1"}, {"2"});
 
   prefetch_container->MakeResourceRequest();
   auto* request = prefetch_container->GetResourceRequest();

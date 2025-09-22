@@ -210,7 +210,7 @@ TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
 // variations header.
 TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            VariationsIdsProvider::GetInstance()->ForceVariationIds(
+            VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.google.com/");
@@ -245,7 +245,7 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
 // header.
 TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   ASSERT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
-            VariationsIdsProvider::GetInstance()->ForceVariationIds(
+            VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
                 /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
 
   GURL url("https://www.nongoogle.com/");

@@ -1354,7 +1354,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
   auto* variations_ids_provider =
       variations::VariationsIdsProvider::GetInstance();
   ASSERT_TRUE(variations_ids_provider != nullptr);
-  variations_ids_provider->ForceVariationIds(
+  variations_ids_provider->ForceVariationIdsForTesting(
       {"t3314883", "t3312923", "t3314885"},  // first two valid, out-of-order
       {});
 

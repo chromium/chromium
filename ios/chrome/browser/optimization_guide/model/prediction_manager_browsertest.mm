@@ -187,7 +187,7 @@ class PredictionManagerTestBase : public TestWithProfile {
     auto* variations_ids_provider =
         variations::VariationsIdsProvider::GetInstance();
     ASSERT_TRUE(variations_ids_provider != nullptr);
-    variations_ids_provider->ForceVariationIds({}, {"4"});
+    variations_ids_provider->ForceVariationIdsForTesting({}, {"4"});
     cmd->AppendSwitch("append-variations-headers-to-localhost");
   }
 
