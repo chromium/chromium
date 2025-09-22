@@ -26,12 +26,13 @@ const variants = {
   "full": { dateStyle: "full", timeStyle: "full" },
 };
 
-for (const [lang, { timeZone }] of Object.entries(locales)) {
-  print(`[${lang}]`);
+for (const [locale, { displayName, timeZone }] of Object.entries(locales)) {
+  print(`[${locale}] ${displayName}`);
   for (const [variant, options] of Object.entries((variants))) {
-    const formatter = new Intl.DateTimeFormat(lang, { ...options, timeZone });
+    const formatter = new Intl.DateTimeFormat(locale, { ...options, timeZone });
     print(`  [${variant}] ${formatter.format(date)}`);
   }
+  print('');
 }
 
 </script>

@@ -25,14 +25,14 @@ const duration = {
   seconds: 35,
 };
 
-for (const locale of Object.keys(locales)) {
-  print(`[${locale}]`);
-
+for (const [locale, { displayName }] of Object.entries(locales)) {
+  print(`[${locale}] ${displayName}`);
   for (const style of ["digital", "narrow", "short", "long"]) {
     const formatter = new Intl.DurationFormat(locale, { style });
     print(`  [${style}] ${formatter.format(duration)}`);
 
   }
+  print('');
 }
 
 </script>
