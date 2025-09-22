@@ -310,8 +310,11 @@ crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateContr
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 
-
+#Mac Intel WebCodecs Flakes
+crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
+crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_3000000 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
