@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -202,10 +203,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             @BookmarkBarItemsProvider.ObservationId int observationId,
             BookmarkItem item,
             int index) {
-        mItemsModel.add(
-                index,
-                BookmarkBarUtils.createListItemFor(
-                        this::onBookmarkItemClick, mActivity, mImageFetcher, item));
+        mItemsModel.add(index, createListItemFor(this::onBookmarkItemClick, mImageFetcher, item));
     }
 
     @Override
@@ -226,9 +224,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             BookmarkItem item,
             int index) {
         mItemsModel.update(
-                index,
-                BookmarkBarUtils.createListItemFor(
-                        this::onBookmarkItemClick, mActivity, mImageFetcher, item));
+                index, createListItemFor(this::onBookmarkItemClick, mImageFetcher, item));
     }
 
     @Override
@@ -238,9 +234,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             int index) {
         final List<ListItem> batch = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
-            batch.add(
-                    BookmarkBarUtils.createListItemFor(
-                            this::onBookmarkItemClick, mActivity, mImageFetcher, items.get(i)));
+            batch.add(createListItemFor(this::onBookmarkItemClick, mImageFetcher, items.get(i)));
         }
         mItemsModel.addAll(batch, index);
     }
@@ -909,6 +903,78 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         }
 
         return bookmarkIds;
+    }
+
+    /**
+     * Creates a list item to render in the bookmark bar for the specified bookmark item.
+     *
+     * @param clickCallback The callback to invoke on list item click events.
+     * @param imageFetcher The image fetcher to use for rendering favicons.
+     * @param item The bookmark item for which to create a renderable list item.
+     * @return The created list item to render in the bookmark bar.
+     */
+    private ListItem createListItemFor(
+            BiConsumer<BookmarkItem, Integer> clickCallback,
+            @Nullable BookmarkImageFetcher imageFetcher,
+            BookmarkItem item) {
+
+        View.OnKeyListener keyListener =
+                (v, keyCode, event) -> {
+                    // Check whether the Enter key is released.
+                    if (event.getAction() == KeyEvent.ACTION_UP
+                            && keyCode == KeyEvent.KEYCODE_ENTER) {
+                        // clickCallback is an object that represents
+                        // BookmarkBarMediator#onBookmarkItemClick.
+                        clickCallback.accept(item, event.getMetaState());
+                        // Returning true handles the event, avoids triggering a normal click
+                        // (double action).
+                        return true;
+                    }
+                    // We do not handle other keys.
+                    return false;
+                };
+
+        PropertyModel.Builder modelBuilder =
+                new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
+                        .with(
+                                BookmarkBarButtonProperties.CLICK_CALLBACK,
+                                (metaState) -> clickCallback.accept(item, metaState))
+                        .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
+                        .with(
+                                BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
+                                item.isFolder()
+                                        ? R.color.default_icon_color_tint_list
+                                        : Resources.ID_NULL)
+                        .with(
+                                BookmarkBarButtonProperties.FOLDER_CONTENT_DESCRIPTION,
+                                item.isFolder()
+                                        ? mActivity.getString(
+                                                R.string.bookmark_bar_folder_content_description,
+                                                item.getTitle())
+                                        : null)
+                        .with(BookmarkBarButtonProperties.TITLE, item.getTitle());
+        if (imageFetcher != null) {
+            modelBuilder.with(
+                    BookmarkBarButtonProperties.ICON_SUPPLIER,
+                    createIconSupplierFor(imageFetcher, item));
+        }
+        return new ListItem(BookmarkBarUtils.ViewType.ITEM, modelBuilder.build());
+    }
+
+    private LazyOneshotSupplier<Drawable> createIconSupplierFor(
+            BookmarkImageFetcher imageFetcher, BookmarkItem item) {
+        if (item.isFolder()) {
+            return LazyOneshotSupplier.fromSupplier(
+                    () ->
+                            AppCompatResources.getDrawable(
+                                    mActivity, R.drawable.ic_folder_outline_24dp));
+        }
+        return new LazyOneshotSupplierImpl<>() {
+            @Override
+            public void doSet() {
+                imageFetcher.fetchFaviconForBookmark(item, this::set);
+            }
+        };
     }
 
     void setAnchoredPopupWindowForTesting(AnchoredPopupWindow anchoredPopupWindow) {

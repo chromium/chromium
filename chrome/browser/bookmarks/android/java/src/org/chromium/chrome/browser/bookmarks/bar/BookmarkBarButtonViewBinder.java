@@ -35,6 +35,12 @@ class BookmarkBarButtonViewBinder {
             view.setIconTintList(model.get(BookmarkBarButtonProperties.ICON_TINT_LIST_ID));
         } else if (key == BookmarkBarButtonProperties.TITLE) {
             view.setTitle(model.get(BookmarkBarButtonProperties.TITLE));
+        } else if (key == BookmarkBarButtonProperties.FOLDER_CONTENT_DESCRIPTION) {
+            String contentDescription =
+                    model.get(BookmarkBarButtonProperties.FOLDER_CONTENT_DESCRIPTION);
+            if (contentDescription != null && !contentDescription.isEmpty()) {
+                view.setContentDescription(contentDescription);
+            }
         }
     }
 }

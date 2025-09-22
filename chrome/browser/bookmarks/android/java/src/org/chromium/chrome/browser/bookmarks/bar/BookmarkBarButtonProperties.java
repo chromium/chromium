@@ -48,8 +48,17 @@ class BookmarkBarButtonProperties {
     /** The title to render in the bookmark bar button. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
+    /** The content description for folders in the bookmark bar. */
+    public static final WritableObjectPropertyKey<String> FOLDER_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                CLICK_CALLBACK, KEY_LISTENER, ICON_SUPPLIER, ICON_TINT_LIST_ID, TITLE
+                CLICK_CALLBACK,
+                KEY_LISTENER,
+                ICON_SUPPLIER,
+                ICON_TINT_LIST_ID,
+                TITLE,
+                FOLDER_CONTENT_DESCRIPTION
             };
 }

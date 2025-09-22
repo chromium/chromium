@@ -5,39 +5,27 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.annotation.IntDef;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
-import java.util.function.BiConsumer;
 
 /** Utilities for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked
@@ -371,73 +359,6 @@ public class BookmarkBarUtils {
     }
 
     // Helper methods.
-
-    /**
-     * Creates a list item to render in the bookmark bar for the specified bookmark item.
-     *
-     * @param clickCallback The callback to invoke on list item click events.
-     * @param context The context in which the created list item will be rendered.
-     * @param imageFetcher The image fetcher to use for rendering favicons.
-     * @param item The bookmark item for which to create a renderable list item.
-     * @return The created list item to render in the bookmark bar.
-     */
-    static ListItem createListItemFor(
-            BiConsumer<BookmarkItem, Integer> clickCallback,
-            Context context,
-            @Nullable BookmarkImageFetcher imageFetcher,
-            BookmarkItem item) {
-
-        View.OnKeyListener keyListener =
-                (v, keyCode, event) -> {
-                    // Check whether the Enter key is released.
-                    if (event.getAction() == KeyEvent.ACTION_UP
-                            && keyCode == KeyEvent.KEYCODE_ENTER) {
-                        // clickCallback is an object that represents
-                        // BookmarkBarMediator#onBookmarkItemClick.
-                        clickCallback.accept(item, event.getMetaState());
-                        // Returning true handles the event, avoids triggering a normal click
-                        // (double action).
-                        return true;
-                    }
-                    // We do not handle other keys.
-                    return false;
-                };
-
-        PropertyModel.Builder modelBuilder =
-                new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
-                        .with(
-                                BookmarkBarButtonProperties.CLICK_CALLBACK,
-                                (metaState) -> clickCallback.accept(item, metaState))
-                        .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
-                        .with(
-                                BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
-                                item.isFolder()
-                                        ? R.color.default_icon_color_tint_list
-                                        : Resources.ID_NULL)
-                        .with(BookmarkBarButtonProperties.TITLE, item.getTitle());
-        if (imageFetcher != null) {
-            modelBuilder.with(
-                    BookmarkBarButtonProperties.ICON_SUPPLIER,
-                    createIconSupplierFor(context, imageFetcher, item));
-        }
-        return new ListItem(ViewType.ITEM, modelBuilder.build());
-    }
-
-    private static LazyOneshotSupplier<Drawable> createIconSupplierFor(
-            Context context, BookmarkImageFetcher imageFetcher, BookmarkItem item) {
-        if (item.isFolder()) {
-            return LazyOneshotSupplier.fromSupplier(
-                    () ->
-                            AppCompatResources.getDrawable(
-                                    context, R.drawable.ic_folder_outline_24dp));
-        }
-        return new LazyOneshotSupplierImpl<>() {
-            @Override
-            public void doSet() {
-                imageFetcher.fetchFaviconForBookmark(item, this::set);
-            }
-        };
-    }
 
     private static PrefService getPrefService(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile());
