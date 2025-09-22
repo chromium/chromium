@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/signin/model/test_constants_utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -387,21 +388,24 @@ id<GREYMatcher> SafariImportButton() {
   GREYAssertTrue([SettingsAppInterface settingsRegisteredKeyboardCommands],
                  @"Settings should register key commands when presented.");
 
-  // Present the Sign-in UI.
-  id<GREYMatcher> matcher =
-      grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
-  // Wait for UI to finish loading the Sign-in screen.
-  [ChromeEarlGreyUI waitForAppToIdle];
+  for (NSString* cancelButtonId in
+           signin::FakeSystemIdentityManagerStaySignedOutButtons()) {
+    // Present the Sign-in UI.
+    id<GREYMatcher> matcher =
+        grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+    // Wait for UI to finish loading the Sign-in screen.
+    [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Verify that the Settings register keyboard commands.
-  GREYAssertFalse([SettingsAppInterface settingsRegisteredKeyboardCommands],
-                  @"Settings should not register key commands when presented.");
+    // Verify that the Settings register keyboard commands.
+    GREYAssertFalse(
+        [SettingsAppInterface settingsRegisteredKeyboardCommands],
+        @"Settings should not register key commands when presented.");
 
-  // Cancel the sign-in operation.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthCancelButtonIdentifier)]
-      performAction:grey_tap()];
+    // Cancel the sign-in operation.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(cancelButtonId)]
+        performAction:grey_tap()];
+  }
 
   // Wait for UI to finish closing the Sign-in screen.
   [ChromeEarlGreyUI waitForAppToIdle];

@@ -407,6 +407,8 @@ source_set("test_constants") {
   sources = [
     "test_constants.h",
     "test_constants.mm",
+    "test_constants_utils.h",
+    "test_constants_utils.mm",
   ]
   frameworks = [ "Foundation.framework" ]
 }

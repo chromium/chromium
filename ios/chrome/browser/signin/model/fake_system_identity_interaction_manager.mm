@@ -54,9 +54,23 @@ BOOL gUsingUnknownCapabilities;
       [self createButtonWithTitle:@"Cancel"
                            action:@selector(didTapCancel:)
            accessibilitIdentifier:kFakeAuthCancelButtonIdentifier];
+  NSMutableArray<UIButton*>* subviews =
+      [NSMutableArray arrayWithObjects:addAccountButton, cancelButton, nil];
+  if (!@available(iOS 26, *)) {
+    // Up to iOS 18, the view can disappear without calling the callback. This
+    // occur when the user turn off and on the screen while iOS asks whether
+    // they accept to use google.com to authentify. This button simulate this
+    // issue. It can be removed once the minimal version is iOS 26.  See
+    // crbug.com/395959814.
+    UIButton* dismissButton =
+        [self createButtonWithTitle:@"Dismiss without callback"
+                             action:@selector(didTapDismiss:)
+             accessibilitIdentifier:kFakeAuthDismissButtonIdentifier];
+    [subviews addObject:dismissButton];
+  }
   // Container StackView
-  UIStackView* stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ addAccountButton, cancelButton ]];
+  UIStackView* stackView =
+      [[UIStackView alloc] initWithArrangedSubviews:subviews];
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.translatesAutoresizingMaskIntoConstraints = false;
   [self.view addSubview:stackView];
@@ -90,6 +104,16 @@ BOOL gUsingUnknownCapabilities;
 
 - (void)didTapCancel:(id)sender {
   [_manager simulateDidTapCancel];
+}
+
+// Dismiss the view without informing the manager.
+// This simulates UIKit bug crbug.com/395959814.
+- (void)didTapDismiss:(id)sender {
+  if (@available(iOS 26, *)) {
+    // The bug simulated by this function is fixed in iOS 26.
+    NOTREACHED();
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

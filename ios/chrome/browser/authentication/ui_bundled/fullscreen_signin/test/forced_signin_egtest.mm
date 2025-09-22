@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/signin/model/test_constants_utils.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -318,20 +319,21 @@ void CompleteSigninFlow() {
 - (void)testSignInScreenWithoutAccount {
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
-  // Tap on the "Sign in" button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION))]
-      performAction:grey_tap()];
+  for (NSString* cancelButtonId in
+           signin::FakeSystemIdentityManagerStaySignedOutButtons()) {
+    // Tap on the "Sign in" button.
+    [[EarlGrey
+        selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                     IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION))]
+        performAction:grey_tap()];
+    // Check for the fake SSO screen.
+    [ChromeEarlGrey waitForMatcher:grey_accessibilityID(cancelButtonId)];
+    // Close the SSO view controller.
+    id<GREYMatcher> matcher = grey_allOf(grey_accessibilityID(cancelButtonId),
+                                         grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  }
 
-  // Check for the fake SSO screen.
-  [ChromeEarlGrey
-      waitForMatcher:grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
-  // Close the SSO view controller.
-  id<GREYMatcher> matcher =
-      grey_allOf(grey_accessibilityID(kFakeAuthCancelButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Make sure the SSO view controller is fully removed before ending the test.
   // The tear down needs to remove other view controllers, and it cannot be done
   // during the animation of the SSO view controler.

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/signin/model/test_constants_utils.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -289,18 +290,20 @@ id<GREYMatcher> identityDiscMatcher() {
 - (void)testAddAccount {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuAddAccountButtonId)]
-      performAction:grey_tap()];
-  // Checks the Fake authentication view is shown
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kFakeAuthActivityViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Close the SSO view controller.
-  id<GREYMatcher> matcher =
-      grey_allOf(grey_accessibilityID(kFakeAuthCancelButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  for (NSString* cancelButtonId in
+           signin::FakeSystemIdentityManagerStaySignedOutButtons()) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kAccountMenuAddAccountButtonId)]
+        performAction:grey_tap()];
+    // Checks the Fake authentication view is shown
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAuthActivityViewIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    // Close the SSO view controller.
+    id<GREYMatcher> matcher = grey_allOf(grey_accessibilityID(cancelButtonId),
+                                         grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  }
   // Make sure the SSO view controller is fully removed before ending the test.
   // The tear down needs to remove other view controllers, and it cannot be done
   // during the animation of the SSO view controler.
