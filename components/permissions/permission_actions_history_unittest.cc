@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_enums.h"
@@ -30,6 +31,8 @@
 
 namespace permissions {
 namespace {
+
+constexpr int kHeuristicGrantThreshold = 3;
 
 struct TestEntry {
   PermissionAction action;
@@ -68,6 +71,27 @@ const char kLegacyPrefs[] = R"({
         {"time": "%s", "action" : 3}
       ]
       })";
+
+class MockPermissionActionsHistoryObserver
+    : public permissions::PermissionActionsHistory::Observer {
+ public:
+  void OnAutoGrantedHeuristically(
+      const GURL& origin,
+      ContentSettingsType content_setting) override {
+    origin_ = origin;
+    content_setting_ = content_setting;
+    call_count_++;
+  }
+
+  int call_count() const { return call_count_; }
+  const GURL& origin() const { return origin_; }
+  ContentSettingsType content_setting() const { return content_setting_; }
+
+ private:
+  int call_count_ = 0;
+  GURL origin_;
+  ContentSettingsType content_setting_ = ContentSettingsType::DEFAULT;
+};
 }  // namespace
 
 class PermissionActionHistoryTest : public testing::Test {
@@ -129,9 +153,11 @@ class PermissionActionHistoryTest : public testing::Test {
     }
   }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ private:
   content::TestBrowserContext browser_context_;
   TestPermissionsClient permissions_client_;
 };
@@ -311,6 +337,120 @@ TEST_F(PermissionActionHistoryTest, FillInActionCountsTest) {
   EXPECT_EQ(2u, permanent_grant_count);
   EXPECT_EQ(1u, one_time_grant_count);
   EXPECT_EQ(7u, all_entries.size());
+}
+
+TEST_F(PermissionActionHistoryTest, HeuristicGrant) {
+  GURL url("https://www.example.com");
+  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  auto* history = GetPermissionActionsHistory();
+
+  MockPermissionActionsHistoryObserver observer;
+  history->AddObserver(&observer);
+
+  for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
+    EXPECT_FALSE(
+        history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+    EXPECT_EQ(0, observer.call_count());
+  }
+
+  // The next time should trigger auto-grant.
+  EXPECT_TRUE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+  EXPECT_EQ(1, observer.call_count());
+  EXPECT_EQ(url, observer.origin());
+  EXPECT_EQ(permission, observer.content_setting());
+
+  // Subsequent calls should also return true.
+  EXPECT_TRUE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+  // The observer is notified again.
+  EXPECT_EQ(2, observer.call_count());
+
+  history->RemoveObserver(&observer);
+}
+
+TEST_F(PermissionActionHistoryTest, HeuristicGrantReset) {
+  GURL url("https://www.example.com");
+  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  auto* history = GetPermissionActionsHistory();
+
+  // Grant twice.
+  EXPECT_FALSE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+  EXPECT_FALSE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+
+  // Reset.
+  history->ResetHeuristicData(url, permission);
+
+  for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
+    EXPECT_FALSE(
+        history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+  }
+
+  // Next time after reset should trigger auto-grant.
+  EXPECT_TRUE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+}
+
+TEST_F(PermissionActionHistoryTest,
+       HeuristicGrantMultipleOriginsAndPermissions) {
+  GURL url1("https://www.example.com");
+  GURL url2("https://www.google.com");
+  ContentSettingsType permission1 = ContentSettingsType::GEOLOCATION;
+  auto* history = GetPermissionActionsHistory();
+
+  for (int i = 0; i < kHeuristicGrantThreshold - 1; ++i) {
+    history->CheckAutoGrantAndRecordTemporaryGrant(url1, permission1);
+    history->CheckAutoGrantAndRecordTemporaryGrant(url2, permission1);
+  }
+
+  // Grant url1/permission1 one more time. Should not auto-grant.
+  EXPECT_FALSE(
+      history->CheckAutoGrantAndRecordTemporaryGrant(url1, permission1));
+
+  // Grant url1/permission1 another time. Next check will auto-grant.
+  EXPECT_TRUE(
+      history->CheckAutoGrantAndRecordTemporaryGrant(url1, permission1));
+
+  // The other permissions should not be auto-granted yet.
+  // The next call will increment to counter and not auto-grant.
+  EXPECT_FALSE(
+      history->CheckAutoGrantAndRecordTemporaryGrant(url2, permission1));
+
+  // The next call for these will auto-grant.
+  EXPECT_TRUE(
+      history->CheckAutoGrantAndRecordTemporaryGrant(url2, permission1));
+}
+
+TEST_F(PermissionActionHistoryTest, HeuristicGrantGeolocationOnly) {
+  GURL url("https://www.example.com");
+  auto* history = GetPermissionActionsHistory();
+
+  // GEOLOCATION should work.
+  EXPECT_FALSE(history->CheckAutoGrantAndRecordTemporaryGrant(
+      url, ContentSettingsType::GEOLOCATION));
+
+  // NOTIFICATIONS should crash.
+  EXPECT_DEATH_IF_SUPPORTED(history->CheckAutoGrantAndRecordTemporaryGrant(
+                                url, ContentSettingsType::NOTIFICATIONS),
+                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      history->ResetHeuristicData(url, ContentSettingsType::NOTIFICATIONS), "");
+}
+
+TEST_F(PermissionActionHistoryTest, HeuristicGrantExpiration) {
+  GURL url("https://www.example.com");
+  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  auto* history = GetPermissionActionsHistory();
+
+  for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
+    history->CheckAutoGrantAndRecordTemporaryGrant(url, permission);
+  }
+
+  // Trigger auto-grant.
+  EXPECT_TRUE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
+
+  // Advance clock past expiration date.
+  task_environment_.AdvanceClock(base::Days(8));
+
+  // The count should be reset, so the next grant is not an auto-grant.
+  EXPECT_FALSE(history->CheckAutoGrantAndRecordTemporaryGrant(url, permission));
 }
 
 }  // namespace permissions

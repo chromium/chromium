@@ -784,6 +784,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, delete_begin,
         delete_end, website_settings_filter);
 
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::PERMISSION_ACTIONS_HISTORY, delete_begin,
+        delete_end, website_settings_filter);
+
     if (auto* privacy_sandbox_settings =
             PrivacySandboxSettingsFactory::GetForProfile(profile_)) {
       privacy_sandbox_settings->ClearFledgeJoiningAllowedSettings(delete_begin_,

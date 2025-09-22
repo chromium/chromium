@@ -121,6 +121,7 @@ export const contentSettingGroups:
           ContentSettingsType.NOTIFICATION_PERMISSION_REVIEW,
           ContentSettingsType.PERMISSION_AUTOBLOCKER_DATA,
           ContentSettingsType.PERMISSION_AUTOREVOCATION_DATA,
+          ContentSettingsType.PERMISSION_ACTIONS_HISTORY,
           ContentSettingsType.REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
           ContentSettingsType.REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
           ContentSettingsType.REVOKED_UNUSED_SITE_PERMISSIONS,

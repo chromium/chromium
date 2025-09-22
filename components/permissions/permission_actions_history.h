@@ -18,14 +18,19 @@
 enum class PermissionAction;
 enum class RequestType;
 class PrefService;
+class HostContentSettingsMap;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
 namespace permissions {
-// This class records and stores all actions taken on permission prompts. It
-// also has utility functions to interact with the history.
+// This class records and stores all actions related to permission prompts in a
+// global, browser-wide scope, offering utility functions for history
+// interaction. Additionally, it manages heuristic permission grants,
+// specifically within origin scopes, based on repeated temporary grants. This
+// feature aims to reduce user friction for those who frequently grant temporary
+// permissions (e.g., "Allow this time") to a site for a particular permission.
 class PermissionActionsHistory : public KeyedService {
  public:
   struct Entry {
@@ -41,12 +46,20 @@ class PermissionActionsHistory : public KeyedService {
     WANT_QUIET_PROMPTS_ONLY,
   };
 
-  explicit PermissionActionsHistory(PrefService* pref_service);
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnAutoGrantedHeuristically(
+        const GURL& origin,
+        ContentSettingsType content_setting) = 0;
+  };
+
+  explicit PermissionActionsHistory(PrefService* pref_service,
+                                    HostContentSettingsMap* settings_map);
 
   PermissionActionsHistory(const PermissionActionsHistory&) = delete;
   PermissionActionsHistory& operator=(const PermissionActionsHistory&) = delete;
 
-  ~PermissionActionsHistory() override = default;
+  ~PermissionActionsHistory() override;
 
   // Get the history of recorded actions that happened after a particular time.
   // Optionally a permission request type can be specified which will only
@@ -77,12 +90,37 @@ class PermissionActionsHistory : public KeyedService {
   // Registers the preferences related to blocklisting in the given PrefService.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Checks if a heuristic grant should be made for the given permission on
+  // the `request_origin`. This is based on the number of consecutive temporary
+  // grants.
+  bool CheckAutoGrantAndRecordTemporaryGrant(const GURL& request_origin,
+                                             ContentSettingsType permission);
+
+  // Resets the heuristic data for the given URL and permission, for
+  // example when the user manually resets permissions.
+  void ResetHeuristicData(const GURL& url, ContentSettingsType permission);
+
+  // Sets the heuristic auto grant for |permission| on |request_origin| and
+  // notifies observers.
+  void SetAutoGrantHeuristically(const GURL& request_origin,
+                                 ContentSettingsType permission);
+
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
+
  private:
   std::vector<Entry> GetHistoryInternal(const base::Time& begin,
                                         const std::string& key,
                                         EntryFilter entry_filter);
 
+  void NotifyAutoGrantedHeuristically(const GURL& origin,
+                                      ContentSettingsType content_setting);
+
   raw_ptr<PrefService> pref_service_;
+
+  raw_ptr<HostContentSettingsMap> settings_map_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace permissions

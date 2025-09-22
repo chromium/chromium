@@ -46,7 +46,89 @@ constexpr char kPermissionActionEntryPromptDispositionKey[] =
 // Entries in permission actions expire after they become this old.
 constexpr base::TimeDelta kPermissionActionMaxAge = base::Days(90);
 
+// The threshold for temporary grants before a heuristic grant is made.
+constexpr int kHeuristicGrantThreshold = 3;
+
+// The duration after which the auto-grant expires.
+constexpr base::TimeDelta kAutoGrantHeuristicallyExpiration = base::Days(7);
+
+// Keys for storing data in website settings.
+constexpr char kTempGrantCountKey[] = "temp_grant_count";
+constexpr char kAutoGrantHeuristicallyKey[] = "auto_grant_heuristically_days";
+
+std::string GetContentTypeString(ContentSettingsType content_type) {
+  CHECK(content_type == ContentSettingsType::GEOLOCATION);
+  return PermissionUtil::GetPermissionString(content_type);
+}
+
+base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
+                                             const GURL& origin_url) {
+  base::Value website_setting = settings->GetWebsiteSetting(
+      origin_url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY);
+  if (!website_setting.is_dict()) {
+    return base::Value::Dict();
+  }
+
+  return std::move(website_setting.GetDict());
+}
+
+base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
+                                        const std::string& permission) {
+  return origin_dict.EnsureDict(permission);
+}
+
+// Record incrementally by one the number of temporary grants for `permission`
+// type at `url`.
+int RecordTemporaryGrantCount(const GURL& url,
+                              ContentSettingsType permission,
+                              HostContentSettingsMap* settings_map) {
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
+
+  base::Value::Dict* permission_dict =
+      EnsurePermissionDict(dict, GetContentTypeString(permission));
+
+  std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
+  int current_count = value.value_or(0);
+  permission_dict->Set(kTempGrantCountKey, base::Value(++current_count));
+
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+      base::Value(std::move(dict)));
+
+  return current_count;
+}
+
+// Returns the current number of temporary grants recorded for `permission`
+// type at `url`.
+int GetTemporaryGrantCount(const GURL& url,
+                           ContentSettingsType permission,
+                           HostContentSettingsMap* settings_map) {
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
+  base::Value::Dict* permission_dict =
+      EnsurePermissionDict(dict, GetContentTypeString(permission));
+
+  std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
+  return value.value_or(0);
+}
+
 }  // namespace
+
+PermissionActionsHistory::PermissionActionsHistory(
+    PrefService* pref_service,
+    HostContentSettingsMap* settings_map)
+    : pref_service_(pref_service), settings_map_(settings_map) {}
+
+PermissionActionsHistory::~PermissionActionsHistory() = default;
+void PermissionActionsHistory::ResetHeuristicData(
+    const GURL& url,
+    ContentSettingsType permission) {
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
+  dict.Remove(GetContentTypeString(permission));
+
+  settings_map_->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+      base::Value(std::move(dict)));
+}
 
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
@@ -134,8 +216,55 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   }
 }
 
-PermissionActionsHistory::PermissionActionsHistory(PrefService* pref_service)
-    : pref_service_(pref_service) {}
+bool PermissionActionsHistory::CheckAutoGrantAndRecordTemporaryGrant(
+    const GURL& url,
+    ContentSettingsType permission) {
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
+  base::Value::Dict* permission_dict =
+      EnsurePermissionDict(dict, GetContentTypeString(permission));
+
+  std::optional<base::Time> auto_grant_time =
+      base::ValueToTime(permission_dict->Find(kAutoGrantHeuristicallyKey));
+
+  int current_count = GetTemporaryGrantCount(url, permission, settings_map_);
+
+  if (auto_grant_time.has_value() && (base::Time::Now() - *auto_grant_time) >
+                                         kAutoGrantHeuristicallyExpiration) {
+    ResetHeuristicData(url, permission);
+    current_count = 0;
+  }
+
+  if (current_count >= kHeuristicGrantThreshold) {
+    SetAutoGrantHeuristically(url, permission);
+    return true;
+  }
+
+  RecordTemporaryGrantCount(url, permission, settings_map_);
+  return false;
+}
+
+void PermissionActionsHistory::SetAutoGrantHeuristically(
+    const GURL& request_origin,
+    ContentSettingsType permission) {
+  base::Value::Dict dict =
+      GetOriginActionHistoryData(settings_map_, request_origin);
+  base::Value::Dict* permission_dict =
+      EnsurePermissionDict(dict, GetContentTypeString(permission));
+  permission_dict->Set(kAutoGrantHeuristicallyKey,
+                       base::TimeToValue(base::Time::Now()));
+  settings_map_->SetWebsiteSettingDefaultScope(
+      request_origin, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+      base::Value(std::move(dict)));
+  NotifyAutoGrantedHeuristically(request_origin, permission);
+}
+
+void PermissionActionsHistory::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void PermissionActionsHistory::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
 
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
@@ -184,6 +313,14 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
         PermissionActionsHistory::Entry{past_action, timestamp.value()});
   }
   return matching_actions;
+}
+
+void PermissionActionsHistory::NotifyAutoGrantedHeuristically(
+    const GURL& origin,
+    ContentSettingsType content_setting) {
+  for (Observer& obs : observers_) {
+    obs.OnAutoGrantedHeuristically(origin, content_setting);
+  }
 }
 
 PrefService* PermissionActionsHistory::GetPrefServiceForTesting() {

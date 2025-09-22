@@ -26,7 +26,7 @@ scoped_refptr<HostContentSettingsMap> CreateSettingsMap(
 TestPermissionsClient::TestPermissionsClient()
     : settings_map_(CreateSettingsMap(&prefs_)),
       autoblocker_(settings_map_.get()),
-      permission_actions_history_(&prefs_) {
+      permission_actions_history_(&prefs_, settings_map_.get()) {
   PermissionActionsHistory::RegisterProfilePrefs(prefs_.registry());
 }
 

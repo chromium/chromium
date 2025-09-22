@@ -259,6 +259,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     // TODO(crbug.com/430494524): Implement the WebUI
     {ContentSettingsType::GEOLOCATION_WITH_OPTIONS, nullptr},
     {ContentSettingsType::DEVICE_ATTRIBUTES, nullptr},
+    {ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr},
 });
 
 static_assert(
