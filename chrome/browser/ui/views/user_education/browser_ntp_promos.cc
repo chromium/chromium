@@ -105,10 +105,12 @@ NtpPromoSpecification::Eligibility CheckExtensionsPromoEligibility(
 }
 
 void InvokeExtensionsPromo(ContextPtr context) {
-  NavigateParams params(GetProfile(context),
-                        extension_urls::GetWebstoreLaunchURL(),
+  BrowserWindowInterface* const bwi =
+      context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser();
+  NavigateParams params(bwi, extension_urls::GetWebstoreLaunchURL(),
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.initiating_profile = GetProfile(context);
   Navigate(&params);
 }
 
