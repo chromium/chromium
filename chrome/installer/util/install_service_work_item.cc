@@ -5,6 +5,7 @@
 #include "chrome/installer/util/install_service_work_item.h"
 
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/installer/util/install_service_work_item_impl.h"
 
 namespace installer {
@@ -33,7 +34,16 @@ InstallServiceWorkItem::InstallServiceWorkItem(
 InstallServiceWorkItem::~InstallServiceWorkItem() = default;
 
 bool InstallServiceWorkItem::DoImpl() {
-  return impl_->DoImpl();
+  if (impl_->DoImpl()) {
+    return true;
+  }
+  // TODO(crbug.com/443552436): The overall installation succeeds if updating
+  // the elevation service fails, yet saved passwords will be unavailable until
+  // the next update repairs it. Send up a dump in case of failure so that we
+  // can see what's happening in the process and the most recent errors added to
+  // the installer's log file.
+  base::debug::DumpWithoutCrashing();
+  return false;
 }
 
 void InstallServiceWorkItem::RollbackImpl() {
