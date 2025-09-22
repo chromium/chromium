@@ -56,7 +56,6 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -97,8 +96,6 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using blink::web_pref::WebPreferences;
 using content::BrowserContext;
