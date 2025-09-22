@@ -120,10 +120,9 @@ pub mod value;
 
 mod ignored_any;
 mod impls;
-pub(crate) mod size_hint;
 
 pub use self::ignored_any::IgnoredAny;
-
+pub use crate::private::InPlaceSeed;
 #[cfg(all(not(feature = "std"), no_core_error))]
 #[doc(no_inline)]
 pub use crate::std_error::Error as StdError;
@@ -158,6 +157,12 @@ macro_rules! declare_error_trait {
         /// type appropriate for a basic JSON data format.
         ///
         /// [example data format]: https://serde.rs/data-format.html
+        #[cfg_attr(
+            not(no_diagnostic_namespace),
+            diagnostic::on_unimplemented(
+                message = "the trait bound `{Self}: serde::de::Error` is not satisfied",
+            )
+        )]
         pub trait Error: Sized $(+ $($supertrait)::+)* {
             /// Raised when there is general error when deserializing a type.
             ///
@@ -206,7 +211,7 @@ macro_rules! declare_error_trait {
             /// containing an integer, the unexpected type is the integer and the
             /// expected type is the string.
             #[cold]
-            fn invalid_type(unexp: Unexpected, exp: &Expected) -> Self {
+            fn invalid_type(unexp: Unexpected, exp: &dyn Expected) -> Self {
                 Error::custom(format_args!("invalid type: {}, expected {}", unexp, exp))
             }
 
@@ -224,7 +229,7 @@ macro_rules! declare_error_trait {
             /// that is not valid UTF-8, the unexpected value is the bytes and the
             /// expected value is a string.
             #[cold]
-            fn invalid_value(unexp: Unexpected, exp: &Expected) -> Self {
+            fn invalid_value(unexp: Unexpected, exp: &dyn Expected) -> Self {
                 Error::custom(format_args!("invalid value: {}, expected {}", unexp, exp))
             }
 
@@ -238,7 +243,7 @@ macro_rules! declare_error_trait {
             /// expected. For example `exp` might say that a tuple of size 6 was
             /// expected.
             #[cold]
-            fn invalid_length(len: usize, exp: &Expected) -> Self {
+            fn invalid_length(len: usize, exp: &dyn Expected) -> Self {
                 Error::custom(format_args!("invalid length {}, expected {}", len, exp))
             }
 
@@ -471,6 +476,12 @@ impl<'a> fmt::Display for Unexpected<'a> {
 /// ));
 /// # }
 /// ```
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::Expected` is not satisfied",
+    )
+)]
 pub trait Expected {
     /// Format an explanation of what data was being expected. Same signature as
     /// the `Display` and `Debug` traits.
@@ -492,7 +503,7 @@ impl Expected for &str {
     }
 }
 
-impl Display for Expected + '_ {
+impl Display for dyn Expected + '_ {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         Expected::fmt(self, formatter)
     }
@@ -534,6 +545,9 @@ impl Display for Expected + '_ {
 #[cfg_attr(
     not(no_diagnostic_namespace),
     diagnostic::on_unimplemented(
+        // Prevents `serde_core::de::Deserialize` appearing in the error message
+        // in projects with no direct dependency on serde_core.
+        message = "the trait bound `{Self}: serde::Deserialize<'de>` is not satisfied",
         note = "for local types consider adding `#[derive(serde::Deserialize)]` to your `{Self}` type",
         note = "for types from other crates check whether the crate offers a `serde` feature flag",
     )
@@ -610,6 +624,12 @@ pub trait Deserialize<'de>: Sized {
 /// lifetimes].
 ///
 /// [Understanding deserializer lifetimes]: https://serde.rs/lifetimes.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::DeserializeOwned` is not satisfied",
+    )
+)]
 pub trait DeserializeOwned: for<'de> Deserialize<'de> {}
 impl<T> DeserializeOwned for T where T: for<'de> Deserialize<'de> {}
 
@@ -775,6 +795,12 @@ impl<T> DeserializeOwned for T where T: for<'de> Deserialize<'de> {}
 /// #     Ok(())
 /// # }
 /// ```
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::DeserializeSeed<'de>` is not satisfied",
+    )
+)]
 pub trait DeserializeSeed<'de>: Sized {
     /// The type produced by using this seed.
     type Value;
@@ -911,6 +937,12 @@ where
 /// a basic JSON `Deserializer`.
 ///
 /// [example data format]: https://serde.rs/data-format.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::Deserializer<'de>` is not satisfied",
+    )
+)]
 pub trait Deserializer<'de>: Sized {
     /// The error type that can be returned if some error occurs during
     /// deserialization.
@@ -1226,13 +1258,9 @@ pub trait Deserializer<'de>: Sized {
     // Not public API.
     #[cfg(all(not(no_serde_derive), any(feature = "std", feature = "alloc")))]
     #[doc(hidden)]
-    fn __deserialize_content<V>(
-        self,
-        _: crate::actually_private::T,
-        visitor: V,
-    ) -> Result<crate::__private::de::Content<'de>, Self::Error>
+    fn __deserialize_content_v1<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
-        V: Visitor<'de, Value = crate::__private::de::Content<'de>>,
+        V: Visitor<'de, Value = crate::private::Content<'de>>,
     {
         self.deserialize_any(visitor)
     }
@@ -1281,6 +1309,12 @@ pub trait Deserializer<'de>: Sized {
 ///     }
 /// }
 /// ```
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::Visitor<'de>` is not satisfied",
+    )
+)]
 pub trait Visitor<'de>: Sized {
     /// The value produced by this visitor.
     type Value;
@@ -1707,6 +1741,12 @@ pub trait Visitor<'de>: Sized {
 /// implementation of `SeqAccess` for a basic JSON data format.
 ///
 /// [example data format]: https://serde.rs/data-format.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::SeqAccess<'de>` is not satisfied",
+    )
+)]
 pub trait SeqAccess<'de> {
     /// The error type that can be returned if some error occurs during
     /// deserialization.
@@ -1789,6 +1829,12 @@ where
 /// implementation of `MapAccess` for a basic JSON data format.
 ///
 /// [example data format]: https://serde.rs/data-format.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::MapAccess<'de>` is not satisfied",
+    )
+)]
 pub trait MapAccess<'de> {
     /// The error type that can be returned if some error occurs during
     /// deserialization.
@@ -1981,6 +2027,12 @@ where
 /// implementation of `EnumAccess` for a basic JSON data format.
 ///
 /// [example data format]: https://serde.rs/data-format.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::EnumAccess<'de>` is not satisfied",
+    )
+)]
 pub trait EnumAccess<'de>: Sized {
     /// The error type that can be returned if some error occurs during
     /// deserialization.
@@ -2028,6 +2080,12 @@ pub trait EnumAccess<'de>: Sized {
 /// implementation of `VariantAccess` for a basic JSON data format.
 ///
 /// [example data format]: https://serde.rs/data-format.html
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "the trait bound `{Self}: serde::de::VariantAccess<'de>` is not satisfied",
+    )
+)]
 pub trait VariantAccess<'de>: Sized {
     /// The error type that can be returned if some error occurs during
     /// deserialization. Must match the error type of our `EnumAccess`.

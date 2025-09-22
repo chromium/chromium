@@ -15,39 +15,28 @@ cargo_crate("lib") {
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/ignored_any.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/seed.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/size_hint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/de/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/format.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/integer128.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/macros.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/private/de.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/private/doc.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/private/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/private/ser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/ser/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/ser/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/ser/impossible.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/ser/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/serde-v1/src/std_error.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2018"
+  edition = "2021"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde"
   cargo_pkg_description = "A generic serialization/deserialization framework"
   cargo_pkg_repository = "https://github.com/serde-rs/serde"
-  cargo_pkg_version = "1.0.219"
+  cargo_pkg_version = "1.0.225"
 
-  allow_unsafe = true
+  allow_unsafe = false
 
-  deps = [ "//third_party/rust/serde_derive/v1:lib" ]
+  deps = [
+    "//third_party/rust/serde_core/v1:lib",
+    "//third_party/rust/serde_derive/v1:lib",
+  ]
   features = [
     "alloc",
     "default",
@@ -58,6 +47,7 @@ cargo_crate("lib") {
   build_root = "//third_party/rust/chromium_crates_io/vendor/serde-v1/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/serde-v1/build.rs" ]
+  build_script_outputs = [ "private.rs" ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -11,12 +11,13 @@ use crate::de::{MapAccess, Unexpected};
 
 #[cfg(any(feature = "std", feature = "alloc"))]
 pub use self::content::{
-    Content, ContentDeserializer, ContentRefDeserializer, EnumDeserializer,
-    InternallyTaggedUnitVisitor, TagContentOtherField, TagContentOtherFieldVisitor,
-    TagOrContentField, TagOrContentFieldVisitor, TaggedContentVisitor, UntaggedUnitVisitor,
+    content_as_str, Content, ContentDeserializer, ContentRefDeserializer, ContentVisitor,
+    EnumDeserializer, InternallyTaggedUnitVisitor, TagContentOtherField,
+    TagContentOtherFieldVisitor, TagOrContentField, TagOrContentFieldVisitor, TaggedContentVisitor,
+    UntaggedUnitVisitor,
 };
 
-pub use crate::seed::InPlaceSeed;
+pub use crate::serde_core_private::InPlaceSeed;
 
 /// If the missing field is of type `Option<T>` then treat is as `None`,
 /// otherwise it is an error.
@@ -27,6 +28,7 @@ where
 {
     struct MissingFieldDeserializer<E>(&'static str, PhantomData<E>);
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, E> Deserializer<'de> for MissingFieldDeserializer<E>
     where
         E: Error,
@@ -47,7 +49,7 @@ where
             visitor.visit_none()
         }
 
-        forward_to_deserialize_any! {
+        serde_core::forward_to_deserialize_any! {
             bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
             bytes byte_buf unit unit_struct newtype_struct seq tuple
             tuple_struct map struct enum identifier ignored_any
@@ -66,6 +68,7 @@ where
 {
     struct CowStrVisitor;
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'a> Visitor<'a> for CowStrVisitor {
         type Value = Cow<'a, str>;
 
@@ -139,6 +142,7 @@ where
 {
     struct CowBytesVisitor;
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'a> Visitor<'a> for CowBytesVisitor {
         type Value = Cow<'a, [u8]>;
 
@@ -208,134 +212,104 @@ mod content {
 
     use crate::lib::*;
 
-    use crate::actually_private;
-    use crate::de::value::{MapDeserializer, SeqDeserializer};
     use crate::de::{
-        self, size_hint, Deserialize, DeserializeSeed, Deserializer, EnumAccess, Expected,
-        IgnoredAny, MapAccess, SeqAccess, Unexpected, Visitor,
+        self, Deserialize, DeserializeSeed, Deserializer, EnumAccess, Expected, IgnoredAny,
+        MapAccess, SeqAccess, Unexpected, Visitor,
     };
+    use crate::serde_core_private::size_hint;
+    pub use crate::serde_core_private::Content;
 
-    /// Used from generated code to buffer the contents of the Deserializer when
-    /// deserializing untagged enums and internally tagged enums.
-    ///
-    /// Not public API. Use serde-value instead.
-    #[derive(Debug, Clone)]
-    pub enum Content<'de> {
-        Bool(bool),
-
-        U8(u8),
-        U16(u16),
-        U32(u32),
-        U64(u64),
-
-        I8(i8),
-        I16(i16),
-        I32(i32),
-        I64(i64),
-
-        F32(f32),
-        F64(f64),
-
-        Char(char),
-        String(String),
-        Str(&'de str),
-        ByteBuf(Vec<u8>),
-        Bytes(&'de [u8]),
-
-        None,
-        Some(Box<Content<'de>>),
-
-        Unit,
-        Newtype(Box<Content<'de>>),
-        Seq(Vec<Content<'de>>),
-        Map(Vec<(Content<'de>, Content<'de>)>),
-    }
-
-    impl<'de> Content<'de> {
-        pub fn as_str(&self) -> Option<&str> {
-            match *self {
-                Content::Str(x) => Some(x),
-                Content::String(ref x) => Some(x),
-                Content::Bytes(x) => str::from_utf8(x).ok(),
-                Content::ByteBuf(ref x) => str::from_utf8(x).ok(),
-                _ => None,
-            }
-        }
-
-        #[cold]
-        fn unexpected(&self) -> Unexpected {
-            match *self {
-                Content::Bool(b) => Unexpected::Bool(b),
-                Content::U8(n) => Unexpected::Unsigned(n as u64),
-                Content::U16(n) => Unexpected::Unsigned(n as u64),
-                Content::U32(n) => Unexpected::Unsigned(n as u64),
-                Content::U64(n) => Unexpected::Unsigned(n),
-                Content::I8(n) => Unexpected::Signed(n as i64),
-                Content::I16(n) => Unexpected::Signed(n as i64),
-                Content::I32(n) => Unexpected::Signed(n as i64),
-                Content::I64(n) => Unexpected::Signed(n),
-                Content::F32(f) => Unexpected::Float(f as f64),
-                Content::F64(f) => Unexpected::Float(f),
-                Content::Char(c) => Unexpected::Char(c),
-                Content::String(ref s) => Unexpected::Str(s),
-                Content::Str(s) => Unexpected::Str(s),
-                Content::ByteBuf(ref b) => Unexpected::Bytes(b),
-                Content::Bytes(b) => Unexpected::Bytes(b),
-                Content::None | Content::Some(_) => Unexpected::Option,
-                Content::Unit => Unexpected::Unit,
-                Content::Newtype(_) => Unexpected::NewtypeStruct,
-                Content::Seq(_) => Unexpected::Seq,
-                Content::Map(_) => Unexpected::Map,
-            }
+    pub fn content_as_str<'a, 'de>(content: &'a Content<'de>) -> Option<&'a str> {
+        match *content {
+            Content::Str(x) => Some(x),
+            Content::String(ref x) => Some(x),
+            Content::Bytes(x) => str::from_utf8(x).ok(),
+            Content::ByteBuf(ref x) => str::from_utf8(x).ok(),
+            _ => None,
         }
     }
 
-    impl<'de> Deserialize<'de> for Content<'de> {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: Deserializer<'de>,
-        {
-            // Untagged and internally tagged enums are only supported in
-            // self-describing formats.
-            let visitor = ContentVisitor { value: PhantomData };
-            deserializer.__deserialize_content(actually_private::T, visitor)
+    fn content_clone<'de>(content: &Content<'de>) -> Content<'de> {
+        match content {
+            Content::Bool(b) => Content::Bool(*b),
+            Content::U8(n) => Content::U8(*n),
+            Content::U16(n) => Content::U16(*n),
+            Content::U32(n) => Content::U32(*n),
+            Content::U64(n) => Content::U64(*n),
+            Content::I8(n) => Content::I8(*n),
+            Content::I16(n) => Content::I16(*n),
+            Content::I32(n) => Content::I32(*n),
+            Content::I64(n) => Content::I64(*n),
+            Content::F32(f) => Content::F32(*f),
+            Content::F64(f) => Content::F64(*f),
+            Content::Char(c) => Content::Char(*c),
+            Content::String(s) => Content::String(s.clone()),
+            Content::Str(s) => Content::Str(*s),
+            Content::ByteBuf(b) => Content::ByteBuf(b.clone()),
+            Content::Bytes(b) => Content::Bytes(b),
+            Content::None => Content::None,
+            Content::Some(content) => Content::Some(Box::new(content_clone(content))),
+            Content::Unit => Content::Unit,
+            Content::Newtype(content) => Content::Newtype(Box::new(content_clone(content))),
+            Content::Seq(seq) => Content::Seq(seq.iter().map(content_clone).collect()),
+            Content::Map(map) => Content::Map(
+                map.iter()
+                    .map(|(k, v)| (content_clone(k), content_clone(v)))
+                    .collect(),
+            ),
         }
     }
 
-    impl<'de, E> de::IntoDeserializer<'de, E> for Content<'de>
-    where
-        E: de::Error,
-    {
-        type Deserializer = ContentDeserializer<'de, E>;
-
-        fn into_deserializer(self) -> Self::Deserializer {
-            ContentDeserializer::new(self)
+    #[cold]
+    fn content_unexpected<'a, 'de>(content: &'a Content<'de>) -> Unexpected<'a> {
+        match *content {
+            Content::Bool(b) => Unexpected::Bool(b),
+            Content::U8(n) => Unexpected::Unsigned(n as u64),
+            Content::U16(n) => Unexpected::Unsigned(n as u64),
+            Content::U32(n) => Unexpected::Unsigned(n as u64),
+            Content::U64(n) => Unexpected::Unsigned(n),
+            Content::I8(n) => Unexpected::Signed(n as i64),
+            Content::I16(n) => Unexpected::Signed(n as i64),
+            Content::I32(n) => Unexpected::Signed(n as i64),
+            Content::I64(n) => Unexpected::Signed(n),
+            Content::F32(f) => Unexpected::Float(f as f64),
+            Content::F64(f) => Unexpected::Float(f),
+            Content::Char(c) => Unexpected::Char(c),
+            Content::String(ref s) => Unexpected::Str(s),
+            Content::Str(s) => Unexpected::Str(s),
+            Content::ByteBuf(ref b) => Unexpected::Bytes(b),
+            Content::Bytes(b) => Unexpected::Bytes(b),
+            Content::None | Content::Some(_) => Unexpected::Option,
+            Content::Unit => Unexpected::Unit,
+            Content::Newtype(_) => Unexpected::NewtypeStruct,
+            Content::Seq(_) => Unexpected::Seq,
+            Content::Map(_) => Unexpected::Map,
         }
     }
 
-    impl<'a, 'de, E> de::IntoDeserializer<'de, E> for &'a Content<'de>
-    where
-        E: de::Error,
-    {
-        type Deserializer = ContentRefDeserializer<'a, 'de, E>;
-
-        fn into_deserializer(self) -> Self::Deserializer {
-            ContentRefDeserializer::new(self)
-        }
-    }
-
-    /// Used to capture data in [`Content`] from other deserializers.
-    /// Cannot capture externally tagged enums, `i128` and `u128`.
-    struct ContentVisitor<'de> {
+    pub struct ContentVisitor<'de> {
         value: PhantomData<Content<'de>>,
     }
 
     impl<'de> ContentVisitor<'de> {
-        fn new() -> Self {
+        pub fn new() -> Self {
             ContentVisitor { value: PhantomData }
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de> DeserializeSeed<'de> for ContentVisitor<'de> {
+        type Value = Content<'de>;
+
+        fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            deserializer.__deserialize_content_v1(self)
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> Visitor<'de> for ContentVisitor<'de> {
         type Value = Content<'de>;
 
@@ -487,7 +461,7 @@ mod content {
         where
             D: Deserializer<'de>,
         {
-            let v = tri!(Deserialize::deserialize(deserializer));
+            let v = tri!(ContentVisitor::new().deserialize(deserializer));
             Ok(Content::Some(Box::new(v)))
         }
 
@@ -495,7 +469,7 @@ mod content {
         where
             D: Deserializer<'de>,
         {
-            let v = tri!(Deserialize::deserialize(deserializer));
+            let v = tri!(ContentVisitor::new().deserialize(deserializer));
             Ok(Content::Newtype(Box::new(v)))
         }
 
@@ -505,7 +479,7 @@ mod content {
         {
             let mut vec =
                 Vec::<Content>::with_capacity(size_hint::cautious::<Content>(visitor.size_hint()));
-            while let Some(e) = tri!(visitor.next_element()) {
+            while let Some(e) = tri!(visitor.next_element_seed(ContentVisitor::new())) {
                 vec.push(e);
             }
             Ok(Content::Seq(vec))
@@ -519,7 +493,9 @@ mod content {
                 Vec::<(Content, Content)>::with_capacity(
                     size_hint::cautious::<(Content, Content)>(visitor.size_hint()),
                 );
-            while let Some(kv) = tri!(visitor.next_entry()) {
+            while let Some(kv) =
+                tri!(visitor.next_entry_seed(ContentVisitor::new(), ContentVisitor::new()))
+            {
                 vec.push(kv);
             }
             Ok(Content::Map(vec))
@@ -559,6 +535,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> DeserializeSeed<'de> for TagOrContentVisitor<'de> {
         type Value = TagOrContent<'de>;
 
@@ -572,6 +549,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> Visitor<'de> for TagOrContentVisitor<'de> {
         type Value = TagOrContent<'de>;
 
@@ -853,6 +831,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, T> Visitor<'de> for TaggedContentVisitor<T>
     where
         T: Deserialize<'de>,
@@ -874,7 +853,7 @@ mod content {
                 }
             };
             let rest = de::value::SeqAccessDeserializer::new(seq);
-            Ok((tag, tri!(Content::deserialize(rest))))
+            Ok((tag, tri!(ContentVisitor::new().deserialize(rest))))
         }
 
         fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
@@ -895,7 +874,7 @@ mod content {
                         tag = Some(tri!(map.next_value()));
                     }
                     TagOrContent::Content(k) => {
-                        let v = tri!(map.next_value());
+                        let v = tri!(map.next_value_seed(ContentVisitor::new()));
                         vec.push((k, v));
                     }
                 }
@@ -923,6 +902,7 @@ mod content {
         pub content: &'static str,
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> DeserializeSeed<'de> for TagOrContentFieldVisitor {
         type Value = TagOrContentField;
 
@@ -934,6 +914,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> Visitor<'de> for TagOrContentFieldVisitor {
         type Value = TagOrContentField;
 
@@ -1000,6 +981,7 @@ mod content {
         pub content: &'static str,
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> DeserializeSeed<'de> for TagContentOtherFieldVisitor {
         type Value = TagContentOtherField;
 
@@ -1011,6 +993,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de> Visitor<'de> for TagContentOtherFieldVisitor {
         type Value = TagContentOtherField;
 
@@ -1065,8 +1048,8 @@ mod content {
         E: de::Error,
     {
         #[cold]
-        fn invalid_type(self, exp: &Expected) -> E {
-            de::Error::invalid_type(self.content.unexpected(), exp)
+        fn invalid_type(self, exp: &dyn Expected) -> E {
+            de::Error::invalid_type(content_unexpected(&self.content), exp)
         }
 
         fn deserialize_integer<V>(self, visitor: V) -> Result<V::Value, E>
@@ -1111,7 +1094,7 @@ mod content {
         V: Visitor<'de>,
         E: de::Error,
     {
-        let mut seq_visitor = SeqDeserializer::new(content.into_iter());
+        let mut seq_visitor = SeqDeserializer::new(content);
         let value = tri!(visitor.visit_seq(&mut seq_visitor));
         tri!(seq_visitor.end());
         Ok(value)
@@ -1125,7 +1108,7 @@ mod content {
         V: Visitor<'de>,
         E: de::Error,
     {
-        let mut map_visitor = MapDeserializer::new(content.into_iter());
+        let mut map_visitor = MapDeserializer::new(content);
         let value = tri!(visitor.visit_map(&mut map_visitor));
         tri!(map_visitor.end());
         Ok(value)
@@ -1133,6 +1116,7 @@ mod content {
 
     /// Used when deserializing an internally tagged enum because the content
     /// will be used exactly once.
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, E> Deserializer<'de> for ContentDeserializer<'de, E>
     where
         E: de::Error,
@@ -1466,7 +1450,7 @@ mod content {
                 s @ Content::String(_) | s @ Content::Str(_) => (s, None),
                 other => {
                     return Err(de::Error::invalid_type(
-                        other.unexpected(),
+                        content_unexpected(&other),
                         &"string or map",
                     ));
                 }
@@ -1498,11 +1482,7 @@ mod content {
             visitor.visit_unit()
         }
 
-        fn __deserialize_content<V>(
-            self,
-            _: actually_private::T,
-            visitor: V,
-        ) -> Result<Content<'de>, Self::Error>
+        fn __deserialize_content_v1<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where
             V: Visitor<'de, Value = Content<'de>>,
         {
@@ -1517,6 +1497,369 @@ mod content {
             ContentDeserializer {
                 content,
                 err: PhantomData,
+            }
+        }
+    }
+
+    struct SeqDeserializer<'de, E> {
+        iter: <Vec<Content<'de>> as IntoIterator>::IntoIter,
+        count: usize,
+        marker: PhantomData<E>,
+    }
+
+    impl<'de, E> SeqDeserializer<'de, E> {
+        fn new(content: Vec<Content<'de>>) -> Self {
+            SeqDeserializer {
+                iter: content.into_iter(),
+                count: 0,
+                marker: PhantomData,
+            }
+        }
+    }
+
+    impl<'de, E> SeqDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        fn end(self) -> Result<(), E> {
+            let remaining = self.iter.count();
+            if remaining == 0 {
+                Ok(())
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(
+                    self.count + remaining,
+                    &ExpectedInSeq(self.count),
+                ))
+            }
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> Deserializer<'de> for SeqDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn deserialize_any<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let v = tri!(visitor.visit_seq(&mut self));
+            tri!(self.end());
+            Ok(v)
+        }
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct seq tuple
+            tuple_struct map struct enum identifier ignored_any
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> SeqAccess<'de> for SeqDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<V>(&mut self, seed: V) -> Result<Option<V::Value>, Self::Error>
+        where
+            V: DeserializeSeed<'de>,
+        {
+            match self.iter.next() {
+                Some(value) => {
+                    self.count += 1;
+                    seed.deserialize(ContentDeserializer::new(value)).map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    struct ExpectedInSeq(usize);
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl Expected for ExpectedInSeq {
+        fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            if self.0 == 1 {
+                formatter.write_str("1 element in sequence")
+            } else {
+                write!(formatter, "{} elements in sequence", self.0)
+            }
+        }
+    }
+
+    struct MapDeserializer<'de, E> {
+        iter: <Vec<(Content<'de>, Content<'de>)> as IntoIterator>::IntoIter,
+        value: Option<Content<'de>>,
+        count: usize,
+        error: PhantomData<E>,
+    }
+
+    impl<'de, E> MapDeserializer<'de, E> {
+        fn new(content: Vec<(Content<'de>, Content<'de>)>) -> Self {
+            MapDeserializer {
+                iter: content.into_iter(),
+                value: None,
+                count: 0,
+                error: PhantomData,
+            }
+        }
+    }
+
+    impl<'de, E> MapDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        fn end(self) -> Result<(), E> {
+            let remaining = self.iter.count();
+            if remaining == 0 {
+                Ok(())
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(
+                    self.count + remaining,
+                    &ExpectedInMap(self.count),
+                ))
+            }
+        }
+    }
+
+    impl<'de, E> MapDeserializer<'de, E> {
+        fn next_pair(&mut self) -> Option<(Content<'de>, Content<'de>)> {
+            match self.iter.next() {
+                Some((k, v)) => {
+                    self.count += 1;
+                    Some((k, v))
+                }
+                None => None,
+            }
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> Deserializer<'de> for MapDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn deserialize_any<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let value = tri!(visitor.visit_map(&mut self));
+            tri!(self.end());
+            Ok(value)
+        }
+
+        fn deserialize_seq<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let value = tri!(visitor.visit_seq(&mut self));
+            tri!(self.end());
+            Ok(value)
+        }
+
+        fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let _ = len;
+            self.deserialize_seq(visitor)
+        }
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+            struct enum identifier ignored_any
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> MapAccess<'de> for MapDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_key_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((key, value)) => {
+                    self.value = Some(value);
+                    seed.deserialize(ContentDeserializer::new(key)).map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn next_value_seed<T>(&mut self, seed: T) -> Result<T::Value, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            let value = self.value.take();
+            // Panic because this indicates a bug in the program rather than an
+            // expected failure.
+            let value = value.expect("MapAccess::next_value called before next_key");
+            seed.deserialize(ContentDeserializer::new(value))
+        }
+
+        fn next_entry_seed<TK, TV>(
+            &mut self,
+            kseed: TK,
+            vseed: TV,
+        ) -> Result<Option<(TK::Value, TV::Value)>, Self::Error>
+        where
+            TK: DeserializeSeed<'de>,
+            TV: DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((key, value)) => {
+                    let key = tri!(kseed.deserialize(ContentDeserializer::new(key)));
+                    let value = tri!(vseed.deserialize(ContentDeserializer::new(value)));
+                    Ok(Some((key, value)))
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> SeqAccess<'de> for MapDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: de::DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((k, v)) => {
+                    let de = PairDeserializer(k, v, PhantomData);
+                    seed.deserialize(de).map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    struct PairDeserializer<'de, E>(Content<'de>, Content<'de>, PhantomData<E>);
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> Deserializer<'de> for PairDeserializer<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+            struct enum identifier ignored_any
+        }
+
+        fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            self.deserialize_seq(visitor)
+        }
+
+        fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let mut pair_visitor = PairVisitor(Some(self.0), Some(self.1), PhantomData);
+            let pair = tri!(visitor.visit_seq(&mut pair_visitor));
+            if pair_visitor.1.is_none() {
+                Ok(pair)
+            } else {
+                let remaining = pair_visitor.size_hint().unwrap();
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(2, &ExpectedInSeq(2 - remaining)))
+            }
+        }
+
+        fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: de::Visitor<'de>,
+        {
+            if len == 2 {
+                self.deserialize_seq(visitor)
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(2, &ExpectedInSeq(len)))
+            }
+        }
+    }
+
+    struct PairVisitor<'de, E>(Option<Content<'de>>, Option<Content<'de>>, PhantomData<E>);
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'de, E> SeqAccess<'de> for PairVisitor<'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            if let Some(k) = self.0.take() {
+                seed.deserialize(ContentDeserializer::new(k)).map(Some)
+            } else if let Some(v) = self.1.take() {
+                seed.deserialize(ContentDeserializer::new(v)).map(Some)
+            } else {
+                Ok(None)
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            if self.0.is_some() {
+                Some(2)
+            } else if self.1.is_some() {
+                Some(1)
+            } else {
+                Some(0)
+            }
+        }
+    }
+
+    struct ExpectedInMap(usize);
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl Expected for ExpectedInMap {
+        fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            if self.0 == 1 {
+                formatter.write_str("1 element in map")
+            } else {
+                write!(formatter, "{} elements in map", self.0)
             }
         }
     }
@@ -1543,6 +1886,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, E> de::EnumAccess<'de> for EnumDeserializer<'de, E>
     where
         E: de::Error,
@@ -1571,6 +1915,7 @@ mod content {
         err: PhantomData<E>,
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, E> de::VariantAccess<'de> for VariantDeserializer<'de, E>
     where
         E: de::Error,
@@ -1603,10 +1948,10 @@ mod content {
         {
             match self.value {
                 Some(Content::Seq(v)) => {
-                    de::Deserializer::deserialize_any(SeqDeserializer::new(v.into_iter()), visitor)
+                    de::Deserializer::deserialize_any(SeqDeserializer::new(v), visitor)
                 }
                 Some(other) => Err(de::Error::invalid_type(
-                    other.unexpected(),
+                    content_unexpected(&other),
                     &"tuple variant",
                 )),
                 None => Err(de::Error::invalid_type(
@@ -1626,13 +1971,13 @@ mod content {
         {
             match self.value {
                 Some(Content::Map(v)) => {
-                    de::Deserializer::deserialize_any(MapDeserializer::new(v.into_iter()), visitor)
+                    de::Deserializer::deserialize_any(MapDeserializer::new(v), visitor)
                 }
                 Some(Content::Seq(v)) => {
-                    de::Deserializer::deserialize_any(SeqDeserializer::new(v.into_iter()), visitor)
+                    de::Deserializer::deserialize_any(SeqDeserializer::new(v), visitor)
                 }
                 Some(other) => Err(de::Error::invalid_type(
-                    other.unexpected(),
+                    content_unexpected(&other),
                     &"struct variant",
                 )),
                 None => Err(de::Error::invalid_type(
@@ -1654,8 +1999,8 @@ mod content {
         E: de::Error,
     {
         #[cold]
-        fn invalid_type(self, exp: &Expected) -> E {
-            de::Error::invalid_type(self.content.unexpected(), exp)
+        fn invalid_type(self, exp: &dyn Expected) -> E {
+            de::Error::invalid_type(content_unexpected(self.content), exp)
         }
 
         fn deserialize_integer<V>(self, visitor: V) -> Result<V::Value, E>
@@ -1703,7 +2048,7 @@ mod content {
         V: Visitor<'de>,
         E: de::Error,
     {
-        let mut seq_visitor = SeqDeserializer::new(content.iter());
+        let mut seq_visitor = SeqRefDeserializer::new(content);
         let value = tri!(visitor.visit_seq(&mut seq_visitor));
         tri!(seq_visitor.end());
         Ok(value)
@@ -1717,14 +2062,7 @@ mod content {
         V: Visitor<'de>,
         E: de::Error,
     {
-        fn content_ref_deserializer_pair<'a, 'de>(
-            (k, v): &'a (Content<'de>, Content<'de>),
-        ) -> (&'a Content<'de>, &'a Content<'de>) {
-            (k, v)
-        }
-
-        let map = content.iter().map(content_ref_deserializer_pair);
-        let mut map_visitor = MapDeserializer::new(map);
+        let mut map_visitor = MapRefDeserializer::new(content);
         let value = tri!(visitor.visit_map(&mut map_visitor));
         tri!(map_visitor.end());
         Ok(value)
@@ -1732,6 +2070,7 @@ mod content {
 
     /// Used when deserializing an untagged enum because the content may need
     /// to be used more than once.
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a, E> Deserializer<'de> for ContentRefDeserializer<'a, 'de, E>
     where
         E: de::Error,
@@ -2056,7 +2395,7 @@ mod content {
                 ref s @ Content::String(_) | ref s @ Content::Str(_) => (s, None),
                 ref other => {
                     return Err(de::Error::invalid_type(
-                        other.unexpected(),
+                        content_unexpected(other),
                         &"string or map",
                     ));
                 }
@@ -2091,16 +2430,12 @@ mod content {
             visitor.visit_unit()
         }
 
-        fn __deserialize_content<V>(
-            self,
-            _: actually_private::T,
-            visitor: V,
-        ) -> Result<Content<'de>, Self::Error>
+        fn __deserialize_content_v1<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where
             V: Visitor<'de, Value = Content<'de>>,
         {
             let _ = visitor;
-            Ok(self.content.clone())
+            Ok(content_clone(self.content))
         }
     }
 
@@ -2114,11 +2449,355 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'a, 'de: 'a, E> Copy for ContentRefDeserializer<'a, 'de, E> {}
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'a, 'de: 'a, E> Clone for ContentRefDeserializer<'a, 'de, E> {
         fn clone(&self) -> Self {
             *self
+        }
+    }
+
+    struct SeqRefDeserializer<'a, 'de, E> {
+        iter: <&'a [Content<'de>] as IntoIterator>::IntoIter,
+        count: usize,
+        marker: PhantomData<E>,
+    }
+
+    impl<'a, 'de, E> SeqRefDeserializer<'a, 'de, E> {
+        fn new(content: &'a [Content<'de>]) -> Self {
+            SeqRefDeserializer {
+                iter: content.iter(),
+                count: 0,
+                marker: PhantomData,
+            }
+        }
+    }
+
+    impl<'a, 'de, E> SeqRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        fn end(self) -> Result<(), E> {
+            let remaining = self.iter.count();
+            if remaining == 0 {
+                Ok(())
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(
+                    self.count + remaining,
+                    &ExpectedInSeq(self.count),
+                ))
+            }
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> Deserializer<'de> for SeqRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn deserialize_any<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let v = tri!(visitor.visit_seq(&mut self));
+            tri!(self.end());
+            Ok(v)
+        }
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct seq tuple
+            tuple_struct map struct enum identifier ignored_any
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> SeqAccess<'de> for SeqRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<V>(&mut self, seed: V) -> Result<Option<V::Value>, Self::Error>
+        where
+            V: DeserializeSeed<'de>,
+        {
+            match self.iter.next() {
+                Some(value) => {
+                    self.count += 1;
+                    seed.deserialize(ContentRefDeserializer::new(value))
+                        .map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    struct MapRefDeserializer<'a, 'de, E> {
+        iter: <&'a [(Content<'de>, Content<'de>)] as IntoIterator>::IntoIter,
+        value: Option<&'a Content<'de>>,
+        count: usize,
+        error: PhantomData<E>,
+    }
+
+    impl<'a, 'de, E> MapRefDeserializer<'a, 'de, E> {
+        fn new(content: &'a [(Content<'de>, Content<'de>)]) -> Self {
+            MapRefDeserializer {
+                iter: content.iter(),
+                value: None,
+                count: 0,
+                error: PhantomData,
+            }
+        }
+    }
+
+    impl<'a, 'de, E> MapRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        fn end(self) -> Result<(), E> {
+            let remaining = self.iter.count();
+            if remaining == 0 {
+                Ok(())
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(
+                    self.count + remaining,
+                    &ExpectedInMap(self.count),
+                ))
+            }
+        }
+    }
+
+    impl<'a, 'de, E> MapRefDeserializer<'a, 'de, E> {
+        fn next_pair(&mut self) -> Option<(&'a Content<'de>, &'a Content<'de>)> {
+            match self.iter.next() {
+                Some((k, v)) => {
+                    self.count += 1;
+                    Some((k, v))
+                }
+                None => None,
+            }
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> Deserializer<'de> for MapRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn deserialize_any<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let value = tri!(visitor.visit_map(&mut self));
+            tri!(self.end());
+            Ok(value)
+        }
+
+        fn deserialize_seq<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let value = tri!(visitor.visit_seq(&mut self));
+            tri!(self.end());
+            Ok(value)
+        }
+
+        fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let _ = len;
+            self.deserialize_seq(visitor)
+        }
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+            struct enum identifier ignored_any
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> MapAccess<'de> for MapRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_key_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((key, value)) => {
+                    self.value = Some(value);
+                    seed.deserialize(ContentRefDeserializer::new(key)).map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn next_value_seed<T>(&mut self, seed: T) -> Result<T::Value, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            let value = self.value.take();
+            // Panic because this indicates a bug in the program rather than an
+            // expected failure.
+            let value = value.expect("MapAccess::next_value called before next_key");
+            seed.deserialize(ContentRefDeserializer::new(value))
+        }
+
+        fn next_entry_seed<TK, TV>(
+            &mut self,
+            kseed: TK,
+            vseed: TV,
+        ) -> Result<Option<(TK::Value, TV::Value)>, Self::Error>
+        where
+            TK: DeserializeSeed<'de>,
+            TV: DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((key, value)) => {
+                    let key = tri!(kseed.deserialize(ContentRefDeserializer::new(key)));
+                    let value = tri!(vseed.deserialize(ContentRefDeserializer::new(value)));
+                    Ok(Some((key, value)))
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> SeqAccess<'de> for MapRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: de::DeserializeSeed<'de>,
+        {
+            match self.next_pair() {
+                Some((k, v)) => {
+                    let de = PairRefDeserializer(k, v, PhantomData);
+                    seed.deserialize(de).map(Some)
+                }
+                None => Ok(None),
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            size_hint::from_bounds(&self.iter)
+        }
+    }
+
+    struct PairRefDeserializer<'a, 'de, E>(&'a Content<'de>, &'a Content<'de>, PhantomData<E>);
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> Deserializer<'de> for PairRefDeserializer<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        serde_core::forward_to_deserialize_any! {
+            bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct tuple_struct map
+            struct enum identifier ignored_any
+        }
+
+        fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            self.deserialize_seq(visitor)
+        }
+
+        fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: Visitor<'de>,
+        {
+            let mut pair_visitor = PairRefVisitor(Some(self.0), Some(self.1), PhantomData);
+            let pair = tri!(visitor.visit_seq(&mut pair_visitor));
+            if pair_visitor.1.is_none() {
+                Ok(pair)
+            } else {
+                let remaining = pair_visitor.size_hint().unwrap();
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(2, &ExpectedInSeq(2 - remaining)))
+            }
+        }
+
+        fn deserialize_tuple<V>(self, len: usize, visitor: V) -> Result<V::Value, Self::Error>
+        where
+            V: de::Visitor<'de>,
+        {
+            if len == 2 {
+                self.deserialize_seq(visitor)
+            } else {
+                // First argument is the number of elements in the data, second
+                // argument is the number of elements expected by the Deserialize.
+                Err(de::Error::invalid_length(2, &ExpectedInSeq(len)))
+            }
+        }
+    }
+
+    struct PairRefVisitor<'a, 'de, E>(
+        Option<&'a Content<'de>>,
+        Option<&'a Content<'de>>,
+        PhantomData<E>,
+    );
+
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
+    impl<'a, 'de, E> SeqAccess<'de> for PairRefVisitor<'a, 'de, E>
+    where
+        E: de::Error,
+    {
+        type Error = E;
+
+        fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+        where
+            T: DeserializeSeed<'de>,
+        {
+            if let Some(k) = self.0.take() {
+                seed.deserialize(ContentRefDeserializer::new(k)).map(Some)
+            } else if let Some(v) = self.1.take() {
+                seed.deserialize(ContentRefDeserializer::new(v)).map(Some)
+            } else {
+                Ok(None)
+            }
+        }
+
+        fn size_hint(&self) -> Option<usize> {
+            if self.0.is_some() {
+                Some(2)
+            } else if self.1.is_some() {
+                Some(1)
+            } else {
+                Some(0)
+            }
         }
     }
 
@@ -2131,6 +2810,7 @@ mod content {
         err: PhantomData<E>,
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a, E> de::EnumAccess<'de> for EnumRefDeserializer<'a, 'de, E>
     where
         E: de::Error,
@@ -2159,6 +2839,7 @@ mod content {
         err: PhantomData<E>,
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a, E> de::VariantAccess<'de> for VariantRefDeserializer<'a, 'de, E>
     where
         E: de::Error,
@@ -2207,7 +2888,7 @@ mod content {
                 //      newtype_enum::tuple2
                 Some(Content::Seq(v)) => visit_content_seq_ref(v, visitor),
                 Some(other) => Err(de::Error::invalid_type(
-                    other.unexpected(),
+                    content_unexpected(other),
                     &"tuple variant",
                 )),
                 None => Err(de::Error::invalid_type(
@@ -2234,7 +2915,7 @@ mod content {
                 //      newtype_enum::empty_struct_from_seq
                 Some(Content::Seq(v)) => visit_content_seq_ref(v, visitor),
                 Some(other) => Err(de::Error::invalid_type(
-                    other.unexpected(),
+                    content_unexpected(other),
                     &"struct variant",
                 )),
                 None => Err(de::Error::invalid_type(
@@ -2245,6 +2926,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, E> de::IntoDeserializer<'de, E> for ContentDeserializer<'de, E>
     where
         E: de::Error,
@@ -2256,6 +2938,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a, E> de::IntoDeserializer<'de, E> for ContentRefDeserializer<'a, 'de, E>
     where
         E: de::Error,
@@ -2285,6 +2968,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a> Visitor<'de> for InternallyTaggedUnitVisitor<'a> {
         type Value = ();
 
@@ -2330,6 +3014,7 @@ mod content {
         }
     }
 
+    #[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
     impl<'de, 'a> Visitor<'de> for UntaggedUnitVisitor<'a> {
         type Value = ();
 
@@ -2377,6 +3062,7 @@ pub trait IdentifierDeserializer<'de, E: Error> {
 
 pub struct Borrowed<'de, T: 'de + ?Sized>(pub &'de T);
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, E> IdentifierDeserializer<'de, E> for u64
 where
     E: Error,
@@ -2393,6 +3079,7 @@ pub struct StrDeserializer<'a, E> {
     marker: PhantomData<E>,
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, 'a, E> Deserializer<'de> for StrDeserializer<'a, E>
 where
     E: Error,
@@ -2406,7 +3093,7 @@ where
         visitor.visit_str(self.value)
     }
 
-    forward_to_deserialize_any! {
+    serde_core::forward_to_deserialize_any! {
         bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
         bytes byte_buf option unit unit_struct newtype_struct seq tuple
         tuple_struct map struct enum identifier ignored_any
@@ -2418,6 +3105,7 @@ pub struct BorrowedStrDeserializer<'de, E> {
     marker: PhantomData<E>,
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, E> Deserializer<'de> for BorrowedStrDeserializer<'de, E>
 where
     E: Error,
@@ -2431,13 +3119,14 @@ where
         visitor.visit_borrowed_str(self.value)
     }
 
-    forward_to_deserialize_any! {
+    serde_core::forward_to_deserialize_any! {
         bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
         bytes byte_buf option unit unit_struct newtype_struct seq tuple
         tuple_struct map struct enum identifier ignored_any
     }
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'a, E> IdentifierDeserializer<'a, E> for &'a str
 where
     E: Error,
@@ -2452,6 +3141,7 @@ where
     }
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, E> IdentifierDeserializer<'de, E> for Borrowed<'de, str>
 where
     E: Error,
@@ -2466,6 +3156,7 @@ where
     }
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'a, E> IdentifierDeserializer<'a, E> for &'a [u8]
 where
     E: Error,
@@ -2477,6 +3168,7 @@ where
     }
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, E> IdentifierDeserializer<'de, E> for Borrowed<'de, [u8]>
 where
     E: Error,
@@ -2519,6 +3211,7 @@ macro_rules! forward_to_deserialize_other {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'a, 'de, E> Deserializer<'de> for FlatMapDeserializer<'a, 'de, E>
 where
     E: Error,
@@ -2655,6 +3348,7 @@ struct FlatMapAccess<'a, 'de: 'a, E> {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'a, 'de, E> MapAccess<'de> for FlatMapAccess<'a, 'de, E>
 where
     E: Error,
@@ -2699,6 +3393,7 @@ struct FlatStructAccess<'a, 'de: 'a, E> {
 }
 
 #[cfg(any(feature = "std", feature = "alloc"))]
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'a, 'de, E> MapAccess<'de> for FlatStructAccess<'a, 'de, E>
 where
     E: Error,
@@ -2741,7 +3436,7 @@ fn flat_map_take_entry<'de>(
     // and if the field is one recognized by the current data structure.
     let is_recognized = match entry {
         None => false,
-        Some((k, _v)) => k.as_str().map_or(false, |name| recognized.contains(&name)),
+        Some((k, _v)) => content_as_str(k).map_or(false, |name| recognized.contains(&name)),
     };
 
     if is_recognized {
@@ -2762,6 +3457,7 @@ pub struct AdjacentlyTaggedEnumVariantVisitor<F> {
     fields_enum: PhantomData<F>,
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, F> Visitor<'de> for AdjacentlyTaggedEnumVariantVisitor<F>
 where
     F: Deserialize<'de>,
@@ -2782,6 +3478,7 @@ where
     }
 }
 
+#[cfg_attr(not(no_diagnostic_namespace), diagnostic::do_not_recommend)]
 impl<'de, F> DeserializeSeed<'de> for AdjacentlyTaggedEnumVariantSeed<F>
 where
     F: Deserialize<'de>,

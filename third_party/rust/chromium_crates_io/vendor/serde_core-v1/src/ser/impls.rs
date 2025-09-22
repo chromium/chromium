@@ -185,11 +185,10 @@ where
     }
 }
 
-#[cfg(not(no_relaxed_trait_bounds))]
 macro_rules! seq_impl {
     (
         $(#[$attr:meta])*
-        $ty:ident <T $(: $tbound1:ident $(+ $tbound2:ident)*)* $(, $typaram:ident : $bound:ident)*>
+        $ty:ident <T $(, $typaram:ident : $bound:ident)*>
     ) => {
         $(#[$attr])*
         impl<T $(, $typaram)*> Serialize for $ty<T $(, $typaram)*>
@@ -207,45 +206,22 @@ macro_rules! seq_impl {
     }
 }
 
-#[cfg(no_relaxed_trait_bounds)]
-macro_rules! seq_impl {
-    (
-        $(#[$attr:meta])*
-        $ty:ident <T $(: $tbound1:ident $(+ $tbound2:ident)*)* $(, $typaram:ident : $bound:ident)*>
-    ) => {
-        $(#[$attr])*
-        impl<T $(, $typaram)*> Serialize for $ty<T $(, $typaram)*>
-        where
-            T: Serialize $(+ $tbound1 $(+ $tbound2)*)*,
-            $($typaram: $bound,)*
-        {
-            #[inline]
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: Serializer,
-            {
-                serializer.collect_seq(self)
-            }
-        }
-    }
+seq_impl! {
+    #[cfg(any(feature = "std", feature = "alloc"))]
+    #[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
+    BinaryHeap<T>
 }
 
 seq_impl! {
     #[cfg(any(feature = "std", feature = "alloc"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
-    BinaryHeap<T: Ord>
-}
-
-seq_impl! {
-    #[cfg(any(feature = "std", feature = "alloc"))]
-    #[cfg_attr(docsrs, doc(cfg(any(feature = "std", feature = "alloc"))))]
-    BTreeSet<T: Ord>
+    BTreeSet<T>
 }
 
 seq_impl! {
     #[cfg(feature = "std")]
     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
-    HashSet<T: Eq + Hash, H: BuildHasher>
+    HashSet<T, H: BuildHasher>
 }
 
 seq_impl! {
@@ -445,7 +421,6 @@ tuple_impls! {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[cfg(not(no_relaxed_trait_bounds))]
 macro_rules! map_impl {
     (
         $(#[$attr:meta])*
@@ -456,30 +431,6 @@ macro_rules! map_impl {
         where
             K: Serialize,
             V: Serialize,
-        {
-            #[inline]
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: Serializer,
-            {
-                serializer.collect_map(self)
-            }
-        }
-    }
-}
-
-#[cfg(no_relaxed_trait_bounds)]
-macro_rules! map_impl {
-    (
-        $(#[$attr:meta])*
-        $ty:ident <K $(: $kbound1:ident $(+ $kbound2:ident)*)*, V $(, $typaram:ident : $bound:ident)*>
-    ) => {
-        $(#[$attr])*
-        impl<K, V $(, $typaram)*> Serialize for $ty<K, V $(, $typaram)*>
-        where
-            K: Serialize $(+ $kbound1 $(+ $kbound2)*)*,
-            V: Serialize,
-            $($typaram: $bound,)*
         {
             #[inline]
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -632,22 +583,18 @@ macro_rules! nonzero_integers {
 }
 
 nonzero_integers! {
-    NonZeroU8,
-    NonZeroU16,
-    NonZeroU32,
-    NonZeroU64,
-    NonZeroU128,
-    NonZeroUsize,
-}
-
-#[cfg(not(no_num_nonzero_signed))]
-nonzero_integers! {
     NonZeroI8,
     NonZeroI16,
     NonZeroI32,
     NonZeroI64,
     NonZeroI128,
     NonZeroIsize,
+    NonZeroU8,
+    NonZeroU16,
+    NonZeroU32,
+    NonZeroU64,
+    NonZeroU128,
+    NonZeroUsize,
 }
 
 impl<T> Serialize for Cell<T>
@@ -713,6 +660,8 @@ where
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#[cfg(feature = "result")]
+#[cfg_attr(docsrs, doc(cfg(feature = "result")))]
 impl<T, E> Serialize for Result<T, E>
 where
     T: Serialize,

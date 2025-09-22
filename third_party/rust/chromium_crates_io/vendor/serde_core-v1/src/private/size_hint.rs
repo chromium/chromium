@@ -1,3 +1,4 @@
+#[cfg(any(feature = "std", feature = "alloc"))]
 use crate::lib::*;
 
 pub fn from_bounds<I>(iter: &I) -> Option<usize>

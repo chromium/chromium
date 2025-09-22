@@ -1,7 +1,6 @@
 // Super explicit first paragraph because this shows up at the top level and
 // trips up people who are just looking for basic Serialize / Deserialize
 // documentation.
-//
 /// Helper macro when implementing the `Deserializer` part of a new data format
 /// for Serde.
 ///

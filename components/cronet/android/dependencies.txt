@@ -87,6 +87,7 @@
 //third_party/rust/rustversion
 //third_party/rust/ryu
 //third_party/rust/serde
+//third_party/rust/serde_core
 //third_party/rust/serde_derive
 //third_party/rust/serde_json_lenient
 //third_party/rust/strsim

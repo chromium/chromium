@@ -9,7 +9,7 @@
 //! these two groups interact with each other, allowing any supported data
 //! structure to be serialized and deserialized using any supported data format.
 //!
-//! See the Serde website <https://serde.rs/> for additional documentation and
+//! See the Serde website <https://serde.rs> for additional documentation and
 //! usage examples.
 //!
 //! ## Design
@@ -95,7 +95,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.219")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.225")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
 // Show which crate feature enables conditionally compiled APIs in documentation.
@@ -106,7 +106,12 @@
 //
 //    https://github.com/serde-rs/serde/issues/812
 #![cfg_attr(feature = "unstable", feature(never_type))]
-#![allow(unknown_lints, bare_trait_objects, deprecated)]
+#![allow(
+    unknown_lints,
+    bare_trait_objects,
+    deprecated,
+    mismatched_lifetime_syntaxes
+)]
 // Ignored clippy and clippy_pedantic lints
 #![allow(
     // clippy bug: https://github.com/rust-lang/rust-clippy/issues/5704
@@ -175,25 +180,18 @@ mod lib {
     }
 
     pub use self::core::{f32, f64};
-    pub use self::core::{i16, i32, i64, i8, isize};
-    pub use self::core::{iter, num, ptr, str};
-    pub use self::core::{u16, u32, u64, u8, usize};
+    pub use self::core::{ptr, str};
 
     #[cfg(any(feature = "std", feature = "alloc"))]
-    pub use self::core::{cmp, mem, slice};
+    pub use self::core::slice;
 
-    pub use self::core::cell::{Cell, RefCell};
     pub use self::core::clone;
-    pub use self::core::cmp::Reverse;
     pub use self::core::convert;
     pub use self::core::default;
     pub use self::core::fmt::{self, Debug, Display, Write as FmtWrite};
     pub use self::core::marker::{self, PhantomData};
-    pub use self::core::num::Wrapping;
-    pub use self::core::ops::{Bound, Range, RangeFrom, RangeInclusive, RangeTo};
     pub use self::core::option;
     pub use self::core::result;
-    pub use self::core::time::Duration;
 
     #[cfg(all(feature = "alloc", not(feature = "std")))]
     pub use alloc::borrow::{Cow, ToOwned};
@@ -214,84 +212,13 @@ mod lib {
     pub use alloc::boxed::Box;
     #[cfg(feature = "std")]
     pub use std::boxed::Box;
-
-    #[cfg(all(feature = "rc", feature = "alloc", not(feature = "std")))]
-    pub use alloc::rc::{Rc, Weak as RcWeak};
-    #[cfg(all(feature = "rc", feature = "std"))]
-    pub use std::rc::{Rc, Weak as RcWeak};
-
-    #[cfg(all(feature = "rc", feature = "alloc", not(feature = "std")))]
-    pub use alloc::sync::{Arc, Weak as ArcWeak};
-    #[cfg(all(feature = "rc", feature = "std"))]
-    pub use std::sync::{Arc, Weak as ArcWeak};
-
-    #[cfg(all(feature = "alloc", not(feature = "std")))]
-    pub use alloc::collections::{BTreeMap, BTreeSet, BinaryHeap, LinkedList, VecDeque};
-    #[cfg(feature = "std")]
-    pub use std::collections::{BTreeMap, BTreeSet, BinaryHeap, LinkedList, VecDeque};
-
-    #[cfg(all(not(no_core_cstr), not(feature = "std")))]
-    pub use self::core::ffi::CStr;
-    #[cfg(feature = "std")]
-    pub use std::ffi::CStr;
-
-    #[cfg(all(not(no_core_cstr), feature = "alloc", not(feature = "std")))]
-    pub use alloc::ffi::CString;
-    #[cfg(feature = "std")]
-    pub use std::ffi::CString;
-
-    #[cfg(all(not(no_core_net), not(feature = "std")))]
-    pub use self::core::net;
-    #[cfg(feature = "std")]
-    pub use std::net;
-
-    #[cfg(feature = "std")]
-    pub use std::error;
-
-    #[cfg(feature = "std")]
-    pub use std::collections::{HashMap, HashSet};
-    #[cfg(feature = "std")]
-    pub use std::ffi::{OsStr, OsString};
-    #[cfg(feature = "std")]
-    pub use std::hash::{BuildHasher, Hash};
-    #[cfg(feature = "std")]
-    pub use std::io::Write;
-    #[cfg(feature = "std")]
-    pub use std::path::{Path, PathBuf};
-    #[cfg(feature = "std")]
-    pub use std::sync::{Mutex, RwLock};
-    #[cfg(feature = "std")]
-    pub use std::time::{SystemTime, UNIX_EPOCH};
-
-    #[cfg(all(feature = "std", no_target_has_atomic, not(no_std_atomic)))]
-    pub use std::sync::atomic::{
-        AtomicBool, AtomicI16, AtomicI32, AtomicI8, AtomicIsize, AtomicU16, AtomicU32, AtomicU8,
-        AtomicUsize, Ordering,
-    };
-    #[cfg(all(feature = "std", no_target_has_atomic, not(no_std_atomic64)))]
-    pub use std::sync::atomic::{AtomicI64, AtomicU64};
-
-    #[cfg(all(feature = "std", not(no_target_has_atomic)))]
-    pub use std::sync::atomic::Ordering;
-    #[cfg(all(feature = "std", not(no_target_has_atomic), target_has_atomic = "8"))]
-    pub use std::sync::atomic::{AtomicBool, AtomicI8, AtomicU8};
-    #[cfg(all(feature = "std", not(no_target_has_atomic), target_has_atomic = "16"))]
-    pub use std::sync::atomic::{AtomicI16, AtomicU16};
-    #[cfg(all(feature = "std", not(no_target_has_atomic), target_has_atomic = "32"))]
-    pub use std::sync::atomic::{AtomicI32, AtomicU32};
-    #[cfg(all(feature = "std", not(no_target_has_atomic), target_has_atomic = "64"))]
-    pub use std::sync::atomic::{AtomicI64, AtomicU64};
-    #[cfg(all(feature = "std", not(no_target_has_atomic), target_has_atomic = "ptr"))]
-    pub use std::sync::atomic::{AtomicIsize, AtomicUsize};
-
-    #[cfg(not(no_core_num_saturating))]
-    pub use self::core::num::Saturating;
 }
 
 // None of this crate's error handling needs the `From::from` error conversion
 // performed implicitly by the `?` operator or the standard library's `try!`
 // macro. This simplified macro gives a 5.5% improvement in compile time
 // compared to standard `try!`, and 9% improvement compared to `?`.
+#[cfg(not(no_serde_derive))]
 macro_rules! tri {
     ($expr:expr) => {
         match $expr {
@@ -303,32 +230,18 @@ macro_rules! tri {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#[macro_use]
-mod macros;
+pub use serde_core::{
+    de, forward_to_deserialize_any, ser, Deserialize, Deserializer, Serialize, Serializer,
+};
 
 #[macro_use]
 mod integer128;
 
-pub mod de;
-pub mod ser;
-
-mod format;
-
-#[doc(inline)]
-pub use crate::de::{Deserialize, Deserializer};
-#[doc(inline)]
-pub use crate::ser::{Serialize, Serializer};
-
 // Used by generated code and doc tests. Not public API.
 #[doc(hidden)]
-#[path = "private/mod.rs"]
-pub mod __private;
+mod private;
 
-#[path = "de/seed.rs"]
-mod seed;
-
-#[cfg(all(not(feature = "std"), no_core_error))]
-mod std_error;
+include!(concat!(env!("OUT_DIR"), "/private.rs"));
 
 // Re-export #[derive(Serialize, Deserialize)].
 //
@@ -343,7 +256,8 @@ extern crate serde_derive;
 #[cfg_attr(docsrs, doc(cfg(feature = "derive")))]
 pub use serde_derive::{Deserialize, Serialize};
 
-#[cfg(all(not(no_serde_derive), any(feature = "std", feature = "alloc")))]
-mod actually_private {
-    pub struct T;
+#[macro_export]
+#[doc(hidden)]
+macro_rules! __require_serde_not_serde_core {
+    () => {};
 }

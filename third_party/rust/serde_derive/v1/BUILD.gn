@@ -17,6 +17,7 @@ cargo_crate("lib") {
   sources = [
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/bound.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/deprecated.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/dummy.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/fragment.rs",
     "//third_party/rust/chromium_crates_io/vendor/serde_derive-v1/src/internals/ast.rs",
@@ -37,13 +38,13 @@ cargo_crate("lib") {
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2015"
+  edition = "2021"
   cargo_pkg_authors = "Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "serde_derive"
   cargo_pkg_description =
       "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
   cargo_pkg_repository = "https://github.com/serde-rs/serde"
-  cargo_pkg_version = "1.0.219"
+  cargo_pkg_version = "1.0.225"
 
   allow_unsafe = false
 

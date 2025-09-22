@@ -1,11 +1,11 @@
 [package]
 name = "serde_derive"
-version = "1.0.219"
+version = "1.0.225"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc"]
 description = "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
 documentation = "https://serde.rs/derive.html"
-edition = "2015"
+edition = "2021"
 exclude = ["build.rs"]
 homepage = "https://serde.rs"
 keywords = ["serde", "serialization", "no_std", "derive"]

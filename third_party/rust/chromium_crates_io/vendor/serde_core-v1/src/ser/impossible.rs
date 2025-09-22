@@ -17,7 +17,7 @@ use crate::ser::{
 ///
 /// ```edition2021
 /// # use serde::ser::{Serializer, Impossible};
-/// # use serde::__private::doc::Error;
+/// # use serde_core::__private::doc::Error;
 /// #
 /// # struct MySerializer;
 /// #
@@ -41,7 +41,7 @@ use crate::ser::{
 ///     }
 ///
 ///     /* other Serializer methods */
-/// #     serde::__serialize_unimplemented! {
+/// #     serde_core::__serialize_unimplemented! {
 /// #         bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str bytes none some
 /// #         unit unit_struct unit_variant newtype_struct newtype_variant
 /// #         tuple tuple_struct tuple_variant map struct struct_variant

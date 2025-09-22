@@ -149,6 +149,16 @@ template("cargo_crate") {
   }
   if (defined(invoker.cargo_pkg_version)) {
     _rustenv += [ "CARGO_PKG_VERSION=${invoker.cargo_pkg_version}" ]
+
+    # Parse `<major>.<minor>.<patch>-<pre>` (the `-<pre>` part of optional,
+    # other parts are mandatory).
+    _cargo_pkg_version_parts = string_split(invoker.cargo_pkg_version, ".")
+    _rustenv += [ "CARGO_PKG_VERSION_MAJOR=${_cargo_pkg_version_parts[0]}" ]
+    _rustenv += [ "CARGO_PKG_VERSION_MINOR=${_cargo_pkg_version_parts[1]}" ]
+    _cargo_pkg_version_subparts = string_split(_cargo_pkg_version_parts[2], "-")
+    _cargo_pkg_version_subparts += [ "" ]  # In case there is no prerelease.
+    _rustenv += [ "CARGO_PKG_VERSION_PATCH=${_cargo_pkg_version_subparts[0]}" ]
+    _rustenv += [ "CARGO_PKG_VERSION_PRE=${_cargo_pkg_version_subparts[1]}" ]
   }
   if (defined(invoker.cargo_pkg_name)) {
     _rustenv += [ "CARGO_PKG_NAME=${invoker.cargo_pkg_name}" ]
