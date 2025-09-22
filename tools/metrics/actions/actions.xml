@@ -33,6 +33,17 @@ should be able to be added at any place in this file.
 
 <actions>
 
+<variants name="Toast_Type">
+  <variant name="" summary="aggregated"/>
+  <variant name=".AddedToComparisonTable" summary="Added to comparison table"/>
+  <variant name=".AddedToReadingList" summary="Added to reading list"/>
+  <variant name=".DiceUserMigrated" summary="DICe user migrated"/>
+  <variant name=".SyncEsbOff"
+      summary="Enhanced Protection setting has been synced to Off"/>
+  <variant name=".SyncEsbOn"
+      summary="Enhanced Protection setting has been synced to On"/>
+</variants>
+
 <action name="AboutChrome">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -28940,14 +28951,87 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobileToolbarTabMenu">
+<action name="MobileToolbarTabMenu{ActionType}">
   <owner>jhimawan@google.com</owner>
   <owner>hitarthkothari@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
     Recorded when the user interacts with the tab menu on the tab strip on
-    Android.
+    Android. {ActionType}
   </description>
+  <token key="ActionType">
+    <variant name="" summary="aggregated"/>
+    <variant name=".AddToTabGroup"
+        summary="User opened the bottom sheet to add a tab to a new or
+                 existing tab group, via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".AddToTabGroup.MultiTab"
+        summary="User opened the bottom sheet to add multiple tabs to a new
+                 or existing tab group, via the tab context menu on tab strip
+                 on Android."/>
+    <variant name=".CloseTab"
+        summary="User closed a tab via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".CloseTab.MultiTab"
+        summary="User closed multiple tabs via the tab context menu on tab
+                 strip on Android."/>
+    <variant name=".MoveTabToGroup"
+        summary="User moved a tab to a synced tab group via the tab context
+                 menu on tab strip on Android."/>
+    <variant name=".MoveTabToGroup.MultiTab"
+        summary="User moved multiple tabs to a synced tab group via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".MoveTabToIncognitoGroup"
+        summary="User moved a tab to an incognito tab group via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".MoveTabToIncognitoGroup.MultiTab"
+        summary="User moved multiple tabs to an incognito tab group via the
+                 tab context menu on tab strip on Android."/>
+    <variant name=".MoveTabToNewWindow"
+        summary="User moved a tab to a new window via the tab context menu on
+                 tab strip on Android."/>
+    <variant name=".MoveTabToNewWindow.MultiTab"
+        summary="User moved multiple tabs to a new window via the tab context
+                 menu on tab strip on Android."/>
+    <variant name=".MoveTabToOtherWindow"
+        summary="User moved a tab to another window via the tab context menu
+                 on tab strip on Android."/>
+    <variant name=".MoveTabToOtherWindow.MultiTab"
+        summary="User moved multiple tabs to another window via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".NewGroup"
+        summary="User created a new tab group via the tab context menu on tab
+                 strip on Android."/>
+    <variant name=".NewGroup.MultiTab"
+        summary="User created a new tab group with multiple tabs via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".PinTab"
+        summary="User pinned a tab via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".PinTab.MultiTab"
+        summary="User pinned multiple tabs via the tab context menu on tab
+                 strip on Android."/>
+    <variant name=".RemoveTabFromTabGroup"
+        summary="User removed a tab from its tab group via the tab context
+                 menu on tab strip on Android."/>
+    <variant name=".RemoveTabFromTabGroup.MultiTab"
+        summary="User removed multiple tabs from their tab group via the tab
+                 context menu on tab strip on Android."/>
+    <variant name=".ShareTab"
+        summary="User shared the URL open in a tab, via the tab context menu
+                 on tab strip on Android."/>
+    <variant name=".Shown"
+        summary="Recorded when the tab context menu is shown."/>
+    <variant name=".Shown.MultiTab"
+        summary="Recorded when the tab context menu is shown with multiple
+                 tabs selected."/>
+    <variant name=".UnpinTab"
+        summary="User unpinned a tab via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".UnpinTab.MultiTab"
+        summary="User unpinned multiple tabs via the tab context menu on tab
+                 strip on Android."/>
+  </token>
 </action>
 
 <action name="MobileToolbarToggleBookmark">
@@ -46932,22 +47016,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Toast.ActionButtonClicked">
+<action name="Toast.ActionButtonClicked{Toast_Type}">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <description>
-    Recorded when the user clicks on toast's action button.
+    Recorded when the user clicks on toast's action button. {Toast_Type}
   </description>
+  <token key="Toast_Type" variants="Toast_Type"/>
 </action>
 
-<action name="Toast.CloseButtonClicked">
+<action name="Toast.CloseButtonClicked{Toast_Type}">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <description>
-    Recorded when the user clicks on the toast's close button.
+    Recorded when the user clicks on the toast's close button. {Toast_Type}
   </description>
+  <token key="Toast_Type" variants="Toast_Type"/>
 </action>
 
 <action name="TodayExtension.ExtensionDismissed">
@@ -51601,38 +51687,6 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="AddedToReadingList" label="Added to reading list"/>
-  <affected-action name="Toast.ActionButtonClicked"/>
-  <affected-action name="Toast.CloseButtonClicked"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="AddedToComparisonTable" label="Added to comparison table"/>
-  <affected-action name="Toast.ActionButtonClicked"/>
-  <affected-action name="Toast.CloseButtonClicked"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="DiceUserMigrated" label="DICe user migrated"/>
-  <affected-action name="Toast.ActionButtonClicked"/>
-  <affected-action name="Toast.CloseButtonClicked"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="SyncEsbOn"
-      label="Enhanced Protection setting has been synced to On"/>
-  <affected-action name="Toast.ActionButtonClicked"/>
-  <affected-action name="Toast.CloseButtonClicked"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="SyncEsbOff"
-      label="Enhanced Protection setting has been synced to Off"/>
-  <affected-action name="Toast.ActionButtonClicked"/>
-  <affected-action name="Toast.CloseButtonClicked"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
   <suffix name="FamiliarSite" label="Recorded on a familiar site."/>
   <affected-action name="MerchantTrust.BubbleClosed"/>
   <affected-action name="MerchantTrust.BubbleOpenedFromLocationBarChip"/>
@@ -51723,90 +51777,6 @@ should be able to be added at any place in this file.
       label="Recorded when a group suggestion is considered invalid."/>
   <suffix name="Shown" label="Recorded when a group suggestion is shown."/>
   <affected-action name="TabSwitcher.GroupSuggest"/>
-</action-suffix>
-
-<action-suffix separator="." ordering="suffix">
-  <suffix name="AddToTabGroup"
-      label="User opened the bottom sheet to add a tab to a new or existing
-             tab group, via the tab context menu on tab strip on Android."/>
-  <suffix name="AddToTabGroup.MultiTab"
-      label="User opened the bottom sheet to add multiple tabs to a new or
-             existing tab group, via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="CloseTab"
-      label="User closed a tab via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="CloseTab.MultiTab"
-      label="User closed multiple tabs via the tab context menu on tab strip
-             on Android."/>
-  <suffix name="MoveTabToGroup"
-      label="User moved a tab to a synced tab group via the tab context menu
-             on tab strip on Android."/>
-  <suffix name="MoveTabToGroup.MultiTab"
-      label="User moved multiple tabs to a synced tab group via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="MoveTabToIncognitoGroup"
-      label="User moved a tab to an incognito tab group via the tab context
-             menu on tab strip on Android."/>
-  <suffix name="MoveTabToIncognitoGroup.MultiTab"
-      label="User moved multiple tabs to an incognito tab group via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="MoveTabToNewWindow"
-      label="User moved a tab to a new window via the tab context menu on tab
-             strip on Android."/>
-  <suffix name="MoveTabToNewWindow.MultiTab"
-      label="User moved multiple tabs to a new window via the tab context
-             menu on tab strip on Android."/>
-  <suffix name="MoveTabToOtherWindow"
-      label="User moved a tab to another window via the tab context menu on
-             tab strip on Android."/>
-  <suffix name="MoveTabToOtherWindow.MultiTab"
-      label="User moved multiple tabs to another window via the tab context
-             menu on tab strip on Android."/>
-  <suffix name="MuteSite"
-      label="User muted a site via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="MuteSite.MultiTab"
-      label="User muted site(s) from multiple selected tabs via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="NewGroup"
-      label="User created a new tab group via the tab context menu on tab
-             strip on Android."/>
-  <suffix name="NewGroup.MultiTab"
-      label="User created a new tab group with multiple tabs via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="PinTab"
-      label="User pinned a tab via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="PinTab.MultiTab"
-      label="User pinned multiple tabs via the tab context menu on tab strip
-             on Android."/>
-  <suffix name="RemoveTabFromTabGroup"
-      label="User removed a tab from its tab group via the tab context menu
-             on tab strip on Android."/>
-  <suffix name="RemoveTabFromTabGroup.MultiTab"
-      label="User removed multiple tabs from their tab group via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="ShareTab"
-      label="User shared the URL open in a tab, via the tab context menu on
-             tab strip on Android."/>
-  <suffix name="Shown" label="Recorded when the tab context menu is shown."/>
-  <suffix name="Shown.MultiTab"
-      label="Recorded when the tab context menu is shown with multiple tabs
-             selected."/>
-  <suffix name="UnmuteSite"
-      label="User unmuted a site via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="UnmuteSite.MultiTab"
-      label="User unmuted site(s) from multiple selected tabs via the tab
-             context menu on tab strip on Android."/>
-  <suffix name="UnpinTab"
-      label="User unpinned a tab via the tab context menu on tab strip on
-             Android."/>
-  <suffix name="UnpinTab.MultiTab"
-      label="User unpinned multiple tabs via the tab context menu on tab
-             strip on Android."/>
-  <affected-action name="MobileToolbarTabMenu"/>
 </action-suffix>
 
 </actions>
