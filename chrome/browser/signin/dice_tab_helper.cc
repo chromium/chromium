@@ -91,7 +91,7 @@ DiceTabHelper::GetHistorySyncOptinCallbackForBrowser() {
 
     Browser* browser = web_contents ? chrome::FindBrowserWithTab(web_contents)
                                     : chrome::FindBrowserWithProfile(profile);
-    if (!browser || !signin_util::ShouldShowHistorySyncOptinScreen(*profile)) {
+    if (!browser) {
       return;
     }
 

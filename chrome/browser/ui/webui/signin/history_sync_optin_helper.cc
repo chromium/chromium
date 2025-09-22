@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
@@ -224,16 +225,19 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
 }
 
 void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
-  if (GetSyncService(profile_)) {
+  if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
     delegate_->ShowHistorySyncOptinScreen(
         profile(), base::BindOnce(&HistorySyncOptinHelper::NotifyFlowFinished,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  // TODO(crbug.com/435191375): If the purpose of the flow is to enable
-  // history sync we may want to show an error when sync is disabled. Otherwise,
-  // if the goal is to sign in the user, we can skip the history
-  // optin screen.
+  // Currently this class is used to for entry points meant to
+  // display the history sync optin screen (i.e. enabling history
+  // sync is optional).
+  // If sync is disabled just skip the screen.
+  // TODO(crbug.com/435191375): Once access_point is plumped to
+  // this class maybe add sanity checks that we are not in an
+  // access point with required history sync enabling.
   FinishFlowWithoutHistorySyncOptin();
 }
 

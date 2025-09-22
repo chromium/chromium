@@ -78,6 +78,11 @@ class HistorySyncOptinServiceTest : public testing::Test {
 
 TEST_F(HistorySyncOptinServiceTest, StartFlow) {
   AccountInfo account_info = MakePrimaryAccountAvailable();
+  SyncServiceFactory::GetForProfile(profile_.get())
+      ->GetUserSettings()
+      ->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
   auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
   auto* delegate_ptr = delegate.get();
   EXPECT_CALL(*delegate_ptr,
@@ -90,6 +95,11 @@ TEST_F(HistorySyncOptinServiceTest, StartFlow) {
 
 TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   AccountInfo account_info = MakePrimaryAccountAvailable();
+  SyncServiceFactory::GetForProfile(profile_.get())
+      ->GetUserSettings()
+      ->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
   auto delegate = std::make_unique<MockHistorySyncOptinHelperDelegate>();
   auto* delegate_ptr = delegate.get();
 

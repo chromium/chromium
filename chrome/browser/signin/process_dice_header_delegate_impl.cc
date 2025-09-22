@@ -268,11 +268,6 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return false;
   }
-  if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
-    VLOG(1)
-        << "Do not start history sync if the necessary conditions are not met.";
-    return false;
-  }
   if (!is_sync_signin_tab_) {
     VLOG(1) << "Do not start history sync after web sign-in [not a Chrome "
                "sign-in tab].";

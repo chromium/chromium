@@ -98,7 +98,7 @@ class HistorySyncOptinHelperBrowserTest
         /*disabled_features=*/{});
   }
 
-  AccountInfo MakeAccountInfoAvailable() {
+  AccountInfo MakeAccountInfoAvailableAndSignIn() {
     AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable("test@example.com");
     // Fill the account info, in particular for the hosted_domain field.
@@ -107,6 +107,9 @@ class HistorySyncOptinHelperBrowserTest
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+    identity_test_env()->SetPrimaryAccount(account_info.email,
+                                           signin::ConsentLevel::kSignin);
     return account_info;
   }
 
@@ -159,7 +162,10 @@ class HistorySyncOptinHelperBrowserTest
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperBrowserTest,
     TriggersHistorySyncScreenWhenAccountInfoFetchedForConsumerAccount) {
-  AccountInfo account_info = MakeAccountInfoAvailable();
+  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
   MockHistorySyncOptinHelperDelegate delegate;
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen(GetProfile(), testing::_))
@@ -180,7 +186,10 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperBrowserTest,
     TriggersManagedAccountScreenThenHistorySyncOptinScreenForManagedAccount) {
-  AccountInfo account_info = MakeAccountInfoAvailable();
+  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
   MockHistorySyncOptinHelperDelegate delegate;
 
   base::test::TestFuture<Profile*> future;
@@ -230,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperBrowserTest,
     SkipsHistorySyncOptinScreenWhenUserRejectsManagementForManagedAccount) {
-  AccountInfo account_info = MakeAccountInfoAvailable();
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
   MockHistorySyncOptinHelperDelegate delegate;
 
   base::test::TestFuture<void> future;
@@ -276,7 +285,11 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     HistorySyncOptinHelperBrowserTest,
     TriggersHistorySyncScreenWhenAccountInfoFetchingTimesOut) {
-  AccountInfo account_info = MakeAccountInfoAvailable();
+  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
+
   MockHistorySyncOptinHelperDelegate delegate;
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
@@ -298,12 +311,15 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
                        WaitsForSyncServiceBeforeTriggeringHistorySyncScreen) {
+  GetTestSyncService()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
   // Set the sync service in pending state.
   GetTestSyncService()->SetMaxTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
 
-  AccountInfo account_info = MakeAccountInfoAvailable();
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
+  UpdateAccountManagementInfo(account_info, false);
   MockHistorySyncOptinHelperDelegate delegate;
 
   auto history_sync_optin_helper = HistorySyncOptinHelper::Create(
@@ -332,8 +348,8 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
   // Disable the sync service.
   GetTestSyncService()->SetAllowedByEnterprisePolicy(false);
 
-  AccountInfo account_info = MakeAccountInfoAvailable();
-  UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
+  AccountInfo account_info = MakeAccountInfoAvailableAndSignIn();
+  UpdateAccountManagementInfo(account_info, false);
   MockHistorySyncOptinHelperDelegate delegate;
 
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
