@@ -82,6 +82,7 @@
       completionHandler();
     }
     [weakSelf setHistoryClearBrowsingDataCoordinator:nil];
+    [weakSelf.delegate closeHistory];
   }];
 }
 

@@ -307,13 +307,6 @@ using chrome_test_util::WindowWithNumber;
 // Tests that opening the Clear Browsing interface from the History and tapping
 // the "Search history" link opens the help center.
 - (void)testTapSearchHistoryFromHistory {
-  // TODO(crbug.com/445086811): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
