@@ -272,7 +272,7 @@ void OpenPageInfoBubble(Browser* browser) {
   location_icon_view->ShowBubble(event);
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
-  EXPECT_NE(nullptr, page_info);
+  ASSERT_NE(nullptr, page_info);
   page_info->set_close_on_deactivate(false);
 }
 
