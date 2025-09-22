@@ -701,8 +701,9 @@ class IpProtectionCoreHostUserSettingBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// FLAKY <https://crbug.com/445760641>
 IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
-                       OnIpProtectionEnabledChanged) {
+                       DISABLED_OnIpProtectionEnabledChanged) {
   IpProtectionCoreHost* provider =
       IpProtectionCoreHostFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(provider);
