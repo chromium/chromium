@@ -14,6 +14,7 @@
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
@@ -194,6 +195,10 @@ void GlicMediaIntegrationImpl::AppendContext(
     content::WebContents* web_contents,
     optimization_guide::proto::ContentNode* context_root) {
   if (!web_contents) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kAnnotatedPageContentWithMediaData)) {
     return;
   }
   // Walk the tree and find a transcript.
