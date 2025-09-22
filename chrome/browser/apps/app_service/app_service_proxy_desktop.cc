@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
 #include "chrome/browser/apps/app_service/publisher_host_factory.h"
-#include "chrome/browser/apps/app_service/publisher_host_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_impl.h"
 
 namespace apps {
 

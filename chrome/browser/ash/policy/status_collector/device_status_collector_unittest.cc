@@ -47,7 +47,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/apps/app_service/publisher_host_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_impl.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"

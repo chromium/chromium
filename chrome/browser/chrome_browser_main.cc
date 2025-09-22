@@ -141,7 +141,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publisher_host_factory_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"

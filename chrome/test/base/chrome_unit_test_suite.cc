@@ -47,7 +47,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/auto_reset.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publisher_host_factory_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #endif  // !BUILDFLAG(IS_ANDROID)

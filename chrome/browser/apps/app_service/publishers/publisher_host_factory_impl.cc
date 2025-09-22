@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publisher_host_factory_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 
 #include <memory>
 
-#include "chrome/browser/apps/app_service/publisher_host_impl.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_impl.h"
 
 namespace apps {
 

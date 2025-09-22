@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHER_HOST_FACTORY_IMPL_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHER_HOST_FACTORY_IMPL_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_PUBLISHER_HOST_FACTORY_IMPL_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_PUBLISHER_HOST_FACTORY_IMPL_H_
 
 #include "chrome/browser/apps/app_service/publisher_host_factory.h"
 
@@ -23,4 +23,4 @@ class PublisherHostFactoryImpl : public PublisherHostFactory {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHER_HOST_FACTORY_IMPL_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_PUBLISHER_HOST_FACTORY_IMPL_H_
