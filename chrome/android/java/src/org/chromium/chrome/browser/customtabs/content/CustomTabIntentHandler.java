@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -24,12 +25,13 @@ import org.chromium.net.NetworkChangeNotifier;
  * Handles the incoming intents: the one that starts the activity, as well as subsequent intents
  * received in onNewIntent.
  */
+@NullMarked
 public class CustomTabIntentHandler {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabIntentHandlingStrategy mHandlingStrategy;
     private final Context mContext;
-    @Nullable private Runnable mOnTabCreatedRunnable;
+    private @Nullable Runnable mOnTabCreatedRunnable;
     private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
 
     public CustomTabIntentHandler(
@@ -57,7 +59,7 @@ public class CustomTabIntentHandler {
         mTabProvider.addObserver(
                 new CustomTabActivityTabProvider.Observer() {
                     @Override
-                    public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {
+                    public void onInitialTabCreated(Tab tab, @TabCreationMode int mode) {
                         if (mOnTabCreatedRunnable != null) {
                             mOnTabCreatedRunnable.run();
                             mOnTabCreatedRunnable = null;
@@ -74,7 +76,7 @@ public class CustomTabIntentHandler {
                         mHandlingStrategy.handleInitialIntent(mIntentDataProvider);
                     } else if (mIntentDataProvider.getActivityType() == ActivityType.WEBAPP
                             && NetworkChangeNotifier.isOnline()) {
-                        mTabProvider.getTab().reloadIgnoringCache();
+                        assumeNonNull(mTabProvider.getTab()).reloadIgnoringCache();
                     }
                 });
     }
@@ -96,13 +98,14 @@ public class CustomTabIntentHandler {
             if (!webappExtras.shouldForceNavigation) return false;
         } else if (session == null || !session.equals(mIntentDataProvider.getSession())) {
             assert false : "New intent delivered into a Custom Tab with a different session";
+            assumeNonNull(intent);
             int flagsToRemove = Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP;
             intent.setFlags((intent.getFlags() & ~flagsToRemove) | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
             return false;
         }
 
-        if (IntentHandler.shouldIgnoreIntent(intent, mContext, true)) {
+        if (IntentHandler.shouldIgnoreIntent(assumeNonNull(intent), mContext, true)) {
             return false;
         }
 

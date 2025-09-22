@@ -97,7 +97,7 @@ public class PostMessageHandler implements OriginVerificationListener {
      * @param webContents The new {@link WebContents} that the session got associated with. If this
      *                    is null, the handler disconnects and unbinds from service.
      */
-    public void reset(final WebContents webContents) {
+    public void reset(final @Nullable WebContents webContents) {
         if (webContents == null || webContents.isDestroyed()) {
             disconnectChannel();
             return;

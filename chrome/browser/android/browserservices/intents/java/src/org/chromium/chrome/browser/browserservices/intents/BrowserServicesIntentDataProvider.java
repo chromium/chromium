@@ -273,7 +273,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return The URL that should be used from this intent. Must be called only after native has
      *     loaded.
      */
-    public abstract String getUrlToLoad();
+    public abstract @Nullable String getUrlToLoad();
 
     /**
      * @return Whether url bar hiding should be enabled in the custom tab.

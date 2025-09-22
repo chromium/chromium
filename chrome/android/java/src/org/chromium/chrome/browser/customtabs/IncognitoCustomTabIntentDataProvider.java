@@ -286,7 +286,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     @Override
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return mUrlToLoad;
     }
 

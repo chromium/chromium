@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -70,6 +71,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         if (initialTabCreationMode == TabCreationMode.HIDDEN) {
             handleInitialLoadForHiddenTab(intentDataProvider);
         } else {
+            assumeNonNull(intentDataProvider.getUrlToLoad());
             LoadUrlParams params = new LoadUrlParams(intentDataProvider.getUrlToLoad());
             mNavigationController.navigate(params, intentDataProvider.getIntent());
         }
@@ -85,7 +87,7 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
         if (tab == null) {
             throw new IllegalStateException("handleInitialIntent called before Tab created");
         }
-        String url = intentDataProvider.getUrlToLoad();
+        String url = assertNonNull(intentDataProvider.getUrlToLoad());
 
         // No actual load to do if the hidden tab already has the exact correct url.
         String speculatedUrl = mTabProvider.getSpeculatedUrl();

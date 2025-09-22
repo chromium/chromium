@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
 
 import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -182,7 +183,8 @@ public class HiddenTabHolder {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         String referrer = IntentHandler.getReferrerUrlIncludingExtraHeaders(extrasIntent);
         if (referrer == null && clientManager.getDefaultReferrerForSession(session) != null) {
-            referrer = clientManager.getDefaultReferrerForSession(session).getUrl();
+            var sessionReferrer = clientManager.getDefaultReferrerForSession(session);
+            referrer = assumeNonNull(sessionReferrer).getUrl();
         }
         if (referrer == null) referrer = "";
         if (!referrer.isEmpty()) {
@@ -329,13 +331,15 @@ public class HiddenTabHolder {
         customTabObserver.trackNextPageLoadForLaunch(tab, intent);
 
         if (isTrustedWebActivity) {
+            var packageName =
+                    CustomTabsConnection.getInstance().getClientPackageNameForSession(token);
             TwaOfflineDataProvider.createFor(
                     tab,
                     url,
                     IntentUtils.safeGetStringArrayListExtra(
                             intent,
                             TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS),
-                    CustomTabsConnection.getInstance().getClientPackageNameForSession(token));
+                    assertNonNull(packageName));
         }
 
         mSpeculation =

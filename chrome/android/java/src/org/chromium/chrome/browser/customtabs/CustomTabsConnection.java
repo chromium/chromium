@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.app.PendingIntent;
@@ -1076,8 +1077,7 @@ public class CustomTabsConnection {
         // thread. Make sure the client has called warmup() beforehand.
         if (!mWarmupHasBeenCalled.get()) {
             Log.d(TAG, "Verification failed due to warmup not having been previously called.");
-            mClientManager
-                    .getCallbackForSession(session)
+            assumeNonNull(mClientManager.getCallbackForSession(session))
                     .onRelationshipValidationResult(
                             relation, Uri.parse(origin.toString()), false, null);
             return false;
@@ -1373,7 +1373,7 @@ public class CustomTabsConnection {
     }
 
     /** See {@link ClientManager#getClientPackageNameForSession(SessionHolder)} */
-    public String getClientPackageNameForSession(@Nullable SessionHolder<?> session) {
+    public @Nullable String getClientPackageNameForSession(@Nullable SessionHolder<?> session) {
         return mClientManager.getClientPackageNameForSession(session);
     }
 
@@ -1809,7 +1809,7 @@ public class CustomTabsConnection {
      * @param intent Intent describing the service to bind to.
      * @return true for success.
      */
-    boolean keepAliveForSession(SessionHolder<?> session, Intent intent) {
+    boolean keepAliveForSession(@Nullable SessionHolder<?> session, @Nullable Intent intent) {
         return mClientManager.keepAliveForSession(session, intent);
     }
 
@@ -1820,7 +1820,7 @@ public class CustomTabsConnection {
      *
      * @param session The Binder object identifying the session.
      */
-    void dontKeepAliveForSession(SessionHolder<?> session) {
+    void dontKeepAliveForSession(@Nullable SessionHolder<?> session) {
         mClientManager.dontKeepAliveForSession(session);
     }
 
@@ -2002,7 +2002,7 @@ public class CustomTabsConnection {
     /**
      * @return The referrer that is associated with the client owning the given session.
      */
-    public Referrer getDefaultReferrerForSession(SessionHolder<?> session) {
+    public @Nullable Referrer getDefaultReferrerForSession(SessionHolder<?> session) {
         return mClientManager.getDefaultReferrerForSession(session);
     }
 
@@ -2032,7 +2032,7 @@ public class CustomTabsConnection {
     }
 
     public @Nullable EngagementSignalsHandler getEngagementSignalsHandler(
-            SessionHolder<?> session) {
+            @Nullable SessionHolder<?> session) {
         return mClientManager.getEngagementSignalsHandlerForSession(session);
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,8 +18,6 @@ import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsService;
@@ -30,6 +30,9 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserCallbackWrapper;
@@ -59,6 +62,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /** Manages the clients' state for Custom Tabs. This class is threadsafe. */
+@NullMarked
 class ClientManager {
     // Values for the "CustomTabs.MayLaunchUrlType" UMA histogram. Append-only.
     @IntDef({
@@ -201,47 +205,51 @@ class ClientManager {
     /** Per-session values. */
     private static class SessionParams {
         public final int uid;
-        private BrowserCallbackWrapper mCallback;
-        private EngagementSignalsCallback mEngagementSignalsCallback;
+        private @Nullable BrowserCallbackWrapper mCallback;
+        private @Nullable EngagementSignalsCallback mEngagementSignalsCallback;
         public final DisconnectCallback disconnectCallback;
-        public final PostMessageHandler postMessageHandler;
-        public final PostMessageServiceConnection serviceConnection;
+        public final @Nullable PostMessageHandler postMessageHandler;
+        public final @Nullable PostMessageServiceConnection serviceConnection;
         public final Set<Origin> mLinkedOrigins = new HashSet<>();
-        public ChromeOriginVerifier originVerifier;
+        public @Nullable ChromeOriginVerifier originVerifier;
         public boolean mIgnoreFragments;
         public boolean lowConfidencePrediction;
         public boolean highConfidencePrediction;
-        private String mPackageName;
+        private @Nullable String mPackageName;
         private boolean mShouldHideDomain;
         private boolean mShouldSpeculateLoadOnCellular;
         private boolean mShouldSendNavigationInfo;
         private boolean mShouldSendBottomBarScrollState;
-        private KeepAliveServiceConnection mKeepAliveConnection;
-        private String mPredictedUrl;
+        private @Nullable KeepAliveServiceConnection mKeepAliveConnection;
+        private @Nullable String mPredictedUrl;
         private boolean mCanUseHiddenTab;
         private boolean mAllowParallelRequest;
         private boolean mAllowResourcePrefetch;
         private boolean mShouldGetPageLoadMetrics;
         private boolean mCustomTabIsInForeground;
         private boolean mWasSessionDisconnectStatusLogged;
-        private Supplier<Boolean> mEngagementSignalsAvailableSupplier;
-        private final EngagementSignalsHandler mEngagementSignalsHandler;
+        private @Nullable Supplier<Boolean> mEngagementSignalsAvailableSupplier;
+        private final @Nullable EngagementSignalsHandler mEngagementSignalsHandler;
 
         public SessionParams(
                 Context context,
                 int uid,
                 BrowserCallbackWrapper callback,
                 DisconnectCallback disconnectCallback,
-                PostMessageHandler postMessageHandler,
-                PostMessageServiceConnection serviceConnection,
-                EngagementSignalsHandler engagementSignalsHandler) {
+                @Nullable PostMessageHandler postMessageHandler,
+                @Nullable PostMessageServiceConnection serviceConnection,
+                @Nullable EngagementSignalsHandler engagementSignalsHandler) {
             this.uid = uid;
             mPackageName = getPackageName(context, uid);
             mCallback = callback;
             this.disconnectCallback = disconnectCallback;
             this.postMessageHandler = postMessageHandler;
             this.serviceConnection = serviceConnection;
-            if (postMessageHandler != null) this.serviceConnection.setPackageName(mPackageName);
+            if (postMessageHandler != null) {
+                assert mPackageName != null;
+                assumeNonNull(this.serviceConnection);
+                this.serviceConnection.setPackageName(mPackageName);
+            }
             mEngagementSignalsHandler = engagementSignalsHandler;
         }
 
@@ -253,18 +261,18 @@ class ClientManager {
         /**
          * @return The package name for this session.
          */
-        public String getPackageName() {
+        public @Nullable String getPackageName() {
             return mPackageName;
         }
 
-        private static String getPackageName(Context context, int uid) {
+        private static @Nullable String getPackageName(Context context, int uid) {
             PackageManager packageManager = context.getPackageManager();
-            String[] packageList = packageManager.getPackagesForUid(uid);
+            String[] packageList = assumeNonNull(packageManager.getPackagesForUid(uid));
             if (packageList.length != 1 || TextUtils.isEmpty(packageList[0])) return null;
             return packageList[0];
         }
 
-        public KeepAliveServiceConnection getKeepAliveConnection() {
+        public @Nullable KeepAliveServiceConnection getKeepAliveConnection() {
             return mKeepAliveConnection;
         }
 
@@ -272,7 +280,7 @@ class ClientManager {
             mKeepAliveConnection = serviceConnection;
         }
 
-        public void setPredictionMetrics(String predictedUrl, boolean lowConfidence) {
+        public void setPredictionMetrics(@Nullable String predictedUrl, boolean lowConfidence) {
             mPredictedUrl = predictedUrl;
             highConfidencePrediction |= !TextUtils.isEmpty(predictedUrl);
             lowConfidencePrediction |= lowConfidence;
@@ -288,26 +296,19 @@ class ClientManager {
             lowConfidencePrediction = false;
         }
 
-        public String getPredictedUrl() {
+        public @Nullable String getPredictedUrl() {
             return mPredictedUrl;
         }
 
-        /**
-         * @return Whether the default parameters are used for this session.
-         */
-        public boolean isDefault() {
-            return !mIgnoreFragments && !mShouldSpeculateLoadOnCellular;
-        }
-
-        public BrowserCallbackWrapper getCallback() {
+        public @Nullable BrowserCallbackWrapper getCallback() {
             return mCallback;
         }
 
-        public void setCallback(BrowserCallbackWrapper callback) {
+        public void setCallback(@Nullable BrowserCallbackWrapper callback) {
             mCallback = callback;
         }
 
-        public EngagementSignalsCallback getEngagementSignalsCallback() {
+        public @Nullable EngagementSignalsCallback getEngagementSignalsCallback() {
             return mEngagementSignalsCallback;
         }
 
@@ -315,15 +316,15 @@ class ClientManager {
             mEngagementSignalsCallback = callback;
         }
 
-        public void setEngagementSignalsAvailableSupplier(Supplier<Boolean> supplier) {
+        public void setEngagementSignalsAvailableSupplier(@Nullable Supplier<Boolean> supplier) {
             mEngagementSignalsAvailableSupplier = supplier;
         }
 
-        public Supplier<Boolean> getEngagementSignalsAvailableSupplier() {
+        public @Nullable Supplier<Boolean> getEngagementSignalsAvailableSupplier() {
             return mEngagementSignalsAvailableSupplier;
         }
 
-        public EngagementSignalsHandler getEngagementSignalsHandler() {
+        public @Nullable EngagementSignalsHandler getEngagementSignalsHandler() {
             return mEngagementSignalsHandler;
         }
     }
@@ -370,7 +371,7 @@ class ClientManager {
      * @return true for success.
      */
     public synchronized boolean newSession(
-            @NonNull SessionHolder<?> session,
+            SessionHolder<?> session,
             int uid,
             DisconnectCallback onDisconnect,
             @Nullable PostMessageHandler postMessageHandler,
@@ -443,7 +444,7 @@ class ClientManager {
      * @return true if speculation is allowed.
      */
     public synchronized boolean updateStatsAndReturnWhetherAllowed(
-            SessionHolder<?> session, int uid, String url, boolean lowConfidence) {
+            SessionHolder<?> session, int uid, @Nullable String url, boolean lowConfidence) {
         SessionParams params = mSessionParams.get(session);
         if (params == null || params.uid != uid) return false;
         boolean firstLowConfidencePrediction =
@@ -455,10 +456,11 @@ class ClientManager {
     }
 
     @VisibleForTesting
-    synchronized @CalledWarmup int getWarmupState(SessionHolder<?> session) {
+    synchronized @CalledWarmup int getWarmupState(@Nullable SessionHolder<?> session) {
         SessionParams params = mSessionParams.get(session);
         boolean hasValidSession = params != null;
-        boolean hasUidCalledWarmup = hasValidSession && mUidHasCalledWarmup.get(params.uid);
+        boolean hasUidCalledWarmup =
+                hasValidSession && mUidHasCalledWarmup.get(assumeNonNull(params).uid);
         int result =
                 mWarmupHasBeenCalled
                         ? CalledWarmup.NO_SESSION_WARMUP
@@ -481,7 +483,8 @@ class ClientManager {
      *     null.
      */
     @VisibleForTesting
-    synchronized @PredictionStatus int getPredictionOutcome(SessionHolder<?> session, String url) {
+    synchronized @PredictionStatus int getPredictionOutcome(
+            @Nullable SessionHolder<?> session, String url) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return PredictionStatus.NONE;
 
@@ -500,12 +503,13 @@ class ClientManager {
     }
 
     /** Registers that a client has launched a URL inside a Custom Tab. */
-    public synchronized void registerLaunch(SessionHolder<?> session, String url) {
+    public synchronized void registerLaunch(@Nullable SessionHolder<?> session, String url) {
         @PredictionStatus int outcome = getPredictionOutcome(session, url);
 
         SessionParams params = mSessionParams.get(session);
         if (outcome == PredictionStatus.GOOD) {
-            RequestThrottler.getForUid(params.uid).registerSuccess(params.mPredictedUrl);
+            RequestThrottler.getForUid(assumeNonNull(params).uid)
+                    .registerSuccess(params.mPredictedUrl);
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.WarmupStateOnLaunch",
@@ -533,7 +537,8 @@ class ClientManager {
         return callOnSession(
                 session,
                 CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
-                params -> params.postMessageHandler.postMessageFromClientApp(message));
+                params ->
+                        assumeNonNull(params.postMessageHandler).postMessageFromClientApp(message));
     }
 
     /**
@@ -544,28 +549,32 @@ class ClientManager {
                 session,
                 false,
                 params ->
-                        params.serviceConnection.bindSessionToPostMessageService(
-                                ContextUtils.getApplicationContext()));
+                        assumeNonNull(params.serviceConnection)
+                                .bindSessionToPostMessageService(
+                                        ContextUtils.getApplicationContext()));
     }
 
     /** See {@link PostMessageHandler#initializeWithPostMessageUri(Uri, Uri)}. */
     public void initializeWithPostMessageOriginForSession(
-            SessionHolder<?> session, Uri origin, Uri targetOrigin) {
+            SessionHolder<?> session, Uri origin, @Nullable Uri targetOrigin) {
         callOnSession(
                 session,
                 params ->
-                        params.postMessageHandler.initializeWithPostMessageUri(
-                                origin, targetOrigin));
+                        assumeNonNull(params.postMessageHandler)
+                                .initializeWithPostMessageUri(origin, targetOrigin));
     }
 
     public synchronized boolean validateRelationship(
-            SessionHolder<?> session, int relation, Origin origin, Bundle extras) {
+            SessionHolder<?> session, int relation, Origin origin, @Nullable Bundle extras) {
         return validateRelationshipInternal(session, relation, origin, null, false, null);
     }
 
     /** Validates the link between the client and the origin. */
     public synchronized void verifyAndInitializeWithPostMessageOriginForSession(
-            SessionHolder<?> session, Origin origin, Origin targetOrigin, @Relation int relation) {
+            SessionHolder<?> session,
+            Origin origin,
+            @Nullable Origin targetOrigin,
+            @Relation int relation) {
         validateRelationshipInternal(session, relation, origin, targetOrigin, true, null);
     }
 
@@ -595,7 +604,7 @@ class ClientManager {
             Origin origin,
             @Nullable Origin targetOrigin,
             boolean initializePostMessageChannel,
-            Runnable internalCallback) {
+            @Nullable Runnable internalCallback) {
         SessionParams params = mSessionParams.get(session);
         if (params == null || TextUtils.isEmpty(params.getPackageName())) return false;
 
@@ -614,6 +623,7 @@ class ClientManager {
                                 relation, origin.uri(), verified, extras);
                     }
                     if (initializePostMessageChannel) {
+                        assumeNonNull(params.postMessageHandler);
                         if (targetOrigin != null) {
                             params.postMessageHandler.setPostMessageTargetUri(targetOrigin.uri());
                         }
@@ -632,13 +642,12 @@ class ClientManager {
 
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(
-                        () -> {
-                            PostTask.runOrPostTask(
-                                    TaskTraits.UI_DEFAULT,
-                                    () -> {
-                                        params.originVerifier.start(listener, origin);
-                                    });
-                        });
+                        () ->
+                                PostTask.runOrPostTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () ->
+                                                assumeNonNull(params.originVerifier)
+                                                        .start(listener, origin)));
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(
                         params.getPackageName(), origin)) {
@@ -650,28 +659,32 @@ class ClientManager {
     /**
      * @return The postMessage origin for the given session.
      */
-    Uri getPostMessageOriginForSessionForTesting(SessionHolder<?> session) {
+    @Nullable Uri getPostMessageOriginForSessionForTesting(SessionHolder<?> session) {
         return callOnSession(
                 session,
                 null,
-                params -> params.postMessageHandler.getPostMessageUriForTesting() // IN-TEST
+                params ->
+                        assumeNonNull(params.postMessageHandler)
+                                .getPostMessageUriForTesting() // IN-TEST
                 );
     }
 
     /**
      * @return The postMessage target origin for the given session.
      */
-    Uri getPostMessageTargetOriginForSessionForTesting(SessionHolder<?> session) {
+    @Nullable Uri getPostMessageTargetOriginForSessionForTesting(SessionHolder<?> session) {
         return callOnSession(
                 session,
                 null,
-                params -> params.postMessageHandler.getPostMessageTargetUriForTesting() // IN-TEST
+                params ->
+                        assumeNonNull(params.postMessageHandler)
+                                .getPostMessageTargetUriForTesting() // IN-TEST
                 );
     }
 
     /** See {@link PostMessageHandler#reset(WebContents)}. */
     public void resetPostMessageHandlerForSession(
-            SessionHolder<?> session, WebContents webContents) {
+            SessionHolder<?> session, @Nullable WebContents webContents) {
         callOnSession(
                 session,
                 params -> {
@@ -684,7 +697,8 @@ class ClientManager {
     /**
      * @return The referrer that is associated with the client owning given session.
      */
-    public synchronized Referrer getDefaultReferrerForSession(SessionHolder<?> sessionHolder) {
+    public synchronized @Nullable Referrer getDefaultReferrerForSession(
+            SessionHolder<?> sessionHolder) {
         return IntentHandler.constructValidReferrerForAuthority(
                 getClientPackageNameForSession(sessionHolder));
     }
@@ -692,7 +706,7 @@ class ClientManager {
     /**
      * @return The package name associated with the client owning the given session.
      */
-    public String getClientPackageNameForSession(SessionHolder<?> session) {
+    public @Nullable String getClientPackageNameForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, null, params -> params.getPackageName());
     }
 
@@ -710,7 +724,8 @@ class ClientManager {
     /**
      * @return The callback {@link SessionHolder<?>} for the given session.
      */
-    public BrowserCallbackWrapper getCallbackForSession(SessionHolder<?> session) {
+    public @Nullable BrowserCallbackWrapper getCallbackForSession(
+            @Nullable SessionHolder<?> session) {
         return callOnSession(session, null, params -> params.getCallback());
     }
 
@@ -742,7 +757,7 @@ class ClientManager {
     /**
      * @return Whether navigation info should be recorded and shared for the session.
      */
-    public boolean shouldSendNavigationInfoForSession(SessionHolder<?> session) {
+    public boolean shouldSendNavigationInfoForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, false, params -> params.mShouldSendNavigationInfo);
     }
 
@@ -750,14 +765,14 @@ class ClientManager {
      * Sets whether navigation info should be recorded and shared for the current navigation in this
      * session.
      */
-    public void setSendNavigationInfoForSession(SessionHolder<?> session, boolean send) {
+    public void setSendNavigationInfoForSession(@Nullable SessionHolder<?> session, boolean send) {
         callOnSession(session, params -> params.mShouldSendNavigationInfo = send);
     }
 
     /**
      * @return Whether the fragment should be ignored for speculation matching.
      */
-    public boolean getIgnoreFragmentsForSession(SessionHolder<?> session) {
+    public boolean getIgnoreFragmentsForSession(@Nullable SessionHolder<?> session) {
         return callOnSession(session, false, params -> params.mIgnoreFragments);
     }
 
@@ -771,14 +786,6 @@ class ClientManager {
      */
     public boolean shouldSpeculateLoadOnCellularForSession(SessionHolder<?> session) {
         return callOnSession(session, false, params -> params.mShouldSpeculateLoadOnCellular);
-    }
-
-    /**
-     * @return Whether the session is using the default parameters (that is, don't ignore fragments
-     *     and don't speculate loads on cellular connections).
-     */
-    public boolean usesDefaultSessionParameters(SessionHolder<?> session) {
-        return callOnSession(session, true, params -> params.isDefault());
     }
 
     /**
@@ -830,11 +837,6 @@ class ClientManager {
                 || callOnSession(session, false, params -> params.mShouldGetPageLoadMetrics);
     }
 
-    /** Returns the uid associated with the session, {@code -1} if there is no matching session. */
-    public int getUidForSession(SessionHolder<?> session) {
-        return callOnSession(session, -1, params -> params.uid);
-    }
-
     /**
      * Returns whether an origin is first-party with respect to a session, that is if the
      * application linked to the session has a relation with the provided origin. This does not
@@ -852,7 +854,8 @@ class ClientManager {
     }
 
     /** Tries to bind to a client to keep it alive, and returns true for success. */
-    public synchronized boolean keepAliveForSession(SessionHolder<?> session, Intent intent) {
+    public synchronized boolean keepAliveForSession(
+            @Nullable SessionHolder<?> session, @Nullable Intent intent) {
         // When an application is bound to a service, its priority is raised to
         // be at least equal to the application's one. This binds to a placeholder
         // service (no calls to this service are made).
@@ -881,7 +884,7 @@ class ClientManager {
     }
 
     /** Unbind from the KeepAlive service for a client. */
-    public void dontKeepAliveForSession(SessionHolder<?> session) {
+    public void dontKeepAliveForSession(@Nullable SessionHolder<?> session) {
         callOnSession(
                 session,
                 params -> {
@@ -963,7 +966,8 @@ class ClientManager {
         // cleanupSessionInternal modifies mSessionParams therefore we need a copy
         List<SessionHolder<?>> sessions = new ArrayList<>(mSessionParams.keySet());
         for (SessionHolder<?> session : sessions) {
-            if (mSessionParams.get(session).getCallback() == null) {
+            var params = assumeNonNull(mSessionParams.get(session));
+            if (params.getCallback() == null) {
                 cleanupSessionInternal(session);
             }
         }
@@ -999,7 +1003,7 @@ class ClientManager {
     }
 
     public @Nullable EngagementSignalsHandler getEngagementSignalsHandlerForSession(
-            SessionHolder<?> session) {
+            @Nullable SessionHolder<?> session) {
         return callOnSession(session, null, SessionParams::getEngagementSignalsHandler);
     }
 
@@ -1036,11 +1040,14 @@ class ClientManager {
     }
 
     private interface SessionParamsCallback<T> {
-        T run(SessionParams params);
+        @Nullable T run(SessionParams params);
     }
 
-    private synchronized <T> T callOnSession(
-            SessionHolder<?> session, T fallback, SessionParamsCallback<T> callback) {
+    @Contract("_, !null, _ -> !null")
+    private synchronized <T> @Nullable T callOnSession(
+            @Nullable SessionHolder<?> session,
+            @Nullable T fallback,
+            SessionParamsCallback<T> callback) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return fallback;
         return callback.run(params);
@@ -1051,7 +1058,7 @@ class ClientManager {
     }
 
     private synchronized void callOnSession(
-            SessionHolder<?> session, SessionParamsRunnable runnable) {
+            @Nullable SessionHolder<?> session, SessionParamsRunnable runnable) {
         SessionParams params = mSessionParams.get(session);
         if (params == null) return;
         runnable.run(params);

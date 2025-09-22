@@ -678,7 +678,8 @@ public class IntentHandler {
      * @param authority The authority to use.
      * @return Referrer with default policy that uses the valid android app scheme, or null.
      */
-    public static @Nullable Referrer constructValidReferrerForAuthority(String authority) {
+    public static @Nullable Referrer constructValidReferrerForAuthority(
+            @Nullable String authority) {
         if (TextUtils.isEmpty(authority)) return null;
         return new Referrer(
                 new Uri.Builder()
