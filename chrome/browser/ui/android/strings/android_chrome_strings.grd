@@ -4378,7 +4378,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         More bookmarks
       </message>
       <message name="IDS_BOOKMARK_BAR_FOLDER_CONTENT_DESCRIPTION" desc="Accessibility label for a folder that appears in the bookmarks bar.">
-          <ph name="FOLDER_TITLE">%1$s<ex>My bookmarks</ex></ph> folder
+        <ph name="FOLDER_TITLE">%1$s<ex>My bookmarks</ex></ph> folder
+      </message>
+      <message name="IDS_BOOKMARK_BAR_CONTENT_DESCRIPTION" desc="Accessibility label for the encompassing view of the entire bookmark bar.">
+        Bookmarks Bar
       </message>
 
       <!-- Power bookmarks strings -->

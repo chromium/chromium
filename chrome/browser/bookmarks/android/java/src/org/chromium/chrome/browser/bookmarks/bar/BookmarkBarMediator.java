@@ -169,6 +169,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         mBookmarkManagerOpenerSupplier = bookmarkManagerOpenerSupplier;
         mItemsRecyclerView = itemsRecyclerView;
         mBookmarkBarView = bookmarkBarView;
+        mBookmarkBarView.setContentDescription(
+                mActivity.getString(R.string.bookmark_bar_content_description));
     }
 
     /** Destroys the bookmark bar mediator. */
