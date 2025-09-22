@@ -53,6 +53,9 @@
 # TODO(crbug.com/401453196): Refine into child bugs if/as it becomes clear that
 # tests are failing due to distinct issues.
 
+crbug.com/401453196 fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure ]
+crbug.com/401453196 fast/mediarecorder/MediaRecorder-isTypeSupported-avc1.html [ Failure ]
+
 crbug.com/401453196 compositing/culling/clear-fixed-iframe.html [ Failure ]
 crbug.com/401453196 compositing/lots-of-img-layers-with-opacity.html [ Failure ]
 crbug.com/401453196 compositing/lots-of-img-layers.html [ Failure ]
