@@ -975,6 +975,21 @@ jboolean WebContentsAndroid::HasOpener(JNIEnv* env) {
   return static_cast<jboolean>(web_contents_->HasOpener());
 }
 
+void WebContentsAndroid::UpdateWindowControlsOverlay(JNIEnv* env,
+                                                     jint left,
+                                                     jint top,
+                                                     jint right,
+                                                     jint bottom) {
+  float dip_scale = web_contents_->GetNativeView()->GetDipScale();
+  left = std::round(left / dip_scale);
+  top = std::round(top / dip_scale);
+  right = std::round(right / dip_scale);
+  bottom = std::round(bottom / dip_scale);
+
+  web_contents_->UpdateWindowControlsOverlay(
+      gfx::Rect(left, top, right - left, bottom - top));
+}
+
 void WebContentsAndroid::UpdateOffsetTagDefinitions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jtag_definitions) {

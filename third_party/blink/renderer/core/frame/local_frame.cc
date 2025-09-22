@@ -156,6 +156,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/window_controls_overlay_changed_delegate.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -250,10 +251,6 @@
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
 #include "ui/gfx/range/range.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/blink/renderer/core/frame/window_controls_overlay_changed_delegate.h"
 #endif
 
 namespace blink {
@@ -531,9 +528,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(v8_local_compile_hints_producer_);
   visitor->Trace(browser_interface_broker_proxy_);
   visitor->Trace(frame_visibility_observers_);
-#if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(window_controls_overlay_changed_delegate_);
-#endif
   Frame::Trace(visitor);
   Supplementable<LocalFrame>::Trace(visitor);
 }
@@ -976,7 +971,6 @@ void LocalFrame::DidAttachDocument() {
   notified_initial_network_almost_idle_ = false;
   notified_initial_network_idle_ = false;
 
-#if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_override "window-controls-overlay", titlebar area
   // rect bounds sent from the browser need to persist on navigation to keep the
   // UI consistent. The titlebar area rect values are set in |LocalFrame| before
@@ -991,7 +985,6 @@ void LocalFrame::DidAttachDocument() {
         {}, false /* record_metrics */));
     SetTitlebarAreaDocumentStyleEnvironmentVariables();
   }
-#endif
 }
 
 void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
@@ -1735,9 +1728,7 @@ void LocalFrame::SetZoomFactors(float layout_zoom_factor,
   }
 
   if (layout_zoom_changed) {
-#if !BUILDFLAG(IS_ANDROID)
     MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
-#endif
     document->LayoutViewportWasResized();
     document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   }
@@ -3484,7 +3475,6 @@ void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 void LocalFrame::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect_in_dips) {
   // The rect passed to us from content is in DIP screen space, relative to the
@@ -3538,7 +3528,6 @@ void LocalFrame::RegisterWindowControlsOverlayChangedDelegate(
     WindowControlsOverlayChangedDelegate* delegate) {
   window_controls_overlay_changed_delegate_ = delegate;
 }
-#endif
 
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
     const gfx::Point& pos_in_viewport) {
@@ -4043,7 +4032,6 @@ LocalFrame::GetBlobUrlStorePendingRemote() {
   return pending_remote;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void LocalFrame::SetTitlebarAreaDocumentStyleEnvironmentVariables() const {
   DCHECK(is_window_controls_overlay_visible_);
   DocumentStyleEnvironmentVariables& vars =
@@ -4071,7 +4059,6 @@ void LocalFrame::MaybeUpdateWindowControlsOverlayWithNewZoomLevel() {
 
   UpdateWindowControlsOverlay(window_controls_overlay_rect_in_dips_);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void LocalFrame::SetNotRestoredReasons(
     mojom::blink::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons) {

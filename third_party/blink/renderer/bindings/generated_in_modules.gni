@@ -1368,6 +1368,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket_open_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_websocket_stream_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_write_params.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_write_params.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_writer_write_options.cc",
@@ -3064,6 +3066,10 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_client.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_client.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_worker_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_worker_global_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_worker_navigator.cc",
@@ -3519,25 +3525,6 @@ if (!target_os_is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.h",
-  ]
-}
-
-# WindowControlsOverlay
-# This uses target_os rather than current_os (which is what is_android is set
-# from) for the case of generating the v8 context snapshot for android. When
-# generating the snapshot for android, blink is compiled with
-# current_os="linux" and target_os="android". Using target_os is necessary as
-# we need to compile in the same way as would happen when current_os="android".
-if (!target_os_is_android) {
-  generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event_init.h",
-  ]
-  generated_interface_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_window_controls_overlay_geometry_change_event.h",
   ]
 }
 

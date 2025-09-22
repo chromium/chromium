@@ -407,6 +407,9 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     }
 
     @Override
+    public void updateWindowControlsOverlay(Rect rect) {}
+
+    @Override
     public <T extends UserData> @Nullable T getOrSetUserData(
             Class<T> key, @Nullable UserDataFactory<T> userDataFactory) {
         return null;

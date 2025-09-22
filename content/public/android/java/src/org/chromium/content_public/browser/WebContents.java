@@ -656,6 +656,13 @@ public interface WebContents extends Parcelable {
     int getOriginalWindowOpenDisposition();
 
     /**
+     * Updates the Window Controls Overlay rect for a PWA.
+     *
+     * @param rect The rect of the overlay.
+     */
+    public void updateWindowControlsOverlay(Rect rect);
+
+    /**
      * Factory interface passed to {@link #getOrSetUserData()} for instantiation of class as user
      * data.
      *

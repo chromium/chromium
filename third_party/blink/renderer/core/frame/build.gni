@@ -246,6 +246,8 @@ blink_core_sources_frame = [
   "web_remote_frame_impl.cc",
   "web_remote_frame_impl.h",
   "widget_creation_observer.h",
+  "window_controls_overlay_changed_delegate.cc",
+  "window_controls_overlay_changed_delegate.h",
   "window_event_handlers.h",
   "window_popin.h",
   "window_popin.cc",
@@ -254,19 +256,6 @@ blink_core_sources_frame = [
   "window_or_worker_global_scope.cc",
   "window_or_worker_global_scope.h",
 ]
-
-# WindowControlsOverlay
-# This uses target_os rather than current_os (which is what is_android is set
-# from) for the case of generating the v8 context snapshot for android. When
-# generating the snapshot for android, blink is compiled with
-# current_os="linux" and target_os="android". Using target_os is necessary as
-# we need to compile in the same way as would happen when current_os="android".
-if (!target_os_is_android) {
-  blink_core_sources_frame += [
-    "window_controls_overlay_changed_delegate.cc",
-    "window_controls_overlay_changed_delegate.h",
-  ]
-}
 
 blink_core_tests_frame = [
   "ad_tracker_test.cc",

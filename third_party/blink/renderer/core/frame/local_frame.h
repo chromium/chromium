@@ -169,16 +169,13 @@ class WebPrescientNetworking;
 class URLLoader;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
+class WindowControlsOverlayChangedDelegate;
 
 namespace v8_compile_hints {
 class V8LocalCompileHintsProducer;
 }  // namespace v8_compile_hints
 
 enum class BackForwardCacheAware;
-
-#if !BUILDFLAG(IS_ANDROID)
-class WindowControlsOverlayChangedDelegate;
-#endif
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
@@ -786,7 +783,6 @@ class CORE_EXPORT LocalFrame final
   void GetCharacterIndexAtPoint(const gfx::Point& point);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
   void RegisterWindowControlsOverlayChangedDelegate(
       WindowControlsOverlayChangedDelegate*);
@@ -799,7 +795,6 @@ class CORE_EXPORT LocalFrame final
   bool IsWindowControlsOverlayVisible() const {
     return is_window_controls_overlay_visible_;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   SystemClipboard* GetSystemClipboard();
 
@@ -1049,10 +1044,8 @@ class CORE_EXPORT LocalFrame final
                                     String& clip_html,
                                     gfx::Rect& clip_rect);
 
-#if !BUILDFLAG(IS_ANDROID)
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
   void MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
-#endif
 
   void EnsureLinkPreviewTriggererInitialized();
 
@@ -1179,7 +1172,6 @@ class CORE_EXPORT LocalFrame final
   // be registered at the actual elements as the references here are weak.
   HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
 
-#if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;
   // |layout_zoom_factor_| is asynchronously set sometimes (most prominently
   // seen on mac) in |LocalFrame| via |WebFrameWidgetImpl::SetZoomLevel| on
@@ -1190,7 +1182,6 @@ class CORE_EXPORT LocalFrame final
   gfx::Rect window_controls_overlay_rect_;
   WeakMember<WindowControlsOverlayChangedDelegate>
       window_controls_overlay_changed_delegate_;
-#endif
 
   // The evidence for or against a frame being an ad frame. `std::nullopt` if
   // not yet set or if the frame is a subfiltering root frame. (Only non-root

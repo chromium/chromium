@@ -1266,6 +1266,13 @@ public class WebContentsImpl
         return WebContentsImplJni.get().getOriginalWindowOpenDisposition(mNativeWebContentsAndroid);
     }
 
+    @Override
+    public void updateWindowControlsOverlay(Rect rect) {
+        WebContentsImplJni.get()
+                .updateWindowControlsOverlay(
+                        mNativeWebContentsAndroid, rect.left, rect.top, rect.right, rect.bottom);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -1492,5 +1499,8 @@ public class WebContentsImpl
         boolean hasOpener(long nativeWebContentsAndroid);
 
         int getOriginalWindowOpenDisposition(long nativeWebContentsAndroid);
+
+        void updateWindowControlsOverlay(
+                long nativeWebContentsAndroid, int left, int top, int right, int bottom);
     }
 }

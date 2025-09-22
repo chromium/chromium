@@ -7,5 +7,5 @@
 [
     ImplementedAs=WindowControlsOverlay
 ] partial interface Navigator {
-    [SameObject] readonly attribute WindowControlsOverlay windowControlsOverlay;
+    [SameObject, RuntimeEnabled=WindowControlsOverlay] readonly attribute WindowControlsOverlay windowControlsOverlay;
 };
