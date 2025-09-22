@@ -234,12 +234,6 @@ class AccountMenuMediatorTest
 // Checks that adding a secondary identity lead to updating the
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   FakeSystemIdentity* thirdIdentity = [FakeSystemIdentity fakeIdentity3];
   // Initially, the user's name isn't known.
   thirdIdentity.userFullName = nil;
@@ -276,12 +270,6 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 // Checks that removing a secondary identity lead to updating the
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
 
   OCMExpect([consumer_mock_ updatePrimaryAccount]);
@@ -307,12 +295,6 @@ TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 // Checks that removing the primary identity lead to updating the
 // consumer.
 TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultInterrupted
@@ -327,12 +309,6 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
 
 // Tests the result of secondaryAccountsGaiaIDs.
 TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ secondaryAccountsGaiaIDs],
               @[ kSecondaryIdentity.gaiaID ]);
 }
@@ -341,36 +317,18 @@ TEST_P(AccountMenuMediatorTest, TestSecondaryAccountsGaiaID) {
 
 // Tests the result of nameForGaiaID.
 TEST_P(AccountMenuMediatorTest, nameForGaiaID) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ nameForGaiaID:kSecondaryIdentity.gaiaID],
               kSecondaryIdentity.userFullName);
 }
 
 // Tests the result of emailForGaiaID.
 TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ emailForGaiaID:kSecondaryIdentity.gaiaID],
               kSecondaryIdentity.userEmail);
 }
 
 // Tests the result of imageForGaiaID.
 TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaID],
               account_manager_service_ -> GetIdentityAvatarWithIdentity(
                                            kSecondaryIdentity,
@@ -379,35 +337,17 @@ TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
 
 // Tests the result of primaryAccountEmail.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountEmail) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ primaryAccountEmail], kPrimaryIdentity.userEmail);
 }
 
 // Tests the result of primaryAccountUserFullName.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ primaryAccountUserFullName],
               kPrimaryIdentity.userFullName);
 }
 
 // Tests the result of primaryAccountAvatar.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_NSEQ([mediator_ primaryAccountAvatar],
               account_manager_service_ -> GetIdentityAvatarWithIdentity(
                                            kPrimaryIdentity,
@@ -416,23 +356,11 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
 
 // Tests the result of TestError when there is no error.
 TEST_P(AccountMenuMediatorTest, TestNoError) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   EXPECT_THAT([mediator_ accountErrorUIInfo], IsNull());
 }
 
 // Tests the result of TestError when passphrase is required.
 TEST_P(AccountMenuMediatorTest, TestError) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   // In order to simulate requiring a passphrase, test sync service requires
   // us to explicitly set that the setup is not complete, and fire the state
   // change to its observer.
@@ -455,12 +383,6 @@ TEST_P(AccountMenuMediatorTest, TestError) {
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-out fail.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `triggerSignoutWithTargetRect:completion` creates a
   // callback in a callback, this tests has three parts.  One part by callback,
@@ -502,12 +424,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when sign-in fail.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   // Given that the method  `signOutFromTargetRect:completion` create
   // a callback in a callback, this tests has three parts.  One part by
@@ -555,12 +471,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
 // Tests the result of accountTappedWithGaiaID:targetRect:
 // when switch is successful.
 TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   // Given that the method  `signOutFromTargetRect:callback` create a
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
@@ -601,12 +511,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
 
 // Tests the result of didTapErrorButton when a passphrase is required.
 TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   // While many errors can be displayed by the account menu, this test suite
   // only consider the error where the passphrase is needed. This is because,
   // when the suite was written, `TestSyncService::GetUserActionableError` could
@@ -626,12 +530,6 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
 
 // Tests the effect of didTapManageYourGoogleAccount.
 TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   OCMExpect([delegate_mock_ didTapManageYourGoogleAccount]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapManageYourGoogleAccount];
@@ -641,12 +539,6 @@ TEST_P(AccountMenuMediatorTest, TestDidTapManageYourGoogleAccount) {
 
 // Tests the effect of didTapManageAccounts.
 TEST_P(AccountMenuMediatorTest, TestDidTapEditAccountList) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   OCMExpect([delegate_mock_ didTapManageAccounts]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_ didTapManageAccounts];
@@ -678,12 +570,6 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
   if (@available(iOS 26, *)) {
     return;
   }
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
   OCMExpect([delegate_mock_ didTapAddAccount]);
   OCMExpect([delegate_mock_ didTapAddAccount]);
@@ -698,12 +584,6 @@ TEST_P(AccountMenuMediatorTest, TestDidTapAddAccount) {
 
 // Tests the effect of signOutFromTargetRect.
 TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
   __block signin_ui::SignoutCompletionCallback completion = nil;
@@ -728,12 +608,6 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
 TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   CGRect rect = CGRectMake(0, 0, 40, 24);
   __block signin_ui::SignoutCompletionCallback completion = nil;
   OCMExpect([delegate_mock_
@@ -754,12 +628,6 @@ TEST_P(AccountMenuMediatorTest, TestSignoutAndClose) {
 // Tests tapping on the close button just after the sign-out button.
 // This is a regression test for crbug.com/371046656.
 TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultCanceledByUser
@@ -773,13 +641,6 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
 // Tests that the consumer is not notified to update the error section multiple
 // times if the underlying error does not change.
 TEST_P(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
-
   SignInAndSetPassphraseRequired();
 
   // The error has not changed. The consumer should not be notified again.
@@ -790,12 +651,6 @@ TEST_P(AccountMenuMediatorTest, TestErrorSectionUptadedOnceForSameError) {
 // Tests that the consumer is notified to update the error section if the
 // underlying error is resolved.
 TEST_P(AccountMenuMediatorTest, TestErrorSectionUpdatedWhenErrorCleared) {
-  if (!@available(iOS 17, *)) {
-    if (GetParam() == kWithSeparateProfiles) {
-      // Separate profiles are only available in iOS 17+.
-      return;
-    }
-  }
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
   constexpr char kSyncPassphrase[] = "passphrase";
   test_sync_service_->GetUserSettings()->SetPassphraseRequired(kSyncPassphrase);
