@@ -4641,7 +4641,7 @@ CSSValue* ConsumeTimelineTriggerValue(CSSPropertyID property,
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kOnce, CSSValueID::kRepeat, CSSValueID::kAlternate,
           CSSValueID::kState>(stream);
-    case CSSPropertyID::kTimelineTriggerTimeline:
+    case CSSPropertyID::kTimelineTriggerSource:
       return css_parsing_utils::ConsumeAnimationTimeline(stream, context);
     case CSSPropertyID::kTimelineTriggerRangeStart:
       return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,

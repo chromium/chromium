@@ -855,7 +855,7 @@ TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeEnd(
   return TimelineOffsetOrAuto(MapAnimationRange(state, value, 100));
 }
 
-StyleTimeline CSSToStyleMap::MapAnimationTimelineTriggerTimeline(
+StyleTimeline CSSToStyleMap::MapAnimationTimelineTriggerSource(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationTimeline(state, value);

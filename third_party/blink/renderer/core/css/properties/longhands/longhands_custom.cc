@@ -860,7 +860,7 @@ const CSSValue* TimelineTriggerExitRangeEnd::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 
-const CSSValue* TimelineTriggerTimeline::ParseSingleValue(
+const CSSValue* TimelineTriggerSource::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
@@ -868,7 +868,7 @@ const CSSValue* TimelineTriggerTimeline::ParseSingleValue(
       css_parsing_utils::ConsumeAnimationTimeline, stream, context);
 }
 
-const CSSValue* TimelineTriggerTimeline::CSSValueFromComputedStyleInternal(
+const CSSValue* TimelineTriggerSource::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
@@ -877,7 +877,7 @@ const CSSValue* TimelineTriggerTimeline::CSSValueFromComputedStyleInternal(
       style.Animations(), style);
 }
 
-const CSSValue* TimelineTriggerTimeline::InitialValue() const {
+const CSSValue* TimelineTriggerSource::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kAuto);
 }
 

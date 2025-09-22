@@ -447,7 +447,7 @@ All changes to this list should go through Blink's feature review process: http:
     timeline-trigger-name
     timeline-trigger-range-end
     timeline-trigger-range-start
-    timeline-trigger-timeline
+    timeline-trigger-source
     top
     touch-action
     transform
@@ -934,7 +934,7 @@ All changes to this list should go through Blink's feature review process: http:
         timeline-trigger-name
         timeline-trigger-range-end
         timeline-trigger-range-start
-        timeline-trigger-timeline
+        timeline-trigger-source
     transition
         transition-behavior
         transition-delay

@@ -1630,9 +1630,9 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   AnimationTimeline* existing_timeline =
       (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
   AnimationTimeline* new_timeline =
-      animation_index < data->TimelineTriggerTimelineList().size()
+      animation_index < data->TimelineTriggerSourceList().size()
           ? ComputeTimeline(element,
-                            data->GetTimelineTriggerTimeline(animation_index),
+                            data->GetTimelineTriggerSource(animation_index),
                             update, existing_timeline)
           : nullptr;
   if (!new_timeline) {
@@ -3585,7 +3585,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kTimelineTriggerRangeEnd:
     case CSSPropertyID::kTimelineTriggerExitRangeStart:
     case CSSPropertyID::kTimelineTriggerExitRangeEnd:
-    case CSSPropertyID::kTimelineTriggerTimeline:
+    case CSSPropertyID::kTimelineTriggerSource:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kTransitionBehavior:
     case CSSPropertyID::kTransitionDelay:

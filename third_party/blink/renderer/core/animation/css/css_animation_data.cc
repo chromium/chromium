@@ -20,7 +20,7 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   composition_list_.push_back(InitialComposition());
   timeline_trigger_name_list_.push_back(InitialTimelineTriggerName());
   timeline_trigger_behavior_list_.push_back(InitialTimelineTriggerBehavior());
-  timeline_trigger_timeline_list_.push_back(InitialTimelineTriggerTimeline());
+  timeline_trigger_source_list_.push_back(InitialTimelineTriggerSource());
   timeline_trigger_range_start_list_.push_back(
       InitialTimelineTriggerRangeStart());
   timeline_trigger_range_end_list_.push_back(InitialTimelineTriggerRangeEnd());
@@ -47,10 +47,10 @@ const StyleTimeline& CSSAnimationData::InitialTimeline() {
   return timeline;
 }
 
-const StyleTimeline& CSSAnimationData::InitialTimelineTriggerTimeline() {
-  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline_trigger_timeline,
+const StyleTimeline& CSSAnimationData::InitialTimelineTriggerSource() {
+  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline_trigger_source,
                       (CSSValueID::kAuto));
-  return timeline_trigger_timeline;
+  return timeline_trigger_source;
 }
 
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
@@ -81,10 +81,10 @@ const StyleTimeline& CSSAnimationData::GetTimeline(size_t index) const {
   return GetRepeated(timeline_list_, index);
 }
 
-const StyleTimeline& CSSAnimationData::GetTimelineTriggerTimeline(
+const StyleTimeline& CSSAnimationData::GetTimelineTriggerSource(
     size_t index) const {
-  DCHECK_LT(index, timeline_trigger_timeline_list_.size());
-  return GetRepeated(timeline_trigger_timeline_list_, index);
+  DCHECK_LT(index, timeline_trigger_source_list_.size());
+  return GetRepeated(timeline_trigger_source_list_, index);
 }
 
 const Member<const StyleTriggerAttachmentVector>&

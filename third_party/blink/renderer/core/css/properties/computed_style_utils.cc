@@ -2839,9 +2839,9 @@ CSSValue* ComputedStyleUtils::ValueForTimelineTriggerTimelineList(
     const ComputedStyle& style) {
   return CreateAnimationValueList(
       animation_data
-          ? animation_data->TimelineTriggerTimelineList()
+          ? animation_data->TimelineTriggerSourceList()
           : Vector<StyleTimeline>{CSSAnimationData::
-                                      InitialTimelineTriggerTimeline()},
+                                      InitialTimelineTriggerSource()},
       &ValueForAnimationTimeline, style);
 }
 

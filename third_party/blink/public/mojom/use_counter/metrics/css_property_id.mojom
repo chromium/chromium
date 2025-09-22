@@ -936,7 +936,7 @@ enum CSSSampleId {
     kTimelineTriggerRangeEnd = 874,
     kTimelineTriggerExitRangeStart = 875,
     kTimelineTriggerExitRangeEnd = 876,
-    kTimelineTriggerTimeline = 877,
+    kTimelineTriggerSource = 877,
     kTimelineTrigger = 878,
     kMasonry = 879,
     kContinue = 880,

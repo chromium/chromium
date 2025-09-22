@@ -87,10 +87,10 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeEndList() const {
     return timeline_trigger_exit_range_end_list_;
   }
-  const Vector<StyleTimeline>& TimelineTriggerTimelineList() const {
-    return timeline_trigger_timeline_list_;
+  const Vector<StyleTimeline>& TimelineTriggerSourceList() const {
+    return timeline_trigger_source_list_;
   }
-  const StyleTimeline& GetTimelineTriggerTimeline(size_t index) const;
+  const StyleTimeline& GetTimelineTriggerSource(size_t index) const;
 
   const TriggerAttachmentsListType& TriggerAttachmentsList() const {
     return trigger_attachments_list_;
@@ -139,8 +139,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<TimelineOffsetOrAuto>& TimelineTriggerExitRangeEndList() {
     return timeline_trigger_exit_range_end_list_;
   }
-  Vector<StyleTimeline>& TimelineTriggerTimelineList() {
-    return timeline_trigger_timeline_list_;
+  Vector<StyleTimeline>& TimelineTriggerSourceList() {
+    return timeline_trigger_source_list_;
   }
   TriggerAttachmentsListType& TriggerAttachmentsList() {
     return trigger_attachments_list_;
@@ -193,7 +193,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static TimelineOffsetOrAuto InitialTimelineTriggerExitRangeEnd() {
     return TimelineOffsetOrAuto();
   }
-  static const StyleTimeline& InitialTimelineTriggerTimeline();
+  static const StyleTimeline& InitialTimelineTriggerSource();
   static Member<StyleTriggerAttachmentVector> InitialTriggerAttachments() {
     return nullptr;
   }
@@ -215,7 +215,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<std::optional<TimelineOffset>> timeline_trigger_range_end_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_start_list_;
   Vector<TimelineOffsetOrAuto> timeline_trigger_exit_range_end_list_;
-  Vector<StyleTimeline> timeline_trigger_timeline_list_;
+  Vector<StyleTimeline> timeline_trigger_source_list_;
 
   TriggerAttachmentsListType trigger_attachments_list_;
 };

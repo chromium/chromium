@@ -1123,11 +1123,11 @@
       runtime_flag: "AnimationTrigger",
     },
     {
-      name: "timeline-trigger-timeline",
+      name: "timeline-trigger-source",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TimelineTriggerTimeline",
+        attribute: "TimelineTriggerSource",
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
@@ -9005,7 +9005,7 @@
     {
       name: "timeline-trigger",
       longhands: [
-        "timeline-trigger-name", "timeline-trigger-timeline",
+        "timeline-trigger-name", "timeline-trigger-source",
         "timeline-trigger-behavior", "timeline-trigger-range-start",
         "timeline-trigger-range-end", "timeline-trigger-exit-range-start",
         "timeline-trigger-exit-range-end",
