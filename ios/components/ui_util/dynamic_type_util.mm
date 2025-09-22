@@ -5,8 +5,20 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "build/config/ios/buildflags.h"
 
 namespace {
+
+// Returns the preferred content size category from the system.
+UIContentSizeCategory SystemPreferredContentSizeCategory() {
+#if BUILDFLAG(IOS_IS_APP_EXTENSION)
+  // App extensions can not access -sharedApplication, so fall back to using
+  // UIScreen's -mainScreen to get the preferred content size category.
+  return UIScreen.mainScreen.traitCollection.preferredContentSizeCategory;
+#else
+  return UIApplication.sharedApplication.preferredContentSizeCategory;
+#endif
+}
 
 // Structure that describes a content size category.
 typedef struct {
@@ -91,7 +103,7 @@ namespace ui_util {
 ui_util::IOSContentSizeCategory GetPreferredContentSizeCategory() {
   std::optional<ContentSizeCategoryDescription>
       preferred_system_font_decription = GetContentSizeCategoryDescription(
-          UIApplication.sharedApplication.preferredContentSizeCategory);
+          SystemPreferredContentSizeCategory());
   return preferred_system_font_decription
       .value_or(kUnspecifiedContentSizeCategory)
       .category;
@@ -100,7 +112,7 @@ ui_util::IOSContentSizeCategory GetPreferredContentSizeCategory() {
 void RecordSystemFontSizeMetrics() {
   std::optional<ContentSizeCategoryDescription>
       preferred_system_font_decription = GetContentSizeCategoryDescription(
-          UIApplication.sharedApplication.preferredContentSizeCategory);
+          SystemPreferredContentSizeCategory());
   bool has_value = preferred_system_font_decription.has_value();
   // In case there is a new accessibility value, log if there is a value we
   // are missing. Use the sharedApplication value as this method can be called
@@ -116,7 +128,7 @@ void RecordSystemFontSizeMetrics() {
 
 float SystemSuggestedFontSizeMultiplier() {
   return SystemSuggestedFontSizeMultiplier(
-      UIApplication.sharedApplication.preferredContentSizeCategory);
+      SystemPreferredContentSizeCategory());
 }
 
 float SystemSuggestedFontSizeMultiplier(UIContentSizeCategory category) {
