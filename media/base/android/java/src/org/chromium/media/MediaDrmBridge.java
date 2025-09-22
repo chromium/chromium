@@ -720,7 +720,11 @@ public class MediaDrmBridge {
         Log.i(TAG, "Destroying MediaDrmBridge for origin %s", mOrigin);
         mNativeMediaDrmBridge = INVALID_NATIVE_MEDIA_DRM_BRIDGE;
         if (mMediaDrm != null) {
-            release();
+            try {
+                release();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to destroy MediaDrmBridge properly", e);
+            }
         }
     }
 
