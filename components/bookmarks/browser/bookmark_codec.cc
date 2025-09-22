@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -23,7 +24,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "crypto/hash.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -38,6 +41,7 @@ const char BookmarkCodec::kOtherBookmarkFolderNameKey[] = "other";
 const char BookmarkCodec::kMobileBookmarkFolderNameKey[] = "synced";
 const char BookmarkCodec::kVersionKey[] = "version";
 const char BookmarkCodec::kChecksumKey[] = "checksum";
+const char BookmarkCodec::kChecksumSHA256Key[] = "checksum_sha256";
 const char BookmarkCodec::kIdKey[] = "id";
 const char BookmarkCodec::kTypeKey[] = "type";
 const char BookmarkCodec::kNameKey[] = "name";
@@ -109,7 +113,10 @@ base::Value::Dict BookmarkCodec::Encode(
   // the same as computed checksum.
   stored_checksum_ = computed_checksum_;
   main.Set(kChecksumKey, computed_checksum_);
-
+  if (base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256)) {
+    stored_sha256_checksum_ = computed_sha256_checksum_;
+    main.Set(kChecksumSHA256Key, computed_sha256_checksum_);
+  }
   main.Set(kRootsKey, std::move(roots));
   return main;
 }
@@ -139,13 +146,17 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
   ids_valid_ = true;
   maximum_id_ = 0;
   stored_checksum_.clear();
+  stored_sha256_checksum_.clear();
   InitializeChecksum();
   bool success = DecodeHelper(bb_node, other_folder_node, mobile_folder_node,
                               value, sync_metadata_str);
   FinalizeChecksum();
+
   // If either the checksums differ or some IDs were missing/not unique,
   // reassign IDs.
-  if (!ids_valid_ || computed_checksum_ != stored_checksum_) {
+  bool use_sha256 = base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256);
+  if (!ids_valid_ || (computed_checksum_ != stored_checksum_) ||
+      (use_sha256 && computed_sha256_checksum_ != stored_sha256_checksum_)) {
     maximum_id_ = max_already_assigned_id;
     ReassignIDs(bb_node, other_folder_node, mobile_folder_node);
   }
@@ -154,8 +165,10 @@ bool BookmarkCodec::Decode(const base::Value::Dict& value,
 }
 
 bool BookmarkCodec::required_recovery() const {
+  bool use_sha256 = base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256);
   return ids_reassigned_ || uuids_reassigned_ ||
-         computed_checksum_ != stored_checksum_;
+         (computed_checksum_ != stored_checksum_) ||
+         (use_sha256 && computed_sha256_checksum_ != stored_sha256_checksum_);
 }
 
 base::Value::Dict BookmarkCodec::EncodeNode(const BookmarkNode* node) {
@@ -218,6 +231,19 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
       stored_checksum_ = *checksum;
     else
       return false;
+  }
+
+  if (base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256)) {
+    const std::string* checksum_sha256 = value.FindString(kChecksumSHA256Key);
+    if (checksum_sha256) {
+      stored_sha256_checksum_ = *checksum_sha256;
+    }
+    // If checksum is missing, stored data must predate md5->sha256 migration.
+    // Expect a md5 checksum to have been set by the previous block.
+    else if (!checksum_value->GetIfString()) {
+      // If no checksum was set, then the decode should fail.
+      return false;
+    }
   }
 
   if (sync_metadata_str) {
@@ -496,11 +522,13 @@ void BookmarkCodec::ReassignIDsHelper(BookmarkNode* node) {
 
 void BookmarkCodec::UpdateChecksum(const std::string& str) {
   md5_hasher_.Update(str);
+  sha256_hasher_.Update(str);
 }
 
 void BookmarkCodec::UpdateChecksum(const std::u16string& str) {
-  md5_hasher_.Update(std::string_view(reinterpret_cast<const char*>(str.data()),
-                                      str.length() * sizeof(str[0])));
+  auto bytes = base::as_byte_span(str);
+  md5_hasher_.Update(bytes);
+  sha256_hasher_.Update(bytes);
 }
 
 void BookmarkCodec::UpdateChecksumWithUrlNode(const std::string& id,
@@ -522,11 +550,15 @@ void BookmarkCodec::UpdateChecksumWithFolderNode(const std::string& id,
 
 void BookmarkCodec::InitializeChecksum() {
   md5_hasher_ = crypto::obsolete::Md5();
+  sha256_hasher_ = crypto::hash::Hasher(crypto::hash::kSha256);
 }
 
 void BookmarkCodec::FinalizeChecksum() {
   computed_checksum_ =
       base::ToLowerASCII(base::HexEncode(md5_hasher_.Finish()));
+  std::string result(crypto::hash::kSha256Size, 0);
+  sha256_hasher_.Finish(base::as_writable_byte_span(result));
+  computed_sha256_checksum_ = base::ToLowerASCII(base::HexEncode(result));
 }
 
 }  // namespace bookmarks

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,10 +18,12 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,14 +157,27 @@ class BookmarkCodecTest : public testing::Test {
                        model->mobile_node(), sync_metadata_str));
     const std::string& computed_checksum = encoder.ComputedChecksumForTest();
     const std::string& stored_checksum = encoder.StoredChecksumForTest();
+    const std::string& computed_sha256_checksum =
+        encoder.ComputedSha256ChecksumForTest();
+    const std::string& stored_sha256_checksum =
+        encoder.StoredSha256ChecksumForTest();
 
     // Computed and stored checksums should not be empty and should be equal.
     EXPECT_FALSE(computed_checksum.empty());
     EXPECT_FALSE(stored_checksum.empty());
     EXPECT_EQ(computed_checksum, stored_checksum);
+    if (base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256)) {
+      EXPECT_FALSE(computed_sha256_checksum.empty());
+      EXPECT_FALSE(stored_sha256_checksum.empty());
+      EXPECT_EQ(computed_sha256_checksum, stored_sha256_checksum);
+    }
 
     if (checksum) {
-      *checksum = computed_checksum;
+      if (base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256)) {
+        *checksum = computed_sha256_checksum;
+      } else {
+        *checksum = computed_checksum;
+      }
     }
 
     return value;
@@ -204,6 +220,12 @@ class BookmarkCodecTest : public testing::Test {
     EXPECT_EQ("", decoder.ComputedChecksumForTest());
     EXPECT_EQ("", decoder.StoredChecksumForTest());
 
+    bool use_sha256 = base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256);
+    if (use_sha256) {
+      EXPECT_EQ("", decoder.ComputedSha256ChecksumForTest());
+      EXPECT_EQ("", decoder.StoredSha256ChecksumForTest());
+    }
+
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
     EXPECT_TRUE(Decode(&decoder, value, /*already_assigned_ids=*/{},
                        model.get(),
@@ -211,20 +233,30 @@ class BookmarkCodecTest : public testing::Test {
 
     *computed_checksum = decoder.ComputedChecksumForTest();
     const std::string& stored_checksum = decoder.StoredChecksumForTest();
-
+    const std::string& stored_checksum_sha256 =
+        decoder.StoredSha256ChecksumForTest();
+    if (use_sha256) {
+      *computed_checksum = decoder.ComputedSha256ChecksumForTest();
+    }
     // Computed and stored checksums should not be empty.
     EXPECT_FALSE(computed_checksum->empty());
     EXPECT_FALSE(stored_checksum.empty());
+    if (use_sha256) {
+      EXPECT_FALSE(stored_checksum_sha256.empty());
+    }
 
     // Stored checksum should be as expected.
-    EXPECT_EQ(expected_stored_checksum, stored_checksum);
+    EXPECT_EQ(expected_stored_checksum,
+              use_sha256 ? stored_checksum_sha256 : stored_checksum);
 
     // The two checksums should be equal if expected_changes is true; otherwise
     // they should be different.
     if (expected_changes)
-      EXPECT_NE(*computed_checksum, stored_checksum);
+      EXPECT_NE(*computed_checksum,
+                use_sha256 ? stored_checksum_sha256 : stored_checksum);
     else
-      EXPECT_EQ(*computed_checksum, stored_checksum);
+      EXPECT_EQ(*computed_checksum,
+                use_sha256 ? stored_checksum_sha256 : stored_checksum);
 
     return model;
   }
@@ -939,6 +971,52 @@ TEST_F(BookmarkCodecTest, CanonicalizeUuid) {
                      /*sync_metadata_str=*/nullptr));
 
   EXPECT_EQ(kGuid, decoded_model2->bookmark_bar_node()->children()[0]->uuid());
+}
+
+// This test checks that a corrupted SHA256 value does not match the stored
+// SHA256 value.
+TEST_F(BookmarkCodecTest, ShouldRecordSHA256DigestMismatchWhenReadingFile) {
+  std::unique_ptr<BookmarkModel> model(CreateTestModel1());
+  std::string enc_checksum;
+  base::Value::Dict value = EncodeModel(
+      model.get(), /*sync_metadata_str=*/std::string(), &enc_checksum);
+  // Do not change the model, do change the set enc_checksum.
+  value.Set("checksum_sha256", "notavalidsha256value");
+
+  std::string dec_checksum;
+  // Expect the decoder to succeed when we set the expect changes check to true.
+  std::unique_ptr<BookmarkModel> decoded_model =
+      DecodeHelper(value, /*expected_stored_checksum=*/"notavalidsha256value",
+                   &dec_checksum, /*expected_changes*/ true,
+                   /*sync_metadata_str=*/nullptr);
+}
+
+class BookmarkCodecTestDisableSHA256Test : public BookmarkCodecTest {
+ public:
+  BookmarkCodecTestDisableSHA256Test() {
+    feature_list_.InitAndDisableFeature(kEnableBookmarkCodecSHA256);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that files written with corrupted SHA256 can still be read when the
+// feature is disabled.
+TEST_F(BookmarkCodecTestDisableSHA256Test, DisablingSHA256) {
+  std::unique_ptr<BookmarkModel> model_to_encode(CreateTestModel1());
+  std::string enc_checksum;
+  base::Value::Dict value =
+      EncodeModel(model_to_encode.get(), /*sync_metadata_str=*/std::string(),
+                  &enc_checksum);
+  value.Set("checksum_sha256", "invalid_sha256_checksum");
+
+  std::string dec_checksum;
+  // Set expected_changes to false, making sure that the old md5 codec is used
+  // as the checksum.
+  std::unique_ptr<BookmarkModel> decoded_model = DecodeHelper(
+      value, enc_checksum, &dec_checksum, /*expected_changes*/ false,
+      /*sync_metadata_str=*/nullptr);
 }
 
 }  // namespace bookmarks

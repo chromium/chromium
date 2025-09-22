@@ -12,7 +12,7 @@ include_rules = [
   # cleaned up.
   "+components/sync/base/features.h",
   "+components/url_formatter",
-  "+crypto/obsolete",
+  "+crypto",
   "+net/base",
   "+ui",
 ]

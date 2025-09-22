@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 
 namespace bookmarks {
@@ -85,6 +86,13 @@ class BookmarkCodec {
   }
   const std::string& StoredChecksumForTest() const { return stored_checksum_; }
 
+  const std::string& ComputedSha256ChecksumForTest() const {
+    return computed_sha256_checksum_;
+  }
+  const std::string& StoredSha256ChecksumForTest() const {
+    return stored_sha256_checksum_;
+  }
+
   std::set<int64_t> release_assigned_ids() { return std::move(ids_); }
 
   // Names of the various keys written to the Value.
@@ -94,6 +102,7 @@ class BookmarkCodec {
   static const char kMobileBookmarkFolderNameKey[];
   static const char kVersionKey[];
   static const char kChecksumKey[];
+  static const char kChecksumSHA256Key[];
   static const char kIdKey[];
   static const char kTypeKey[];
   static const char kNameKey[];
@@ -204,8 +213,15 @@ class BookmarkCodec {
   // MD5 context used to compute MD5 hash of all bookmark data.
   crypto::obsolete::Md5 md5_hasher_;
 
-  // Checksum computed during last encoding/decoding call.
+  // SHA context used to compute SHA256 hash of all bookmark data.
+  // Intended to replace MD5 hasher (crbug.com/426243026)
+  crypto::hash::Hasher sha256_hasher_{crypto::hash::kSha256};
+
+  // MD5 checksum computed during last encoding/decoding call.
   std::string computed_checksum_;
+
+  // SHA256 checksum computed during last encoding/decoding call.
+  std::string computed_sha256_checksum_;
 
   // The checksum that's stored in the file. After a call to Encode, the
   // computed and stored checksums are the same since the computed checksum is
@@ -213,6 +229,8 @@ class BookmarkCodec {
   // differ from the stored checksum if the file contents were changed by the
   // user.
   std::string stored_checksum_;
+  // Same as above but encoded using SHA256 rather than MD5.
+  std::string stored_sha256_checksum_;
 
   // Maximum ID assigned when decoding data.
   int64_t maximum_id_{0};
