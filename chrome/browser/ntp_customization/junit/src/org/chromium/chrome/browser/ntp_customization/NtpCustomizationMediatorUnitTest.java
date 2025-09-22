@@ -16,13 +16,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -371,5 +376,33 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.updateFeedSectionSubtitle(/* isFeedVisible= */ false);
         verify(mContainerPropertyModel)
                 .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_off));
+    }
+
+    @Test
+    public void testBackPressOnThemeBottomSheet() {
+        mViewFlipperMap.put(THEME_COLLECTIONS, 0);
+        mViewFlipperMap.put(THEME, 1);
+        mViewFlipperMap.put(MAIN, 2);
+
+        mMediator.setCurrentBottomSheetForTesting(SINGLE_THEME_COLLECTION);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME_COLLECTIONS, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(0));
+
+        mMediator.setCurrentBottomSheetForTesting(THEME_COLLECTIONS);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(1));
+
+        mMediator.setCurrentBottomSheetForTesting(CHROME_COLORS);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel, times(2)).set(eq(LAYOUT_TO_DISPLAY), eq(1));
+
+        mMediator.setCurrentBottomSheetForTesting(THEME);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(MAIN, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(2));
     }
 }

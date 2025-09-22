@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
@@ -48,6 +51,13 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class NtpCustomizationMediator {
+    // Defines the back navigation hierarchy for theme-related bottom sheets. <Child, Parent>
+    private final Map<Integer, Integer> mThemeBackNavigationMap =
+            Map.ofEntries(
+                    Map.entry(SINGLE_THEME_COLLECTION, THEME_COLLECTIONS),
+                    Map.entry(THEME_COLLECTIONS, THEME),
+                    Map.entry(CHROME_COLORS, THEME));
+
     /**
      * A map of <{@link NtpCustomizationCoordinator.BottomSheetType}, view's position index in the
      * {@link ViewFlipper}>.
@@ -135,6 +145,14 @@ public class NtpCustomizationMediator {
 
         if (mCurrentBottomSheet == MAIN) {
             dismissBottomSheet(/* animate= */ true);
+            return;
+        }
+
+        @NtpCustomizationCoordinator.BottomSheetType
+        Integer parentSheet = mThemeBackNavigationMap.get(mCurrentBottomSheet);
+
+        if (parentSheet != null) {
+            showBottomSheet(parentSheet);
         } else {
             showBottomSheet(MAIN);
 
