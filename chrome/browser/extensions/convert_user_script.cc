@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "crypto/hash.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -31,6 +32,8 @@
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/extension_types_utils.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
