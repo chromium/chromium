@@ -36,13 +36,6 @@ BASE_FEATURE(kAutofillEnableAmountExtraction,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// When enabled, Chrome will have the ability to load and query the allowlist
-// for checkout amount extraction, which will be used to check if the current
-// URL is eligible for products that use the checkout amount extraction
-// algorithm.
-BASE_FEATURE(kAutofillEnableAmountExtractionAllowlist,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables testing of the result of checkout amount extraction on desktop.
 // This flag will allow amount extraction to run on any website when a CC
 // form is clicked. This flag should never be enabled.

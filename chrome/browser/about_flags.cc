@@ -12074,17 +12074,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardChangeEventDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kClipboardChangeEvent)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-amount-extraction-allowlist",
-     flag_descriptions::kAutofillEnableAmountExtractionAllowlistName,
-     flag_descriptions::kAutofillEnableAmountExtractionAllowlistDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableAmountExtractionAllowlist)},
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"devtools-project-settings",
      flag_descriptions::kDevToolsProjectSettingsName,

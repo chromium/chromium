@@ -711,13 +711,6 @@ const char kAutofillEnableAmountExtractionName[] =
 const char kAutofillEnableAmountExtractionDescription[] =
     "When enabled, Chrome will extract the checkout amount from the checkout "
     "page of the allowlisted merchant websites.";
-const char kAutofillEnableAmountExtractionAllowlistName[] =
-    "Enable loading and querying the checkout amount extraction allowlist.";
-const char kAutofillEnableAmountExtractionAllowlistDescription[] =
-    "When enabled, Chrome will have the ability to load and query the "
-    "allowlist for checkout amount extraction, which will be used to check if "
-    "the current URL is eligible for products that use the checkout amount "
-    "extraction algorithm.";
 const char kAutofillEnableAmountExtractionTestingName[] =
     "Enable amount extraction testing";
 const char kAutofillEnableAmountExtractionTestingDescription[] =

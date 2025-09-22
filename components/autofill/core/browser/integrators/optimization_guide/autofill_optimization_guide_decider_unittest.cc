@@ -720,14 +720,13 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Affirm BNPL issuer with `OnPaymentsDataLoaded()` call.
+// when there is at least one Affirm BNPL issuer with `OnPaymentsDataLoaded()`
+// call.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing,
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
 
@@ -744,14 +743,13 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Zip BNPL issuer with `OnPaymentsDataLoaded()` call.
+// when there is at least one Zip BNPL issuer with `OnPaymentsDataLoaded()`
+// call.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing,
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
 
@@ -768,14 +766,13 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Klarna BNPL issuer with `OnPaymentsDataLoaded()` call.
+// when there is at least one Klarna BNPL issuer with `OnPaymentsDataLoaded()`
+// call.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing,
+      {features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableLoadBnplAllowlistAfterSyncing},
       {});
 
@@ -792,16 +789,15 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is not
-// registered when the amount extraction allowlist is enabled and there is at
-// least one Klarna BNPL issuer with `OnPaymentsDataLoaded()` call if flag
+// registered when there is at least one Klarna BNPL issuer with
+// `OnPaymentsDataLoaded()` call if flag
 // `features::kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
 TEST_F(
     AutofillOptimizationGuideDeciderTest,
     OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna_LoadAllowListAfterSyncingDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing},
+      {features::kAutofillEnableBuyNowPayLaterSyncing},
       {features::kAutofillEnableLoadBnplAllowlistAfterSyncing});
 
   payments_data_manager().AddBnplIssuer(
@@ -818,16 +814,11 @@ TEST_F(
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Affirm BNPL issuer.
-TEST_F(
-    AutofillOptimizationGuideDeciderTest,
-    CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderAffirm) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing},
-      {});
+// when there is at least one Affirm BNPL issuer.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       CreditCardFormFound_BuyNowPayLaterProviderAffirm) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLaterSyncing};
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -846,15 +837,11 @@ TEST_F(
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Zip BNPL issuer.
+// when there is at least one Zip BNPL issuer.
 TEST_F(AutofillOptimizationGuideDeciderTest,
-       CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderZip) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing},
-      {});
+       CreditCardFormFound_BuyNowPayLaterProviderZip) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLaterSyncing};
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -873,16 +860,11 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is registered
-// when the amount extraction allowlist is enabled and there is at least one
-// Klarna BNPL issuer.
-TEST_F(
-    AutofillOptimizationGuideDeciderTest,
-    CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderKlarna) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing},
-      {});
+// when there is at least one Klarna BNPL issuer.
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       CreditCardFormFound_BuyNowPayLaterProviderKlarna) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableBuyNowPayLaterSyncing};
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -900,45 +882,14 @@ TEST_F(
   guide().OnDidParseForm(form_structure, payments_data_manager());
 }
 
-// Test none of `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM`,
-// `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP`, and `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA`
-// optimization types are registered when the amount extraction allowlist flag
-// is off.
-TEST_F(AutofillOptimizationGuideDeciderTest,
-       CreditCardFormFound_AmountExtractionAllowed_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing},
-      /*disabled_features=*/{
-          features::kAutofillEnableAmountExtractionAllowlist});
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  test_api(form_structure)
-      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  BnplIssuer bnpl_issuer =
-      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
-  payments_data_manager().AddBnplIssuer(bnpl_issuer);
-  bnpl_issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplKlarna);
-  payments_data_manager().AddBnplIssuer(bnpl_issuer);
-
-  // RegisterOptimizationTypes shouldn't be called.
-  EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
-
-  guide().OnDidParseForm(form_structure, payments_data_manager());
-}
-
 // Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
 // `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization types are registered when
 // there is no BNPL issuer synced to the account.
 TEST_F(AutofillOptimizationGuideDeciderTest,
-       CreditCardFormFound_AmountExtractionAllowed_NoBnplIssuerFound) {
+       CreditCardFormFound_NoBnplIssuerFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kAutofillEnableAmountExtractionAllowlist,
-       features::kAutofillEnableBuyNowPayLaterSyncing},
-      {});
+      {features::kAutofillEnableBuyNowPayLaterSyncing}, {});
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -956,9 +907,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlAllowed) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -976,9 +924,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // non-allowlisted URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlBlocked) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -995,9 +940,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // Test that we allow checkout amount searching for Zip on an allowlisted URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_ZipUrlAllowed) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -1015,9 +957,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // non-allowlisted URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_ZipUrlBlocked) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -1035,9 +974,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlAllowed) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -1055,9 +991,6 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
 // non-allowlisted URL.
 TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlBlocked) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionAllowlist};
-
   ON_CALL(decider(),
           CanApplyOptimization(
               Eq(GURL("https://www.testurl.test")),
@@ -1135,26 +1068,6 @@ TEST_F(
   // kAutofillEnableAmountExtractionTesting overrides the allowlist.
   EXPECT_TRUE(guide().IsUrlEligibleForBnplIssuer(
       BnplIssuer::IssuerId::kBnplKlarna, GURL("https://www.testurl.test")));
-}
-
-// Test that we do not allow checkout amount searching when the amount
-// extraction allowlist is off.
-TEST_F(AutofillOptimizationGuideDeciderTest,
-       IsUrlEligibleForBnplIssuer_AllowlistFlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableAmountExtractionAllowlist);
-
-  ON_CALL(decider(),
-          CanApplyOptimization(
-              Eq(GURL("https://www.testurl.test")),
-              Eq(optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
-              Matcher<optimization_guide::OptimizationMetadata*>(Eq(nullptr))))
-      .WillByDefault(
-          Return(optimization_guide::OptimizationGuideDecision::kTrue));
-
-  EXPECT_FALSE(guide().IsUrlEligibleForBnplIssuer(
-      BnplIssuer::IssuerId::kBnplZip, GURL("https://www.testurl.test")));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

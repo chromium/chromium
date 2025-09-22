@@ -461,8 +461,6 @@ extern const char
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 extern const char kAutofillEnableAmountExtractionName[];
 extern const char kAutofillEnableAmountExtractionDescription[];
-extern const char kAutofillEnableAmountExtractionAllowlistName[];
-extern const char kAutofillEnableAmountExtractionAllowlistDescription[];
 extern const char kAutofillEnableAmountExtractionTestingName[];
 extern const char kAutofillEnableAmountExtractionTestingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
