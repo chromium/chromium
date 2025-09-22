@@ -61,6 +61,14 @@ class ToolDelegate {
       const std::vector<actor_login::Credential>& credentials,
       const base::flat_map<std::string, gfx::Image>& icons,
       CredentialSelectedCallback callback) = 0;
+
+  // Sets / gets the credential that the user has chosen to allow the
+  // actor to use. The selected credential can be used for multi-step login
+  // within the same task.
+  virtual void SetUserSelectedCredential(
+      const actor_login::Credential& credential) = 0;
+  virtual const std::optional<actor_login::Credential>
+  GetUserSelectedCredential(const url::Origin& request_origin) const = 0;
 };
 
 }  // namespace actor

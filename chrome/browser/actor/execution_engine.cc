@@ -532,6 +532,21 @@ void ExecutionEngine::PromptToSelectCredential(
                                                      credentials);
 }
 
+void ExecutionEngine::SetUserSelectedCredential(
+    const actor_login::Credential& credential) {
+  user_selected_credentials_[credential.request_origin] = credential;
+}
+
+const std::optional<actor_login::Credential>
+ExecutionEngine::GetUserSelectedCredential(
+    const url::Origin& request_origin) const {
+  auto it = user_selected_credentials_.find(request_origin);
+  if (it == user_selected_credentials_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
 void ExecutionEngine::OnCredentialSelected(
     webui::mojom::SelectCredentialDialogResponsePtr response) {
   TRACE_EVENT0("actor", "ExecutionEngine::OnCredentialSelected");

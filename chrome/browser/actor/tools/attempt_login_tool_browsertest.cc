@@ -360,6 +360,104 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const bool immediately_available_to_login = true;
+  mock_login_service().SetCredentials(std::vector{
+      MakeTestCredential(u"username1", url, immediately_available_to_login)});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // The user selects the first credential, which is cached.
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
+                       const MockExecutionEngine::IconMap&,
+                       ToolDelegate::CredentialSelectedCallback callback) {
+        auto response = MakeSelectCredentialDialogResponse(actor_task().id(),
+                                                           credentials[0].id);
+        std::move(callback).Run(std::move(response));
+      });
+  std::unique_ptr<ToolRequest> action1 = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result1;
+  actor_task().Act(ToRequestList(action1), result1.GetCallback());
+  ExpectOkResult(result1);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username1",
+            mock_login_service().last_credential_used()->username);
+
+  // The second time, the user should not be prompted. Note that we don't need
+  // to set another expectation on `PromptToSelectCredential` because the
+  // WillOnce() above.
+  std::unique_ptr<ToolRequest> action2 = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result2;
+  actor_task().Act(ToRequestList(action2), result2.GetCallback());
+  ExpectOkResult(result2);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username1",
+            mock_login_service().last_credential_used()->username);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
+  const GURL blank_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blank_url));
+
+  GURL blank_origin = blank_url.GetWithEmptyPath();
+
+  std::vector<actor_login::Credential> credentials =
+      std::vector{MakeTestCredential(u"username1", blank_url.GetWithEmptyPath(),
+                                     /*immediately_available_to_login=*/true)};
+  mock_login_service().SetCredentials(credentials);
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // The user selects the first credential, which is cached.
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
+                       const MockExecutionEngine::IconMap&,
+                       ToolDelegate::CredentialSelectedCallback callback) {
+        auto response = MakeSelectCredentialDialogResponse(actor_task().id(),
+                                                           credentials[0].id);
+        std::move(callback).Run(std::move(response));
+      });
+  std::unique_ptr<ToolRequest> action1 = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result1;
+  actor_task().Act(ToRequestList(action1), result1.GetCallback());
+  ExpectOkResult(result1);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username1",
+            mock_login_service().last_credential_used()->username);
+
+  const GURL link_url = embedded_https_test_server().GetURL(
+      "subdomain.example.com", "/actor/link.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), link_url));
+  mock_login_service().SetCredentials(std::vector<actor_login::Credential>{
+      MakeTestCredential(u"username2", link_url.GetWithEmptyPath(),
+                         /*immediately_available_to_login=*/true)});
+  // The second time, the user is prompted again because the page's origin is
+  // subdomain.example.com. The previously cached (and selected) credential is
+  // for example.com.
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .WillOnce([this](const std::vector<actor_login::Credential>& credentials,
+                       const MockExecutionEngine::IconMap&,
+                       ToolDelegate::CredentialSelectedCallback callback) {
+        auto response = MakeSelectCredentialDialogResponse(actor_task().id(),
+                                                           credentials[0].id);
+        std::move(callback).Run(std::move(response));
+      });
+
+  std::unique_ptr<ToolRequest> action2 = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result2;
+  actor_task().Act(ToRequestList(action2), result2.GetCallback());
+  ExpectOkResult(result2);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username2",
+            mock_login_service().last_credential_used()->username);
+}
+
 class ActorAttemptLoginToolTestWithFaviconService
     : public ActorAttemptLoginToolTest {
  public:

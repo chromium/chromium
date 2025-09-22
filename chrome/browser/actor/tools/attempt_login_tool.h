@@ -48,7 +48,7 @@ class AttemptLoginTool : public Tool {
 
  private:
   void OnGetCredentials(actor_login::CredentialsOrError credentials);
-  void FetchFavicons();
+  void FetchIcons();
   void OnIconFetched(base::RepeatingClosure barrier,
                      GURL origin,
                      const favicon_base::FaviconImageResult& result);

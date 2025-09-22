@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
@@ -90,6 +91,21 @@ void AttemptLoginTool::Invoke(InvokeCallback callback) {
   }
 
   invoke_callback_ = std::move(callback);
+
+  // First check if there is a user selected credential for the current request
+  // origin. If so, use it immediately.
+  const url::Origin& current_origin =
+      tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const std::optional<actor_login::Credential> user_selected_credential =
+      tool_delegate().GetUserSelectedCredential(current_origin);
+  if (user_selected_credential.has_value()) {
+    GetActorLoginService().AttemptLogin(
+        tab, *user_selected_credential,
+        base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   GetActorLoginService().GetCredentials(
       tab, base::BindOnce(&AttemptLoginTool::OnGetCredentials,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -104,6 +120,7 @@ void AttemptLoginTool::OnGetCredentials(
   }
 
   credentials_ = std::move(credentials.value());
+
   if (credentials_.empty()) {
     PostResponseTask(
         std::move(invoke_callback_),
@@ -131,7 +148,7 @@ void AttemptLoginTool::OnGetCredentials(
   // Unless the flag is enabled, always auto-select the first credential, which
   // is the credential that is most likely to be the correct one.
   if (base::FeatureList::IsEnabled(actor::kGlicEnableAutoLoginDialogs)) {
-    FetchFavicons();
+    FetchIcons();
   } else {
     // The task ID doesn't matter here because the task ID check is already
     // done at this point.
@@ -141,7 +158,7 @@ void AttemptLoginTool::OnGetCredentials(
   }
 }
 
-void AttemptLoginTool::FetchFavicons() {
+void AttemptLoginTool::FetchIcons() {
   favicon::FaviconService* favicon_service =
       tool_delegate().GetFaviconService();
   if (!favicon_service) {
@@ -230,6 +247,9 @@ void AttemptLoginTool::OnCredentialSelected(
         MakeResult(mojom::ActionResultCode::kLoginNoCredentialsAvailable));
     return;
   }
+
+  // Cache the user selected credential for reuse.
+  tool_delegate().SetUserSelectedCredential(*selected_credential);
 
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab) {

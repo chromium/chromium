@@ -42,6 +42,7 @@ actor_login::Credential MakeTestCredential(
   // TODO(crbug.com/441231531): Clarify the format.
   credential.source_site_or_app =
       base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
+  credential.request_origin = url::Origin::Create(url);
   credential.type = actor_login::CredentialType::kPassword;
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
   return credential;
