@@ -198,6 +198,8 @@ _CONFIG = [
 
             # //base/functional/callback_helpers.h.
             'base::DoNothing',
+            'base::DoNothingAs',
+            'base::DoNothingWithBoundArgs',
             'base::IgnoreArgs',
             'base::SplitOnceCallback',
 
@@ -1951,7 +1953,6 @@ _CONFIG = [
         ],
         'allowed': [
             'base::ClampMul',
-            'base::DoNothingWithBoundArgs',
             'base::IsAligned',
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
@@ -2105,7 +2106,6 @@ _CONFIG = [
             'third_party/blink/renderer/modules/ai/',
         ],
         'allowed': [
-            'base::DoNothingWithBoundArgs',
             'base::MakeFixedFlatSet',
         ],
     },
