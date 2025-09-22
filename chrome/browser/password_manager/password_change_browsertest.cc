@@ -102,6 +102,7 @@ using QualityStatus = ::optimization_guide::proto::
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
 using SubmitFormResponseData =
     ::optimization_guide::proto::SubmitFormResponseData;
+using IsLoggedIn = LoginStateChecker::IsLoggedIn;
 
 constexpr char kPasswordChangeSubmissionOutcomeHistogram[] =
     "PasswordManager.PasswordChangeSubmissionOutcome";
@@ -197,7 +198,8 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
     ASSERT_TRUE(observer.Wait());
   }
 
-  void VerifyUniqueQualityLog(QualityStatus open_form_status,
+  void VerifyUniqueQualityLog(QualityStatus login_check_status,
+                              QualityStatus open_form_status,
                               QualityStatus submit_form_status,
                               QualityStatus verify_submission_status,
                               FinalModelStatus final_status,
@@ -214,10 +216,11 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
         it->get()->password_change_submission().quality();
     EXPECT_EQ(quality.logged_in_check().classification_overridden_by_user(),
               login_check_was_skipped);
-    EXPECT_EQ(quality.final_model_status(), final_status);
-    EXPECT_EQ(quality.verify_submission().status(), verify_submission_status);
+    EXPECT_EQ(quality.logged_in_check().status(), login_check_status);
     EXPECT_EQ(quality.open_form().status(), open_form_status);
     EXPECT_EQ(quality.submit_form().status(), submit_form_status);
+    EXPECT_EQ(quality.verify_submission().status(), verify_submission_status);
+    EXPECT_EQ(quality.final_model_status(), final_status);
   }
 
   void SetPrivacyNoticeAcceptedPref() {
@@ -596,6 +599,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kSuccess));
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
@@ -788,6 +793,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           kPasswordChangeSubmissionOutcomeName,
       static_cast<int>(SubmissionOutcome::kPageError));
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
@@ -944,6 +951,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
@@ -1002,6 +1011,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
@@ -1320,6 +1331,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -1372,6 +1385,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -1424,6 +1439,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
@@ -1480,6 +1497,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
@@ -1523,12 +1542,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in.
   for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
-    delegate_impl->login_checker()->RespondWithLoginStatus(false);
+    delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   }
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
@@ -1552,13 +1571,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in after
   // maximum amount of attempts.
   for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
-    delegate_impl->login_checker()->RespondWithLoginStatus(false);
+    delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   }
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
@@ -1582,6 +1601,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       .WillOnce(Return(GURL(kChangePasswordURL)));
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"password", WebContents());
+  SetModelQualityLogsUploader();
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1596,12 +1616,34 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   // Verify that password change continues if the user is logged in.
   static_cast<PasswordChangeDelegateImpl*>(delegate)
       ->login_checker()
-      ->RespondWithLoginStatus(true);
+      ->RespondWithLoginStatus(IsLoggedIn(true));
   EXPECT_FALSE(
       static_cast<PasswordChangeDelegateImpl*>(delegate)->login_checker());
   EXPECT_TRUE(static_cast<PasswordChangeDelegateImpl*>(delegate)->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+  // Stop the flow to check the correct state of the quality log.
+  delegate->Stop();
+  // The quality log is uploaded in the destructor.
+  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
+      delegate->AsWeakPtr();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
+  VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+      /*open_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED,
+      /*login_check_was_skipped=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
@@ -1622,7 +1664,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_TRUE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
@@ -1630,7 +1672,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
 
   // Failing for the second time changes the state to give an option to
   // continue.
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_TRUE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
@@ -1638,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
 
   // User stays in `kLoginFormDetectedUserCanContinue` after subsequent
   // failures.
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 
@@ -1656,6 +1698,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_TRUE(base::test::RunUntil(
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
   VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE,
       /*open_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,

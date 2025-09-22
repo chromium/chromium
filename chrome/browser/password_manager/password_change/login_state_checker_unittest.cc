@@ -25,6 +25,8 @@ using ::base::test::RunOnceCallback;
 using testing::InSequence;
 using testing::Invoke;
 using testing::WithArg;
+using QualityStatus = ::optimization_guide::proto::
+    PasswordChangeQuality_StepQuality_SubmissionStatus;
 
 std::unique_ptr<KeyedService> CreateOptimizationService(
     content::BrowserContext* context) {
@@ -45,13 +47,17 @@ void PostResponse(
                                 /*log_entry=*/nullptr));
 }
 
-void VerifyRetryCount(const optimization_guide::proto::LogAiDataRequest& log,
-                      const int expected_retry_count) {
+void VerifyQualityFields(const optimization_guide::proto::LogAiDataRequest& log,
+                         QualityStatus expected_quality_status,
+                         const int expected_retry_count) {
   EXPECT_EQ(log.password_change_submission()
                 .quality()
                 .logged_in_check()
                 .retry_count(),
             expected_retry_count);
+  EXPECT_EQ(
+      log.password_change_submission().quality().logged_in_check().status(),
+      expected_quality_status);
 }
 
 }  // namespace
@@ -106,7 +112,11 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
   EXPECT_TRUE(future.Take());
-  VerifyRetryCount(logs_uploader()->GetFinalLog(), 0);
+  VerifyQualityFields(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+      /*expected_retry_count=*/0);
 }
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
@@ -132,7 +142,11 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
   EXPECT_TRUE(future.Take());
-  VerifyRetryCount(logs_uploader()->GetFinalLog(), 1);
+  VerifyQualityFields(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+      /* expected_retry_count=*/1);
 }
 
 TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
@@ -141,7 +155,11 @@ TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
   ASSERT_TRUE(checker->capturer());
   checker->capturer()->ReplyWithContent(std::nullopt);
   EXPECT_FALSE(future.Take());
-  VerifyRetryCount(logs_uploader()->GetFinalLog(), 0);
+  VerifyQualityFields(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE,
+      /* expected_retry_count=*/0);
 }
 
 TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
@@ -168,8 +186,11 @@ TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
   static_cast<content::WebContentsObserver*>(checker.get())
       ->DidFinishNavigation(nullptr);
   EXPECT_FALSE(future.Take());
-  VerifyRetryCount(logs_uploader()->GetFinalLog(),
-                   LoginStateChecker::kMaxLoginChecks - 1);
+  VerifyQualityFields(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
+      /* expected_retry_count=*/LoginStateChecker::kMaxLoginChecks - 1);
 }
 
 TEST_F(LoginStateCheckerTest, CachesPageContentIfRequestInFlight) {

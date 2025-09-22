@@ -7,7 +7,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -33,6 +35,9 @@ class LoginStateChecker : public content::WebContentsObserver {
   // Maximum amount of login state checks.
   static constexpr int kMaxLoginChecks = 5;
   using LoginStateResultCallback = base::RepeatingCallback<void(bool)>;
+  using QualityStatus = optimization_guide::proto::
+      PasswordChangeQuality_StepQuality_SubmissionStatus;
+  using IsLoggedIn = base::StrongAlias<class IsLoggedInTag, bool>;
 
   LoginStateChecker(content::WebContents* web_contents,
                     ModelQualityLogsUploader* logs_uploader,
@@ -45,9 +50,10 @@ class LoginStateChecker : public content::WebContentsObserver {
 
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
-  void RespondWithLoginStatus(bool is_logged_in) {
+  void RespondWithLoginStatus(IsLoggedIn is_logged_in) {
+    SetLoginCheckQuality(is_logged_in);
     state_checks_count_++;
-    result_check_callback_.Run(is_logged_in);
+    result_check_callback_.Run(is_logged_in.value());
   }
 #endif
 
@@ -55,6 +61,9 @@ class LoginStateChecker : public content::WebContentsObserver {
   // To be called when the login checks should be terminated due
   // to max retries or an unexpected state.
   void TerminateLoginChecks();
+
+  // Sets the quality log state based on the last check performed.
+  void SetLoginCheckQuality(IsLoggedIn is_logged_in);
 
   OptimizationGuideKeyedService* GetOptimizationService();
 
