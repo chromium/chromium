@@ -1204,8 +1204,8 @@ mod tests {
     use cbor::cbor;
     use crypto::EcdsaKeyPair;
     use passkeys::{
-        CLAIMED_PIN, CLIENT_DATA_JSON, COSE_ALGORITHM, PIN_CLAIM_KEY, PIN_HASH, PROTOBUF,
-        PUB_KEY_CRED_PARAMS, RP_ID, WEBAUTHN_REQUEST,
+        CLAIMED_PIN, CLIENT_DATA_JSON, CLIENT_DATA_JSON_HASH, COSE_ALGORITHM, PIN_CLAIM_KEY,
+        PIN_HASH, PROTOBUF, PUB_KEY_CRED_PARAMS, RP_ID, WEBAUTHN_REQUEST,
     };
     use prost::Message;
     use recovery_key_store::{CERT_XML, SIG_XML};
@@ -1994,11 +1994,13 @@ mod tests {
 
     #[test]
     fn test_passkeys_assert() {
+        let client_data_json =
+            r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#;
         let msg = sign_request(cbor!({
             CMD: "passkeys/assert",
             WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
             PROTOBUF: (PROTOBUF_BYTES.to_vec()),
-            CLIENT_DATA_JSON: r#"{"type": "webauthn.get", challenge: "1234", "origin": "example.com"}"#,
+            CLIENT_DATA_JSON: client_data_json,
             WEBAUTHN_REQUEST: {
                 RP_ID: "example.com",
             },
@@ -2012,13 +2014,181 @@ mod tests {
             msg.clone(),
         )
         .unwrap();
-        assert!(is_ok(&output), "{:?}", output);
+        let Some(Value::Map(result)) = ok_value(&output) else {
+            panic!("{:?}", output);
+        };
+        let Some(Value::Map(response)) =
+            result.get(&MapKeyRef::Str("response") as &dyn MapLookupKey)
+        else {
+            panic!("{:?}", result);
+        };
+        let Some(Value::String(response_client_data_json)) =
+            response.get(&MapKeyRef::Str("clientDataJSON") as &dyn MapLookupKey)
+        else {
+            panic!("{:?}", response);
+        };
+        assert_eq!(response_client_data_json, client_data_json);
         assert_eq!(
             metrics,
             MetricsUpdate {
                 passkeys_assert: 1,
                 ..MetricsUpdate::default()
             }
+        );
+    }
+
+    #[test]
+    fn test_passkeys_assert_with_hash() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            PROTOBUF: (PROTOBUF_BYTES.to_vec()),
+            CLIENT_DATA_JSON_HASH: (&[1u8; 32]),
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let mut metrics = MetricsUpdate::default();
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        let Some(Value::Map(result)) = ok_value(&output) else {
+            panic!("{:?}", output);
+        };
+        let Some(Value::Map(response)) =
+            result.get(&MapKeyRef::Str("response") as &dyn MapLookupKey)
+        else {
+            panic!("{:?}", result);
+        };
+        assert!(response
+            .get(&MapKeyRef::Str("clientDataJSON") as &dyn MapLookupKey)
+            .is_none());
+        assert_eq!(
+            metrics,
+            MetricsUpdate {
+                passkeys_assert: 1,
+                ..MetricsUpdate::default()
+            }
+        );
+    }
+
+    #[test]
+    fn test_passkeys_assert_missing_client_data_json() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            PROTOBUF: (PROTOBUF_BYTES.to_vec()),
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let mut metrics = MetricsUpdate::default();
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+        let error = single_error_string(&output).unwrap();
+        assert!(
+            error.contains("either clientDataJson or clientDataJsonHash are required"),
+            "{:?}",
+            output
+        );
+    }
+
+    #[test]
+    fn test_passkeys_assert_client_data_json_wrong_hash_length() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            PROTOBUF: (PROTOBUF_BYTES.to_vec()),
+            CLIENT_DATA_JSON_HASH: (&[1u8; 33]),
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let mut metrics = MetricsUpdate::default();
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+        let error = single_error_string(&output).unwrap();
+        assert!(
+            error.contains("clientDataJsonHash does not match expected length"),
+            "{:?}",
+            output
+        );
+    }
+
+    #[test]
+    fn test_passkeys_assert_client_data_json_not_a_string() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            PROTOBUF: (PROTOBUF_BYTES.to_vec()),
+            CLIENT_DATA_JSON: (&[1u8; 32]),  // Not a string.
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let mut metrics = MetricsUpdate::default();
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+        let error = single_error_string(&output).unwrap();
+        assert!(
+            error.contains("clientDataJson is not a string"),
+            "{:?}",
+            output
+        );
+    }
+
+    #[test]
+    fn test_passkeys_assert_client_data_json_hash_not_a_bytestring() {
+        let msg = sign_request(cbor!({
+            CMD: "passkeys/assert",
+            WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.as_slice()),
+            PROTOBUF: (PROTOBUF_BYTES.to_vec()),
+            CLIENT_DATA_JSON_HASH: "not a bytestring",
+            WEBAUTHN_REQUEST: {
+                RP_ID: "example.com",
+            },
+        }));
+        let mut metrics = MetricsUpdate::default();
+        let (output, _state) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg.clone(),
+        )
+        .unwrap();
+        assert!(!is_ok(&output));
+        let error = single_error_string(&output).unwrap();
+        assert!(
+            error.contains("clientDataJsonHash is not a bytestring"),
+            "{:?}",
+            output
         );
     }
 
