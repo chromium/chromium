@@ -168,7 +168,7 @@ void BridgeIceController::SelectAndPingConnection() {
   agent_.UpdateConnectionStates();
 
   IceControllerInterface::PingResult result =
-      native_controller_->SelectConnectionToPing(agent_.GetLastPingSentMs());
+      native_controller_->GetConnectionToPing(agent_.GetLastPingSent());
   bool reply_expected = false;
   if (observer_) {
     // Ping proposal without a connection may still be useful to indicate a
@@ -216,7 +216,8 @@ void BridgeIceController::OnPingProposalRejected(
 void BridgeIceController::DoPerformPing(
     const webrtc::IceControllerInterface::PingResult result) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-  DoPerformPing(result.connection.value_or(nullptr), result.recheck_delay_ms);
+  DoPerformPing(result.connection.value_or(nullptr),
+                result.recheck_delay().ms());
 }
 
 void BridgeIceController::DoPerformPing(const webrtc::Connection* connection,
