@@ -39,7 +39,6 @@ class SVGPathByteStream {
 
  public:
   using Data = Vector<unsigned char>;
-  using DataIterator = Data::const_iterator;
 
   SVGPathByteStream() = default;
   explicit SVGPathByteStream(const Vector<unsigned char, 1024>& other) {
@@ -53,8 +52,7 @@ class SVGPathByteStream {
     return base::WrapUnique(new SVGPathByteStream(data_));
   }
 
-  DataIterator begin() const { return data_.begin(); }
-  DataIterator end() const { return data_.end(); }
+  base::span<const uint8_t> Span() const { return data_; }
   void clear() { data_.clear(); }
   void ReserveInitialCapacity(wtf_size_t size) {
     data_.ReserveInitialCapacity(size);
