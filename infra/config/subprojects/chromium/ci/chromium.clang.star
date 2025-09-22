@@ -1767,7 +1767,7 @@ ci.builder(
             "clang_tot_gn",
             "no_treat_warnings_as_errors",
             "ios_simulator",
-            "x64",
+            "arm64",
             "ios_disable_code_signing",
             "release_builder",
             "xctest",
@@ -1783,7 +1783,7 @@ ci.builder(
         mixins = [
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
-            "mac_default_x64",
+            "mac_default_arm64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_26_main",
