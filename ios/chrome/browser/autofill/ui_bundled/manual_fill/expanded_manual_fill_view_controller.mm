@@ -256,16 +256,14 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
     _headerViewTrailingConstraint,
   ]];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf resetHeaderViewOnTraitChange];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    [weakSelf resetHeaderViewOnTraitChange];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -311,22 +309,6 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
 
   [self adjustTopHeaderViewConstraint];
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self resetHeaderViewOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - Setters
 
