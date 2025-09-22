@@ -640,10 +640,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     return;
   }
 
-  const auto start_padding =
-      discard_padding ? buffer->discard_padding()->first : base::TimeDelta();
-  const auto end_padding =
-      discard_padding ? buffer->discard_padding()->second : base::TimeDelta();
+  const auto start_padding = buffer->discard_padding()
+                                 ? buffer->discard_padding()->first
+                                 : base::TimeDelta();
+  const auto end_padding = buffer->discard_padding()
+                               ? buffer->discard_padding()->second
+                               : base::TimeDelta();
 
   // Save the timestamp of the first non-discarded frame, to calculate duration
   // below. Only the first buffer should have discard padding.

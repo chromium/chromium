@@ -441,6 +441,7 @@
 //media/test/data/pixel-41x22-yuv420.jpg
 //media/test/data/pixel-41x23-yuv420.jpg
 //media/test/data/player.html
+//media/test/data/populated-zero-value-padding.ogg
 //media/test/data/puppets-1280x720.i420.yuv.webm
 //media/test/data/puppets-1280x720.nv12.yuv.json
 //media/test/data/puppets-320x180.nv12.yuv.json

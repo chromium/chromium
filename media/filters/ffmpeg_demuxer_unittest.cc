@@ -33,6 +33,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
@@ -111,24 +112,19 @@ const auto kEncryptedMediaInitData = std::to_array<uint8_t>({
     0x35,
 });
 
-static void EosOnReadDone(bool* got_eos_buffer,
-                          base::OnceClosure quit_closure,
+static void EosOnReadDone(base::OnceClosure quit_closure,
+                          bool* got_eos_buffer,
                           DemuxerStream::Status status,
                           DemuxerStream::DecoderBufferVector buffers) {
   // TODO(crbug.com/40232931): add multi read unit tests in next CL.
-  DCHECK_EQ(buffers.size(), 1u)
+  CHECK_EQ(buffers.size(), 1u)
       << "FFmpegDemuxerTest only reads a single-buffer.";
-  scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
-  std::move(quit_closure).Run();
   EXPECT_EQ(status, DemuxerStream::kOk);
-  if (buffer->end_of_stream()) {
-    *got_eos_buffer = true;
-    return;
-  }
-  auto buffer_span = base::span(*buffer);
-  EXPECT_TRUE(buffer_span.data());
-  EXPECT_FALSE(buffer_span.empty());
-  *got_eos_buffer = false;
+
+  const DecoderBuffer& buffer = (*buffers[0]);
+  EXPECT_TRUE(buffer.end_of_stream() || !buffer.empty());
+  *got_eos_buffer = buffer.end_of_stream();
+  std::move(quit_closure).Run();
 }
 
 // Fixture class to facilitate writing tests.  Takes care of setting up the
@@ -195,25 +191,15 @@ class FFmpegDemuxerTest : public testing::Test {
     InitializeDemuxerInternal(expected_pipeline_status, base::Time());
   }
 
-  MOCK_METHOD2(OnReadDoneCalled, void(int, int64_t));
+  MOCK_METHOD2(OnReadDoneCalled,
+               void(std::optional<size_t>, std::optional<int64_t>));
 
   struct ReadExpectation {
-    ReadExpectation(size_t size,
-                    int64_t timestamp_us,
-                    base::TimeDelta discard_front_padding,
-                    bool is_key_frame,
-                    DemuxerStream::Status status)
-        : size(size),
-          timestamp_us(timestamp_us),
-          discard_front_padding(discard_front_padding),
-          is_key_frame(is_key_frame),
-          status(status) {}
-
-    size_t size;
-    int64_t timestamp_us;
+    std::optional<size_t> size;
+    std::optional<int64_t> timestamp_us;
     base::TimeDelta discard_front_padding;
-    bool is_key_frame;
-    DemuxerStream::Status status;
+    bool is_key_frame = true;
+    DemuxerStream::Status status = DemuxerStream::Status::kOk;
   };
 
   // Verifies that |buffer| has a specific |size| and |timestamp|.
@@ -225,24 +211,27 @@ class FFmpegDemuxerTest : public testing::Test {
                   DemuxerStream::Status status,
                   DemuxerStream::DecoderBufferVector buffers) {
     // TODO(crbug.com/40232931): add multi read unit tests in next CL.
-    DCHECK_LE(buffers.size(), 1u)
+    CHECK_LE(buffers.size(), 1u)
         << "FFmpegDemuxerTest only reads a single-buffer.";
-    std::string location_str = location.ToString();
-    location_str += "\n";
-    SCOPED_TRACE(location_str);
+    SCOPED_TRACE(location.ToString() + "\n");
     EXPECT_EQ(read_expectation.status, status);
     if (status == DemuxerStream::kOk) {
-      DCHECK_EQ(buffers.size(), 1u);
-      scoped_refptr<DecoderBuffer> buffer = std::move(buffers[0]);
-      EXPECT_TRUE(buffer);
-      EXPECT_EQ(read_expectation.size, buffer->size());
-      EXPECT_EQ(read_expectation.timestamp_us,
-                buffer->timestamp().InMicroseconds());
-      auto discard_padding = buffer->discard_padding();
+      CHECK_EQ(buffers.size(), 1u);
+      CHECK(buffers[0]);
+      const DecoderBuffer& buffer = *(buffers[0]);
+
+      if (read_expectation.size) {
+        EXPECT_EQ(read_expectation.size.value(), buffer.size());
+      }
+      if (read_expectation.timestamp_us) {
+        EXPECT_EQ(read_expectation.timestamp_us.value(),
+                  buffer.timestamp().InMicroseconds());
+      }
+      const auto discard_padding = buffer.discard_padding();
       EXPECT_EQ(read_expectation.discard_front_padding,
                 discard_padding.has_value() ? discard_padding->first
                                             : base::TimeDelta());
-      EXPECT_EQ(read_expectation.is_key_frame, buffer->is_key_frame());
+      EXPECT_EQ(read_expectation.is_key_frame, buffer.is_key_frame());
     }
     OnReadDoneCalled(read_expectation.size, read_expectation.timestamp_us);
     std::move(quit_closure).Run();
@@ -250,19 +239,12 @@ class FFmpegDemuxerTest : public testing::Test {
 
   DemuxerStream::ReadCB NewReadCBWithCheckedDiscard(
       const base::Location& location,
-      int size,
-      int64_t timestamp_us,
-      base::TimeDelta discard_front_padding,
-      bool is_key_frame,
-      DemuxerStream::Status status,
+      ReadExpectation expectation,
       base::OnceClosure quit_closure) {
-    EXPECT_CALL(*this, OnReadDoneCalled(size, timestamp_us));
-
-    struct ReadExpectation read_expectation(
-        size, timestamp_us, discard_front_padding, is_key_frame, status);
-
+    EXPECT_CALL(*this,
+                OnReadDoneCalled(expectation.size, expectation.timestamp_us));
     return base::BindOnce(&FFmpegDemuxerTest::OnReadDone,
-                          base::Unretained(this), location, read_expectation,
+                          base::Unretained(this), location, expectation,
                           std::move(quit_closure));
   }
 
@@ -273,10 +255,17 @@ class FFmpegDemuxerTest : public testing::Test {
             bool is_key_frame,
             DemuxerStream::Status status = DemuxerStream::Status::kOk,
             base::TimeDelta discard_front_padding = base::TimeDelta()) {
+    Read(stream, location,
+         ReadExpectation{size, timestamp_us, discard_front_padding,
+                         is_key_frame, status});
+  }
+
+  void Read(DemuxerStream* stream,
+            const base::Location& location,
+            const ReadExpectation& expectation) {
     base::RunLoop run_loop;
-    stream->Read(1, NewReadCBWithCheckedDiscard(
-                        location, size, timestamp_us, discard_front_padding,
-                        is_key_frame, status, run_loop.QuitClosure()));
+    stream->Read(1, NewReadCBWithCheckedDiscard(location, expectation,
+                                                run_loop.QuitClosure()));
     run_loop.Run();
 
     // Ensure tasks posted after the ReadCB is satisfied run. These are always
@@ -331,17 +320,24 @@ class FFmpegDemuxerTest : public testing::Test {
     return demuxer_->FindPreferredStreamForSeeking(seek_time);
   }
 
-  void ReadUntilEndOfStream(DemuxerStream* stream) {
+  // Returns the number of successful read calls before the EOS was reached.
+  // This value is useful for sanity checking that we properly processed a
+  // stream with known length.
+  size_t ReadUntilEndOfStream(DemuxerStream* stream) {
+    constexpr size_t kMaxReads = 170;
+
     bool got_eos_buffer = false;
-    const int kMaxBuffers = 170;
-    for (int i = 0; !got_eos_buffer && i < kMaxBuffers; i++) {
+    size_t num_reads = 0;
+    while (!got_eos_buffer && num_reads < kMaxReads) {
       base::RunLoop loop;
-      stream->Read(1, base::BindOnce(&EosOnReadDone, &got_eos_buffer,
-                                     loop.QuitWhenIdleClosure()));
+      stream->Read(1, base::BindOnce(&EosOnReadDone, loop.QuitWhenIdleClosure(),
+                                     &got_eos_buffer));
       loop.Run();
+      ++num_reads;
     }
 
     EXPECT_TRUE(got_eos_buffer);
+    return num_reads;
   }
 
   void Seek(base::TimeDelta seek_target) {
@@ -555,7 +551,6 @@ TEST_F(FFmpegDemuxerTest, Initialize_NoConfigChangeSupport) {
 }
 
 TEST_F(FFmpegDemuxerTest, AbortPendingReads) {
-  // We test that on a successful audio packet read.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
 
@@ -569,8 +564,11 @@ TEST_F(FFmpegDemuxerTest, AbortPendingReads) {
   {
     base::RunLoop run_loop;
     audio->Read(1, NewReadCBWithCheckedDiscard(
-                       FROM_HERE, 29, 0, base::TimeDelta(), true,
-                       DemuxerStream::kAborted, run_loop.QuitClosure()));
+                       FROM_HERE,
+                       ReadExpectation{.size = 29,
+                                       .timestamp_us = 0,
+                                       .status = DemuxerStream::kAborted},
+                       run_loop.QuitClosure()));
     demuxer_->AbortPendingReads();
     run_loop.Run();
     task_environment_.RunUntilIdle();
@@ -589,7 +587,6 @@ TEST_F(FFmpegDemuxerTest, AbortPendingReads) {
 }
 
 TEST_F(FFmpegDemuxerTest, Read_Audio) {
-  // We test that on a successful audio packet read.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
 
@@ -601,7 +598,6 @@ TEST_F(FFmpegDemuxerTest, Read_Audio) {
 }
 
 TEST_F(FFmpegDemuxerTest, Read_Video) {
-  // We test that on a successful video packet read.
   CreateDemuxer("bear-320x240.webm");
   InitializeDemuxer();
 
@@ -610,6 +606,44 @@ TEST_F(FFmpegDemuxerTest, Read_Video) {
   Read(video, FROM_HERE, 22084, 0, true);
   Read(video, FROM_HERE, 1057, 33000, false);
   EXPECT_EQ(GetExpectedMemoryUsage(193, 148778), demuxer_->GetMemoryUsage());
+}
+
+// Ensure that the demuxer properly handles files where the discard padding
+// is set, but set to a value of zero. Since the buffer has an optimization
+// to ignore zero-value discard padding, care must be taken to ensure that the
+// demuxer properly handles this case.
+//
+// See associated fuzzing bug crbug.com/445206931 for inspiration.
+TEST_F(FFmpegDemuxerTest, Read_Audio_PopulatedZeroValueDiscardPadding) {
+  // To test, we simply need to read until the end of the stream. Improper
+  // handling will result in a crash on the 29th Read() call.
+  constexpr size_t kExpectedNumberOfReads = 103;
+  constexpr int kReadWithPopulatedZeroValueDiscardPadding = 29;
+
+  CreateDemuxer("populated-zero-value-padding.ogg");
+  InitializeDemuxer();
+  DemuxerStream* audio = GetStream(DemuxerStream::AUDIO);
+
+  // Ensure we can read all the way up to the special buffer.
+  Read(audio, FROM_HERE,
+       ReadExpectation{.discard_front_padding = base::Microseconds(7416)});
+  for (int i = 1; i < kReadWithPopulatedZeroValueDiscardPadding; ++i) {
+    Read(audio, FROM_HERE, ReadExpectation{});
+  }
+
+  // This is the Read() with the special buffer. Make sure it has a zero value
+  // discard padding.
+  Read(audio, FROM_HERE,
+       ReadExpectation{
+           .size = 215,
+           .timestamp_us = 580000,
+           .discard_front_padding = base::TimeDelta(),
+       });
+
+  // And then read the file to the end of the stream.
+  EXPECT_EQ(
+      ReadUntilEndOfStream(audio),
+      kExpectedNumberOfReads - kReadWithPopulatedZeroValueDiscardPadding - 1);
 }
 
 TEST_F(FFmpegDemuxerTest, SeekInitialized_NoVideoStartTime) {

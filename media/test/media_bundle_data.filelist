@@ -429,6 +429,7 @@ data/pixel-40x23-yuv420.jpg
 data/pixel-41x22-yuv420.jpg
 data/pixel-41x23-yuv420.jpg
 data/player.html
+data/populated-zero-value-padding.ogg
 data/puppets-1280x720.i420.yuv.webm
 data/puppets-1280x720.nv12.yuv.json
 data/puppets-320x180.nv12.yuv.json
