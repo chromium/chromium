@@ -6214,7 +6214,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_CONTINUE" desc="Header for continue sheet. Sheet is shown to prompt user to continue to a website using an account from an identity provider.">
         Continue to <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%2$s<ex>idp.com</ex></ph>
       </message>
-    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_FOR_EMBED" desc="Subtitle for account selection sheet. Explains the relationship between the embedder website and the embedded iframe." translateable="false">
+    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_FOR_EMBED" desc="Subtitle for account selection sheet. Explains the relationship between the embedder website and the embedded iframe.">
       <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph> embeds content from <ph name="IFRAME_ETLD_PLUS_ONE">%2$s<ex>iframe.example</ex></ph>
     </message>
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_NAME" desc="A user's name, to be used in a list of items shared with a website">

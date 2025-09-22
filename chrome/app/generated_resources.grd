@@ -18450,7 +18450,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT_CONTINUE" desc="Header for continue-to sheet. Sheet is shown to prompt user to continue using their identity from an identity provider on a website.">
       Continue to <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$2<ex>idp.example</ex></ph>
     </message>
-    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_FOR_EMBED" desc="Subtitle for account selection sheet. Explains the relationship between the embedder website and the embedded iframe." translateable="false">
+    <message name="IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE_FOR_EMBED" desc="Subtitle for account selection sheet. Explains the relationship between the embedder website and the embedded iframe.">
       <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph> embeds content from <ph name="IFRAME_ETLD_PLUS_ONE">$2<ex>iframe.example</ex></ph>
     </message>
     <message name="IDS_ACCOUNT_SELECTION_CONTINUE" desc="Title of the button that continues filling with the only available set of credentials.">
