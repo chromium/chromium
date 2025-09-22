@@ -25,6 +25,7 @@ using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsInclude;
 using ::base::test::RunOnceCallback;
+using ::testing::Each;
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using UkmBnplSuggestionShownType = ukm::builders::Autofill_BnplSuggestionShown;
@@ -122,11 +123,20 @@ TEST_F(CreditCardFormEventLoggerTest,
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
   autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmBnplSuggestionShownType::kEntryName,
-            {{{UkmBnplSuggestionShownType::kShownName, true}}});
-  VerifyUkm(&test_ukm_recorder(), form,
-            UkmBnplSuggestionAcceptedType::kEntryName,
-            {{{UkmBnplSuggestionAcceptedType::kAcceptedName, true}}});
+  {
+    using Ukm = UkmBnplSuggestionShownType;
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+                UkmEventsAre({{{Ukm::kShownName, true}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
+  }
+  {
+    using Ukm = UkmBnplSuggestionAcceptedType;
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+                UkmEventsAre({{{Ukm::kAcceptedName, true}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
+  }
 }
 
 // Tests that the Bnpl FormFilledOnce event is logged once when
@@ -480,8 +490,11 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmBnplSuggestionShownType::kEntryName,
-            {{{UkmBnplSuggestionShownType::kShownName, true}}});
+  using Ukm = UkmBnplSuggestionShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre({{{Ukm::kShownName, true}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 // Test that we log parsed form event for credit card forms.
@@ -494,9 +507,9 @@ TEST_F(CreditCardFormEventLoggerTest, CreditCardParsedFormEvents) {
                   CreateTestFormField("Verification", "verification", "",
                                       FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
-                                        CREDIT_CARD_EXP_MONTH,
-                                        CREDIT_CARD_VERIFICATION_CODE};
+  const std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
+                                              CREDIT_CARD_EXP_MONTH,
+                                              CREDIT_CARD_VERIFICATION_CODE};
 
   base::HistogramTester histogram_tester;
   SeeForm(form);
@@ -510,7 +523,7 @@ TEST_F(CreditCardFormEventLoggerTest, CreditCardParsedFormEvents) {
 TEST_F(CreditCardFormEventLoggerTest, StandaloneCvcParsedFormEvents) {
   FormData form = CreateForm({CreateTestFormField(
       "Standalone Cvc", "CVC", "", FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
 
   base::HistogramTester histogram_tester;
@@ -998,7 +1011,7 @@ TEST_F(
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
   autofill_manager().AddSeenForm(form, field_types);
@@ -1033,7 +1046,7 @@ TEST_F(CreditCardFormEventLoggerTest,
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -1083,7 +1096,7 @@ TEST_F(CreditCardFormEventLoggerTest,
        .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
                   {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
                   {.role = CREDIT_CARD_NUMBER, .value = u""}}});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -1304,17 +1317,20 @@ TEST_F(CreditCardFormEventLoggerTest,
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+                    {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                    {Ukm::kServerTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,
@@ -1341,17 +1357,21 @@ TEST_F(CreditCardFormEventLoggerTest,
       BucketsInclude(Bucket(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE, 1),
                      Bucket(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE, 1)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+                    {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                    {Ukm::kServerTypeName, CREDIT_CARD_NUMBER},
+                    {Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmSuggestionsShownType::kEntryName),
+      Each(form.main_frame_origin().GetURL()));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,
@@ -1376,16 +1396,20 @@ TEST_F(CreditCardFormEventLoggerTest,
       BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, 1),
                      Bucket(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kLocalCard)},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().front()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kLocalCard},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,
@@ -1415,16 +1439,20 @@ TEST_F(CreditCardFormEventLoggerTest,
           Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, 1),
           Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kVirtualCard)},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().front()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kVirtualCard},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().front()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,
@@ -1450,16 +1478,20 @@ TEST_F(CreditCardFormEventLoggerTest,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED, 1),
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, 1)));
 
-  VerifyUkm(&test_ukm_recorder(), form, UkmSuggestionFilledType::kEntryName,
-            {{{UkmSuggestionFilledType::kRecordTypeName,
-               base::to_underlying(CreditCard::RecordType::kMaskedServerCard)},
-              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-              {UkmSuggestionFilledType::kIsForCreditCardName, true},
-              {UkmSuggestionFilledType::kFieldSignatureName,
-               Collapse(CalculateFieldSignatureForField(form.fields().back()))
-                   .value()},
-              {UkmSuggestionFilledType::kFormSignatureName,
-               Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionFilledType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kRecordTypeName, CreditCard::RecordType::kMaskedServerCard},
+            {Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kIsForCreditCardName, true},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields().back()))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 TEST_F(CreditCardFormEventLoggerTest,
@@ -1516,17 +1548,22 @@ TEST_F(CreditCardFormEventLoggerTest,
           Bucket(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
                  0)));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},
-        {UkmTextFieldValueChangedType::kHeuristicTypeName, CREDIT_CARD_NUMBER},
-        {UkmTextFieldValueChangedType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[2])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre(
+          {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+            {Ukm::kHeuristicTypeName, CREDIT_CARD_NUMBER},
+            {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+            {UkmTextFieldValueChangedType::kServerTypeName, CREDIT_CARD_NUMBER},
+            {Ukm::kFieldSignatureName,
+             Collapse(CalculateFieldSignatureForField(form.fields()[2]))
+                 .value()},
+            {Ukm::kFormSignatureName,
+             Collapse(CalculateFormSignature(form)).value()}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+      Each(form.main_frame_origin().GetURL()));
 }
 
 // Test that we log "will submit" and "submitted" form events for credit
@@ -1711,7 +1748,7 @@ TEST_F(CreditCardFormEventLoggerTest, MixedParsedFormEvents) {
        CreateTestFormField("Verification", "verification", "",
                            FormControlType::kInputText)});
 
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       ADDRESS_HOME_STATE,          ADDRESS_HOME_CITY,
       ADDRESS_HOME_STREET_ADDRESS, CREDIT_CARD_NAME_FULL,
       CREDIT_CARD_EXP_MONTH,       CREDIT_CARD_VERIFICATION_CODE};
@@ -1901,7 +1938,7 @@ TEST_F(CreditCardFormEventLoggerTest, NonSecureCreditCardForm) {
                                       FormControlType::kInputText),
                   CreateTestFormField("Expiration date", "expdate", "",
                                       FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {
+  const std::vector<FieldType> field_types = {
       CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_MONTH,
       CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR};
 

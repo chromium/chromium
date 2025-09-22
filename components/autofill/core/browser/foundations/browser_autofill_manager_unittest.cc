@@ -151,6 +151,8 @@
 namespace autofill {
 namespace {
 
+using autofill_metrics::GetUkmEvents;
+using autofill_metrics::UkmEventsAre;
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::UTF8ToUTF16;
@@ -2363,17 +2365,22 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
       "Autofill.KeyMetrics.FillingCorrectness.LoyaltyCard", 0);
   histogram_tester.ExpectBucketCount(
       "Autofill.KeyMetrics.FillingAssistance.LoyaltyCard", 0, 1);
-  autofill_metrics::VerifyUkm(
-      client().GetUkmRecorder(), form, UkmAutofillKeyMetricsType::kEntryName,
-      {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-        {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
-        {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-        {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-        {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-        {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-        {UkmAutofillKeyMetricsType::kFormTypesName,
-         AutofillMetrics::FormTypesToBitVector(
-             {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+
+  using Ukm = UkmAutofillKeyMetricsType;
+  EXPECT_THAT(
+      GetUkmEvents(*client().GetUkmRecorder(), Ukm::kEntryName),
+      UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                     {Ukm::kFillingAcceptanceName, 0},
+                     {Ukm::kFillingAssistanceName, 0},
+                     {Ukm::kAutofillFillsName, 0},
+                     {Ukm::kFormElementUserModificationsName, 0},
+                     {Ukm::kFlowIdName, flow_id.value()},
+                     {Ukm::kFormTypesName,
+                      AutofillMetrics::FormTypesToBitVector(
+                          {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+  EXPECT_THAT(autofill_metrics::GetEventUrls(*client().GetUkmRecorder(),
+                                             Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
 }
 
 // Tests that when both email and loyalty card suggestions are available, they

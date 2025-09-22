@@ -21,6 +21,7 @@ using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using test::CreateTestFormField;
+using ::testing::Each;
 using ::testing::IsEmpty;
 
 // Parameterized test where the parameter indicates how far we went through
@@ -194,19 +195,21 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
             LOYALTY_MEMBERSHIP_ID, /*suggestion_accepted=*/true),
         1);
 
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmAutofillKeyMetricsType::kEntryName,
-        {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-          {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
-          {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
-          {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
-          {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
-          {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-          {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-          {UkmAutofillKeyMetricsType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector(
-               {FormTypeNameForLogging::kLoyaltyCardForm})}}});
-
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                       {Ukm::kFillingAcceptanceName, 1},
+                       {Ukm::kFillingCorrectnessName, 1},
+                       {Ukm::kFillingAssistanceName, 1},
+                       {Ukm::kAutofillFillsName, 1},
+                       {Ukm::kFormElementUserModificationsName, 0},
+                       {Ukm::kFlowIdName, flow_id.value()},
+                       {Ukm::kFormTypesName,
+                        AutofillMetrics::FormTypesToBitVector(
+                            {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.LoyaltyCard", 0);
@@ -223,9 +226,9 @@ TEST_P(LoyaltyCardFormEventLoggerFunnelTest, LogKeyMetrics) {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-    EXPECT_THAT(test_ukm_recorder().GetEntriesByName(
-                    UkmAutofillKeyMetricsType::kEntryName),
-                IsEmpty());
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(),
+                             UkmAutofillKeyMetricsType::kEntryName),
+                UkmEventsAre({}));
   }
   if (user_accepted_suggestion) {
     histogram_tester.ExpectBucketCount(
@@ -259,22 +262,17 @@ class LoyaltyCardFormEventLoggerBaseKeyMetricsTest
 
   void TearDown() override { TearDownHelper(); }
 
-  void AppendLoyaltyCardFormEventUkm(
-      const FormEvent& form_event,
-      std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
-    AppendFormEventUkm(
-        form_event, /*form_types=*/{FormTypeNameForLogging::kLoyaltyCardForm},
-        expected_metrics);
-  }
-
   void VerifyInteractedWithFormUkmMetric() {
-    VerifyUkm(&test_ukm_recorder(), form_,
-              UkmInteractedWithFormType::kEntryName,
-              {{{UkmInteractedWithFormType::kIsForCreditCardName, false},
-                {UkmInteractedWithFormType::kLocalRecordTypeCountName, 2},
-                {UkmInteractedWithFormType::kServerRecordTypeCountName, 0},
-                {UkmInteractedWithFormType::kFormSignatureName,
-                 Collapse(CalculateFormSignature(form_)).value()}}});
+    using Ukm = UkmInteractedWithFormType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kIsForCreditCardName, false},
+                       {Ukm::kLocalRecordTypeCountName, 2},
+                       {Ukm::kServerRecordTypeCountName, 0},
+                       {Ukm::kFormSignatureName,
+                        Collapse(CalculateFormSignature(form_)).value()}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
   }
 
   // Fillable form.
@@ -311,19 +309,25 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                       {Ukm::kFillingAssistanceName, 0},
+                       {Ukm::kAutofillFillsName, 0},
+                       {Ukm::kFormElementUserModificationsName, 0},
+                       {Ukm::kFlowIdName, flow_id.value()},
+                       {Ukm::kFormTypesName,
+                        AutofillMetrics::FormTypesToBitVector(
+                            {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   EXPECT_THAT(
-      test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
-      IsEmpty());
+      GetUkmEvents(test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+      UkmEventsAre({}));
 
   VerifyInteractedWithFormUkmMetric();
 }
@@ -363,20 +367,26 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
           field_types_[1], /*suggestion_accepted=*/false),
       1);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                       {Ukm::kFillingAcceptanceName, 0},
+                       {Ukm::kFillingAssistanceName, 0},
+                       {Ukm::kAutofillFillsName, 0},
+                       {Ukm::kFormElementUserModificationsName, 2},
+                       {Ukm::kFlowIdName, flow_id.value()},
+                       {Ukm::kFormTypesName,
+                        AutofillMetrics::FormTypesToBitVector(
+                            {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   EXPECT_THAT(
-      test_ukm_recorder().GetEntriesByName(UkmSuggestionFilledType::kEntryName),
-      IsEmpty());
+      GetUkmEvents(test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+      UkmEventsAre({}));
 
   VerifyInteractedWithFormUkmMetric();
 }
@@ -415,62 +425,70 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, UserAcceptsSuggestion) {
           field_types_[1], /*suggestion_accepted=*/true),
       1);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
-              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                       {Ukm::kFillingAcceptanceName, 1},
+                       {Ukm::kFillingCorrectnessName, 1},
+                       {Ukm::kFillingAssistanceName, 1},
+                       {Ukm::kAutofillFillsName, 1},
+                       {Ukm::kFormElementUserModificationsName, 0},
+                       {Ukm::kFlowIdName, flow_id.value()},
+                       {Ukm::kFormTypesName,
+                        AutofillMetrics::FormTypesToBitVector(
+                            {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
-  VerifyUkm(
-      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
-      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
-        {UkmSuggestionFilledType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form_)).value()},
-        {UkmSuggestionFilledType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+  {
+    using Ukm = UkmSuggestionFilledType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre(
+            {{{Ukm::kIsForCreditCardName, false},
+              {Ukm::kFormSignatureName,
+               Collapse(CalculateFormSignature(form_)).value()},
+              {Ukm::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form_.fields()[1]))
+                   .value()},
+              {Ukm::kMillisecondsSinceFormParsedName, 0}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   // Verify that the FORM_EVENT_LOCAL_SUGGESTION_FILLED and
   // FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE events are logged by the logger,
   // other events are logged by the base logger.
-  std::vector<std::vector<ExpectedUkmMetricsPair>> expected_form_event_metrics;
-  // Form parsed.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_DID_PARSE_FORM,
-                                &expected_form_event_metrics);
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_DID_PARSE_FORM,
-                                &expected_form_event_metrics);
-  // User interacted with the form.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_INTERACTED_ONCE,
-                                &expected_form_event_metrics);
-  // Suggestion shown.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTIONS_SHOWN,
-                                &expected_form_event_metrics);
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE,
-                                &expected_form_event_metrics);
-  // Suggestion filled.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_FILLED,
-                                &expected_form_event_metrics);
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
-                                &expected_form_event_metrics);
-  // Form submitted.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE,
-                                &expected_form_event_metrics);
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE,
-                                &expected_form_event_metrics);
-  // Suggestion submitted.
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE,
-                                &expected_form_event_metrics);
-  AppendLoyaltyCardFormEventUkm(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE,
-                                &expected_form_event_metrics);
-
-  VerifyUkm(&test_ukm_recorder(), form_, UkmFormEventType::kEntryName,
-            expected_form_event_metrics);
+  {
+    using Ukm = UkmFormEventType;
+    auto event_metrics = [](FormEvent e) {
+      return std::vector<UkmMetricNameAndValue>{
+          {Ukm::kAutofillFormEventName, e},
+          {Ukm::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kLoyaltyCardForm})},
+          {Ukm::kMillisecondsSinceFormParsedName, 0}};
+    };
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre(
+            {event_metrics(FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(FORM_EVENT_INTERACTED_ONCE),
+             event_metrics(FORM_EVENT_SUGGESTIONS_SHOWN),
+             event_metrics(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE),
+             event_metrics(FORM_EVENT_LOCAL_SUGGESTION_FILLED),
+             event_metrics(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE),
+             event_metrics(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE),
+             event_metrics(FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE),
+             event_metrics(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE),
+             event_metrics(FORM_EVENT_SUGGESTION_SHOWN_SUBMITTED_ONCE)}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   VerifyInteractedWithFormUkmMetric();
 }
@@ -511,26 +529,39 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
           field_types_[1], /*suggestion_accepted=*/true),
       1);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
-              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kLoyaltyCardForm})}}});
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre({{{Ukm::kFillingReadinessName, 1},
+                       {Ukm::kFillingAcceptanceName, 1},
+                       {Ukm::kFillingCorrectnessName, 0},
+                       {Ukm::kFillingAssistanceName, 1},
+                       {Ukm::kAutofillFillsName, 1},
+                       {Ukm::kFormElementUserModificationsName, 1},
+                       {Ukm::kFlowIdName, flow_id.value()},
+                       {Ukm::kFormTypesName,
+                        AutofillMetrics::FormTypesToBitVector(
+                            {FormTypeNameForLogging::kLoyaltyCardForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
-  VerifyUkm(
-      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
-      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
-        {UkmSuggestionFilledType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form_)).value()},
-        {UkmSuggestionFilledType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+  {
+    using Ukm = UkmSuggestionFilledType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre(
+            {{{Ukm::kIsForCreditCardName, false},
+              {Ukm::kFormSignatureName,
+               Collapse(CalculateFormSignature(form_)).value()},
+              {Ukm::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form_.fields()[1]))
+                   .value()},
+              {Ukm::kMillisecondsSinceFormParsedName, 0}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   VerifyInteractedWithFormUkmMetric();
 }
@@ -568,18 +599,25 @@ TEST_F(LoyaltyCardFormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-  EXPECT_THAT(test_ukm_recorder().GetEntriesByName(
-                  UkmAutofillKeyMetricsType::kEntryName),
-              IsEmpty());
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre({}));
 
-  VerifyUkm(
-      &test_ukm_recorder(), form_, UkmSuggestionFilledType::kEntryName,
-      {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
-        {UkmSuggestionFilledType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form_)).value()},
-        {UkmSuggestionFilledType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form_.fields()[1])).value()},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+  {
+    using Ukm = UkmSuggestionFilledType;
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        UkmEventsAre(
+            {{{Ukm::kIsForCreditCardName, false},
+              {Ukm::kFormSignatureName,
+               Collapse(CalculateFormSignature(form_)).value()},
+              {Ukm::kFieldSignatureName,
+               Collapse(CalculateFieldSignatureForField(form_.fields()[1]))
+                   .value()},
+              {Ukm::kMillisecondsSinceFormParsedName, 0}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+                Each(form_.main_frame_origin().GetURL()));
+  }
 
   VerifyInteractedWithFormUkmMetric();
 }

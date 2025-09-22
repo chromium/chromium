@@ -30,6 +30,7 @@ using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using base::Bucket;
 using base::BucketsAre;
 using test::CreateTestFormField;
+using ::testing::Each;
 
 // Parameterized test where the parameter indicates how far we went through
 // the funnel:
@@ -57,8 +58,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-                                        ADDRESS_HOME_LINE1};
+  const std::vector<FieldType> field_types = {
+      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_LINE1};
 
   base::HistogramTester histogram_tester;
 
@@ -159,19 +160,24 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
             field_types[2], /*suggestion_accepted=*/true),
         1);
 
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmAutofillKeyMetricsType::kEntryName,
-        {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-          {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
-          {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
-          {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
-          {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
-          {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-          {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-          {UkmAutofillKeyMetricsType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector(
-               {FormTypeNameForLogging::kAddressForm,
-                FormTypeNameForLogging::kPostalAddressForm})}}});
+    EXPECT_THAT(
+        GetUkmEvents(test_ukm_recorder(),
+                     UkmAutofillKeyMetricsType::kEntryName),
+        UkmEventsAre(
+            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 1},
+              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
+              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
+              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}}));
+    EXPECT_THAT(GetEventUrls(test_ukm_recorder(),
+                             UkmAutofillKeyMetricsType::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -213,8 +219,8 @@ TEST_F(FormEventLoggerBaseFunnelTest, AblationState) {
        CreateTestFormField("City", "city", "", FormControlType::kInputText),
        CreateTestFormField("Street", "street", "",
                            FormControlType::kInputText)});
-  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-                                        ADDRESS_HOME_STREET_ADDRESS};
+  const std::vector<FieldType> field_types = {
+      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
 
   base::HistogramTester histogram_tester;
 
@@ -316,16 +322,21 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kAddressForm,
-                    FormTypeNameForLogging::kPostalAddressForm})}}});
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre(
+          {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+            {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+            {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
+            {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
+            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+            {UkmAutofillKeyMetricsType::kFormTypesName,
+             AutofillMetrics::FormTypesToBitVector(
+                 {FormTypeNameForLogging::kAddressForm,
+                  FormTypeNameForLogging::kPostalAddressForm})}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      Each(form_.main_frame_origin().GetURL()));
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has no address profile on
@@ -360,16 +371,21 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kAddressForm,
-                    FormTypeNameForLogging::kPostalAddressForm})}}});
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre(
+          {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
+            {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+            {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
+            {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
+            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+            {UkmAutofillKeyMetricsType::kFormTypesName,
+             AutofillMetrics::FormTypesToBitVector(
+                 {FormTypeNameForLogging::kAddressForm,
+                  FormTypeNameForLogging::kPostalAddressForm})}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      Each(form_.main_frame_origin().GetURL()));
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -406,17 +422,22 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
           field_types_[2], /*suggestion_accepted=*/false),
       1);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kAddressForm,
-                    FormTypeNameForLogging::kPostalAddressForm})}}});
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre(
+          {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+            {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
+            {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
+            {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
+            {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
+            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+            {UkmAutofillKeyMetricsType::kFormTypesName,
+             AutofillMetrics::FormTypesToBitVector(
+                 {FormTypeNameForLogging::kAddressForm,
+                  FormTypeNameForLogging::kPostalAddressForm})}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      Each(form_.main_frame_origin().GetURL()));
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
@@ -454,18 +475,23 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
           field_types_[2], /*suggestion_accepted=*/true),
       1);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
-              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName,
-               AutofillMetrics::FormTypesToBitVector(
-                   {FormTypeNameForLogging::kAddressForm,
-                    FormTypeNameForLogging::kPostalAddressForm})}}});
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre(
+          {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 1},
+            {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 1},
+            {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
+            {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
+            {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
+            {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
+            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
+            {UkmAutofillKeyMetricsType::kFormTypesName,
+             AutofillMetrics::FormTypesToBitVector(
+                 {FormTypeNameForLogging::kAddressForm,
+                  FormTypeNameForLogging::kPostalAddressForm})}}}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      Each(form_.main_frame_origin().GetURL()));
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
@@ -486,8 +512,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
 
   // Don't submit form.
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectTotalCount(
@@ -503,15 +527,13 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType", 0);
 
-  VerifyUkm(&test_ukm_recorder(), form_, UkmAutofillKeyMetricsType::kEntryName,
-            {{{UkmAutofillKeyMetricsType::kFillingReadinessName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAcceptanceName, 0},
-              {UkmAutofillKeyMetricsType::kFillingCorrectnessName, 0},
-              {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
-              {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
-              {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+  // No UkmAutofillKeyMetrics are recorded for non-submitted forms.
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      UkmEventsAre({}));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmAutofillKeyMetricsType::kEntryName),
+      Each(form_.main_frame_origin().GetURL()));
 }
 
 TEST_F(FormEventLoggerBaseKeyMetricsTest, EmailHeuristicOnlyAcceptance) {
@@ -617,8 +639,8 @@ void FormEventLoggerBaseEmailHeuristicOnlyMetricsTest::SetUp() {
 
   // Load a fillable form.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
-  std::vector<FieldType> heuristic_types = {EMAIL_ADDRESS};
-  std::vector<FieldType> server_types = {NO_SERVER_DATA};
+  const std::vector<FieldType> heuristic_types = {EMAIL_ADDRESS};
+  const std::vector<FieldType> server_types = {NO_SERVER_DATA};
 
   autofill_manager().AddSeenForm(form_, heuristic_types, server_types);
 }
@@ -680,7 +702,7 @@ TEST_F(FormEventLoggerBaseEmailHeuristicOnlyMetricsTest, ServerTypeKnown) {
 
   // Reset the form to include only a known server type.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
-  std::vector<FieldType> field_types = {EMAIL_ADDRESS};
+  const std::vector<FieldType> field_types = {EMAIL_ADDRESS};
   autofill_manager().AddSeenForm(form_, field_types, field_types);
 
   // Simulate that suggestion is shown and user accepts it.

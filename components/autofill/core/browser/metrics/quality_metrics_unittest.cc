@@ -35,10 +35,9 @@ using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::BucketsInclude;
+using ::testing::Each;
 using ::testing::ElementsAre;
 
-using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
-using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 using UkmFieldTypeValidationType = ukm::builders::Autofill_FieldTypeValidation;
 
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
@@ -48,6 +47,43 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
     return "";
   }
   return base::Base64Encode(unencoded_response_string);
+}
+
+void AppendFieldTypeUkm(
+    const FormData& form,
+    const std::vector<FieldType>& heuristic_types,
+    const std::vector<FieldType>& server_types,
+    const std::vector<FieldType>& actual_types,
+    std::vector<std::vector<UkmMetricNameAndValue>>* expected_metrics) {
+  ASSERT_EQ(heuristic_types.size(), form.fields().size());
+  ASSERT_EQ(server_types.size(), form.fields().size());
+  ASSERT_EQ(actual_types.size(), form.fields().size());
+  FormSignature form_signature = Collapse(CalculateFormSignature(form));
+  int64_t metric_type = static_cast<int64_t>(TYPE_SUBMISSION);
+  std::vector<int64_t> prediction_sources{PREDICTION_SOURCE_HEURISTIC,
+                                          PREDICTION_SOURCE_SERVER,
+                                          PREDICTION_SOURCE_OVERALL};
+  for (size_t i = 0; i < form.fields().size(); ++i) {
+    const FormFieldData& field = form.fields()[i];
+    FieldSignature field_signature =
+        Collapse(CalculateFieldSignatureForField(field));
+    for (int64_t source : prediction_sources) {
+      int64_t predicted_type = static_cast<int64_t>(
+          (source == PREDICTION_SOURCE_SERVER ? server_types
+                                              : heuristic_types)[i]);
+      int64_t actual_type = static_cast<int64_t>(actual_types[i]);
+      expected_metrics->push_back(
+          {{UkmFieldTypeValidationType::kMillisecondsSinceFormParsedName, 0},
+           {UkmFieldTypeValidationType::kFormSignatureName,
+            form_signature.value()},
+           {UkmFieldTypeValidationType::kFieldSignatureName,
+            field_signature.value()},
+           {UkmFieldTypeValidationType::kValidationEventName, metric_type},
+           {UkmFieldTypeValidationType::kPredictionSourceName, source},
+           {UkmFieldTypeValidationType::kPredictedTypeName, predicted_type},
+           {UkmFieldTypeValidationType::kActualTypeName, actual_type}});
+    }
+  }
 }
 
 }  // namespace
@@ -617,11 +653,15 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
-  ExpectedUkmMetrics expected_ukm_metrics;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_ukm_metrics;
   AppendFieldTypeUkm(form, heuristic_types, server_types, actual_types,
                      &expected_ukm_metrics);
-  VerifyUkm(&test_ukm_recorder(), form, UkmFieldTypeValidationType::kEntryName,
-            expected_ukm_metrics);
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmFieldTypeValidationType::kEntryName),
+      UkmEventsAre(expected_ukm_metrics));
+  EXPECT_THAT(
+      GetEventUrls(test_ukm_recorder(), UkmFieldTypeValidationType::kEntryName),
+      Each(form.main_frame_origin().GetURL()));
 
   // Validate the total samples and the crossed (predicted-to-actual) samples.
   for (const auto& source : prediction_sources) {
