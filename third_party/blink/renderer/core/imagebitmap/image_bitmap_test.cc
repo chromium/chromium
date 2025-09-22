@@ -282,12 +282,19 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
                                  image_bitmap_options, true);
   }
 
-  std::list<String> image_orientations = {"none", "flipY"};
-  std::list<String> premultiply_alphas = {"none", "premultiply", "default"};
-  std::list<String> color_space_conversions = {"none", "default"};
+  std::list<V8ImageOrientation::Enum> image_orientations = {
+      V8ImageOrientation::Enum::kNone, V8ImageOrientation::Enum::kFlipY};
+  std::list<V8PremultiplyAlpha::Enum> premultiply_alphas = {
+      V8PremultiplyAlpha::Enum::kNone, V8PremultiplyAlpha::Enum::kPremultiply,
+      V8PremultiplyAlpha::Enum::kDefault};
+  std::list<V8ColorSpaceConversion::Enum> color_space_conversions = {
+      V8ColorSpaceConversion::Enum::kNone,
+      V8ColorSpaceConversion::Enum::kDefault};
   std::list<int> resize_widths = {25, 50, 75};
   std::list<int> resize_heights = {25, 50, 75};
-  std::list<String> resize_qualities = {"pixelated", "low", "medium", "high"};
+  std::list<V8ResizeQuality::Enum> resize_qualities = {
+      V8ResizeQuality::Enum::kPixelated, V8ResizeQuality::Enum::kLow,
+      V8ResizeQuality::Enum::kMedium, V8ResizeQuality::Enum::kHigh};
 
   for (auto image_orientation : image_orientations) {
     for (auto premultiply_alpha : premultiply_alphas) {
@@ -307,9 +314,9 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
               // Setting premuliply_alpha to none will cause a read back.
               // Otherwise, we expect to avoid GPU readback when creaing an
               // ImageBitmap from a texture-backed source.
-              TestImageBitmapTextureBacked(bitmap, image_bitmap_rect,
-                                           image_bitmap_options,
-                                           premultiply_alpha != "none");
+              TestImageBitmapTextureBacked(
+                  bitmap, image_bitmap_rect, image_bitmap_options,
+                  premultiply_alpha != V8PremultiplyAlpha::Enum::kNone);
             }
           }
         }
@@ -338,7 +345,7 @@ TEST_F(ImageBitmapTest,
   ImageData* image_data = ImageData::CreateForTest(gfx::Size(kWidth, 1));
   DCHECK(image_data);
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
-  options->setColorSpaceConversion("default");
+  options->setColorSpaceConversion(V8ColorSpaceConversion::Enum::kDefault);
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
       image_data, gfx::Rect(image_data->Size()), options);
   DCHECK(image_bitmap);
@@ -367,10 +374,10 @@ TEST_F(ImageBitmapTest, ImageAlphaState) {
 
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   // ImageBitmap created from unpremul source image result.
-  options->setPremultiplyAlpha("none");
+  options->setPremultiplyAlpha(V8PremultiplyAlpha::Enum::kNone);
 
   // Additional operation shouldn't affect alpha op.
-  options->setImageOrientation("flipY");
+  options->setImageOrientation(V8ImageOrientation::Enum::kFlipY);
 
   std::optional<gfx::Rect> crop_rect =
       gfx::Rect(0, 0, image_element->width(), image_element->height());

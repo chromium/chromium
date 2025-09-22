@@ -849,8 +849,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   // deserialize correctly.
   V8TestingScope scope;
   ImageDataSettings* image_data_settings = ImageDataSettings::Create();
-  image_data_settings->setColorSpace("display-p3");
-  image_data_settings->setPixelFormat("rgba-float16");
+  image_data_settings->setColorSpace(V8PredefinedColorSpace::Enum::kDisplayP3);
+  image_data_settings->setPixelFormat(
+      V8ImageDataPixelFormat::Enum::kRgbaFloat16);
   ImageData* image_data = ImageData::ValidateAndCreate(
       2, 1, std::nullopt, image_data_settings,
       ImageData::ValidateAndCreateParams(), ASSERT_NO_EXCEPTION);
