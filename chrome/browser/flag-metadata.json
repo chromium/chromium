@@ -8331,6 +8331,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "proactive-suggestions-framework",
+    "owners": [
+      "kanouche@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "process-rank-policy-android",
     "owners": [
       "kawasin@google.com",

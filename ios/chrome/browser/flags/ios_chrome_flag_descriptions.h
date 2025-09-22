@@ -758,6 +758,9 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 
+extern const char kProactiveSuggestionsFrameworkName[];
+extern const char kProactiveSuggestionsFrameworkDescription[];
+
 extern const char kGeminiCrossTabName[];
 extern const char kGeminiCrossTabDescription[];
 

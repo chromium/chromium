@@ -17,6 +17,12 @@ BASE_DECLARE_FEATURE(kEnhancedCalendar);
 // Returns true if enhanced calendar is enabled.
 bool IsEnhancedCalendarEnabled();
 
+// Feature flag controlling the proactive suggestions framework.
+BASE_DECLARE_FEATURE(kProactiveSuggestionsFramework);
+
+// Returns true if the proactive suggestions framework is enabled.
+bool IsProactiveSuggestionsFrameworkEnabled();
+
 // Feature flag controlling the page action menu.
 BASE_DECLARE_FEATURE(kPageActionMenu);
 

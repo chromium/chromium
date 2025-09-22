@@ -27,6 +27,12 @@ bool IsPageActionMenuEnabled() {
   return base::FeatureList::IsEnabled(kPageActionMenu);
 }
 
+BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsProactiveSuggestionsFrameworkEnabled() {
+  return base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
+}
+
 BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAskGeminiChipEnabled() {
