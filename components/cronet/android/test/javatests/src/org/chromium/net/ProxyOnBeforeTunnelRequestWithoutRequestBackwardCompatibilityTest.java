@@ -83,7 +83,8 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
     @Test
     @SmallTest
     public void testProxy_nullHost_throws() {
-        Proxy.Callback proxyCallbackMock = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallbackMock =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
@@ -101,7 +102,8 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
     @Test
     @SmallTest
     public void testProxy_invalidScheme_throws() {
-        Proxy.Callback proxyCallbackMock = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallbackMock =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
@@ -175,7 +177,8 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testUnreachableProxyWithDirectFallback_requestSucceeds() {
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
@@ -218,7 +221,8 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testUnreachableProxy_requestFails() {
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
@@ -257,21 +261,18 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
     @DisabledTest(message = "We need the ability to spawn multiple NativeTestServer to test this.")
     public void testUnreachableProxy_isDeprioritized() {
         mNativeTestServer.start();
-        Proxy.Callback unreachableProxyCallback = Mockito.mock(Proxy.Callback.class);
-        // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
-        // this, we would be overriding the fallback behavior that calls into
-        // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
-        Mockito.doCallRealMethod().when(unreachableProxyCallback).onBeforeTunnelRequest(any());
-        Mockito.when(unreachableProxyCallback.onBeforeTunnelRequest()).thenReturn(null);
-        Proxy.Callback reachableProxyCallback = Mockito.mock(Proxy.Callback.class);
-        // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
-        // this, we would be overriding the fallback behavior that calls into
-        // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
-        Mockito.doCallRealMethod().when(reachableProxyCallback).onBeforeTunnelRequest(any());
-        Mockito.when(reachableProxyCallback.onBeforeTunnelRequest())
-                .thenReturn(Collections.emptyList());
-        Mockito.when(reachableProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                .thenReturn(true);
+        Proxy.Callback unreachableProxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doReturn(null).when(unreachableProxyCallback).onBeforeTunnelRequest();
+
+        Proxy.Callback reachableProxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doReturn(Collections.emptyList())
+                .when(reachableProxyCallback)
+                .onBeforeTunnelRequest();
+        Mockito.doReturn(true)
+                .when(reachableProxyCallback)
+                .onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -341,7 +342,8 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
@@ -402,13 +404,14 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
         // this, we would be overriding the fallback behavior that calls into
         // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
         Mockito.doCallRealMethod().when(proxyCallback).onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onBeforeTunnelRequest()).thenReturn(Collections.emptyList());
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt())).thenReturn(true);
+        Mockito.doReturn(Collections.emptyList()).when(proxyCallback).onBeforeTunnelRequest();
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -463,17 +466,14 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
-        // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
-        // this, we would be overriding the fallback behavior that calls into
-        // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
-        Mockito.doCallRealMethod().when(proxyCallback).onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onBeforeTunnelRequest())
-                .thenReturn(
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doReturn(
                         Arrays.asList(
-                                new AbstractMap.SimpleEntry<>(
-                                        "Authorization", "b3BlbiBzZXNhbWU=")));
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(any(), anyInt())).thenReturn(true);
+                                new AbstractMap.SimpleEntry<>("Authorization", "b3BlbiBzZXNhbWU=")))
+                .when(proxyCallback)
+                .onBeforeTunnelRequest();
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -519,12 +519,10 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
         // destinations other than the one passed will result in 502 responses.
         mNativeTestServer.enableConnectProxy(Arrays.asList("https://not-existing-url.com"));
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
-        // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant. Without
-        // this, we would be overriding the fallback behavior that calls into
-        // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
-        Mockito.doCallRealMethod().when(proxyCallback).onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(any(), anyInt())).thenReturn(true);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+        Mockito.doReturn(Collections.emptyList()).when(proxyCallback).onBeforeTunnelRequest();
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -572,16 +570,10 @@ public class ProxyOnBeforeTunnelRequestWithoutRequestBackwardCompatibilityTest {
             originServer.start();
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
-            Mockito.when(proxyCallback.onBeforeTunnelRequest()).thenReturn(Collections.emptyList());
-            // Stops Mockito from implementing the new onBeforeTunnelRequest(Request) variant.
-            // Without
-            // this, we would be overriding the fallback behavior that calls into
-            // onBeforeTunnelRequest() from onBeforeTunnelRequest(Request).
-            Mockito.doCallRealMethod().when(proxyCallback).onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onBeforeTunnelRequest()).thenReturn(Collections.emptyList());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+            Mockito.doReturn(Collections.emptyList()).when(proxyCallback).onBeforeTunnelRequest();
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
             mTestRule
                     .getTestFramework()
                     .applyEngineBuilderPatch(

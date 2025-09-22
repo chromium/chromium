@@ -85,7 +85,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
     @Test
     @SmallTest
     public void testProxy_nullHost_throws() {
-        Proxy.Callback proxyCallbackMock = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallbackMock =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         assertThrows(
                 NullPointerException.class,
                 () ->
@@ -99,7 +100,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
     @Test
     @SmallTest
     public void testProxy_invalidScheme_throws() {
-        Proxy.Callback proxyCallbackMock = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallbackMock =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
@@ -129,7 +131,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
     public void testProxyOptions_nullProxyIsNotLastElement_throws() {
         assertThrows(
                 IllegalArgumentException.class, () -> new ProxyOptions(Arrays.asList(null, null)));
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         Proxy proxy =
                 new Proxy(
                         /* scheme= */ Proxy.HTTPS,
@@ -188,7 +191,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testUnreachableProxyWithDirectFallback_requestSucceeds() {
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -227,7 +231,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testUnreachableProxy_requestFails() {
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -278,7 +283,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             workingProxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             workingProxyServer.start();
 
-            Proxy.Callback brokenProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback brokenProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -287,10 +293,12 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(brokenProxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(brokenProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true)
+                    .when(brokenProxyCallback)
+                    .onTunnelHeadersReceived(any(), anyInt());
 
-            Proxy.Callback workingProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback workingProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -299,8 +307,9 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(workingProxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(workingProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true)
+                    .when(workingProxyCallback)
+                    .onTunnelHeadersReceived(any(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -380,7 +389,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -437,7 +447,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         doAnswer(
                         invocation -> {
                             Proxy.Callback.Request request = invocation.getArgument(0);
@@ -446,7 +457,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                         })
                 .when(proxyCallback)
                 .onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt())).thenReturn(true);
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -501,7 +512,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         doAnswer(
                         invocation -> {
                             Proxy.Callback.Request request = invocation.getArgument(0);
@@ -513,7 +525,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                         })
                 .when(proxyCallback)
                 .onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(any(), anyInt())).thenReturn(true);
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -559,7 +571,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
         // destinations other than the one passed will result in 502 responses.
         mNativeTestServer.enableConnectProxy(Arrays.asList("https://not-existing-url.com"));
         mNativeTestServer.start();
-        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
         doAnswer(
                         invocation -> {
                             Proxy.Callback.Request request = invocation.getArgument(0);
@@ -568,7 +581,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                         })
                 .when(proxyCallback)
                 .onBeforeTunnelRequest(any());
-        Mockito.when(proxyCallback.onTunnelHeadersReceived(any(), anyInt())).thenReturn(true);
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -616,7 +629,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             originServer.start();
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -625,8 +639,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
             mTestRule
                     .getTestFramework()
                     .applyEngineBuilderPatch(
@@ -702,7 +715,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             originServer.start();
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -711,8 +725,9 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(false);
+            Mockito.doReturn(false)
+                    .when(proxyCallback)
+                    .onTunnelHeadersReceived(anyList(), anyInt());
             mTestRule
                     .getTestFramework()
                     .applyEngineBuilderPatch(
@@ -765,8 +780,15 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             originServer.start();
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
-            // We want to hang: do not mock the callback methods.
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+            doAnswer(
+                            invocation -> {
+                                // We want to hang: ignore the Request object we receive.
+                                return null;
+                            })
+                    .when(proxyCallback)
+                    .onBeforeTunnelRequest(any());
             mTestRule
                     .getTestFramework()
                     .applyEngineBuilderPatch(
@@ -826,7 +848,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -895,7 +918,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -959,7 +983,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -1025,7 +1050,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -1033,8 +1059,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -1105,7 +1130,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -1113,8 +1139,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -1174,7 +1199,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -1182,8 +1208,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -1243,7 +1268,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
 
             Exchanger<Proxy.Callback.Request> proxyRequestExchanger =
                     new Exchanger<Proxy.Callback.Request>();
-            Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 proxyRequestExchanger.exchange(invocation.getArgument(0));
@@ -1251,8 +1277,7 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proxyCallback.onTunnelHeadersReceived(anyList(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(anyList(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -1307,7 +1332,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
 
-            Proxy.Callback requestCancelProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback requestCancelProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -1317,7 +1343,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                     .when(requestCancelProxyCallback)
                     .onBeforeTunnelRequest(any());
 
-            Proxy.Callback proceedProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proceedProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -1326,8 +1353,9 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proceedProxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proceedProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true)
+                    .when(proceedProxyCallback)
+                    .onTunnelHeadersReceived(any(), anyInt());
 
             mTestRule
                     .getTestFramework()
@@ -1406,7 +1434,8 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             proxyServer.enableConnectProxy(Arrays.asList(originServer.getSuccessURL()));
             proxyServer.start();
 
-            Proxy.Callback responseCancelProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback responseCancelProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -1415,10 +1444,12 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(responseCancelProxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(responseCancelProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                    .thenReturn(false);
+            Mockito.doReturn(false)
+                    .when(responseCancelProxyCallback)
+                    .onTunnelHeadersReceived(any(), anyInt());
 
-            Proxy.Callback proceedProxyCallback = Mockito.mock(Proxy.Callback.class);
+            Proxy.Callback proceedProxyCallback =
+                    Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
             doAnswer(
                             invocation -> {
                                 Proxy.Callback.Request request = invocation.getArgument(0);
@@ -1427,8 +1458,9 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
                             })
                     .when(proceedProxyCallback)
                     .onBeforeTunnelRequest(any());
-            Mockito.when(proceedProxyCallback.onTunnelHeadersReceived(any(), anyInt()))
-                    .thenReturn(true);
+            Mockito.doReturn(true)
+                    .when(proceedProxyCallback)
+                    .onTunnelHeadersReceived(any(), anyInt());
 
             mTestRule
                     .getTestFramework()
