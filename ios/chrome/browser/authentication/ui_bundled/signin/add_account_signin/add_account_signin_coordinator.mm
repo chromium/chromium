@@ -264,6 +264,11 @@ using signin_metrics::PromoAction;
 
 #pragma mark - Private
 
+// Returns whether the coordinator is started and not stopped.
+- (BOOL)isStarted {
+  return !_continuationProvider.is_null();
+}
+
 - (void)stopAlertCoordinator {
   // To avoid reentry, `noInteractionAction` is set to nil.
   self.alertCoordinator.noInteractionAction = nil;
@@ -356,6 +361,7 @@ using signin_metrics::PromoAction;
 // Presents the extra screen with `identity` pre-selected.
 - (void)presentPostSigninManagerCoordinatorWithIdentity:
     (id<SystemIdentity>)identity {
+  CHECK([self isStarted], base::NotFatalUntil::M144);
   // The new UIViewController is presented on top of the currently displayed
   // view controller.
   self.postSigninManagerCoordinator = [SigninCoordinator
@@ -394,6 +400,7 @@ using signin_metrics::PromoAction;
     [self addAccountDoneWithSigninResult:result identity:resultIdentity];
     return;
   }
+  CHECK([self isStarted], base::NotFatalUntil::M144);
   self.historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
