@@ -61,7 +61,7 @@ const uint64_t kTestUkmHatsId = 0xbaadf00d;
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
-  MockHatsNextWebDialog(Browser* browser,
+  MockHatsNextWebDialog(BrowserWindowInterface* browser,
                         const std::string& trigger_id,
                         const std::optional<std::string>& hats_histogram_name,
                         const std::optional<uint64_t> hats_survey_ukm_id,
@@ -111,7 +111,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
 
   // Open a blank tab in the main browser, inspect it, and return the devtools
   // Browser for the undocked devtools window.
-  Browser* OpenUndockedDevToolsWindow() {
+  BrowserWindowInterface* OpenUndockedDevToolsWindow() {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
     const bool is_docked = false;
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
                        NewWebContentsForDevtoolsBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  Browser* devtools_browser = OpenUndockedDevToolsWindow();
+  BrowserWindowInterface* devtools_browser = OpenUndockedDevToolsWindow();
 
   auto* dialog = new MockHatsNextWebDialog(
       devtools_browser, "open_new_web_contents_for_testing", std::nullopt,

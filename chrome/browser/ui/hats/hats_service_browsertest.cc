@@ -864,3 +864,19 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
   GetHatsService()->GetSurveyMetadataForTesting(&metadata);
   EXPECT_TRUE(metadata.last_survey_check_time.has_value());
 }
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, DialogDoesNotOutliveBrowser) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(
+      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
+  raw_ptr<BrowserWindowInterface> hats_browser = CreateBrowser(GetProfile());
+
+  GetHatsService()->LaunchSurveyForWebContents(
+      kHatsSurveyTriggerSettings,
+      hats_browser->GetTabStripModel()->GetActiveWebContents(),
+      /*product_specific_bits_data=*/{}, /*product_specific_string_data=*/{});
+  EXPECT_TRUE(GetHatsService()->hats_next_dialog_exists_for_testing());
+
+  CloseBrowserSynchronously(hats_browser.ExtractAsDangling());
+  EXPECT_FALSE(GetHatsService()->hats_next_dialog_exists_for_testing());
+}

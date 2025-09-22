@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -86,7 +87,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 
  public:
   HatsWebView(content::BrowserContext* browser_context,
-              Browser* browser,
+              BrowserWindowInterface* browser,
               HatsNextWebDialog* dialog)
       : views::WebView(browser_context), dialog_(dialog), browser_(browser) {}
 
@@ -126,9 +127,9 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 
     // For the case where we are showing a survey in an undocked DevTools
     // window, we open the URL in the browser of the inspected page.
-    if (browser_->is_type_devtools()) {
-      DevToolsWindow* devtools_window =
-          DevToolsWindow::AsDevToolsWindow(browser_);
+    if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+      DevToolsWindow* devtools_window = DevToolsWindow::AsDevToolsWindow(
+          browser_->GetBrowserForMigrationOnly());
       DCHECK(devtools_window);
       devtools_window->OpenURLFromInspectedTab(params);
     } else {
@@ -150,14 +151,14 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 
  private:
   raw_ptr<HatsNextWebDialog> dialog_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 BEGIN_METADATA(HatsNextWebDialog, HatsWebView)
 END_METADATA
 
 HatsNextWebDialog::HatsNextWebDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& trigger_id,
     const std::optional<std::string>& hats_histogram_name,
     const std::optional<uint64_t> hats_survey_ukm_id,
@@ -203,7 +204,8 @@ void HatsNextWebDialog::OnSurveyLoaded() {
   }
   loading_timer_.Stop();
   // Record that the survey was shown, and display the widget.
-  auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
+  auto* service =
+      HatsServiceFactory::GetForProfile(browser_->GetProfile(), false);
   DCHECK(service);
   service->RecordSurveyAsShown(trigger_id_);
   received_survey_loaded_ = true;
@@ -344,7 +346,7 @@ uint64_t HatsNextWebDialog::EncodeUkmQuestionAnswers(
 }
 
 HatsNextWebDialog::HatsNextWebDialog(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& trigger_id,
     const std::optional<std::string>& hats_histogram_name,
     const std::optional<uint64_t> hats_survey_ukm_id,
@@ -355,7 +357,7 @@ HatsNextWebDialog::HatsNextWebDialog(
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data)
     : BubbleDialogDelegateView(
-          browser->is_type_devtools()
+          browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS
               ? static_cast<views::View*>(
                     BrowserView::GetBrowserViewForBrowser(browser)
                         ->top_container())
@@ -365,10 +367,13 @@ HatsNextWebDialog::HatsNextWebDialog(
           views::BubbleBorder::TOP_RIGHT,
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
-      otr_profile_(browser->profile()->GetOffTheRecordProfile(
+      otr_profile_(browser->GetProfile()->GetOffTheRecordProfile(
           Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"),
           /*create_if_needed=*/true)),
       browser_(browser),
+      browser_close_subscription_(browser->RegisterBrowserDidClose(
+          base::BindRepeating(&HatsNextWebDialog::BrowserDidClose,
+                              base::Unretained(this)))),
       trigger_id_(trigger_id),
       hats_histogram_name_(
           hats::SurveyConfig::ValidateHatsHistogramName(hats_histogram_name)),
@@ -380,7 +385,7 @@ HatsNextWebDialog::HatsNextWebDialog(
       failure_callback_(std::move(failure_callback)),
       product_specific_bits_data_(product_specific_bits_data),
       product_specific_string_data_(product_specific_string_data),
-      ukm_hats_builder_(browser->tab_strip_model()
+      ukm_hats_builder_(browser->GetTabStripModel()
                             ->GetActiveWebContents()
                             ->GetPrimaryMainFrame()
                             ->GetPageUkmSourceId()) {
@@ -428,7 +433,7 @@ HatsNextWebDialog::~HatsNextWebDialog() {
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile_);
   }
   HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
-      HatsServiceFactory::GetForProfile(browser_->profile(), false));
+      HatsServiceFactory::GetForProfile(browser_->GetProfile(), false));
   DCHECK(service);
   service->HatsNextDialogClosed();
 
@@ -539,6 +544,10 @@ int HatsNextWebDialog::GetHistogramBucket(int question, int answer) {
   // HappinessTrackingSurvey, which is defined in the file
   // tools/metrics/histograms/metadata/others/enums.xml.
   return question * 100 + answer;
+}
+
+void HatsNextWebDialog::BrowserDidClose(BrowserWindowInterface* browser) {
+  widget_->CloseNow();
 }
 
 BEGIN_METADATA(HatsNextWebDialog)

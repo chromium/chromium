@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_HATS_HATS_NEXT_WEB_DIALOG_H_
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -19,7 +20,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace views {
@@ -38,7 +39,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   METADATA_HEADER(HatsNextWebDialog, views::BubbleDialogDelegateView)
 
  public:
-  HatsNextWebDialog(Browser* browser,
+  HatsNextWebDialog(BrowserWindowInterface* browser,
                     const std::string& trigger_id,
                     const std::optional<std::string>& hats_histogram_name,
                     const std::optional<uint64_t> hats_survey_ukm_id,
@@ -100,7 +101,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, MaximumSize);
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, ZoomLevel);
 
-  HatsNextWebDialog(Browser* browser,
+  HatsNextWebDialog(BrowserWindowInterface* browser,
                     const std::string& trigger_id,
                     const std::optional<std::string>& hats_histogram_name,
                     const std::optional<uint64_t> hats_survey_ukm_id,
@@ -145,13 +146,17 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   int GetHistogramBucket(int question, int answer);
 
  private:
+  // Invoked when `browser_` is closed.
+  void BrowserDidClose(BrowserWindowInterface* browser);
+
   // A timer to prevent unresponsive loading of survey dialog.
   base::OneShotTimer loading_timer_;
 
   // The off-the-record profile used for browsing to the Chrome HaTS webpage.
   raw_ptr<Profile> otr_profile_;
 
-  raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
+  base::CallbackListSubscription browser_close_subscription_;
 
   // The HaTS Next survey trigger ID that is provided to the HaTS webpage.
   const std::string trigger_id_;
@@ -181,6 +186,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   static constexpr gfx::Size kMaxSize = gfx::Size(800, 600);
 
   raw_ptr<views::WebView> web_view_ = nullptr;
+
+  // TODO(crbug.com/338254375): Configure `widget_` to use CLIENT_OWNS_WIDGET
+  // and update this to be a unique_ptr.
   raw_ptr<views::Widget> widget_ = nullptr;
 
   GURL hats_survey_url_;
