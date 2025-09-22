@@ -25,6 +25,7 @@ build_webui("build") {
   css_files = [
     "searchbox_action.css",
     "searchbox_compose_button.css",
+    "searchbox_dropdown.css",
     "searchbox_dropdown_shared_style.css",
     "searchbox_dropdown_shared_style_lit.css",
     "searchbox_icon.css",

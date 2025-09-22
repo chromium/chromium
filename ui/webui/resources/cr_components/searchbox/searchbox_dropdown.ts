@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 
 import './searchbox_match.js';
-import './searchbox_dropdown_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
-import {getTemplate} from './searchbox_dropdown.html.js';
+import {getCss} from './searchbox_dropdown.css.js';
+import {getHtml} from './searchbox_dropdown.html.js';
 import type {SearchboxMatchElement} from './searchbox_match.js';
 import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
 
@@ -32,16 +32,20 @@ export interface SearchboxDropdownElement {
 
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <cr-searchbox>) to change the selection.
-export class SearchboxDropdownElement extends PolymerElement {
+export class SearchboxDropdownElement extends CrLitElement {
   static get is() {
     return 'cr-searchbox-dropdown';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       //========================================================================
       // Public properties
@@ -51,17 +55,13 @@ export class SearchboxDropdownElement extends PolymerElement {
        * Whether the secondary side can be shown based on the feature state and
        * the width available to the dropdown.
        */
-      canShowSecondarySide: {
-        type: Boolean,
-        value: false,
-      },
+      canShowSecondarySide: {type: Boolean},
 
       /**
        * Whether the secondary side was at any point available to be shown.
        */
       hadSecondarySide: {
         type: Boolean,
-        value: false,
         notify: true,
       },
 
@@ -70,27 +70,28 @@ export class SearchboxDropdownElement extends PolymerElement {
        */
       hasSecondarySide: {
         type: Boolean,
-        computed: `computeHasSecondarySide_(result)`,
         notify: true,
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       hasEmptyInput: {
         type: Boolean,
-        reflectToAttribute: true,
-        computed: `computeHasEmptyInput_(result)`,
+        reflect: true,
       },
 
-      result: {
-        type: Object,
-      },
+      result: {type: Object},
 
       /** Index of the selected match. */
       selectedMatchIndex: {
         type: Number,
-        value: -1,
         notify: true,
       },
+
+      showThumbnail: {type: Boolean},
+
+      //========================================================================
+      // Private properties
+      //========================================================================
 
       /**
        * Computed value for whether or not the dropdown should show the
@@ -98,39 +99,21 @@ export class SearchboxDropdownElement extends PolymerElement {
        * `canShowSecondarySide` to true and whether there are visible primary
        * matches.
        */
-      showSecondarySide_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowSecondarySide_(' +
-            'canShowSecondarySide, result.matches.*)',
-      },
-
-      showThumbnail: {
-        type: Boolean,
-        value: false,
-      },
-
-      //========================================================================
-      // Private properties
-      //========================================================================
-
-      /** The list of selectable match elements. */
-      selectableMatchElements_: {
-        type: Array,
-        value: () => [],
-      },
+      showSecondarySide_: {type: Boolean},
     };
   }
 
-  declare canShowSecondarySide: boolean;
-  declare hadSecondarySide: boolean;
-  declare hasSecondarySide: boolean;
-  declare hasEmptyInput: boolean;
-  declare result: AutocompleteResult;
-  declare selectedMatchIndex: number;
-  declare showThumbnail: boolean;
-  declare private selectableMatchElements_: SearchboxMatchElement[];
-  declare private showSecondarySide_: boolean;
+  accessor canShowSecondarySide: boolean = false;
+  accessor hadSecondarySide: boolean = false;
+  accessor hasSecondarySide: boolean;
+  accessor hasEmptyInput: boolean;
+  accessor result: AutocompleteResult;
+  accessor selectedMatchIndex: number = -1;
+  accessor showThumbnail: boolean = false;
+  private accessor showSecondarySide_: boolean = false;
+
+  /** The list of selectable match elements. */
+  private selectableMatchElements_: SearchboxMatchElement[] = [];
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
@@ -157,6 +140,28 @@ export class SearchboxDropdownElement extends PolymerElement {
     super.disconnectedCallback();
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('result')) {
+      this.hasSecondarySide = this.computeHasSecondarySide_();
+      this.hasEmptyInput = this.computeHasEmptyInput_();
+    }
+
+    if (changedProperties.has('result') ||
+        changedProperties.has('canShowSecondarySide')) {
+      this.showSecondarySide_ = this.computeShowSecondarySide_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    // Update the list of selectable match elements.
+    this.selectableMatchElements_ =
+        [...this.shadowRoot.querySelectorAll('cr-searchbox-match')];
+  }
+
   //============================================================================
   // Public methods
   //============================================================================
@@ -181,11 +186,13 @@ export class SearchboxDropdownElement extends PolymerElement {
   /** Selects the first match. */
   selectFirst() {
     this.selectedMatchIndex = 0;
+    return this.updateComplete;
   }
 
   /** Selects the match at the given index. */
   selectIndex(index: number) {
     this.selectedMatchIndex = index;
+    return this.updateComplete;
   }
 
   updateSelection(
@@ -211,11 +218,13 @@ export class SearchboxDropdownElement extends PolymerElement {
     const previous = Math.max(this.selectedMatchIndex, 0) - 1;
     this.selectedMatchIndex =
         remainder(previous, this.selectableMatchElements.length);
+    return this.updateComplete;
   }
 
   /** Selects the last match. */
   selectLast() {
     this.selectedMatchIndex = this.selectableMatchElements.length - 1;
+    return this.updateComplete;
   }
 
   /**
@@ -226,17 +235,20 @@ export class SearchboxDropdownElement extends PolymerElement {
     const next = this.selectedMatchIndex + 1;
     this.selectedMatchIndex =
         remainder(next, this.selectableMatchElements.length);
+    return this.updateComplete;
   }
 
   //============================================================================
   // Event handlers
   //============================================================================
 
-  private onHeaderMousedown_(e: Event) {
+  protected onHeaderMousedown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 
-  private onResultRepaint_() {
+  // TODO(dpapad): Figure out how to port this to Lit, previously invoked on
+  // 'dom-change' events.
+  protected onResultRepaint_() {
     if (loadTimeData.getBoolean('reportMetrics')) {
       const metricsReporter = MetricsReporterImpl.getInstance();
       metricsReporter.measure('CharTyped')
@@ -257,21 +269,17 @@ export class SearchboxDropdownElement extends PolymerElement {
           })
           .catch(() => {});  // Fail silently if 'ResultChanged' is not marked.
     }
-
-    // Update the list of selectable match elements.
-    this.selectableMatchElements_ =
-        [...this.shadowRoot!.querySelectorAll('cr-searchbox-match')];
   }
 
   //============================================================================
   // Helpers
   //============================================================================
 
-  private sideTypeClass_(side: SideType): string {
+  protected sideTypeClass_(side: SideType): string {
     return sideTypeToClass(side);
   }
 
-  private renderTypeClassForGroup_(groupId: number): string {
+  protected renderTypeClassForGroup_(groupId: number): string {
     return renderTypeToClass(
         this.result?.suggestionGroupsMap[groupId]?.renderType ??
         RenderType.kDefaultVertical);
@@ -290,7 +298,7 @@ export class SearchboxDropdownElement extends PolymerElement {
     return this.result && decodeString16(this.result.input) === '';
   }
 
-  private isSelected_(match: AutocompleteMatch): boolean {
+  protected isSelected_(match: AutocompleteMatch): boolean {
     return this.matchIndex_(match) === this.selectedMatchIndex;
   }
 
@@ -298,7 +306,7 @@ export class SearchboxDropdownElement extends PolymerElement {
    * @returns The unique suggestion group IDs that belong to the given side type
    *     while preserving the order in which they appear in the list of matches.
    */
-  private groupIdsForSideType_(side: SideType): number[] {
+  protected groupIdsForSideType_(side: SideType): number[] {
     return [...new Set<number>(
         this.result?.matches?.map(match => match.suggestionGroupId)
             .filter(groupId => this.sideTypeForGroup_(groupId) === side))];
@@ -307,14 +315,14 @@ export class SearchboxDropdownElement extends PolymerElement {
   /**
    * @returns Whether the given suggestion group ID has a header.
    */
-  private hasHeaderForGroup_(groupId: number): boolean {
+  protected hasHeaderForGroup_(groupId: number): boolean {
     return !!this.headerForGroup_(groupId);
   }
 
   /**
    * @returns The header for the given suggestion group ID, if any.
    */
-  private headerForGroup_(groupId: number): string {
+  protected headerForGroup_(groupId: number): string {
     return this.result?.suggestionGroupsMap[groupId] ?
         decodeString16(this.result.suggestionGroupsMap[groupId].header) :
         '';
@@ -324,7 +332,7 @@ export class SearchboxDropdownElement extends PolymerElement {
    * @returns Index of the match in the autocomplete result. Passed to the match
    *     so it knows its position in the list of matches.
    */
-  private matchIndex_(match: AutocompleteMatch): number {
+  protected matchIndex_(match: AutocompleteMatch): number {
     return this.result?.matches?.indexOf(match) ?? -1;
   }
 
@@ -332,7 +340,7 @@ export class SearchboxDropdownElement extends PolymerElement {
    * @returns The list of visible matches that belong to the given suggestion
    *     group ID.
    */
-  private matchesForGroup_(groupId: number): AutocompleteMatch[] {
+  protected matchesForGroup_(groupId: number): AutocompleteMatch[] {
     return (this.result?.matches ?? [])
         .filter(match => match.suggestionGroupId === groupId);
   }
@@ -340,7 +348,7 @@ export class SearchboxDropdownElement extends PolymerElement {
   /**
    * @returns The list of side types to show.
    */
-  private sideTypes_(): SideType[] {
+  protected sideTypes_(): SideType[] {
     return this.showSecondarySide_ ?
         [SideType.kDefaultPrimary, SideType.kSecondary] :
         [SideType.kDefaultPrimary];
@@ -349,7 +357,7 @@ export class SearchboxDropdownElement extends PolymerElement {
   /**
    * @returns The side type for the given suggestion group ID.
    */
-  private sideTypeForGroup_(groupId: number): SideType {
+  protected sideTypeForGroup_(groupId: number): SideType {
     return this.result?.suggestionGroupsMap[groupId]?.sideType ??
         SideType.kDefaultPrimary;
   }

@@ -419,7 +419,7 @@ export class SearchboxElement extends SearchboxElementBase {
   // Callbacks
   //============================================================================
 
-  private onAutocompleteResultChanged_(result: AutocompleteResult) {
+  private async onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput_ === null ||
         this.lastQueriedInput_.trimStart() !== decodeString16(result.input)) {
       return;  // Stale result; ignore.
@@ -457,7 +457,7 @@ export class SearchboxElement extends SearchboxElementBase {
       // Restore the selection and update the input. Don't restore when the
       // user deletes all their input and autocomplete is queried or else the
       // empty input will change to the value of the first result.
-      this.$.matches.selectIndex(this.selectedMatchIndex_);
+      await this.$.matches.selectIndex(this.selectedMatchIndex_);
       this.updateInput_({
         text: decodeString16(this.selectedMatch_!.fillIntoEdit),
         inline: '',
@@ -652,7 +652,7 @@ export class SearchboxElement extends SearchboxElementBase {
     this.pageHandler_.onFocusChanged(false);
   }
 
-  private onInputWrapperKeydown_(e: KeyboardEvent) {
+  private async onInputWrapperKeydown_(e: KeyboardEvent) {
     const KEYDOWN_HANDLED_KEYS = [
       'ArrowDown',
       'ArrowUp',
@@ -796,22 +796,23 @@ export class SearchboxElement extends SearchboxElementBase {
       return;
     }
 
+    e.preventDefault();
+
     if (e.key === 'ArrowDown') {
-      this.$.matches.selectNext();
+      await this.$.matches.selectNext();
       this.pageHandler_.onNavigationLikely(
           this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
           NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'ArrowUp') {
-      this.$.matches.selectPrevious();
+      await this.$.matches.selectPrevious();
       this.pageHandler_.onNavigationLikely(
           this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
           NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'Escape' || e.key === 'PageUp') {
-      this.$.matches.selectFirst();
+      await this.$.matches.selectFirst();
     } else if (e.key === 'PageDown') {
-      this.$.matches.selectLast();
+      await this.$.matches.selectLast();
     }
-    e.preventDefault();
 
     // Focus the selected match if focus is currently in the matches.
     if (this.shadowRoot!.activeElement === this.$.matches) {
@@ -837,9 +838,9 @@ export class SearchboxElement extends SearchboxElementBase {
   /**
    * @param e Event containing index of the match that received focus.
    */
-  private onMatchFocusin_(e: CustomEvent<number>) {
+  private async onMatchFocusin_(e: CustomEvent<number>) {
     // Select the match that received focus.
-    this.$.matches.selectIndex(e.detail);
+    await this.$.matches.selectIndex(e.detail);
     // Input selection (if any) likely drops due to focus change. Simply fill
     // the input with the match and move the cursor to the end.
     this.updateInput_({

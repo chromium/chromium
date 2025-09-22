@@ -12,7 +12,8 @@ import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -54,10 +55,10 @@ suite('Lens search', () => {
 
   const testMetricsReporterProxy = TestMock.fromClass(BrowserProxyImpl);
 
-  function areMatchesShowing(): boolean {
-    // Force a synchronous render.
-    [...realbox.$.matches.shadowRoot!.querySelectorAll('dom-repeat')].forEach(
-        template => template.render());
+  async function areMatchesShowing(): Promise<boolean> {
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(realbox);
+    await microtasksFinished();
     return window.getComputedStyle(realbox.$.matches).display !== 'none';
   }
 
@@ -137,7 +138,7 @@ suite('Lens search', () => {
       smartComposeInlineHint: stringToMojoString16(''),
     });
     await testProxy.callbackRouterRemote.$.flushForTesting();
-    assertTrue(areMatchesShowing());
+    assertTrue(await areMatchesShowing());
 
     // Act.
     const lensButton =
@@ -146,7 +147,7 @@ suite('Lens search', () => {
     lensButton.click();
 
     // Assert.
-    assertFalse(areMatchesShowing());
+    assertFalse(await areMatchesShowing());
   });
 
   test('clicking Lens search button sends Lens search event', async () => {
