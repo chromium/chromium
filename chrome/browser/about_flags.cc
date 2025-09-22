@@ -9340,7 +9340,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
 
     {"fedcm-iframe-origin", flag_descriptions::kFedCmIframeOriginName,
-     flag_descriptions::kFedCmIframeOriginDescription, kOsDesktop,
+     flag_descriptions::kFedCmIframeOriginDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmIframeOrigin)},
 
     {"fedcm-lightweight-mode", flag_descriptions::kFedCmLightweightModeName,
