@@ -53,7 +53,12 @@ source_set("web_navigation") {
     ]
   }
 
-  if (!is_android) {
+  if (is_android) {
+    deps += [
+      "//chrome/browser/ui/android/tab_model",
+      "//components/tabs:public",
+    ]
+  } else {
     deps += [
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_tab_strip",

@@ -238,7 +238,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
 #include "chrome/browser/extensions/app_tab_helper.h"
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
@@ -250,6 +249,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #endif
@@ -768,13 +768,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::AppTabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
-  extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   web_app::WindowManagementContentSettingObserver::CreateForWebContents(
       web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // extensions::TabHelper is used on Win/Mac/Linux and desktop Android.
+  // These helpers are used on Win/Mac/Linux and also desktop Android.
+  extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   extensions::TabHelper::CreateForWebContents(web_contents);
 #endif
 

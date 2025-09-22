@@ -378,10 +378,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          WebNavigationApiPrerenderTestWithContextType,
                          testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
-// the API is ported and chrome.tabs becomes available.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ClientRedirect) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect")) << message_;
 }
@@ -395,6 +391,10 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/formSubmission")) << message_;
 }
+
+// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
+// the API is ported and chrome.tabs becomes available.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that WebNavigation API does not emit the same event twice when providing
 // filters in addListener. Regression test for https://crbug.com/439995191.

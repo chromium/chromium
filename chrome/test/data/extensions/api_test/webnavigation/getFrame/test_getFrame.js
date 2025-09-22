@@ -7,19 +7,16 @@ const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let ready;
 let onScriptLoad = chrome.test.loadScript(scriptUrl);
 
-const platformUrl = '_test_resources/test_util/platform_util.js';
-let onPlatformLoad = chrome.test.loadScript(platformUrl);
-
 const kNotSpecifiedErrorMessage =
   'Either documentId or both tabId and frameId must be specified.';
 
 if (inServiceWorker) {
-  ready = Promise.all([onScriptLoad, onPlatformLoad]);
+  ready = onScriptLoad;
 } else {
   let onWindowLoad = new Promise((resolve) => {
     window.onload = resolve;
   });
-  ready = Promise.all([onWindowLoad, onScriptLoad, onPlatformLoad]);
+  ready = Promise.all([onWindowLoad, onScriptLoad]);
 }
 
 ready.then(async function() {
@@ -33,12 +30,6 @@ ready.then(async function() {
 
   chrome.test.runTests([
     async function testGetFrame() {
-      if (await isAndroid()) {
-        // TODO(crbug.com/371432404): chrome.webNavigation.onCommitted isn't
-        // supported yet. Skip the test.
-        chrome.test.succeed();
-        return;
-      }
       var done = chrome.test.listenForever(chrome.webNavigation.onCommitted,
         function (details) {
           if (details.tabId != tab.id || details.url != URL)
@@ -91,12 +82,6 @@ ready.then(async function() {
     },
 
     async function testGetFrameDocumentId() {
-      if (await isAndroid()) {
-        // TODO(crbug.com/371432404): Depends on documentId from a skipped test
-        // above. Skip this test too.
-        chrome.test.succeed();
-        return;
-      }
       chrome.webNavigation.getFrame({tabId: tab.id, documentId: documentId},
         function (details) {
           chrome.test.assertEq({
@@ -112,12 +97,6 @@ ready.then(async function() {
     },
 
     async function testGetFrameDocumentIdAndFrameId() {
-      if (await isAndroid()) {
-        // TODO(crbug.com/371432404): Depends on documentId from a skipped test
-        // above. Skip this test too.
-        chrome.test.succeed();
-        return;
-      }
       chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0,
                                      processId: processId,
                                      documentId: documentId},
@@ -156,12 +135,6 @@ ready.then(async function() {
     },
 
     async function testGetAllFrames() {
-      if (await isAndroid()) {
-        // TODO(crbug.com/371432404): Fails because FrameNavigationState is not
-        // wired up yet. Skip the test.
-        chrome.test.succeed();
-        return;
-      }
       chrome.webNavigation.getAllFrames({tabId: tab.id}, function (details) {
           chrome.test.assertEq(
               [{errorOccurred: false,
@@ -224,12 +197,6 @@ ready.then(async function() {
       chrome.tabs.update(tab.id, {"url": initiatorUrl});
     },
     async function testGetPrerenderingFramesAndSubframes() {
-      if (await isAndroid()) {
-        // TODO(crbug.com/371432404): chrome.webNavigation.onCommitted isn't
-        // supported yet. Skip the test.
-        chrome.test.succeed();
-        return;
-      }
       const urlPrefix =
       `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + "a.html?initial";

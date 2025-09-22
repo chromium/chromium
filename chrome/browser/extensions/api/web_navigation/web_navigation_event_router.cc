@@ -11,11 +11,19 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/android/tab_android.h"  // nogncheck
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#else
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -48,16 +56,71 @@ void WebNavigationEventRouter::PendingWebContents::WebContentsDestroyed() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371432404): Provide an implementation for desktop Android,
-// based on TabModelListObserver and TabModelObserver.
-class WebNavigationEventRouter::TabHelper {
+// Android uses TabModel to track tabs.
+class WebNavigationEventRouter::TabHelper : public TabModelListObserver,
+                                            public TabModelObserver {
  public:
-  TabHelper(WebNavigationEventRouter* router, Profile* profile) {}
+  TabHelper(WebNavigationEventRouter* router, Profile* profile)
+      : router_(router), profile_(profile) {}
   TabHelper(const TabHelper&) = delete;
   TabHelper& operator=(const TabHelper&) = delete;
-  ~TabHelper() = default;
+  ~TabHelper() override {
+    tab_model_observations_.RemoveAllObservations();
+    TabModelList::RemoveObserver(this);
+  }
 
-  void Init() {}
+  void Init() {
+    // Equivalent to observing for new windows (a TabModel is like a window).
+    TabModelList::AddObserver(this);
+    // Add models for existing windows.
+    for (TabModel* model : TabModelList::models()) {
+      OnTabModelAdded(model);
+    }
+  }
+
+  // TabModelListObserver:
+  void OnTabModelAdded(TabModel* tab_model) override {
+    // Equivalent to a new window being added. Check if the window has a profile
+    // we're tracking.
+    if (!ShouldTrackModel(tab_model)) {
+      return;
+    }
+    // Observe for new tabs being created.
+    tab_model_observations_.AddObservation(tab_model);
+    // Call TabAdded() on existing tabs.
+    for (::tabs::TabInterface* tab : tab_model->GetAllTabs()) {
+      if (tab && tab->GetContents()) {
+        router_->TabAdded(tab->GetContents());
+      }
+    }
+  }
+
+  void OnTabModelRemoved(TabModel* tab_model) override {
+    if (tab_model_observations_.IsObservingSource(tab_model)) {
+      tab_model_observations_.RemoveObservation(tab_model);
+    }
+  }
+
+  // TabModelObserver:
+  void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override {
+    if (tab->GetContents()) {
+      router_->TabAdded(tab->GetContents());
+    }
+  }
+
+  // TODO(crbug.com/371432404): Find a method to deal with "replace" updates
+  // to tabs.
+
+ private:
+  // Returns true if we should track tabs in this model (window).
+  bool ShouldTrackModel(TabModel* model) const {
+    return profile_->IsSameOrParent(model->GetProfile());
+  }
+
+  raw_ptr<WebNavigationEventRouter> router_;
+  raw_ptr<Profile> profile_;
+  base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+      tab_model_observations_{this};
 };
 #else
 // Tab helper implementation for Win/Mac/Linux/Chrome OS.
