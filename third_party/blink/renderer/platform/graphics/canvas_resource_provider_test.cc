@@ -41,6 +41,8 @@ namespace {
 
 constexpr int kMaxTextureSize = 1024;
 
+}  // namespace
+
 class ImageTrackingDecodeCache : public cc::StubDecodeCache {
  public:
   ImageTrackingDecodeCache() = default;
@@ -114,6 +116,10 @@ class CanvasResourceProviderTest : public Test {
   void TearDown() override { SharedGpuContext::Reset(); }
 
  protected:
+  const gpu::SyncToken& GetSyncToken(const CanvasResource* resource) {
+    return resource->sync_token();
+  }
+
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ImageTrackingDecodeCache image_decode_cache_;
@@ -371,14 +377,14 @@ TEST_F(CanvasResourceProviderTest,
 
   // Same resource and sync token if we query again without updating.
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
-  auto sync_token = resource->GetSyncToken();
+  auto sync_token = GetSyncToken(resource.get());
   ASSERT_TRUE(resource);
   EXPECT_EQ(resource, provider->ProduceCanvasResource(FlushReason::kTesting));
-  EXPECT_EQ(sync_token, resource->GetSyncToken());
+  EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
   auto new_resource = UpdateResource(provider.get());
   EXPECT_NE(resource, new_resource);
-  EXPECT_NE(resource->GetSyncToken(), new_resource->GetSyncToken());
+  EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
   auto* resource_ptr = resource.get();
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
@@ -895,5 +901,4 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_FALSE(provider->Recorder().HasSideRecording());
 }
 
-}  // namespace
 }  // namespace blink

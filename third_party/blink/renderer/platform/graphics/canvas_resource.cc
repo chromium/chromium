@@ -176,7 +176,6 @@ bool CanvasResource::PrepareTransferableResource(
     return false;
   }
 
-  GetSyncToken();
   if (needs_verified_synctoken) {
     VerifySyncToken();
   }
@@ -239,7 +238,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   // so we instead ensure that it is verified now.
   owning_thread_data().sync_token =
       shared_image_interface->GenVerifiedSyncToken();
-  owning_thread_data().mailbox_needs_new_sync_token = false;
 }
 
 scoped_refptr<CanvasResourceSharedImage>
@@ -422,8 +420,6 @@ void CanvasResourceSharedImage::WillDraw() {
   // time the GMB is updated.
   if (!is_accelerated_)
     return;
-
-  owning_thread_data().mailbox_needs_new_sync_token = true;
 }
 
 void CanvasResourceSharedImage::Transfer() {
@@ -433,7 +429,6 @@ void CanvasResourceSharedImage::Transfer() {
   // TODO(khushalsagar): This is for consistency with MailboxTextureHolder
   // transfer path. It's unclear why the verification can not be deferred until
   // the resource needs to be transferred cross-process.
-  GetSyncToken();
   VerifySyncToken();
 }
 
@@ -480,7 +475,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, GetSyncToken(), /*shared_image_texture_id=*/0,
+      client_shared_image, sync_token(), /*shared_image_texture_id=*/0,
       GetAlphaType(), context_provider_wrapper_, owning_thread_ref_,
       owning_thread_task_runner_, std::move(release_callback));
 
@@ -506,7 +501,6 @@ void CanvasResourceSharedImage::EndExternalWrite(
   // internal interface as part of generating the TransferableResource. This new
   // sync token will be chained after `external_write_sync_token` thanks to the
   // wait above.
-  owning_thread_data_.mailbox_needs_new_sync_token = true;
   GetSyncToken();
 }
 
@@ -546,7 +540,6 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
     // This class doesn't currently have a way of verifying the sync token
     // within this call for software SharedImages, so it instead ensures that it
     // is verified at the time of generation.
-    DCHECK(!mailbox_needs_new_sync_token());
     DCHECK(sync_token().verified_flush());
 
     return sync_token();
@@ -557,20 +550,16 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
     // called before cross-thread usage. And since we don't allow writes on
     // another thread, the sync token generated at Transfer time shouldn't
     // have been invalidated.
-    DCHECK(!mailbox_needs_new_sync_token());
     DCHECK(sync_token().verified_flush());
 
     return sync_token();
   }
 
-  if (mailbox_needs_new_sync_token()) {
-    auto* raster_interface = RasterInterface();
-    DCHECK(raster_interface);  // caller should already have early exited if
-                               // !raster_interface.
-    raster_interface->GenUnverifiedSyncTokenCHROMIUM(
-        owning_thread_data().sync_token.GetData());
-    owning_thread_data().mailbox_needs_new_sync_token = false;
-  }
+  auto* raster_interface = RasterInterface();
+  DCHECK(raster_interface);  // caller should already have early exited if
+                             // !raster_interface.
+  raster_interface->GenUnverifiedSyncTokenCHROMIUM(
+      owning_thread_data().sync_token.GetData());
 
   return sync_token();
 }
@@ -694,7 +683,15 @@ const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
     auto* interface = InterfaceBase();
     if (interface)
       interface->GenSyncTokenCHROMIUM(sync_token_.GetData());
-  } else if (!sync_token_.verified_flush()) {
+  } else {
+    VerifySyncToken();
+  }
+
+  return sync_token_;
+}
+
+void ExternalCanvasResource::VerifySyncToken() {
+  if (!sync_token_.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
     // be able to use it by the compositor. This is why this method produces a
     // verified token even if no verification is explicitly requested.
@@ -705,8 +702,6 @@ const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
     interface->VerifySyncTokensCHROMIUM(&token_data, 1);
     sync_token_.SetVerifyFlush();
   }
-
-  return sync_token_;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

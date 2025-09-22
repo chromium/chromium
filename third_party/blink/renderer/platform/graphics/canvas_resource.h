@@ -167,6 +167,8 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
+  friend class CanvasResourceProviderTest;
+
   static void OnPlaceholderReleasedResourceOnOwningThread(
       scoped_refptr<CanvasResource> resource);
 
@@ -246,7 +248,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // We ensure to correctly update their state in Transfer, which is called
   // before a resource is used on a different thread.
   struct OwningThreadData {
-    bool mailbox_needs_new_sync_token = true;
     scoped_refptr<gpu::ClientSharedImage> client_shared_image;
     gpu::SyncToken sync_token;
     bool is_lost = false;
@@ -285,11 +286,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     return owning_thread_data_;
   }
 
-  // Can be read on any thread.
-
-  bool mailbox_needs_new_sync_token() const {
-    return owning_thread_data_.mailbox_needs_new_sync_token;
-  }
   const gpu::SyncToken& sync_token() const override {
     return owning_thread_data_.sync_token;
   }
@@ -341,6 +337,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool UsesAcceleratedRaster() const final { return true; }
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
+  void VerifySyncToken() override;
 
   ExternalCanvasResource(
       scoped_refptr<gpu::ClientSharedImage> client_si,
