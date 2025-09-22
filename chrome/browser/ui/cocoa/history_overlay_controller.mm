@@ -119,6 +119,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 }
 
 - (void)setProgress:(CGFloat)gestureAmount finished:(BOOL)finished {
+  DCHECK(self.view.superview);
   NSRect parentFrame = self.view.superview.frame;
   // When tracking the gesture, the height is constant and the alpha value
   // changes from [0.25, 0.65].
@@ -151,8 +152,10 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 }
 
 - (void)showPanelForView:(NSView*)view {
-  [self setProgress:0 finished:NO];  // Set initial view position.
+  // The self.view should be added to the hierarchy before its initial position
+  // can be set, because setProgress:finished: depends on the superview's frame.
   [view addSubview:self.view];
+  [self setProgress:0 finished:NO];  // Set initial view position.
 }
 
 - (void)dismiss {
