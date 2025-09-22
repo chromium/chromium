@@ -357,6 +357,20 @@ public class TabUtils {
         }
     }
 
+    /**
+     * Returns the {@link DrawableRes} ID for a given media state.
+     *
+     * @param mediaState The {@link MediaState} for which to get the indicator.
+     */
+    public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
+        // TODO(crbug.com/430072416): Add other media indicators.
+        return switch (mediaState) {
+            case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
+            case MediaState.MUTED -> R.drawable.volume_off_24dp;
+            default -> Resources.ID_NULL;
+        };
+    }
+
     private static int getThumbnailHeightDiff(Context context) {
         final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
         final int thumbnailMargin =
@@ -372,14 +386,5 @@ public class TabUtils {
         final int thumbnailMargin =
                 (int) context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
         return 2 * (tabGridCardMargin + thumbnailMargin);
-    }
-
-    public static @DrawableRes int getMediaIndicatorDrawable(@MediaState int mediaState) {
-        // TODO(crbug.com/430072416): Add other media indicators.
-        return switch (mediaState) {
-            case MediaState.AUDIBLE -> R.drawable.volume_up_24dp;
-            case MediaState.MUTED -> R.drawable.volume_off_24dp;
-            default -> Resources.ID_NULL;
-        };
     }
 }

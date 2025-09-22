@@ -31,6 +31,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -574,6 +578,35 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract void moveTabGroupToWindow(
             @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
 
+    @Override
+    public void setMuteSetting(List<Tab> tabs, boolean mute) {
+        TabModelJniBridgeJni.get().setMuteSetting(mNativeTabModelJniBridge, tabs, mute);
+    }
+
+    @Override
+    public boolean isMuted(Tab tab) {
+        WebContents contents = tab.getWebContents();
+        if (contents != null) {
+            return contents.isAudioMuted();
+        }
+
+        GURL url = tab.getUrl();
+        String scheme = url.getScheme();
+        if (url.isEmpty()
+                || UrlConstants.CHROME_SCHEME.equals(scheme)
+                || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)) {
+            // Chrome URLs don't have content settings, so default to false when WebContents are not
+            // available.
+            return false;
+        }
+
+        @ContentSetting
+        int soundSetting =
+                WebsitePreferenceBridge.getContentSetting(
+                        mProfile, ContentSettingsType.SOUND, url, url);
+        return soundSetting == ContentSetting.BLOCK;
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -591,6 +624,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
         void associateWithBrowserWindow(
                 long nativeTabModelJniBridge, long nativeAndroidBrowserWindow);
+
+        void setMuteSetting(
+                long nativeTabModelJniBridge,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                boolean mute);
 
         void duplicateTabForTesting( // IN-TEST
                 long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);

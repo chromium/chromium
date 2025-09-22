@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 
@@ -259,5 +260,13 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     @Override
     public OptionalInt getNativeSessionIdForTesting() {
         return OptionalInt.empty();
+    }
+
+    @Override
+    public void setMuteSetting(List<Tab> tabs, boolean mute) {}
+
+    @Override
+    public boolean isMuted(Tab tab) {
+        return false;
     }
 }

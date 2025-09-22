@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
+import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
 
@@ -207,4 +208,20 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
 
     /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
     OptionalInt getNativeSessionIdForTesting();
+
+    /**
+     * Sets the mute setting for the sites of the provided tabs.
+     *
+     * @param tabs The list of {@link Tab}s whose sites will have their sound setting changed.
+     * @param mute If true, it will block sound (muted); if false, it will allow sound (unmuted).
+     */
+    void setMuteSetting(List<Tab> tabs, boolean mute);
+
+    /**
+     * Returns whether a tab is muted. This is determined by the audio state of the WebContents if
+     * it's available, otherwise it falls back to the sound content setting for the tab's URL.
+     *
+     * @param tab The {@link Tab} to check.
+     */
+    boolean isMuted(Tab tab);
 }

@@ -109,6 +109,7 @@ public class TabContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final int TAB_OUTSIDE_OF_GROUP_ID = 2;
     private static final int NON_URL_TAB_ID = 3;
+    private static final int TAB_ID_2 = 4;
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
     private static final String TAB_GROUP_TITLE = "Tab Group Title";
@@ -165,6 +166,7 @@ public class TabContextMenuCoordinatorUnitTest {
     private final SavedTabGroupTab mSavedTabGroupTab = new SavedTabGroupTab();
     @Mock private TabList mTabList;
     @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
     @Mock private Tab mTabOutsideOfGroup;
     @Mock private Tab mNonUrlTab;
     @Mock private TabRemover mTabRemover;
@@ -208,6 +210,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabList.getTabAtChecked(1)).thenReturn(mTabOutsideOfGroup);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB_ID_2)).thenReturn(mTab2);
         when(mTabModel.getTabById(TAB_OUTSIDE_OF_GROUP_ID)).thenReturn(mTabOutsideOfGroup);
         when(mTabModel.getTabById(NON_URL_TAB_ID)).thenReturn(mNonUrlTab);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
@@ -1100,6 +1103,127 @@ public class TabContextMenuCoordinatorUnitTest {
                         mTabContextMenuCoordinator.showMenu(
                                 rectProvider, Collections.singletonList(TAB_ID)),
                 mTabContextMenuCoordinator::destroyMenuForTesting);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testMuteSite_singleTab() {
+        when(mTabModel.isMuted(mTab1)).thenReturn(false);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, List.of(TAB_ID));
+
+        ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
+        assertNotNull(muteItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.mute_sites_menu_item, 1),
+                muteItem.model.get(TITLE));
+
+        mOnItemClickedCallback.onClick(R.id.mute_site_menu_id, List.of(TAB_ID), null, null);
+        verify(mTabModel).setMuteSetting(List.of(mTab1), true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testUnmuteSite_singleTab() {
+        when(mTabModel.isMuted(mTab1)).thenReturn(true);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, List.of(TAB_ID));
+
+        ListItem unmuteItem = findItemByMenuId(modelList, R.id.unmute_site_menu_id);
+        assertNotNull(unmuteItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.unmute_sites_menu_item, 1),
+                unmuteItem.model.get(TITLE));
+
+        mOnItemClickedCallback.onClick(R.id.unmute_site_menu_id, List.of(TAB_ID), null, null);
+        verify(mTabModel).setMuteSetting(List.of(mTab1), false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testMuteSite_multipleTabs() {
+        when(mTabModel.isMuted(mTab1)).thenReturn(false);
+        when(mTabModel.isMuted(mTab2)).thenReturn(false);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_ID, TAB_ID_2));
+
+        ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
+        assertNotNull(muteItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.mute_sites_menu_item, 2),
+                muteItem.model.get(TITLE));
+
+        mOnItemClickedCallback.onClick(
+                R.id.mute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+        verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testUnmuteSite_multipleTabs() {
+        when(mTabModel.isMuted(mTab1)).thenReturn(true);
+        when(mTabModel.isMuted(mTab2)).thenReturn(true);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_ID, TAB_ID_2));
+
+        ListItem unmuteItem = findItemByMenuId(modelList, R.id.unmute_site_menu_id);
+        assertNotNull(unmuteItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.unmute_sites_menu_item, 2),
+                unmuteItem.model.get(TITLE));
+
+        mOnItemClickedCallback.onClick(
+                R.id.unmute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+        verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), false);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.MEDIA_INDICATORS_ANDROID,
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+    })
+    public void testMuteSite_multipleTabs_mixedState() {
+        when(mTabModel.isMuted(mTab1)).thenReturn(true);
+        when(mTabModel.isMuted(mTab2)).thenReturn(false);
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, List.of(TAB_ID, TAB_ID_2));
+
+        ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
+        assertNotNull(muteItem);
+        assertEquals(
+                mActivity.getResources().getQuantityString(R.plurals.mute_sites_menu_item, 2),
+                muteItem.model.get(TITLE));
+
+        mOnItemClickedCallback.onClick(
+                R.id.mute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+        verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), true);
+    }
+
+    private @Nullable ListItem findItemByMenuId(ModelList modelList, int menuId) {
+        for (int i = 0; i < modelList.size(); i++) {
+            ListItem item = modelList.get(i);
+            if (item.type == MENU_ITEM) {
+                if (item.model.get(ListMenuItemProperties.MENU_ITEM_ID) == menuId) {
+                    return item;
+                }
+            }
+        }
+        return null;
     }
 
     private void verifyAddToGroupSubmenuForTabOutsideOfGroup(

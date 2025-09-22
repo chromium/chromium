@@ -58,6 +58,9 @@ import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -1303,6 +1306,280 @@ public class TabModelImplTest {
                     assertFalse(
                             "Tab 2 should not be selected.",
                             tabModel.isTabMultiSelected(tab2.getId()));
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMuteSetting() {
+        WebPageStation page = mPage.loadWebPageProgrammatically(mTestUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(1, mTabModelJni.getCount());
+                    List<Tab> tabsToMute = mTabModelJni.getAllTabs();
+                    Tab tab = tabsToMute.get(0);
+                    assertFalse(
+                            "Tab should not be muted initially.",
+                            tab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ true);
+                    assertTrue(
+                            "Tab should be muted after setting.",
+                            tab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ false);
+                    assertFalse(
+                            "Tab should be unmuted after setting.",
+                            tab.getWebContents().isAudioMuted());
+                });
+
+        page.loadWebPageProgrammatically("chrome://version");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabsToMute = mTabModelJni.getAllTabs();
+                    Tab tab = tabsToMute.get(0);
+                    assertFalse(
+                            "WebContents should not be muted initially",
+                            tab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ true);
+                    assertTrue("WebContents should be muted", tab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ false);
+                    assertFalse(
+                            "WebContents shouldn't be muted", tab.getWebContents().isAudioMuted());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMuteSetting_MultipleTabs() {
+        WebPageStation page = mPage.loadWebPageProgrammatically(mTestUrl);
+        page.openNewTabFast().loadWebPageProgrammatically("chrome://version");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(2, mTabModelJni.getCount());
+                    List<Tab> tabsToMute = mTabModelJni.getAllTabs();
+
+                    Tab tab1 = tabsToMute.get(0);
+                    Tab tab2 = tabsToMute.get(1);
+
+                    assertFalse(
+                            "Tab 1 should not be muted initially.",
+                            tab1.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Tab 2 should not be muted initially.",
+                            tab2.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ true);
+
+                    assertTrue("Tab 1 should be muted.", tab1.getWebContents().isAudioMuted());
+                    assertTrue("Tab 2 should be muted.", tab2.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ false);
+
+                    assertFalse("Tab 1 should be unmuted.", tab1.getWebContents().isAudioMuted());
+                    assertFalse("Tab 2 should be unmuted.", tab2.getWebContents().isAudioMuted());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMuteSetting_SameSite() {
+        WebPageStation page = mPage.loadWebPageProgrammatically(mTestUrl);
+        String secondUrl =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/simple.html");
+        page.openNewTabFast().loadWebPageProgrammatically(secondUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab1 = mTabModelJni.getTabAt(0);
+                    Tab tab2 = mTabModelJni.getTabAt(1);
+
+                    assertFalse(
+                            "Tab 1 should not be muted initially.",
+                            tab1.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Tab 2 should not be muted initially.",
+                            tab2.getWebContents().isAudioMuted());
+
+                    List<Tab> tabsToMute = List.of(tab1);
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ true);
+
+                    assertTrue(
+                            "Tab 1 should be muted after setting.",
+                            tab1.getWebContents().isAudioMuted());
+                    assertTrue(
+                            "Tab 2 should also be muted as it's the same site.",
+                            tab2.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(tabsToMute, /* mute= */ false);
+
+                    assertFalse(
+                            "Tab 1 should be unmuted after setting.",
+                            tab1.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Tab 2 should also be unmuted as it's the same site.",
+                            tab2.getWebContents().isAudioMuted());
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMuteSetting_WithWildcardPattern() {
+        final String host = "example.com";
+        final String subdomainUrl =
+                mActivityTestRule.getTestServer().getURLWithHostName("sub." + host, "/test.html");
+        final String anotherSubdomainUrl =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURLWithHostName("another." + host, "/test.html");
+        final String wildcardPattern = "[*.]" + host;
+        final Tab tab = mPage.getTab();
+
+        // Set a wildcard rule to BLOCK sound for all subdomains.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebsitePreferenceBridge.setContentSettingCustomScope(
+                                mTabModelJni.getProfile(),
+                                ContentSettingsType.SOUND,
+                                wildcardPattern,
+                                WebsitePreferenceBridge.SITE_WILDCARD,
+                                ContentSetting.BLOCK));
+
+        mPage.loadWebPageProgrammatically(subdomainUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            "Tab should be muted by wildcard rule",
+                            tab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(List.of(tab), /* mute= */ false);
+                    assertFalse(
+                            "Tab should be unmuted by the new, specific exception.",
+                            tab.getWebContents().isAudioMuted());
+
+                    @ContentSetting
+                    int setting =
+                            WebsitePreferenceBridge.getContentSetting(
+                                    mTabModelJni.getProfile(),
+                                    ContentSettingsType.SOUND,
+                                    new GURL(subdomainUrl),
+                                    new GURL(subdomainUrl));
+
+                    assertEquals(
+                            "Site should block sound by the new, specific exception.",
+                            ContentSetting.ALLOW,
+                            setting);
+
+                    setting =
+                            WebsitePreferenceBridge.getContentSetting(
+                                    mTabModelJni.getProfile(),
+                                    ContentSettingsType.SOUND,
+                                    new GURL(anotherSubdomainUrl),
+                                    new GURL(anotherSubdomainUrl));
+                    assertEquals(
+                            "Another subdomain should still have sound blocked by the wildcard.",
+                            ContentSetting.BLOCK,
+                            setting);
+
+                    // Cleanup
+                    WebsitePreferenceBridge.setContentSettingCustomScope(
+                            mTabModelJni.getProfile(),
+                            ContentSettingsType.SOUND,
+                            wildcardPattern,
+                            WebsitePreferenceBridge.SITE_WILDCARD,
+                            ContentSetting.DEFAULT);
+
+                    setting =
+                            WebsitePreferenceBridge.getContentSetting(
+                                    mTabModelJni.getProfile(),
+                                    ContentSettingsType.SOUND,
+                                    new GURL(anotherSubdomainUrl),
+                                    new GURL(anotherSubdomainUrl));
+                    assertEquals(
+                            "Another subdomain should allow sound again after wildcard rule is"
+                                    + " removed.",
+                            ContentSetting.ALLOW,
+                            setting);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testSetMuteSetting_Incognito() {
+        WebPageStation page = mPage.loadWebPageProgrammatically(mTestUrl);
+        Journeys.createIncognitoTabsWithWebPages(page, List.of(mTestUrl));
+        TabModel incognitoTabModel =
+                mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab regularTab = mTabModelJni.getTabAt(0);
+                    Tab incognitoTab = incognitoTabModel.getTabAt(0);
+
+                    assertFalse(
+                            "Regular tab should not be muted initially.",
+                            regularTab.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Incognito tab should not be muted initially.",
+                            incognitoTab.getWebContents().isAudioMuted());
+
+                    List<Tab> incognitoToMute = List.of(incognitoTab);
+                    List<Tab> regularToMute = List.of(regularTab);
+
+                    // Muting in non-incognito will influence incognito if there is no specific
+                    // content setting for the site in the incognito profile.
+                    mTabModelJni.setMuteSetting(regularToMute, /* mute= */ true);
+                    assertTrue(
+                            "Regular tab should be muted.",
+                            regularTab.getWebContents().isAudioMuted());
+                    assertTrue(
+                            "Incognito tab should be muted because it inherits from regular model.",
+                            incognitoTab.getWebContents().isAudioMuted());
+
+                    // For unmuting, same reason as comment above.
+                    mTabModelJni.setMuteSetting(regularToMute, /* mute= */ false);
+                    assertFalse(
+                            "Regular tab should be unmuted.",
+                            regularTab.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Incognito tab should also be unmuted.",
+                            incognitoTab.getWebContents().isAudioMuted());
+
+                    // Muting in incognito should not influence the non-incognito profile content
+                    // setting of this site.
+                    incognitoTabModel.setMuteSetting(incognitoToMute, /* mute= */ true);
+                    assertTrue(
+                            "Incognito tab should be muted.",
+                            incognitoTab.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Regular tab should not be affected by incognito setting.",
+                            regularTab.getWebContents().isAudioMuted());
+
+                    mTabModelJni.setMuteSetting(regularToMute, /* mute= */ true);
+                    assertTrue(
+                            "Regular tab should be muted again.",
+                            regularTab.getWebContents().isAudioMuted());
+
+                    // At this point incognito has its specific content setting and will no longer
+                    // be in sync with the non-incognito content setting map.
+                    mTabModelJni.setMuteSetting(regularToMute, /* mute= */ false);
+                    assertTrue(
+                            "Incognito tab should remain muted due to its own setting.",
+                            incognitoTab.getWebContents().isAudioMuted());
+                    assertFalse(
+                            "Regular tab should be unmuted.",
+                            regularTab.getWebContents().isAudioMuted());
+
+                    // Reset
+                    incognitoTabModel.setMuteSetting(incognitoToMute, /* mute= */ false);
+                    assertFalse(
+                            "Incognito tab should be unmuted after reset.",
+                            incognitoTab.getWebContents().isAudioMuted());
                 });
     }
 

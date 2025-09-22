@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stdint.h>
 
+#include <set>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -21,16 +22,23 @@
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/resource_request_body_android.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
+#include "url/origin.h"
 
 // "chrome/browser/ui/browser_window" is available on desktop Android, but not
 // other Android builds.
@@ -167,6 +175,74 @@ void TabModelJniBridge::MoveTabGroupToWindowForTesting(
 #else
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+}
+
+void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
+                                       std::vector<TabAndroid*> tabs,
+                                       bool mute) {
+  Profile* profile = GetProfile();
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  bool offTheRecord = profile->IsOffTheRecord();
+  std::set<url::Origin> processed_origins;
+
+  for (TabAndroid* tab : tabs) {
+    WebContents* web_contents = tab->web_contents();
+
+    // If there are no WebContents, we get the url from the Tab object, if
+    // available.
+    GURL url =
+        web_contents ? web_contents->GetLastCommittedURL() : tab->GetURL();
+
+    if (url.is_empty()) {
+      continue;
+    }
+
+    if (url.SchemeIs(content::kChromeUIScheme) ||
+        url.SchemeIs(content::kChromeNativeScheme)) {
+      if (web_contents) {
+        // chrome:// URLs don't have content settings but can be muted, so just
+        // mute the WebContents.
+        web_contents->SetAudioMuted(mute);
+      }
+      continue;
+    }
+
+    if (web_contents) {
+      // The origin may be null (when navigation hasn't finalized) or may not
+      // match the URL (e.g., for offline pages). We use the URL directly in
+      // these cases to ensure the content setting is applied correctly, but the
+      // origin can help us filter previously processed origins.
+      url::Origin origin =
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+      if (!processed_origins.insert(origin).second) {
+        continue;
+      }
+    }
+
+    ContentSetting setting =
+        mute ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW;
+
+    // We add the site URL to the exception list if the request behavior
+    // differs from the default value.
+    if (!offTheRecord) {
+      // Using default setting value below clears the setting from the
+      // exception list for the site URL if it exists or if there is an
+      // existing less specific rule in the exception list.
+      map->SetContentSettingDefaultScope(url, url, ContentSettingsType::SOUND,
+                                         CONTENT_SETTING_DEFAULT);
+
+      // If the current setting matches the desired setting after clearing the
+      // site URL from the exception list we can simply skip.
+      if (setting ==
+          map->GetContentSetting(url, url, ContentSettingsType::SOUND)) {
+        continue;
+      }
+    }
+    // Adds the site URL to the exception list for the setting.
+    map->SetContentSettingDefaultScope(url, url, ContentSettingsType::SOUND,
+                                       setting);
+  }
 }
 
 jint TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {

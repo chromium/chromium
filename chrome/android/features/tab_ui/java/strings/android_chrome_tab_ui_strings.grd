@@ -1073,6 +1073,16 @@
           =1 {Move tabs to new window}
           other {Move tabs to another window}}
       </message>
+      <message name="IDS_MUTE_SITES_MENU_ITEM" desc="Content description for an action which mutes a selection of sites.">
+         {TAB_COUNT, plural,
+            =1 {Mute site}
+            other {Mute sites}}
+      </message>
+      <message name="IDS_UNMUTE_SITES_MENU_ITEM" desc="Content description for an action which unmutes a selection of sites.">
+        {TAB_COUNT, plural,
+            =1 {Unmute site}
+            other {Unmute sites}}
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

@@ -51763,6 +51763,12 @@ should be able to be added at any place in this file.
   <suffix name="MoveTabToOtherWindow.MultiTab"
       label="User moved multiple tabs to another window via the tab context
              menu on tab strip on Android."/>
+  <suffix name="MuteSite"
+      label="User muted a site via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="MuteSite.MultiTab"
+      label="User muted site(s) from multiple selected tabs via the tab
+             context menu on tab strip on Android."/>
   <suffix name="NewGroup"
       label="User created a new tab group via the tab context menu on tab
              strip on Android."/>
@@ -51788,6 +51794,12 @@ should be able to be added at any place in this file.
   <suffix name="Shown.MultiTab"
       label="Recorded when the tab context menu is shown with multiple tabs
              selected."/>
+  <suffix name="UnmuteSite"
+      label="User unmuted a site via the tab context menu on tab strip on
+             Android."/>
+  <suffix name="UnmuteSite.MultiTab"
+      label="User unmuted site(s) from multiple selected tabs via the tab
+             context menu on tab strip on Android."/>
   <suffix name="UnpinTab"
       label="User unpinned a tab via the tab context menu on tab strip on
              Android."/>
