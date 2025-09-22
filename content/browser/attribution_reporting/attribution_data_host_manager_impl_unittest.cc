@@ -1992,8 +1992,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kNavigationDone = 0
   histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
                                 0, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.OsRegistrationsBufferWithSameContext", true, 2);
 }
 
 TEST_F(
@@ -2069,8 +2067,6 @@ TEST_F(
   // kTimeout = 2
   histograms.ExpectUniqueSample("Conversions.OsRegistrationsBufferFlushReason",
                                 2, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.OsRegistrationsBufferWithSameContext", true, 1);
   checkpoint.Call(2);
 
   // If any additional registrations are received past a timeout, they should
@@ -3581,9 +3577,6 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   histograms.ExpectBucketCount(kRegistrationMethod, 0, 1);
   // Even if OS registrations are buffered, each data received should record.
   histograms.ExpectBucketCount(kRegistrationMethod, 3, 2);
-
-  histograms.ExpectUniqueSample(
-      "Conversions.OsRegistrationsBufferWithSameContext", true, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,

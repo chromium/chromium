@@ -1044,11 +1044,7 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
     if (!context_.has_value()) {
       context_ = registration_context;
     } else {
-      // TODO(anthonygarant): Convert to CHECK after validating that the
-      // contexts are always equivalent.
-      base::UmaHistogramBoolean(
-          "Conversions.OsRegistrationsBufferWithSameContext",
-          context_->IsEquivalent(registration_context));
+      CHECK(context_->IsEquivalent(registration_context));
     }
 
     CHECK_LE(registrations_.size(), kMaxBufferSize);

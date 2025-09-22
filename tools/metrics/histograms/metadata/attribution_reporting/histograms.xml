@@ -925,24 +925,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.OsRegistrationsBufferWithSameContext"
-    enum="Boolean" expires_after="2025-11-02">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    The OS allows associating a navigation's input event to a single call. As a
-    result, all registrations tied to a navigation are buffered before
-    delegating them to the OS.
-
-    Registrations buffered in one buffer should all have equivalent contexts.
-    This histogram emits a boolean indicating if the context is considered
-    equivalent to the first buffered registration.
-
-    Contexts are considered equivalent if their properties are equal except for
-    those influenced by the registration method.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
     units="count" expires_after="2026-01-25">
   <owner>linnan@chromium.org</owner>
