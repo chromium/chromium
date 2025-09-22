@@ -4,24 +4,23 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_two_origins_view.h"
 
-#include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/views/chrome_views_test_base.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"
 
 namespace {
@@ -106,44 +105,18 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
 };
 }  // namespace
 
-class PermissionPromptBubbleTwoOriginsViewTest : public ChromeViewsTestBase {
+class PermissionPromptBubbleTwoOriginsViewBrowserTest
+    : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    ChromeViewsTestBase::SetUp();
-    CreateBrowser();
-  }
-
-  Browser* browser() { return browser_.get(); }
-
   std::unique_ptr<PermissionPromptBubbleBaseView> CreateBubble(
       TestDelegateTwoOrigins* delegate) {
     return std::make_unique<PermissionPromptBubbleTwoOriginsView>(
         browser(), delegate->GetWeakPtr(), PermissionPromptStyle::kBubbleOnly);
   }
-
- private:
-  void CreateBrowser() {
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        FaviconServiceFactory::GetInstance(),
-        FaviconServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params(profile_.get(), /*user_gesture=*/true);
-    params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
-  }
-
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
 };
 
-TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
-       TitleMentionsRequestingOriginAndPermission) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
+                       TitleMentionsRequestingOriginAndPermission) {
   TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
                                   GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
@@ -160,15 +133,16 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
   EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "test.embedding", title);
 }
 
-TEST_F(PermissionPromptBubbleTwoOriginsViewTest, DiesIfPermissionNotAllowed) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
+                       DiesIfPermissionNotAllowed) {
   TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
                                   GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kCameraStream});
   EXPECT_DEATH_IF_SUPPORTED(CreateBubble(&delegate), "");
 }
 
-TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
-       DescriptionMentionsTwoOriginsAndPermission) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
+                       DescriptionMentionsTwoOriginsAndPermission) {
   TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
                                   GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
@@ -189,7 +163,8 @@ TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
                       description);
 }
 
-TEST_F(PermissionPromptBubbleTwoOriginsViewTest, LinkIsPresent) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
+                       LinkIsPresent) {
   TestDelegateTwoOrigins delegate(GURL("https://www.test.requesting.com"),
                                   GURL("https://www.test.embedding.com"),
                                   {permissions::RequestType::kStorageAccess});
