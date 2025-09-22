@@ -9,7 +9,10 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class CommandLine;
