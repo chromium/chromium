@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/apple/mobile_config.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
@@ -330,4 +331,11 @@ action("xctest_runner_without_arm64e") {
   if (ios_use_xcode_symlinks) {
     deps += [ ":copy_xctrunner_app" ]
   }
+}
+
+# Allow code to detect whether it is compiler for an app extension or not
+# (extensions cannot access some APIs, e.g. UIApplication.sharedApplication).
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_IS_APP_EXTENSION=$ios_is_app_extension" ]
 }
