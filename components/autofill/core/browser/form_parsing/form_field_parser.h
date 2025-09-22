@@ -332,11 +332,6 @@ class FormFieldParser {
       ParsingContext& context,
       AutofillScanner& scanner);
 
-  // Removes checkable fields and returns fields to be processed for field
-  // detection.
-  static std::vector<FormFieldData> RemoveCheckableFields(
-      base::span<const FormFieldData> fields);
-
   // Matches the regular expression `pattern` against the specified
   // `match_attributes` of the `field`.
   static std::optional<MatchInfo> Match(
@@ -360,15 +355,13 @@ class FormFieldParser {
                                               std::string_view regex_name,
                                               bool is_negative_pattern = false);
 
-  // Perform a "pass" over the |fields| where each pass uses the supplied
-  // |parse| method to match content to a given field type.
-  // |fields| is both an input and an output parameter.  Upon exit |fields|
-  // holds any remaining unclassified fields for further processing.
-  // Classification results of the processed fields are stored in
-  // |field_candidates|.
+  // Applies `parse()` from left to right to `fields`. Only considers fields
+  // that satisfy `is_relevant()`.
+  // Stores the classification results in `field_candidates`.
   static void ParseFormFieldsPass(ParseFunction parse,
                                   ParsingContext& context,
                                   base::span<const FormFieldData> fields,
+                                  bool (*is_relevant)(const FormFieldData&),
                                   FieldCandidatesMap& field_candidates);
 };
 

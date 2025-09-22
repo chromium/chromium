@@ -64,7 +64,8 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     PatternFile pattern_file) {
-  AutofillScanner scanner(fields_);
+  AutofillScanner scanner(fields_,
+                          [](const FormFieldData& field) { return true; });
   ParsingContext context(fields_, client_country, page_language, pattern_file,
                          GetActiveRegexFeatures(), /*log_manager=*/nullptr);
   std::unique_ptr<FormFieldParser> field = Parse(context, scanner);
@@ -86,9 +87,9 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const LanguageCode& page_language) {
   ParsingContext context(fields_, client_country, page_language,
                          *GetActivePatternFile(), /*active_features=*/{},
-                         /*log_manager=*/nullptr);
-
-  AutofillScanner scanner(fields_);
+                         /*log_manager=*/{});
+  AutofillScanner scanner(fields_,
+                          [](const FormFieldData& field) { return true; });
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of
     // all languages are used.

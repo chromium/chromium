@@ -128,7 +128,7 @@ void PhoneFieldParserTest::RunParsingTest(
   }
 
   // Parse.
-  AutofillScanner scanner(list_);
+  AutofillScanner scanner(list_, [](const FormFieldData&) { return true; });
   ParsingContext context(list_, GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile(), /*active_features=*/{},
                          /*log_manager=*/nullptr);

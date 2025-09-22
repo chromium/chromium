@@ -1468,6 +1468,7 @@ source_set("unit_tests") {
     "form_parsing/address_field_parser_ng_unittest.cc",
     "form_parsing/address_field_parser_unittest.cc",
     "form_parsing/alternative_name_field_parser_unittest.cc",
+    "form_parsing/autofill_scanner_unittest.cc",
     "form_parsing/credit_card_field_parser_unittest.cc",
     "form_parsing/email_field_parser_unittest.cc",
     "form_parsing/field_candidates_unittest.cc",

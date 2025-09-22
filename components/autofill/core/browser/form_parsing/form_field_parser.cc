@@ -129,6 +129,12 @@ bool IsLabelHigherQualityThanPlaceholder(
   }
 }
 
+bool IsRelevant(const FormFieldData& field) {
+  return !IsCheckable(field.check_status()) &&
+         (field.role() != FormFieldData::RoleAttribute::kPresentation ||
+          field.IsSelectElement());
+}
+
 }  // namespace
 
 RegexMatchesCache::RegexMatchesCache(int capacity) : cache_(capacity) {}
@@ -224,19 +230,17 @@ bool FormFieldParser::MatchesRegexWithCache(
 void FormFieldParser::ParseFormFields(ParsingContext& context,
                                       base::span<const FormFieldData> fields,
                                       FieldCandidatesMap& field_candidates) {
-  std::vector<FormFieldData> processed_fields = RemoveCheckableFields(fields);
-
   // Email pass.
-  ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(EmailFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
   bool found_email_field = !field_candidates.empty();
 
   // Phone pass.
-  ParseFormFieldsPass(PhoneFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(PhoneFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   // Travel pass.
-  ParseFormFieldsPass(TravelFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(TravelFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   // Address pass.
@@ -244,12 +248,12 @@ void FormFieldParser::ParseFormFields(ParsingContext& context,
                           features::kAutofillEnableAddressFieldParserNG)
                           ? AddressFieldParserNG::Parse
                           : AddressFieldParser::Parse,
-                      context, processed_fields, field_candidates);
+                      context, fields, &IsRelevant, field_candidates);
 
   const size_t candidates_size = field_candidates.size();
   // Credit card pass.
-  ParseFormFieldsPass(CreditCardFieldParser::Parse, context, processed_fields,
-                      field_candidates);
+  ParseFormFieldsPass(CreditCardFieldParser::Parse, context, fields,
+                      &IsRelevant, field_candidates);
   bool found_cc_fields = candidates_size != field_candidates.size();
   if (!found_email_field && !found_cc_fields) {
     // No email or cc fields found. Standalone CVC field pass for the VCN card
@@ -259,37 +263,37 @@ void FormFieldParser::ParseFormFields(ParsingContext& context,
   }
 
   // Price pass.
-  ParseFormFieldsPass(PriceFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(PriceFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableLoyaltyCardsFilling)) {
     // Loyalty card pass.
-    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
+    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
                         field_candidates);
   }
 
   // Name pass.
-  ParseFormFieldsPass(NameFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(NameFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
     // Alternative name (e.g. phonetic name) pass.
-    ParseFormFieldsPass(AlternativeNameFieldParser::Parse, context,
-                        processed_fields, field_candidates);
+    ParseFormFieldsPass(AlternativeNameFieldParser::Parse, context, fields,
+                        &IsRelevant, field_candidates);
   }
 
   // Search pass.
-  ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(SearchFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   // Merchant promo code pass.
-  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
-                      processed_fields, field_candidates);
+  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context, fields,
+                      &IsRelevant, field_candidates);
 
   // IBAN pass.
-  ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(IbanFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
@@ -400,20 +404,19 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 void FormFieldParser::ParseSingleFields(ParsingContext& context,
                                         base::span<const FormFieldData> fields,
                                         FieldCandidatesMap& field_candidates) {
-  std::vector<FormFieldData> processed_fields = RemoveCheckableFields(fields);
   // Merchant promo code pass.
-  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
-                      processed_fields, field_candidates);
+  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context, fields,
+                      &IsRelevant, field_candidates);
 
   // IBAN pass.
-  ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
+  ParseFormFieldsPass(IbanFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
   if (AddressFieldParser::IsStandaloneZipSupported(context.client_country)) {
     // In some countries we observe address forms that are particularly small
     // (e.g. only a zip code.)
-    ParseFormFieldsPass(AddressFieldParser::ParseStandaloneZip, context,
-                        processed_fields, field_candidates);
+    ParseFormFieldsPass(AddressFieldParser::ParseStandaloneZip, context, fields,
+                        &IsRelevant, field_candidates);
   }
 }
 
@@ -421,12 +424,10 @@ void FormFieldParser::ParseStandaloneLoyaltyCardFields(
     ParsingContext& context,
     base::span<const FormFieldData> fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<FormFieldData> processed_fields = RemoveCheckableFields(fields);
-
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableLoyaltyCardsFilling)) {
     // Loyalty Cards pass.
-    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, processed_fields,
+    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
                         field_candidates);
   }
 }
@@ -435,26 +436,23 @@ void FormFieldParser::ParseStandaloneCVCFields(
     ParsingContext& context,
     base::span<const FormFieldData> fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<FormFieldData> processed_fields = RemoveCheckableFields(fields);
-  ParseFormFieldsPass(StandaloneCvcFieldParser::Parse, context,
-                      processed_fields, field_candidates);
+  ParseFormFieldsPass(StandaloneCvcFieldParser::Parse, context, fields,
+                      &IsRelevant, field_candidates);
 }
 
 void FormFieldParser::ParseStandaloneEmailFields(
     ParsingContext& context,
     base::span<const FormFieldData> fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<FormFieldData> processed_fields = RemoveCheckableFields(fields);
-  // Do not ignore fields with autocomplete attributes attempting to disable
+  // Do not consider fields with autocomplete attributes attempting to disable
   // autocomplete. Disabling autocomplete is a common practice on fields where
   // we don't want to offer email filling even if our heuristics match (e.g.
   // search input fields).
-  std::erase_if(processed_fields, [](const FormFieldData& field) {
-    return field.autocomplete_attribute() == "off" ||
-           field.autocomplete_attribute() == "false";
-  });
-
-  ParseFormFieldsPass(EmailFieldParser::Parse, context, processed_fields,
+  auto is_relevant = [](const FormFieldData& field) {
+    return IsRelevant(field) && field.autocomplete_attribute() != "off" &&
+           field.autocomplete_attribute() != "false";
+  };
+  ParseFormFieldsPass(EmailFieldParser::Parse, context, fields, is_relevant,
                       field_candidates);
 }
 
@@ -676,27 +674,6 @@ void FormFieldParser::AddClassification(
       score);
 }
 
-// static
-std::vector<FormFieldData> FormFieldParser::RemoveCheckableFields(
-    base::span<const FormFieldData> fields) {
-  // Set up a working copy of the fields to be processed.
-  std::vector<FormFieldData> processed_fields;
-  for (const auto& field : fields) {
-    // Ignore checkable fields as they interfere with parsers assuming context.
-    // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
-    // interferes with correctly understanding ADDRESS_LINE2.
-    // Ignore fields marked as presentational, unless for 'select' fields (for
-    // synthetic fields.)
-    if (IsCheckable(field.check_status()) ||
-        (field.role() == FormFieldData::RoleAttribute::kPresentation &&
-         !field.IsSelectElement())) {
-      continue;
-    }
-    processed_fields.push_back(field);
-  }
-  return processed_fields;
-}
-
 std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
     ParsingContext& context,
     const FormFieldData& field,
@@ -823,8 +800,9 @@ void FormFieldParser::ParseFormFieldsPass(
     ParseFunction parse,
     ParsingContext& context,
     base::span<const FormFieldData> fields,
+    bool (*is_relevant)(const FormFieldData&),
     FieldCandidatesMap& field_candidates) {
-  AutofillScanner scanner(fields);
+  AutofillScanner scanner(fields, is_relevant);
   while (!scanner.IsEnd()) {
     std::unique_ptr<FormFieldParser> form_field = parse(context, scanner);
     if (form_field == nullptr) {

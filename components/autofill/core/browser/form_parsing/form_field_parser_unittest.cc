@@ -341,7 +341,8 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   // Construct `n` parsers from `testcase.field_matches_parser`.
   // Since base::FunctionRef is non-owning, we need to define at least `n`
   // lambdas by hand.
-  AutofillScanner scanner(fields);
+  AutofillScanner scanner(fields,
+                          [](const FormFieldData& field) { return true; });
   CHECK_LE(n, 3u) << "If a test case has size > 3, add a `callbackN` variable "
                      "below and add it to `callbacks`";
   auto callback0 = [&]() {
