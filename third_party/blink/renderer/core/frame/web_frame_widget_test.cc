@@ -803,6 +803,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
   base::test::ScopedFeatureList feature_list(
       features::kSpeculativeImageDecodes);
   SimRequest request("https://example.com/test.html", "text/html");
+  SimRequest image_request("https://example.com/image.png", "image/png");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
       <!DOCTYPE html>
@@ -818,17 +819,12 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
   // actually match the intrinsic size of the data URL below.
   EXPECT_EQ(layout_image->CachedSpeculativeDecodeSize(), gfx::Size(340, 380));
 
-  image->setAttribute(
-      html_names::kSrcAttr,
-      AtomicString("data:image/"
-                   "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
-                   "9AAAAAXNSR0IArs4c6QAAABhJREFUKFNjbGj48J+BCMA4qhBfKFE/"
-                   "eACQKR1hvTllHQAAAABJRU5ErkJggg=="));
-  // The fetch is initiated synchronously from a microtask after src is set. For
-  // a data URL the load will also finish synchronously, and the speculative
-  // decode should have been triggered, based on pre-computed visibility.
-  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, true)).Times(1);
+  image->setAttribute(html_names::kSrcAttr, AtomicString("image.png"));
+  // The fetch is initiated synchronously from a microtask after src is set.
   GetDocument().GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, true)).Times(1);
+  image_request.Complete(*test::ReadFromFile(
+      test::CoreTestDataPath("notifications/3000x2000.png")));
 }
 
 TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {

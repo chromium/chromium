@@ -1491,6 +1491,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           resource->GetContentStatus() == ResourceStatus::kCached &&
           base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
         speculative_decode_candidate_images_.insert(resource);
+        MaybeStartSpeculativeImageDecode();
       }
       break;
   }
@@ -2524,6 +2525,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
         resource->GetContentStatus() == ResourceStatus::kCached &&
         base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
       speculative_decode_candidate_images_.insert(resource);
+      MaybeStartSpeculativeImageDecode();
     }
 
     // Since this resource came from the network stack we only schedule a stale
