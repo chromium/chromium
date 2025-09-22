@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 
+#include "chrome/browser/actor/ui/actor_overlay_handler.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,13 +46,16 @@ void ActorOverlayUI::BindInterface(
 void ActorOverlayUI::CreatePageHandler(
     mojo::PendingRemote<mojom::ActorOverlayPage> page,
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
-  content::WebContents* web_contents = web_ui()->GetWebContents();
-  tabs::TabInterface* tab_interface = webui::GetTabInterface(web_contents);
-  ActorUiTabControllerInterface* actor_ui_tab_controller =
-      ActorUiTabControllerInterface::From(tab_interface);
-  CHECK(actor_ui_tab_controller);
-  actor_ui_tab_controller->BindActorOverlay(std::move(page),
-                                            std::move(receiver));
+  handler_ = std::make_unique<ActorOverlayHandler>(
+      std::move(page), std::move(receiver), web_ui()->GetWebContents());
+}
+
+void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
+  if (!handler_) {
+    return;
+  }
+
+  handler_->SetOverlayBackground(is_visible);
 }
 
 }  // namespace actor::ui

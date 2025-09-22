@@ -8,10 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "chrome/browser/actor/ui/states/actor_overlay_state.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class ActorOverlayWebView;
+
 namespace views {
-class View;
 class WebView;
 }  // namespace views
 
@@ -19,67 +23,63 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace tabs {
-class TabInterface;
-}
-
 class BrowserWindowInterface;
-
 namespace actor::ui {
 
-// Manages the actor overlay for a single contents container (e.g., a single
-// tab's content area). In split-view mode, there will be multiple instances of
-// this class, one for each content area.
-class ActorUiContentsContainerController {
+// Manages the actor ui components for a single contents container (e.g., a
+// single tab's content area). In split-view mode, there will be multiple
+// instances of this class, one for each content area.
+class ActorUiContentsContainerController : public content::WebContentsObserver {
  public:
   explicit ActorUiContentsContainerController(
       views::WebView* contents_container_view,
-      views::View* actor_overlay_view_container);
-  ~ActorUiContentsContainerController();
+      ActorOverlayWebView* actor_overlay_web_view);
+  ActorUiContentsContainerController(
+      const ActorUiContentsContainerController&) = delete;
+  ActorUiContentsContainerController& operator=(
+      const ActorUiContentsContainerController&) = delete;
+  ~ActorUiContentsContainerController() override;
 
-  static ActorUiContentsContainerController* From(
-      tabs::TabInterface* tab_interface);
+  // Called whenever web contents are attached to a `web_view`.
+  void OnWebContentsAttached(views::WebView* web_view);
 
-  // Adds a child WebView to the overlay container, transferring ownership of
-  // `web_view` to the container. The container's visibility is automatically
-  // updated. Returns a raw pointer to the added WebView.
-  views::WebView* AddChildWebView(std::unique_ptr<views::WebView> web_view);
-  // Removes a child WebView from the overlay container and transfers its
-  // ownership back to the caller. The container's visibility is automatically
-  // updated.
-  [[nodiscard]] std::unique_ptr<views::WebView> RemoveChildWebView(
-      views::WebView* web_view);
-  // Decides whether the main container should be visible based on its
-  // children's state.
-  void MaybeUpdateContainerVisibility();
+  // Called whenever web contents are detached from a `web_view`.
+  void OnWebContentsDetached(views::WebView* web_view);
 
-  // Returns true if this controller is associated with the given
-  // `web_contents`.
-  bool IsAssociatedWithWebContents(content::WebContents* web_contents);
+  // Updates the overlay_ state.
+  void UpdateOverlayState(bool is_visible, ActorOverlayState state);
 
  private:
+  // Notified whenever the overlay background status changes.
+  void OnActorOverlayBackgroundChange(bool is_visible);
+
+  std::vector<base::CallbackListSubscription>
+      web_contents_callback_subscriptions_;
+  std::vector<base::CallbackListSubscription>
+      actor_ui_tab_controller_callback_subscriptions_;
   raw_ptr<views::WebView> contents_container_view_ = nullptr;
-  raw_ptr<views::View> actor_overlay_view_container_ = nullptr;
+  raw_ptr<ActorOverlayWebView> overlay_ = nullptr;
+
+  base::WeakPtrFactory<ActorUiContentsContainerController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace actor::ui
 
-// Manages the actor overlay for a browser window. This controller is
-// responsible for creating and managing the
-// `ActorUiContentsContainerController`s for each content area in the
-// window.
 class ActorUiWindowController {
  public:
   DECLARE_USER_DATA(ActorUiWindowController);
 
   explicit ActorUiWindowController(
       BrowserWindowInterface* browser_window_interface,
-      std::vector<std::pair<views::WebView*, views::View*>>
+      std::vector<std::pair<views::WebView*, ActorOverlayWebView*>>
           container_overlay_view_pairs);
   ~ActorUiWindowController();
 
   static ActorUiWindowController* From(
       BrowserWindowInterface* browser_window_interface);
+
+  void TearDown();
 
   actor::ui::ActorUiContentsContainerController* GetControllerForWebContents(
       content::WebContents* web_contents);
@@ -89,8 +89,6 @@ class ActorUiWindowController {
   // area..
   std::vector<std::unique_ptr<actor::ui::ActorUiContentsContainerController>>
       contents_container_controllers_;
-  // The `BrowserWindowInterface` that owns this controller.
-  raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
   ::ui::ScopedUnownedUserData<ActorUiWindowController> scoped_data_holder_;
 };
 

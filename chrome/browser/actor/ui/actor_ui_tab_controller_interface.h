@@ -14,7 +14,6 @@
 
 namespace actor::ui {
 class HandoffButtonController;
-class ActorOverlayViewController;
 using UiResultCallback = base::OnceCallback<void(bool)>;
 
 struct UiTabState {
@@ -43,8 +42,6 @@ class ActorUiTabControllerFactoryInterface {
   virtual ~ActorUiTabControllerFactoryInterface() = default;
   virtual std::unique_ptr<HandoffButtonController>
   CreateHandoffButtonController(tabs::TabInterface& tab) = 0;
-  virtual std::unique_ptr<ActorOverlayViewController>
-  CreateActorOverlayViewController(tabs::TabInterface& tab) = 0;
 };
 
 class ActorUiTabControllerInterface {
@@ -60,6 +57,9 @@ class ActorUiTabControllerInterface {
   virtual void OnUiTabStateChange(const UiTabState& ui_tab_state,
                                   UiResultCallback callback) = 0;
 
+  // Called whenever web contents are attached to this tab.
+  virtual void OnWebContentsAttached() = 0;
+
   // Sets the last active task id's state to paused. If there is no task
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskPaused() = 0;
@@ -68,13 +68,8 @@ class ActorUiTabControllerInterface {
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskResume() = 0;
 
-  // Tab subscriptions:
-  // Called when the tab's active state changes.
-  virtual void OnTabActiveStatusChanged(bool tab_active_status,
-                                        tabs::TabInterface* tab) = 0;
-
   // Called when the hover status changes on the overlay.
-  virtual void OnOverlayHoverStatusChanged() = 0;
+  virtual void OnOverlayHoverStatusChanged(bool is_hovering) = 0;
 
   // Called when the hover status changes on the handoff button.
   virtual void OnHandoffButtonHoverStatusChanged() = 0;
@@ -83,23 +78,28 @@ class ActorUiTabControllerInterface {
   virtual bool ShouldShowActorTabIndicator() = 0;
 
   virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
-  virtual void BindActorOverlay(
-      mojo::PendingRemote<mojom::ActorOverlayPage> page,
-      mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) = 0;
 
   // Retrieves an ActorUiTabControllerInterface from the provided tab, or
   // nullptr if it does not exist.
   static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
+
   // Returns the current UiTabState.
   virtual UiTabState GetCurrentUiTabState() const = 0;
-  // Returns the Actor Overlay View Controller.
-  virtual ActorOverlayViewController* GetActorOverlayViewController() = 0;
 
+  // Callbacks:
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(bool)>;
   virtual base::CallbackListSubscription
   RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) = 0;
+  using ActorOverlayStateChangeCallback =
+      base::RepeatingCallback<void(bool, ActorOverlayState)>;
+  virtual base::CallbackListSubscription RegisterActorOverlayStateChange(
+      ActorOverlayStateChangeCallback callback) = 0;
+  using ActorOverlayBackgroundChangeCallback =
+      base::RepeatingCallback<void(bool)>;
+  virtual base::CallbackListSubscription RegisterActorOverlayBackgroundChange(
+      ActorOverlayBackgroundChangeCallback callback) = 0;
 
  private:
   ::ui::ScopedUnownedUserData<ActorUiTabControllerInterface>

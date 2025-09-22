@@ -6,6 +6,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
@@ -43,26 +44,15 @@ class ActorOverlayTest : public InProcessBrowserTest {
   bool IsActorOverlayVisible(Browser* browser) const {
     return browser->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->actor_overlay_view()
+        ->actor_overlay_web_view()
         ->GetVisible();
   }
 
-  unsigned int NumActorOverlayChildren(Browser* browser) const {
+  bool IsActorOverlayWebContentsAttached(Browser* browser) const {
     return browser->GetBrowserView()
         .GetActiveContentsContainerView()
-        ->actor_overlay_view()
-        ->children()
-        .size();
-  }
-
-  bool IsActorOverlayChildVisible(Browser* browser) const {
-    EXPECT_EQ(NumActorOverlayChildren(browser), 1u)
-        << "Child 0 is not present or extra children are present";
-    return browser->GetBrowserView()
-        .GetActiveContentsContainerView()
-        ->actor_overlay_view()
-        ->children()[0]
-        ->GetVisible();
+        ->actor_overlay_web_view()
+        ->web_contents();
   }
 
  private:
@@ -126,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {
 }
 
 // Testing the Actor Overlay Window Controller
-IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest, WebViewLifecycleAndVisibility) {
   ActorUiWindowController* window_controller =
       ActorUiWindowController::From(browser());
   ASSERT_NE(window_controller, nullptr);
@@ -135,41 +125,23 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
           browser()->GetActiveTabInterface()->GetContents());
   ASSERT_NE(contents_controller, nullptr);
 
-  // The main actor_overlay_view container should initially be hidden. It should
-  // also have no children.
-  EXPECT_FALSE(IsActorOverlayVisible(browser()));
-  EXPECT_EQ(NumActorOverlayChildren(browser()), 0u);
-  content::BrowserContext* browser_context =
-      browser()->GetActiveTabInterface()->GetContents()->GetBrowserContext();
-
-  // Add a new WebView, initially hidden.
-  auto web_view = std::make_unique<views::WebView>(browser_context);
-  web_view->SetVisible(false);
-  raw_ptr<views::WebView> overlay_web_view =
-      contents_controller->AddChildWebView(std::move(web_view));
-  ASSERT_NE(overlay_web_view, nullptr);
-
-  // Verify container size and that it remains hidden because the child is
-  // hidden.
-  EXPECT_EQ(NumActorOverlayChildren(browser()), 1u);
+  // The actor overlay web webview should initially be hidden.
   EXPECT_FALSE(IsActorOverlayVisible(browser()));
 
-  // Make the added WebView visible, and update the container's visibility.
-  overlay_web_view->SetVisible(true);
-  contents_controller->MaybeUpdateContainerVisibility();
+  // Verify web contents have not been attached yet.
+  EXPECT_FALSE(IsActorOverlayWebContentsAttached(browser()));
 
-  // Container view should now be visible.
+  // Make the scrim visible.
+  contents_controller->UpdateOverlayState(/*is_visible=*/true,
+                                          ActorOverlayState());
+
+  // Actor Overlay WebView should now be visible.
   EXPECT_TRUE(IsActorOverlayVisible(browser()));
-  std::unique_ptr<views::WebView> managed_overlay_web_view =
-      contents_controller->RemoveChildWebView(overlay_web_view);
-  // The raw_ptr to the removed view is now invalid, so set it to nullptr.
-  overlay_web_view = nullptr;
+  contents_controller->UpdateOverlayState(/*is_visible=*/false,
+                                          ActorOverlayState());
 
-  // Confirm managed WebView is not null and the container should become hidden
-  // again
-  ASSERT_NE(managed_overlay_web_view, nullptr);
+  // Confirm Actor Overlay WebView is hidden.
   EXPECT_FALSE(IsActorOverlayVisible(browser()));
-  EXPECT_EQ(NumActorOverlayChildren(browser()), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
@@ -184,11 +156,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
   ExpectOkResult(result);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-  EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
+  EXPECT_TRUE(IsActorOverlayWebContentsAttached(browser()));
   state_manager->OnUiEvent(StoppedActingOnTab(tab_handle));
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser()); }));
-  EXPECT_FALSE(IsActorOverlayChildVisible(browser()));
+  EXPECT_FALSE(IsActorOverlayWebContentsAttached(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
@@ -203,17 +175,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
   ExpectOkResult(result);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-  EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
+  EXPECT_TRUE(IsActorOverlayWebContentsAttached(browser()));
   browser()->tab_strip_model()->AppendWebContents(
       content::WebContents::Create(content::WebContents::CreateParams(profile)),
       /*foreground=*/true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser()); }));
-  EXPECT_FALSE(IsActorOverlayChildVisible(browser()));
+  EXPECT_FALSE(IsActorOverlayWebContentsAttached(browser()));
   browser()->tab_strip_model()->ActivateTabAt(0);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
-  EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
+  EXPECT_TRUE(IsActorOverlayWebContentsAttached(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
@@ -272,35 +244,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
     // Verify the overlay is visible in the *new* browser holding tab_2.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsActorOverlayVisible(target_browser); }));
-    // Verify the overlay's child WebView was correctly detached from the source
-    // browser window.
-    EXPECT_EQ(NumActorOverlayChildren(source_browser), 0u);
-    // Verify the WebView was correctly re-attached to the target browser window
-    // and is visible.
-    ASSERT_EQ(NumActorOverlayChildren(target_browser), 1u);
+    // Verify the overlay's web contents were correctly detached from the
+    // source browser window's overlay webview.
+    EXPECT_FALSE(IsActorOverlayWebContentsAttached(source_browser));
     EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return IsActorOverlayChildVisible(target_browser); }));
+        [&]() { return IsActorOverlayVisible(target_browser); }));
   }
   // Stop acting on the tab at the end of the test
   state_manager->OnUiEvent(StoppedActingOnTab(tab_2->GetHandle()));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Overlay should become invisible in the browser that currently holds tab_1
     return !IsActorOverlayVisible(target_browser);
-  }));
-  // Verify that stopping actuation only hides the child WebView, but does not
-  // destroy it or remove it from the view hierarchy.
-  ASSERT_EQ(target_browser->GetBrowserView()
-                .GetActiveContentsContainerView()
-                ->actor_overlay_view()
-                ->children()
-                .size(),
-            1u);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !target_browser->GetBrowserView()
-                .GetActiveContentsContainerView()
-                ->actor_overlay_view()
-                ->children()[0]
-                ->GetVisible();
   }));
 }
 
@@ -331,11 +285,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
     // Verify the overlay is visible in the current browser.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsActorOverlayVisible(browser_with_actuated_tab); }));
-    // Also verify that the overlay's child WebView exists and is visible.
-    ASSERT_EQ(NumActorOverlayChildren(browser_with_actuated_tab), 1u);
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return IsActorOverlayChildVisible(browser_with_actuated_tab);
-    }));
+    // Verify the overlay's web contents were correctly attached.
+    EXPECT_TRUE(IsActorOverlayWebContentsAttached(browser_with_actuated_tab));
     // Add a new tab to ensure the source window always has at least two tabs
     // before moving one to a new window (simulates user behavior).
     tabs::TabInterface* new_tab = tabs::TabInterface::GetFromContents(
@@ -357,11 +308,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   // actuated tab.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser_with_actuated_tab); }));
-  // Verify that stopping actuation only hides the child WebView, but does not
-  // destroy it or remove it from the view hierarchy.
-  ASSERT_EQ(NumActorOverlayChildren(browser_with_actuated_tab), 1u);
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !IsActorOverlayChildVisible(browser_with_actuated_tab);
+    return !IsActorOverlayWebContentsAttached(browser_with_actuated_tab);
   }));
 }
 
@@ -457,18 +405,27 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
   EXPECT_NE(web_contents->GetTitle(), u"Actor Overlay");
 }
 
+class GlicActorDisabledTest : public InProcessBrowserTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(features::kGlicActorUi);
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Verifies that the ActorUiWindowController should not exist for any
 // browser windows since the feature is disabled.
-IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
+IN_PROC_BROWSER_TEST_F(GlicActorDisabledTest,
                        ControllerDoesntExistsForNormalBrowsers) {
   Profile* const profile = browser()->profile();
 
-  // Normal browser window, only the overlay controller's should be null since
-  // the feature param for the overlay is disabled, but the GlicActorUi feature
-  // is still enabled.
+  // Normal browser window
   Browser* const normal_browser = browser();
   ASSERT_EQ(ActorUiWindowController::From(normal_browser), nullptr);
-  ASSERT_NE(ActorUiTabController::From(normal_browser->browser_window_features()
+  ASSERT_EQ(ActorUiTabController::From(normal_browser->browser_window_features()
                                            ->tab_strip_model()
                                            ->GetActiveTab()),
             nullptr);

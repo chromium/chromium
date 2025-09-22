@@ -664,14 +664,14 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               browser_view->browser());
     }
 
-    if (features::kGlicActorUiOverlay.Get()) {
-      std::vector<std::pair<views::WebView*, views::View*>>
+    if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
+      std::vector<std::pair<views::WebView*, ActorOverlayWebView*>>
           container_overlay_view_pairs;
       for (auto* contents_container :
            browser_view->GetContentsContainerViews()) {
         container_overlay_view_pairs.emplace_back(
             contents_container->contents_view(),
-            contents_container->actor_overlay_view());
+            contents_container->actor_overlay_web_view());
       }
       actor_ui_window_controller_ =
           GetUserDataFactory().CreateInstance<ActorUiWindowController>(
@@ -723,7 +723,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   toast_service_.reset();
   extension_window_controller_.reset();
   actor_border_view_controller_.reset();
-  actor_ui_window_controller_.reset();
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic_button_controller_.reset();
@@ -766,6 +765,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   if (devtools_ui_controller_) {
     devtools_ui_controller_->TearDown();
+  }
+
+  if (actor_ui_window_controller_) {
+    actor_ui_window_controller_->TearDown();
   }
 
   data_protection_ui_controller_.reset();

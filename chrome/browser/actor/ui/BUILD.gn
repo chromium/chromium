@@ -20,10 +20,12 @@ source_set("ui") {
   sources = [
     "actor_border_view_controller.cc",
     "actor_border_view_controller.h",
+    "actor_overlay_handler.cc",
+    "actor_overlay_handler.h",
     "actor_overlay_ui.cc",
     "actor_overlay_ui.h",
-    "actor_overlay_view_controller.cc",
-    "actor_overlay_view_controller.h",
+    "actor_overlay_web_view.cc",
+    "actor_overlay_web_view.h",
     "actor_ui_metrics.cc",
     "actor_ui_metrics.h",
     "actor_ui_state_manager.cc",
@@ -44,7 +46,6 @@ source_set("ui") {
     ":ui_event_types",
     "//base",
     "//chrome/app/vector_icons",
-    "//chrome/browser/actor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/browser_window",
@@ -116,8 +117,6 @@ source_set("dom_node_geometry") {
 
 source_set("test_support") {
   sources = [
-    "mocks/mock_actor_overlay_view_controller.cc",
-    "mocks/mock_actor_overlay_view_controller.h",
     "mocks/mock_actor_ui_state_manager.cc",
     "mocks/mock_actor_ui_state_manager.h",
     "mocks/mock_actor_ui_tab_controller.cc",
@@ -189,7 +188,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_border_view_controller_unittest.cc",
-    "actor_overlay_view_controller_unittest.cc",
+    "actor_overlay_handler_unittest.cc",
     "actor_ui_state_manager_unittest.cc",
     "actor_ui_tab_controller_unittest.cc",
     "dom_node_geometry_unittest.cc",
@@ -210,6 +209,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/frame:test_support",
+    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/tabs:public",

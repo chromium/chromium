@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -128,6 +129,14 @@ MultiContentsView::MultiContentsView(
           contents_container_view->new_tab_footer_view()
               ->AddWebContentsFocusedCallback(
                   base::BindRepeating(&MultiContentsView::OnNtpFooterFocused,
+                                      base::Unretained(this))));
+    }
+
+    if (contents_container_view->actor_overlay_web_view()) {
+      actor_overlay_focused_subscriptions_.push_back(
+          contents_container_view->actor_overlay_web_view()
+              ->AddWebContentsFocusedCallback(
+                  base::BindRepeating(&MultiContentsView::OnActorOverlayFocused,
                                       base::Unretained(this))));
     }
   }
@@ -396,6 +405,20 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
     if (GetInactiveContentsView()->web_contents() == web_view->web_contents() &&
         GetWidget()->IsVisible()) {
       delegate_->WebContentsFocused(web_view->web_contents());
+    }
+  }
+}
+
+void MultiContentsView::OnActorOverlayFocused(views::WebView* web_view) {
+  if (IsInSplitView() && GetWidget()->IsVisible()) {
+    for (auto* contents_container_view : contents_container_views_) {
+      if (contents_container_view->actor_overlay_web_view() &&
+          contents_container_view->actor_overlay_web_view() == web_view &&
+          GetInactiveContentsView() ==
+              contents_container_view->contents_view()) {
+        return delegate_->WebContentsFocused(
+            GetInactiveContentsView()->web_contents());
+      }
     }
   }
 }

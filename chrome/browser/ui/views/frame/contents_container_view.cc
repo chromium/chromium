@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/profiles/profile.h"
@@ -102,11 +103,11 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
 
   if (features::kGlicActorUiOverlay.Get()) {
-    auto actor_overlay_view = std::make_unique<views::View>();
-    actor_overlay_view->SetID(VIEW_ID_ACTOR_OVERLAY);
-    actor_overlay_view->SetVisible(false);
-    actor_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
-    actor_overlay_view_ = AddChildView(std::move(actor_overlay_view));
+    auto actor_overlay_web_view =
+        std::make_unique<ActorOverlayWebView>(browser_view->browser());
+    actor_overlay_web_view->SetID(VIEW_ID_ACTOR_OVERLAY);
+    actor_overlay_web_view->SetVisible(false);
+    actor_overlay_web_view_ = AddChildView(std::move(actor_overlay_web_view));
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -516,9 +517,9 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
                                      full_contents_bounds);
 
   // Actor Overlay view bounds are the same as the contents view.
-  if (actor_overlay_view_) {
+  if (actor_overlay_web_view_) {
     layouts.child_layouts.emplace_back(
-        actor_overlay_view_.get(), actor_overlay_view_->GetVisible(),
+        actor_overlay_web_view_.get(), actor_overlay_web_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
   }
 

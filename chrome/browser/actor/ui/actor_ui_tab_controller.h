@@ -8,7 +8,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
-#include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -27,8 +26,6 @@ class ActorUiTabControllerFactory
  public:
   std::unique_ptr<HandoffButtonController> CreateHandoffButtonController(
       tabs::TabInterface& tab) override;
-  std::unique_ptr<ActorOverlayViewController> CreateActorOverlayViewController(
-      tabs::TabInterface& tab) override;
 };
 
 class ActorUiTabController : public ActorUiTabControllerInterface,
@@ -45,15 +42,13 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
                           UiResultCallback callback) override;
-  void OnTabActiveStatusChanged(bool tab_active_status,
-                                tabs::TabInterface* tab) override;
+  void OnWebContentsAttached() override;
   void SetActorTaskPaused() override;
   void SetActorTaskResume() override;
-  void OnOverlayHoverStatusChanged() override;
+  void OnOverlayHoverStatusChanged(bool is_hovering) override;
   void OnHandoffButtonHoverStatusChanged() override;
   UiTabState GetCurrentUiTabState() const override;
   bool ShouldShowActorTabIndicator() override;
-  ActorOverlayViewController* GetActorOverlayViewController() override;
 
   // ImmersiveModeController::Observer
   void OnImmersiveFullscreenEntered() override;
@@ -69,14 +64,12 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
 
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
-  // Binds the Mojo receiver to the tab's ActorOverlayViewController.
-  // Called by ActorOverlayUI when the chrome://actor-overlay page loads.
-  void BindActorOverlay(
-      mojo::PendingRemote<mojom::ActorOverlayPage> page,
-      mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
-
   base::CallbackListSubscription RegisterActorTabIndicatorStateChangedCallback(
       ActorTabIndicatorStateChangedCallback callback) override;
+  base::CallbackListSubscription RegisterActorOverlayStateChange(
+      ActorOverlayStateChangeCallback callback) override;
+  base::CallbackListSubscription RegisterActorOverlayBackgroundChange(
+      ActorOverlayBackgroundChangeCallback callback) override;
 
  private:
   // Called only once on startup to initialize tab subscriptions.
@@ -125,8 +118,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
       .handoff_button = HandoffButtonState(),
   };
 
-  // The current active status of the tab.
-  bool current_tab_active_status_ = false;
+  // Copy of the current tab's overlay hover status.
+  bool is_overlay_hovered_ = false;
 
   // Determines if the scrim background should be visible. This is set to true
   // if the mouse is hovering over either the overlay or the handoff button.
@@ -142,13 +135,19 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
       base::RepeatingCallbackList<void(bool)>;
   ActorTabIndicatorStateChangedCallbackList
       on_actor_tab_indicator_changed_callbacks_;
+  using ActorOverlayStateChangedCallbackList =
+      base::RepeatingCallbackList<void(bool, ActorOverlayState)>;
+  ActorOverlayStateChangedCallbackList
+      on_actor_overlay_state_changed_callbacks_;
+  using ActorOverlayBackgroundChangeCallbackList =
+      base::RepeatingCallbackList<void(bool)>;
+  ActorOverlayBackgroundChangeCallbackList
+      actor_overlay_background_changed_callbacks_;
 
   // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
 
   // Owned controllers:
-  // The Actor Overlay View controller for this tab.
-  std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller_;
   // The Handoff Button controller for this tab.
   std::unique_ptr<HandoffButtonController> handoff_button_controller_;
   std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;

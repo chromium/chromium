@@ -21,6 +21,7 @@ class ContentsContainerOutline;
 class ContentsWebView;
 class MultiContentsViewMiniToolbar;
 class ScrimView;
+class ActorOverlayWebView;
 
 namespace gfx {
 class Rect;
@@ -77,7 +78,9 @@ class ContentsContainerView : public views::View,
   DevToolsDockedPlacement devtools_docked_placement() {
     return current_devtools_docked_placement_;
   }
-  views::View* actor_overlay_view() { return actor_overlay_view_; }
+  ActorOverlayWebView* actor_overlay_web_view() {
+    return actor_overlay_web_view_;
+  }
   glic::GlicBorderView* glic_border_view() { return glic_border_; }
   new_tab_footer::NewTabFooterWebView* new_tab_footer_view() {
     return new_tab_footer_view_;
@@ -172,7 +175,7 @@ class ContentsContainerView : public views::View,
 
   // The view that contains the Glic Actor Overlay. The Actor Overlay is a UI
   // overlay that is shown on top of the web contents.
-  raw_ptr<views::View> actor_overlay_view_ = nullptr;
+  raw_ptr<ActorOverlayWebView> actor_overlay_web_view_ = nullptr;
 
   // The glic browser view that renders around the web contents area.
   raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;

@@ -10,7 +10,6 @@
 
 namespace actor::ui {
 
-class MockActorOverlayViewController;
 class MockHandoffButtonController;
 
 // A mock factory for creating MockActorUiTabControllers for testing.
@@ -25,15 +24,10 @@ class MockActorUiTabControllerFactory
 
   std::unique_ptr<HandoffButtonController> CreateHandoffButtonController(
       tabs::TabInterface& tab) override;
-  std::unique_ptr<ActorOverlayViewController> CreateActorOverlayViewController(
-      tabs::TabInterface& tab) override;
 
-  MockActorOverlayViewController* overlay_controller();
   MockHandoffButtonController* handoff_button_controller();
 
  private:
-  raw_ptr<MockActorOverlayViewController> mock_overlay_view_controller_ =
-      nullptr;
   raw_ptr<MockHandoffButtonController> mock_handoff_button_controller_ =
       nullptr;
 };
