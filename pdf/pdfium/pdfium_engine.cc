@@ -1004,7 +1004,11 @@ void PDFiumEngine::InvalidateRect(const gfx::Rect& rect) {
 }
 
 bool PDFiumEngine::IsSelecting() const {
-  return !selection_.empty();
+  // `selection_` can have multiple entries with all char counts set to 0, but
+  // `GetSelectedText()` inserts a newline between pages. In this case, return
+  // true.
+  return !selection_.empty() &&
+         (selection_.size() > 1 || !selection_[0].GetText().empty());
 }
 
 bool PDFiumEngine::IsSynthesizedNewline(const PageCharacterIndex& index) const {

@@ -115,6 +115,7 @@ class PdfCaretTest : public testing::Test {
 
   void SetUp() override {
     ResetBitmap();
+    EXPECT_CALL(client(), IsSelecting()).WillRepeatedly(Return(false));
   }
 
   void InitializeCaretAtChar(const PageCharacterIndex& index) {
@@ -375,6 +376,19 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
   EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(kTestChar0Caret.origin()),
                                      kTestChar0Caret));
   VerifyCaretRendering(kTestChar0Caret);
+}
+
+TEST_F(PdfCaretTest, CaretNotVisibleWhileSelecting) {
+  SetUpPagesWithCharCounts({1});
+  SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
+  InitializeCaretAtChar(kTestChar0);
+  caret().SetVisibility(true);
+
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(true));
+  TestDrawCaretFails(kTestChar0Caret);
+
+  EXPECT_CALL(client(), IsSelecting()).WillOnce(Return(false));
+  TestDrawCaret(kTestChar0Caret);
 }
 
 TEST_F(PdfCaretTest, Blink) {

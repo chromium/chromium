@@ -42,7 +42,7 @@ class PdfCaretClient {
   // Notifies the client to invalidate `rect` for the caret.
   virtual void InvalidateRect(const gfx::Rect& rect) {}
 
-  // Returns whether the client is selecting text.
+  // Returns whether the client is selecting text containing at least one char.
   virtual bool IsSelecting() const = 0;
 
   // Returns whether the char at `index` is a synthesized newline (i.e. '\r' or

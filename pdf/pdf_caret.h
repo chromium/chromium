@@ -61,7 +61,8 @@ class PdfCaret {
   void SetChar(const PageCharacterIndex& next_char);
 
   // Draws the caret on the canvas if it is visible within any paint updates in
-  // `dirty_in_screen`. Returns true if the caret was drawn, false otherwise.
+  // `dirty_in_screen` and no text is selected. Returns true if the caret was
+  // drawn, false otherwise.
   bool MaybeDrawCaret(const RegionData& region,
                       const gfx::Rect& dirty_in_screen) const;
 

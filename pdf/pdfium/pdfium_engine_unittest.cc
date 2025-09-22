@@ -1429,6 +1429,10 @@ TEST_P(PDFiumEngineSelectionTest, StartExtendAndInvalidateSelectionByChar) {
 
   engine->StartSelection({0, 21});
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_FALSE(engine->IsSelecting());
+
+  engine->ExtendAndInvalidateSelectionByChar({0, 22});
+  EXPECT_EQ("e", engine->GetSelectedText());
   EXPECT_TRUE(engine->IsSelecting());
 
   engine->ExtendAndInvalidateSelectionByChar({1, 5});
