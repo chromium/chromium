@@ -7652,8 +7652,6 @@ static_library("browser") {
       "page_load_metrics/observers/serp_page_load_metrics_observer.h",
       "performance_manager/extension_watcher.cc",
       "performance_manager/extension_watcher.h",
-      "policy/chrome_extension_policy_migrator.cc",
-      "policy/chrome_extension_policy_migrator.h",
       "policy/value_provider/extension_policies_value_provider.cc",
       "policy/value_provider/extension_policies_value_provider.h",
       "renderer_context_menu/context_menu_content_type_app_mode.cc",
@@ -7807,6 +7805,7 @@ static_library("browser") {
     ]
     deps += [
       "//apps",
+      "//chrome/browser/policy:policy_migrator",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",

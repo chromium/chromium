@@ -9549,6 +9549,8 @@ test("unit_tests") {
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
 
+    deps += [ "//chrome/browser/policy:policy_migrator" ]
+
     # Side panel is not yet supported on desktop Android.
     sources += [ "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc" ]
 

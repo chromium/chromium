@@ -139,6 +139,21 @@ source_set("policy_util") {
   ]
 }
 
+if (enable_extensions) {
+  source_set("policy_migrator") {
+    sources = [
+      "chrome_extension_policy_migrator.cc",
+      "chrome_extension_policy_migrator.h",
+    ]
+    public_deps = [ "//components/policy/core/common" ]
+    deps = [
+      "//base",
+      "//components/strings:components_strings",
+      "//extensions/common",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
 
