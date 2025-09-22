@@ -23628,6 +23628,8 @@
                     },
                     "enable_features": [
                         "CloseActiveTabInSplitViewViaHotkey",
+                        "IPH_SideBySidePinnableFeature",
+                        "IPH_SideBySideTabSwitchFeature",
                         "ReloadSelectionModel",
                         "SideBySide",
                         "SideBySideLinkMenuNewBadge",
