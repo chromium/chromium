@@ -19,11 +19,30 @@ The following conversion rules and the provided `alarms` API conversion example 
 The top-level `namespace` declaration is removed.
 * The content of the old `namespace foo { ... }` becomes the new top-level `interface Foo { ... }`. Note the capitalization change from `foo` to `Foo`.
 * The descriptive comment above the old namespace should be moved to be above the new interface definition.
-* A `partial interface Browser` is added at the end of the file to expose the API on the `browser` object. For an API named `Foo`, this should be:
+* A `partial interface Browser` is added at the end of the file to expose the API on the `browser` object. For an API named `foo`, this should be:
 ```
+interface Foo {
+  ...
+}
+
 partial interface Browser {
   static attribute Foo foo;
 };
+```
+* If the previous namespace name contained periods, it will need to use nested partial interfaces for each pieces of the API name. For example, an API which was previously exposed under `system.cpu` would become:
+```
+// Note the interface name here is only the final part of the API name.
+interface CPU {
+  ...
+}
+
+partial interface System {
+  static attribute CPU cpu;
+}
+
+partial interface Browser {
+  static attribute System system;
+}
 ```
 
 ### Dictionaries

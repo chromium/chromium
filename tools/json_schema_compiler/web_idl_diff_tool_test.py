@@ -21,6 +21,8 @@ class WebIdlDiffToolTest(unittest.TestCase):
     # remove the old parser, these can all be deleted and this test removed.
     converted_schemas = [
         ('alarms.idl', 'alarms.webidl'),
+        ('app_current_window_internal.idl',
+         'app_current_window_internal.webidl'),
         ('bluetooth.idl', 'bluetooth.webidl'),
         ('dns.idl', 'dns.webidl'),
         ('audio.idl', 'audio.webidl'),
