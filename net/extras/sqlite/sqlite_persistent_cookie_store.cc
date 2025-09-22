@@ -144,21 +144,6 @@ void HistogramCookieAge(const net::CanonicalCookie& cookie) {
       }
     }
   } else {
-    // We are studying the age of session cookies in active use. The record is
-    // split into two histograms to improve resolution.
-    if (!cookie.CreationDate().is_null()) {
-      const int session_cookie_age_in_hours =
-          (Time::Now() - cookie.CreationDate()).InHours();
-      if (session_cookie_age_in_hours > kHoursInOneWeek) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursGTOneWeek2",
-                                    session_cookie_age_in_hours,
-                                    kHoursInOneWeek + 1, kHoursInOneYear, 100);
-      } else {
-        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursLTEOneWeek2",
-                                    session_cookie_age_in_hours, 1,
-                                    kHoursInOneWeek + 1, 100);
-      }
-    }
     // Similar to the above, except this metric tracks time since the cookie was
     // last updated and not just initial creation.
     if (!cookie.LastUpdateDate().is_null()) {

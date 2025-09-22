@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Cookie.AndroidOTRRestore" enum="BooleanEnabled"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.CorruptMetaTableRecovered" enum="Boolean"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.DaysSinceRefreshForRetrieval" units="days"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesNonSecure.Subsampled2"
-    units="minutes" expires_after="2026-02-22">
+    units="minutes" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ExpirationDurationMinutesSecure.Subsampled2"
-    units="minutes" expires_after="2026-02-22">
+    units="minutes" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.IsPersistentWhenSet.Subsampled" enum="Boolean"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -963,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ScriptAgeSinceLastUpdateInHoursGTOneWeek" units="hours"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ScriptAgeSinceLastUpdateInHoursLTEOneWeek"
-    units="hours" expires_after="2025-10-31">
+    units="hours" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ScriptExpirationInHoursGTOneWeek.Subsampled"
-    units="hours" expires_after="2025-10-31">
+    units="hours" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -999,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ScriptExpirationInHoursLTEOneWeek.Subsampled"
-    units="hours" expires_after="2025-10-31">
+    units="hours" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1012,30 +1012,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SessionAgeInHoursGTOneWeek2" units="hours"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Number of hours old a session cookie being loaded for some context is (for
-    values greater than one week). Recorded when cookies are loaded from the
-    store.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SessionAgeInHoursLTEOneWeek2" units="hours"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Number of hours old a session cookie being loaded for some context is (for
-    values less than or equal to one week). Recorded when cookies are loaded
-    from the store.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.SessionAgeSinceLastUpdateInHoursGTOneWeek"
-    units="hours" expires_after="2026-01-04">
+    units="hours" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1047,7 +1025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek"
-    units="hours" expires_after="2026-01-04">
+    units="hours" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1072,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SourceType.Subsampled" enum="CookieSourceType"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1086,7 +1064,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.StaleSessionCookiesDeletedOnStartup" units="cookies"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1109,6 +1087,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV20" units="ms"
     expires_after="2025-11-14">
+  <owner>arichiv@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1119,6 +1098,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV21" units="ms"
     expires_after="2025-11-22">
+  <owner>arichiv@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1139,6 +1119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV23" units="ms"
     expires_after="2026-04-10">
+  <owner>arichiv@chromium.org</owner>
   <owner>selya@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1149,6 +1130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV24" units="ms"
     expires_after="2026-02-09">
+  <owner>arichiv@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1187,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.Type2.Subsampled" enum="CookieType"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
