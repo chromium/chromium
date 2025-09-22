@@ -1,6 +1,8 @@
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.waitUntilDone();
+
+let t = async_test('Crash when moving a stylesheet between documents');
 
 var iframe;
 var div;
@@ -14,11 +16,7 @@ function start() {
 
 function startrly() {
     if (location.hash == '#done') {
-        document.write('PASS');
-        if (window.testRunner) {
-            testRunner.dumpAsText();
-            testRunner.notifyDone();
-        }
+        t.done();
         return;
     }
     var count = 0;
