@@ -273,6 +273,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Duplicate split"/>
   <int value="7" label="Extensions API"/>
   <int value="8" label="What's new"/>
+  <int value="9" label="Keyboard shortcut"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_metrics.h:SplitTabCreatedSource) -->

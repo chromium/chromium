@@ -25,7 +25,8 @@ enum class SplitTabCreatedSource {
   // Side Panel.
   kExtensionsApi = 7,
   kWhatsNew = 8,
-  kMaxValue = kWhatsNew,
+  kKeyboardShortcut = 9,
+  kMaxValue = kKeyboardShortcut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:SplitTabCreatedSource)
 

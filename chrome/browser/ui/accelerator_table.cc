@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "printing/buildflags/buildflags.h"
@@ -38,7 +39,7 @@ namespace {
 // (mostly-alphabetical) order as the Windows accelerators in
 // ../../app/chrome_dll.rc.
 // Do not use Ctrl-Alt as a shortcut modifier, as it is used by i18n keyboards:
-// http://blogs.msdn.com/b/oldnewthing/archive/2004/03/29/101121.aspx
+// https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
 const AcceleratorMapping kAcceleratorMap[] = {
 // To add an accelerator to macOS that uses modifier keys, either:
 //   1) Update the main menu built in main_menu_builder.mm to include a new menu
@@ -309,10 +310,22 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
                          std::begin(kDevToolsAcceleratorMap),
                          std::end(kDevToolsAcceleratorMap));
 
+    if (features::IsSideBySideKeyboardShortcutEnabled()) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+      accelerators->emplace_back(
+          AcceleratorMapping({ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+                              IDC_NEW_SPLIT_TAB}));
+#elif BUILDFLAG(IS_CHROMEOS)
+      accelerators->emplace_back(
+          AcceleratorMapping({ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+                              IDC_NEW_SPLIT_TAB}));
+#endif
+    }
+
     // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
     // Doing this check here and not at the bottom since kUIDebugAcceleratorMap
     // contains Ctrl+Alt keys but we don't enable those for the public.
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && BUILDFLAG(IS_WIN)
     constexpr int kCtrlAlt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
     for (auto& mapping : *accelerators) {
       DCHECK((mapping.modifiers & kCtrlAlt) != kCtrlAlt)

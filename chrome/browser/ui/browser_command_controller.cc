@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
@@ -649,6 +650,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_MOVE_TAB_TO_NEW_WINDOW:
       MoveActiveTabToNewWindow(browser_);
+      break;
+    case IDC_NEW_SPLIT_TAB:
+      if (!browser_->tab_strip_model()->GetActiveTab()->IsSplit()) {
+        NewSplitTab(browser_,
+                    split_tabs::SplitTabCreatedSource::kKeyboardShortcut);
+      }
       break;
     case IDC_NAME_WINDOW:
       PromptToNameWindow(browser_);
@@ -2241,6 +2248,8 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
                                         CanCloseOtherTabs(browser_));
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
                                         CanMoveActiveTabToNewWindow(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_NEW_SPLIT_TAB,
+                                        browser_->is_type_normal());
   UpdateCommandsForBookmarkEditing();
 }
 

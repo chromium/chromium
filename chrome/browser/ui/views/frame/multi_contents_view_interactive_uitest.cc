@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -39,6 +40,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_modifiers.h"
@@ -751,6 +753,30 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
                 ->GetText();
           },
           u""));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, KeyboardShortcutCreatesSplit) {
+  ui::Accelerator accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_NEW_SPLIT_TAB, &accelerator));
+  RunTestSequence(
+      CheckResult(
+          [&]() {
+            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+          },
+          false),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 1),
+      SendAccelerator(kBrowserViewElementId, accelerator),
+      CheckResult(
+          [&]() {
+            return browser()->tab_strip_model()->GetActiveTab()->IsSplit();
+          },
+          true),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2),
+      // Pressing the accelerator again shouldn't do anything since the active
+      // tab is already in a split
+      SendAccelerator(kBrowserViewElementId, accelerator),
+      CheckResult([&]() { return browser()->tab_strip_model()->count(); }, 2));
 }
 
 using ContentsViewOutlineHighlightObserver =

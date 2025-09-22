@@ -206,6 +206,10 @@ bool IsRestoringSplitViewEnabled();
 
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
 
+BASE_DECLARE_FEATURE(kSideBySideKeyboardShortcut);
+
+bool IsSideBySideKeyboardShortcutEnabled();
+
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);

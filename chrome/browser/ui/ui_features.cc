@@ -248,6 +248,13 @@ bool IsRestoringSplitViewEnabled() {
 
 BASE_FEATURE(kSideBySideLinkMenuNewBadge, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSideBySideKeyboardShortcut, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsSideBySideKeyboardShortcutEnabled() {
+  return base::FeatureList::IsEnabled(features::kSideBySide) &&
+         base::FeatureList::IsEnabled(features::kSideBySideKeyboardShortcut);
+}
+
 BASE_FEATURE(kSidePanelResizing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
