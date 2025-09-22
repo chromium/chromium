@@ -529,8 +529,6 @@ class PredictionServiceHoldbackBrowserTest
                                          },
                                          /*disabled_features=*/
                                          {permissions::features::
-                                              kPermissionOnDeviceNotificationPredictions,
-                                          permissions::features::
                                               kPermissionsAIv1,
                                           permissions::features::
                                               kPermissionsAIv3,
@@ -659,10 +657,7 @@ class SignatureModelPredictionServiceBrowserTest
  public:
   SignatureModelPredictionServiceBrowserTest()
       : PredictionServiceBrowserTestBase(/*enabled_features=*/
-                                         {{features::
-                                               kPermissionOnDeviceNotificationPredictions,
-                                           {}},
-                                          {optimization_guide::features::
+                                         {{optimization_guide::features::
                                                kOptimizationHints,
                                            {}},
                                           {features::

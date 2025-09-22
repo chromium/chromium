@@ -778,8 +778,7 @@ PredictionSource PermissionsAiUiSelector::GetPredictionTypeToUse(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   bool use_ondevice_tflite = false;
   if (request_type == permissions::RequestType::kNotifications) {
-    use_ondevice_tflite = base::FeatureList::IsEnabled(
-        permissions::features::kPermissionOnDeviceNotificationPredictions);
+    use_ondevice_tflite = true;
   } else if (request_type == permissions::RequestType::kGeolocation) {
     use_ondevice_tflite = base::FeatureList::IsEnabled(
         permissions::features::kPermissionOnDeviceGeolocationPredictions);

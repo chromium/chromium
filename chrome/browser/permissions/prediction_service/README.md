@@ -167,9 +167,7 @@ requiring a server-side call.
   - "Make searches and browsing better
     (`unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled`)"
     is not enabled for the client
-  - The on-device prediction feature is enabled for the permission type
-    (e.g.,
-    `permissions::features::kPermissionOnDeviceNotificationPredictions`).
+  - The on-device prediction feature is enabled for the permission type.
   - The client has at least 4 previous permission prompts for the given type.
 - **Input**:
   - **Client-specific signals**: Statistical aggregates of the client's past

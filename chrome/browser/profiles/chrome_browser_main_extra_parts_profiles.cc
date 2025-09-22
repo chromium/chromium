@@ -1191,13 +1191,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::UserPolicySigninServiceFactory::GetInstance();
 #endif
   PolicyBlocklistFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceNotificationPredictions) ||
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionOnDeviceGeolocationPredictions) ||
-      base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv1)) {
-    PredictionModelHandlerProviderFactory::GetInstance();
-  }
+  PredictionModelHandlerProviderFactory::GetInstance();
   PredictionServiceFactory::GetInstance();
   predictors::AutocompleteActionPredictorFactory::GetInstance();
   predictors::LoadingPredictorFactory::GetInstance();
