@@ -22,26 +22,39 @@
 #include "url/origin.h"
 
 using base::Time;
-using testing::AllOf;
-using testing::ElementsAre;
-using testing::IsEmpty;
-using testing::Property;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Property;
 
 namespace history {
 
 namespace {
 
-bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
-  return a.visit_id == b.visit_id && a.url_id == b.url_id &&
-         a.visit_time == b.visit_time &&
-         a.referring_visit == b.referring_visit &&
-         ui::PageTransitionTypeIncludingQualifiersIs(a.transition,
-                                                     b.transition) &&
-         a.originator_cache_guid == b.originator_cache_guid &&
-         a.originator_visit_id == b.originator_visit_id &&
-         a.is_known_to_sync == b.is_known_to_sync &&
-         a.consider_for_ntp_most_visited == b.consider_for_ntp_most_visited &&
-         a.app_id == b.app_id;
+::testing::Matcher<const VisitRow&> MatchesVisitInfo(const VisitRow& expected) {
+  return AllOf(
+      Field("visit_id", &VisitRow::visit_id, Eq(expected.visit_id)),
+      Field("url_id", &VisitRow::url_id, Eq(expected.url_id)),
+      Field("visit_time", &VisitRow::visit_time, Eq(expected.visit_time)),
+      Field("referring_visit", &VisitRow::referring_visit,
+            Eq(expected.referring_visit)),
+      Field("transition", &VisitRow::transition,
+            ::testing::Truly([&](const auto& actual_transition) {
+              return ui::PageTransitionTypeIncludingQualifiersIs(
+                  actual_transition, expected.transition);
+            })),
+      Field("originator_cache_guid", &VisitRow::originator_cache_guid,
+            Eq(expected.originator_cache_guid)),
+      Field("originator_visit_id", &VisitRow::originator_visit_id,
+            Eq(expected.originator_visit_id)),
+      Field("is_known_to_sync", &VisitRow::is_known_to_sync,
+            Eq(expected.is_known_to_sync)),
+      Field("consider_for_ntp_most_visited",
+            &VisitRow::consider_for_ntp_most_visited,
+            Eq(expected.consider_for_ntp_most_visited)),
+      Field("app_id", &VisitRow::app_id, Eq(expected.app_id)));
 }
 
 }  // namespace
@@ -104,8 +117,8 @@ TEST_F(VisitDatabaseTest, Add) {
   EXPECT_EQ(2U, matches.size());
 
   // Make sure we got both (order in result set is visit time).
-  EXPECT_TRUE(IsVisitInfoEqual(matches[0], visit_info1) &&
-              IsVisitInfoEqual(matches[1], visit_info2));
+  EXPECT_THAT(matches[0], MatchesVisitInfo(visit_info1));
+  EXPECT_THAT(matches[1], MatchesVisitInfo(visit_info2));
 }
 
 TEST_F(VisitDatabaseTest, Delete) {
@@ -131,9 +144,9 @@ TEST_F(VisitDatabaseTest, Delete) {
   std::vector<VisitRow> matches;
   EXPECT_TRUE(GetVisitsForURL(visit_info1.url_id, &matches));
   EXPECT_EQ(3U, matches.size());
-  EXPECT_TRUE(IsVisitInfoEqual(matches[0], visit_info1) &&
-              IsVisitInfoEqual(matches[1], visit_info2) &&
-              IsVisitInfoEqual(matches[2], visit_info3));
+  EXPECT_THAT(matches[0], MatchesVisitInfo(visit_info1));
+  EXPECT_THAT(matches[1], MatchesVisitInfo(visit_info2));
+  EXPECT_THAT(matches[2], MatchesVisitInfo(visit_info3));
 
   // Delete the middle one.
   DeleteVisit(visit_info2);
@@ -144,8 +157,8 @@ TEST_F(VisitDatabaseTest, Delete) {
   matches.clear();
   EXPECT_TRUE(GetVisitsForURL(visit_info1.url_id, &matches));
   EXPECT_EQ(2U, matches.size());
-  EXPECT_TRUE(IsVisitInfoEqual(matches[0], visit_info1) &&
-              IsVisitInfoEqual(matches[1], visit_info3));
+  EXPECT_THAT(matches[0], MatchesVisitInfo(visit_info1));
+  EXPECT_THAT(matches[1], MatchesVisitInfo(visit_info3));
 }
 
 TEST_F(VisitDatabaseTest, Update) {
@@ -167,7 +180,7 @@ TEST_F(VisitDatabaseTest, Update) {
   // Check that the mutated version was written.
   VisitRow final;
   GetRowForVisit(original.visit_id, &final);
-  EXPECT_TRUE(IsVisitInfoEqual(modification, final));
+  EXPECT_THAT(final, MatchesVisitInfo(modification));
 }
 
 TEST_F(VisitDatabaseTest, IsKnownToSync) {
@@ -484,7 +497,7 @@ TEST_F(VisitDatabaseTest, GetVisitsForTimes) {
     VisitVector results;
     GetVisitsForTimes(times, &results);
     ASSERT_EQ(1U, results.size());
-    EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[i]));
+    EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[i]));
   }
 }
 
@@ -524,14 +537,14 @@ TEST_F(VisitDatabaseTest, GetAllVisitsInRange) {
   ASSERT_EQ(6U, test_visit_rows.size());
   ASSERT_EQ(test_visit_rows.size(), results.size());
   for (size_t i = 0; i < test_visit_rows.size(); ++i) {
-    EXPECT_TRUE(IsVisitInfoEqual(results[i], test_visit_rows[i]));
+    EXPECT_THAT(results[i], MatchesVisitInfo(test_visit_rows[i]));
   }
 
   // Query the visits with an app ID. Only those with a given ID are returned.
   GetAllVisitsInRange(Time(), Time(), "org.chromium.dino", 0, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[2]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[2]));
 
   // Query a time range and make sure beginning is inclusive and ending is
   // exclusive.
@@ -539,13 +552,13 @@ TEST_F(VisitDatabaseTest, GetAllVisitsInRange) {
                       test_visit_rows[3].visit_time, kNoAppIdFilter, 0,
                       &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[2]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[2]));
 
   // Query for a max count and make sure we get only that number.
   GetAllVisitsInRange(Time(), Time(), kNoAppIdFilter, 1, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[0]));
 }
 
 TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
@@ -583,15 +596,15 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
 #if !defined(ANDROID)
   // We should not get the first or the second visit (duplicates of the sixth)
   // or the redirect or subframe visits.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
 #else
   // On Android, the one with app_id is chosen among the duplicates.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
 #endif
 
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[3]));
   // Based on `options.policy_for_404_visits`, we should get the 404 visit.
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], visit_404));
+  EXPECT_THAT(results[2], MatchesVisitInfo(visit_404));
 
   // Retry the query, but exclude 404s.
   options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
@@ -601,10 +614,10 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
 #if !defined(ANDROID)
   // We should not get the first or the second visit (duplicates of the sixth)
   // or the redirect or subframe visits.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
 #else
   // On Android, the one with app_id is chosen among the duplicates.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
 #endif
 
   // Query the visits with app_id. Only those with the matching app_id will be
@@ -615,9 +628,9 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(3U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], visit_404));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[3]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(visit_404));
 
   // Query the visits with app_id, excluding 404s. The results should be the
   // same as above, but without the 404 visit.
@@ -625,25 +638,25 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[3]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[1]));
 
   // Test the query with app_id including 404s, but in the reverse order.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(3U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], visit_404));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[3]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_404));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[3]));
 
   // Query with app_id but without 404s, in reverse order.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[3]));
 
   options = QueryOptions();  // Reset options to default.
 
@@ -653,20 +666,20 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(4U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[3], visit_404));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[3]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[3], MatchesVisitInfo(visit_404));
 
   // Now try without de-duping, expect to see all visible visits.
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(5U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[3]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[3], visit_404));
-  EXPECT_TRUE(IsVisitInfoEqual(results[4], test_visit_rows[0]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[3]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[3], MatchesVisitInfo(visit_404));
+  EXPECT_THAT(results[4], MatchesVisitInfo(test_visit_rows[0]));
 
   // Set the end time to exclude the second visit. The first visit should be
   // returned. Even though the second is a more recent visit, it's not in the
@@ -674,8 +687,8 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.end_time = test_visit_rows[1].visit_time;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], visit_404));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[0]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_404));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[0]));
 
   options = QueryOptions();  // Reset options to default.
 
@@ -683,7 +696,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.max_count = 1;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
 
   // Query a time range and make sure beginning is inclusive and ending is
   // exclusive.
@@ -692,14 +705,14 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   options.max_count = 0;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
 
   // Query oldest visits in a time range and make sure beginning is exclusive
   // and ending is inclusive.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   GetVisibleVisitsInRange(options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[3]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[3]));
 }
 
 TEST_F(VisitDatabaseTest, GetAllURLIDsForTransition) {
@@ -814,10 +827,10 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   // We should not get the first, the second or the sixth (duplicates of the
   // seventh), the eighth or ninth (404), or any other urls, redirects or
   // subframe visits.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[6]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
 #else
   // On Android, the one with app_id is chosen among the duplicates.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
 #endif
 
   // Repeat the same query, but include 404s.
@@ -828,11 +841,11 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   // We should not get the first, the second, the sixth, the seventh, or the
   // eighth (duplicates of the ninth) or any other urls, redirects or subframe
   // visits.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[8]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[8]));
 #else
   // On Android, the ones with an app_id are chosen among the duplicates. Visit
   // 8 is the most recent of those.
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[7]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[7]));
 #endif
 
   // Query the visits with app_id, excluding 404s. Only non-404 visits matching
@@ -842,7 +855,7 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[5]));
 
   // Query the visits with app_id again, including 404s this time. All visits
   // matching both url id (1,2,6,7,8,9) and app id(2,3,4,6,8) will be
@@ -851,14 +864,14 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[7]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[7]));
 
   // Test the query with app_id, but in the reverse order.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(1U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
 
   options = QueryOptions();  // Reset options to default.
 
@@ -867,33 +880,40 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   options.duplicate_policy = QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(3U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[6]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
 
   // Now try without de-duping, expect to see all visible visits to url id 1.
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(4U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[6]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[2], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[3], test_visit_rows[0]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[3], MatchesVisitInfo(test_visit_rows[0]));
 
   // Now try with a `max_count` limit to get the newest 2 visits only.
   options.max_count = 2;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[6]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
+
+  // Try `max_count` again, including 404s this time.
+  options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(2U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[8]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[7]));
 
   // Now try getting the oldest 2 visits and make sure they're ordered oldest
   // first.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[0]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[1]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[0]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[1]));
 
   // Query a time range and make sure beginning is inclusive and ending is
   // exclusive.
@@ -903,16 +923,16 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   options.max_count = 0;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[0]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[0]));
 
   // Query oldest visits in a time range and make sure beginning is exclusive
   // and ending is inclusive.
   options.visit_order = QueryOptions::OLDEST_FIRST;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_TRUE(IsVisitInfoEqual(results[0], test_visit_rows[1]));
-  EXPECT_TRUE(IsVisitInfoEqual(results[1], test_visit_rows[5]));
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
 }
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
@@ -1560,13 +1580,13 @@ TEST_F(VisitDatabaseTest, GetLastRowForVisitByVisitTime) {
   // the chain (because that one was added last).
   VisitRow result1;
   GetLastRowForVisitByVisitTime(kVisitTime1, &result1);
-  EXPECT_TRUE(IsVisitInfoEqual(result1, visit1));
+  EXPECT_THAT(result1, MatchesVisitInfo(visit1));
   VisitRow result2;
   GetLastRowForVisitByVisitTime(kVisitTime2, &result2);
-  EXPECT_TRUE(IsVisitInfoEqual(result2, visit2b));
+  EXPECT_THAT(result2, MatchesVisitInfo(visit2b));
   VisitRow result3;
   GetLastRowForVisitByVisitTime(kVisitTime3, &result3);
-  EXPECT_TRUE(IsVisitInfoEqual(result3, visit3c));
+  EXPECT_THAT(result3, MatchesVisitInfo(visit3c));
 }
 
 }  // namespace history
