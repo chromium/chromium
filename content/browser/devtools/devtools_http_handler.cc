@@ -399,6 +399,7 @@ DevToolsHttpHandler::~DevToolsHttpHandler() {
   connection_to_client_.clear();
   TerminateOnUI(std::move(thread_), std::move(server_wrapper_),
                 std::move(socket_factory_));
+  delegate_ = nullptr;
 }
 
 static std::string PathWithoutParams(const std::string& path) {

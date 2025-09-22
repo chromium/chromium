@@ -121,7 +121,7 @@ class DevToolsHttpHandler {
   using ConnectionToClientMap =
       std::map<int, std::unique_ptr<DevToolsAgentHostClientImpl>>;
   ConnectionToClientMap connection_to_client_;
-  raw_ptr<DevToolsManagerDelegate, LeakedDanglingUntriaged> delegate_;
+  raw_ptr<DevToolsManagerDelegate> delegate_;
   std::unique_ptr<DevToolsSocketFactory> socket_factory_;
   base::WeakPtrFactory<DevToolsHttpHandler> weak_factory_{this};
 };
