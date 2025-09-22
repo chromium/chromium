@@ -925,6 +925,109 @@ suite('NewTabPageComposeboxTest', () => {
     loadTimeData.overrideValues({composeboxShowZps: false});
   });
 
+  test('Selection is restored after selected match is removed', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new InputEvent('input'));
+
+    let matches = [
+      createSearchMatch({
+        supportsDeletion: true,
+      }),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input:
+              stringToMojoString16(composeboxElement.$.input.value.trimStart()),
+          matches,
+        }));
+    await microtasksFinished();
+    assertTrue(await areMatchesShowing());
+
+    let matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(1, matchEls.length);
+    // First match is not selected.
+    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+
+    // Remove the first match.
+    matchEls[0]!.$.remove.click();
+    const args = await searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    assertEquals(0, args[0]);
+    assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+
+    searchboxHandler.reset();
+
+    matches = [
+      createSearchMatch({supportsDeletion: true}), createSearchMatch({
+        supportsDeletion: true,
+        fillIntoEdit: stringToMojoString16('hello world 2'),
+      }),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(''),
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing());
+
+    matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(2, matchEls.length);
+
+    // First match is not selected.
+    assertFalse(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+
+    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', composeboxElement.$.input.value);
+
+    // By pressing 'Enter' on the button.
+    const keydownEvent = (new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'Enter',
+    }));
+    assertTrue(!!matchEls[0]!.$.remove);
+    matchEls[0]!.$.remove.dispatchEvent(keydownEvent);
+    assertTrue(keydownEvent.defaultPrevented);
+    const keydownArgs =
+        await searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    await microtasksFinished();
+    assertEquals(0, keydownArgs[0]);
+    assertEquals(1, searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+
+    matches = [createSearchMatch({
+      supportsDeletion: true,
+      fillIntoEdit: stringToMojoString16('hello world 2'),
+    })];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(''),
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing());
+
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world 2', composeboxElement.$.input.value);
+  });
+
   test('smart compose response added', async () => {
     createComposeboxElement();
     await microtasksFinished();
