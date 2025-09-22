@@ -1150,6 +1150,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.EFFECTIVE_BINDING_STATE,
                 "Use effective binding state to manage child process bindings."),
+        Flag.baseFeature(
+                CcFeatures.OVERSCROLL_BEHAVIOR_RESPECTED_ON_ALL_SCROLL_CONTAINERS,
+                "Enables overscroll-behavior to be respected on all scroll containers."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
