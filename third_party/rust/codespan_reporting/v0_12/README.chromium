@@ -5,7 +5,7 @@ Revision: 3d3a03a8fcc30cc10b783b16c62029d5c232059b
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_12/LICENSE
-Shipped: no
+Shipped: yes
 Security Critical: yes
 
 Description: Beautiful diagnostic reporting for text-based programming languages

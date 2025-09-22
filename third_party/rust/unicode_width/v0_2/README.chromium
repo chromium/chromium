@@ -5,7 +5,7 @@ Revision: 0085e91db72ae9a4498e62030d9651f1c1d09b4f
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/unicode-width-v0_2/LICENSE-APACHE
-Shipped: no
+Shipped: yes
 Security Critical: yes
 
 Description: Determine displayed width of `char` and `str` types

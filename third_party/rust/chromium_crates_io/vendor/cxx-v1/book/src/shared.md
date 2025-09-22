@@ -215,6 +215,9 @@ bridge module.
 - `Ord`
 - `PartialEq`
 - `PartialOrd`
+- `BitAnd` (enums only)
+- `BitOr` (enums only)
+- `BitXor` (enums only)
 
 Note that shared enums automatically always come with impls of `Copy`, `Clone`,
 `Eq`, and `PartialEq`, so you're free to omit those derives on an enum.
@@ -242,6 +245,9 @@ C++ data type:
 - `Hash` gives you a specialization of [`template <> struct std::hash<T>`][hash] in C++
 - `PartialEq` produces `operator==` and `operator!=`
 - `PartialOrd` produces `operator<`, `operator<=`, `operator>`, `operator>=`
+- `BitAnd` produces `operator&`
+- `BitOr` produces `operator|`
+- `BitXor` produces `operator^`
 
 [hash]: https://en.cppreference.com/w/cpp/utility/hash
 

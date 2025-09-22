@@ -4,6 +4,7 @@ use crate::gen::nested::NamespaceEntries;
 use crate::gen::out::OutFile;
 use crate::gen::{builtin, include, pragma, Opt};
 use crate::syntax::atom::Atom::{self, *};
+use crate::syntax::discriminant::{Discriminant, Limits};
 use crate::syntax::instantiate::{ImplKey, NamedImplKey};
 use crate::syntax::map::UnorderedMap as Map;
 use crate::syntax::namespace::Namespace;
@@ -446,15 +447,23 @@ fn write_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     let guard = Guard::new(out, "CXXBRIDGE1_ENUM", &enm.name);
     writeln!(out, "#ifndef {}", guard);
     writeln!(out, "#define {}", guard);
+
     write_doc(out, "", &enm.doc);
     write!(out, "enum class {} : ", enm.name.cxx);
     write_atom(out, enm.repr.atom);
     writeln!(out, " {{");
     for variant in &enm.variants {
         write_doc(out, "  ", &variant.doc);
-        writeln!(out, "  {} = {},", variant.name.cxx, variant.discriminant);
+        write!(out, "  {} = ", variant.name.cxx);
+        write_discriminant(out, enm.repr.atom, variant.discriminant);
+        writeln!(out, ",");
     }
     writeln!(out, "}};");
+
+    if out.header {
+        write_enum_operators(out, enm);
+    }
+
     writeln!(out, "#endif // {}", guard);
 }
 
@@ -472,11 +481,82 @@ fn check_enum<'a>(out: &mut OutFile<'a>, enm: &'a Enum) {
     for variant in &enm.variants {
         write!(out, "static_assert(static_cast<");
         write_atom(out, enm.repr.atom);
+        writeln!(out, ">({}::{}) == ", enm.name.cxx, variant.name.cxx);
+        write_discriminant(out, enm.repr.atom, variant.discriminant);
+        writeln!(out, ", \"disagrees with the value in #[cxx::bridge]\");");
+    }
+
+    if out.header
+        && (derive::contains(&enm.derives, Trait::BitAnd)
+            || derive::contains(&enm.derives, Trait::BitOr)
+            || derive::contains(&enm.derives, Trait::BitXor))
+    {
+        out.next_section();
+        let guard = Guard::new(out, "CXXBRIDGE1_ENUM", &enm.name);
+        writeln!(out, "#ifndef {}", guard);
+        writeln!(out, "#define {}", guard);
+        out.suppress_next_section();
+        write_enum_operators(out, enm);
+        writeln!(out, "#endif // {}", guard);
+    }
+}
+
+fn write_discriminant(out: &mut OutFile, repr: Atom, discriminant: Discriminant) {
+    let limits = Limits::of(repr).unwrap();
+    if discriminant == limits.min && limits.min < Discriminant::zero() {
+        out.include.limits = true;
+        write!(out, "::std::numeric_limits<");
+        write_atom(out, repr);
+        write!(out, ">::min()");
+    } else {
+        write!(out, "{}", discriminant);
+    }
+}
+
+fn write_enum_operators(out: &mut OutFile, enm: &Enum) {
+    if derive::contains(&enm.derives, Trait::BitAnd) {
+        out.next_section();
         writeln!(
             out,
-            ">({}::{}) == {}, \"disagrees with the value in #[cxx::bridge]\");",
-            enm.name.cxx, variant.name.cxx, variant.discriminant,
+            "inline {} operator&({} lhs, {} rhs) {{",
+            enm.name.cxx, enm.name.cxx, enm.name.cxx,
         );
+        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
+        write_atom(out, enm.repr.atom);
+        write!(out, ">(lhs) & static_cast<");
+        write_atom(out, enm.repr.atom);
+        writeln!(out, ">(rhs));");
+        writeln!(out, "}}");
+    }
+
+    if derive::contains(&enm.derives, Trait::BitOr) {
+        out.next_section();
+        writeln!(
+            out,
+            "inline {} operator|({} lhs, {} rhs) {{",
+            enm.name.cxx, enm.name.cxx, enm.name.cxx,
+        );
+        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
+        write_atom(out, enm.repr.atom);
+        write!(out, ">(lhs) | static_cast<");
+        write_atom(out, enm.repr.atom);
+        writeln!(out, ">(rhs));");
+        writeln!(out, "}}");
+    }
+
+    if derive::contains(&enm.derives, Trait::BitXor) {
+        out.next_section();
+        writeln!(
+            out,
+            "inline {} operator^({} lhs, {} rhs) {{",
+            enm.name.cxx, enm.name.cxx, enm.name.cxx,
+        );
+        write!(out, "  return static_cast<{}>(static_cast<", enm.name.cxx);
+        write_atom(out, enm.repr.atom);
+        write!(out, ">(lhs) ^ static_cast<");
+        write_atom(out, enm.repr.atom);
+        writeln!(out, ">(rhs));");
+        writeln!(out, "}}");
     }
 }
 
@@ -576,6 +656,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
 
     if derive::contains(&strct.derives, Trait::PartialEq) {
         out.pragma.dollar_in_identifier = true;
+        out.pragma.missing_declarations = true;
         let link_name = mangle::operator(&strct.name, "eq");
         writeln!(
             out,
@@ -595,6 +676,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
 
     if derive::contains(&strct.derives, Trait::PartialOrd) {
         out.pragma.dollar_in_identifier = true;
+        out.pragma.missing_declarations = true;
         let link_name = mangle::operator(&strct.name, "lt");
         writeln!(
             out,
@@ -629,6 +711,7 @@ fn write_struct_operator_decls<'a>(out: &mut OutFile<'a>, strct: &'a Struct) {
     if derive::contains(&strct.derives, Trait::Hash) {
         out.include.cstddef = true;
         out.pragma.dollar_in_identifier = true;
+        out.pragma.missing_declarations = true;
         let link_name = mangle::operator(&strct.name, "hash");
         writeln!(
             out,
@@ -732,6 +815,7 @@ fn write_opaque_type_layout_decls<'a>(out: &mut OutFile<'a>, ety: &'a ExternType
     out.set_namespace(&ety.name.namespace);
     out.begin_block(Block::ExternC);
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
 
     let link_name = mangle::operator(&ety.name, "sizeof");
     writeln!(out, "::std::size_t {}() noexcept;", link_name);
@@ -779,6 +863,7 @@ fn begin_function_definition(out: &mut OutFile) {
 
 fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
     out.next_section();
     out.set_namespace(&efn.name.namespace);
     out.begin_block(Block::ExternC);
@@ -956,6 +1041,8 @@ fn write_cxx_function_shim<'a>(out: &mut OutFile<'a>, efn: &'a ExternFn) {
 }
 
 fn write_function_pointer_trampoline(out: &mut OutFile, efn: &ExternFn, var: &Pair, f: &Signature) {
+    out.pragma.return_type_c_linkage = true;
+
     let r_trampoline = mangle::r_trampoline(efn, var, out.types);
     let indirect_call = true;
     write_rust_function_decl_impl(out, &r_trampoline, f, indirect_call);
@@ -1759,6 +1846,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     out.include.new = true;
     out.include.utility = true;
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
 
     let inner = ty.to_typename(out.types);
     let instance = ty.to_mangled(out.types);
@@ -1867,6 +1955,7 @@ fn write_shared_ptr(out: &mut OutFile, key: &NamedImplKey) {
     out.include.new = true;
     out.include.utility = true;
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
 
     // Some aliases are to opaque types; some are to trivial types. We can't
     // know at code generation time, so we generate both C++ and Rust side
@@ -1963,6 +2052,7 @@ fn write_weak_ptr(out: &mut OutFile, key: &NamedImplKey) {
     out.include.new = true;
     out.include.utility = true;
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
 
     writeln!(
         out,
@@ -2034,6 +2124,7 @@ fn write_cxx_vector(out: &mut OutFile, key: &NamedImplKey) {
     out.include.utility = true;
     out.builtin.destroy = true;
     out.pragma.dollar_in_identifier = true;
+    out.pragma.missing_declarations = true;
 
     begin_function_definition(out);
     writeln!(

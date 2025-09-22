@@ -251,14 +251,14 @@ fn parse_int_suffix(suffix: &str) -> Result<Option<Atom>> {
 }
 
 #[derive(Copy, Clone)]
-struct Limits {
-    repr: Atom,
-    min: Discriminant,
-    max: Discriminant,
+pub(crate) struct Limits {
+    pub repr: Atom,
+    pub min: Discriminant,
+    pub max: Discriminant,
 }
 
 impl Limits {
-    fn of(repr: Atom) -> Option<Limits> {
+    pub(crate) fn of(repr: Atom) -> Option<Limits> {
         for limits in &LIMITS {
             if limits.repr == repr {
                 return Some(*limits);

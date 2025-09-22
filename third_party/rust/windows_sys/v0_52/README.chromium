@@ -5,7 +5,7 @@ Revision: 3a605cba064b26f2a198ac58085f8c8836f47c38
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/license-apache-2.0
-Shipped: no
+Shipped: yes
 Security Critical: yes
 
 Description: Rust for Windows

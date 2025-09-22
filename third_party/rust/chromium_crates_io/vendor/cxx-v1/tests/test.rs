@@ -95,8 +95,8 @@ fn test_c_return() {
         enm @ ffi::AEnum::AAVal => assert_eq!(0, enm.repr),
         _ => assert!(false),
     }
-    match ffi::c_return_nested_ns_enum(0) {
-        enm @ ffi::ABEnum::ABAVal => assert_eq!(0, enm.repr),
+    match ffi::c_return_nested_ns_enum(2021) {
+        enm @ ffi::ABEnum::ABCVal => assert_eq!(i32::MIN, enm.repr),
         _ => assert!(false),
     }
 }

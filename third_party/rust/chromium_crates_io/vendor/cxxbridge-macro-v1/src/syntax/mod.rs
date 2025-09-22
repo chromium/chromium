@@ -5,7 +5,7 @@ pub(crate) mod attrs;
 pub(crate) mod cfg;
 pub(crate) mod check;
 pub(crate) mod derive;
-mod discriminant;
+pub(crate) mod discriminant;
 mod doc;
 pub(crate) mod error;
 pub(crate) mod file;
@@ -178,6 +178,8 @@ pub(crate) struct TypeAlias {
 
 pub(crate) struct Impl {
     pub cfg: CfgExpr,
+    #[expect(dead_code)]
+    pub attrs: OtherAttrs,
     pub impl_token: Token![impl],
     pub impl_generics: Lifetimes,
     #[expect(dead_code)]

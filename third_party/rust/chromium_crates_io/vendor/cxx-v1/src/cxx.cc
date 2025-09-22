@@ -23,6 +23,7 @@
 #endif
 
 #ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wmissing-declarations"
 #pragma GCC diagnostic ignored "-Wshadow"
 #endif
 #ifdef __clang__

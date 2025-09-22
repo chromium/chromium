@@ -31,6 +31,7 @@ pub(crate) struct Includes<'a> {
     pub functional: bool,
     pub initializer_list: bool,
     pub iterator: bool,
+    pub limits: bool,
     pub memory: bool,
     pub new: bool,
     pub ranges: bool,
@@ -94,6 +95,7 @@ pub(super) fn write(out: &mut OutFile) {
         functional,
         initializer_list,
         iterator,
+        limits,
         memory,
         new,
         ranges,
@@ -137,6 +139,9 @@ pub(super) fn write(out: &mut OutFile) {
     }
     if iterator && !cxx_header {
         writeln!(out, "#include <iterator>");
+    }
+    if limits {
+        writeln!(out, "#include <limits>");
     }
     if memory {
         writeln!(out, "#include <memory>");

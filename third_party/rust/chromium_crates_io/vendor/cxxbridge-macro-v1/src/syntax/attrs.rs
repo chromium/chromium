@@ -3,8 +3,7 @@ use crate::syntax::namespace::Namespace;
 use crate::syntax::report::Errors;
 use crate::syntax::repr::Repr;
 use crate::syntax::{cfg, Derive, Doc, ForeignName};
-use proc_macro2::{Ident, TokenStream};
-use quote::ToTokens;
+use proc_macro2::Ident;
 use syn::parse::ParseStream;
 use syn::{Attribute, Error, Expr, Lit, LitStr, Meta, Path, Result, Token};
 
@@ -45,8 +44,9 @@ pub(crate) struct Parser<'a> {
     pub(crate) _more: (),
 }
 
+#[must_use]
 pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) -> OtherAttrs {
-    let mut passthrough_attrs = Vec::new();
+    let mut other_attrs = OtherAttrs::new();
     for attr in attrs {
         let attr_path = attr.path();
         if attr_path.is_ident("doc") {
@@ -161,7 +161,7 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
                 Ok(cfg_expr) => {
                     if let Some(cfg) = &mut parser.cfg {
                         cfg.merge_and(cfg_expr);
-                        passthrough_attrs.push(attr);
+                        other_attrs.cfg.push(attr);
                         continue;
                     }
                 }
@@ -174,14 +174,14 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
             || attr_path.is_ident("warn")
             || attr_path.is_ident("deny")
             || attr_path.is_ident("forbid")
-            || attr_path.is_ident("deprecated")
-            || attr_path.is_ident("must_use")
         {
-            // https://doc.rust-lang.org/reference/attributes/diagnostics.html
-            passthrough_attrs.push(attr);
+            other_attrs.lint.push(attr);
             continue;
-        } else if attr_path.is_ident("serde") {
-            passthrough_attrs.push(attr);
+        } else if attr_path.is_ident("deprecated")
+            || attr_path.is_ident("must_use")
+            || attr_path.is_ident("serde")
+        {
+            other_attrs.passthrough.push(attr);
             continue;
         } else if attr_path.segments.len() > 1 {
             let tool = &attr_path.segments.first().unwrap().ident;
@@ -189,7 +189,7 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
                 // Skip, rustfmt only needs to find it in the pre-expansion source file.
                 continue;
             } else if tool == "clippy" {
-                passthrough_attrs.push(attr);
+                other_attrs.lint.push(attr);
                 continue;
             }
         }
@@ -198,7 +198,7 @@ pub(crate) fn parse(cx: &mut Errors, attrs: Vec<Attribute>, mut parser: Parser) 
             break;
         }
     }
-    OtherAttrs(passthrough_attrs)
+    other_attrs
 }
 
 enum DocAttribute {
@@ -301,30 +301,24 @@ fn parse_rust_ident_attribute(meta: &Meta) -> Result<Ident> {
 }
 
 #[derive(Clone)]
-pub(crate) struct OtherAttrs(Vec<Attribute>);
+pub(crate) struct OtherAttrs {
+    pub cfg: Vec<Attribute>,
+    pub lint: Vec<Attribute>,
+    pub passthrough: Vec<Attribute>,
+}
 
 impl OtherAttrs {
-    pub(crate) fn none() -> Self {
-        OtherAttrs(Vec::new())
+    pub(crate) fn new() -> Self {
+        OtherAttrs {
+            cfg: Vec::new(),
+            lint: Vec::new(),
+            passthrough: Vec::new(),
+        }
     }
 
     pub(crate) fn extend(&mut self, other: Self) {
-        self.0.extend(other.0);
-    }
-}
-
-impl ToTokens for OtherAttrs {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        for attr in &self.0 {
-            let Attribute {
-                pound_token,
-                style,
-                bracket_token,
-                meta,
-            } = attr;
-            pound_token.to_tokens(tokens);
-            let _ = style; // ignore; render outer and inner attrs both as outer
-            bracket_token.surround(tokens, |tokens| meta.to_tokens(tokens));
-        }
+        self.cfg.extend(other.cfg);
+        self.lint.extend(other.lint);
+        self.passthrough.extend(other.passthrough);
     }
 }

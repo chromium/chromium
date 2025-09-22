@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-macro"
-version = "1.0.179"
+version = "1.0.184"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi"]
 description = "Implementation detail of the `cxx` crate."
@@ -24,6 +24,7 @@ syn = { version = "2.0.46", features = ["full"] }
 
 [dev-dependencies]
 cxx = { version = "1.0", path = ".." }
+prettyplease = "0.2.35"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

@@ -191,10 +191,11 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.179"
+version = "1.0.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cc",
+ "cxx-build",
  "cxxbridge-cmd",
  "cxxbridge-flags",
  "cxxbridge-macro",
@@ -203,8 +204,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "cxx-build"
+version = "1.0.184"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "cc",
+ "codespan-reporting",
+ "indexmap",
+ "proc-macro2",
+ "quote",
+ "scratch",
+ "syn",
+]
+
+[[package]]
 name = "cxxbridge-cmd"
-version = "1.0.179"
+version = "1.0.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap",
@@ -217,12 +232,12 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.179"
+version = "1.0.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.179"
+version = "1.0.184"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "indexmap",
@@ -864,6 +879,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "ryu"
 version = "1.0.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "scratch"
+version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

@@ -343,9 +343,29 @@ fn check_api_struct(cx: &mut Check, strct: &Struct) {
     }
 
     for derive in &strct.derives {
-        if derive.what == Trait::ExternType {
-            let msg = format!("derive({}) on shared struct is not supported", derive);
-            cx.error(derive, msg);
+        match derive.what {
+            Trait::Clone
+            | Trait::Copy
+            | Trait::Debug
+            | Trait::Default
+            | Trait::Eq
+            | Trait::Hash
+            | Trait::Ord
+            | Trait::PartialEq
+            | Trait::PartialOrd
+            | Trait::Serialize
+            | Trait::Deserialize => {}
+            Trait::BitAnd | Trait::BitOr | Trait::BitXor => {
+                let msg = format!(
+                    "derive({}) is currently only supported on enums, not structs",
+                    derive,
+                );
+                cx.error(derive, msg);
+            }
+            Trait::ExternType => {
+                let msg = format!("derive({}) on shared struct is not supported", derive);
+                cx.error(derive, msg);
+            }
         }
     }
 
@@ -376,19 +396,35 @@ fn check_api_enum(cx: &mut Check, enm: &Enum) {
     }
 
     for derive in &enm.derives {
-        if derive.what == Trait::Default {
-            let default_variants = enm.variants.iter().filter(|v| v.default).count();
-            if default_variants != 1 {
-                let mut msg = Message::new();
-                write!(msg, "derive(Default) on enum requires exactly one variant to be marked with #[default]");
-                if default_variants > 0 {
-                    write!(msg, " (found {})", default_variants);
+        match derive.what {
+            Trait::BitAnd
+            | Trait::BitOr
+            | Trait::BitXor
+            | Trait::Clone
+            | Trait::Copy
+            | Trait::Debug
+            | Trait::Eq
+            | Trait::Hash
+            | Trait::Ord
+            | Trait::PartialEq
+            | Trait::PartialOrd
+            | Trait::Serialize
+            | Trait::Deserialize => {}
+            Trait::Default => {
+                let default_variants = enm.variants.iter().filter(|v| v.default).count();
+                if default_variants != 1 {
+                    let mut msg = Message::new();
+                    write!(msg, "derive(Default) on enum requires exactly one variant to be marked with #[default]");
+                    if default_variants > 0 {
+                        write!(msg, " (found {})", default_variants);
+                    }
+                    cx.error(derive, msg);
                 }
+            }
+            Trait::ExternType => {
+                let msg = "derive(ExternType) on shared enum is not supported";
                 cx.error(derive, msg);
             }
-        } else if derive.what == Trait::ExternType {
-            let msg = "derive(ExternType) on shared enum is not supported";
-            cx.error(derive, msg);
         }
     }
 }

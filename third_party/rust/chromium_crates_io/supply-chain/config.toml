@@ -96,7 +96,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."codespan-reporting:0.12.0"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."core_maths:0.1.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -104,16 +104,19 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.179"]
+[policy."cxx-build:1.0.184"]
+criteria = []
+
+[policy."cxx:1.0.184"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.179"]
+[policy."cxxbridge-cmd:1.0.184"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.179"]
+[policy."cxxbridge-flags:1.0.184"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.179"]
+[policy."cxxbridge-macro:1.0.184"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."derive_arbitrary:1.4.2"]
@@ -414,7 +417,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."termcolor:1.4.1"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."timezone_provider:0.0.16"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -429,22 +432,22 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-width:0.2.1"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."winapi-util:0.1.11"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows-sys:0.52.0"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows-targets:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_aarch64_gnullvm:0.52.6"]
 criteria = []
 
 [policy."windows_aarch64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_i686_gnu:0.52.6"]
 criteria = []
@@ -453,7 +456,7 @@ criteria = []
 criteria = []
 
 [policy."windows_i686_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."windows_x86_64_gnu:0.52.6"]
 criteria = []
@@ -462,7 +465,7 @@ criteria = []
 criteria = []
 
 [policy."windows_x86_64_msvc:0.52.6"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."writeable:0.6.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]

@@ -25,6 +25,7 @@ rust_library(
     deps = [
         ":impl",
         "//:cxx",
+        "@crates.io//:serde",
     ],
 )
 

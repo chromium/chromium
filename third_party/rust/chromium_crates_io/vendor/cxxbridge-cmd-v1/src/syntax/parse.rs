@@ -659,7 +659,7 @@ fn parse_extern_fn(
                 let ty = parse_type(&arg.ty)?;
                 let cfg = CfgExpr::Unconditional;
                 let doc = Doc::new();
-                let attrs = OtherAttrs::none();
+                let attrs = OtherAttrs::new();
                 let visibility = Token![pub](ident.span());
                 let name = pair(Namespace::default(), &ident, None, None);
                 let colon_token = arg.colon_token;
@@ -1020,7 +1020,7 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
     let impl_token = imp.impl_token;
 
     let mut cfg = CfgExpr::Unconditional;
-    attrs::parse(
+    let attrs = attrs::parse(
         cx,
         imp.attrs,
         attrs::Parser {
@@ -1115,6 +1115,7 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
 
     Ok(Api::Impl(Impl {
         cfg,
+        attrs,
         impl_token,
         impl_generics,
         negative,
@@ -1426,7 +1427,7 @@ fn parse_type_fn(ty: &TypeBareFn) -> Result<Type> {
             let ty = parse_type(&arg.ty)?;
             let cfg = CfgExpr::Unconditional;
             let doc = Doc::new();
-            let attrs = OtherAttrs::none();
+            let attrs = OtherAttrs::new();
             let visibility = Token![pub](ident.span());
             let name = pair(Namespace::default(), &ident, None, None);
             Ok(Var {

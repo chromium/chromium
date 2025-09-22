@@ -5,7 +5,7 @@ Revision: 71f0921f1eeceda85487098588a1602979d52493
 Update Mechanism: Manual
 License: MIT
 License File: //third_party/rust/chromium_crates_io/vendor/termcolor-v1/LICENSE-MIT
-Shipped: no
+Shipped: yes
 Security Critical: yes
 
 Description: A simple cross platform library for writing colored text to a terminal.

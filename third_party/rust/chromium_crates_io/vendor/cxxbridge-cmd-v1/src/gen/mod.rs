@@ -152,7 +152,7 @@ pub(super) fn generate(syntax: File, opt: &Opt) -> Result<GeneratedCode> {
     let ref mut cfg_errors = Set::new();
     for bridge in syntax.modules {
         let mut cfg = CfgExpr::Unconditional;
-        attrs::parse(
+        let _ = attrs::parse(
             errors,
             bridge.attrs,
             attrs::Parser {

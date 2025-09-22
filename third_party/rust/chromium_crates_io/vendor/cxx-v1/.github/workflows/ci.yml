@@ -166,6 +166,41 @@ jobs:
           CXXFLAGS: --sysroot=${{runner.temp}}/wasi-sdk-27.0-x86_64-linux/share/wasi-sysroot
       - run: wasmtime target/wasm32-wasip1/release/demo.wasm
 
+  emscripten:
+    name: Emscripten
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-unknown-emscripten
+          components: rust-src
+      - name: Disable initramfs update
+        run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+      - name: Disable man-db update
+        run: sudo rm -f /var/lib/man-db/auto-update
+      - name: Install emscripten
+        run: sudo apt-get install emscripten
+      - run: cargo build --target=wasm32-unknown-emscripten --manifest-path=demo/Cargo.toml --release -Zbuild-std
+        env:
+          RUSTFLAGS: -Clink-arg=--emrun ${{env.RUSTFLAGS}}
+      - name: Create demo.html for demo.js
+        run: echo '<!DOCTYPE html><script src="demo.js"></script>' > target/wasm32-unknown-emscripten/release/demo.html
+      - name: Install firefox
+        run: sudo snap install firefox
+      - run: emrun target/wasm32-unknown-emscripten/release/demo.html
+          --browser=/snap/firefox/current/usr/lib/firefox/firefox
+          --browser_args=-headless
+          --safe_firefox_profile
+          --log_stdout=${{runner.temp}}/demo.log
+          --timeout=60
+          --kill_exit
+      - run: cat ${{runner.temp}}/demo.log
+      - run: grep --silent blobid ${{runner.temp}}/demo.log
+
   reindeer:
     name: Reindeer
     runs-on: ubuntu-latest
@@ -193,6 +228,12 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
+      - name: Disable initramfs update
+        run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+        if: matrix.os == 'ubuntu'
+      - name: Disable man-db update
+        run: sudo rm -f /var/lib/man-db/auto-update
+        if: matrix.os == 'ubuntu'
       - name: Install lld
         run: sudo apt-get install lld
         if: matrix.os == 'ubuntu'
@@ -264,10 +305,14 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
+      - name: Disable initramfs update
+        run: sudo sed -i 's/^update_initramfs=yes$/update_initramfs=no/' /etc/initramfs-tools/update-initramfs.conf
+      - name: Disable man-db update
+        run: sudo rm -f /var/lib/man-db/auto-update
       - name: Install clang-tidy
-        run: sudo apt-get install clang-tidy-19
+        run: sudo apt-get update && sudo apt-get install clang-tidy-20
       - name: Run clang-tidy
-        run: clang-tidy-19 src/cxx.cc --warnings-as-errors=*
+        run: clang-tidy-20 src/cxx.cc --warnings-as-errors=*
 
   eslint:
     name: ESLint

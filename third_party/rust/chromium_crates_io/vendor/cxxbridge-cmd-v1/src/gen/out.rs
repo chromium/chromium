@@ -23,6 +23,7 @@ pub(crate) struct Content<'a> {
     bytes: String,
     namespace: &'a Namespace,
     blocks: Vec<BlockBoundary<'a>>,
+    suppress_next_section: bool,
     section_pending: bool,
     blocks_pending: usize,
 }
@@ -49,6 +50,10 @@ impl<'a> OutFile<'a> {
     // Write a blank line if the preceding section had any contents.
     pub(crate) fn next_section(&mut self) {
         self.content.get_mut().next_section();
+    }
+
+    pub(crate) fn suppress_next_section(&mut self) {
+        self.content.get_mut().suppress_next_section();
     }
 
     pub(crate) fn begin_block(&mut self, block: Block<'a>) {
@@ -129,7 +134,11 @@ impl<'a> Content<'a> {
     }
 
     pub(crate) fn next_section(&mut self) {
-        self.section_pending = true;
+        self.section_pending = !self.suppress_next_section;
+    }
+
+    pub(crate) fn suppress_next_section(&mut self) {
+        self.suppress_next_section = true;
     }
 
     pub(crate) fn begin_block(&mut self, block: Block<'a>) {
@@ -163,6 +172,7 @@ impl<'a> Content<'a> {
                 self.bytes.push('\n');
             }
             self.bytes.push_str(b);
+            self.suppress_next_section = false;
             self.section_pending = false;
             self.blocks_pending = 0;
         }

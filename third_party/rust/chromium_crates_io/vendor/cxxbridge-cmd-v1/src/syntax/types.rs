@@ -335,10 +335,9 @@ impl<'a> Types<'a> {
             | Type::SharedPtr(ty)
             | Type::WeakPtr(ty)
             | Type::CxxVector(ty) => self.contains_elided_lifetime(&ty.inner),
-            Type::Ref(ty) | Type::Str(ty) => {
-                ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner)
-            }
+            Type::Ref(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
             Type::Ptr(ty) => self.contains_elided_lifetime(&ty.inner),
+            Type::Str(ty) => ty.lifetime.is_none(),
             Type::SliceRef(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
             Type::Array(ty) => self.contains_elided_lifetime(&ty.inner),
             Type::Fn(_) | Type::Void(_) => false,
