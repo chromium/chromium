@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("wallet") {
+  sources = [
+    "walletable_pass_bubble_controller_base.cc",
+    "walletable_pass_bubble_controller_base.h",
+    "walletable_pass_bubble_view_base.cc",
+    "walletable_pass_bubble_view_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/views/location_bar",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}

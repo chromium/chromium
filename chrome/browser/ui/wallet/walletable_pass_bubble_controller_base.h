@@ -1,0 +1,58 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
+#define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
+namespace wallet {
+
+class WalletablePassBubbleViewBase;
+
+// Base class for the controller of the walletable pass bubble. This controller
+// is responsible for showing, hiding, and handling user interactions with the
+// bubble.
+class WalletablePassBubbleControllerBase
+    : public autofill::BubbleControllerBase {
+ public:
+  enum WalletablePassBubbleClosedReason {
+    kUnknown = 0,
+    kLostFocus = 1,
+    kClosed = 2,
+    kAccepted = 3,
+    kDeclined = 4,
+    kMaxValue = kDeclined
+  };
+
+  WalletablePassBubbleControllerBase();
+  ~WalletablePassBubbleControllerBase() override;
+
+  WalletablePassBubbleControllerBase(
+      const WalletablePassBubbleControllerBase&) = delete;
+
+  WalletablePassBubbleControllerBase& operator=(
+      const WalletablePassBubbleControllerBase&) = delete;
+
+  // BubbleControllerBase:
+  bool IsShowingBubble() const override;
+  bool IsMouseHovered() const override;
+
+  // Called when the bubble is closed.
+  void OnBubbleClosed(WalletablePassBubbleClosedReason reason);
+
+  virtual base::WeakPtr<WalletablePassBubbleControllerBase>
+  GetWalletablePassBubbleControllerBaseWeakPtr() = 0;
+
+ protected:
+  void SetBubbleView(WalletablePassBubbleViewBase& bubble_view);
+
+ private:
+  // Weak reference. Will be nullptr if no bubble is currently shown.
+  raw_ptr<WalletablePassBubbleViewBase> bubble_view_ = nullptr;
+};
+
+}  // namespace wallet
+
+#endif  // CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
