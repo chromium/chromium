@@ -9,7 +9,11 @@ found in the LICENSE file.
         <item name="newTabButtonStyle">@style/HubToolbarActionButtonStyle.Baseline</item>
     </style>
 
-    <style name="HubToolbarActionButtonStyle.Baseline" parent="Widget.Material3Expressive.Button.IconButton.Standard">
+    <style name="HubToolbarActionButtonStyleOverlay_Fill" parent="">
+        <item name="newTabButtonStyle">@style/HubToolbarActionButtonStyle.Fill</item>
+    </style>
+
+    <style name="HubToolbarActionButtonStyle.Baseline" parent="Widget.Material3.Button.TextButton.Icon">
         <item name="android:textAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
         <item name="android:minWidth">@dimen/min_touch_target_size</item>
         <item name="android:paddingStart">16dp</item>
@@ -20,11 +24,12 @@ found in the LICENSE file.
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
     </style>
 
-    <style name="NewTabButtonStyle" parent="Widget.Material3Expressive.Button.IconButton.Filled">
-        <item name="android:insetLeft">0dp</item>
+    <style name="HubToolbarActionButtonStyle.Fill" parent="Widget.Material3.Button.Icon">
+        <item name="android:minWidth">@dimen/min_touch_target_size</item>
+        <item name="android:paddingStart">@dimen/hub_toolbar_action_button_padding_lr</item>
+        <item name="android:paddingEnd">@dimen/hub_toolbar_action_button_padding_lr</item>
         <item name="android:insetTop">0dp</item>
-        <item name="android:insetRight">0dp</item>
         <item name="android:insetBottom">0dp</item>
-        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small.Square</item>
+        <item name="android:background">@drawable/new_tab_button_background</item>
     </style>
 </resources>

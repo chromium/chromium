@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.Chromium.Widget" parent="Theme.Material3Expressive.DynamicColors.DayNight" />
+    <style name="Theme.Chromium.Widget" parent="Theme.Material3.DynamicColors.DayNight" />
 </resources>

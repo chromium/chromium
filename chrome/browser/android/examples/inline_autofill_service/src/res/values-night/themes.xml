@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <style name="Base.Theme.TestAutofillService" parent="Theme.Material3Expressive.DayNight.NoActionBar">
+  <style name="Base.Theme.TestAutofillService" parent="Theme.Material3.DayNight.NoActionBar">
   </style>
 </resources>

@@ -214,7 +214,7 @@ found in the LICENSE file.
 
 
     <!-- Settings -->
-    <style name="SettingsToolbarStyle" parent="Widget.Material3Expressive.Toolbar">
+    <style name="SettingsToolbarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="navigationIconTint">?attr/colorOnSurface</item>

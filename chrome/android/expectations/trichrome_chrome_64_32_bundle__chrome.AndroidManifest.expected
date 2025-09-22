@@ -394,7 +394,7 @@
         android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
         android:excludeFromRecents="true"
         android:exported="false"
-        android:theme="@style/Theme.Material3Expressive.DayNight">
+        android:theme="@style/Theme.Material3.DayNight">
     </activity>  # DIFF-ANCHOR: 45a98fa4
     <activity  # DIFF-ANCHOR: 6e34d703
         android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
@@ -408,7 +408,7 @@
         android:excludeFromRecents="true"
         android:exported="true"
         android:noHistory="true"
-        android:theme="@style/Theme.Material3Expressive.DayNight">
+        android:theme="@style/Theme.Material3.DayNight">
     </activity>  # DIFF-ANCHOR: 43bfa5de
     <activity  # DIFF-ANCHOR: 9bb1f409
         android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"

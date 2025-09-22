@@ -27,7 +27,7 @@ found in the LICENSE file.
         <item name="elevationOverlayEnabled">false</item>
     </style>
 
-    <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3Expressive.DynamicColors.DayNight">
+    <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="elevationOverlayColor">?attr/colorPrimary</item>
         <item name="elevationOverlayAccentColor">@android:color/transparent</item>
         <!-- android:textColorHighlight applied by Material3 is too dark, so we override it with our

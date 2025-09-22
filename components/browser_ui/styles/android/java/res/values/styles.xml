@@ -75,7 +75,7 @@ found in the LICENSE file.
         <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
     </style>
 
-    <style name="AlertDialogButtonStyle" parent="Widget.Material3Expressive.Button.TextButton.Dialog">
+    <style name="AlertDialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
     </style>
 
@@ -127,7 +127,7 @@ found in the LICENSE file.
     <item name="android:background">@macro/default_bg_color</item>
     </style>
 
-    <style name="Base.ModernToolbar" parent="Widget.Material3Expressive.Toolbar">
+    <style name="Base.ModernToolbar" parent="Widget.Material3.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
