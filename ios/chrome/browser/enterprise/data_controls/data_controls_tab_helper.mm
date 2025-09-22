@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/functional/callback.h"
+#import "components/enterprise/data_controls/core/browser/rule.h"
 #import "ios/chrome/browser/enterprise/data_controls/clipboard_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/enterprise/data_controls/features.h"
@@ -35,10 +36,8 @@ void DataControlsTabHelper::ShouldAllowCopy(
 
   const GURL& source_url = web_state_->GetLastCommittedURL();
 
-  IsCopyAllowedByPolicy(source_url, metadata, profile, web_state_,
-                        base::BindOnce(&DataControlsTabHelper::OnCopyAllowed,
-                                       weak_factory_.GetWeakPtr(), source_url,
-                                       std::move(callback)));
+  OnCopyAllowed(source_url, std::move(callback),
+                IsCopyAllowedByPolicy(source_url, metadata, profile));
 }
 
 void DataControlsTabHelper::ShouldAllowPaste(
@@ -60,7 +59,7 @@ void DataControlsTabHelper::ShouldAllowShare(
 void DataControlsTabHelper::OnCopyAllowed(
     const GURL& source_url,
     base::OnceCallback<void(bool)> callback,
-    CopyDecision decision) {
+    CopyPolicyVerdicts copy_verdicts) {
   // The user may have navigated away from the page from which the copy
   // operation was initiated. If the URL has changed, we should block the copy
   // operation as the original content is no longer available.
@@ -71,8 +70,8 @@ void DataControlsTabHelper::OnCopyAllowed(
 
   // TODO(crbug.com/439549626): Store metadata when decision is
   // kAllow or kAllowAndProtect.
-  bool allowed = (decision == CopyDecision::kAllow ||
-                  decision == CopyDecision::kAllowAndProtect);
+  bool allowed =
+      (copy_verdicts.copy_action_verdict.level() != Rule::Level::kBlock);
   std::move(callback).Run(allowed);
 }
 

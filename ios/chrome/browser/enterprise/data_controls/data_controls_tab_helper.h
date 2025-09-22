@@ -47,7 +47,7 @@ class DataControlsTabHelper
 
   void OnCopyAllowed(const GURL& source_url,
                      base::OnceCallback<void(bool)> callback,
-                     CopyDecision decision);
+                     CopyPolicyVerdicts copy_verdict);
 
   // Unowned pointer to the WebState owning `this`. `web_state_` will always
   // outlive `this`.
