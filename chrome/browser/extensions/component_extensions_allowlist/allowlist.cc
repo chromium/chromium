@@ -15,6 +15,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -24,6 +25,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
