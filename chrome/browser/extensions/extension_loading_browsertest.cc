@@ -83,9 +83,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
-  const GURL test_link_from_NTP =
-      embedded_test_server()->GetURL("/README.chromium");
-  EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.chromium"))
+  const GURL test_link_from_NTP = embedded_test_server()->GetURL("/README.md");
+  EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.md"))
       << "Check that the test server started.";
   EXPECT_TRUE(NavigateInRenderer(GetActiveWebContents(), test_link_from_NTP));
 
@@ -137,9 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // Navigate that tab to a non-extension URL to swap out the extension's
   // renderer.
-  const GURL test_link_from_ntp =
-      embedded_test_server()->GetURL("/README.chromium");
-  EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.chromium"))
+  const GURL test_link_from_ntp = embedded_test_server()->GetURL("/README.md");
+  EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.md"))
       << "Check that the test server started.";
   EXPECT_TRUE(NavigateInRenderer(GetActiveWebContents(), test_link_from_ntp));
 
