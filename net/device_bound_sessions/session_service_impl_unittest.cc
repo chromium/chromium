@@ -57,6 +57,13 @@ const std::string kOrigin2 = "https://example2.com";
 
 const std::string kChallenge = "challenge";
 
+const char* GetSessionChallengeHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Challenge"
+             : "Sec-Session-Challenge";
+}
+
 // Matcher for SessionKeys
 auto ExpectId(std::string_view id) {
   return testing::Field(&SessionKey::id, Session::Id(std::string(id)));
@@ -247,9 +254,9 @@ TEST_F(SessionServiceImplTest, SetChallengeForBoundSession) {
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   headers->AddHeader(
-      "Sec-Session-Challenge",
+      GetSessionChallengeHeaderName(),
       R"("challenge";id="SessionId", "challenge1";id="NonExisted")");
-  headers->AddHeader("Sec-Session-Challenge", R"("challenge2")");
+  headers->AddHeader(GetSessionChallengeHeaderName(), R"("challenge2")");
 
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
@@ -282,7 +289,8 @@ TEST_F(SessionServiceImplTestWithOriginTrialFeedback,
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader("Sec-Session-Challenge", R"("challenge";id="SessionId")");
+  headers->AddHeader(GetSessionChallengeHeaderName(),
+                     R"("challenge";id="SessionId")");
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
 
@@ -308,7 +316,8 @@ TEST_F(SessionServiceImplTestWithoutOriginTrialFeedback,
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader("Sec-Session-Challenge", R"("challenge";id="SessionId")");
+  headers->AddHeader(GetSessionChallengeHeaderName(),
+                     R"("challenge";id="SessionId")");
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());
 
@@ -414,7 +423,8 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
 
   scoped_refptr<net::HttpResponseHeaders> headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  headers->AddHeader("Sec-Session-Challenge", "\"challenge\";id=\"SessionId\"");
+  headers->AddHeader(GetSessionChallengeHeaderName(),
+                     "\"challenge\";id=\"SessionId\"");
 
   std::vector<SessionChallengeParam> params =
       SessionChallengeParam::CreateIfValid(kTestUrl, headers.get());

@@ -23,10 +23,10 @@ def main(request, response):
     for session_id in session_manager.find_for_request(request).get_session_ids():
         early_challenge = test_session_manager.get_early_challenge(session_id)
         if early_challenge is not None:
-            challenges.append(("Sec-Session-Challenge", f'"{early_challenge}";id="{session_id}"'))
+            challenges.append(("Secure-Session-Challenge", f'"{early_challenge}";id="{session_id}"'))
 
     if use_single_header:
-        combined_challenges = [("Sec-Session-Challenge", ", ".join([challenge[1] for challenge in challenges]))]
+        combined_challenges = [("Secure-Session-Challenge", ", ".join([challenge[1] for challenge in challenges]))]
         return (200, headers + combined_challenges, "")
     else:
         return (200, headers + challenges, "")

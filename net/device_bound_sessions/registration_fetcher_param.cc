@@ -11,13 +11,20 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
 
 namespace {
-constexpr char kRegistrationHeaderName[] = "Sec-Session-Registration";
+const char* GetRegistrationHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Registration"
+             : "Sec-Session-Registration";
+}
+
 constexpr char kChallengeParamKey[] = "challenge";
 constexpr char kPathParamKey[] = "path";
 constexpr char kAuthCodeParamKey[] = "authorization";
@@ -162,7 +169,7 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     return params;
   }
   std::optional<std::string> header_value =
-      headers->GetNormalizedHeader(kRegistrationHeaderName);
+      headers->GetNormalizedHeader(GetRegistrationHeaderName());
   if (!header_value) {
     return params;
   }

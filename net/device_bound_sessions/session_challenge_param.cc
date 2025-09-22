@@ -6,13 +6,20 @@
 
 #include <algorithm>
 
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
 namespace {
-// Sec-Session-Challenge header defined in
+// Secure-Session-Challenge header defined in
 // https://github.com/WICG/dbsc/blob/main/README.md#high-level-overview
-constexpr char kSessionChallengeHeaderName[] = "Sec-Session-Challenge";
+const char* GetSessionChallengeHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Challenge"
+             : "Sec-Session-Challenge";
+}
+
 constexpr char kSessionIdKey[] = "id";
 }  // namespace
 
@@ -81,7 +88,7 @@ std::vector<SessionChallengeParam> SessionChallengeParam::CreateIfValid(
     return params;
   }
   std::optional<std::string> header_value =
-      headers->GetNormalizedHeader(kSessionChallengeHeaderName);
+      headers->GetNormalizedHeader(GetSessionChallengeHeaderName());
   if (!header_value) {
     return params;
   }

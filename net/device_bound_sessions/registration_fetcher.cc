@@ -30,8 +30,19 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-constexpr char kSessionIdHeaderName[] = "Sec-Session-Id";
-constexpr char kJwtSessionHeaderName[] = "Sec-Session-Response";
+const char* GetSessionIdHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Sec-Secure-Session-Id"
+             : "Sec-Session-Id";
+}
+
+const char* GetJwtSessionHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Response"
+             : "Sec-Session-Response";
+}
 
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -457,7 +468,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                                                 net_log_source_);
     ConfigureRequest(url_fetcher_->request());
     url_fetcher_->request().SetExtraRequestHeaderByName(
-        kJwtSessionHeaderName, registration_token.value(), /*overwrite*/ true);
+        GetJwtSessionHeaderName(), registration_token.value(),
+        /*overwrite*/ true);
 
     // `this` owns `url_fetcher_`, so it's safe to use
     // `base::Unretained`
@@ -477,7 +489,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     if (IsForRefreshRequest()) {
       request.SetExtraRequestHeaderByName(
-          kSessionIdHeaderName, *session_identifier_, /*overwrite*/ true);
+          GetSessionIdHeaderName(), *session_identifier_, /*overwrite*/ true);
     }
   }
 

@@ -253,11 +253,18 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponse(
   return response;
 }
 
+const char* GetSessionChallengeHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Challenge"
+             : "Sec-Session-Challenge";
+}
+
 std::unique_ptr<test_server::HttpResponse> ReturnUnauthorized(
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_UNAUTHORIZED);
-  response->AddCustomHeader("Sec-Session-Challenge", R"("challenge")");
+  response->AddCustomHeader(GetSessionChallengeHeaderName(), R"("challenge")");
   return response;
 }
 
@@ -380,12 +387,19 @@ MATCHER_P2(EqualsCredential, name, attributes, "") {
       arg, result_listener);
 }
 
+const char* GetSessionResponseHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Secure-Session-Response"
+             : "Sec-Session-Response";
+}
+
 TEST_F(RegistrationTest, BasicSuccess) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating([](const test_server::HttpRequest& request) {
-        auto resp_iter = request.headers.find("Sec-Session-Response");
+        auto resp_iter = request.headers.find(GetSessionResponseHeaderName());
         EXPECT_TRUE(resp_iter != request.headers.end());
         if (resp_iter != request.headers.end()) {
           EXPECT_TRUE(VerifyEs256Jwt(resp_iter->second));
@@ -1300,20 +1314,27 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
             SessionError::ErrorType::kNetError);
 }
 
+const char* GetSessionIdHeaderName() {
+  return base::FeatureList::IsEnabled(
+             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+             ? "Sec-Secure-Session-Id"
+             : "Sec-Session-Id";
+}
+
 std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
 
-  auto resp_iter = request.headers.find("Sec-Session-Response");
+  auto resp_iter = request.headers.find(GetSessionResponseHeaderName());
   std::string session_response =
       resp_iter != request.headers.end() ? resp_iter->second : "";
   if (session_response.empty()) {
-    const auto session_iter = request.headers.find("Sec-Session-Id");
+    const auto session_iter = request.headers.find(GetSessionIdHeaderName());
     EXPECT_TRUE(session_iter != request.headers.end() &&
                 !session_iter->second.empty());
 
     response->set_code(HTTP_UNAUTHORIZED);
-    response->AddCustomHeader("Sec-Session-Challenge",
+    response->AddCustomHeader(GetSessionChallengeHeaderName(),
                               R"("test_challenge";id="session_id")");
     return response;
   }
@@ -1328,7 +1349,7 @@ std::unique_ptr<test_server::HttpResponse>
 Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_UNAUTHORIZED);
-  response->AddCustomHeader("Sec-Session-Challenge", "");
+  response->AddCustomHeader(GetSessionChallengeHeaderName(), "");
   return response;
 }
 
