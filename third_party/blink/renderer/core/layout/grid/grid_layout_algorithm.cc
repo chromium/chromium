@@ -2254,7 +2254,7 @@ class GapAccumulator {
     if (col_gutter_size_ > LayoutUnit()) {
       gap_geometry->SetGapIntersections(kForColumns,
                                         std::move(column_intersections_));
-      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
         if (!cross_gaps_.empty()) {
           gap_geometry->SetCrossGaps(std::move(cross_gaps_));
         }
@@ -2264,14 +2264,14 @@ class GapAccumulator {
     if (row_gutter_size_ > LayoutUnit()) {
       gap_geometry->SetGapIntersections(kForRows,
                                         std::move(row_intersections_));
-      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
         if (!main_gaps_.empty()) {
           gap_geometry->SetMainGaps(std::move(main_gaps_));
         }
       }
     }
 
-    if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
       gap_geometry->SetContentInlineOffsets(content_inline_start_,
                                             content_inline_end_);
       gap_geometry->SetContentBlockOffsets(content_block_start_,
@@ -2345,7 +2345,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
       Style().HasGapRule()) {
     gap_accumulator = GapAccumulator();
     gap_accumulator->BuildGapIntersectionPoints(layout_data);
-    if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
       gap_accumulator->BuildGapGeometry(layout_data);
     }
   }
@@ -2454,7 +2454,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
 
     if (gap_accumulator) {
       gap_accumulator->MarkBlockedStatusForGapIntersections(grid_item);
-      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
         gap_accumulator->AggregateGapsToBlockedTracks(grid_item);
       }
     }

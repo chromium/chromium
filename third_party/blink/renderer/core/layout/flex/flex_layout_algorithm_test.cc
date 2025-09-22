@@ -739,7 +739,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsColumnFlexDirection) {
 // GapDecorations. Once the optimized version is implemented, we can remove all
 // the other unused tests from the old version.
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedOneLine) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -812,7 +812,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedOneLine) {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedBasic) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -889,7 +889,7 @@ TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedBasic) {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapIntersectionsOptimizedContentEndPastContainer) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {
@@ -955,7 +955,7 @@ TEST_F(FlexLayoutAlgorithmTest,
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedNonAlignedColumn) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -1041,7 +1041,7 @@ body {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedNonAlignedColumn2) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -1126,7 +1126,7 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapIntersectionsOptimizedVerticalFlexAlignedCenter) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -1212,7 +1212,7 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapIntersectionsOptimizedVerticalFlexAlignedStart) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -1298,7 +1298,7 @@ body {
 
 TEST_F(FlexLayoutAlgorithmTest,
        GapIntersectionsOptimizedVerticalFlexAlignedStretch) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
 body {
@@ -1383,7 +1383,7 @@ body {
 }
 
 TEST_F(FlexLayoutAlgorithmTest, GapIntersectionsOptimizedColumnFlexDirection) {
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
   SetBodyInnerHTML(R"HTML(
     <style>
     body {

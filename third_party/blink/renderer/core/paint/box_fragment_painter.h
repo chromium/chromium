@@ -195,10 +195,6 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
       const PhysicalOffset& paint_offset,
       const DisplayItemClient* background_client,
       const std::optional<ScopedBoxContentsPaintState>& contents_paint_state);
-  void PaintGaps(GridTrackSizingDirection track_direction,
-                 const PaintInfo& paint_info,
-                 const PhysicalRect& paint_rect,
-                 const GapGeometry& gap_geometry);
 
   InlinePaintContext& EnsureInlineContext();
 

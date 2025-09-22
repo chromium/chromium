@@ -2450,8 +2450,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   LayoutResult::EStatus status = LayoutResult::kSuccess;
 
   std::optional<GapAccumulator> gap_accumulator = std::nullopt;
-  if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
-       RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule()) {
     gap_accumulator = GapAccumulator(gap_between_items_, gap_between_lines_,
                                      flex_lines->size(), flex_items_.size(),

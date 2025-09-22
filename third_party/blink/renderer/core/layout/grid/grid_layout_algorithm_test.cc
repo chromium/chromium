@@ -443,7 +443,6 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometryMC) {
   )HTML");
 
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
   BlockNode node(GetLayoutBoxByElementId("grid1"));
 
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
@@ -528,7 +527,6 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItemsMC) {
   )HTML");
 
   ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
-  ScopedCSSGapDecorationOptimizedForTest scoped_gap_decoration_optimized(true);
   BlockNode node(GetLayoutBoxByElementId("grid1"));
 
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(

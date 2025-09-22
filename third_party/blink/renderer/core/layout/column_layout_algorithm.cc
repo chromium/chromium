@@ -400,8 +400,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   container_builder_.HandleOofsAndSpecialDescendants();
 
-  if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
-       RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule()) {
     // After we are done, we can modify the last column intersections to move
     // them to be at the edge of the container.
@@ -428,7 +427,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
         gap_geometry->SetBlockGapSize(row_gap_size_);
       }
 
-      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
         // TODO(crbug.com/436140061): The following are for the optimized
         // version of GapDecorations. Once the optimized version is implemented,
         // we can remove all the parts of this function used for the old
@@ -1406,7 +1405,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       // The number of column gaps is one less than the number of columns.
       column_gaps_.resize(new_columns.size() - 1);
 
-      if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+      if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
         // TODO(crbug.com/436140061): The following are for the optimized
         // version
         // of GapDecorations. Once the optimized version is implemented, we can
@@ -1447,8 +1446,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       container_builder_.AddSnapAreaForColumn(column_pseudo);
     }
 
-    if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() ||
-         RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) &&
+    if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
         Style().HasGapRule()) {
       // If we have a row gap, it means that the block offset of the last
       // intersections added to each column gap is wrong, since it should be in
@@ -1521,7 +1519,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     column_index_in_row++;
   }
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()) {
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
     // We purposely commit the range of cross gaps before current main gap after
     // processing the row to capture all cross gaps that began prior to the main
     // gap boundary. Only do this if a `MainGap` was created.
@@ -1618,7 +1616,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
 
-  if (RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled() &&
+  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule() && !cross_gaps_.empty()) {
     // If the spanner comes before the start of any cross gaps, we skip it since
     // it won't affect the cross gaps.

@@ -1094,14 +1094,9 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
         LayoutUnit(MaxGapDecorationsWidth(style.ColumnRuleWidth()));
     LayoutUnit block_thickness =
         LayoutUnit(MaxGapDecorationsWidth(style.RowRuleWidth()));
-    PhysicalRect rect =
-        RuntimeEnabledFeatures::CSSGapDecorationOptimizedEnabled()
-            ? gap_geometry->ComputeInkOverflowForGapsOptimized(
-                  Style().GetWritingDirection(), Size(), inline_thickness,
-                  block_thickness)
-            : gap_geometry->ComputeInkOverflowForGaps(
-                  Style().GetWritingDirection(), Size(), inline_thickness,
-                  block_thickness);
+    PhysicalRect rect = gap_geometry->ComputeInkOverflowForGapsOptimized(
+        Style().GetWritingDirection(), Size(), inline_thickness,
+        block_thickness);
     ink_overflow.Unite(rect);
   }
 
