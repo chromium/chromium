@@ -1737,9 +1737,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_BROWSER_PROFILE_MANAGED" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users where the profile is managed by a different entity from the browser.">
         Your browser and profile are managed
       </message>
-      <message name="IDS_CHROME_TIPS" desc="The text label of the Help menu item which takes the user to the Chrome Tips page.">
-        Tips for Chrome
-      </message>
       <message name="IDS_CHROME_WHATS_NEW" desc="The text label of the Help menu item which takes the user to the Chrome What's New page.">
         What's New
       </message>
