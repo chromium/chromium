@@ -111,6 +111,7 @@ void IceTransportChannel::Connect(const std::string& name,
              const webrtc::Candidate& candidate) {
         OnCandidateGathered(transport, candidate);
       });
+  // TODO: bugs.webrtc.org/4222260 - Change to SignalNetworkRouteChanged.
   channel_->SignalRouteChange.connect(this,
                                       &IceTransportChannel::OnRouteChange);
   channel_->SignalWritableState.connect(this,
