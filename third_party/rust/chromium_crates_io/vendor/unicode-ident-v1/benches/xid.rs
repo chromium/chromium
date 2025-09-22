@@ -22,10 +22,11 @@ mod roaring;
 #[path = "../tests/trie/mod.rs"]
 mod trie;
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 use rand::distr::{Bernoulli, Distribution, Uniform};
 use rand::rngs::SmallRng;
 use rand::SeedableRng;
+use std::hint::black_box;
 use std::time::Duration;
 
 fn gen_string(p_nonascii: u32) -> String {

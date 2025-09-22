@@ -43,9 +43,9 @@
 //!
 //! | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 //! |---|---|---|---|---|---|
-//! | **`unicode-ident`** | 10.4 K | 1.03 ns | 1.02 ns | 1.11 ns | 1.66 ns |
-//! | **`unicode-xid`** | 11.8 K | 2.57 ns | 2.74 ns | 3.20 ns | 9.35 ns |
-//! | **`ucd-trie`** | 10.3 K | 1.27 ns | 1.27 ns | 1.41 ns | 2.53 ns |
+//! | **`unicode-ident`** | 10.5 K | 1.03 ns | 1.02 ns | 1.11 ns | 1.66 ns |
+//! | **`unicode-xid`** | 12.0 K | 2.57 ns | 2.74 ns | 3.20 ns | 9.35 ns |
+//! | **`ucd-trie`** | 10.4 K | 1.27 ns | 1.27 ns | 1.41 ns | 2.53 ns |
 //! | **`fst`** | 144 K | 49.3 ns | 49.1 ns | 47.1 ns | 27.9 ns |
 //! | **`roaring`** | 66.1 K | 4.10 ns | 4.05 ns | 4.02 ns | 5.12 ns |
 //!
@@ -242,7 +242,7 @@
 //! this data structure is straight-line code with no need for branching.
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.18")]
+#![doc(html_root_url = "https://docs.rs/unicode-ident/1.0.19")]
 #![allow(clippy::doc_markdown, clippy::must_use_candidate)]
 
 #[rustfmt::skip]

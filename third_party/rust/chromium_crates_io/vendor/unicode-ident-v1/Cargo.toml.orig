@@ -1,6 +1,6 @@
 [package]
 name = "unicode-ident"
-version = "1.0.18"
+version = "1.0.19"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::procedural-macro-helpers", "no-std", "no-std::no-alloc"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
@@ -12,10 +12,10 @@ repository = "https://github.com/dtolnay/unicode-ident"
 rust-version = "1.31"
 
 [dev-dependencies]
-criterion = { version = "0.5", default-features = false }
+criterion = { version = "0.7", default-features = false }
 fst = "0.4"
 rand = "0.9"
-roaring = "0.10"
+roaring = "0.11"
 ucd-trie = { version = "0.1", default-features = false }
 unicode-xid = "0.2.6"
 
@@ -34,3 +34,6 @@ rustdoc-args = [
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
 ]
+
+[patch.crates-io]
+unicode-xid = { git = "https://github.com/dtolnay-contrib/unicode-xid", branch = "unicode17.0.0" }
