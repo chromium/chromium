@@ -302,6 +302,7 @@ crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebC
 crbug.com/416294710 [ angle-opengl graphite-disabled intel-0x3e9b sequoia ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_sw_decoder [ Failure ]
 
 # Mac Intel SharedImage Synchronization Flakes
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_arraybuffer_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
@@ -311,6 +312,7 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_Manua
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
+crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 
 #Mac Intel WebCodecs Flakes
 crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
