@@ -9100,8 +9100,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   EXPECT_TRUE(AreAnyRoundedCornersShowing());
 }
 
+// TODO(crbug.com/446694608): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SidePanelRoundedCornerSplitTab \
+  DISABLED_SidePanelRoundedCornerSplitTab
+#else
+#define MAYBE_SidePanelRoundedCornerSplitTab SidePanelRoundedCornerSplitTab
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
-                       SidePanelRoundedCornerSplitTab) {
+                       MAYBE_SidePanelRoundedCornerSplitTab) {
   // Create a new split, after which the second tab should be activated.
   chrome::NewSplitTab(browser(),
                       split_tabs::SplitTabCreatedSource::kToolbarButton);
