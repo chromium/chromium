@@ -209,6 +209,22 @@ TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
   EXPECT_EQ(future.Get(), nullptr);
 }
 
+// Verify that model download is triggered for a feature that has recently
+// been used.
+TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
+  InstallTestFeatureConfig();
+  model_execution::prefs::RecordFeatureUsage(&local_state_.local_state(),
+                                             ModelBasedCapabilityKey::kTest);
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod() -
+      base::Days(1));
+
+  ModelBrokerClient client(BindAndPassRemote(),
+                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+  auto session = DownloadModelAndCreateSession(client);
+  ASSERT_TRUE(session);
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

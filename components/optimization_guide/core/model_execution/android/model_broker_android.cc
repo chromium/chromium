@@ -124,6 +124,9 @@ class ModelBrokerAndroid::SolutionFactory final
   void OnDeviceEligibleFeatureFirstUsed(
       ModelBasedCapabilityKey feature) override;
 
+  // Asks AICore to download the base model.
+  void StartDownload(ModelBasedCapabilityKey feature);
+
   // Called when an AICore model was found (or not supported).
   void OnAICoreModelUpdated(
       ModelBasedCapabilityKey feature,
@@ -162,14 +165,24 @@ ModelBrokerAndroid::SolutionFactory::SolutionFactory(ModelBrokerAndroid& parent)
           base::BindRepeating(&SolutionFactory::MaybeUpdateModelAdaptation,
                               base::Unretained(this))) {
   parent_->usage_tracker_.AddObserver(this);
-  // TODO: crbug.com/441578339 - Do AI core init, start model downloads for
-  // already used features
+  // Start model downloads for recently used features
+  for (auto feature : kAllModelBasedCapabilityKeys) {
+    if (parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(
+            feature)) {
+      StartDownload(feature);
+    }
+  }
 }
 ModelBrokerAndroid::SolutionFactory::~SolutionFactory() {
   parent_->usage_tracker_.RemoveObserver(this);
 }
 
 void ModelBrokerAndroid::SolutionFactory::OnDeviceEligibleFeatureFirstUsed(
+    ModelBasedCapabilityKey feature) {
+  StartDownload(feature);
+}
+
+void ModelBrokerAndroid::SolutionFactory::StartDownload(
     ModelBasedCapabilityKey feature) {
   // If there is an ongoing download, do nothing.
   if (model_downloaders_.contains(feature)) {
