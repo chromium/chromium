@@ -246,6 +246,9 @@ size_t CPUMeasurementMonitor::GetDeadContextCountForTesting() const {
 QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
     std::optional<internal::QueryId> query_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "PerformanceManager.ResourceQueryTime.CPUMeasurementMonitor",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   UpdateAllCPUMeasurements();
 
   QueryResultMap results;

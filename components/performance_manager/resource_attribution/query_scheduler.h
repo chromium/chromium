@@ -24,6 +24,10 @@
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+namespace base {
+class ScopedUmaHistogramTimer;
+}
+
 namespace performance_manager {
 class Graph;
 }
@@ -105,12 +109,16 @@ class QueryScheduler
   // Decreases the memory query count.
   void RemoveMemoryQuery();
 
-  // Invoked from RequestResults when all results are received. `all_results`
-  // will contain a separate result map for each ResourceType that was
-  // requested.
+  // Invoked from RequestResults when all results for `query_id` are received.
+  // `all_results` will contain a separate result map for each ResourceType that
+  // was requested. Combines them int a single result map associating all
+  // results for each context in `contexts`, and passes it to `callback`.
+  // `request_timer` logs the time from the beginning of RequestResults to the
+  // end of this function.
   void OnResultsReceived(
       const std::optional<QueryId>& query_id,
       const ContextCollection& contexts,
+      std::unique_ptr<base::ScopedUmaHistogramTimer> request_timer,
       base::OnceCallback<void(const QueryResultMap&)> callback,
       std::vector<QueryResultMap> all_results);
 

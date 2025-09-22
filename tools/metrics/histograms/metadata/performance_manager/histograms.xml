@@ -322,6 +322,26 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.ResourceQueryTime.{Function}"
+    units="microseconds" expires_after="M145">
+  <owner>joenotcharles@google.com</owner>
+  <owner>olivierli@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The time it takes for a single Resource Attribution query to return results.
+    This slice of the metric covers the {Function} function.
+  </summary>
+  <token key="Function">
+    <variant name="CPUMeasurementMonitor"
+        summary="CPUMeasurementMonitor::UpdateAndGetCPUMeasurements"/>
+    <variant name="MemoryMeasurementProvider"
+        summary="MemoryMeasurementProvider::OnMemorySummary"/>
+    <variant name="OnResultsReceived"
+        summary="QueryScheduler::OnResultsReceived"/>
+    <variant name="RequestResults" summary="QueryScheduler::RequestResults"/>
+  </token>
+</histogram>
+
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
     units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>

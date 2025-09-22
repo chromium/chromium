@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/features.h"
@@ -99,6 +100,10 @@ void MemoryMeasurementProvider::OnMemorySummary(
       MemoryMeasurementDelegate::MemorySummaryMeasurement;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "PerformanceManager.ResourceQueryTime.MemoryMeasurementProvider",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
   QueryResultMap results;
 
   // Adds the memory from `summary` to a MemorySummaryResult for `context`.
