@@ -366,13 +366,6 @@ id<GREYMatcher> BottomToolbar() {
 // Checks that the Autofill credit cards list view is in edit mode and the
 // Autofill credit cards / mandatory reauth switches are disabled.
 - (void)testListViewEditMode {
-  // TODO(crbug.com/446642688): Test is flaky on iPad simulator, re-enable when
-  // fixed.
-#if TARGET_OS_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
-  }
-#endif
   [AutofillAppInterface saveLocalCreditCard];
   for (ReauthenticationResult result :
        {ReauthenticationResult::kFailure, ReauthenticationResult::kSuccess,
@@ -394,9 +387,10 @@ id<GREYMatcher> BottomToolbar() {
     // Check the Autofill credit card switch is enabled if the reauthentication
     // result is a failure.
     bool enabled = (result == ReauthenticationResult::kFailure);
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                            kAutofillCreditCardSwitchViewId,
-                                            YES, enabled)]
+    id<GREYMatcher> autofillCardSwitch = chrome_test_util::TableViewSwitchCell(
+        kAutofillCreditCardSwitchViewId, YES, enabled);
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:autofillCardSwitch];
+    [[EarlGrey selectElementWithMatcher:autofillCardSwitch]
         assertWithMatcher:grey_notNil()];
 
     // Check the Autofill mandatory reauth switch is enabled if the
