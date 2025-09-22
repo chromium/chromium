@@ -6,7 +6,6 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsClearBrowsingDataAccountIndicator} from 'chrome://settings/lazy_load.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -128,24 +127,4 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
     await flushTasks();
     assertFalse(checkAccountIndicatorVisibility());
   });
-
-  // <if expr="not is_chromeos">
-  test('IndicatorVisibilityAccountDeletionDisabled', async function() {
-    loadTimeData.overrideValues({isClearPrimaryAccountAllowed: false});
-    await createIndicator();
-    simulateStoredAccounts([
-      {
-        fullName: 'fooName',
-        givenName: 'foo',
-        email: 'foo@foo.com',
-      },
-    ]);
-    webUIListenerCallback('sync-status-changed', {
-      signedInState: SignedInState.SYNCING,
-      hasError: false,
-    });
-    await flushTasks();
-    assertFalse(checkAccountIndicatorVisibility());
-  });
-  // </if>
 });

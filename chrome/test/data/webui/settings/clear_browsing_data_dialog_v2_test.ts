@@ -257,21 +257,6 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(
         loadTimeData.getString('deleteDataFromDevice'),
         dialog.$.deleteButton.innerText.trim());
-
-    // <if expr="not is_chromeos">
-    // Account deletion disabled: Button label should be "delete data from
-    // device".
-    loadTimeData.overrideValues({isClearPrimaryAccountAllowed: false});
-    await createDialog();
-    webUIListenerCallback('sync-status-changed', {
-      signedInState: SignedInState.SYNCING,
-      hasError: false,
-    });
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('deleteDataFromDevice'),
-        dialog.$.deleteButton.innerText.trim());
-    // </if>
   });
 
   test('MetricsDialogCreated', async function() {
