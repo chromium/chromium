@@ -5016,9 +5016,6 @@ crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001
 crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
 crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Skip Timeout ]
 
-crbug.com/446634532 external/wpt/partitioned-popins/partitioned-popins.cookies-allowed.tentative.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/partitioned-popins/partitioned-popins.cookies-blocked.tentative.sub.https.window.html [ Failure ]
-
 crbug.com/446634532 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure ]
 crbug.com/446634532 external/wpt/storage-access-api/hasStorageAccess-ABA.sub.https.window.html [ Failure ]
 crbug.com/446634532 external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Failure ]
