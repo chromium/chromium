@@ -460,14 +460,7 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-// TODO(crbug.com/40212918): Understand why we can't read from Read-Execute
-// pages on iOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
-#else
-#define MAYBE_ReadExecutePages ReadExecutePages
-#endif  // PA_BUILDFLAG(IS_IOS)
-TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
+TEST(PartitionAllocPageAllocatorTest, ReadExecutePages) {
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
                  PageAccessibilityConfiguration(

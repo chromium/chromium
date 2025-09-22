@@ -718,13 +718,6 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 
 #endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
-// TODO(crbug.com/40816487): Flaky on IOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_PurgeAll DISABLED_PurgeAll
-#else
-#define MAYBE_PurgeAll PurgeAll
-#endif
-
 namespace {
 
 class ThreadDelegateForPurgeAll
@@ -776,7 +769,7 @@ class ThreadDelegateForPurgeAll
 
 }  // namespace
 
-TEST_P(PartitionAllocThreadCacheTest, MAYBE_PurgeAll)
+TEST_P(PartitionAllocThreadCacheTest, PurgeAll)
 PA_NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> purge_called{false};
@@ -969,13 +962,7 @@ TEST_P(PartitionAllocThreadCacheTest,
   internal::base::PlatformThreadForTesting::Join(thread_handle_2);
 }
 
-// TODO(crbug.com/40816487): Flaky on IOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_DynamicCountPerBucket DISABLED_DynamicCountPerBucket
-#else
-#define MAYBE_DynamicCountPerBucket DynamicCountPerBucket
-#endif
-TEST_P(PartitionAllocThreadCacheTest, MAYBE_DynamicCountPerBucket) {
+TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
   auto* tcache = root()->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
@@ -1042,15 +1029,6 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   }
 }
 
-// TODO(crbug.com/40816487): Flaky on IOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_DynamicCountPerBucketMultipleThreads \
-  DISABLED_DynamicCountPerBucketMultipleThreads
-#else
-#define MAYBE_DynamicCountPerBucketMultipleThreads \
-  DynamicCountPerBucketMultipleThreads
-#endif
-
 namespace {
 
 class ThreadDelegateForDynamicCountPerBucketMultipleThreads
@@ -1099,8 +1077,7 @@ class ThreadDelegateForDynamicCountPerBucketMultipleThreads
 
 }  // namespace
 
-TEST_P(PartitionAllocThreadCacheTest,
-       MAYBE_DynamicCountPerBucketMultipleThreads) {
+TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> threshold_changed{false};
 
@@ -1227,13 +1204,7 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
                          tcache->bucket_for_testing(index).freelist_head));
 }
 
-// TODO(crbug.com/40816487): Flaky on IOS.
-#if PA_BUILDFLAG(IS_IOS)
-#define MAYBE_Bookkeeping DISABLED_Bookkeeping
-#else
-#define MAYBE_Bookkeeping Bookkeeping
-#endif
-TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
+TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
   void* arr[kFillCountForMediumBucket] = {};
   auto* tcache = root()->thread_cache_for_testing();
 
