@@ -155,15 +155,14 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
     const base::TimeDelta timeout) {
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
-      /*url=*/url,
-      /*content_type=*/kHttpContentType,
-      /*timeout=*/timeout,
-      /*post_data=*/post_data,
-      /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(),
-      // ChromeOS always uses the stable channel API key
-      version_info::Channel::STABLE,
+      /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(kHttpMethod, annotation_tag)
+          .SetAuthType(endpoint_fetcher::CHROME_API_KEY)
+          .SetUrl(url)
+          .SetContentType(kHttpContentType)
+          .SetTimeout(timeout)
+          .SetPostData(post_data)
+          .SetChannel(version_info::Channel::STABLE)
           .Build());
 }
 
