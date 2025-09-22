@@ -51,6 +51,7 @@ android_library("data_importer_service_impl_java") {
     "//base:callback_java",
     "//base:log_java",
     "//base:metrics_java",
+    "//base:resetters_java",
     "//base:tasks_java",
     "//base/version_info/android:version_constants_java",
     "//chrome/android:base_module_java",
@@ -72,6 +73,7 @@ android_library("data_importer_service_impl_java_test") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
+    "javatests/src/org/chromium/chrome/browser/data_import/DataImporterServiceImplTest.java",
     "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceGrpcTest.java",
     "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceTest.java",
   ]
@@ -81,6 +83,7 @@ android_library("data_importer_service_impl_java_test") {
     ":os_migration_target_service_proto_java",
     "//base:base_java_test_support",
     "//base:callback_java",
+    "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/bookmarks/android:java",
     "//chrome/browser/flags:java",
@@ -98,6 +101,7 @@ android_library("data_importer_service_impl_java_test") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

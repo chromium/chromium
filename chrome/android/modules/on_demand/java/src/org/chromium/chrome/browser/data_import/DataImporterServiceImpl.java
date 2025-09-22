@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
 import io.grpc.Context;
 import io.grpc.Contexts;
 import io.grpc.Metadata;
@@ -27,6 +29,7 @@ import io.grpc.binder.ServerSecurityPolicy;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,6 +44,15 @@ import java.io.IOException;
 public class DataImporterServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DataImporterService";
 
+    private static boolean sSkipSecurityPolicyForTesting;
+
+    /** If true, the gRPC server will not enforce a security policy. Only for use in tests. */
+    @VisibleForTesting
+    public static void setSkipSecurityPolicyForTesting(boolean skip) {
+        ResettersForTesting.register(() -> sSkipSecurityPolicyForTesting = false);
+        sSkipSecurityPolicyForTesting = skip;
+    }
+
     private @Nullable IBinderReceiver mBinderReceiver;
     private @Nullable Server mServer;
     private boolean mStarted;
@@ -52,15 +64,17 @@ public class DataImporterServiceImpl extends SplitCompatService.Impl {
             return;
         }
         mBinderReceiver = new IBinderReceiver();
-        mServer =
+        BinderServerBuilder builder =
                 BinderServerBuilder.forAddress(
                                 AndroidComponentAddress.forContext(getService()), mBinderReceiver)
                         .addService(
                                 ServerInterceptors.intercept(
                                         new TargetService(), new ParcelableMetadataInterceptor()))
-                        .securityPolicy(getServerSecurityPolicy())
-                        .inboundParcelablePolicy(getInboundParcelablePolicy())
-                        .build();
+                        .inboundParcelablePolicy(getInboundParcelablePolicy());
+        if (!sSkipSecurityPolicyForTesting) {
+            builder.securityPolicy(getServerSecurityPolicy());
+        }
+        mServer = builder.build();
     }
 
     @Override
