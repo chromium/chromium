@@ -672,7 +672,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   std::optional<float> aspect_ratio_;
 
   // Size to exclude from aspect ratio calculation.
-  gfx::Size excluded_margin_;
+  gfx::Size excluded_margin_dip_;
 
   // The current DPI.
   int dpi_;
