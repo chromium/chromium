@@ -67,6 +67,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -1319,3 +1320,44 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest,
                          testing::Values(CookieControlsState::kActiveTp,
                                          CookieControlsState::kPausedTp));
+
+class PageInfoBubbleViewAutoPipTest : public PageInfoBubbleViewTest {
+ public:
+  PageInfoBubbleViewAutoPipTest() {
+    feature_list_.InitAndEnableFeature(
+        media::kAutoPictureInPicturePageInfoDetails);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PageInfoBubbleViewAutoPipTest, CheckSubpageForAutoPictureInPicture) {
+  // Set auto-pip permission to be allowed, so it shows up.
+  HostContentSettingsMapFactory::GetForProfile(web_contents_helper_->profile())
+      ->SetContentSettingDefaultScope(
+          GURL(kUrl), GURL(kUrl), ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+          CONTENT_SETTING_ALLOW);
+
+  // Recreate the view to display the permission.
+  api_->CreateView();
+
+  // Verify label matches the auto auto-pip setting.
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE),
+      api_->GetPermissionLabelTextAt(0));
+
+  // Verify the permission toggle row for auto-pip exists.
+  PermissionToggleRowView* pip_toggle_row = api_->GetPermissionToggleRowAt(0);
+  ASSERT_TRUE(pip_toggle_row);
+
+  // Open the subpage for the auto-pip permission.
+  api_->navigation_handler()->OpenPermissionPage(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  ASSERT_GE(api_->current_view()->children().size(), 2u);
+  auto* page_view = static_cast<PageInfoPermissionContentView*>(
+      api_->current_view()->children()[1]);
+  ASSERT_TRUE(page_view);
+
+  EXPECT_NE(page_view->GetToggleButtonForTesting(), nullptr);
+}

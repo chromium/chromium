@@ -557,6 +557,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessLiveCaption);
 // Enable site-specific media link helpers.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLinkHelpers);
 
+// Enables showing auto picture-in-picture permission details in page info.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPicturePageInfoDetails);
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

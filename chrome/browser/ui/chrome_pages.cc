@@ -234,6 +234,8 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
           {ContentSettingsType::USB_CHOOSER_DATA, "usbDevices"},
           {ContentSettingsType::WEB_PRINTING, "webPrinting"},
+          {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+           "autoPictureInPicture"},
       });
 
   const std::string_view* override =

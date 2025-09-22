@@ -89,6 +89,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -1897,3 +1898,44 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
                          testing::Bool());
+
+class PageInfoBubbleViewBrowserTestAutoPip
+    : public PageInfoBubbleViewBrowserTest {
+ public:
+  PageInfoBubbleViewBrowserTestAutoPip() {
+    feature_list_.InitAndEnableFeature(
+        media::kAutoPictureInPicturePageInfoDetails);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestAutoPip,
+                       InteractedWithAutoPipSubpage) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Set auto-pip permission to be allowed, so it shows up.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetContentSettingDefaultScope(
+          url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+          CONTENT_SETTING_ALLOW);
+
+  // Open the Page Info bubble.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  // Open the auto-pip subpage view.
+  auto* page_info_bubble = static_cast<PageInfoBubbleView*>(
+      PageInfoBubbleView::GetPageInfoBubbleForTesting());
+  page_info_bubble->OpenPermissionPage(
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+
+  // Simulate clicking the subpage manage button for auto-pip and verify the
+  // correct settings page is opened.
+  content::WebContentsAddedObserver new_tab_observer;
+  PerformMouseClickOnView(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON));
+  EXPECT_EQ(chrome::GetSettingsUrl(chrome::kAutoPictureInPictureSubPage),
+            new_tab_observer.GetWebContents()->GetVisibleURL());
+}

@@ -947,6 +947,10 @@ BASE_FEATURE(kResolutionBasedDecoderPriority, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutoPictureInPictureForVideoPlayback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing auto picture-in-picture permission details in page info.
+BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether we should show a setting to disable autoplay policy.
 BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
