@@ -15,7 +15,10 @@
 #include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
 class GURL;

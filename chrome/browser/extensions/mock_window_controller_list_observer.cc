@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/mock_window_controller_list_observer.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 MockWindowControllerListObserver::MockWindowControllerListObserver() = default;
 MockWindowControllerListObserver::~MockWindowControllerListObserver() = default;
