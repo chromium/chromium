@@ -90,6 +90,9 @@ BASE_FEATURE(kLensOverlayStraightToSrp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchAimM3, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchReinvocationAffordance,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayEntrypointLabelAlt, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint,
@@ -1034,6 +1037,10 @@ bool GetEnableFloatingGForHeader() {
 bool GetEnableClientSideHeader() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kEnableClientSideHeader.Get();
+}
+
+bool GetEnableLensButtonInSearchbox() {
+  return base::FeatureList::IsEnabled(kLensSearchReinvocationAffordance);
 }
 
 bool ShouldUseAltLoadingHintWeb() {

@@ -553,6 +553,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected onLensClick_() {
+    // TODO(crbug.com/445698141): Open the Lens overlay selection state.
+  }
+
   // Sets the input property to compute the cancel button title without using
   // "$." syntax  as this is not allowed in WillUpdate().
   protected handleInput_(e: Event) {

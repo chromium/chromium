@@ -168,6 +168,49 @@ suite('Composebox', () => {
     assertFalse(isVisible(fileUploadButton));
   });
 
+  test('ShowsLensButtonWhenEnabled', async () => {
+    loadTimeData.overrideValues(
+        {enableAimSearchbox: true, showLensButton: true});
+    const composebox = await setupTest();
+
+    const lensButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+    assertTrue(!!lensButton);
+
+    // The button should not be visible initially while the composebox is
+    // collapsed.
+    assertFalse(isTrulyVisible(lensButton));
+
+    // Grab the input to focus it.
+    const input = composebox.shadowRoot!.querySelector<HTMLTextAreaElement>(
+        'textarea#input');
+    assertTrue(!!input);
+
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+
+    // Focusing the input should expand the composebox.
+    const expandPromise =
+        getTransitionEndPromise(animatedElement, 'max-height');
+    input.focus();
+    await expandPromise;
+
+    // The button should be visible now that the composebox is expanded.
+    assertTrue(isTrulyVisible(lensButton));
+  });
+
+  test('HidesLensButtonWhenDisabled', async () => {
+    loadTimeData.overrideValues(
+        {enableAimSearchbox: true, showLensButton: false});
+    const composebox = await setupTest();
+
+    const lensButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+    assertTrue(!!lensButton);
+    assertFalse(isVisible(lensButton));
+  });
+
   test('IsCollapsible', async () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();

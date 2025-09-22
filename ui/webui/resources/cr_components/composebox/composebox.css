@@ -396,6 +396,27 @@
   pointer-events: none;
 }
 
+#lensIcon {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  bottom: var(--input-bottom-spacing);
+  display: none;
+  pointer-events: auto;
+  position: absolute;
+  right: 68px;
+}
+
+#lensIcon:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
+  outline-offset: 2px;
+}
+
+:host-context([dir='rtl']) #lensIcon {
+  left: 68px;
+  right: unset;
+}
+
 #submitContainer {
   display: none;
 }

@@ -132,6 +132,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableAimSearchbox",
       aim_enabled && lens::features::GetAimSearchboxEnabled());
+  html_source->AddBoolean("showLensButton",
+                          lens::features::GetEnableLensButtonInSearchbox());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

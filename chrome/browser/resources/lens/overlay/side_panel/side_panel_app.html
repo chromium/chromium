@@ -326,6 +326,13 @@
       var(--color-new-tab-page-composebox-cancel-button);
   }
 
+  :host([show-lens-button]) #composebox::part(lens-icon) {
+    --cr-icon-button-icon-size: 24px;
+    --cr-icon-button-fill-color:
+      var(--color-new-tab-page-composebox-lens-button);
+    display: block;
+  }
+
   #composebox::part(submit) {
     display: block;
   }

@@ -66,6 +66,9 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       dark_mode ? SkColorSetRGB(0x25, 0x26, 0x2E)
                 : SkColorSetRGB(0xE9, 0xEB, 0xF0)};
   mixer[kColorNewTabPageComposeboxInputIcon] = {ui::kColorRefNeutral30};
+  mixer[kColorNewTabPageComposeboxLensButton] = {
+      dark_mode ? SkColorSetRGB(0xAD, 0xAF, 0xB8)
+                : SkColorSetRGB(0x0A, 0x0A, 0x0A)};
   mixer[kColorNewTabPageComposeboxOutlineHcm] = {
       dark_mode ? SkColorSetRGB(0xFF, 0xFF, 0xFF)
                 : SkColorSetRGB(0x00, 0x00, 0x00)};

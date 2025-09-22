@@ -173,6 +173,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
         value: false,
         notify: true,
       },
+      showLensButton: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showLensButton'),
+        reflectToAttribute: true,
+      },
       pageContentType: {
         type: Number,
         value: PageContentType.kUnknown,
@@ -226,6 +231,8 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   declare placeholderText: string;
   // Whether the ghost loader should show its error state.
   declare showErrorState: boolean;
+  // Whether the lens button should be shown in the searchbox.
+  declare private showLensButton: boolean;
   declare private showUploadProgress: boolean;
   // The current progress of the page content upload.
   declare uploadProgressPercentage: number;

@@ -116,6 +116,13 @@ export function getHtml(this: ComposeboxElement) {
           ?disabled="${this.isCollapsible && !this.submitEnabled_}">
       </cr-icon-button>
     </div>
+    <cr-icon-button
+        class="action-icon icon-fade"
+        id="lensIcon"
+        part="action-icon lens-icon"
+        title="${this.i18n('lensSearchButtonLabel')}"
+        @click="${this.onLensClick_}">
+    </cr-icon-button>
     <!-- A seperate container is needed for the submit button so the
        expand/collapse animation can be applied without affecting the submit
        button enabled/disabled state. -->
