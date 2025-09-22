@@ -82,7 +82,10 @@ source_set("impl") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "cookie_controls_content_view_browsertest.cc" ]
+  sources = [
+    "cookie_controls_bubble_browsertest.cc",
+    "cookie_controls_content_view_browsertest.cc",
+  ]
 
   deps = [
     ":cookie_controls",
@@ -139,7 +142,6 @@ source_set("unit_tests") {
 
   if (toolkit_views) {
     sources += [
-      "cookie_controls_bubble_unittest.cc",
       "cookie_controls_icon_view_unittest.cc",
       "cookie_controls_page_action_controller_unittest.cc",
     ]
