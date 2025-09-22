@@ -40,6 +40,10 @@ export class FakeReadingMode {
   darkTheme: number = 8;
   yellowTheme: number = 9;
   blueTheme: number = 10;
+  highContrastTheme: number = 11;
+  lowContrastTheme: number = 12;
+  sepiaLightTheme: number = 13;
+  sepiaDarkTheme: number = 14;
 
   // Enum values for highlight granularity.
   autoHighlighting: number = 0;

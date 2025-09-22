@@ -9487,6 +9487,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_YELLOW_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
         Yellow
       </message>
+      <message name="IDS_READING_MODE_HIGH_CONTRAST_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
+        High contrast
+      </message>
+      <message name="IDS_READING_MODE_LOW_CONTRAST_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
+        Low contrast
+      </message>
+      <message name="IDS_READING_MODE_SEPIA_LIGHT_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
+        Sepia light
+      </message>
+      <message name="IDS_READING_MODE_SEPIA_DARK_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
+        Sepia dark
+      </message>
       <message name="IDS_READING_MODE_BLUE_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
         Blue
       </message>

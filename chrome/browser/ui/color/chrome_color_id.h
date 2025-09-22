@@ -511,56 +511,100 @@
   E_CPONLY(kColorReadAnythingBackgroundDark) \
   E_CPONLY(kColorReadAnythingBackgroundLight) \
   E_CPONLY(kColorReadAnythingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingBackgroundHighContrast) \
+  E_CPONLY(kColorReadAnythingBackgroundLowContrast) \
+  E_CPONLY(kColorReadAnythingBackgroundSepiaLight) \
+  E_CPONLY(kColorReadAnythingBackgroundSepiaDark) \
   E_CPONLY(kColorReadAnythingCurrentReadAloudHighlight) \
   E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightBlue) \
   E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightDark) \
   E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightLight) \
   E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightYellow) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightHighContrast) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightLowContrast) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightSepiaLight) \
+  E_CPONLY(kColorReadAnythingCurrentReadAloudHighlightSepiaDark) \
   E_CPONLY(kColorReadAnythingFocusRingBackground) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundBlue) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundDark) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundLight) \
   E_CPONLY(kColorReadAnythingFocusRingBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundHighContrast) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundLowContrast) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundSepiaLight) \
+  E_CPONLY(kColorReadAnythingFocusRingBackgroundSepiaDark) \
   E_CPONLY(kColorReadAnythingForeground) \
   E_CPONLY(kColorReadAnythingForegroundBlue) \
   E_CPONLY(kColorReadAnythingForegroundDark) \
   E_CPONLY(kColorReadAnythingForegroundLight) \
   E_CPONLY(kColorReadAnythingForegroundYellow) \
+  E_CPONLY(kColorReadAnythingForegroundHighContrast) \
+  E_CPONLY(kColorReadAnythingForegroundLowContrast) \
+  E_CPONLY(kColorReadAnythingForegroundSepiaLight) \
+  E_CPONLY(kColorReadAnythingForegroundSepiaDark) \
   E_CPONLY(kColorReadAnythingSeparator) \
   E_CPONLY(kColorReadAnythingSeparatorBlue) \
   E_CPONLY(kColorReadAnythingSeparatorDark) \
   E_CPONLY(kColorReadAnythingSeparatorLight) \
   E_CPONLY(kColorReadAnythingSeparatorYellow) \
+  E_CPONLY(kColorReadAnythingSeparatorHighContrast) \
+  E_CPONLY(kColorReadAnythingSeparatorLowContrast) \
+  E_CPONLY(kColorReadAnythingSeparatorSepiaLight) \
+  E_CPONLY(kColorReadAnythingSeparatorSepiaDark) \
   E_CPONLY(kColorReadAnythingDropdownBackground) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundBlue) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundDark) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundLight) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundHighContrast) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundLowContrast) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundSepiaLight) \
+  E_CPONLY(kColorReadAnythingDropdownBackgroundSepiaDark) \
   E_CPONLY(kColorReadAnythingDropdownSelected) \
   E_CPONLY(kColorReadAnythingDropdownSelectedBlue) \
   E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
   E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
   E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedHighContrast) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedLowContrast) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedSepiaLight) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedSepiaDark) \
   E_CPONLY(kColorReadAnythingTextSelection) \
   E_CPONLY(kColorReadAnythingTextSelectionBlue) \
   E_CPONLY(kColorReadAnythingTextSelectionDark) \
   E_CPONLY(kColorReadAnythingTextSelectionLight) \
   E_CPONLY(kColorReadAnythingTextSelectionYellow) \
+  E_CPONLY(kColorReadAnythingTextSelectionHighContrast) \
+  E_CPONLY(kColorReadAnythingTextSelectionLowContrast) \
+  E_CPONLY(kColorReadAnythingTextSelectionSepiaLight) \
+  E_CPONLY(kColorReadAnythingTextSelectionSepiaDark) \
   E_CPONLY(kColorReadAnythingLinkDefault) \
   E_CPONLY(kColorReadAnythingLinkDefaultBlue) \
   E_CPONLY(kColorReadAnythingLinkDefaultDark) \
   E_CPONLY(kColorReadAnythingLinkDefaultLight) \
   E_CPONLY(kColorReadAnythingLinkDefaultYellow) \
+  E_CPONLY(kColorReadAnythingLinkDefaultHighContrast) \
+  E_CPONLY(kColorReadAnythingLinkDefaultLowContrast) \
+  E_CPONLY(kColorReadAnythingLinkDefaultSepiaLight) \
+  E_CPONLY(kColorReadAnythingLinkDefaultSepiaDark) \
   E_CPONLY(kColorReadAnythingLinkVisited) \
   E_CPONLY(kColorReadAnythingLinkVisitedBlue) \
   E_CPONLY(kColorReadAnythingLinkVisitedDark) \
   E_CPONLY(kColorReadAnythingLinkVisitedLight) \
   E_CPONLY(kColorReadAnythingLinkVisitedYellow) \
+  E_CPONLY(kColorReadAnythingLinkVisitedHighContrast) \
+  E_CPONLY(kColorReadAnythingLinkVisitedLowContrast) \
+  E_CPONLY(kColorReadAnythingLinkVisitedSepiaLight) \
+  E_CPONLY(kColorReadAnythingLinkVisitedSepiaDark) \
   E_CPONLY(kColorReadAnythingPreviousReadAloudHighlight) \
   E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightBlue) \
   E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightDark) \
   E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightLight) \
   E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightYellow) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightHighContrast) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightLowContrast) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightSepiaLight) \
+  E_CPONLY(kColorReadAnythingPreviousReadAloudHighlightSepiaDark) \
   /* Realbox colors. */ \
   E_CPONLY(kColorSearchboxAnswerIconBackground) \
   E_CPONLY(kColorSearchboxAnswerIconForeground) \

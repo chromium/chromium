@@ -57,7 +57,7 @@ interface UntrustedPageHandlerFactory {
 };
 
 // Used as identifiers for the Read Anything theme options.
-// Next value: 5
+// Next value: 9
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
 // LINT.IfChange(Colors)
 enum Colors {
@@ -66,6 +66,10 @@ enum Colors {
   kDark = 2,
   kYellow = 3,
   [MinVersion=1] kBlue = 4,
+  [MinVersion=2] kHighContrast = 5,
+  [MinVersion=2] kLowContrast = 6,
+  [MinVersion=2] kSepiaLight = 7,
+  [MinVersion=2] kSepiaDark = 8,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
 

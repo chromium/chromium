@@ -43,9 +43,29 @@ suite('ColorMenuElement', () => {
         new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme3}}));
     assertEquals(theme3, chrome.readingMode.colorTheme);
 
+    const theme4 = chrome.readingMode.highContrastTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme4}}));
+    assertEquals(theme4, chrome.readingMode.colorTheme);
+
+    const theme5 = chrome.readingMode.lowContrastTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme5}}));
+    assertEquals(theme5, chrome.readingMode.colorTheme);
+
+    const theme6 = chrome.readingMode.sepiaLightTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme6}}));
+    assertEquals(theme6, chrome.readingMode.colorTheme);
+
+    const theme7 = chrome.readingMode.sepiaDarkTheme;
+    colorMenu.$.menu.dispatchEvent(
+        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme7}}));
+    assertEquals(theme7, chrome.readingMode.colorTheme);
+
     assertEquals(
         ReadAnythingSettingsChange.THEME_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
-    assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+    assertEquals(7, metrics.getCallCount('recordTextSettingsChange'));
   });
 });

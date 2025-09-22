@@ -56,6 +56,10 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
+    let highContrastTheme: number;
+    let lowContrastTheme: number;
+    let sepiaLightTheme: number;
+    let sepiaDarkTheme: number;
     let autoHighlighting: number;
     let wordHighlighting: number;
     let phraseHighlighting: number;

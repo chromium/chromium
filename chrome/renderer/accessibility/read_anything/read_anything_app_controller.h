@@ -208,6 +208,10 @@ class ReadAnythingAppController
   int DarkTheme() const;
   int YellowTheme() const;
   int BlueTheme() const;
+  int HighContrastTheme() const;
+  int LowContrastTheme() const;
+  int SepiaLightTheme() const;
+  int SepiaDarkTheme() const;
   int AutoHighlighting() const;
   int WordHighlighting() const;
   int PhraseHighlighting() const;

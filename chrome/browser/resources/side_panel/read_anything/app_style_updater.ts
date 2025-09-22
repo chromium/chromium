@@ -45,6 +45,10 @@ enum ColorSuffix {
   LIGHT = '-light',
   YELLOW = '-yellow',
   BLUE = '-blue',
+  HIGH_CONTRAST = '-high-contrast',
+  LOW_CONTRAST = '-low-contrast',
+  SEPIA_LIGHT = '-sepia-light',
+  SEPIA_DARK = '-sepia-dark',
 }
 
 // Handles updating the visual styles for the Reading mode content panel.
@@ -153,6 +157,14 @@ export class AppStyleUpdater {
         return ColorSuffix.YELLOW;
       case chrome.readingMode.blueTheme:
         return ColorSuffix.BLUE;
+      case chrome.readingMode.highContrastTheme:
+        return ColorSuffix.HIGH_CONTRAST;
+      case chrome.readingMode.lowContrastTheme:
+        return ColorSuffix.LOW_CONTRAST;
+      case chrome.readingMode.sepiaLightTheme:
+        return ColorSuffix.SEPIA_LIGHT;
+      case chrome.readingMode.sepiaDarkTheme:
+        return ColorSuffix.SEPIA_DARK;
       default:
         return ColorSuffix.DEFAULT;
     }

@@ -1105,6 +1105,13 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("darkTheme", &ReadAnythingAppController::DarkTheme)
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
+      .SetProperty("highContrastTheme",
+                   &ReadAnythingAppController::HighContrastTheme)
+      .SetProperty("lowContrastTheme",
+                   &ReadAnythingAppController::LowContrastTheme)
+      .SetProperty("sepiaLightTheme",
+                   &ReadAnythingAppController::SepiaLightTheme)
+      .SetProperty("sepiaDarkTheme", &ReadAnythingAppController::SepiaDarkTheme)
       .SetProperty("autoHighlighting",
                    &ReadAnythingAppController::AutoHighlighting)
       .SetProperty("wordHighlighting",
@@ -1378,6 +1385,22 @@ int ReadAnythingAppController::YellowTheme() const {
 
 int ReadAnythingAppController::BlueTheme() const {
   return base::to_underlying(read_anything::mojom::Colors::kBlue);
+}
+
+int ReadAnythingAppController::HighContrastTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kHighContrast);
+}
+
+int ReadAnythingAppController::LowContrastTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kLowContrast);
+}
+
+int ReadAnythingAppController::SepiaLightTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaLight);
+}
+
+int ReadAnythingAppController::SepiaDarkTheme() const {
+  return base::to_underlying(read_anything::mojom::Colors::kSepiaDark);
 }
 
 bool ReadAnythingAppController::IsHighlightOn() {

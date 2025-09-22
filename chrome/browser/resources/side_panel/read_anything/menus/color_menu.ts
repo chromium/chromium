@@ -73,6 +73,26 @@ export class ColorMenuElement extends ColorMenuElementBase {
       icon: 'read-anything-20:blue-theme',
       data: chrome.readingMode.blueTheme,
     },
+    {
+      title: loadTimeData.getString('highContrastColorTitle'),
+      icon: 'read-anything-20:high-contrast-theme',
+      data: chrome.readingMode.highContrastTheme,
+    },
+    {
+      title: loadTimeData.getString('lowContrastColorTitle'),
+      icon: 'read-anything-20:low-contrast-theme',
+      data: chrome.readingMode.lowContrastTheme,
+    },
+    {
+      title: loadTimeData.getString('sepiaLightColorTitle'),
+      icon: 'read-anything-20:sepia-light-theme',
+      data: chrome.readingMode.sepiaLightTheme,
+    },
+    {
+      title: loadTimeData.getString('sepiaDarkColorTitle'),
+      icon: 'read-anything-20:sepia-dark-theme',
+      data: chrome.readingMode.sepiaDarkTheme,
+    },
   ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
