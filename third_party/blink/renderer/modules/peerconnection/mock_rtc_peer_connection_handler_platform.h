@@ -15,7 +15,6 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
-#include "third_party/webrtc/api/test/mock_session_description_interface.h"
 
 namespace blink {
 
