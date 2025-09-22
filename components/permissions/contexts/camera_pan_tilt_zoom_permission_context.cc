@@ -6,6 +6,12 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_id.h"
@@ -138,9 +144,26 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     // Automatically update camera permission to camera PTZ permission as any
     // change to camera PTZ should be reflected to camera.
     updating_mediastream_camera_permission_ = true;
+
+    content_settings::ContentSettingConstraints constraints;
+
+    // Enable last-visit tracking for eligible MEDIASTREAM_CAMERA settings.
+    // This allows Safety Hub to auto-revoke the permission if the site is
+    // not visited for a finite amount of time.
+    if (base::FeatureList::IsEnabled(
+            permissions::features::
+                kSafetyHubUnusedPermissionRevocationForAllSurfaces) &&
+        camera_ptz_setting &&
+        content_settings::CanBeAutoRevokedAsUnusedPermission(
+            ContentSettingsType::MEDIASTREAM_CAMERA,
+            content_settings::ContentSettingToValue(camera_ptz_setting))) {
+      constraints.set_track_last_visit_for_autoexpiration(true);
+    }
+
     host_content_settings_map_->SetContentSettingCustomScope(
         primary_pattern, secondary_pattern,
-        ContentSettingsType::MEDIASTREAM_CAMERA, camera_ptz_setting);
+        ContentSettingsType::MEDIASTREAM_CAMERA, camera_ptz_setting,
+        constraints);
     return;
   }
 
