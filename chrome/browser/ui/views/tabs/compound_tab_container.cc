@@ -515,14 +515,14 @@ std::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
 }
 
 void CompoundTabContainer::UpdateHoverCard(
-    Tab* tab,
+    views::View* view,
     TabSlotController::HoverCardUpdateType update_type) {
   // Some operations (including e.g. starting a drag) can cause the tab focus
   // to change at the same time as the tabstrip is starting to animate; the
   // hover card should not be visible at this time.
   // See crbug.com/1220840 for an example case.
   if (controller_->IsAnimatingInTabStrip()) {
-    tab = nullptr;
+    view = nullptr;
     update_type = TabSlotController::HoverCardUpdateType::kAnimating;
   }
 
@@ -530,7 +530,7 @@ void CompoundTabContainer::UpdateHoverCard(
     return;
   }
 
-  hover_card_controller_->UpdateHoverCard(tab, update_type);
+  hover_card_controller_->UpdateHoverCard(view, update_type);
 }
 
 void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {

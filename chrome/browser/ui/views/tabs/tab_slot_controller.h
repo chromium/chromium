@@ -46,9 +46,9 @@ class TabSlotController {
   enum HoverCardUpdateType {
     kHover,
     kFocus,
-    kTabDataChanged,
+    kViewDataChanged,
     kAnimating,
-    kTabRemoved,
+    kViewRemoved,
     kSelectionChanged,
     kEvent
   };
@@ -168,7 +168,8 @@ class TabSlotController {
   // hovered and whether the card should be shown. Providing a nullptr for `tab`
   // will cause the tab hover card to be hidden. `update_type` is used to decide
   // how the show, hide, or update will be processed.
-  virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
+  virtual void UpdateHoverCard(views::View* view,
+                               HoverCardUpdateType update_type) = 0;
 
   // Returns true if the hover card is showing for the given tab.
   virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;

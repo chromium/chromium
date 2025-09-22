@@ -73,7 +73,7 @@ class CompoundTabContainer : public TabContainer,
   int GetTabCount() const override;
   std::optional<int> GetModelIndexOfFirstNonClosingTab(Tab* tab) const override;
   void UpdateHoverCard(
-      Tab* tab,
+      views::View* view,
       TabSlotController::HoverCardUpdateType update_type) override;
   void HandleLongTap(ui::GestureEvent* event) override;
   bool IsRectInContentArea(const gfx::Rect& rect) override;
