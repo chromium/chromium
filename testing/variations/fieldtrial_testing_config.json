@@ -8858,26 +8858,6 @@
             ]
         }
     ],
-    "DidObserveNewFeatureUsageImprovement": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DidObserveNewFeatureUsageImprovement"
-                    ]
-                }
-            ]
-        }
-    ],
     "DipsForWebView": [
         {
             "platforms": [
@@ -15665,6 +15645,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MetricsLogTrimming"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MetricsRenderFrameObserverImprovement": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DidObserveNewFeatureUsageImprovement",
+                        "DidObserveSubresourceLoadImprovement"
                     ]
                 }
             ]
