@@ -995,14 +995,18 @@ Browser* BrowserCreatedObserver::Wait() {
     run_loop_.Run();
   }
   CHECK(browser_);
-  // Extract the Browser raw_ptr to mitigate risks of a dangling ref in the case
-  // clients close `browser_` before destroying this class.
-  return browser_.ExtractAsDangling();
+  return browser_;
 }
 
 void BrowserCreatedObserver::OnBrowserAdded(Browser* browser) {
   browser_ = browser;
   run_loop_.Quit();
+}
+
+void BrowserCreatedObserver::OnBrowserRemoved(Browser* browser) {
+  // Clear `browser_` in the event of a removal to mitigate the risk of dangling
+  // refs.
+  browser_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

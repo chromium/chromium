@@ -629,6 +629,7 @@ class BrowserCreatedObserver : public BrowserListObserver {
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
 
  private:
   raw_ptr<Browser> browser_ = nullptr;
