@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -424,7 +425,7 @@ int PaintLayerScrollableArea::ScrollSize(
 void PaintLayerScrollableArea::UpdateScrollOffset(
     const ScrollOffset& new_offset,
     mojom::blink::ScrollType scroll_type,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   if (HasBeenDisposed() || GetScrollOffset() == new_offset)
     return;
 
@@ -542,8 +543,8 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 void PaintLayerScrollableArea::UpdateLastScrollDirection(
     const ScrollOffset& previous_offset,
     const ScrollOffset& new_offset,
-    ScrollSourceType source_type) {
-  if (source_type != ScrollSourceType::kRelativeScroll) {
+    cc::ScrollSourceType source_type) {
+  if (source_type != cc::ScrollSourceType::kRelativeScroll) {
     return;
   }
   if (previous_offset.x() > new_offset.x()) {
@@ -1018,7 +1019,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type) {
   CancelScrollAnimation();
-  ScrollOffsetChanged(offset, scroll_type, ScrollSourceType::kNone);
+  ScrollOffsetChanged(offset, scroll_type, cc::ScrollSourceType::kNone);
 }
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {

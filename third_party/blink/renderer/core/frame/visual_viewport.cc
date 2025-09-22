@@ -760,7 +760,7 @@ bool VisualViewport::SetScrollOffset(
     mojom::blink::ScrollBehavior scroll_behavior,
     ScrollCallback on_finish,
     bool targeted_scroll,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
   // set to a non-clamped offset by ScrollableArea::setScrollOffset,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down
@@ -779,7 +779,7 @@ bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   return SetScrollOffset(offset, scroll_type, scroll_behavior, ScrollCallback(),
                          false, source_type);
 }
@@ -947,7 +947,7 @@ mojom::blink::ColorScheme VisualViewport::UsedColorSchemeScrollbars() const {
 
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         mojom::blink::ScrollType scroll_type,
-                                        ScrollSourceType source_type) {
+                                        cc::ScrollSourceType source_type) {
   if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
                              gfx::PointAtOffsetFromOrigin(position))) {
     return;

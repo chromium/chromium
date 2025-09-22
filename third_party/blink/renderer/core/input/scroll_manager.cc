@@ -223,8 +223,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     ScrollableArea* scrollable_area = ScrollableArea::GetForScrolling(box);
     DCHECK(scrollable_area);
 
-    ScrollableArea::ScrollSourceType source_type =
-        ScrollableArea::ScrollSourceType::kNone;
+    cc::ScrollSourceType source_type = cc::ScrollSourceType::kNone;
     // Pressing the arrow key is considered as a scroll with intended direction
     // only. Pressing the PgUp/PgDn key is considered as a scroll with intended
     // direction and end position. Pressing the Home/End key is considered as a
@@ -234,21 +233,21 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         if (scrollable_area->SnapForDirection(physical_direction)) {
           return true;
         }
-        source_type = ScrollableArea::ScrollSourceType::kRelativeScroll;
+        source_type = cc::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByPage: {
         if (scrollable_area->SnapForPageScroll(physical_direction)) {
           return true;
         }
-        source_type = ScrollableArea::ScrollSourceType::kRelativeScroll;
+        source_type = cc::ScrollSourceType::kRelativeScroll;
         break;
       }
       case ui::ScrollGranularity::kScrollByDocument: {
         if (scrollable_area->SnapForDocumentScroll(physical_direction)) {
           return true;
         }
-        source_type = ScrollableArea::ScrollSourceType::kAbsoluteScroll;
+        source_type = cc::ScrollSourceType::kAbsoluteScroll;
         break;
       }
       default:

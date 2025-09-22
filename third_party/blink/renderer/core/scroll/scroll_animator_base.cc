@@ -51,7 +51,7 @@ ScrollOffset ScrollAnimatorBase::ComputeDeltaToConsume(
 ScrollResult ScrollAnimatorBase::UserScroll(
     ui::ScrollGranularity,
     const ScrollOffset& delta,
-    ScrollableArea::ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // Run the callback for non-animation user scroll.
 
@@ -80,7 +80,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset,
-    ScrollableArea::ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   SetCurrentOffset(offset);
   source_type_ = source_type;
   ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser,

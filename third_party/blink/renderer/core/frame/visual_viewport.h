@@ -188,17 +188,18 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;
-  bool SetScrollOffset(const ScrollOffset&,
-                       mojom::blink::ScrollType,
-                       mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish,
-                       bool targeted_scroll = false,
-                       ScrollSourceType = ScrollSourceType::kNone) override;
+  bool SetScrollOffset(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      mojom::blink::ScrollBehavior,
+      ScrollCallback on_finish,
+      bool targeted_scroll = false,
+      cc::ScrollSourceType = cc::ScrollSourceType::kNone) override;
   bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
       mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
-      ScrollSourceType = ScrollSourceType::kNone) override;
+      cc::ScrollSourceType = cc::ScrollSourceType::kNone) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -232,7 +233,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType,
-                          ScrollSourceType) override;
+                          cc::ScrollSourceType) override;
   cc::Layer* LayerForScrolling() const;
   cc::Layer* LayerForHorizontalScrollbar() const override;
   cc::Layer* LayerForVerticalScrollbar() const override;

@@ -364,7 +364,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
           mojom::blink::ScrollBehavior::kInstant,
       mojom::blink::ScrollType scroll_type =
           mojom::blink::ScrollType::kProgrammatic,
-      ScrollSourceType source_type = ScrollSourceType::kNone) {
+      cc::ScrollSourceType source_type = cc::ScrollSourceType::kNone) {
     return SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
                            scroll_type, scroll_behavior, source_type);
   }
@@ -704,7 +704,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType,
-                          ScrollSourceType) override;
+                          cc::ScrollSourceType) override;
   void InvalidatePaintForScrollOffsetChange();
 
   // Only relative scrolls [0] should affect scroll-state() query last direction
@@ -712,7 +712,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // direction. [0] https://drafts.csswg.org/css-scroll-snap-1/#relative-scroll
   void UpdateLastScrollDirection(const ScrollOffset& previous_offset,
                                  const ScrollOffset& new_offset,
-                                 ScrollSourceType);
+                                 cc::ScrollSourceType);
 
   int VerticalScrollbarStart() const;
   int HorizontalScrollbarStart() const;
@@ -880,6 +880,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
       ContainerScrollDirection::kNone;
   ContainerScrollDirection last_scroll_direction_vertical_ =
       ContainerScrollDirection::kNone;
+
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,
         public DisplayItemClient {

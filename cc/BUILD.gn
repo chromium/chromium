@@ -453,6 +453,7 @@ cc_component("cc") {
     "trees/scoped_abort_remaining_swap_promises.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
+    "trees/scroll_source_type.h",
     "trees/single_thread_proxy.cc",
     "trees/single_thread_proxy.h",
     "trees/sticky_position_constraint.cc",

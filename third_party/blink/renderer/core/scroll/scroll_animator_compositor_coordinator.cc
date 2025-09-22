@@ -291,7 +291,7 @@ void ScrollAnimatorCompositorCoordinator::UpdateCompositorAnimations() {
 void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
-    ScrollableArea::ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   ScrollOffset clamped_offset = GetScrollableArea()->ClampScrollOffset(offset);
   GetScrollableArea()->ScrollOffsetChanged(clamped_offset, scroll_type,
                                            source_type);

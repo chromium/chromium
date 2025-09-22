@@ -790,7 +790,7 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     // like scrollbar drag or panning touch gesture scroll. Need to add a way to
     // identify them and pass correct `ScrollSourceType` below.
     scrollable->UserScroll(event.data.scroll_update.delta_units, scroll_offset,
-                           ScrollableArea::ScrollSourceType::kRelativeScroll,
+                           cc::ScrollSourceType::kRelativeScroll,
                            ScrollableArea::ScrollCallback());
     return WebInputEventResult::kHandledSystem;
   }

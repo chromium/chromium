@@ -32,9 +32,9 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   ~ProgrammaticScrollAnimator() override;
 
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
-                                      ScrollableArea::ScrollSourceType);
+                                      cc::ScrollSourceType);
   void AnimateToOffset(const ScrollOffset&,
-                       ScrollableArea::ScrollSourceType,
+                       cc::ScrollSourceType,
                        ScrollableArea::ScrollCallback on_finish =
                            ScrollableArea::ScrollCallback());
 
@@ -50,6 +50,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   void NotifyCompositorAnimationFinished(int group_id) override;
   void NotifyCompositorAnimationAborted(int group_id) override {}
   ScrollOffset TargetOffset() const { return target_offset_; }
+  cc::ScrollSourceType GetScrollSourceType() { return source_type_; }
 
   void Trace(Visitor*) const override;
 
@@ -65,7 +66,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   ScrollableArea::ScrollCallback on_finish_;
 
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
-  ScrollableArea::ScrollSourceType source_type_;
+  cc::ScrollSourceType source_type_;
 };
 
 }  // namespace blink

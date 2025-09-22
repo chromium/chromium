@@ -89,7 +89,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
   void UpdateScrollOffset(const ScrollOffset& offset,
                           mojom::blink::ScrollType,
-                          ScrollSourceType) override {
+                          cc::ScrollSourceType) override {
     scroll_offset_ = offset;
     scroll_offset_.SetToMin(maximum_scroll_offset_);
   }

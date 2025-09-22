@@ -315,7 +315,7 @@ bool RootFrameViewport::SetScrollOffset(
     mojom::blink::ScrollBehavior scroll_behavior,
     ScrollCallback on_finish,
     bool targeted_scroll,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)
@@ -412,7 +412,7 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
 
 void RootFrameViewport::UpdateScrollOffset(const ScrollOffset& offset,
                                            mojom::blink::ScrollType scroll_type,
-                                           ScrollSourceType source_type) {
+                                           cc::ScrollSourceType source_type) {
   DistributeScrollBetweenViewports(
       offset, scroll_type, mojom::blink::ScrollBehavior::kInstant,
       kVisualViewport, ScrollCallback(), source_type);
@@ -424,7 +424,7 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
     mojom::blink::ScrollBehavior behavior,
     ViewportToScrollFirst scroll_first,
     ScrollCallback on_finish,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   // Make sure we use the scroll offsets as reported by each viewport's
   // ScrollAnimatorBase, since its ScrollableArea's offset may have the
   // fractional part truncated off.
@@ -548,7 +548,7 @@ cc::Layer* RootFrameViewport::LayerForScrollCorner() const {
 ScrollResult RootFrameViewport::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
-    ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // TODO(bokan/ymalik): Once smooth scrolling is permanently enabled we
   // should be able to remove this method override and use the base class

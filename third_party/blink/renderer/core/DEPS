@@ -59,6 +59,7 @@ include_rules = [
     "+cc/trees/layer_tree_host.h",
     "+cc/trees/paint_holding_commit_trigger.h",
     "+cc/trees/paint_holding_reason.h",
+    "+cc/trees/scroll_source_type.h",
     "+cc/trees/target_property.h",
     "+cc/trees/ukm_manager.h",
     "+components/subresource_filter/core/common/scoped_rule.h",

@@ -58,12 +58,13 @@ class CORE_EXPORT RootFrameViewport final
   // ScrollableArea Implementation
   PhysicalOffset LocalToScrollOriginOffset() const final;
   bool IsRootFrameViewport() const override { return true; }
-  bool SetScrollOffset(const ScrollOffset&,
-                       mojom::blink::ScrollType,
-                       mojom::blink::ScrollBehavior,
-                       ScrollCallback on_finish,
-                       bool targeted_scroll = false,
-                       ScrollSourceType = ScrollSourceType::kNone) override;
+  bool SetScrollOffset(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      mojom::blink::ScrollBehavior,
+      ScrollCallback on_finish,
+      bool targeted_scroll = false,
+      cc::ScrollSourceType = cc::ScrollSourceType::kNone) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -84,7 +85,7 @@ class CORE_EXPORT RootFrameViewport final
   gfx::Rect ScrollCornerRect() const override;
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType,
-                          ScrollSourceType) override;
+                          cc::ScrollSourceType) override;
   gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const override;
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override;
@@ -109,7 +110,7 @@ class CORE_EXPORT RootFrameViewport final
                                  kIgnoreOverlayScrollbarSize) const override;
   ScrollResult UserScroll(ui::ScrollGranularity,
                           const ScrollOffset&,
-                          ScrollSourceType,
+                          cc::ScrollSourceType,
                           ScrollableArea::ScrollCallback on_finish) override;
   CompositorElementId GetScrollElementId() const override;
   CompositorElementId GetScrollbarElementId(
@@ -196,7 +197,7 @@ class CORE_EXPORT RootFrameViewport final
       mojom::blink::ScrollBehavior,
       ViewportToScrollFirst,
       ScrollCallback on_finish = ScrollCallback(),
-      ScrollSourceType = ScrollSourceType::kNone);
+      cc::ScrollSourceType = cc::ScrollSourceType::kNone);
 
   // If either of the layout or visual viewports are scrolled explicitly (i.e.
   // not through this class), their updated offset will not be reflected in this

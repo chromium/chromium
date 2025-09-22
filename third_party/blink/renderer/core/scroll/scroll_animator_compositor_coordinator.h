@@ -127,7 +127,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   void ScrollOffsetChanged(const ScrollOffset&,
                            mojom::blink::ScrollType,
-                           ScrollableArea::ScrollSourceType);
+                           cc::ScrollSourceType);
 
   void AdjustImplOnlyScrollOffsetAnimation(const gfx::Vector2d& adjustment);
   gfx::Vector2d ImplOnlyAnimationAdjustmentForTesting() {

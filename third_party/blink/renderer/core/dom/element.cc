@@ -2607,10 +2607,10 @@ void Element::setScrollLeft(double new_left) {
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
     }
-    scrollable_area->SetScrollOffset(
-        end_offset, mojom::blink::ScrollType::kProgrammatic,
-        mojom::blink::ScrollBehavior::kAuto,
-        ScrollableArea::ScrollSourceType::kAbsoluteScroll);
+    scrollable_area->SetScrollOffset(end_offset,
+                                     mojom::blink::ScrollType::kProgrammatic,
+                                     mojom::blink::ScrollBehavior::kAuto,
+                                     cc::ScrollSourceType::kAbsoluteScroll);
   }
 }
 
@@ -2666,10 +2666,10 @@ void Element::setScrollTop(double new_top) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
     }
 
-    scrollable_area->SetScrollOffset(
-        end_offset, mojom::blink::ScrollType::kProgrammatic,
-        mojom::blink::ScrollBehavior::kAuto,
-        ScrollableArea::ScrollSourceType::kAbsoluteScroll);
+    scrollable_area->SetScrollOffset(end_offset,
+                                     mojom::blink::ScrollType::kProgrammatic,
+                                     mojom::blink::ScrollBehavior::kAuto,
+                                     cc::ScrollSourceType::kAbsoluteScroll);
   }
 }
 
@@ -2857,7 +2857,7 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
           new_position);
   return scrollable_area->ScrollToAbsolutePosition(
       new_position, scroll_behavior, mojom::blink::ScrollType::kProgrammatic,
-      ScrollableArea::ScrollSourceType::kRelativeScroll);
+      cc::ScrollSourceType::kRelativeScroll);
 }
 
 bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
@@ -2925,7 +2925,7 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
 
   return scrollable_area->SetScrollOffset(
       new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      ScrollableArea::ScrollSourceType::kAbsoluteScroll);
+      cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
@@ -2964,7 +2964,7 @@ bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
   return viewport->SetScrollOffset(
       viewport->ScrollPositionToOffset(new_position),
       mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      ScrollableArea::ScrollSourceType::kRelativeScroll);
+      cc::ScrollSourceType::kRelativeScroll);
 }
 
 bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
@@ -3004,7 +3004,7 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   new_offset = viewport->ScrollPositionToOffset(new_position);
   return viewport->SetScrollOffset(
       new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      ScrollableArea::ScrollSourceType::kAbsoluteScroll);
+      cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 gfx::Rect Element::BoundsInWidget() const {

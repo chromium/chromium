@@ -688,6 +688,7 @@ _CONFIG = [
             'cc::ScrollOffsetAnimationCurve',
             'cc::ScrollSnapAlign',
             'cc::ScrollSnapType',
+            'cc::ScrollSourceType',
             'cc::ScrollStateData',
             'cc::ScrollUtils',
             'cc::SnapAlignment',

@@ -93,7 +93,7 @@ void ScrollAnimator::ResetAnimationState() {
 ScrollResult ScrollAnimator::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
-    ScrollableArea::ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // We only store on_finish_ when running an animation, and it should be
   // invoked as soon as the animation is finished. If we don't animate the
@@ -236,7 +236,7 @@ void ScrollAnimator::AdjustAnimation(const gfx::Vector2d& adjustment) {
 
 void ScrollAnimator::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset,
-    ScrollableArea::ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   current_offset_ = offset;
   source_type_ = source_type;
 

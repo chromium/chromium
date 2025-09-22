@@ -38,7 +38,7 @@ mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
 
 void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset,
-    ScrollableArea::ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   CancelAnimation();
   source_type_ = source_type;
   ScrollOffsetChanged(offset, GetScrollType(), source_type);
@@ -46,7 +46,7 @@ void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
 
 void ProgrammaticScrollAnimator::AnimateToOffset(
     const ScrollOffset& offset,
-    ScrollableArea::ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
@@ -69,6 +69,9 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   start_time_ = base::TimeTicks();
   target_offset_ = offset;
   source_type_ = source_type;
+  // TODO(crbug.com/414556050): `ScrollOffsetAnimationCurve` should be aware of
+  // `ScrollSourceType`, so that when we have multiple scroll containers we will
+  // set last scroll direction correctly.
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
       cc::ScrollOffsetAnimationCurve::ScrollType::kProgrammatic);

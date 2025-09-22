@@ -218,7 +218,7 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(
 
 ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
                                         const ScrollOffset& delta,
-                                        ScrollSourceType source_type,
+                                        cc::ScrollSourceType source_type,
                                         ScrollCallback on_finish) {
   TRACE_EVENT2("input", "ScrollableArea::UserScroll", "x", delta.x(), "y",
                delta.y());
@@ -289,7 +289,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollBehavior behavior,
                                      ScrollCallback on_finish,
                                      bool targeted_scroll,
-                                     ScrollSourceType source_type) {
+                                     cc::ScrollSourceType source_type) {
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -358,24 +358,26 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       ScrollOffsetChanged(clamped_offset, scroll_type, source_type);
       break;
     case mojom::blink::ScrollType::kClamping:
-      ScrollOffsetChanged(clamped_offset, scroll_type, ScrollSourceType::kNone);
+      ScrollOffsetChanged(clamped_offset, scroll_type,
+                          cc::ScrollSourceType::kNone);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kAnchoring:
       // TODO(crbug.com/414556050): We need to have the correct
-      // `source_type=ScrollSourceType::kStationaryScroll` here. Add a DCHECK
-      // and replace `ScrollSourceType::kStationaryScroll` with `source_type`
-      // below.
+      // `source_type=cc::ScrollSourceType::kStationaryScroll` here. Add a
+      // DCHECK and replace `cc::ScrollSourceType::kStationaryScroll` with
+      // `source_type` below.
       ScrollOffsetChanged(clamped_offset, scroll_type,
-                          ScrollSourceType::kStationaryScroll);
+                          cc::ScrollSourceType::kStationaryScroll);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       pending_scroll_anchor_adjustment_ += clamped_offset - previous_offset;
       break;
     case mojom::blink::ScrollType::kScrollStart:
       // TODO(crbug.com/414556050): We need to have the correct
-      // `source_type=ScrollSourceType::kNone` here. Add a DCHECK and replace
-      // `ScrollSourceType::kNone` with `source_type` below.
-      ScrollOffsetChanged(clamped_offset, scroll_type, ScrollSourceType::kNone);
+      // `source_type=cc::ScrollSourceType::kNone` here. Add a DCHECK and
+      // replace `cc::ScrollSourceType::kNone` with `source_type` below.
+      ScrollOffsetChanged(clamped_offset, scroll_type,
+                          cc::ScrollSourceType::kNone);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kProgrammatic:
@@ -414,7 +416,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
 bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType type,
                                      mojom::blink::ScrollBehavior behavior,
-                                     ScrollSourceType source_type) {
+                                     cc::ScrollSourceType source_type) {
   return SetScrollOffset(offset, type, behavior, ScrollCallback(), false,
                          source_type);
 }
@@ -566,7 +568,7 @@ void ScrollableArea::ScrollBy(const ScrollOffset& delta,
                               mojom::blink::ScrollType type,
                               mojom::blink::ScrollBehavior behavior) {
   SetScrollOffset(GetScrollOffset() + delta, type, behavior,
-                  ScrollSourceType::kRelativeScroll);
+                  cc::ScrollSourceType::kRelativeScroll);
 }
 
 bool ScrollableArea::ProgrammaticScrollHelper(
@@ -574,7 +576,7 @@ bool ScrollableArea::ProgrammaticScrollHelper(
     mojom::blink::ScrollBehavior scroll_behavior,
     gfx::Vector2d animation_adjustment,
     ScrollCallback on_finish,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   bool should_use_animation =
       scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
       ScrollAnimatorEnabled();
@@ -632,7 +634,7 @@ bool ScrollableArea::ProgrammaticScrollHelper(
 void ScrollableArea::UserScrollHelper(
     const ScrollOffset& offset,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   CancelProgrammaticScrollAnimation();
 
   float x = UserInputScrollable(kHorizontalScrollbar)
@@ -663,7 +665,7 @@ PhysicalRect ScrollableArea::ScrollIntoView(
 
 void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
                                          mojom::blink::ScrollType scroll_type,
-                                         ScrollSourceType source_type) {
+                                         cc::ScrollSourceType source_type) {
   TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x", offset.x(),
                "y", offset.y());
   TRACE_EVENT_INSTANT1("input", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
@@ -1156,7 +1158,7 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   // targeted scroll, the associated ScrollMarkerGroupPseudoElement's
   // selected marker will still be pinned and we should not change that.
   bool targeted_scroll = group && group->SelectedMarkerIsPinned();
-  // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType` from the
+  // TODO(crbug.com/414556050): Pass the correct `cc::ScrollSourceType` from the
   // compositor.
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
                   mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
@@ -1208,7 +1210,7 @@ void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
 
 void ScrollableArea::SnapAfterScrollbarScrolling(
     ScrollbarOrientation orientation,
-    ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type) {
   SnapAtCurrentPosition(orientation == kHorizontalScrollbar,
                         orientation == kVerticalScrollbar, source_type);
 }
@@ -1216,7 +1218,7 @@ void ScrollableArea::SnapAfterScrollbarScrolling(
 bool ScrollableArea::SnapAtCurrentPosition(
     bool scrolled_x,
     bool scrolled_y,
-    ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
   gfx::PointF current_position = ScrollPosition();
@@ -1227,7 +1229,7 @@ bool ScrollableArea::SnapAtCurrentPosition(
 bool ScrollableArea::SnapForEndPosition(const gfx::PointF& end_position,
                                         bool scrolled_x,
                                         bool scrolled_y,
-                                        ScrollSourceType source_type,
+                                        cc::ScrollSourceType source_type,
                                         base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
@@ -1250,7 +1252,7 @@ bool ScrollableArea::SnapForDirection(ScrollDirectionPhysical direction) {
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   // Only called for arrow key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
-  return PerformSnapping(*strategy, ScrollSourceType::kRelativeScroll,
+  return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll,
                          mojom::blink::ScrollBehavior::kSmooth);
 }
 
@@ -1260,7 +1262,7 @@ bool ScrollableArea::SnapForPageScroll(ScrollDirectionPhysical direction) {
       PageScrollSnapStrategy(direction);
   // Only called for PgUp/PgDn key press scrolls, which are relative scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
-  return PerformSnapping(*strategy, ScrollSourceType::kRelativeScroll);
+  return PerformSnapping(*strategy, cc::ScrollSourceType::kRelativeScroll);
 }
 
 bool ScrollableArea::SnapForDocumentScroll(ScrollDirectionPhysical direction) {
@@ -1273,7 +1275,7 @@ bool ScrollableArea::SnapForDocumentScroll(ScrollDirectionPhysical direction) {
   // Only called for Home/End key press scrolls, which are absolute scrolls.
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types
   return SnapForEndPosition(end_position, scrolled_x, scrolled_y,
-                            ScrollSourceType::kAbsoluteScroll);
+                            cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 std::unique_ptr<cc::SnapSelectionStrategy>
@@ -1294,14 +1296,14 @@ void ScrollableArea::SnapAfterLayout() {
   gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForTargetElement(current_position);
-  PerformSnapping(*strategy, ScrollSourceType::kStationaryScroll,
+  PerformSnapping(*strategy, cc::ScrollSourceType::kStationaryScroll,
                   mojom::blink::ScrollBehavior::kInstant,
                   base::ScopedClosureRunner(), true);
 }
 
 bool ScrollableArea::PerformSnapping(
     const cc::SnapSelectionStrategy& strategy,
-    ScrollSourceType source_type,
+    cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     base::ScopedClosureRunner on_finish,
     bool preserve_pinned_marker) {
