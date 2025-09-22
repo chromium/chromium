@@ -52,12 +52,14 @@ void HTMLGeolocationElement::UpdatePermissionStatusAndAppearance() {
   PseudoStateChanged(CSSSelector::kPseudoPermissionGranted);
 }
 
-void HTMLGeolocationElement::
-    PopulateEmbeddedPermissionRequestDescriptorExtension(
-        mojom::blink::EmbeddedPermissionRequestDescriptor& descriptor) {
-  descriptor.geolocation =
+mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
+  auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New();
+  descriptor->element_position = BoundsInWidget();
+  descriptor->geolocation =
       mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
-  descriptor.geolocation->autolocate = autolocate();
+  descriptor->geolocation->autolocate = autolocate();
+  return descriptor;
 }
 
 }  // namespace blink

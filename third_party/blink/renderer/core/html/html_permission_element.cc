@@ -634,6 +634,13 @@ void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
   UpdateText();
 }
 
+mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+HTMLPermissionElement::CreateEmbeddedPermissionRequestDescriptor() {
+  auto descriptor = EmbeddedPermissionRequestDescriptor::New();
+  descriptor->element_position = BoundsInWidget();
+  return descriptor;
+}
+
 void HTMLPermissionElement::UpdatePermissionStatus() {
   if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
         return status.value == MojoPermissionStatus::DENIED;
@@ -787,7 +794,8 @@ bool HTMLPermissionElement::MaybeRegisterPageEmbeddedPermissionControl() {
       client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
   CHECK(embedded_permission_control_receiver_.is_bound());
   GetPermissionService()->RegisterPageEmbeddedPermissionControl(
-      mojo::Clone(permission_descriptors_), std::move(client));
+      mojo::Clone(permission_descriptors_),
+      CreateEmbeddedPermissionRequestDescriptor(), std::move(client));
   return true;
 }
 
@@ -1124,14 +1132,11 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
 void HTMLPermissionElement::RequestPageEmbededPermissions() {
   CHECK_GT(permission_descriptors_.size(), 0U);
   CHECK_LE(permission_descriptors_.size(), 2U);
-  auto descriptor = EmbeddedPermissionRequestDescriptor::New();
-  descriptor->element_position = BoundsInWidget();
-  PopulateEmbeddedPermissionRequestDescriptorExtension(*descriptor);
-
   pending_request_created_ = base::TimeTicks::Now();
 
   GetPermissionService()->RequestPageEmbeddedPermission(
-      mojo::Clone(permission_descriptors_), std::move(descriptor),
+      mojo::Clone(permission_descriptors_),
+      CreateEmbeddedPermissionRequestDescriptor(),
       BindOnce(&HTMLPermissionElement::OnEmbeddedPermissionsDecided,
                WrapWeakPersistent(this)));
 }

@@ -263,6 +263,7 @@ class TestPermissionService : public PermissionService {
                      HasPermissionCallback) override {}
   void RegisterPageEmbeddedPermissionControl(
       Vector<PermissionDescriptorPtr> permissions,
+      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
           pending_client) override {
     if (pepc_registered_callback_) {

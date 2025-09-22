@@ -91,8 +91,8 @@ class EmbeddedPermissionControlCheckerTest
   PermissionService* permission_service() { return permission_service_.get(); }
 
   std::unique_ptr<MockEmbeddedPermissionControlClient>
-  CreateEmbeddedPermissionControlClient(
-      std::vector<PermissionName> permissions) {
+  CreateEmbeddedPermissionControlClient(std::vector<PermissionName> permissions,
+                                        bool is_geolocation_source = false) {
     mojo::PendingRemote<EmbeddedPermissionControlClient> mojo_client;
     auto client = std::make_unique<MockEmbeddedPermissionControlClient>(
         mojo_client.InitWithNewPipeAndPassReceiver());
@@ -107,8 +107,16 @@ class EmbeddedPermissionControlCheckerTest
                              return descriptor;
                            });
 
+    auto request_descriptor =
+        blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+    if (is_geolocation_source) {
+      request_descriptor->geolocation =
+          blink::mojom::GeolocationEmbeddedPermissionRequestDescriptor::New();
+    }
+
     permission_service()->RegisterPageEmbeddedPermissionControl(
-        std::move(permission_descriptors), std::move(mojo_client));
+        std::move(permission_descriptors), std::move(request_descriptor),
+        std::move(mojo_client));
     return client;
   }
 
@@ -192,6 +200,48 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
   pending_client_2->ExpectEmbeddedPermissionControlNotRegistered();
   grouped_clients.pop_back();
   pending_client_2->ExpectEmbeddedPermissionControlRegistered();
+}
+
+TEST_F(EmbeddedPermissionControlCheckerTest, DecouplePermissionSources) {
+  // Register `kMaxPEPCPerPage` clients for the permission element source.
+  std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
+      permission_clients(kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    permission_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/false);
+    permission_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+  }
+
+  // Register `kMaxPEPCPerPage` clients for the geolocation element source.
+  // These should also be registered, as the sources are decoupled.
+  std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
+      geolocation_clients(kMaxPEPCPerPage);
+  for (size_t i = 0; i < kMaxPEPCPerPage; ++i) {
+    geolocation_clients[i] = CreateEmbeddedPermissionControlClient(
+        {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/true);
+    geolocation_clients[i]->ExpectEmbeddedPermissionControlRegistered();
+  }
+
+  // Create one more client for each source, which should not be registered yet.
+  auto pending_permission_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/false);
+  pending_permission_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  auto pending_geolocation_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::GEOLOCATION}, /*is_geolocation_source=*/true);
+  pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  // Disconnect one client from the permission element source.
+  permission_clients.pop_back();
+  // The pending permission client should now be registered.
+  pending_permission_client->ExpectEmbeddedPermissionControlRegistered();
+  // The pending geolocation client should still not be registered.
+  pending_geolocation_client->ExpectEmbeddedPermissionControlNotRegistered();
+
+  // Disconnect one client from the geolocation element source.
+  geolocation_clients.pop_back();
+  // The pending geolocation client should now be registered.
+  pending_geolocation_client->ExpectEmbeddedPermissionControlRegistered();
 }
 
 }  // namespace content

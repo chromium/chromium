@@ -117,8 +117,8 @@ class CORE_EXPORT HTMLPermissionElement
   // Update permission statuses and appearance based on the current statuses.
   virtual void UpdatePermissionStatusAndAppearance();
 
-  virtual void PopulateEmbeddedPermissionRequestDescriptorExtension(
-      mojom::blink::EmbeddedPermissionRequestDescriptor&) {}
+  virtual mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor();
 
   // Called when the |permission_status_map_| is updated to
   // - Ensure that |aggregated_permission_status_| and

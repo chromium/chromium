@@ -155,6 +155,7 @@ interface PermissionService {
   // object has been destroyed.
   RegisterPageEmbeddedPermissionControl(
     array<PermissionDescriptor> permissions,
+    EmbeddedPermissionRequestDescriptor descriptor,
     pending_remote<EmbeddedPermissionControlClient> client);
   // Calling this method indicates the user has explicitly requested the
   // permission by clicking on the `HTMLPermissionElement`. Asks for a list of

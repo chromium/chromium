@@ -31,13 +31,15 @@ EmbeddedPermissionControlChecker::EmbeddedPermissionControlChecker(Page& page)
 EmbeddedPermissionControlChecker::~EmbeddedPermissionControlChecker() = default;
 
 void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
+    Source source,
     std::set<PermissionName> permissions,
     mojo::PendingRemote<EmbeddedPermissionControlClient> pending_client,
     RegisterPageEmbeddedPermissionCallback callback) {
   auto client =
-      std::make_unique<Client>(this, std::move(permissions),
+      std::make_unique<Client>(this, source, std::move(permissions),
                                std::move(pending_client), std::move(callback));
-  auto& queue = client_map_[client->permissions()];
+  ClientKey key(client->source(), client->permissions());
+  auto& queue = client_map_[key];
   if (queue.size() < kMaxPEPCPerPage ||
       base::FeatureList::IsEnabled(
           blink::features::kBypassPepcSecurityForTesting)) {
@@ -57,7 +59,9 @@ PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);
 
 void EmbeddedPermissionControlChecker::OnClientDisconnect(
     Client* disconnected_client) {
-  auto client_map_it = client_map_.find(disconnected_client->permissions());
+  ClientKey key(disconnected_client->source(),
+                disconnected_client->permissions());
+  auto client_map_it = client_map_.find(key);
   CHECK(client_map_it != client_map_.end() && !client_map_it->second.empty());
   auto& queue = client_map_it->second;
   for (auto& client : queue) {
@@ -76,10 +80,12 @@ void EmbeddedPermissionControlChecker::OnClientDisconnect(
 
 EmbeddedPermissionControlChecker::Client::Client(
     EmbeddedPermissionControlChecker* checker,
+    Source source,
     std::set<PermissionName> permissions,
     mojo::PendingRemote<EmbeddedPermissionControlClient> client,
     RegisterPageEmbeddedPermissionCallback callback)
     : checker_(checker),
+      source_(source),
       permissions_(std::move(permissions)),
       client_(std::move(client)),
       callback_(std::move(callback)) {
@@ -88,6 +94,25 @@ EmbeddedPermissionControlChecker::Client::Client(
 }
 
 EmbeddedPermissionControlChecker::Client::~Client() = default;
+
+EmbeddedPermissionControlChecker::ClientKey::ClientKey(
+    Source source,
+    std::set<PermissionName> permissions)
+    : source(source), permissions(std::move(permissions)) {}
+
+EmbeddedPermissionControlChecker::ClientKey::ClientKey(const ClientKey& other) =
+    default;
+EmbeddedPermissionControlChecker::ClientKey::ClientKey(ClientKey&& other) =
+    default;
+EmbeddedPermissionControlChecker::ClientKey::~ClientKey() = default;
+
+bool EmbeddedPermissionControlChecker::ClientKey::operator<(
+    const ClientKey& other) const {
+  if (source != other.source) {
+    return source < other.source;
+  }
+  return permissions < other.permissions;
+}
 
 void EmbeddedPermissionControlChecker::Client::OnMojoDisconnect() {
   checker_->OnClientDisconnect(this);

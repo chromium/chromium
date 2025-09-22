@@ -153,6 +153,7 @@ PermissionServiceImpl::~PermissionServiceImpl() {}
 
 void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     std::vector<PermissionDescriptorPtr> permissions,
+    blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
   if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
     bad_message::ReceivedBadMessage(
@@ -177,8 +178,12 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     }
   }
 
+  auto source =
+      descriptor->geolocation
+          ? EmbeddedPermissionControlChecker::Source::kGeolocationElement
+          : EmbeddedPermissionControlChecker::Source::kPermissionElement;
   checker->CheckPageEmbeddedPermission(
-      std::move(permission_names), std::move(observer),
+      source, std::move(permission_names), std::move(observer),
       base::BindOnce(
           &PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered,
           weak_factory_.GetWeakPtr(), std::move(permissions)));
