@@ -18,12 +18,8 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "remoting/client/common/client_status_observer.h"
 #include "remoting/protocol/frame_consumer.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-
-namespace network {
-class PendingSharedURLLoaderFactory;
-class SharedURLLoaderFactory;
-}  // namespace network
 
 namespace remoting {
 class RemotingClient;
@@ -35,17 +31,40 @@ class DesktopFrame;
 
 namespace ash::boca {
 
-// Class used to run the `remoting::RemotingClient` on the IO sequence.
-class RemotingClientIOProxy : public remoting::ClientStatusObserver {
+class RemotingClientIOProxy {
  public:
-  RemotingClientIOProxy(
+  RemotingClientIOProxy(const RemotingClientIOProxy&) = delete;
+  RemotingClientIOProxy& operator=(const RemotingClientIOProxy&) = delete;
+
+  virtual ~RemotingClientIOProxy() = default;
+
+  // Starts a `remoting::RemotingClient`
+  virtual void StartCrdClient(std::string crd_connection_code,
+                              std::string oauth_access_token,
+                              std::string authorized_helper_email,
+                              base::OnceClosure crd_session_ended_callback) = 0;
+
+  // Stops the `remoting::RemotingClient` if there is an active session and
+  // releases the resources for the next session.
+  virtual void StopCrdClient() = 0;
+
+ protected:
+  RemotingClientIOProxy() = default;
+};
+
+// Class used to run the `remoting::RemotingClient` on the IO sequence.
+class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
+                                  public remoting::ClientStatusObserver {
+ public:
+  RemotingClientIOProxyImpl(
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
       SpotlightCrdStateUpdatedCallback status_updated_callback);
-  RemotingClientIOProxy(const RemotingClientIOProxy&) = delete;
-  RemotingClientIOProxy& operator=(const RemotingClientIOProxy&) = delete;
-  ~RemotingClientIOProxy() override;
+  RemotingClientIOProxyImpl(const RemotingClientIOProxyImpl&) = delete;
+  RemotingClientIOProxyImpl& operator=(const RemotingClientIOProxyImpl&) =
+      delete;
+  ~RemotingClientIOProxyImpl() override;
 
   // `remoting::ClientStatusObserver`
   void OnConnectionFailed() override;
@@ -53,15 +72,12 @@ class RemotingClientIOProxy : public remoting::ClientStatusObserver {
   void OnDisconnected() override;
   void OnClientDestroyed() override;
 
-  // Starts a `remoting::RemotingClient`
+  // RemotingClientIOProxy:
   void StartCrdClient(std::string crd_connection_code,
                       std::string oauth_access_token,
                       std::string authorized_helper_email,
-                      base::OnceClosure crd_session_ended_callback);
-
-  // Stops the `remoting::RemotingClient` if there is an active session and
-  // releases the resources for the next session.
-  void StopCrdClient();
+                      base::OnceClosure crd_session_ended_callback) override;
+  void StopCrdClient() override;
 
  private:
   // Accepts the CRD ended event on the current sequence and forwards it to the
@@ -84,18 +100,19 @@ class RemotingClientIOProxy : public remoting::ClientStatusObserver {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  std::unique_ptr<network::PendingSharedURLLoaderFactory>
+      pending_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   // Callback for handling an update that the crd session has ended.
   base::OnceClosure crd_session_ended_callback_;
   // Callback for receiving a completed frame from `SpotlightFrameConsumer`.
   SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback_;
   // Callback for `CrdConnectionState` updates.
   SpotlightCrdStateUpdatedCallback status_updated_callback_;
-
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<SpotlightFrameConsumer> frame_consumer_;
   std::unique_ptr<remoting::RemotingClient> remoting_client_;
 
-  base::WeakPtrFactory<RemotingClientIOProxy> weak_factory_{this};
+  base::WeakPtrFactory<RemotingClientIOProxyImpl> weak_factory_{this};
 };
 
 }  // namespace ash::boca

@@ -26,13 +26,15 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_oauth_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 namespace ash::boca {
 
 SpotlightRemotingClientManagerImpl::SpotlightRemotingClientManagerImpl(
     std::unique_ptr<SpotlightOAuthTokenFetcher> token_fetcher,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    CreateRemotingIOProxyCb create_remoting_io_proxy_cb)
     : io_thread_("Boca Spotlight IO"),
       token_fetcher_(std::move(token_fetcher)) {
   base::Thread::Options options;
@@ -40,15 +42,16 @@ SpotlightRemotingClientManagerImpl::SpotlightRemotingClientManagerImpl(
   // Thread will be processing incoming video frames.
   options.thread_type = base::ThreadType::kDisplayCritical;
   CHECK(io_thread_.StartWithOptions(std::move(options)));
-  remoting_client_io_proxy_ =
-      std::make_unique<base::SequenceBound<RemotingClientIOProxy>>(
-          io_thread_.task_runner(), url_loader_factory->Clone(),
+  remoting_client_io_proxy_ = std::make_unique<SequencedRemotingClientIOProxy>(
+      io_thread_.task_runner(),
+      create_remoting_io_proxy_cb.Run(
+          url_loader_factory->Clone(),
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &SpotlightRemotingClientManagerImpl::HandleFrameReceived,
               weak_factory_.GetWeakPtr())),
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &SpotlightRemotingClientManagerImpl::UpdateState,
-              weak_factory_.GetWeakPtr())));
+              weak_factory_.GetWeakPtr()))));
 }
 
 SpotlightRemotingClientManagerImpl::~SpotlightRemotingClientManagerImpl() {
@@ -109,6 +112,18 @@ void SpotlightRemotingClientManagerImpl::StopCrdClient() {
 
 std::string SpotlightRemotingClientManagerImpl::GetDeviceRobotEmail() {
   return token_fetcher_->GetDeviceRobotEmail();
+}
+
+// static
+std::unique_ptr<RemotingClientIOProxy>
+SpotlightRemotingClientManagerImpl::CreateRemotingIOProxy(
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory,
+    SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
+    SpotlightCrdStateUpdatedCallback status_updated_callback) {
+  return std::make_unique<RemotingClientIOProxyImpl>(
+      std::move(pending_url_loader_factory), std::move(frame_received_callback),
+      std::move(status_updated_callback));
 }
 
 void SpotlightRemotingClientManagerImpl::HandleOAuthTokenRetrieved(

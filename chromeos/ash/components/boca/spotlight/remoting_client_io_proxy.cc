@@ -19,48 +19,50 @@
 
 namespace ash::boca {
 
-RemotingClientIOProxy::RemotingClientIOProxy(
+RemotingClientIOProxyImpl::RemotingClientIOProxyImpl(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
     SpotlightCrdStateUpdatedCallback status_updated_callback)
-    : frame_received_callback_(std::move(frame_received_callback)),
+    : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
+      frame_received_callback_(std::move(frame_received_callback)),
       status_updated_callback_(std::move(status_updated_callback)) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  shared_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
-      std::move(pending_url_loader_factory));
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-RemotingClientIOProxy::~RemotingClientIOProxy() = default;
+RemotingClientIOProxyImpl::~RemotingClientIOProxyImpl() = default;
 
-void RemotingClientIOProxy::OnConnectionFailed() {
+void RemotingClientIOProxyImpl::OnConnectionFailed() {
   UpdateState(CrdConnectionState::kFailed);
 }
-void RemotingClientIOProxy::OnConnected() {
+void RemotingClientIOProxyImpl::OnConnected() {
   UpdateState(CrdConnectionState::kConnected);
 }
-void RemotingClientIOProxy::OnDisconnected() {
+void RemotingClientIOProxyImpl::OnDisconnected() {
   UpdateState(CrdConnectionState::kDisconnected);
 }
-void RemotingClientIOProxy::OnClientDestroyed() {
+void RemotingClientIOProxyImpl::OnClientDestroyed() {
   UpdateState(CrdConnectionState::kDisconnected);
 }
 
-void RemotingClientIOProxy::StartCrdClient(
+void RemotingClientIOProxyImpl::StartCrdClient(
     std::string crd_connection_code,
     std::string oauth_access_token,
     std::string authorized_helper_email,
     base::OnceClosure crd_session_ended_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  if (!shared_url_loader_factory_) {
+    shared_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+        std::move(pending_url_loader_factory_));
+  }
   crd_session_ended_callback_ = std::move(crd_session_ended_callback);
-  frame_consumer_ =
-      std::make_unique<SpotlightFrameConsumer>(base::BindRepeating(
-          &RemotingClientIOProxy::OnFrameReceived, weak_factory_.GetWeakPtr()));
+  frame_consumer_ = std::make_unique<SpotlightFrameConsumer>(
+      base::BindRepeating(&RemotingClientIOProxyImpl::OnFrameReceived,
+                          weak_factory_.GetWeakPtr()));
   remoting_client_ = std::make_unique<remoting::RemotingClient>(
       base::BindPostTask(
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::BindOnce(&RemotingClientIOProxy::HandleCrdSessionEnded,
+          base::BindOnce(&RemotingClientIOProxyImpl::HandleCrdSessionEnded,
                          weak_factory_.GetWeakPtr())),
       frame_consumer_.get(),
       /*audio_stream_consumer=*/nullptr, shared_url_loader_factory_);
@@ -70,7 +72,7 @@ void RemotingClientIOProxy::StartCrdClient(
                                  {oauth_access_token, authorized_helper_email});
 }
 
-void RemotingClientIOProxy::StopCrdClient() {
+void RemotingClientIOProxyImpl::StopCrdClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   crd_session_ended_callback_.Reset();
@@ -89,13 +91,13 @@ void RemotingClientIOProxy::StopCrdClient() {
   // not require this delay as it is a messy work around.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&RemotingClientIOProxy::ResetRemotingClient,
+      base::BindOnce(&RemotingClientIOProxyImpl::ResetRemotingClient,
                      weak_factory_.GetWeakPtr(), std::move(remoting_client_),
                      std::move(frame_consumer_)),
       base::Seconds(3));
 }
 
-void RemotingClientIOProxy::HandleCrdSessionEnded() {
+void RemotingClientIOProxyImpl::HandleCrdSessionEnded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!crd_session_ended_callback_) {
     return;
@@ -104,19 +106,19 @@ void RemotingClientIOProxy::HandleCrdSessionEnded() {
   std::move(crd_session_ended_callback_).Run();
 }
 
-void RemotingClientIOProxy::UpdateState(CrdConnectionState state) {
+void RemotingClientIOProxyImpl::UpdateState(CrdConnectionState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_updated_callback_.Run(state);
 }
 
-void RemotingClientIOProxy::OnFrameReceived(
+void RemotingClientIOProxyImpl::OnFrameReceived(
     SkBitmap bitmap,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   frame_received_callback_.Run(std::move(bitmap), std::move(frame));
 }
 
-void RemotingClientIOProxy::ResetRemotingClient(
+void RemotingClientIOProxyImpl::ResetRemotingClient(
     std::unique_ptr<remoting::RemotingClient> remoting_client,
     std::unique_ptr<SpotlightFrameConsumer> frame_consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

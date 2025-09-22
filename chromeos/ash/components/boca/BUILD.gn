@@ -156,6 +156,7 @@ source_set("unit_tests") {
     "retriable_request_sender_unittest.cc",
     "spotlight/register_screen_request_unittest.cc",
     "spotlight/spotlight_notification_handler_unittest.cc",
+    "spotlight/spotlight_remoting_client_manager_unittest.cc",
     "spotlight/spotlight_service_unittest.cc",
     "spotlight/spotlight_session_manager_unittest.cc",
     "spotlight/update_view_screen_state_request_unittest.cc",
