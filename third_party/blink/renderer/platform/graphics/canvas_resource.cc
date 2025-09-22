@@ -111,7 +111,6 @@ void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
 }
 
 static void ReleaseFrameResources(
-    base::WeakPtr<CanvasResourceProvider> resource_provider,
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
@@ -150,9 +149,8 @@ void CanvasResource::OnPlaceholderReleasedResourceOnOwningThread(
     scoped_refptr<CanvasResource> resource) {
   DCHECK(!resource->is_cross_thread());
 
-  auto weak_provider = resource->WeakProvider();
-  ReleaseFrameResources(std::move(weak_provider), std::move(resource),
-                        gpu::SyncToken(), /*is_lost=*/false);
+  ReleaseFrameResources(std::move(resource), gpu::SyncToken(),
+                        /*is_lost=*/false);
 }
 
 bool CanvasResource::PrepareTransferableResource(
@@ -162,7 +160,7 @@ bool CanvasResource::PrepareTransferableResource(
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  *out_callback = blink::BindOnce(&ReleaseFrameResources, WeakProvider());
+  *out_callback = blink::BindOnce(&ReleaseFrameResources);
 
   if (!out_resource)
     return true;
@@ -474,9 +472,8 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
-  auto release_callback =
-      base::BindOnce(&ReleaseFrameResources, WeakProvider(),
-                     scoped_refptr<CanvasResourceSharedImage>(this));
+  auto release_callback = base::BindOnce(
+      &ReleaseFrameResources, scoped_refptr<CanvasResourceSharedImage>(this));
 
   scoped_refptr<StaticBitmapImage> image;
   const auto& client_shared_image = GetClientSharedImage();
@@ -623,11 +620,6 @@ void CanvasResourceSharedImage::OnMemoryDump(
 
 CanvasResourceProvider* CanvasResourceSharedImage::Provider() {
   return provider_.get();
-}
-
-base::WeakPtr<CanvasResourceProvider>
-CanvasResourceSharedImage::WeakProvider() {
-  return provider_;
 }
 
 // ExternalCanvasResource
@@ -950,10 +942,6 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
 
 CanvasResourceProvider* CanvasResourceSwapChain::Provider() {
   return provider_.get();
-}
-
-base::WeakPtr<CanvasResourceProvider> CanvasResourceSwapChain::WeakProvider() {
-  return provider_;
 }
 
 }  // namespace blink
