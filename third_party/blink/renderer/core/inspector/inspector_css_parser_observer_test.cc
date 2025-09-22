@@ -217,4 +217,14 @@ TEST_F(InspectorCSSParserObserverTest, MixinWithNestedDeclarations) {
   EXPECT_EQ("green", data[0]->child_rules[0]->property_data[0].value);
 }
 
+TEST_F(InspectorCSSParserObserverTest, MixinApplyWithNoBlock) {
+  String text = "div { @apply --m1; color: green; }";
+  CSSRuleSourceDataList data = Parse(text);
+  ASSERT_EQ(1u, data.size());
+  ASSERT_EQ(2u, data[0]->child_rules.size());
+  ASSERT_EQ(1u, data[0]->child_rules[1]->property_data.size());
+  EXPECT_EQ("color", data[0]->child_rules[1]->property_data[0].name);
+  EXPECT_EQ("green", data[0]->child_rules[1]->property_data[0].value);
+}
+
 }  // namespace blink

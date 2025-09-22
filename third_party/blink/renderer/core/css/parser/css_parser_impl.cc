@@ -2515,14 +2515,26 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     return nullptr;
   }
 
-  if (stream.AtEnd()) {
-    // Implicit semicolon at end of block.
-    return MakeGarbageCollected<StyleRuleApplyMixin>(name, std::move(arguments),
-                                                     nullptr);
+  stream.EnsureLookAhead();
+  wtf_size_t header_end = stream.LookAheadOffset();
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kApplyMixin, header_start);
+    observer_->EndRuleHeader(header_end);
   }
-  if (stream.UncheckedPeek().GetType() == kSemicolonToken) {
-    // No declarations block, just a semicolon.
-    stream.UncheckedConsume();  // kSemicolonToken
+
+  if (stream.AtEnd() || stream.UncheckedPeek().GetType() == kSemicolonToken) {
+    // No declarations block, just a semicolon (possibly implicit.
+    if (!stream.AtEnd()) {
+      stream.UncheckedConsume();  // kSemicolonToken
+    }
+    if (observer_) {
+      // Devtools expects to see a rule body for every rule; it is
+      // the trigger for actually inserting the rule. So we need to
+      // include a fake empty body here, or the indexing will be
+      // messed up when the NestedDeclarations rules arrive.
+      observer_->StartRuleBody(stream.Offset());
+      observer_->EndRuleBody(stream.Offset());
+    }
     return MakeGarbageCollected<StyleRuleApplyMixin>(name, std::move(arguments),
                                                      nullptr);
   }
@@ -2530,12 +2542,6 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
   if (stream.UncheckedPeek().GetType() != kLeftBraceToken) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;  // Parse error.
-  }
-  wtf_size_t header_end = stream.LookAheadOffset();
-
-  if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kApplyMixin, header_start);
-    observer_->EndRuleHeader(header_end);
   }
 
   // Parse the @contents block.
