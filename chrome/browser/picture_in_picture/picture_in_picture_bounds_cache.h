@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_BOUNDS_CACHE_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_BOUNDS_CACHE_H_
 
+#include <optional>
+
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -37,20 +39,22 @@ class PictureInPictureBoundsCache
   // If the site did not request a particular content size, then
   // `requested_content_size` should be unset.
   //
-  // `display` should reflect the display on which the opener is shown.
+  // `opener_display` should reflect the display on which the opener is shown.
   //
   // This will also set up the cache to allow additional calls to
   // `UpdateCachedBounds()` to succeed.  This must be called first.
   static std::optional<gfx::Rect> GetBoundsForNewWindow(
       content::WebContents* web_contents,
-      const display::Display& display,
+      const display::Display& opener_display,
       std::optional<gfx::Size> requested_content_size);
 
   // Updates the cache for `web_contents` to reflect `most_recent_bounds` as the
   // window (not content) bounds.  `GetBoundsForNewWindow()` must be called
   // before the first update.
   static void UpdateCachedBounds(content::WebContents* web_contents,
-                                 const gfx::Rect& most_recent_bounds);
+                                 const gfx::Rect& most_recent_bounds,
+                                 const display::Display& opener_display,
+                                 const display::Display& pip_display);
 
   // Clears the cache for `web_contents`.
   static void ClearCachedBounds(content::WebContents* web_contents);
@@ -64,11 +68,14 @@ class PictureInPictureBoundsCache
   // given display, initial the cache and return cached window bounds if they
   // match what's in the cache.
   std::optional<gfx::Rect> GetBoundsForNewWindow(
-      const display::Display& display,
+      const display::Display& opener_display,
       const std::optional<gfx::Size>& requested_content_size);
 
-  // Update the cache to reflect the most recent size of the window.
-  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
+  // Update the cache to reflect the most recent size of the window and
+  // opener/pip window displays.
+  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds,
+                          const display::Display& opener_display,
+                          const display::Display& pip_display);
 
   // Reset our state to have no cached bounds.  Future calls to
   // `UpdaetCachedBounds()` will do nothing, until the next call to
@@ -78,9 +85,11 @@ class PictureInPictureBoundsCache
   // The origin for this cache entry.
   url::Origin origin_;
 
-  // Display from which the window was opened.  `-1` indicates "no display",
-  // according to display::Display::id() docs.
-  int64_t display_id_ = -1;
+  // Display from which the window was opened.
+  std::optional<int64_t> opener_display_id_;
+
+  // Display on which the pip window was shown.
+  std::optional<int64_t> pip_display_id_;
 
   // This is the most recent site-requested contents size, if any.
   std::optional<gfx::Size> requested_content_size_;

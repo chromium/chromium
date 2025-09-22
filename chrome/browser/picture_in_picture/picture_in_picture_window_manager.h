@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
+#include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "url/gurl.h"
@@ -165,14 +166,14 @@ class PictureInPictureWindowManager {
   // minimum (|GetMinimumInnerWindowSize|).
   gfx::Rect CalculateOuterWindowBounds(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
-      const display::Display& display,
       const gfx::Size& minimum_window_size,
       const gfx::Size& excluded_margin);
 
-  // Update the most recent window bounds for the pip window in the cache.  Call
+  // Update the most recent window bounds for the pip window in the cache. Call
   // this when the pip window moves or resizes, though it's okay if not every
   // update makes it here.
-  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds);
+  void UpdateCachedBounds(const gfx::Rect& most_recent_bounds,
+                          const display::Display& pip_display);
 
   // Clears the picture-in-picture window cached bounds.
   void ClearCachedBounds();
@@ -395,6 +396,10 @@ class PictureInPictureWindowManager {
 
   std::unique_ptr<PictureInPictureWindowManagerUmaHelper> uma_helper_;
 #endif  //! BUILDFLAG(IS_ANDROID)
+
+  // The display of the opener window, cached during
+  // `CalculateInitialPictureInPictureWindowBounds`.
+  std::optional<display::Display> opener_display_;
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>
       pip_window_controller_ = nullptr;

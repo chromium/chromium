@@ -771,26 +771,6 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
   // directly.  In that case, the excluded margin we compute won't be used, and
   // probably the browser coordinates are already correct, but that's fine.
 
-  // Get the current display. This is needed by |ComputeOuterWindowBounds| to
-  // determine the work area dimensions and the allowed maximum window size.
-  const BrowserWindow* const browser_window =
-      browser_view()->browser()->window();
-  const gfx::NativeWindow native_window =
-      browser_window ? browser_window->GetNativeWindow() : gfx::NativeWindow();
-  const display::Screen* const screen = display::Screen::Get();
-  const gfx::Rect original_override_bounds =
-      browser_view()->browser()->override_bounds();
-  display::Display display;
-  // Use the override bounds if possible, since the NativeWindow might not be
-  // positioned properly yet.
-  if (!original_override_bounds.IsEmpty()) {
-    display =
-        screen->GetDisplayNearestPoint(original_override_bounds.top_center());
-  } else {
-    display = browser_window ? screen->GetDisplayNearestWindow(native_window)
-                             : screen->GetDisplayForNewWindows();
-  }
-
   // Compute the margin required by both the platform and the browser frame
   // (us) to provide the requested inner size.
 
@@ -813,7 +793,7 @@ void PictureInPictureBrowserFrameView::OnBrowserViewInitViewsComplete() {
   // simply be ignored and nothing will change.
   const gfx::Rect window_bounds =
       PictureInPictureWindowManager::GetInstance()->CalculateOuterWindowBounds(
-          pip_options.value(), display,
+          pip_options.value(),
           GetMinimumSize() + gfx::Size(insets.width(), insets.height()),
           excluded_margin);
 
@@ -1022,12 +1002,13 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
   gfx::Rect current_bounds = GetWidget()->GetWindowBoundsInScreen();
   bool did_adjust_size = false;
 
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
+      GetWidget()->GetNativeWindow());
+
   // If the website is requesting that the window increases in size, then ensure
   // that it's not increasing beyond the site-requested maximum.
   if (bounds.size().width() > current_bounds.size().width() ||
       bounds.size().height() > current_bounds.size().height()) {
-    auto display = display::Screen::Get()->GetDisplayNearestWindow(
-        GetWidget()->GetNativeWindow());
     gfx::Size adjusted_new_size =
         PictureInPictureWindowManager::AdjustRequestedSizeIfNecessary(
             bounds.size(), display);
@@ -1037,7 +1018,11 @@ void PictureInPictureBrowserFrameView::SetFrameBounds(const gfx::Rect& bounds) {
     // and a large requested size could incidentally move the window).
     if (adjusted_new_size != bounds.size()) {
       adjusted_bounds = current_bounds;
-      adjusted_bounds.ClampToCenteredSize(adjusted_new_size);
+      adjusted_bounds.ToCenteredSize(adjusted_new_size);
+
+      // Ensure the bounds are fully within the display work area.
+      adjusted_bounds.AdjustToFit(display.work_area());
+
       did_adjust_size = true;
     }
   }
@@ -1234,7 +1219,10 @@ void PictureInPictureBrowserFrameView::OnWidgetVisibilityChanged(
 void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(new_bounds);
+  const auto pip_display = display::Screen::Get()->GetDisplayNearestWindow(
+      widget->GetNativeWindow());
+  PictureInPictureWindowManager::GetInstance()->UpdateCachedBounds(new_bounds,
+                                                                   pip_display);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

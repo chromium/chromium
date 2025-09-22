@@ -414,14 +414,16 @@ PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
 
 gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
-    const display::Display& display,
     const gfx::Size& minimum_outer_window_size,
     const gfx::Size& excluded_margin) {
+  CHECK(opener_display_);
+  auto opener_display = opener_display_.value();
+
   // TODO(crbug.com/40841415): This copies a bunch of logic from
   // VideoOverlayWindowViews. That class and this one should be refactored so
   // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
   // window sizing.
-  gfx::Rect work_area = display.work_area();
+  gfx::Rect work_area = opener_display.work_area();
   gfx::Rect window_bounds;
 
   // If the outer bounds for this request are cached, then ignore everything
@@ -437,7 +439,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     }
     auto cached_window_bounds =
         PictureInPictureBoundsCache::GetBoundsForNewWindow(
-            web_contents, display, requested_content_bounds);
+            web_contents, opener_display, requested_content_bounds);
     // Ignore the result if we're asked to do so.  Note that we still have to
     // ask the cache, so that it's set up to accept position updates later for
     // this request.
@@ -454,7 +456,7 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
         base::saturated_cast<int>(pip_options.width),
         base::saturated_cast<int>(pip_options.height));
     gfx::Size window_size =
-        AdjustRequestedSizeIfNecessary(requested_window_size, display);
+        AdjustRequestedSizeIfNecessary(requested_window_size, opener_display);
 
 #if !BUILDFLAG(IS_ANDROID)
     if (is_calculating_initial_document_pip_size_) {
@@ -469,18 +471,18 @@ gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     // inner area.
     window_size += excluded_margin;
 
-    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMin(GetMaximumWindowSize(opener_display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
   } else {
     // Otherwise, fall back to the aspect ratio.
     gfx::Size window_size(work_area.width() / 5, work_area.height() / 5);
-    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMin(GetMaximumWindowSize(opener_display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
     gfx::SizeRectToAspectRatioWithExcludedMargin(
         gfx::ResizeEdge::kTopLeft, kInitialAspectRatio,
-        GetMinimumInnerWindowSize(), GetMaximumWindowSize(display),
+        GetMinimumInnerWindowSize(), GetMaximumWindowSize(opener_display),
         excluded_margin, window_bounds);
   }
 
@@ -513,8 +515,11 @@ gfx::Rect
 PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display) {
+  opener_display_ = display;
+
 #if !BUILDFLAG(IS_ANDROID)
-  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options, display);
+  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options,
+                                                     opener_display_.value());
   base::AutoReset<bool> auto_reset(&is_calculating_initial_document_pip_size_,
                                    true);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -523,20 +528,27 @@ PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
   // bounds are incorrect if `pip_options` includes a requested inner size that
   // we'd like to honor.  It's okay, because we'll recompute it later once we
   // know the excluded margin.
-  return CalculateOuterWindowBounds(pip_options, display,
-                                    GetMinimumInnerWindowSize(), gfx::Size());
+  return CalculateOuterWindowBounds(pip_options, GetMinimumInnerWindowSize(),
+                                    gfx::Size());
 }
 
 void PictureInPictureWindowManager::UpdateCachedBounds(
-    const gfx::Rect& most_recent_bounds) {
+    const gfx::Rect& most_recent_bounds,
+    const display::Display& pip_display) {
   // Typically, we have a window controller at this point, but often during
   // tests we don't.  Don't worry about the cache if it's missing.
   if (!pip_window_controller_) {
     return;
   }
+
   auto* const web_contents = pip_window_controller_->GetWebContents();
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents,
-                                                  most_recent_bounds);
+  if (!web_contents) {
+    return;
+  }
+
+  CHECK(opener_display_);
+  PictureInPictureBoundsCache::UpdateCachedBounds(
+      web_contents, most_recent_bounds, opener_display_.value(), pip_display);
 }
 
 void PictureInPictureWindowManager::ClearCachedBounds() {
@@ -623,6 +635,7 @@ void PictureInPictureWindowManager::CloseWindowInternal() {
   video_web_contents_observer_.reset();
   pip_window_controller_->Close(false /* should_pause_video */);
   pip_window_controller_ = nullptr;
+  opener_display_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeRecordPictureInPictureChanged(false);
