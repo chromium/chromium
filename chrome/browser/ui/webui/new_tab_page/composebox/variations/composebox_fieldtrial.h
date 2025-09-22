@@ -43,6 +43,8 @@ extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 extern const base::FeatureParam<bool> kShowNextRealbox;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
+// Whether to show the tools and models picker in the composebox.
+extern const base::FeatureParam<bool> kShowToolsAndModels;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
