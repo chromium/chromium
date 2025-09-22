@@ -16,6 +16,22 @@
 
 namespace net {
 
+// Represents a given named group in TLS, used in supported_groups and
+// key_share.
+struct NET_EXPORT SSLNamedGroupInfo {
+  // NamedGroup enum codepoint for the group, from
+  // https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.7.
+  uint16_t group_id = 0u;
+  // Whether the group should be sent in the key_share extension for the
+  // initial ClientHello.
+  bool send_key_share = false;
+
+  bool operator==(const SSLNamedGroupInfo&) const = default;
+
+  bool IsPostQuantum() const;
+};
+
+// Configuration options for SSL connections.
 struct NET_EXPORT SSLContextConfig {
   SSLContextConfig();
   SSLContextConfig(const SSLContextConfig&);
@@ -25,6 +41,14 @@ struct NET_EXPORT SSLContextConfig {
   SSLContextConfig& operator=(SSLContextConfig&&);
 
   bool operator==(const SSLContextConfig&) const;
+
+  // Returns a copy of the list of group IDs given by `supported_named_groups`.
+  // If `key_shares_only` is false, the returned vector is the list of groups to
+  // include in the supported_groups extension. If `key_shares_only` is true,
+  // only the groups that have `send_key_share == true` are included in the
+  // returned vector, which will be the list of groups to include in the
+  // key_share extension.
+  std::vector<uint16_t> GetSupportedGroups(bool key_shares_only = false) const;
 
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
@@ -43,8 +67,10 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
-  // Controls whether post-quantum key agreement in TLS connections is allowed.
-  bool post_quantum_key_agreement_enabled = true;
+  // Ordered list of NamedGroups that are supported, used to configure
+  // supported_groups and key_share. Set to `kDefaultSSLSupportedGroups` by
+  // default.
+  std::vector<SSLNamedGroupInfo> supported_named_groups;
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;

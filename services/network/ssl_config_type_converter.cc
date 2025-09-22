@@ -4,10 +4,12 @@
 
 #include "services/network/ssl_config_type_converter.h"
 
+#include <functional>
 #include <optional>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "net/ssl/ssl_config_service.h"
 
 namespace mojo {
 
@@ -32,9 +34,19 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
-  net_config.post_quantum_key_agreement_enabled =
-      mojo_config->post_quantum_key_agreement_enabled;
   net_config.ech_enabled = mojo_config->ech_enabled;
+
+  // Translate the configuration options related to named groups.
+  switch (mojo_config->named_groups_preset) {
+    case network::mojom::SSLNamedGroupsPreset::kDefault:
+      // Do nothing, the `net::SSLContextConfig` constructor starts with the
+      // default list.
+      break;
+  }
+  if (!mojo_config->post_quantum_key_agreement_enabled) {
+    std::erase_if(net_config.supported_named_groups,
+                  std::mem_fn(&net::SSLNamedGroupInfo::IsPostQuantum));
+  }
 
   for (const auto& tai : mojo_config->trust_anchor_ids) {
     net_config.trust_anchor_ids.insert(tai);

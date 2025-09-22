@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
 #include <memory>
 #include <ostream>
 #include <utility>
@@ -327,7 +328,8 @@ TEST_F(QuicEndToEndTest, EnableMLKEM) {
 TEST_F(QuicEndToEndTest, MLKEMDisabled) {
   // Disable ML-KEM on the client.
   SSLContextConfig config;
-  config.post_quantum_key_agreement_enabled = false;
+  std::erase_if(config.supported_named_groups,
+                std::mem_fn(&net::SSLNamedGroupInfo::IsPostQuantum));
   ssl_config_service_->UpdateSSLConfigAndNotify(config);
 
   // Configure the server to only support ML-KEM.

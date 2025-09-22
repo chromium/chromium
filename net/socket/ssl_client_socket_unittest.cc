@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -6462,7 +6463,10 @@ TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
     SCOPED_TRACE(enabled);
 
     SSLContextConfig config;
-    config.post_quantum_key_agreement_enabled = enabled;
+    if (!enabled) {
+      std::erase_if(config.supported_named_groups,
+                    std::mem_fn(&SSLNamedGroupInfo::IsPostQuantum));
+    }
     ssl_config_service_->UpdateSSLConfigAndNotify(config);
     int rv;
     ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));

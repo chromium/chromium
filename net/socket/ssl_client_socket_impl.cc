@@ -676,12 +676,18 @@ int SSLClientSocketImpl::Init() {
     return ERR_UNEXPECTED;
   }
 
-  if (context_->config().post_quantum_key_agreement_enabled) {
-    const uint16_t kGroups[] = {SSL_GROUP_X25519_MLKEM768, SSL_GROUP_X25519,
-                                SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1};
-    if (!SSL_set1_group_ids(ssl_.get(), kGroups, std::size(kGroups))) {
-      return ERR_UNEXPECTED;
-    }
+  const std::vector<uint16_t> supported_groups =
+      context_->config().GetSupportedGroups();
+  if (!SSL_set1_group_ids(ssl_.get(), supported_groups.data(),
+                          supported_groups.size())) {
+    return ERR_UNEXPECTED;
+  }
+  const std::vector<uint16_t> key_shares =
+      context_->config().GetSupportedGroups(/*key_shares_only=*/true);
+  if (!key_shares.empty() &&
+      !SSL_set1_client_key_shares(ssl_.get(), key_shares.data(),
+                                  key_shares.size())) {
+    return ERR_UNEXPECTED;
   }
 
   if (IsCachingEnabled()) {
