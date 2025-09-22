@@ -1316,29 +1316,6 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromoMoreInfoButtonMetric) {
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
-// Test verifies that the Trusted Vault widget promo cell is not displayed when
-// the flag
-// `password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget` is
-// disabled.
-TEST_F(PasswordManagerViewControllerTest,
-       TrustedVaultWidgetPromoWhenFlagIsDisabled) {
-  base::HistogramTester histogram_tester;
-  AddSavedForm1();
-
-  GetPasswordManagerViewController().shouldShowTrustedVaultWidgetPromo = YES;
-  [GetPasswordManagerViewController() reloadData];
-
-  EXPECT_FALSE([GetPasswordManagerViewController().tableViewModel
-      hasSectionForSectionIdentifier:SectionIdentifierTrustedVaultWidgetPromo]);
-
-  // Bucket count should be zero.
-  histogram_tester.ExpectBucketCount(
-      kPasswordManagerPromoWithTrustedVaultKeyRetrievalActionHistogram,
-      PasswordManagerPromoWithTrustedVaultKeyRetrievalAction::kDisplayed, 0);
-
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
 // Test verifies the content of the Trusted Vault widget promo cell when the
 // flag
 // `password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget` is
