@@ -16,8 +16,11 @@ public interface PageInfoSubpageController {
     /** Returns a title string for the page info subpage. */
     @Nullable String getSubpageTitle();
 
-    /** Returns a personalized subview to be used inside of the page info subpage. */
+    /** Creates and returns a personalized subview to be used inside of the page info subpage. */
     @Nullable View createViewForSubpage(ViewGroup parent);
+
+    /** Returns the current subpage view if it exists. */
+    @Nullable View getCurrentSubpageView();
 
     /** Called after the subpage closes in order to perform any necessary cleanup. */
     void onSubpageRemoved();

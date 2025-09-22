@@ -65,6 +65,11 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mActiveView;
+    }
+
+    @Override
     public void onSubpageRemoved() {
         mActiveView = null;
     }

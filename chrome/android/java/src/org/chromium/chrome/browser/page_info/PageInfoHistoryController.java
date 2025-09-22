@@ -115,6 +115,11 @@ public class PageInfoHistoryController
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mContentManager != null ? mContentManager.getRecyclerView() : null;
+    }
+
+    @Override
     public void onSubpageRemoved() {
         if (mContentManager != null) {
             mContentManager.onDestroyed();

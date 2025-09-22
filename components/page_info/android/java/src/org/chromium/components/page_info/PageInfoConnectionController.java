@@ -71,6 +71,11 @@ public class PageInfoConnectionController
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mContainer;
+    }
+
+    @Override
     public void onSubpageRemoved() {
         mContainer = null;
         assumeNonNull(mInfoView);

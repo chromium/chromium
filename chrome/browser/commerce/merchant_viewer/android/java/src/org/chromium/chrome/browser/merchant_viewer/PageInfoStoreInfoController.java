@@ -122,6 +122,11 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return null;
+    }
+
+    @Override
     public void onSubpageRemoved() {}
 
     @Override
