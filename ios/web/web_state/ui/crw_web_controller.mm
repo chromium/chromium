@@ -25,12 +25,12 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "build/config/ios/buildflags.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
-#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/download/crw_web_view_download.h"
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
@@ -75,6 +75,10 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "url/gurl.h"
 
+#if !BUILDFLAG(IOS_IS_APP_EXTENSION)
+#import "ios/web/common/uikit_ui_util.h"  // nogncheck
+#endif
+
 using web::NavigationManager;
 using web::NavigationManagerImpl;
 using web::WebState;
@@ -87,6 +91,20 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 // when setting a WKWebView's interaction state.
 BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns the bounds of the screen (or at least of one screen).
+CGRect GetScreenBounds() {
+#if !BUILDFLAG(IOS_IS_APP_EXTENSION)
+  // GetAnyKeyWindow() is not available when building an app extension.
+  if (UIWindow* window = GetAnyKeyWindow()) {
+    return window.bounds;
+  }
+#endif
+
+  // Fall back to UIScreen's -mainScreen if no key window is available.
+  return UIScreen.mainScreen.bounds;
+}
+
 }  // namespace
 
 @interface CRWWebController () <CRWDataControlsDelegate,
@@ -1357,8 +1375,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   } else {
     // Use the screen size because the application's key window and the
     // container may still be nil.
-    _containerView.frame = GetAnyKeyWindow() ? GetAnyKeyWindow().bounds
-                                             : UIScreen.mainScreen.bounds;
+    _containerView.frame = GetScreenBounds();
   }
 
   DCHECK(!CGRectIsEmpty(_containerView.frame));
