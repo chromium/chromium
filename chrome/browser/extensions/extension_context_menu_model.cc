@@ -23,6 +23,8 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/permissions_url_constants.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -56,6 +58,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -105,6 +108,35 @@ bool MenuItemMatchesAction(const std::optional<ActionInfo::Type> action_type,
 bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
   auto* management = ExtensionManagementFactory::GetForBrowserContext(profile);
   return base::Contains(management->GetForcePinnedList(), extension.id());
+}
+
+// Returns true if the given |extension| is allowed to be inspected based on
+// the Developer Tools Availability in the policy.
+bool IsExtensionInspectionAllowed(const Extension& extension,
+                                  Profile* profile) {
+  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  Availability availability =
+      policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
+
+  switch (availability) {
+    case Availability::kDisallowed:
+      return false;
+    case Availability::kAllowed:
+      return true;
+    case Availability::kDisallowedForForceInstalledExtensions:
+      if (Manifest::IsPolicyLocation(extension.location())) {
+        return false;
+      }
+      // We also disallow inspecting component extensions, but only for managed
+      // profiles.
+      if (Manifest::IsComponentLocation(extension.location()) &&
+          profile->GetProfilePolicyConnector()->IsManaged()) {
+        return false;
+      }
+      return true;
+    default:
+      NOTREACHED() << "Unknown developer tools policy";
+  }
 }
 
 // Returns the id for the visibility command for the given |extension|.
@@ -399,7 +431,8 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
       content::WebContents* web_contents = GetActiveWebContents();
       return web_contents && extension_action_ &&
              extension_action_->HasPopup(
-                 sessions::SessionTabHelper::IdForTab(web_contents).id());
+                 sessions::SessionTabHelper::IdForTab(web_contents).id()) &&
+             IsExtensionInspectionAllowed(*extension, profile_);
     }
     case UNINSTALL:
       // Uninstall is always enabled since it will only be visible when the
@@ -805,7 +838,14 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   if (delegate_ && !is_component_ && action_info && !action_info->synthesized &&
       profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithStringId(INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP);
+    if (IsExtensionInspectionAllowed(*extension, profile_)) {
+      AddItemWithStringId(INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP);
+    } else {
+      AddItemWithStringIdAndIcon(
+          INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP,
+          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                         ui::kColorIcon, 16));
+    }
   }
 }
 
