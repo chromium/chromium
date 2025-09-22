@@ -46,6 +46,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
+  void ClearIOThreadState();
 
   gfx::GpuMemoryBufferHandle CreateNativeGmbHandleOnIO(
       const gfx::Size& size,

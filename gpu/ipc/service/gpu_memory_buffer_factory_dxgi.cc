@@ -25,7 +25,27 @@ GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI(
     : io_runner_(std::move(io_runner)) {
   DETACH_FROM_THREAD(thread_checker_);
 }
-GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
+GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() {
+  base::WaitableEvent wait;
+  auto clear_io_thread_state = base::BindOnce(
+      [](GpuMemoryBufferFactoryDXGI* gmb_factory, base::WaitableEvent* wait) {
+        gmb_factory->ClearIOThreadState();
+        wait->Signal();
+      },
+      this, base::Unretained(&wait));
+
+  if (io_runner_ &&
+      io_runner_->PostTask(FROM_HERE, std::move(clear_io_thread_state))) {
+    wait.Wait();
+  }
+}
+
+void GpuMemoryBufferFactoryDXGI::ClearIOThreadState() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  d3d11_device_.Reset();
+  staging_texture_.Reset();
+}
 
 // TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
 // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
