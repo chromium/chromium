@@ -9,6 +9,9 @@
 #include "chrome/browser/extensions/chrome_extension_system.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "extensions/browser/extension_system_provider.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionSystem;

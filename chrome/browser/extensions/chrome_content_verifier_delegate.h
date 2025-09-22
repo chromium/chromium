@@ -13,7 +13,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_verifier/content_verifier_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
