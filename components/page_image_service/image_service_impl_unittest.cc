@@ -77,8 +77,7 @@ class ImageServiceImplTest : public testing::Test {
   ImageServiceImplTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kImageService, kImageServiceSuggestPoweredImages}, {});
+    scoped_feature_list_.InitWithFeatures({kImageService}, {});
 
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,

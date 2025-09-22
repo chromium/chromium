@@ -3251,11 +3251,6 @@ const char kPageImageServiceOptimizationGuideSalientImagesDescription[] =
     "Enables the PageImageService fetching images from the Optimization Guide "
     "Salient Images source.";
 
-const char kPageImageServiceSuggestPoweredImagesName[] =
-    "Page Image Service - Suggest Powered Images";
-const char kPageImageServiceSuggestPoweredImagesDescription[] =
-    "Enables the PageImageService fetching images from the Suggest source.";
-
 const char kPageVisibilityPageContentAnnotationsName[] =
     "Page visibility content annotations";
 const char kPageVisibilityPageContentAnnotationsDescription[] =

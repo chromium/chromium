@@ -7268,12 +7268,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_content_annotations::features::
                             kExtractRelatedSearchesFromPrefetchedZPSResponse)},
 
-    {"page-image-service-suggest-powered-images",
-     flag_descriptions::kPageImageServiceSuggestPoweredImagesName,
-     flag_descriptions::kPageImageServiceSuggestPoweredImagesDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(page_image_service::kImageServiceSuggestPoweredImages)},
-
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription,
      kOsDesktop | kOsAndroid,

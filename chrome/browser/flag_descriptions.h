@@ -1881,9 +1881,6 @@ extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 extern const char kPageImageServiceOptimizationGuideSalientImagesName[];
 extern const char kPageImageServiceOptimizationGuideSalientImagesDescription[];
 
-extern const char kPageImageServiceSuggestPoweredImagesName[];
-extern const char kPageImageServiceSuggestPoweredImagesDescription[];
-
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];
 

@@ -10,7 +10,6 @@
 namespace page_image_service {
 
 BASE_DECLARE_FEATURE(kImageService);
-BASE_DECLARE_FEATURE(kImageServiceSuggestPoweredImages);
 
 }  // namespace page_image_service
 

@@ -250,9 +250,8 @@ void ImageServiceImpl::OnConsentResult(mojom::ClientId client_id,
     return std::move(callback).Run(GURL());
   }
 
-  if (options.suggest_images &&
-      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages) &&
-      template_url_service_ && remote_suggestions_service_) {
+  if (options.suggest_images && template_url_service_ &&
+      remote_suggestions_service_) {
     auto search_metadata =
         template_url_service_->ExtractSearchMetadata(page_url);
     // Fetch entity-keyed images for Google SRP visits only, because only
