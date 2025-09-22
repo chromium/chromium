@@ -2005,6 +2005,14 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
 void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  for (tabs::TabInterface* foreground_tab : GetForegroundTabs()) {
+    if (!foreground_tab->IsActivated()) {
+      static_cast<tabs::TabModel*>(foreground_tab)
+          ->WillBecomeHidden(base::PassKey<TabStripModel>());
+    }
+  }
+
   RemoveSplitImpl(split_id,
                   SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
 }
@@ -3371,7 +3379,10 @@ int TabStripModel::InsertTabAtImpl(
   // If there's already an active tab, and the new tab will become active, send
   // a notification.
   if (active_tab_model && active && !closing_all_) {
-    active_tab_model->WillEnterBackground(base::PassKey<TabStripModel>());
+    for (tabs::TabInterface* foreground_tab : GetForegroundTabs()) {
+      static_cast<tabs::TabModel*>(foreground_tab)
+          ->WillEnterBackground(base::PassKey<TabStripModel>());
+    }
   }
 
   // Have to get the active contents before we monkey with the contents
@@ -3573,8 +3584,30 @@ TabStripSelectionChange TabStripModel::SetSelection(
   if (selection_model().active().has_value() &&
       new_model.active().has_value() &&
       selection_model().active().value() != new_model.active().value()) {
-    GetTabModelAtIndex(active_index())
-        ->WillEnterBackground(base::PassKey<TabStripModel>());
+    if (GetActiveTab()->GetSplit() !=
+        GetSplitForTab(new_model.active().value())) {
+      // When not switching between two splits, the active tab is deactivated
+      // and all foreground tabs become hidden.
+      for (tabs::TabInterface* tab : GetForegroundTabs()) {
+        if (tab->IsActivated()) {
+          static_cast<tabs::TabModel*>(GetActiveTab())
+              ->WillDeactivate(base::PassKey<TabStripModel>());
+        }
+        static_cast<tabs::TabModel*>(tab)->WillBecomeHidden(
+            base::PassKey<TabStripModel>());
+      }
+
+    } else if (GetActiveTab()->IsSplit()) {
+      // When switching between two tabs in a split, neither enters the
+      // background but one becomes deactivated.
+      static_cast<tabs::TabModel*>(GetActiveTab())
+          ->WillDeactivate(base::PassKey<TabStripModel>());
+    } else {
+      // For a non-split tab, just mark the active tab as entering the
+      // background.
+      static_cast<tabs::TabModel*>(GetActiveTab())
+          ->WillEnterBackground(base::PassKey<TabStripModel>());
+    }
   }
 
   // This is done after notifying TabDeactivated() because caller can assume

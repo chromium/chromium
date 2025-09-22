@@ -50,6 +50,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -521,7 +522,35 @@ class TabStripModelTest : public testing::TestWithParam<bool> {
                 .is_null();
   }
 
+  struct MockCallbackOwner {
+    base::MockRepeatingCallback<void(tabs::TabInterface*)> callback;
+  };
+
+  base::CallbackListSubscription ExpectWillDeactivateCallbackCount(int index,
+                                                                   int count) {
+    callbacks_.push_back(std::make_unique<MockCallbackOwner>());
+    EXPECT_CALL(callbacks_.back()->callback, Run).Times(count);
+    return tabstrip()->GetTabAtIndex(index)->RegisterWillDeactivate(
+        callbacks_.back()->callback.Get());
+  }
+
+  base::CallbackListSubscription ExpectWillBecomeHiddenCallbackCount(
+      int index,
+      int count) {
+    callbacks_.push_back(std::make_unique<MockCallbackOwner>());
+    EXPECT_CALL(callbacks_.back()->callback, Run).Times(count);
+    return tabstrip()->GetTabAtIndex(index)->RegisterWillBecomeHidden(
+        callbacks_.back()->callback.Get());
+  }
+
+  void VerifyAndClearCallbacks() {
+    for (const auto& callback_owner : callbacks_) {
+      testing::Mock::VerifyAndClearExpectations(&callback_owner->callback);
+    }
+  }
+
  private:
+  std::vector<std::unique_ptr<MockCallbackOwner>> callbacks_;
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   const std::unique_ptr<TestingProfile> profile_;
@@ -5943,6 +5972,86 @@ TEST_P(TabStripModelTest, AddToComparisonTable_AddToNewTableOpensTab) {
   ASSERT_TRUE(tabstrip()->count() == 2);
   ASSERT_TRUE(tabstrip()->GetActiveWebContents()->GetVisibleURL() ==
               commerce::GetProductSpecsTabUrl({url}));
+}
+
+TEST_P(TabStripModelTest, LifecycleCallbacks_SwitchingTabToSplit) {
+  // Create three tabs with a split containing tabs 0 and 1.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 0, {0}));
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->ActivateTabAt(2);
+
+  auto s0 = ExpectWillBecomeHiddenCallbackCount(2, 1);
+  auto s2 = ExpectWillDeactivateCallbackCount(2, 1);
+
+  // Set the selection to be the tab inside the split.
+  tabstrip()->SelectTabAt(0);
+
+  // Verify that the callback was called for each tab.
+  VerifyAndClearCallbacks();
+}
+
+TEST_P(TabStripModelTest, LifecycleCallbacks_SwitchingTabAwayFromSplit) {
+  // Create three tabs with a split containing tabs 0 and 1.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 0, {0}));
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto s0 = ExpectWillBecomeHiddenCallbackCount(0, 1);
+  auto s1 = ExpectWillBecomeHiddenCallbackCount(1, 1);
+  auto s2 = ExpectWillDeactivateCallbackCount(0, 1);
+  auto s3 = ExpectWillDeactivateCallbackCount(1, 0);
+
+  // Set the selection to be the tab outside the split.
+  tabstrip()->SelectTabAt(2);
+
+  // Verify that the callback was called for each tab.
+  VerifyAndClearCallbacks();
+}
+
+TEST_P(TabStripModelTest, LifecycleCallbacks_SwitchingTabWithinSplit) {
+  // Create three tabs with a split containing tabs 0 and 1.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 0, {0}));
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto s0 = ExpectWillBecomeHiddenCallbackCount(0, 0);
+  auto s1 = ExpectWillBecomeHiddenCallbackCount(1, 0);
+  auto s2 = ExpectWillDeactivateCallbackCount(0, 1);
+  auto s3 = ExpectWillDeactivateCallbackCount(1, 0);
+
+  // Set the selection to be the other tab in the split.
+  tabstrip()->SelectTabAt(1);
+
+  // Verify that the callback was called for each tab.
+  VerifyAndClearCallbacks();
+}
+
+TEST_P(TabStripModelTest, LifecycleCallbacks_UnsplitTabs) {
+  // Create three tabs with a split containing tabs 0 and 1.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 3, 0, {0}));
+  tabstrip()->ActivateTabAt(0);
+  split_tabs::SplitTabId split_id = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto s0 = ExpectWillBecomeHiddenCallbackCount(0, 0);
+  auto s1 = ExpectWillBecomeHiddenCallbackCount(1, 1);
+  auto s2 = ExpectWillDeactivateCallbackCount(0, 0);
+  auto s3 = ExpectWillDeactivateCallbackCount(1, 0);
+
+  // Unsplit the tabs.
+  tabstrip()->RemoveSplit(split_id);
+
+  // Verify that the callback was called for each tab.
+  VerifyAndClearCallbacks();
 }
 
 TEST_P(TabStripModelTest, ExtendSelectionTo_SplitTabs) {

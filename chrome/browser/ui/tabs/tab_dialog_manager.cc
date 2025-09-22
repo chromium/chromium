@@ -241,10 +241,10 @@ TabDialogManager::TabDialogManager(TabInterface* tab_interface)
     : content::WebContentsObserver(tab_interface->GetContents()),
       tab_interface_(tab_interface) {
   tab_subscriptions_.push_back(
-      tab_interface_->RegisterDidActivate(base::BindRepeating(
+      tab_interface_->RegisterDidBecomeVisible(base::BindRepeating(
           &TabDialogManager::TabDidEnterForeground, base::Unretained(this))));
   tab_subscriptions_.push_back(
-      tab_interface_->RegisterWillDeactivate(base::BindRepeating(
+      tab_interface_->RegisterWillBecomeHidden(base::BindRepeating(
           &TabDialogManager::TabWillEnterBackground, base::Unretained(this))));
   tab_subscriptions_.push_back(
       tab_interface_->RegisterWillDetach(base::BindRepeating(
@@ -511,9 +511,11 @@ void TabDialogManager::TabWillDetach(TabInterface* tab_interface,
 
 bool TabDialogManager::GetDialogWidgetVisibility() {
   // The dialog widget should be visible if and only if the tab is in the
-  // foreground and activated, and the host window is not minimized.
+  // foreground and activated, and the host window is not minimized. For split
+  // view, a tab must just be in the foreground because if both tabs have
+  // modals, one won't be activated.
   return GetWidgetVisibility(
-      tab_interface_->IsActivated(),
+      tab_interface_->IsVisible(),
       tab_interface_->GetBrowserWindowInterface()->GetWindow()->IsMinimized(),
       params_->should_show_callback);
 }

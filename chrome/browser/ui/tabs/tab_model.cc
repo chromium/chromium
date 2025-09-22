@@ -181,8 +181,16 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
 }
 
 void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
-  will_enter_background_callback_list_.Notify(this);
+  will_deactivate_callback_list_.Notify(this);
   will_become_hidden_callback_list_.Notify(this);
+}
+
+void TabModel::WillBecomeHidden(base::PassKey<TabStripModel>) {
+  will_become_hidden_callback_list_.Notify(this);
+}
+
+void TabModel::WillDeactivate(base::PassKey<TabStripModel>) {
+  will_deactivate_callback_list_.Notify(this);
 }
 
 void TabModel::WillDetach(base::PassKey<TabStripModel>,
@@ -221,7 +229,7 @@ base::CallbackListSubscription TabModel::RegisterDidActivate(
 
 base::CallbackListSubscription TabModel::RegisterWillDeactivate(
     TabInterface::WillDeactivateCallback callback) {
-  return will_enter_background_callback_list_.Add(std::move(callback));
+  return will_deactivate_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::IsVisible() const {
@@ -332,6 +340,10 @@ void TabModel::OnTabStripModelChanged(
 
   if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
+    did_become_visible_callback_list_.Notify(this);
+    return;
+  } else if (IsSplit() && selection.new_tab->GetSplit() == GetSplit()) {
+    // The inactive tab in a split also becomes visible.
     did_become_visible_callback_list_.Notify(this);
     return;
   }

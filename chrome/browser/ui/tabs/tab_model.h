@@ -107,7 +107,16 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // Called by TabStripModel when a tab is going to be backgrounded (any
   // operation that makes the tab no longer visible, including removal from the
   // TabStripModel). Not called if TabStripModel is being destroyed.
+  // TODO(crbug.com/445414702): Audit uses of this method.
   void WillEnterBackground(base::PassKey<TabStripModel>);
+
+  // Called by TabStripModel when a tab is going to be hidden. Not called if
+  // TabStripModel is being destroyed.
+  void WillBecomeHidden(base::PassKey<TabStripModel>);
+
+  // Called by TabStripModel when a tab is going to be deactivated. Not called
+  // if TabStripModel is being destroyed.
+  void WillDeactivate(base::PassKey<TabStripModel>);
 
   // Called by TabStripModel when a tab is going to be detached for reinsertion
   // into a different tab strip.
@@ -242,7 +251,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
 
   using WillDeactivateCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  WillDeactivateCallbackList will_enter_background_callback_list_;
+  WillDeactivateCallbackList will_deactivate_callback_list_;
 
   using DidBecomeVisibleCallback =
       base::RepeatingCallbackList<void(TabInterface*)>;
