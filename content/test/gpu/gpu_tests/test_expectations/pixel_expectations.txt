@@ -367,7 +367,7 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPass
 [ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [ Slow ]
 
 # Long-running test, can flakily time out on old/slow hardware.
-[ mac amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
+[ mac arch-x86_64 amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
 
 # Hitting timeout with graphite
 crbug.com/381211724 [ mac amd-0x679e release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
@@ -498,8 +498,8 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan no-clang-coverage release
 crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageImageBitmap [ Failure ]
 crbug.com/425671158 [ angle-metal graphite-disabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] Pixel_WebGPUCopyExternalImageWebGPUCanvas [ Failure ]
 
-# Flaky Timeout on Mac m3
-crbug.com/425739516 [ mac apple-angle-metal-renderer:-apple-m3 	angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
+# Flaky Timeout on Mac ARM
+crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
 
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ android android-chromium ] Pixel_Video_MP4_TreesInViz [ Failure ]
