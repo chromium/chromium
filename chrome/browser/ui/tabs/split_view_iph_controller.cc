@@ -55,8 +55,9 @@ void SplitViewIphController::OnTabStripModelChanged(
   if (selection.active_tab_changed()) {
     tabs::TabInterface* const active_tab = selection.new_tab;
 
-    if (recent_tabs_[kMostRecentTabTrackerIndex] != active_tab &&
-        recent_tabs_[kLeastRecentTabTrackerIndex] != active_tab) {
+    if (recent_tabs_.size() < kNumTabsTracked ||
+        (recent_tabs_[kMostRecentTabTrackerIndex] != active_tab &&
+         recent_tabs_[kLeastRecentTabTrackerIndex] != active_tab)) {
       AddNewTabToTracker(active_tab);
     } else if (++tab_switch_count_ >=
                features::kSideBySideIphTabSwitchCount.Get()) {
@@ -67,7 +68,9 @@ void SplitViewIphController::OnTabStripModelChanged(
 
 void SplitViewIphController::AddNewTabToTracker(tabs::TabInterface* new_tab) {
   // Replace the oldest recent tab with the new tab.
-  recent_tabs_.pop_back();
+  if (recent_tabs_.size() >= kNumTabsTracked) {
+    recent_tabs_.pop_back();
+  }
   recent_tabs_.push_front(new_tab);
 
   // Reset tab_switch_count since we're entering a new tab
@@ -77,9 +80,14 @@ void SplitViewIphController::AddNewTabToTracker(tabs::TabInterface* new_tab) {
 void SplitViewIphController::RemoveTabFromTracker(
     const TabStripModelChange::Remove* remove_contents) {
   for (const auto& contents : remove_contents->contents) {
+    if (recent_tabs_.empty()) {
+      return;
+    }
+
     if (recent_tabs_[kMostRecentTabTrackerIndex] == contents.tab) {
       recent_tabs_.pop_front();
-    } else if (recent_tabs_[kLeastRecentTabTrackerIndex] == contents.tab) {
+    } else if (recent_tabs_.size() == kNumTabsTracked &&
+               recent_tabs_[kLeastRecentTabTrackerIndex] == contents.tab) {
       recent_tabs_.pop_back();
     }
   }

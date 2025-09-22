@@ -40,6 +40,9 @@ class SplitViewIphController : public TabStripModelObserver {
   // Returns the most recently inactive tab
   ui::TrackedElement* GetTabSwitchIPHAnchor(BrowserView* browser_view);
 
+  int get_recent_tabs_size() const { return recent_tabs_.size(); }
+  int get_tab_switch_count() const { return tab_switch_count_; }
+
   // TabStripModelObserver
   void OnSplitTabChanged(const SplitTabChange& change) override;
   void OnTabStripModelChanged(

@@ -749,6 +749,7 @@ if (!is_android) {
     sources = [
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "inactive_window_mouse_event_controller_unittest.cc",
+      "split_view_iph_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",
