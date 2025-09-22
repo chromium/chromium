@@ -98,7 +98,7 @@ int FrameViewChromeOS::NonClientTopBorderHeight() const {
       window_state_type == chromeos::WindowStateType::kNormal;
   // The frame should not occupy the window area when it's in fullscreen,
   // not visible, disabled, in immersive mode or in tablet mode.
-  // TODO(crbug.com/40879470): Support NonClientFrameViewAshImmersiveHelper on
+  // TODO(crbug.com/40879470): Support FrameViewAshImmersiveHelper on
   // Lacros so that we can remove InTabletMode() && IsMaximized() condition.
   if (frame_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode() ||

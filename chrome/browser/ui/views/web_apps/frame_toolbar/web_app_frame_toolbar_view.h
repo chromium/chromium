@@ -18,7 +18,7 @@
 #include "ui/views/view_targeter_delegate.h"
 
 namespace {
-class WebAppNonClientFrameViewChromeOSTest;
+class WebAppFrameViewChromeOSTest;
 class LocationBarViewQuietNotificationInteractiveUITest;
 }  // namespace
 
@@ -115,7 +115,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
  private:
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
-  friend class WebAppNonClientFrameViewChromeOSTest;
+  friend class WebAppFrameViewChromeOSTest;
   friend class LocationBarViewQuietNotificationInteractiveUITest;
 
   views::View* GetContentSettingContainerForTesting();

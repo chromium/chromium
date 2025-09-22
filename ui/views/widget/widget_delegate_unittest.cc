@@ -79,8 +79,7 @@ TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
   EXPECT_EQ(tracker.view(), client.get());
 }
 
-TEST_F(WidgetDelegateTest,
-       NonClientFrameViewFactoryCanReplaceNonClientFrameView) {
+TEST_F(WidgetDelegateTest, FrameViewFactoryCanReplaceFrameView) {
   ViewTracker tracker;
 
   auto delegate = std::make_unique<WidgetDelegate>();

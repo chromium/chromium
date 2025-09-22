@@ -55,7 +55,7 @@ using ::chromeos::kImmersiveImpliedByFullscreen;
 using ::chromeos::kTrackDefaultFrameColors;
 using ::chromeos::WindowStateType;
 
-DEFINE_UI_CLASS_PROPERTY_KEY(FrameViewAsh*, kNonClientFrameViewAshKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(FrameViewAsh*, kFrameViewAshKey, nullptr)
 
 // This helper enables and disables immersive mode in response to state such as
 // tablet mode and fullscreen changing. For legacy reasons, it's only
@@ -172,7 +172,7 @@ FrameViewAsh::FrameViewAsh(views::Widget* frame)
         std::make_unique<FrameViewAshImmersiveHelper>(frame, this);
   }
 
-  frame_window->SetProperty(kNonClientFrameViewAshKey, this);
+  frame_window->SetProperty(kFrameViewAshKey, this);
   if (!frame_window->GetProperty(aura::client::kWindowRoundedCornersKey)) {
     frame_window->SetProperty(aura::client::kWindowRoundedCornersKey,
                               chromeos::GetWindowRoundedCorners());
@@ -190,7 +190,7 @@ FrameViewAsh::~FrameViewAsh() {
 
 // static
 FrameViewAsh* FrameViewAsh::Get(aura::Window* window) {
-  return window->GetProperty(kNonClientFrameViewAshKey);
+  return window->GetProperty(kFrameViewAshKey);
 }
 
 void FrameViewAsh::InitImmersiveFullscreenControllerForView(

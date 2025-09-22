@@ -484,15 +484,14 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
 namespace {
 
-class WebAppNonClientFrameViewChromeOSTest
+class WebAppFrameViewChromeOSTest
     : public TopChromeMdParamTest<ChromeOSBrowserUITest> {
  public:
-  WebAppNonClientFrameViewChromeOSTest() = default;
-  WebAppNonClientFrameViewChromeOSTest(
-      const WebAppNonClientFrameViewChromeOSTest&) = delete;
-  WebAppNonClientFrameViewChromeOSTest& operator=(
-      const WebAppNonClientFrameViewChromeOSTest&) = delete;
-  ~WebAppNonClientFrameViewChromeOSTest() override = default;
+  WebAppFrameViewChromeOSTest() = default;
+  WebAppFrameViewChromeOSTest(const WebAppFrameViewChromeOSTest&) = delete;
+  WebAppFrameViewChromeOSTest& operator=(const WebAppFrameViewChromeOSTest&) =
+      delete;
+  ~WebAppFrameViewChromeOSTest() override = default;
 
   GURL GetAppURL() const {
     return https_server_.GetURL("app.com", "/ssl/google.html");
@@ -633,8 +632,7 @@ class WebAppNonClientFrameViewChromeOSTest
 // Tests that the page info dialog doesn't anchor in a way that puts it outside
 // of web-app windows. This is important as some platforms don't support bubble
 // anchor adjustment (see |BubbleDialogDelegateView::CreateBubble()|).
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       PageInfoBubblePosition) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PageInfoBubblePosition) {
   SetUpWebApp();
 
   // Resize app window to only take up the left half of the screen.
@@ -659,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   EXPECT_TRUE(widget->GetWindowBoundsInScreen().Contains(page_info_bounds));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, FocusableViews) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, FocusableViews) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
   browser_view_->GetFocusManager()->AdvanceFocus(false);
@@ -668,7 +666,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, FocusableViews) {
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        ButtonVisibilityInOverviewMode) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForVisible(true, web_app_frame_toolbar_));
@@ -682,8 +680,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   ASSERT_TRUE(WaitForVisible(true, web_app_frame_toolbar_));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       FrameThemeColorIsSet) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, FrameThemeColorIsSet) {
   SetUpWebApp();
   aura::Window* window = browser_view_->GetWidget()->GetNativeWindow();
   EXPECT_EQ(GetThemeColor(),
@@ -695,7 +692,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 
 // Make sure that for web apps, the height of the frame doesn't exceed the
 // height of the caption buttons.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, FrameSize) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, FrameSize) {
   SetUpWebApp();
   const int inset = GetFrameViewChromeOS(browser_view_)->GetTopInset(false);
   EXPECT_EQ(inset, views::GetCaptionButtonLayoutSize(
@@ -705,14 +702,12 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, FrameSize) {
   EXPECT_GE(inset, web_app_frame_toolbar_->size().height());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       IsToolbarButtonProvider) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, IsToolbarButtonProvider) {
   SetUpWebApp();
   EXPECT_EQ(browser_view_->toolbar_button_provider(), web_app_frame_toolbar_);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       ShowManagePasswordsIcon) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
@@ -733,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   ASSERT_TRUE(WaitForVisible(true, manage_passwords_icon));
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->tab_strip_model()->GetActiveWebContents();
@@ -750,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowZoomIcon) {
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowFindIcon) {
   SetUpWebApp();
 
   const bool find_page_action_migrated =
@@ -772,15 +767,13 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest, ShowFindIcon) {
 }
 
 // TODO(crbug.com/420040505): Fix failures on the Linux Chromium OS ASan LSan
-// Tests bot.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
+// Tests bot. (Actually this is flaky on *all* ChromeOS builds.)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowTranslateIcon DISABLED_ShowTranslateIcon
 #else
 #define MAYBE_ShowTranslateIcon ShowTranslateIcon
 #endif
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       MAYBE_ShowTranslateIcon) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, MAYBE_ShowTranslateIcon) {
   SetUpWebApp();
   IconLabelBubbleView* translate_icon = GetPageActionView(kActionShowTranslate);
 
@@ -798,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 
 // Tests that the focus toolbar command focuses the app menu button in web-app
 // windows.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusToolbarAppMenu) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
@@ -810,7 +803,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 
 // Tests that the focus toolbar command focuses content settings icons before
 // the app menu button when present in web-app windows.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusToolbarGeolocation) {
   SetUpWebApp();
 
@@ -831,8 +824,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 }
 
 // Tests that the show app menu command opens the app menu for web-app windows.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       BrowserCommandShowAppMenu) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, BrowserCommandShowAppMenu) {
   SetUpWebApp();
   EXPECT_EQ(nullptr, GetAppMenu());
   chrome::ExecuteCommand(app_browser_, IDC_SHOW_APP_MENU);
@@ -841,7 +833,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 
 // Tests that the focus next pane command focuses the app menu for web-app
 // windows.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusNextPane) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
@@ -851,8 +843,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 }
 
 // Tests the app icon and title are not shown.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       IconShownAndTitleNotShown) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, IconShownAndTitleNotShown) {
   SetUpWebApp();
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
   EXPECT_FALSE(browser_view->ShouldShowWindowIcon());
@@ -860,8 +851,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 }
 
 // Tests that the custom tab bar is focusable from the keyboard.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       CustomTabBarIsFocusable) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, CustomTabBarIsFocusable) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
 
@@ -883,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 
 // Tests that the focus previous pane command focuses the app menu for web-app
 // windows.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        BrowserCommandFocusPreviousPane) {
   SetUpWebApp();
   ASSERT_TRUE(WaitForFocus(true, browser_view_->contents_web_view()));
@@ -893,8 +883,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 }
 
 // Tests that a web app's content settings icons can be interacted with.
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       ContentSettingIcons) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ContentSettingIcons) {
   SetUpWebApp();
   for (ContentSettingImageView* view : *content_setting_views_) {
     EXPECT_FALSE(view->GetVisible());
@@ -917,7 +906,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
 }
 
 // Regression test for https://crbug.com/839955
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest,
                        ActiveStateOfButtonMatchesWidget) {
   SetUpWebApp();
   chromeos::FrameCaptionButtonContainerView::TestApi test(
@@ -931,8 +920,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(GetPaintingAsActive());
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewChromeOSTest,
-                       PopupHasNoToolbar) {
+IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
   SetUpWebApp();
 
   Browser* popup_browser;
@@ -1971,6 +1959,6 @@ INSTANTIATE_TEST_SUITE(BrowserFrameViewChromeOSTestWithWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(FloatBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE(WebAppFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(BrowserFrameViewAshTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserFrameViewAshTest);
