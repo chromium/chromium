@@ -53,19 +53,13 @@
 # TODO(crbug.com/401453196): Refine into child bugs if/as it becomes clear that
 # tests are failing due to distinct issues.
 
-crbug.com/401453196 fast/hidpi/video-controls-in-hidpi.html [ Failure ]
-crbug.com/401453196 fast/mediarecorder/MediaRecorder-error-on-oversize-frame-h264.html [ Failure ]
-crbug.com/401453196 fast/mediarecorder/MediaRecorder-isTypeSupported-avc1.html [ Failure ]
 crbug.com/401453196 compositing/culling/clear-fixed-iframe.html [ Failure ]
-crbug.com/401453196 compositing/img-layer-object-fit.html [ Failure ]
 crbug.com/401453196 compositing/lots-of-img-layers-with-opacity.html [ Failure ]
 crbug.com/401453196 compositing/lots-of-img-layers.html [ Failure ]
 crbug.com/401453196 compositing/perpendicular-layer-sorting.html [ Failure ]
+crbug.com/401453196 compositing/perspective-interest-rect.html [ Failure ]
 
 crbug.com/401453196 virtual/fluent-overlay-scrollbar/virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html [ Failure ]
-crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/hover-over-scrollbar-thumb.html [ Failure ]
-crbug.com/401453196 virtual/fluent-overlay-scrollbar/visual/scrollbar-show-tickmarks.html [ Failure ]
 
-crbug.com/401453196 compositing/perspective-interest-rect.html [ Failure ]
 crbug.com/401453196 transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
 crbug.com/401453196 transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
