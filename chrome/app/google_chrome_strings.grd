@@ -663,6 +663,14 @@ Google Chrome is unable to recover your settings.
           Provides system tracing services for <ph name="BROWSER_NAME">$1<ex>Google Chrome</ex></ph>. If this service is disabled, performance traces created by the browser will not include system-wide events such as context switch and ready thread events.
         </message>
       </if>
+      <if expr="not is_android">
+        <message name="IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE" desc="The title of the file selection dialog for importing passwords">
+          Import Passwords To Chrome
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE" desc="The title of the file selection dialog for exporting passwords">
+          Export Passwords From Chrome
+        </message>
+      </if>
       <!-- Options Dialog -->
       <if expr="is_win">
         <message name="IDS_SHORTCUT_TOOLTIP" desc="Text for the hover-on tooltip for the Google Chrome shortcuts.">

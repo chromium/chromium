@@ -11061,12 +11061,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_TOOLTIP_KEYCHAIN_ERROR" desc="Text for the 'Manage Passwords' icon's 'keychain error' state">
           Fix password error
         </message>
-        <message name="IDS_PASSWORD_MANAGER_IMPORT_DIALOG_TITLE" desc="The title of the file selection dialog for importing passwords">
-          Import Passwords To Chrome
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE" desc="The title of the file selection dialog for exporting passwords">
-          Export Passwords From Chrome
-        </message>
       </if>
       <if expr="is_android">
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option"  formatter_data="android_java">
