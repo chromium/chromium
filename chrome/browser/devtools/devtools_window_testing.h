@@ -10,7 +10,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "ui/gfx/geometry/rect.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -34,8 +34,8 @@ class DevToolsWindowTesting {
   static DevToolsWindow* OpenDevToolsWindowSync(
       content::WebContents* inspected_web_contents,
       bool is_docked);
-  static DevToolsWindow* OpenDevToolsWindowSync(
-      Browser* browser, bool is_docked);
+  static DevToolsWindow* OpenDevToolsWindowSync(BrowserWindowInterface* browser,
+                                                bool is_docked);
   static DevToolsWindow* OpenDevToolsWindowSync(
       Profile* profile,
       scoped_refptr<content::DevToolsAgentHost> agent_host);
@@ -48,7 +48,7 @@ class DevToolsWindowTesting {
 
   static DevToolsWindowTesting* Get(DevToolsWindow* window);
 
-  Browser* browser();
+  BrowserWindowInterface* browser();
   content::WebContents* main_web_contents();
   content::WebContents* toolbox_web_contents();
   void SetInspectedPageBounds(const gfx::Rect& bounds);

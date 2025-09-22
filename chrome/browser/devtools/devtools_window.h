@@ -24,6 +24,7 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class BrowserList;
 class BrowserWindow;
 class DevToolsWindowTesting;
@@ -127,7 +128,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   static bool IsDevToolsWindow(content::WebContents* web_contents);
   static DevToolsWindow* AsDevToolsWindow(content::WebContents* web_contents);
-  static DevToolsWindow* AsDevToolsWindow(Browser* browser);
+  static DevToolsWindow* AsDevToolsWindow(BrowserWindowInterface* browser);
   static DevToolsWindow* FindDevToolsWindow(content::DevToolsAgentHost*);
 
   // Open or reveal DevTools window, and perform the specified action.
@@ -174,7 +175,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
   //
   static void ToggleDevToolsWindow(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const DevToolsToggleAction& action,
       DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
 
@@ -280,7 +281,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   // Returns true if devtools browser has already fired its beforeunload event
   // as a result of beforeunload event interception.
-  static bool HasFiredBeforeUnloadEventForDevToolsBrowser(Browser* browser);
+  static bool HasFiredBeforeUnloadEventForDevToolsBrowser(
+      BrowserWindowInterface* browser);
 
   // Returns true if devtools window would like to hook beforeunload event
   // of this |contents|.
@@ -487,7 +489,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   // Registers a WebContentsModalDialogManager for our WebContents in order to
   // display web modal dialogs triggered by it.
-  void RegisterModalDialogManager(Browser* browser);
+  void RegisterModalDialogManager(BrowserWindowInterface* browser);
 
   // Called when the accepted language changes. |navigator.language| of the
   // DevTools window should match the application language. When the user
@@ -530,7 +532,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   std::unique_ptr<content::WebContents> owned_toolbox_web_contents_;
 
   raw_ptr<DevToolsUIBindings> bindings_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   // When DevToolsWindow is docked, it owns main_web_contents_. When it isn't
   // docked, the tab strip model owns the main_web_contents_.

@@ -128,8 +128,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
     // For the case where we are showing a survey in an undocked DevTools
     // window, we open the URL in the browser of the inspected page.
     if (browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
-      DevToolsWindow* devtools_window = DevToolsWindow::AsDevToolsWindow(
-          browser_->GetBrowserForMigrationOnly());
+      DevToolsWindow* devtools_window =
+          DevToolsWindow::AsDevToolsWindow(browser_);
       DCHECK(devtools_window);
       devtools_window->OpenURLFromInspectedTab(params);
     } else {

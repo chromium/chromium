@@ -19,8 +19,8 @@
 #include "content/public/test/test_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -76,7 +76,7 @@ DevToolsWindowTesting* DevToolsWindowTesting::Find(DevToolsWindow* window) {
   return nullptr;
 }
 
-Browser* DevToolsWindowTesting::browser() {
+BrowserWindowInterface* DevToolsWindowTesting::browser() {
   return devtools_window_->browser_;
 }
 
@@ -163,10 +163,10 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
 #if !BUILDFLAG(IS_ANDROID)
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_docked) {
   return OpenDevToolsWindowSync(
-      browser->tab_strip_model()->GetActiveWebContents(), is_docked);
+      browser->GetTabStripModel()->GetActiveWebContents(), is_docked);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -199,7 +199,7 @@ void DevToolsWindowTesting::CloseDevToolsWindow(
 #if BUILDFLAG(IS_ANDROID)
     window->main_web_contents_->Close();
 #else
-    window->browser_->window()->Close();
+    window->browser_->GetWindow()->Close();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 }

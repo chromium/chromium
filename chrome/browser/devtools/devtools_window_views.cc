@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -16,28 +17,28 @@
 using content::WebContents;
 
 // static
-void DevToolsWindow::ToggleDevToolsWindow(Browser* browser,
+void DevToolsWindow::ToggleDevToolsWindow(BrowserWindowInterface* browser,
                                           const DevToolsToggleAction& action,
                                           DevToolsOpenedByAction opened_by) {
   if (action.type() == DevToolsToggleAction::kToggle &&
-      browser->is_type_devtools()) {
-    browser->tab_strip_model()->CloseAllTabs();
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+    browser->GetTabStripModel()->CloseAllTabs();
     return;
   }
 
-  ToggleDevToolsWindow(browser->tab_strip_model()->GetActiveWebContents(),
+  ToggleDevToolsWindow(browser->GetTabStripModel()->GetActiveWebContents(),
                        nullptr, action.type() == DevToolsToggleAction::kInspect,
                        action, "", opened_by);
 }
 
 // static
 bool DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(
-    Browser* browser) {
-  DCHECK(browser->is_type_devtools());
+    BrowserWindowInterface* browser) {
+  DCHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
   // When FastUnloadController is used, devtools frontend will be detached
   // from the browser window at this point which means we've already fired
   // beforeunload.
-  if (browser->tab_strip_model()->empty()) {
+  if (browser->GetTabStripModel()->empty()) {
     return true;
   }
   DevToolsWindow* window = AsDevToolsWindow(browser);
@@ -48,12 +49,13 @@ bool DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(
 }
 
 // static
-DevToolsWindow* DevToolsWindow::AsDevToolsWindow(Browser* browser) {
-  DCHECK(browser->is_type_devtools());
-  if (browser->tab_strip_model()->empty()) {
+DevToolsWindow* DevToolsWindow::AsDevToolsWindow(
+    BrowserWindowInterface* browser) {
+  DCHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+  if (browser->GetTabStripModel()->empty()) {
     return nullptr;
   }
-  WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(0);
+  WebContents* contents = browser->GetTabStripModel()->GetWebContentsAt(0);
   return AsDevToolsWindow(contents);
 }
 
@@ -111,11 +113,12 @@ void DevToolsWindow::UpdateBrowserWindow() {
   }
 }
 
-void DevToolsWindow::RegisterModalDialogManager(Browser* browser) {
+void DevToolsWindow::RegisterModalDialogManager(
+    BrowserWindowInterface* browser) {
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       main_web_contents_);
   web_modal::WebContentsModalDialogManager::FromWebContents(main_web_contents_)
-      ->SetDelegate(browser);
+      ->SetDelegate(browser->GetBrowserForMigrationOnly());
 
   // Observer `browser` destruction/removal to reset `SetDelegate(nullptr)`
   // before the dialog manager's `raw_ptr` becomes dangling.

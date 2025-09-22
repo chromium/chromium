@@ -196,7 +196,7 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
  public:
   void SetUpOnMainThread() override;
 
-  void ActivateBrowserWindow(Browser* browser);
+  void ActivateBrowserWindow(BrowserWindowInterface* browser);
 
   Browser* CreateBrowserWithEmptyTab(bool as_popup);
 
@@ -251,7 +251,8 @@ void ExtensionWindowLastFocusedTest::SetUpOnMainThread() {
   extension_ = ExtensionBuilder("Test").Build();
 }
 
-void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(Browser* browser) {
+void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(
+    BrowserWindowInterface* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_NE(nullptr, view);
   views::Widget* widget = view->GetWidget();

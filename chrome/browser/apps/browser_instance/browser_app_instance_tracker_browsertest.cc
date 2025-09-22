@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, DISABLED_DevtoolsWindow) {
                                                       /*is_docked=*/false);
     aura::Window* window2 = DevToolsWindowTesting::Get(dev_tools_window)
                                 ->browser()
-                                ->window()
+                                ->GetWindow()
                                 ->GetNativeWindow();
     DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 

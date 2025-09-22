@@ -105,6 +105,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif
@@ -1069,7 +1070,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   MaybeShowSharedProcessInfobar();
 
   if (should_show_window) {
-    browser_->window()->Show();
+    browser_->GetWindow()->Show();
     main_web_contents_->SetInitialFocus();
   }
   if (toolbox_web_contents_) {
@@ -1424,7 +1425,7 @@ void DevToolsWindow::ActivateContents(WebContents* contents) {
     NOTIMPLEMENTED();
 #else
     if (browser_) {
-      browser_->window()->Activate();
+      browser_->GetWindow()->Activate();
     }
 #endif
   }
@@ -1569,8 +1570,8 @@ void DevToolsWindow::ActivateWindow() {
 #else
   if (is_docked_ && GetInspectedBrowserWindow()) {
     main_web_contents_->Focus();
-  } else if (!is_docked_ && browser_ && !browser_->window()->IsActive()) {
-    browser_->window()->Activate();
+  } else if (!is_docked_ && browser_ && !browser_->GetWindow()->IsActive()) {
+    browser_->GetWindow()->Activate();
   }
 #endif
 }
@@ -1646,7 +1647,7 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
   if (dock_requested && !was_docked && browser_) {
     // Detach window from the external devtools browser. It will lead to
     // the browser object's close and delete. Remove observer first.
-    TabStripModel* tab_strip_model = browser_->tab_strip_model();
+    TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
     DCHECK(!owned_main_web_contents_);
 
     // Removing the only WebContents from the tab strip of browser_ will
@@ -1798,7 +1799,7 @@ void DevToolsWindow::RenderProcessGone(bool crashed) {
   } else {
 #if !BUILDFLAG(IS_ANDROID)
     if (browser_ && crashed) {
-      browser_->window()->Close();
+      browser_->GetWindow()->Close();
     }
 #endif
   }
@@ -1927,7 +1928,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
   }
   browser_ =
       Browser::Create(Browser::CreateParams::CreateForDevTools(profile_));
-  browser_->tab_strip_model()->AddWebContents(
+  browser_->GetTabStripModel()->AddWebContents(
       OwnedMainWebContents::TakeWebContents(
           std::move(owned_main_web_contents_)),
       -1, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, AddTabTypes::ADD_ACTIVE);
