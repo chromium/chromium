@@ -660,13 +660,21 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected handleComposeboxFocusIn_() {
+  protected handleComposeboxFocusIn_(e: FocusEvent) {
+    // Exit early if the focus is still within the composebox.
+    if (this.$.composebox.contains(e.relatedTarget as Node)) {
+      return;
+    }
     this.expanded_ = true;
     this.submitting_ = false;
     this.pageHandler_.focusChanged(true);
   }
 
-  protected handleComposeboxFocusOut_() {
+  protected handleComposeboxFocusOut_(e: FocusEvent) {
+    // Exit early if the focus is still within the composebox.
+    if (this.$.composebox.contains(e.relatedTarget as Node)) {
+      return;
+    }
     // If the input is blurred and the composebox is expandable, collapse it.
     // Else, keep the composebox expanded.
     this.expanded_ = !this.isCollapsible;

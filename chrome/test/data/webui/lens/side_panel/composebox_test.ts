@@ -9,7 +9,8 @@ import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {stringToMojoString16} from 'chrome-untrusted://resources/js/mojo_type_util.js';
+import {type AutocompleteMatch, type AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
@@ -49,6 +50,65 @@ function getTransitionEndPromise(
 suite('Composebox', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
+  let mockPageHandler: TestMock<PageHandlerRemote>;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
+  let searchboxCallbackRouterRemote: SearchboxPageRemote;
+
+  function createAutocompleteMatch(): AutocompleteMatch {
+    return {
+      a11yLabel: {data: []},
+      actions: [],
+      allowedToBeDefaultMatch: false,
+      isSearchType: false,
+      isEnterpriseSearchAggregatorPeopleType: false,
+      swapContentsAndDescription: false,
+      supportsDeletion: false,
+      suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
+      contents: {data: []},
+      contentsClass: [{offset: 0, style: 0}],
+      description: {data: []},
+      descriptionClass: [{offset: 0, style: 0}],
+      destinationUrl: {url: ''},
+      inlineAutocompletion: {data: []},
+      fillIntoEdit: {data: []},
+      iconPath: '',
+      iconUrl: {url: ''},
+      imageDominantColor: '',
+      imageUrl: '',
+      isNoncannedAimSuggestion: false,
+      removeButtonA11yLabel: {data: []},
+      type: '',
+      isRichSuggestion: false,
+      isWeatherAnswerSuggestion: null,
+      answer: null,
+      tailSuggestCommonPrefix: null,
+    };
+  }
+
+  function createAutocompleteResult(
+      modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
+    const base: AutocompleteResult = {
+      input: stringToMojoString16(''),
+      matches: [],
+      suggestionGroupsMap: {},
+      smartComposeInlineHint: null,
+    };
+
+    return Object.assign(base, modifiers);
+  }
+
+  function createSearchMatch(modifiers: Partial<AutocompleteMatch> = {}):
+      AutocompleteMatch {
+    return Object.assign(
+        createAutocompleteMatch(), {
+          isSearchType: true,
+          contents: stringToMojoString16('hello world'),
+          destinationUrl: {url: 'https://www.google.com/search?q=hello+world'},
+          fillIntoEdit: stringToMojoString16('hello world'),
+          type: 'search-suggest',
+        },
+        modifiers);
+  }
 
   // Returns the composebox element.
   async function setupTest(): Promise<HTMLElement> {
@@ -56,12 +116,15 @@ suite('Composebox', () => {
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     // Mock the composebox handlers.
-    const mockPageHandler = TestMock.fromClass(PageHandlerRemote);
-    const mockSearchboxPageHandler =
-        TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockPageHandler = TestMock.fromClass(PageHandlerRemote);
+    mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockPageHandler, new PageCallbackRouter(), mockSearchboxPageHandler,
-        new SearchboxPageCallbackRouter()));
+        mockPageHandler as any, new PageCallbackRouter(),
+        mockSearchboxPageHandler as any, searchboxCallbackRouter));
+
+    searchboxCallbackRouterRemote =
+        searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
@@ -136,7 +199,7 @@ suite('Composebox', () => {
     assertEquals(initialHeight, composebox.offsetHeight);
   });
 
-  test('ButtonsHideAndShow', async () => {
+  test('ButtonsUpdateOnInputAndExpansion', async () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
 
@@ -159,25 +222,180 @@ suite('Composebox', () => {
     assertTrue(!!input);
 
     // Focusing the input should expand the composebox.
-    const submitShowPromise =
-        getTransitionEndPromise(submitButton.parentElement!);
-    const cancelShowPromise = getTransitionEndPromise(cancelButton);
+    const container = submitButton.parentElement!;
+    const expansionPromise = getTransitionEndPromise(container, 'opacity');
     input.focus();
-    await Promise.all([submitShowPromise, cancelShowPromise]);
+    await expansionPromise;
 
-    // The buttons should be visible now that the composebox is expanded.
+    // With no text, submit button is visible but disabled. Cancel is not
+    // visible and is disabled.
     assertTrue(isTrulyVisible(submitButton));
+    assertTrue(submitButton.hasAttribute('disabled'));
+    assertFalse(isTrulyVisible(cancelButton));
+    assertTrue(cancelButton.hasAttribute('disabled'));
+
+    // The buttons should be visible now that there is text.
+    input.value = 'hello world';
+    const cancelShowPromise = getTransitionEndPromise(cancelButton, 'opacity');
+    const cancelContainerShowPromise =
+        getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
+    const submitContainerShowPromise =
+        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    await waitAfterNextRender(composebox);
+    await Promise.all([
+      cancelShowPromise, cancelContainerShowPromise, submitContainerShowPromise,
+    ]);
+
+    assertTrue(isTrulyVisible(submitButton));
+    assertFalse(submitButton.hasAttribute('disabled'));
     assertTrue(isTrulyVisible(cancelButton));
+    assertFalse(cancelButton.hasAttribute('disabled'));
 
     // Blur the input to collapse the composebox.
     const submitHidePromise =
-        getTransitionEndPromise(submitButton.parentElement!);
-    const cancelHidePromise = getTransitionEndPromise(cancelButton);
+        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+    const cancelHidePromise =
+        getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     input.blur();
+    await waitAfterNextRender(composebox);
     await Promise.all([submitHidePromise, cancelHidePromise]);
 
     // The buttons should not be visible again.
     assertFalse(isTrulyVisible(submitButton));
     assertFalse(isTrulyVisible(cancelButton));
+  });
+
+  test('TabbingOrder', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+    const cancelButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+    assertTrue(!!submitButton);
+    assertTrue(!!cancelButton);
+
+    const getFocusableElements = () => {
+      // This is a simplified focusable element query that is sufficient for
+      // this test.
+      return Array
+          .from(composebox.shadowRoot!.querySelectorAll<HTMLElement>(
+              'button, [href], input, select, textarea, [tabindex]'))
+          .filter(el => {
+            if (el.getAttribute('tabindex') === '-1' ||
+                el.hasAttribute('disabled')) {
+              return false;
+            }
+            return isTrulyVisible(el);
+          });
+    };
+
+    input.focus();
+    // Wait for expansion.
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // When no text is present, only the input should be focusable inside the
+    // component. Tabbing should therefore move focus outside the component.
+    let focusable = getFocusableElements();
+    assertEquals(1, focusable.length);
+    assertEquals(input, focusable[0]);
+
+    // When text is present, tabbing follows order: input -> cancel -> submit.
+    input.value = 'some text';
+    input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+
+    // The buttons get enabled after an animation. Wait for it.
+    const cancelShowPromise = getTransitionEndPromise(cancelButton, 'opacity');
+    const cancelContainerShowPromise =
+        getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
+    const submitContainerShowPromise =
+        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+    await Promise.all([
+      cancelShowPromise,
+      cancelContainerShowPromise,
+      submitContainerShowPromise,
+    ]);
+
+    focusable = getFocusableElements();
+    assertEquals(3, focusable.length);
+    assertEquals(input, focusable[0]);
+    assertEquals(cancelButton, focusable[1]);
+    assertEquals(submitButton, focusable[2]);
+  });
+
+  test('KeyboardActions', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+    const cancelButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+    assertTrue(!!submitButton);
+    assertTrue(!!cancelButton);
+
+    input.focus();
+    // Wait for expansion.
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    input.value = 'some text';
+    input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+
+    // Focusing the clear button and pressing enter should clear the searchbox.
+    cancelButton.focus();
+    cancelButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      composed: true,
+    }));
+    await waitAfterNextRender(composebox);
+    assertEquals(input.value, '');
+
+    // Focusing the submit button and pressing enter should submit the query.
+    const query = 'some other text';
+    input.value = query;
+    input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+
+    const matches = [createSearchMatch({
+      fillIntoEdit: stringToMojoString16(query),
+      destinationUrl:
+          {url: `https://www.google.com/search?q=${query.replace(/ /g, '+')}`},
+      allowedToBeDefaultMatch: true,
+    })];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(query),
+          matches: matches,
+        }));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    submitButton.focus();
+    submitButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      composed: true,
+    }));
+    const [matchIndex, url] =
+        await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(matchIndex, 0);
+    assertEquals(
+        url.url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);
   });
 });

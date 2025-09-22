@@ -99,7 +99,7 @@
     var(--emphasized-accelerate);
 
   --height-expand-duration: 600ms;
-  --submit-enabled-transition: opactiy 255ms;
+  --submit-enabled-transition: opacity 255ms;
 
   --border-radius-transition: border-radius var(--collapse-duration)
     var(--emphasized-curve);
@@ -382,10 +382,18 @@
   --cr-icon-button-icon-size: 20px;
   position: absolute;
   top: 8px;
+  /* Uses the same transitions as the submit button so they are in sync. */
+  transition: var(--submit-enabled-transition);
 }
 
 :host([expanded_][is-collapsible]) #cancelIcon {
   top: 16px;
+}
+
+/* Hide the cancel icon when the composebox is expanded and no text is present. */
+:host([is-collapsible]:not([submit-enabled_])) #cancelIcon {
+  opacity: 0;
+  pointer-events: none;
 }
 
 #submitContainer {

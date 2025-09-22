@@ -102,13 +102,19 @@ export function getHtml(this: ComposeboxElement) {
       </div>
     `}
     </div>
-    <cr-icon-button
-        class="action-icon icon-fade icon-clear"
-        id="cancelIcon"
-        part="action-icon cancel-icon"
-        title="${this.computeCancelButtonTitle_()}"
-        @click="${this.onCancelClick_}">
-    </cr-icon-button>
+    <!-- A seperate container is needed for the submit button so the
+    expand/collapse animation can be applied without affecting the submit
+    button enabled/disabled state. -->
+    <div id="cancelContainer" class="icon-fade" part="cancel">
+      <cr-icon-button
+          class="action-icon icon-clear"
+          id="cancelIcon"
+          part="action-icon cancel-icon"
+          title="${this.computeCancelButtonTitle_()}"
+          @click="${this.onCancelClick_}"
+          ?disabled="${this.isCollapsible && !this.submitEnabled_}">
+      </cr-icon-button>
+    </div>
     <!-- A seperate container is needed for the submit button so the
        expand/collapse animation can be applied without affecting the submit
        button enabled/disabled state. -->
