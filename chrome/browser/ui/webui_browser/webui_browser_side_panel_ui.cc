@@ -186,7 +186,6 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed() {
     return;
   }
 
-  const bool closing_global = !current_key()->tab_handle;
   SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key());
   set_current_key(std::nullopt);
   if (previous_entry) {
@@ -198,11 +197,6 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed() {
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
-    if (closing_global) {
-      // Reset last active entry in contextual registry as global entry should
-      // take precedence.
-      contextual_registry->ResetLastActiveEntry();
-    }
   }
 
   window_registry_->ResetActiveEntry();

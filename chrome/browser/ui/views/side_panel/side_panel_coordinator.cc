@@ -882,8 +882,6 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     return;
   }
 
-  bool closing_global = !current_key()->tab_handle;
-
   // Reset current_key() first to prevent previous_entry->OnEntryHidden()
   // from calling multiple times. This could happen in the edge cases when
   // callback inside current_entry->OnEntryHidden() is calling Close() to
@@ -900,11 +898,6 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
-    if (closing_global) {
-      // Reset last active entry in contextual registry as global entry should
-      // take precedence.
-      contextual_registry->ResetLastActiveEntry();
-    }
   }
   window_registry_->ResetActiveEntry();
   ClearCachedEntryViews();

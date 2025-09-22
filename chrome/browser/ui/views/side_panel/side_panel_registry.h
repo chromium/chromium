@@ -45,7 +45,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
 
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
   void ResetActiveEntry();
-  void ResetLastActiveEntry();
 
   // Clear cached view for all owned entries.
   void ClearCachedEntryViews();
@@ -63,9 +62,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   void SetActiveEntry(SidePanelEntry* entry);
 
   std::optional<SidePanelEntry*> active_entry() { return active_entry_; }
-  std::optional<SidePanelEntry*> last_active_entry() {
-    return last_active_entry_;
-  }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }
 
   // SidePanelEntryObserver:
@@ -83,10 +79,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   // closed. When there are multiple registries, this may not be the entry
   // currently visible in the side panel.
   std::optional<SidePanelEntry*> active_entry_;
-
-  // The last active entry hosted in the side panel before it was closed. This
-  // is set when the active entry is reset i.e. when the panel is closed.
-  std::optional<SidePanelEntry*> last_active_entry_;
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 

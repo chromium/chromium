@@ -49,9 +49,7 @@ class View;
 // into a single unified side panel.
 // Existence and value of registries' active_entry() determines which entry is
 // visible for a given tab where the order of precedence is contextual
-// registry's active_entry() then global registry's. These values are reset when
-// the side panel is closed and |last_active_global_entry_id_| is used to
-// determine what entry is seen when the panel is reopened.
+// registry's active_entry() then global registry's.
 class SidePanelCoordinator final : public SidePanelUIBase,
                                    public views::ViewObserver,
                                    public PinnedToolbarActionsModel::Observer,

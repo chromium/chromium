@@ -47,14 +47,7 @@ SidePanelEntry* SidePanelRegistry::GetEntryForKey(
 }
 
 void SidePanelRegistry::ResetActiveEntry() {
-  if (active_entry_.has_value()) {
-    last_active_entry_ = active_entry_;
-    active_entry_.reset();
-  }
-}
-
-void SidePanelRegistry::ResetLastActiveEntry() {
-  last_active_entry_.reset();
+  active_entry_.reset();
 }
 
 void SidePanelRegistry::ClearCachedEntryViews() {
@@ -97,10 +90,6 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
   if (active_entry_.has_value() &&
       entry->key() == active_entry_.value()->key()) {
     active_entry_.reset();
-  }
-  if (last_active_entry_.has_value() &&
-      entry->key() == last_active_entry_.value()->key()) {
-    last_active_entry_.reset();
   }
 
   // TODO(https://crbug.com/360163254): This is nullptr in
