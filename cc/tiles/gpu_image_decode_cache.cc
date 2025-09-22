@@ -371,6 +371,8 @@ bool DrawAndScaleImageYUV(
 
 // Takes ownership of the backing texture of an SkImage. This allows us to
 // delete this texture under Skia (via discardable).
+// TODO(crbug.com/391648152): Remove this method entirely, as it is no longer
+// relevant post-OOP-C.
 sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
                                              sk_sp<SkImage> image) {
   // If the image is not texture backed, it has no backing, just return it.
@@ -378,21 +380,9 @@ sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
     return image;
   }
 
-  GrSurfaceOrigin origin;
-  SkImages::GetBackendTextureFromImage(
-      image, nullptr, false /* flushPendingGrContextIO */, &origin);
-  SkColorType color_type = image->colorType();
-  if (color_type == kUnknown_SkColorType) {
-    return nullptr;
-  }
-  sk_sp<SkColorSpace> color_space = image->refColorSpace();
-  GrBackendTexture backend_texture;
-  SkImages::BackendTextureReleaseProc release_proc;
-  SkImages::MakeBackendTextureFromImage(context, std::move(image),
-                                        &backend_texture, &release_proc);
-  return SkImages::BorrowTextureFrom(context, backend_texture, origin,
-                                     color_type, kPremul_SkAlphaType,
-                                     std::move(color_space));
+  // It is not possible to fulfill this operation post-OOP-C as `context` is
+  // always nullptr.
+  return nullptr;
 }
 
 // We use this below, instead of just a std::unique_ptr, so that we can run
