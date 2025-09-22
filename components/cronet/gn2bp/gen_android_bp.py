@@ -3679,9 +3679,8 @@ def main():
       description='Generate Android.bp from a GN description.')
   parser.add_argument(
       '--desc',
-      help=
-      'GN description (e.g., gn desc out --format=json --all-toolchains "//*".'
-      + 'You can specify multiple --desc options for different target_cpu',
+      help='GN description (e.g., gn desc out --format=json "//*".' +
+      'You can specify multiple --desc options for different target_cpu',
       required=True,
       action='append')
   parser.add_argument('--repo_root',
