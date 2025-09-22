@@ -233,6 +233,8 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline-end
     inset-inline-start
     interactivity
+    interest-delay-end
+    interest-delay-start
     interpolate-size
     isolation
     justify-content
@@ -718,6 +720,9 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline
         inset-inline-end
         inset-inline-start
+    interest-delay
+        interest-delay-end
+        interest-delay-start
     list-style
         list-style-image
         list-style-position

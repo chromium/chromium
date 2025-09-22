@@ -357,6 +357,7 @@ html element a
     property href
     property hrefTranslate
     property hreflang
+    property interestForElement
     property name
     property origin
     property password
@@ -386,6 +387,7 @@ html element area
     property host
     property hostname
     property href
+    property interestForElement
     property noHref
     property origin
     property password
@@ -501,6 +503,7 @@ html element button
     property formMethod
     property formNoValidate
     property formTarget
+    property interestForElement
     property labels
     property name
     property popoverTargetAction
@@ -1566,6 +1569,7 @@ svg element a
     property getCTM
     property getScreenCTM
     property href
+    property interestForElement
     property nearestViewportElement
     property rel
     property relList

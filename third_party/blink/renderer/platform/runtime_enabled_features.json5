@@ -2727,12 +2727,12 @@
       name: "HTMLImageElementActualNaturalSize",
       status: "test",
     },
-    // Adds support for the experimental `interestfor`
-    // attributes, as specified in the open-ui "Interest Invokers" explainer.
+    // Adds support for the `interestfor` attribute. See crbug.com/326681249.
     // https://open-ui.org/components/interest-invokers.explainer/
+    // This shipped in M142 and the flag can be removed in M144.
     {
       name: "HTMLInterestForAttribute",
-      status: "experimental",
+      status: "stable",
     },
     // Adds support for the `::interest-hint` pseudo element, which is a sub-
     // feature of the HTMLInterestForAttribute feature.

@@ -3229,6 +3229,7 @@ interface HTMLAnchorElement : HTMLElement
     getter href
     getter hrefTranslate
     getter hreflang
+    getter interestForElement
     getter name
     getter origin
     getter password
@@ -3258,6 +3259,7 @@ interface HTMLAnchorElement : HTMLElement
     setter href
     setter hrefTranslate
     setter hreflang
+    setter interestForElement
     setter name
     setter password
     setter pathname
@@ -3284,6 +3286,7 @@ interface HTMLAreaElement : HTMLElement
     getter host
     getter hostname
     getter href
+    getter interestForElement
     getter noHref
     getter origin
     getter password
@@ -3308,6 +3311,7 @@ interface HTMLAreaElement : HTMLElement
     setter host
     setter hostname
     setter href
+    setter interestForElement
     setter noHref
     setter password
     setter pathname
@@ -3406,6 +3410,7 @@ interface HTMLButtonElement : HTMLElement
     getter formMethod
     getter formNoValidate
     getter formTarget
+    getter interestForElement
     getter labels
     getter name
     getter popoverTargetAction
@@ -3427,6 +3432,7 @@ interface HTMLButtonElement : HTMLElement
     setter formMethod
     setter formNoValidate
     setter formTarget
+    setter interestForElement
     setter name
     setter popoverTargetAction
     setter popoverTargetElement
@@ -5278,6 +5284,10 @@ interface IntegrityViolationReportBody : ReportBody
     getter reportOnly
     method constructor
     method toJSON
+interface InterestEvent : Event
+    attribute @@toStringTag
+    getter source
+    method constructor
 interface IntersectionObserver
     attribute @@toStringTag
     getter delay
@@ -7577,10 +7587,12 @@ interface RestrictionTarget
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
+    getter interestForElement
     getter rel
     getter relList
     getter target
     method constructor
+    setter interestForElement
     setter rel
     setter relList
 interface SVGAngle
