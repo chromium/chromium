@@ -1128,6 +1128,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_NTP_CUSTOMIZE_BUTTON_LABEL" desc="Label for button on the New Tab Page that opens dialog to customize Chrome browser.">
         Customize Chrome
       </message>
+      <message name="IDS_NTP_MODULES_SETUP_LIST_TITLE" desc="Title shown at the top of the Setup List card.">
+        Make Chrome Yours
+      </message>
 
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">

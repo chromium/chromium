@@ -8574,9 +8574,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_SETUP_LIST_DISMISS_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been dismissed.">
         <ph name="MODULE_NAME">$1<ex>Make Chrome Yours</ex></ph> hidden
       </message>
-      <message name="IDS_NTP_MODULES_SETUP_LIST_TITLE" desc="Title shown at the top of the Setup List card.">
-        Make Chrome Yours
-      </message>
       <message name="IDS_NTP_MODULES_SETUP_LIST_INFO" desc="Text shown in the body of the info dialog of the Make Chrome Yours card.">
         You're seeing suggestions on how to personalize Chrome and make it more powerful for your daily needs.
         <ph name="BREAK">&lt;br&gt;</ph>

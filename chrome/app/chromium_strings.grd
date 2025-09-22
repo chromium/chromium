@@ -1157,6 +1157,9 @@ Chromium is unable to recover your settings.
           </message>
         </else>
       </if>
+      <message name="IDS_NTP_MODULES_SETUP_LIST_TITLE" desc="Title shown at the top of the Setup List card.">
+        Make Chromium Yours
+      </message>
 
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">
