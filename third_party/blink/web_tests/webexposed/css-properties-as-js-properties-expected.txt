@@ -425,6 +425,7 @@ rowRuleOutset
 rowRuleStyle
 rowRuleWidth
 rubyAlign
+rubyOverhang
 rubyPosition
 rule
 ruleColor

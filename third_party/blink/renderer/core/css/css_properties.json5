@@ -7042,6 +7042,17 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "ruby-overhang",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "none"],
+      default_value: "auto",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSRubyOverhang",
+    },
+    {
       name: "-webkit-ruby-position",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,

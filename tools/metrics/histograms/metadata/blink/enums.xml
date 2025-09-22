@@ -8059,6 +8059,7 @@ Called by update_use_counter_css.py.-->
   <int value="883" label="overscroll-area"/>
   <int value="884" label="overscroll-position"/>
   <int value="885" label="font-language-override"/>
+  <int value="886" label="ruby-overhang"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

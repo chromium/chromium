@@ -11452,6 +11452,14 @@ const CSSValue* RubyAlign::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RubyAlign());
 }
 
+const CSSValue* RubyOverhang::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.RubyOverhang());
+}
+
 const CSSValue* WebkitRubyPosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

@@ -339,6 +339,7 @@ row-rule-outset: 50%
 row-rule-style: none
 row-rule-width: 3px
 ruby-align: space-around
+ruby-overhang: auto
 ruby-position: over
 rx: auto
 ry: auto
