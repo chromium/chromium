@@ -1433,6 +1433,15 @@ class AutocompleteMediator
 
     private void onToolbarPositionChanged(@ControlsPosition Integer newPosition) {
         mListPropertyModel.set(SuggestionListProperties.TOOLBAR_POSITION, newPosition);
+        if (isActive()) {
+            // Hacky solution: rebuild the list if we're active when the position changes,
+            // triggering recalculation of refine arrow icon. TODO(http://crbug.com/446058347):
+            // refactor to enable updates to the icon property of the model once the list is already
+            // built.
+            onTextChanged(
+                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                    /* isOnFocusContext= */ false);
+        }
     }
 
     /** Returns the current AutocompleteInput instance. */
