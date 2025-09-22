@@ -348,7 +348,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void DropAndRecreateExistingCanvas2DResourceProvider() override;
 
   // This method should be called only when `resource_provider_` is null.
-  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
+  void RecreateCanvasResourceProviderForCanvas2D();
 
   void WakeUpFromHibernation();
 
