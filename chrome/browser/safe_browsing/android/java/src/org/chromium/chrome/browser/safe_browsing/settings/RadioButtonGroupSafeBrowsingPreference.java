@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.core.content.ContextCompat;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
@@ -18,6 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -25,20 +25,16 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /**
- * <p>
  * A radio button group used for Safe Browsing. Currently, it has 3 options: Enhanced Protection,
  * Standard Protection and No Protection. When the Enhanced Protection flag is disabled, the
  * Enhanced Protection option will be removed.
- * </p>
  *
- * <p>
- * This preference also provides an interface {@link
+ * <p>This preference also provides an interface {@link
  * RadioButtonGroupSafeBrowsingPreference.OnSafeBrowsingModeDetailsRequested} that is triggered when
  * more information of a Safe Browsing mode is requested.
- * </p>
  */
 @NullMarked
-public class RadioButtonGroupSafeBrowsingPreference extends Preference
+public class RadioButtonGroupSafeBrowsingPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     /** Interface that will subscribe to Safe Browsing mode details requested events. */

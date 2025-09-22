@@ -28,6 +28,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ClickableSpansTextMessagePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ContainedRadioButtonGroupPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ExpandablePreferenceGroup.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/FaviconViewUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ImageButtonPreference.java",

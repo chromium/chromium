@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -23,9 +22,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +36,8 @@ import java.util.Collections;
  * to be darkened (active for System default and Dark).
  */
 @NullMarked
-public class RadioButtonGroupThemePreference extends Preference
-        implements RadioGroup.OnCheckedChangeListener, CustomStyledContainer {
+public class RadioButtonGroupThemePreference extends ContainedRadioButtonGroupPreference
+        implements RadioGroup.OnCheckedChangeListener {
     private @ThemeType int mSetting;
     private @MonotonicNonNull RadioButtonWithDescription mSettingRadioButton;
     private @MonotonicNonNull RadioButtonWithDescriptionLayout mGroup;

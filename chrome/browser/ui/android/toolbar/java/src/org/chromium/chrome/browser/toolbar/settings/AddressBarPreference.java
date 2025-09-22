@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
@@ -19,12 +18,14 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /** Preferences that allows the user to configure address bar. */
 @NullMarked
-public class AddressBarPreference extends Preference implements RadioGroup.OnCheckedChangeListener {
+public class AddressBarPreference extends ContainedRadioButtonGroupPreference
+        implements RadioGroup.OnCheckedChangeListener {
     private RadioButtonWithDescriptionLayout mGroup;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;

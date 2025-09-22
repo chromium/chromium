@@ -13,7 +13,6 @@ import android.widget.RadioGroup;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -25,12 +24,13 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStats;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /** Fragment that allows the user to configure toolbar shortcut preferences. */
 @NullMarked
-public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
+public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
     private @Nullable RadioButtonWithDescriptionLayout mGroup;
     private @Nullable RadioButtonWithDescription mAutoButton;
