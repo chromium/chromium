@@ -4372,37 +4372,16 @@ static_library("browser") {
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/privacy_sandbox",
-      "//chrome/browser/ui/search",
-      "//chrome/browser/ui/tab_sharing",
-      "//chrome/browser/ui/tabs:glic",
-      "//chrome/browser/ui/tabs/saved_tab_groups",
-
-      # TODO(crbug.com/418180294): Remove this circular dependency when:
-      # - bookmark_model_factory.h,
-      # - after_startup_task_utils.h,
-      # - history_service_factory.h,
-      # - identity_manager_factory.h
-      # ... get componentized.
-      "//chrome/browser/ui/search:impl",
-      "//chrome/browser/ui/send_tab_to_self",
-      "//chrome/browser/ui/views/zoom:impl",
-      "//chrome/browser/ui/webui/access_code_cast",
-      "//chrome/browser/ui/webui/actor_internals",
-      "//chrome/browser/ui/webui/app_service_internals",
-      "//chrome/browser/ui/webui/autofill_ml_internals",
-      "//chrome/browser/ui/webui/color_pipeline_internals",
-      "//chrome/browser/ui/webui/infobar_internals",
-      "//chrome/browser/ui/webui/infobar_internals:impl",
-
-      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
-      # gets modularized.
-      "//chrome/browser/ui/privacy_sandbox:impl",
       "//chrome/browser/ui/promos:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
+      "//chrome/browser/ui/tab_sharing",
       "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:impl",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_group_impl",
@@ -4413,6 +4392,7 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/tabs/organization:impl",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/tabs/saved_tab_groups:impl",
       "//chrome/browser/ui/tabs/tab_group_home",
       "//chrome/browser/ui/tabs/tab_strip_api",
@@ -4431,13 +4411,21 @@ static_library("browser") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
+      "//chrome/browser/ui/views/zoom:impl",
       "//chrome/browser/ui/web_applications:impl",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/actor_internals",
+      "//chrome/browser/ui/webui/app_service_internals",
+      "//chrome/browser/ui/webui/autofill_ml_internals",
+      "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/customize_buttons",
       "//chrome/browser/ui/webui/customize_buttons:impl",
+      "//chrome/browser/ui/webui/infobar_internals",
+      "//chrome/browser/ui/webui/infobar_internals:impl",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/privacy_sandbox",
@@ -4532,6 +4520,24 @@ static_library("browser") {
       "//ui/webui/resources/cr_components/history:mojo_bindings",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
+    ]
+
+    #!is_android
+    deps += [
+      # TODO(413315837): Remove this dependency when chrome/browser/privacy_sandbox
+      # gets modularized.
+      "//chrome/browser/ui/privacy_sandbox:impl",
+    ]
+
+    #!is_android
+    deps += [
+      # TODO(crbug.com/418180294): Remove this circular dependency when:
+      # - bookmark_model_factory.h,
+      # - after_startup_task_utils.h,
+      # - history_service_factory.h,
+      # - identity_manager_factory.h
+      # ... get componentized.
+      "//chrome/browser/ui/search:impl",
     ]
 
     #!is_android
