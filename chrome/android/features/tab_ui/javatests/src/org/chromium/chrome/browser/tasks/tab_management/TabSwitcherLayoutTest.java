@@ -167,7 +167,9 @@ public class TabSwitcherLayoutTest {
                 ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
-        dismissAllModalDialogs();
+        if (mModalDialogManagerSupplier != null) {
+            dismissAllModalDialogs();
+        }
     }
 
     /**
