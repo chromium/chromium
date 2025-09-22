@@ -76,6 +76,7 @@ component("webnn_service") {
     "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
+    "//third_party/tflite:buildflags",
   ]
 
   if (is_win) {
@@ -162,7 +163,6 @@ component("webnn_service") {
       "//third_party/flatbuffers",
       "//third_party/fp16",
       "//third_party/tflite",
-      "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_builtin_op_resolver",
       "//third_party/tflite:tflite_public_headers",
     ]

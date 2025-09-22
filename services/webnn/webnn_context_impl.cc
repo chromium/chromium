@@ -28,6 +28,11 @@
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
+#include "third_party/tflite/buildflags.h"
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#include "third_party/xnnpack/src/include/xnnpack.h"
+#endif  // BUILD_TFLITE_WITH_XNNPACK
 
 namespace webnn {
 
@@ -53,6 +58,12 @@ WebNNContextImpl::WebNNContextImpl(
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)) {
   CHECK(context_provider_);
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  // Initialize XNNPACK
+  const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
+  CHECK_EQ(status, xnn_status_success);
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 }
 
 WebNNContextImpl::~WebNNContextImpl() {
@@ -65,6 +76,12 @@ WebNNContextImpl::~WebNNContextImpl() {
   // Note: ShutDown() prevents new tasks from being scheduled and drops existing
   // ones from executing.
   scheduler_task_runner_->ShutDown();
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  // Deinitialize XNNPACK
+  const xnn_status status = xnn_deinitialize();
+  CHECK_EQ(status, xnn_status_success);
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 }
 
 void WebNNContextImpl::OnDisconnect() {
