@@ -499,5 +499,46 @@ TEST_F(NetworkServiceSSLConfigServiceTest,
             expected_key_shares);
 }
 
+TEST_F(NetworkServiceSSLConfigServiceTest, NamedGroupsCnsa2Preset) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config->named_groups_preset =
+      network::mojom::SSLNamedGroupsPreset::kCnsa2;
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_MLKEM1024, SSL_GROUP_X25519_MLKEM768, SSL_GROUP_SECP384R1,
+      SSL_GROUP_SECP256R1, SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519_MLKEM768,
+                                               SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest,
+       NamedGroupsCnsa2PostQuantumDisabled) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config->named_groups_preset =
+      network::mojom::SSLNamedGroupsPreset::kCnsa2;
+  network_context_params->initial_ssl_config
+      ->post_quantum_key_agreement_enabled = false;
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_SECP384R1, SSL_GROUP_SECP256R1, SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
 }  // namespace
 }  // namespace network

@@ -74,6 +74,7 @@ class SSLConfigServiceManager {
   BooleanPrefMember device_post_quantum_enabled_;
 #endif
   BooleanPrefMember ech_enabled_;
+  StringPrefMember key_exchange_compliance_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;

@@ -74,6 +74,18 @@ class SSLPolicyTest : public PolicyTest {
     return std::nullopt;
   }
 
+  const std::string& GetStringPref(const std::string& pref_name) {
+    return g_browser_process->local_state()->GetString(pref_name);
+  }
+
+  std::optional<std::string> GetManagedStringPref(
+      const std::string& pref_name) {
+    if (g_browser_process->local_state()->IsManagedPreference(pref_name)) {
+      return GetStringPref(pref_name);
+    }
+    return std::nullopt;
+  }
+
   LoadResult LoadPage(std::string_view path) {
     return LoadPage(https_server_.GetURL(path));
   }
@@ -234,6 +246,69 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowKexAlgorithmsPolicy) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_MLKEM1024};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should fail to load a page from the test server because, by default, we
+  // don't negotiate ML-KEM-1024.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+
+  // Set the policy to cnsa2 to prefer ML-KEM-1024.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now succeed.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowKexAlgorithms), "cnsa2");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Set the policy to an unrecognized value; this falls back to the defaults.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("bogus"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now fail.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowKexAlgorithms), "bogus");
+  result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest,
+                       PostQuantumDisabledOverridesPreferSlowKexAlgorithms) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_MLKEM1024};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  PolicyMap policies;
+  SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
+  SetPolicy(&policies, key::kPostQuantumKeyAgreementEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Should fail to load a page from the test server because setting
+  // PostQuantumKeyAgreementEnabled to disabled takes precedence over the
+  // PreferSlowKexAlgorithms policy.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowKexAlgorithms), "cnsa2");
+  EXPECT_FALSE(
+      GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled).value());
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
 
 class ECHPolicyTest : public SSLPolicyTest {
  public:

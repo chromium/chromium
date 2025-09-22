@@ -2849,6 +2849,11 @@ inline constexpr char kDevicePostQuantumKeyAgreementEnabled[] =
     "ssl.device_post_quantum_enabled";
 #endif
 
+// String identifying the compliance regime, if any, that must be adhered to for
+// key exchange in TLS.
+inline constexpr char kPreferSlowKexAlgorithms[] =
+    "ssl.compliance.key_exchange";
+
 // Boolean that specifies whether TLS 1.3 Early Data is enabled.
 inline constexpr char kTLS13EarlyDataEnabled[] = "ssl.tls13_early_data_enabled";
 

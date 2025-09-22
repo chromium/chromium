@@ -24,8 +24,20 @@ enum SSLNamedGroupsPreset {
   //   X25519 (0x001D).
   kDefault,
 
-  // TODO(crbug.com/437415001): Define other configuration presets for
-  // non-default supported groups and key shares.
+  // A non-default configuration for supported groups intended to satisfy the
+  // requirements of the Commercial National Security Algorithm Suite 2.0 (CNSA
+  // 2.0).
+  //
+  // Supported groups:
+  //   MLKEM1024 (0x0202),
+  //   X25519MLKEM768 (0x11EC),
+  //   Secp384r1 (0x0018),
+  //   Secp256r1 (0x0017),
+  //   X25519 (0x001D).
+  // Key shares:
+  //   X25519MLKEM768 (0x11EC),
+  //   X25519 (0x001D).
+  kCnsa2,
 };
 
 // This is a combination of net::SSLContextConfig and

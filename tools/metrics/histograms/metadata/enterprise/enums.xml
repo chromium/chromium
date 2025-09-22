@@ -2273,6 +2273,7 @@ chromium-metrics-reviews@google.com.
   <int value="1391" label="DevToolsGoogleDeveloperProgramProfileAvailability"/>
   <int value="1392" label="IncognitoModeBlocklist"/>
   <int value="1393" label="IncognitoModeAllowlist"/>
+  <int value="1394" label="PreferSlowKexAlgorithms"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

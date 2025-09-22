@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "net/ssl/ssl_config_service.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace mojo {
 
@@ -41,6 +42,15 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
     case network::mojom::SSLNamedGroupsPreset::kDefault:
       // Do nothing, the `net::SSLContextConfig` constructor starts with the
       // default list.
+      break;
+    case network::mojom::SSLNamedGroupsPreset::kCnsa2:
+      net_config.supported_named_groups = {
+          {.group_id = SSL_GROUP_MLKEM1024, .send_key_share = false},
+          {.group_id = SSL_GROUP_X25519_MLKEM768, .send_key_share = true},
+          {.group_id = SSL_GROUP_SECP384R1, .send_key_share = false},
+          {.group_id = SSL_GROUP_SECP256R1, .send_key_share = false},
+          {.group_id = SSL_GROUP_X25519, .send_key_share = true},
+      };
       break;
   }
   if (!mojo_config->post_quantum_key_agreement_enabled) {
