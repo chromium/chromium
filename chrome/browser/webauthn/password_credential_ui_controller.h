@@ -52,6 +52,7 @@ class PasswordCredentialUIController
   // AuthenticatorRequestDialogModel::Observer
   void OnPasswordCredentialSelected(PasswordCredentialPair password) override;
   void OnStepTransition() override;
+  void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
   void SetPasswordManagerClientForTesting(
       password_manager::PasswordManagerClient* client);
@@ -63,7 +64,6 @@ class PasswordCredentialUIController
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
 
-  const raw_ptr<AuthenticatorRequestDialogModel> model_;
   raw_ptr<password_manager::PasswordManagerClient> client_for_testing_;
   base::ScopedObservation<AuthenticatorRequestDialogModel,
                           AuthenticatorRequestDialogModel::Observer>

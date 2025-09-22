@@ -39,8 +39,8 @@ std::u16string GetAuthenticationMessage(std::string_view rp_id) {
 PasswordCredentialUIController::PasswordCredentialUIController(
     GlobalRenderFrameHostId render_frame_host_id,
     AuthenticatorRequestDialogModel* model)
-    : render_frame_host_id_(render_frame_host_id), model_(model) {
-  model_observer_.Observe(model_);
+    : render_frame_host_id_(render_frame_host_id) {
+  model_observer_.Observe(model);
 }
 
 PasswordCredentialUIController::~PasswordCredentialUIController() = default;
@@ -74,7 +74,8 @@ void PasswordCredentialUIController::SetPasswordSelectedCallback(
 
 void PasswordCredentialUIController::OnPasswordCredentialSelected(
     PasswordCredentialPair password) {
-  if (!IsAuthRequired() || model_->local_auth_token.has_value()) {
+  if (!IsAuthRequired() ||
+      model_observer_.GetSource()->local_auth_token.has_value()) {
     password_selected_callback_.Run(password_manager::CredentialInfo(
         password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
         password.first, password.first, GURL(), password.second,
@@ -82,15 +83,16 @@ void PasswordCredentialUIController::OnPasswordCredentialSelected(
     return;
   }
   filling_password_ = std::move(password);
-  model_->SetStep(AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+  model_observer_.GetSource()->SetStep(
+      AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
 }
 
 void PasswordCredentialUIController::OnStepTransition() {
-  if (!model_) {
+  if (!model_observer_.GetSource()) {
     return;
   }
 
-  if (model_->step() ==
+  if (model_observer_.GetSource()->step() ==
       AuthenticatorRequestDialogModel::Step::kPasswordOsAuth) {
     CHECK(filling_password_.has_value());
     auto manage_passwords_ui_controller = PasswordsModelDelegateFromWebContents(
@@ -99,13 +101,18 @@ void PasswordCredentialUIController::OnStepTransition() {
       return;
     }
     manage_passwords_ui_controller->AuthenticateUserWithMessage(
-        GetAuthenticationMessage(model_->relying_party_id),
+        GetAuthenticationMessage(model_observer_.GetSource()->relying_party_id),
         base::BindOnce(
             &PasswordCredentialUIController::OnAuthenticationCompleted,
             weak_ptr_factory_.GetWeakPtr(),
             std::move(filling_password_.value())));
     return;
   }
+}
+
+void PasswordCredentialUIController::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
+  model_observer_.Reset();
 }
 
 void PasswordCredentialUIController::SetPasswordManagerClientForTesting(
@@ -117,7 +124,7 @@ void PasswordCredentialUIController::OnAuthenticationCompleted(
     PasswordCredentialPair password,
     bool success) {
   if (!success) {
-    model_->CancelAuthenticatorRequest();
+    model_observer_.GetSource()->CancelAuthenticatorRequest();
     return;
   }
   password_selected_callback_.Run(password_manager::CredentialInfo(
