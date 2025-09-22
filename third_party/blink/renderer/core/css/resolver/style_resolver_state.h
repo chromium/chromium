@@ -170,11 +170,9 @@ class CORE_EXPORT StyleResolverState {
 
   void LoadPendingResources();
 
-  // FIXME: Once styleImage can be made to not take a StyleResolverState
-  // this convenience function should be removed. As-is, without this, call
-  // sites are extremely verbose.
   StyleImage* GetStyleImage(CSSPropertyID property_id, const CSSValue& value) {
-    return element_style_resources_.GetStyleImage(property_id, value);
+    return element_style_resources_.GetStyleImage(property_id,
+                                                  ResolveGradient(value));
   }
   SVGResource* GetSVGResource(CSSPropertyID, const cssvalue::CSSURIValue&);
 

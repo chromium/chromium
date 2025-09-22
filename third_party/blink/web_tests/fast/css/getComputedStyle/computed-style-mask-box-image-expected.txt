@@ -1,0 +1,9 @@
+Test computed style for the -webkit-mask-box-image property and sub-properties
+
+PASS computedMaskBoxImageStyle('linear-gradient(1turn, red calc(20% * 2 / 4), blue)', '-webkit-mask-box-image-source') is "linear-gradient(360deg, rgb(255, 0, 0) 10%, rgb(0, 0, 255))"
+PASS computedMaskBoxImageStyle('radial-gradient(ellipse 60% 40% at calc(10% + 2em) 20%, red, blue)', '-webkit-mask-box-image-source') is "radial-gradient(60% 40% at calc(10% + 32px) 20%, rgb(255, 0, 0), rgb(0, 0, 255))"
+PASS computedMaskBoxImageStyle('conic-gradient(from 1.5708rad, red 0deg, blue calc(180deg - 10deg))', '-webkit-mask-box-image-source') is "conic-gradient(from 90.0002deg, rgb(255, 0, 0) 0deg, rgb(0, 0, 255) 170deg)"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
