@@ -285,14 +285,23 @@ export class SearchboxIconElement extends CrLitElement {
     }
   }
 
-  // The following icons should not use the GM3 foreground color
-  // TODO(niharm): Refactor logic in C++ and send via mojom in
-  // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
+  // Controls whether the background image should be used instead of the mask
+  // image.
   private showBackgroundImage_(): boolean {
-    const imageUrl = this.backgroundImage;
-    if (!imageUrl) {
+    if (!this.backgroundImage) {
       return false;
     }
+
+    // Navigation suggestions should always use the background image, except
+    // for Lens searchboxes, which prefer to use the default icon in the mask
+    // image.
+    if (!this.isLensSearchbox_ && this.match && !this.match.isSearchType) {
+      return true;
+    }
+
+    // The following icons should not use the GM3 foreground color.
+    // TODO(niharm): Refactor logic in C++ and send via mojom in
+    // "chrome/browser/ui/webui/searchbox/searchbox_handler.cc".
     const themedIcons = [
       'calendar',
       'drive_docs',
@@ -311,7 +320,7 @@ export class SearchboxIconElement extends CrLitElement {
       'sites',
     ];
     for (const icon of themedIcons) {
-      if (imageUrl ===
+      if (this.backgroundImage ===
           'url(//resources/cr_components/searchbox/icons/' + icon + '.svg)') {
         return true;
       }
