@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -259,14 +260,18 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
 // Run 1, the first one happening after a device restore.
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
                        PRE_StaticConditions) {
-  // The current session has the detection but not the ID reset.
-  ASSERT_TRUE(g_browser_process->GetMetricsServicesManager()
-                  ->GetClonedInstallDetectorForTesting()
-                  ->ClonedInstallDetectedInCurrentSession());
-  ASSERT_EQ(metrics::ClonedInstallDetector::ReadClonedInstallInfo(
-                g_browser_process->local_state())
-                .reset_count,
-            0);
+  // The current session has the detection but not the ID reset. These values
+  // are set using ThreadPool tasks so wait until those have executed.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return g_browser_process->GetMetricsServicesManager()
+        ->GetClonedInstallDetectorForTesting()
+        ->ClonedInstallDetectedInCurrentSession();
+  }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return metrics::ClonedInstallDetector::ReadClonedInstallInfo(
+               g_browser_process->local_state())
+               .reset_count == 0;
+  }));
 
   Profile* profile = browser()->profile();
   SearchEngineChoiceService* search_engine_choice_service =
