@@ -70,21 +70,14 @@ IN_PROC_BROWSER_TEST_P(LeakedNodeDetectionBrowsertest, DetectGhostNodeLeaks) {
   WaitForNodeCounts({0U, 0U, 0U, 0U});
 }
 
-// Disabled due to flaky failures. It seems that not all machines perform
-// rundown quckily upon disappearance of the client.
+// TODO(crbug.com/443107137): Disabled due to flaky failures. It seems that not
+// all machines perform rundown quckily upon disappearance of the UiaClient
+// despite all classes implementing IFastRundown. Run this test with
+// --test-launcher-timeout=3600000 --ui-test-action-max-timeout=3600000
+// --ui-test-action-timeout=3600000 --single-process-tests to set the various
+// test timeouts longer than the approx six minute slow rundown time.
 IN_PROC_BROWSER_TEST_P(LeakedNodeDetectionBrowsertest,
                        DISABLED_TerminateClient) {
-  if (client_api() == ClientApi::kIAccessible2) {
-    // When MSAA is in use, it can take six minutes for the final references on
-    // the stubs issued by the accessible process to be released after
-    // termination of the client. This is far greater than the normal test
-    // timeout. Run this test with --test-launcher-timeout=3600000
-    // --ui-test-action-max-timeout=3600000 --ui-test-action-timeout=3600000 to
-    // see that it eventually passes.
-    GTEST_SKIP() << "Termination of an IA2 client with normal "
-                    "test timeouts causes leaks";
-  }
-
   // Initialize the UI Automation client; giving it this window.
   ASSERT_HRESULT_SUCCEEDED(InitializeClient(browser()));
 
