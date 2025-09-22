@@ -1495,10 +1495,11 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // want to behave differently here?
   EnableAccelerationIfPossible();
 
-  // A texture needs to exist on the GPU. If we aren't able to enable
-  // acceleration, the canvas pixels live on the CPU and we weren't able to
-  // transfer them; in that case, WebGPU access is not possible.
-  CanvasResourceProvider* provider = GetOrCreateCanvas2DResourceProvider();
+  // A texture needs to exist on the GPU. If we aren't able to create an
+  // accelerated SharedImage provider, we won't be able to transfer the canvas.
+  // In that case, WebGPU access is not possible.
+  CanvasResourceProviderSharedImage* provider =
+      GetOrCreateCanvas2DResourceProvider()->AsSharedImageProvider();
   if (!provider || !provider->IsAccelerated()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to GPU.");

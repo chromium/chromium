@@ -129,6 +129,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   };
 #pragma GCC diagnostic pop
 
+  virtual CanvasResourceProviderSharedImage* AsSharedImageProvider() {
+    return nullptr;
+  }
+
   // Used to determine if the provider is going to be initialized or not.
   enum class ShouldInitialize { kNo, kCallClear };
 
@@ -540,6 +544,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                                     Delegate*);
   ~CanvasResourceProviderSharedImage() override;
 
+  CanvasResourceProviderSharedImage* AsSharedImageProvider() override {
+    return this;
+  }
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
   bool UseOopRasterization() final { return use_oop_rasterization_; }
