@@ -519,8 +519,7 @@ void GpuServiceImpl::InitializeWithHostInternal(
   // initialization has succeeded.
   gpu_channel_manager_ = std::make_unique<gpu::GpuChannelManager>(
       gpu_preferences_, this, watchdog_thread_.get(), main_runner_, io_runner_,
-      scheduler_, sync_point_manager, shared_image_manager,
-      gpu_memory_buffer_factory_.get(), gpu_feature_info_,
+      scheduler_, sync_point_manager, shared_image_manager, gpu_feature_info_,
       &use_shader_cache_shm_count_, std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider(), dawn_context_provider(),
@@ -921,8 +920,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
 
   auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
-      channel_token, client_id, client_tracing_id, is_gpu_host, gpu_extra_info_,
-      gpu_memory_buffer_factory_.get());
+      channel_token, client_id, client_tracing_id, is_gpu_host,
+      gpu_extra_info_);
 
   if (!gpu_channel) {
     // This returns a null handle, which is treated by the client as a failure

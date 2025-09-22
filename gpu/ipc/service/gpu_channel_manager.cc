@@ -41,7 +41,6 @@
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -332,7 +331,6 @@ GpuChannelManager::GpuChannelManager(
     Scheduler* scheduler,
     SyncPointManager* sync_point_manager,
     SharedImageManager* shared_image_manager,
-    GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const GpuFeatureInfo& gpu_feature_info,
     GpuProcessShmCount* use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
@@ -356,7 +354,6 @@ GpuChannelManager::GpuChannelManager(
       shared_image_manager_(shared_image_manager),
       shader_translator_cache_(gpu_preferences_),
       default_offscreen_surface_(std::move(default_offscreen_surface)),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
       gpu_feature_info_(gpu_feature_info),
       discardable_manager_(gpu_preferences_),
       passthrough_discardable_manager_(gpu_preferences_),
@@ -482,8 +479,7 @@ GpuChannel* GpuChannelManager::EstablishChannel(
     int client_id,
     uint64_t client_tracing_id,
     bool is_gpu_host,
-    const gfx::GpuExtraInfo& gpu_extra_info,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory) {
+    const gfx::GpuExtraInfo& gpu_extra_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Remove existing GPU channel with same client id before creating
@@ -501,8 +497,7 @@ GpuChannel* GpuChannelManager::EstablishChannel(
   std::unique_ptr<GpuChannel> gpu_channel = GpuChannel::Create(
       this, channel_token, scheduler_, sync_point_manager_, share_group_,
       task_runner_, io_task_runner_, client_id, client_tracing_id, is_gpu_host,
-      image_decode_accelerator_worker_, gpu_extra_info,
-      gpu_memory_buffer_factory);
+      image_decode_accelerator_worker_, gpu_extra_info);
 
   if (!gpu_channel)
     return nullptr;

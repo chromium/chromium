@@ -63,7 +63,6 @@ class ImageDecodeAcceleratorWorker;
 struct GpuPreferences;
 class GpuChannel;
 class GpuChannelManagerDelegate;
-class GpuMemoryBufferFactory;
 class GpuWatchdogThread;
 class Scheduler;
 class SharedImageManager;
@@ -94,7 +93,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       Scheduler* scheduler,
       SyncPointManager* sync_point_manager,
       SharedImageManager* shared_image_manager,
-      GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       const GpuFeatureInfo& gpu_feature_info,
       GpuProcessShmCount* use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
@@ -115,13 +113,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   GpuChannelManagerDelegate* delegate() const { return delegate_; }
   GpuWatchdogThread* watchdog() const { return watchdog_; }
 
-  GpuChannel* EstablishChannel(
-      const base::UnguessableToken& channel_token,
-      int client_id,
-      uint64_t client_tracing_id,
-      bool is_gpu_host,
-      const gfx::GpuExtraInfo& gpu_extra_info,
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+  GpuChannel* EstablishChannel(const base::UnguessableToken& channel_token,
+                               int client_id,
+                               uint64_t client_tracing_id,
+                               bool is_gpu_host,
+                               const gfx::GpuExtraInfo& gpu_extra_info);
 
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
   void SetChannelDiskCacheHandle(int client_id,
@@ -167,10 +163,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   gl::GLSurface* default_offscreen_surface() const {
     return default_offscreen_surface_.get();
-  }
-
-  GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
-    return gpu_memory_buffer_factory_;
   }
 
   MemoryTracker::Observer* peak_memory_monitor() {
@@ -340,7 +332,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   scoped_refptr<gl::GLSurface> default_offscreen_surface_;
-  const raw_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   GpuFeatureInfo gpu_feature_info_;
   ServiceDiscardableManager discardable_manager_;
   PassthroughDiscardableManager passthrough_discardable_manager_;
