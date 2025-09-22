@@ -630,22 +630,11 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 // promises.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnResolvesBehavior) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_promise_resolve")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_promise_resolve",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // Tests that when multiple listeners return promises, the sender receives a
@@ -724,23 +713,13 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnRejectsBehavior) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_promise_reject")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_promise_reject",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
+
 using PolyfillSupportMessagingApiTest = MessagingApiTest;
 
 // Tests that runtime.sendMessage() promise version behavior matches the
@@ -752,22 +731,11 @@ using PolyfillSupportMessagingApiTest = MessagingApiTest;
 // elicit the response for some test cases.
 IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
                        SendMessageListenerBehavior_Synchronous) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/send_message_promise_polyfill_sync")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/send_message_promise_polyfill_sync",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // See above.
@@ -853,22 +821,11 @@ class PolyfillSupportMessagingErrorsApiTest
 // 2) the second registered responds to the message
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenErrorIsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/one_time_message_handler_error_first")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/one_time_message_handler_error_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // Test the sender's promise behavior when there are two listeners and:
@@ -876,22 +833,11 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 // 2) the second registered throws a synchronous error
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenResponseIsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/one_time_message_handler_send_response_first")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/one_time_message_handler_send_response_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // Test the sender's promise behavior when there are two listeners and:
@@ -899,22 +845,11 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 // 2) the second registered also throws an error synchronously
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenMultipleSyncErrorsThrown) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/one_time_message_handler_sync_errors")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/one_time_message_handler_sync_errors",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingErrorsApiTest);
@@ -941,22 +876,11 @@ class UnserializableOneTimeMessageResponseMessagingApiTest
 // returned.
 IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
                        UnserializableResponseClosesChannel) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/send_message_promise_polyfill_unserializable")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/send_message_promise_polyfill_unserializable",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // Helps in testing that
@@ -990,23 +914,11 @@ class OnMessageMultiListenerMessagingApiTest
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageSyncListenerReturnsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_multi_listener/sync_listener_called_first")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script response callback function is called with the
-  // expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender response callback to "
-        "receive response from background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_multi_listener/sync_listener_called_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 // Tests that, when a asynchronous onMessage listener is registered first (it's
@@ -1015,23 +927,11 @@ IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageAsyncListenerReturnsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_multi_listener/async_listener_called_first")));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script response callback function is called with the
-  // expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender response callback to "
-        "receive response from background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_multi_listener/async_listener_called_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
