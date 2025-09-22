@@ -62,6 +62,7 @@ void PopulatePersonalCollaborationSpecificsFromSharedTabGroup(
   }
 }
 
+// LINT.IfChange(CreateClientTagFromSavedTabGroup)
 std::string CreateClientTagForSharedTab(const SavedTabGroup& group,
                                         const SavedTabGroupTab& tab) {
   return tab.saved_tab_guid().AsLowercaseString() + "|" +
@@ -78,5 +79,6 @@ std::string CreateClientTagForSharedGroup(const SavedTabGroup& group) {
   return group.saved_guid().AsLowercaseString() + "|" +
          group.collaboration_id().value().value();
 }
+// LINT.ThenChange(//components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_sync_bridge.cc:CreateClientTagFromSpecifics)
 
 }  // namespace tab_groups

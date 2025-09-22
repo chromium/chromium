@@ -9,7 +9,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
+#include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -26,6 +28,40 @@
 
 namespace data_sharing::personal_collaboration_data {
 namespace {
+
+PersonalCollaborationDataService::SpecificsType GetSpecificsTypeFromSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  if (specifics.has_shared_tab_details()) {
+    return PersonalCollaborationDataService::SpecificsType::kSharedTabSpecifics;
+  } else if (specifics.has_shared_tab_group_details()) {
+    return PersonalCollaborationDataService::SpecificsType::
+        kSharedTabGroupSpecifics;
+  }
+  return PersonalCollaborationDataService::SpecificsType::kUnknown;
+}
+
+// Returns the client tag for this specifics object. Note that
+// SharedTabGroupAccountDataSpecifics uses the client tag as a storage key.
+std::string CreateClientTagFromSpecifics(
+    const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
+  CHECK(specifics.has_guid());
+  CHECK(specifics.has_collaboration_id());
+
+  PersonalCollaborationDataService::SpecificsType specifics_type =
+      GetSpecificsTypeFromSpecifics(specifics);
+
+  // Special case tab and tab group since previous data were stored without a
+  // namespace.
+  if (specifics_type == PersonalCollaborationDataService::SpecificsType::
+                            kSharedTabSpecifics ||
+      specifics_type == PersonalCollaborationDataService::SpecificsType::
+                            kSharedTabGroupSpecifics) {
+    return specifics.guid() + "|" + specifics.collaboration_id();
+  }
+
+  return base::NumberToString(static_cast<int>(specifics_type)) + "|" +
+         specifics.guid() + "|" + specifics.collaboration_id();
+}
 
 // Trim specifics for use in TrimAllSupportedFieldsFromRemoteSpecifics.
 // LINT.IfChange(TrimSpecifics)
@@ -70,8 +106,6 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
   auto entity_data = std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_shared_tab_group_account_data() = specifics;
   entity_data->name = specifics.guid();
-  entity_data->client_tag_hash = syncer::ClientTagHash::FromUnhashed(
-      syncer::SHARED_TAB_GROUP_ACCOUNT_DATA, storage_key);
   return entity_data;
 }
 
@@ -224,24 +258,26 @@ PersonalCollaborationDataSyncBridge::GetAllDataForDebugging() {
 
 std::string PersonalCollaborationDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
-  // Client tags are not computed from the specifics.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return CreateClientTagFromSpecifics(
+      entity_data.specifics.shared_tab_group_account_data());
 }
 
 std::string PersonalCollaborationDataSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
-  // Storage keys are not computed from the specifics.
-  NOTREACHED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return CreateClientTagFromSpecifics(
+      entity_data.specifics.shared_tab_group_account_data());
 }
 
 bool PersonalCollaborationDataSyncBridge::SupportsGetClientTag() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
+  return true;
 }
 
 bool PersonalCollaborationDataSyncBridge::SupportsGetStorageKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return false;
+  return true;
 }
 
 void PersonalCollaborationDataSyncBridge::ApplyDisableSyncChanges(
@@ -261,6 +297,11 @@ bool PersonalCollaborationDataSyncBridge::IsEntityDataValid(
       entity_data.specifics.shared_tab_group_account_data();
   if (!base::Uuid::ParseCaseInsensitive(specifics.guid()).is_valid() ||
       specifics.collaboration_id().empty()) {
+    return false;
+  }
+
+  if (GetSpecificsTypeFromSpecifics(specifics) ==
+      PersonalCollaborationDataService::SpecificsType::kUnknown) {
     return false;
   }
 
