@@ -987,8 +987,7 @@ TEST_F(SplitViewControllerTest, SplitDividerHandlesNativeWidgetDestruction) {
   EXPECT_TRUE(split_view_divider()->divider_widget());
   EXPECT_TRUE(split_view_divider()->divider_widget()->GetNativeWindow());
   split_view_divider()->divider_widget()->CloseNow();
-  EXPECT_TRUE(split_view_divider()->divider_widget());
-  EXPECT_FALSE(split_view_divider()->divider_widget()->GetNativeWindow());
+  EXPECT_FALSE(split_view_divider()->divider_widget());
 
   // Activating a non-snappable window and exit the split view mode.
   std::unique_ptr<aura::Window> window3(CreateNonSnappableWindow(bounds));
