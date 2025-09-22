@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 

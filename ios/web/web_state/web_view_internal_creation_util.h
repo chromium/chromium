@@ -13,6 +13,7 @@
 @protocol CRWEditMenuBuilder;
 @protocol CRWInputViewProvider;
 @protocol CRWDataControlsDelegate;
+@class CRWWebView;
 
 // This file is a collection of functions that vend web views.
 namespace web {
@@ -32,13 +33,13 @@ WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
 // Creates and returns a new WKWebView for displaying regular web content.
 // The preconditions for the creation of a WKWebView are the same as the
 // previous method.
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state,
-                          UserAgentType user_agent_type,
-                          id<CRWInputViewProvider> input_view_provider,
-                          id<CRWEditMenuBuilder> edit_menu_builder,
-                          id<CRWDataControlsDelegate> data_controls_delegate);
+CRWWebView* BuildWKWebView(CGRect frame,
+                           WKWebViewConfiguration* configuration,
+                           BrowserState* browser_state,
+                           UserAgentType user_agent_type,
+                           id<CRWInputViewProvider> input_view_provider,
+                           id<CRWEditMenuBuilder> edit_menu_builder,
+                           id<CRWDataControlsDelegate> data_controls_delegate);
 
 }  // namespace web
 

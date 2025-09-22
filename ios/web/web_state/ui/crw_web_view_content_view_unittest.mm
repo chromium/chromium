@@ -4,8 +4,8 @@
 
 #import "ios/web/common/crw_web_view_content_view.h"
 
-#import <UIKit/UIKit.h>
-
+#import "ios/web/common/crw_obscured_insets_controller.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -17,7 +17,7 @@ using CRWWebViewContentViewTest = PlatformTest;
 
 // Tests the ContentInset method when shouldUseViewContentInset is set to YES.
 TEST_F(CRWWebViewContentViewTest, ContentInsetWithInsetForPadding) {
-  UIView* webView = [[UIView alloc] init];
+  CRWWebView* webView = [[CRWWebView alloc] init];
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   [webView addSubview:scrollView];
   CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]

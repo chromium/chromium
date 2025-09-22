@@ -13,6 +13,7 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/test/web_int_test.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "testing/gtest/include/gtest/gtest.h"

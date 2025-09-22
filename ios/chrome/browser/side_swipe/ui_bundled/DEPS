@@ -20,4 +20,7 @@ specific_include_rules = {
   "^side_swipe_mediator\.h$": [
     "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
   ],
+  "^side_swipe_mediator_unittest.mm$": [
+    "+ios/web/web_state/crw_web_view.h",
+  ],
 }

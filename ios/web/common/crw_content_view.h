@@ -41,6 +41,11 @@ enum class CrFullscreenState {
 // bug, where UIScrollView.content inset does not work (rdar://23584409).
 @property(nonatomic, assign) UIEdgeInsets contentInset;
 
+// Insets that describe the portion of the web view that is obscured by other
+// UI. This is used to forward the value to the underlying WKWebView if it
+// supports the `obscuredContentInsets` property.
+@property(nonatomic, assign) UIEdgeInsets obscuredInsets;
+
 @optional
 
 // Whether or not the content view should use the content inset when setting

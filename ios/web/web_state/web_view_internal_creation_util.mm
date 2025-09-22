@@ -23,13 +23,13 @@ WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
                             configuration:configuration];
 }
 
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state,
-                          UserAgentType user_agent_type,
-                          id<CRWInputViewProvider> input_view_provider,
-                          id<CRWEditMenuBuilder> edit_menu_builder,
-                          id<CRWDataControlsDelegate> data_controls_delegate) {
+CRWWebView* BuildWKWebView(CGRect frame,
+                           WKWebViewConfiguration* configuration,
+                           BrowserState* browser_state,
+                           UserAgentType user_agent_type,
+                           id<CRWInputViewProvider> input_view_provider,
+                           id<CRWEditMenuBuilder> edit_menu_builder,
+                           id<CRWDataControlsDelegate> data_controls_delegate) {
   CHECK(browser_state);
   CHECK(configuration);
 

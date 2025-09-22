@@ -4,11 +4,14 @@
 
 #import "ios/web/common/crw_web_view_content_view.h"
 
+#import <WebKit/WebKit.h>
+
 #import <cmath>
 #import <limits>
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/web/common/crw_obscured_insets_controller.h"
 
 namespace {
 
@@ -24,6 +27,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @implementation CRWWebViewContentView
 @synthesize contentOffset = _contentOffset;
 @synthesize contentInset = _contentInset;
+@synthesize obscuredInsets = _obscuredInsets;
 @synthesize scrollView = _scrollView;
 @synthesize shouldUseViewContentInset = _shouldUseViewContentInset;
 @synthesize viewportEdgesAffectedBySafeArea = _viewportEdgesAffectedBySafeArea;
@@ -31,7 +35,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @synthesize webView = _webView;
 @synthesize fullscreenState = _fullscreenState;
 
-- (instancetype)initWithWebView:(UIView*)webView
+- (instancetype)initWithWebView:(UIView<CRWObscuredInsetsController>*)webView
                      scrollView:(UIScrollView*)scrollView
                 fullscreenState:(CrFullscreenState)fullscreenState {
   self = [super initWithFrame:CGRectZero];
@@ -107,6 +111,17 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   if (self.shouldUseViewContentInset) {
     [_scrollView setContentInset:contentInset];
   }
+}
+
+- (UIEdgeInsets)obscuredInset {
+  return _obscuredInsets;
+}
+
+- (void)setObscuredInset:(UIEdgeInsets)obscuredInsets {
+  if (@available(iOS 26, *)) {
+    [_webView setObscuredContentInsets:obscuredInsets];
+  }
+  _obscuredInsets = obscuredInsets;
 }
 
 - (void)setShouldUseViewContentInset:(BOOL)shouldUseViewContentInset {

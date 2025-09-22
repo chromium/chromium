@@ -149,7 +149,7 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 
 // If `contentView_` contains a web view, this is the web view it contains.
 // If not, it's nil. When setting the property, it performs basic setup.
-@property(weak, nonatomic) WKWebView* webView;
+@property(weak, nonatomic) CRWWebView* webView;
 // The scroll view of `webView`.
 @property(weak, nonatomic, readonly) UIScrollView* webScrollView;
 
@@ -346,7 +346,7 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 
 #pragma mark - Private properties accessors
 
-- (void)setWebView:(WKWebView*)webView {
+- (void)setWebView:(CRWWebView*)webView {
   DCHECK_NE(_webView, webView);
 
   // Unwind the old web view.
@@ -1408,7 +1408,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 // Returns a new autoreleased web view created with given configuration.
-- (WKWebView*)webViewWithConfiguration:(WKWebViewConfiguration*)config {
+- (CRWWebView*)webViewWithConfiguration:(WKWebViewConfiguration*)config {
   // Do not attach the context menu controller immediately as the JavaScript
   // delegate must be specified.
   web::UserAgentType defaultUserAgent = web::UserAgentType::AUTOMATIC;
@@ -1437,6 +1437,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
   }
+
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView
@@ -1957,7 +1958,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   [self removeWebView];
 
   [_containerView displayWebViewContentView:webViewContentView];
-  [self setWebView:static_cast<WKWebView*>(webViewContentView.webView)];
+  [self setWebView:static_cast<CRWWebView*>(webViewContentView.webView)];
 }
 
 - (void)resetInjectedWebViewContentView {

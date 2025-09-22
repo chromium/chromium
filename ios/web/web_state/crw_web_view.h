@@ -7,12 +7,14 @@
 
 #import <WebKit/WebKit.h>
 
+#import "ios/web/common/crw_obscured_insets_controller.h"
+
 @protocol CRWEditMenuBuilder;
 @protocol CRWInputViewProvider;
 @protocol CRWDataControlsDelegate;
 
 // Subclass of WKWebView which supports custom input views.
-@interface CRWWebView : WKWebView
+@interface CRWWebView : WKWebView <CRWObscuredInsetsController>
 
 // Provider for custom input views and their respective view controllers.
 @property(nonatomic, weak) id<CRWInputViewProvider> inputViewProvider;

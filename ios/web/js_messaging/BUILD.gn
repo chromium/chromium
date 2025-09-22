@@ -196,6 +196,7 @@ source_set("unittests") {
     "//ios/web/test:js_test_util_internal",
     "//ios/web/test/fakes",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_obscured_insets_controller.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -28,6 +29,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -65,7 +67,7 @@ namespace {
 class SideSwipeMediatorTest : public ReaderModeTest {
  public:
   SideSwipeMediatorTest()
-      : web_view_([[WKWebView alloc]
+      : web_view_([[CRWWebView alloc]
             initWithFrame:scoped_window_.Get().bounds
             configuration:[[WKWebViewConfiguration alloc] init]]),
         content_view_([[CRWWebViewContentView alloc]
@@ -115,7 +117,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
   SideSwipeMediator* side_swipe_mediator_;
   FakeSideSwipeUIController* fake_swipe_ui_controller_;
   ScopedKeyWindow scoped_window_;
-  WKWebView* web_view_ = nil;
+  CRWWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
   raw_ptr<web::WebState, DanglingUntriaged> original_web_state_ = nil;
   std::optional<int> active_web_state_index_;

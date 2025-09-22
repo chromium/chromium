@@ -19,6 +19,9 @@
 // The web view's frame rectangle.
 @property(readonly, assign) CGRect frame;
 
+// Web view's obscured insets.
+@property(nonatomic, assign) UIEdgeInsets obscuredInsets;
+
 // Adds an offset to the scrollable content's frame.
 @property(nonatomic, assign) CGPoint contentOffset;
 
@@ -53,6 +56,9 @@
 // property.
 @property(nonatomic, assign) BOOL shouldUseViewContentInset;
 
+// YES if the keyboard is currently visible for use in the web view.
+@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
+
 // Register the given insets for the given caller.
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller;
 
@@ -61,9 +67,6 @@
 
 // Wrapper around the addSubview method of the webview.
 - (void)addSubview:(UIView*)view;
-
-// YES if the keyboard is currently visible for use in the web view.
-@property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
 // Wrapper around the becomeFirstResponder method of the webview.
 - (BOOL)becomeFirstResponder;

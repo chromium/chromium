@@ -11,6 +11,7 @@ source_set("common") {
     "crw_content_view.h",
     "crw_edit_menu_builder.h",
     "crw_input_view_provider.h",
+    "crw_obscured_insets_controller.h",
     "crw_viewport_adjustment.h",
     "crw_viewport_adjustment_container.h",
     "crw_web_view_content_view.h",

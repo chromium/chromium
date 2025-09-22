@@ -20,6 +20,7 @@ source_set("tos") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/web/common:web_view_creation_util",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

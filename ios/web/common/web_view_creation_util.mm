@@ -8,12 +8,13 @@
 
 #import "base/check.h"
 #import "ios/web/common/user_agent.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_view_internal_creation_util.h"
 
 namespace web {
 
-WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
+CRWWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
   DCHECK(browser_state);
 
   WKWebViewConfigurationProvider& config_provider =
