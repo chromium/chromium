@@ -11,6 +11,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.build.annotations.Initializer;
@@ -18,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 /**
@@ -93,6 +97,12 @@ public class SplitCompatContentProvider extends ContentProvider {
         getImpl().dump(fd, writer, args);
     }
 
+    @Override
+    public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
+            throws FileNotFoundException {
+        return getImpl().openFile(uri, mode);
+    }
+
     /**
      * Holds the implementation of ContentProvider logic. Will be called by {@link
      * SplitCompatContentProvider}.
@@ -134,5 +144,10 @@ public class SplitCompatContentProvider extends ContentProvider {
         public abstract @Nullable String getType(Uri uri);
 
         public void dump(FileDescriptor fd, PrintWriter writer, String[] args) {}
+
+        public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
+                throws FileNotFoundException {
+            throw new FileNotFoundException();
+        }
     }
 }

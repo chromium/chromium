@@ -17,6 +17,18 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class PageContentProviderMetrics {
 
+    @IntDef({Format.TEXT, Format.PROTO})
+    @interface Format {
+        int TEXT = 0;
+        int PROTO = 1;
+    }
+
+    @IntDef({RequestType.QUERY, RequestType.OPEN_FILE})
+    @interface RequestType {
+        int QUERY = 0;
+        int OPEN_FILE = 1;
+    }
+
     @IntDef({
         PageContentProviderEvent.GET_CONTENT_URI_FAILED,
         PageContentProviderEvent.QUERY,
@@ -56,6 +68,15 @@ public class PageContentProviderMetrics {
                 PageContentProviderEvent.NUM_ENTRIES);
     }
 
+    public static void recordPageProviderEvent(
+            @RequestType int requestType, @Format int format, @PageContentProviderEvent int event) {
+        var histogramName =
+                concatenateTypeAndFormatToHistogramName(
+                        "Android.AssistContent.WebPageContentProvider.Events", requestType, format);
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName, event, PageContentProviderEvent.NUM_ENTRIES);
+    }
+
     public static void recordPageContentRequestedUkm(Tab tab) {
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
         new UkmRecorder(tab.getWebContents(), "Android.AssistContent.PageContextRequest")
@@ -88,5 +109,44 @@ public class PageContentProviderMetrics {
         new UkmRecorder(tab.getWebContents(), "Android.AssistContent.Request")
                 .addMetric("WebPageStructuredDataAttached", webStructuredDataAttached ? 1 : 0)
                 .record();
+    }
+
+    public static void recordCreateToExtractionStartLatency(
+            @RequestType int requestType, @Format int format, long duration) {
+        var histogramName =
+                concatenateTypeAndFormatToHistogramName(
+                        "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart",
+                        requestType,
+                        format);
+        RecordHistogram.recordMediumTimesHistogram(histogramName, duration);
+    }
+
+    static void recordExtractionStartToEndLatency(
+            @RequestType int requestType, @Format int format, long duration) {
+        var histogramName =
+                concatenateTypeAndFormatToHistogramName(
+                        "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd",
+                        requestType,
+                        format);
+        RecordHistogram.recordMediumTimesHistogram(histogramName, duration);
+    }
+
+    static void recordTotalLatency(
+            @RequestType int requestType, @Format int format, long duration) {
+        var histogramName =
+                concatenateTypeAndFormatToHistogramName(
+                        "Android.AssistContent.WebPageContentProvider.Latency.TotalLatency",
+                        requestType,
+                        format);
+        RecordHistogram.recordMediumTimesHistogram(histogramName, duration);
+    }
+
+    private static String concatenateTypeAndFormatToHistogramName(
+            String histogram, @RequestType int requestType, @Format int format) {
+        return histogram
+                + '.'
+                + (requestType == RequestType.QUERY ? "Query" : "OpenFile")
+                + '.'
+                + (format == Format.TEXT ? "Text" : "Proto");
     }
 }

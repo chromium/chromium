@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.provider;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,8 +15,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +44,15 @@ import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.optimization_guide.content.PageContentProtoProviderBridge;
+import org.chromium.components.optimization_guide.content.PageContentProtoProviderBridgeJni;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.AnnotatedPageContent;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentAttributeType;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentAttributes;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.ContentNode;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.TextInfo;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.TextSize;
+import org.chromium.components.optimization_guide.features.proto.CommonFeatureDataProto.TextStyle;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -62,6 +77,7 @@ public class PageContentProviderImplUnitTest {
     @Mock private Tab mTab;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private InnerTextBridge.Natives mInnerTextNatives;
+    @Mock private PageContentProtoProviderBridge.Natives mPageContentProtoProviderNatives;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
 
     private PageContentProvider mProvider;
@@ -76,6 +92,7 @@ public class PageContentProviderImplUnitTest {
         mProvider = new PageContentProvider();
 
         InnerTextBridgeJni.setInstanceForTesting(mInnerTextNatives);
+        PageContentProtoProviderBridgeJni.setInstanceForTesting(mPageContentProtoProviderNatives);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
@@ -93,33 +110,39 @@ public class PageContentProviderImplUnitTest {
 
     @Test
     public void testUrlAfterExpiration() throws InterruptedException {
-        var contentUri =
-                PageContentProviderImpl.getContentUriForUrl(
-                        "https://google.com", mActivityTabProvider);
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+
+        var textContentUri = getMetadataFieldFromJson(structuredDataJson, "content_uri");
 
         // Run all delayed tasks to ensure the URI is expired.
         ShadowLooper.idleMainLooper(1, TimeUnit.HOURS);
 
-        var resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
+        var resultCursor = mProvider.query(Uri.parse(textContentUri), null, null, null, null);
 
         assertCursorContainsErrorMessage(resultCursor, "Invalid ID");
     }
 
     @Test
-    public void testGetContentUrl() {
-        var contentUri =
-                PageContentProviderImpl.getContentUriForUrl(
-                        "https://google.com", mActivityTabProvider);
-        assertNotNull(contentUri);
+    public void testGetAssistContentJson() {
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+
+        var textContentUri = getMetadataFieldFromJson(structuredDataJson, "content_uri");
+        assertNotNull(textContentUri);
     }
 
     @Test
-    public void testQueryValidContentUrl() {
+    public void testTextQueryValidContentUrl() {
         setInnerTextExtractionResult("Page contents!", 200);
 
-        var contentUri =
-                PageContentProviderImpl.getContentUriForUrl(
-                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider);
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+
+        var contentUri = getMetadataFieldFromJson(structuredDataJson, "content_uri");
         // Wait 300ms between creating URI and querying it.
         mFakeTimeTestRule.advanceMillis(300);
         Cursor resultCursor;
@@ -128,34 +151,62 @@ public class PageContentProviderImplUnitTest {
         try (HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
-                                "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart",
+                                "Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart.Query.Text",
                                 300)
                         .expectIntRecord(
-                                "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd",
+                                "Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd.Query.Text",
                                 200)
                         .expectIntRecord(
-                                "Android.AssistContent.WebPageContentProvider.Latency.TotalLatency",
+                                "Android.AssistContent.WebPageContentProvider.Latency.TotalLatency.Query.Text",
                                 300 + 200)
                         .build()) {
             resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
         }
-        assertCursorContainsValues(
+        assertTextCursorContainsValues(
                 resultCursor,
                 JUnitTestGURLs.GOOGLE_URL.getSpec(),
-                /* contents= */ "Page contents!");
+                /* textContents= */ "Page contents!");
         verify(mInnerTextNatives).getInnerText(eq(mRenderFrameHost), any());
     }
 
     @Test
-    public void testQuery_errorWhileExtracting() {
+    public void testTextQuery_errorWhileExtracting() {
         setInnerTextExtractionError(100);
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
 
-        var contentUri =
-                PageContentProviderImpl.getContentUriForUrl(
-                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider);
+        var contentUri = getMetadataFieldFromJson(structuredDataJson, "content_uri");
         mFakeTimeTestRule.advanceMillis(300);
         Cursor resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
         assertCursorContainsErrorMessage(resultCursor, "Error during extraction");
+    }
+
+    @Test
+    public void testProtoQueryValidContentUri() {
+        var nodeContents = "Page contents!";
+        var apcProto = getAnnotatedPageContentsProto(nodeContents);
+        setProtoContentExtractionResult(apcProto, 100);
+
+        var structuredDataJson =
+                PageContentProviderImpl.getAssistContentStructuredDataForUrl(
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider, false);
+        var protoContentUri = getMetadataFieldFromJson(structuredDataJson, "proto_content_uri");
+
+        Cursor resultCursor = mProvider.query(Uri.parse(protoContentUri), null, null, null, null);
+
+        assertProtoCursorContainsValues(
+                resultCursor, JUnitTestGURLs.GOOGLE_URL.getSpec(), apcProto.toByteArray());
+    }
+
+    private String getMetadataFieldFromJson(String jsonString, String fieldName) {
+        try {
+            JSONObject jsonObject = (JSONObject) new JSONTokener(jsonString).nextValue();
+            return jsonObject.getJSONObject("page_metadata").getString(fieldName);
+        } catch (JSONException e) {
+            Assert.fail("Error parsing metadata json");
+            return null;
+        }
     }
 
     private void setInnerTextExtractionResult(String result, int resultDelayMs) {
@@ -170,6 +221,20 @@ public class PageContentProviderImplUnitTest {
                         })
                 .when(mInnerTextNatives)
                 .getInnerText(eq(mRenderFrameHost), any());
+    }
+
+    private void setProtoContentExtractionResult(AnnotatedPageContent proto, int resultDelayMs) {
+        doAnswer(
+                        invocationOnMock -> {
+                            Callback<byte[]> callback =
+                                    (Callback<byte[]>)
+                                            invocationOnMock.getArgument(1, Callback.class);
+                            mFakeTimeTestRule.advanceMillis(resultDelayMs);
+                            callback.onResult(proto.toByteArray());
+                            return null;
+                        })
+                .when(mPageContentProtoProviderNatives)
+                .getAiPageContent(eq(mWebContents), any());
     }
 
     private void setInnerTextExtractionError(int resultDelayMs) {
@@ -199,7 +264,7 @@ public class PageContentProviderImplUnitTest {
         assertEquals(errorMessage, cursor.getString(errorMessageColumnIndex));
     }
 
-    private void assertCursorContainsValues(Cursor cursor, String url, String contents) {
+    private void assertTextCursorContainsValues(Cursor cursor, String url, String textContents) {
         assertNotNull(cursor);
         assertEquals(1, cursor.getCount());
         cursor.moveToFirst();
@@ -212,6 +277,64 @@ public class PageContentProviderImplUnitTest {
 
         assertEquals(url, cursor.getString(urlColumnIndex));
         assertEquals(1, cursor.getInt(successColumnIndex));
-        assertEquals(contents, cursor.getString(contentsColumnIndex));
+        assertEquals(textContents, cursor.getString(contentsColumnIndex));
+    }
+
+    private void assertProtoCursorContainsValues(Cursor cursor, String url, byte[] protoContents) {
+        assertNotNull(cursor);
+        assertEquals(1, cursor.getCount());
+        cursor.moveToFirst();
+        var urlColumnIndex = cursor.getColumnIndex("_id");
+        var successColumnIndex = cursor.getColumnIndex("success");
+        var contentsColumnIndex = cursor.getColumnIndex("contents");
+        assertNotEquals(-1, urlColumnIndex);
+        assertNotEquals(-1, successColumnIndex);
+        assertNotEquals(-1, contentsColumnIndex);
+
+        assertEquals(url, cursor.getString(urlColumnIndex));
+        assertEquals(1, cursor.getInt(successColumnIndex));
+        assertArrayEquals(protoContents, cursor.getBlob(contentsColumnIndex));
+    }
+
+    private AnnotatedPageContent getAnnotatedPageContentsProto(String nodeText) {
+        AnnotatedPageContent.Builder pageContentBuilder = AnnotatedPageContent.newBuilder();
+        var rootNode = getRootContentNode(1);
+        var textNode =
+                getContentNodeWithText(
+                        2,
+                        nodeText,
+                        TextSize.TEXT_SIZE_M_DEFAULT,
+                        Color.GREEN,
+                        /* hasEmphasis= */ true);
+
+        rootNode.addChildrenNodes(textNode);
+        pageContentBuilder.setRootNode(rootNode);
+
+        return pageContentBuilder.build();
+    }
+
+    private ContentNode.Builder getContentNodeWithText(
+            int nodeId, String text, TextSize size, int color, boolean hasEmphasis) {
+        return ContentNode.newBuilder()
+                .setContentAttributes(
+                        ContentAttributes.newBuilder()
+                                .setCommonAncestorDomNodeId(nodeId)
+                                .setAttributeType(ContentAttributeType.CONTENT_ATTRIBUTE_TEXT)
+                                .setTextData(
+                                        TextInfo.newBuilder()
+                                                .setTextContent(text)
+                                                .setTextStyle(
+                                                        TextStyle.newBuilder()
+                                                                .setColor(color)
+                                                                .setHasEmphasis(hasEmphasis)
+                                                                .setTextSize(size))));
+    }
+
+    private ContentNode.Builder getRootContentNode(int rootNodeId) {
+        return ContentNode.newBuilder()
+                .setContentAttributes(
+                        ContentAttributes.newBuilder()
+                                .setCommonAncestorDomNodeId(rootNodeId)
+                                .setAttributeType(ContentAttributeType.CONTENT_ATTRIBUTE_ROOT));
     }
 }

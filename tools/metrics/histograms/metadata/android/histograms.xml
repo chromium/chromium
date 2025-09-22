@@ -198,6 +198,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:MessageIdentifier) -->
 
+<variants name="PageContentProvider_OutputFormat">
+  <variant name="Proto" summary="Annotated page content proto format"/>
+  <variant name="Text" summary="Text"/>
+</variants>
+
+<variants name="PageContentProvider_RequestType">
+  <variant name="OpenFile"
+      summary="call to openFile() that returns results as a FileDescriptor"/>
+  <variant name="Query"
+      summary="call to query() that returns results in a Cursor"/>
+</variants>
+
 <!-- LINT.IfChange(IntentOriginVariants) -->
 
 <variants name="SearchActivityIntentOriginVariants">
@@ -581,6 +593,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.AssistContent.WebPageContentProvider.Events.{RequestType}.{Format}"
+    enum="WebPageContentProviderEvent" expires_after="2026-03-08">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records events related to WebPageContentProvider as it generates a URI for
+    an external app and as it handles queries from said external app.
+
+    Recorded when an external app requests {Format} with a {RequestType}.
+  </summary>
+  <token key="RequestType" variants="PageContentProvider_RequestType"/>
+  <token key="Format" variants="PageContentProvider_OutputFormat"/>
+</histogram>
+
+<histogram
     name="Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult"
     enum="BooleanSuccess" expires_after="2025-09-07">
   <owner>salg@google.com</owner>
@@ -593,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart"
+    name="Android.AssistContent.WebPageContentProvider.Latency.CreateToExtractionStart.{RequestType}.{Format}"
     units="ms" expires_after="2026-03-01">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
@@ -602,27 +629,33 @@ chromium-metrics-reviews@google.com.
     provider URI to an external app and receiving a query from an external app
     with the same URI (this starts a content extraction task).
   </summary>
+  <token key="RequestType" variants="PageContentProvider_RequestType"/>
+  <token key="Format" variants="PageContentProvider_OutputFormat"/>
 </histogram>
 
 <histogram
-    name="Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd"
+    name="Android.AssistContent.WebPageContentProvider.Latency.ExtractionStartToEnd.{RequestType}.{Format}"
     units="ms" expires_after="2026-03-01">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
   <summary>
     Records the amount of time passed while extracting a web page's contents.
   </summary>
+  <token key="RequestType" variants="PageContentProvider_RequestType"/>
+  <token key="Format" variants="PageContentProvider_OutputFormat"/>
 </histogram>
 
 <histogram
-    name="Android.AssistContent.WebPageContentProvider.Latency.TotalLatency"
-    units="ms" expires_after="2025-06-01">
+    name="Android.AssistContent.WebPageContentProvider.Latency.TotalLatency.{RequestType}.{Format}"
+    units="ms" expires_after="2026-03-01">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
   <summary>
     Records the total amount of time passed between sending a web page content
     provider URI to an external app and it receiving the web page's contents.
   </summary>
+  <token key="RequestType" variants="PageContentProvider_RequestType"/>
+  <token key="Format" variants="PageContentProvider_OutputFormat"/>
 </histogram>
 
 <!-- LINT.IfChange(DeviceLockSource) -->
