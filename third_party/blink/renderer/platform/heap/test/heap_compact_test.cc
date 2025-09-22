@@ -53,9 +53,11 @@ static_assert(blink::IsTraceableV<IntWrapper>,
 }  // namespace
 
 using IntVector = blink::GCedHeapVector<blink::Member<IntWrapper>>;
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntVector)
 using IntDeque = blink::GCedHeapDeque<blink::Member<IntWrapper>>;
 using IntMap = blink::GCedHeapHashMap<blink::Member<IntWrapper>, int>;
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::HeapVector<blink::Member<IntWrapper>>)
 
 namespace blink {
 
@@ -105,7 +107,7 @@ TEST_F(HeapCompactTest, CompactHashMap) {
 TEST_F(HeapCompactTest, CompactVectorOfVector) {
   ClearOutOldGarbage();
 
-  using IntVectorVector = GCedHeapVector<IntVector>;
+  using IntVectorVector = GCedHeapVector<HeapVector<Member<IntWrapper>>>;
 
   Persistent<IntVectorVector> int_vector_vector =
       MakeGarbageCollected<IntVectorVector>();

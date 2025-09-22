@@ -132,42 +132,27 @@ class BasicHeapVector final
 
  private:
   struct TypeConstraints {
-    constexpr TypeConstraints();
+    constexpr TypeConstraints() {
+      static_assert(
+          std::is_trivially_destructible_v<BasicHeapVector> || inlineCapacity,
+          "BasicHeapVector must be trivially destructible.");
+      static_assert(!IsWeakV<T>,
+                    "Weak types are not allowed in BasicHeapVector.");
+      static_assert(!IsGarbageCollectedTypeV<T>,
+                    "GCed types should not be inlined in a BasicHeapVector.");
+      static_assert(!IsPointerToGarbageCollectedType<T>,
+                    "Don't use raw pointers or reference to garbage collected "
+                    "types in BasicHeapVector. Use Member<> instead.");
 
-   private:
-    template <typename U>
-    class IsHeapVector : public std::false_type {};
-    template <typename U>
-    class IsHeapVector<BasicHeapVector<CollectionType, U>>
-        : public std::true_type {};
-    template <typename U, wtf_size_t InlineCapacity>
-    class IsHeapVector<BasicHeapVector<CollectionType, U, InlineCapacity>>
-        : public std::true_type {};
+      // HeapVector may hold non-traceable types. This is useful for vectors
+      // held by garbage collected objects such that the vectors' backing stores
+      // are accounted as memory held by the GC. HeapVectors of non-traceable
+      // types should only be used as fields of traceable types.
+    }
   };
   static_assert(std::is_empty_v<TypeConstraints>);
   NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
-
-template <internal::HeapCollectionType CollectionType,
-          typename T,
-          wtf_size_t inlineCapacity>
-constexpr BasicHeapVector<CollectionType, T, inlineCapacity>::TypeConstraints::
-    TypeConstraints() {
-  static_assert(
-      std::is_trivially_destructible_v<BasicHeapVector> || inlineCapacity,
-      "BasicHeapVector must be trivially destructible.");
-  static_assert(!IsWeakV<T>, "Weak types are not allowed in BasicHeapVector.");
-  static_assert(!IsGarbageCollectedTypeV<T> || IsHeapVector<T>::value,
-                "GCed types should not be inlined in a BasicHeapVector.");
-  static_assert(!IsPointerToGarbageCollectedType<T>,
-                "Don't use raw pointers or reference to garbage collected "
-                "types in BasicHeapVector. Use Member<> instead.");
-
-  // HeapVector may hold non-traceable types. This is useful for vectors held
-  // by garbage collected objects such that the vectors' backing stores are
-  // accounted as memory held by the GC. HeapVectors of non-traceable types
-  // should only be used as fields of traceable types.
-}
 
 // On-stack for in-field version of Vector for referring to
 // GarbageCollected objects.
