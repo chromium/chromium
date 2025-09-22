@@ -3614,7 +3614,7 @@
     },
     {
       name: "interest-delay",
-      runtime_flag: "CSSInterestDelayShorthand",
+      runtime_flag: "HTMLInterestForAttribute",
       longhands: [
         "interest-delay-start", "interest-delay-end"
       ],

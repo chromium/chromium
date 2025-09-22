@@ -215,8 +215,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
 }
 
 Element* SVGAElement::InterestForElement() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return nullptr;
   }
   // Anchor elements that don't have the `href` attribute are not interactive,

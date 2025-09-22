@@ -1405,14 +1405,6 @@
       status: "stable",
     },
     {
-      // Support for the interest-delay shorthand property.
-      // The longhands are controlled by HTMLInterestForAttribute. The
-      // shorthand is controlled separately since shorthands can not be enabled
-      // by an origin trial.
-      name: "CSSInterestDelayShorthand",
-      status: "experimental",
-    },
-    {
       // https://chromestatus.com/feature/6289894144212992
       name: "CSSKeyframesRuleLength",
       status: "stable",
@@ -2741,8 +2733,6 @@
     {
       name: "HTMLInterestForAttribute",
       status: "experimental",
-      origin_trial_feature_name: "HTMLInterestForAttribute",
-      origin_trial_allows_third_party: true,
     },
     // Adds support for the `::interest-hint` pseudo element, which is a sub-
     // feature of the HTMLInterestForAttribute feature.

@@ -1563,8 +1563,7 @@ InterestInvokerTargetData& Element::EnsureInterestInvokerTargetData() {
   return EnsureElementRareData().EnsureInterestInvokerTargetData();
 }
 InterestInvokerTargetData* Element::GetInterestInvokerTargetData() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   if (const ElementRareDataVector* data = GetElementRareData()) {
     return data->GetInterestInvokerTargetData();
   }
@@ -1656,8 +1655,7 @@ bool ShouldContinueWithInterest(Element& invoker,
 }  // namespace
 
 bool Element::InterestGained(Element* target) {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
 
   if (!ShouldContinueWithInterest(*this, target,
                                   InterestState::kFullInterest)) {
@@ -1724,8 +1722,7 @@ bool Element::InterestGained(Element* target) {
 bool Element::InterestLost(Element* target,
                            InterestLostCancelable cancelable,
                            InterestLostPopoverBehavior behavior) {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
 
   if (!ShouldContinueWithInterest(*this, target, InterestState::kNoInterest)) {
     return false;
@@ -1767,8 +1764,7 @@ bool Element::InterestLost(Element* target,
 
 void Element::HandlePointerEventsForInterestFor(
     const AtomicString& event_type) {
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return;
   }
   for (Element* element = this; element; element = element->parentElement()) {
@@ -1786,8 +1782,7 @@ void Element::HandlePointerEventsForInterestFor(
 }
 
 void Element::DefaultEventHandler(Event& event) {
-  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled() &&
       (InterestForElement() || SourceInterestInvoker() ||
        GetInterestState() != InterestState::kNoInterest)) [[unlikely]] {
     // Handle new `interestfor` activation via keyboard or long-press.
@@ -3611,8 +3606,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (IsElementReflectionAttribute(name)) {
     SynchronizeContentAttributeAndElementReference(name);
     if (name == html_names::kInterestforAttr &&
-        RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-            GetDocument().GetExecutionContext())) {
+        RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
       UseCounter::Count(GetDocument(), WebFeature::kInterestFor);
       if (!params.old_value.IsNull()) {
         // We are changing the value of the `interestfor` attribute, so
@@ -4033,16 +4027,14 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
       // The element being removed is an interest invoker - move it to the
       // no-interest state and cancel any pending interest tasks.
       if (invoker_data->GetInterestState() != InterestState::kNoInterest) {
-        DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-            document.GetExecutionContext()));
+        DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
         ChangeInterestState(invoker_data->ActiveInterestTarget(),
                             InterestState::kNoInterest);
       }
     }
     if (InterestInvokerTargetData* target_data =
             data->GetInterestInvokerTargetData()) [[unlikely]] {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          document.GetExecutionContext()));
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       if (Element* invoker = target_data->interestInvoker();
           invoker &&
           invoker->GetInterestState() != InterestState::kNoInterest &&
@@ -7875,15 +7867,13 @@ bool Element::IsKeyboardFocusableScroller(
 }
 
 void Element::ShowInterestNow() {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   InterestGained(InterestForElement());
 }
 
 void Element::LoseInterestNow(InterestLostCancelable cancelable,
                               InterestLostPopoverBehavior behavior) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   Element* target = InterestForElement();
   DCHECK_EQ(GetInvokerData()->ActiveInterestTarget(), target);
   DCHECK_EQ(GetInterestState(), InterestState::kFullInterest);
@@ -11515,8 +11505,7 @@ void Element::ScheduleInterestLostTask() {
 }
 
 Element* Element::SourceInterestInvoker() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return nullptr;
   }
   InterestInvokerTargetData* target_data = GetInterestInvokerTargetData();
@@ -11538,8 +11527,7 @@ Element* Element::SourceInterestInvoker() const {
 }
 
 Element::InterestState Element::GetInterestState() {
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return InterestState::kNoInterest;
   }
   auto* invoker_data = GetInvokerData();
@@ -11551,8 +11539,7 @@ Element::InterestState Element::GetInterestState() {
 
 namespace {
 Element* NestedSourceInterestInvoker(Element& starting_target) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      starting_target.GetDocument().GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   for (Element* target = &starting_target; target;
        target = target->parentElement()) {
     if (Element* upstream = target->SourceInterestInvoker()) {
@@ -11581,8 +11568,7 @@ Element* NestedSourceInterestInvoker(Element& starting_target) {
 //    notified, this function must walk the ancestors manually.
 void Element::HandleInterestForHoverOrFocus(InterestSource source,
                                             bool recursive_call) {
-  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-      GetDocument().GetExecutionContext()));
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
   if (!IsInTreeScope() || !GetDocument().IsActive()) {
     return;
   }

@@ -586,8 +586,7 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
 }
 
 Element* HTMLAnchorElementBase::InterestForElement() const {
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return nullptr;
   }
   // Anchor elements that don't have the `href` attribute are not interactive,

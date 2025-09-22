@@ -2423,12 +2423,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return element.HasFocusWithin();
     case CSSSelector::kPseudoInterestSource:
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element.GetDocument().GetExecutionContext()));
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       return element.GetInterestState() != Element::InterestState::kNoInterest;
     case CSSSelector::kPseudoInterestTarget: {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element.GetDocument().GetExecutionContext()));
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       Element* invoker = element.SourceInterestInvoker();
       DCHECK(!invoker || invoker->GetInterestState() !=
                              Element::InterestState::kNoInterest);

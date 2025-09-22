@@ -818,8 +818,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if ((match->type == CSSSelector::kPseudoInterestSource ||
        match->type == CSSSelector::kPseudoInterestTarget) &&
-      !RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          document ? document->GetExecutionContext() : nullptr)) {
+      !RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 

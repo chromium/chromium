@@ -2814,8 +2814,7 @@ AXObject* AXObject::GetInterestForTargetPopover() const {
     return nullptr;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetElement()->GetDocument().GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     return nullptr;
   }
 

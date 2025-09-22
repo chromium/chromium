@@ -513,8 +513,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
           element && element->InterestForElement()) {
-        auto* context = element->GetDocument().GetExecutionContext();
-        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(context));
+        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
         data.opened_from_interest_for = true;
         data.interest_for_node_id = element->NodeID();
         break;
