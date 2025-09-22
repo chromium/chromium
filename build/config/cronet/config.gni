@@ -37,3 +37,5 @@ declare_args() {
 assert(
     !is_cronet_for_aosp_build || is_cronet_build,
     "`is_cronet_build` cannot be disabled when `is_cronet_for_aosp_build` is enabled.")
+
+assert(!is_cronet_for_aosp_build || target_os == "android")
