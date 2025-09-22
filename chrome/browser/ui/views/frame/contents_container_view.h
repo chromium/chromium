@@ -111,8 +111,10 @@ class ContentsContainerView : public views::View,
                               bool is_active,
                               bool is_highlighted);
 
-  void ShowCaptureContentsBorder(std::optional<gfx::Rect> border_location);
+  void ShowCaptureContentsBorder();
   void HideCaptureContentsBorder();
+  void SetCaptureContentsBorderLocation(
+      std::optional<gfx::Rect> border_location);
 
  private:
   void CreateCaptureContentsBorder();
