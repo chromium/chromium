@@ -2880,6 +2880,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
         Customize your home screen
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_ACCESSIBILITY_VALUE" desc="Accessibility value read by Voice-over, indicating the background position.">
+        background {position} of {total}
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_AQUA_ACCESSIBILITY_LABEL" desc="Accessibility label for the 'Aqua' color theme.">
         Aqua theme
       </message>

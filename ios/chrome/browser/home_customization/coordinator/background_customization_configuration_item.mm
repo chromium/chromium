@@ -31,6 +31,7 @@
 }
 
 @synthesize accessibilityName = _accessibilityName;
+@synthesize accessibilityValue = _accessibilityValue;
 
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:
@@ -48,8 +49,9 @@
   return self;
 }
 
-- (instancetype)initWithCollectionImage:
-    (const CollectionImage&)collectionImage {
+- (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage
+                      accessibilityName:(NSString*)accessibilityName
+                     accessibilityValue:(NSString*)accessibilityValue {
   self = [super init];
   if (self) {
     _collectionImage = collectionImage;
@@ -59,6 +61,8 @@
                          _backgroundStyle,
                          base::SysUTF8ToNSString(
                              base::NumberToString(collectionImage.asset_id))];
+    _accessibilityName = accessibilityName;
+    _accessibilityValue = accessibilityValue;
   }
   return self;
 }

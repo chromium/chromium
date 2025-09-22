@@ -8,9 +8,12 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
@@ -33,8 +36,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
@@ -413,10 +418,24 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     BackgroundCollectionConfiguration* section =
         [[BackgroundCollectionConfiguration alloc] init];
     section.collectionName = base::SysUTF8ToNSString(collectionName);
-    for (const auto& image : collectionImages) {
+    for (size_t i = 0; i < collectionImages.size(); i++) {
+      const auto& image = collectionImages[i];
+
+      NSString* accessibilityName =
+          base::SysUTF8ToNSString(base::JoinString(image.attribution, " "));
+      NSString* accessibilityValue = base::SysUTF16ToNSString(
+          base::i18n::MessageFormatter::FormatWithNamedArgs(
+              l10n_util::GetStringUTF16(
+                  IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_ACCESSIBILITY_VALUE),
+              "position", static_cast<int>(i) + 1, "total",
+              static_cast<int>(collectionImages.size())));
+
       BackgroundCustomizationConfigurationItem* config =
           [[BackgroundCustomizationConfigurationItem alloc]
-              initWithCollectionImage:image];
+              initWithCollectionImage:image
+                    accessibilityName:accessibilityName
+                   accessibilityValue:accessibilityValue];
+
       [section.configurations setObject:config forKey:config.configurationID];
       [section.configurationOrder addObject:config.configurationID];
 

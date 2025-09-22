@@ -27,7 +27,9 @@ class NtpCustomBackground;
 
 // Initializes a new instance of the background customization configuration
 // with the provided collection image.
-- (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage;
+- (instancetype)initWithCollectionImage:(const CollectionImage&)collectionImage
+                      accessibilityName:(NSString*)accessibilityName
+                     accessibilityValue:(NSString*)accessibilityValue;
 
 // Initializes a new instance of the background customization configuration
 // with the provided NtpCustomBackground, which is the sync/persistence data

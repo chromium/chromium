@@ -114,6 +114,8 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   self = [super initWithFrame:frame];
   if (self) {
     self.contentView.backgroundColor = UIColor.clearColor;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     // Outer container view that holds the highlight border.
     self.borderWrapperView = [[UIView alloc] init];
@@ -246,6 +248,8 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
   _backgroundConfiguration = option;
   _searchEngineLogoMediator = searchEngineLogoMediator;
+  self.accessibilityLabel = option.accessibilityName;
+  self.accessibilityValue = option.accessibilityValue;
 
   [self applyTheme];
 }
