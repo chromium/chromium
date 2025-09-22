@@ -98,10 +98,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Sets the snackbar handler.
   void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
-  // Processes the result of the Reader Mode heuristic trigger that was run on
-  // the `url` content.
-  void HandleReaderModeHeuristicResult(const GURL& url,
-                                       ReaderModeHeuristicResult result);
+  // Processes the result of the Reader Mode heuristic trigger.
+  void HandleReaderModeHeuristicResult(ReaderModeHeuristicResult result);
 
   // Sets the full screen controller that will passed to the
   // `ReaderModeContentTabHelper`.
@@ -137,8 +135,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Handles the result from the Readability JavaScript heuristic triggering
   // logic.
-  void HandleReadabilityHeuristicResult(const GURL& url,
-                                        const base::Value* result);
+  void HandleReadabilityHeuristicResult(const base::Value* result);
 
   // Trigger the heuristic to determine reader mode eligibility.
   void TriggerReaderModeHeuristic(const GURL& url);
@@ -200,6 +197,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   base::OneShotTimer trigger_reader_mode_timer_;
   base::OneShotTimer reader_mode_distillation_timer_;
 
+  // URL on which we are triggering the eligibility heuristic.
+  std::optional<GURL> eligibility_heuristic_url_;
   // Last committed URL, ignoring ref.
   GURL last_committed_url_without_ref_;
   // Whether the last committed URL eligibility has been determined.
