@@ -50,6 +50,7 @@ class PageTool : public Tool {
       const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
  private:
   // Callback for navigation.

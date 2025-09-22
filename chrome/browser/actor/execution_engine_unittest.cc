@@ -151,6 +151,10 @@ class MockTool : public Tool {
     return nullptr;
   }
 
+  tabs::TabHandle GetTargetTab() const override {
+    return tabs::TabHandle::Null();
+  }
+
  private:
   base::OnceClosure on_invoke_;
   base::OnceClosure on_destroy_;

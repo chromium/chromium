@@ -28,6 +28,7 @@ class WaitTool : public Tool {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer()
       const override;
+  tabs::TabHandle GetTargetTab() const override;
 
   static void SetNoDelayForTesting();
 

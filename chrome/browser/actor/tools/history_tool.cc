@@ -121,6 +121,10 @@ void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,
   task.AddTab(tab_handle_, std::move(callback));
 }
 
+tabs::TabHandle HistoryTool::GetTargetTab() const {
+  return tab_handle_;
+}
+
 void HistoryTool::DidStartNavigation(NavigationHandle* navigation_handle) {
   if (!IsInvokeInProgress() || !navigation_handle->IsHistory()) {
     return;

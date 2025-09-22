@@ -37,6 +37,7 @@ class NavigateTool : public Tool, content::WebContentsObserver {
       const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(

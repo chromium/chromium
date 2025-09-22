@@ -21,6 +21,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
@@ -164,22 +165,23 @@ void ToolController::Invoke(ResultCallback result_callback) {
   SetState(State::kPreInvoke);
   active_state_->completion_callback = std::move(result_callback);
 
+  Tool& tool = *active_state_->tool;
+
   const optimization_guide::proto::AnnotatedPageContent*
       last_observed_page_content = nullptr;
-  // Not all tools require a tab.
-  if (!task_->GetTabs().empty()) {
-    // TODO(crbug.com/389739308): The last tab observation should be fetched
-    // from the tool if it requires one.
-    if (auto* tab_data = ActorTabData::From(task_->GetTabForObservation())) {
+
+  // Not all tools operate on a tab.
+  if (tabs::TabInterface* tab = tool.GetTargetTab().Get()) {
+    if (auto* tab_data = ActorTabData::From(tab)) {
       last_observed_page_content = tab_data->GetLastObservedPageContent();
     }
   }
 
   mojom::ActionResultPtr toctou_result =
-      active_state_->tool->TimeOfUseValidation(last_observed_page_content);
+      tool.TimeOfUseValidation(last_observed_page_content);
   if (!IsOk(*toctou_result)) {
-    journal().Log(active_state_->tool->JournalURL(), task_->id(),
-                  mojom::JournalTrack::kActor, "TOCTOU Check Failed",
+    journal().Log(tool.JournalURL(), task_->id(), mojom::JournalTrack::kActor,
+                  "TOCTOU Check Failed",
                   JournalDetailsBuilder()
                       .AddError(ToDebugString(*toctou_result))
                       .Build());
@@ -191,9 +193,9 @@ void ToolController::Invoke(ResultCallback result_callback) {
   // alive and focused), return error otherwise.
 
   SetState(State::kInvoking);
-  observation_delayer_ = active_state_->tool->GetObservationDelayer();
-  active_state_->tool->Invoke(base::BindOnce(
-      &ToolController::DidFinishToolInvoke, weak_ptr_factory_.GetWeakPtr()));
+  observation_delayer_ = tool.GetObservationDelayer();
+  tool.Invoke(base::BindOnce(&ToolController::DidFinishToolInvoke,
+                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ToolController::Cancel() {

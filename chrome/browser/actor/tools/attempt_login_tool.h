@@ -44,6 +44,7 @@ class AttemptLoginTool : public Tool {
       const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
  private:
   void OnGetCredentials(actor_login::CredentialsOrError credentials);

@@ -49,6 +49,10 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer()
   return nullptr;
 }
 
+tabs::TabHandle WaitTool::GetTargetTab() const {
+  return tabs::TabHandle::Null();
+}
+
 void WaitTool::OnDelayFinished(InvokeCallback callback) {
   // TODO(crbug.com/409566732): Add more robust methods for detecting that the
   // page has settled.

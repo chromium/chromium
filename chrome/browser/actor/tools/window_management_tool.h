@@ -42,6 +42,7 @@ class WindowManagementTool : public Tool, public BrowserListObserver {
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              InvokeCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
   // BrowserListObserver
   void OnBrowserRemoved(Browser* browser) final;

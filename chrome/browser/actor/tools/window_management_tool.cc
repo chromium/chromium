@@ -158,6 +158,10 @@ void WindowManagementTool::UpdateTaskAfterInvoke(
   }
 }
 
+tabs::TabHandle WindowManagementTool::GetTargetTab() const {
+  return tabs::TabHandle::Null();
+}
+
 void WindowManagementTool::OnBrowserRemoved(Browser* browser) {
   if (action_ == Action::kClose && browser->session_id().id() == *window_id_) {
     OnInvokeFinished(MakeOkResult());

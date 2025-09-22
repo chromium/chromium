@@ -96,6 +96,10 @@ void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,
   task.AddTab(tab_handle_, std::move(callback));
 }
 
+tabs::TabHandle NavigateTool::GetTargetTab() const {
+  return tab_handle_;
+}
+
 void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {

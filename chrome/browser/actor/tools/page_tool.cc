@@ -443,6 +443,10 @@ void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
   task.AddTab(request_->GetTabHandle(), std::move(callback));
 }
 
+tabs::TabHandle PageTool::GetTargetTab() const {
+  return request_->GetTabHandle();
+}
+
 void PageTool::OnRenderFrameHostChanged() {
   // Return error if tab itself is closed or the WebContents hosted in the tab
   // is being destroyed.

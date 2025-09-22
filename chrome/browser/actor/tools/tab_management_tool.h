@@ -50,6 +50,7 @@ class TabManagementTool : public Tool,
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              InvokeCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
   // TabStripModelObserver
   void OnTabStripModelChanged(TabStripModel* tab_strip_model,

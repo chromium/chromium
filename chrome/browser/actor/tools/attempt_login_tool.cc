@@ -274,6 +274,10 @@ void AttemptLoginTool::UpdateTaskBeforeInvoke(ActorTask& task,
   task.AddTab(tab_handle_, std::move(callback));
 }
 
+tabs::TabHandle AttemptLoginTool::GetTargetTab() const {
+  return tab_handle_;
+}
+
 actor_login::ActorLoginService& AttemptLoginTool::GetActorLoginService() {
   return tool_delegate().GetActorLoginService();
 }

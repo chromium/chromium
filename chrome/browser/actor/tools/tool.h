@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -88,6 +89,9 @@ class Tool {
   virtual void UpdateTaskAfterInvoke(ActorTask& task,
                                      mojom::ActionResultPtr result,
                                      InvokeCallback callback) const;
+
+  // Returns the tab handle for the tab that this tool targets, if any.
+  virtual tabs::TabHandle GetTargetTab() const = 0;
 
  protected:
   TaskId task_id() const { return task_id_; }
