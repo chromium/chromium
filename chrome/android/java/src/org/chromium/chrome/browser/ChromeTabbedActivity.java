@@ -3413,7 +3413,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetCoordinatorSupplier,
                             getStartupMetricsTracker(),
-                            mRootUiCoordinator.getExclusiveAccessManager());
+                            mRootUiCoordinator.getExclusiveAccessManager(),
+                            mBackPressManager);
         }
         return mTabDelegateFactory;
     }

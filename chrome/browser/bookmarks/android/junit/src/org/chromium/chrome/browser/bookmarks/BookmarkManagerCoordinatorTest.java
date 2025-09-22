@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -58,7 +58,10 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-@Features.EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+@Features.EnableFeatures({
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -125,7 +128,8 @@ public class BookmarkManagerCoordinatorTest {
                                             mBookmarkOpener,
                                             mBookmarkManagerOpener,
                                             mPriceDropNotificationManager,
-                                            /* edgeToEdgePadAdjusterGenerator= */ null);
+                                            /* edgeToEdgePadAdjusterGenerator= */ null,
+                                            /* backPressManager= */ null);
                             mActivity.setContentView(mCoordinator.getView());
                         });
     }
@@ -163,8 +167,9 @@ public class BookmarkManagerCoordinatorTest {
 
     @Test
     public void testInvokeBackActionOnEscapeIsTrue() {
-        assertTrue(
-                "Back action should be invoked on escape.",
+        assertFalse(
+                "Back action should not be invoked on escape, but on non-tablet devices, the code"
+                        + " flow will end up going through the back action flow.",
                 mCoordinator.invokeBackActionOnEscape());
     }
 }

@@ -73,7 +73,8 @@ public class BookmarkActivity extends SnackbarActivity {
                         PriceDropNotificationManagerFactory.create(profile),
                         /* edgeToEdgePadAdjusterGenerator= */ view ->
                                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                                        view, getEdgeToEdgeSupplier()));
+                                        view, getEdgeToEdgeSupplier()),
+                        /* backPressManager= */ null);
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);

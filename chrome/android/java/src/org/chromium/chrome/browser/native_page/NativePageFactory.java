@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -87,6 +88,7 @@ public class NativePageFactory {
 
     private @Nullable NativePageBuilder mNativePageBuilder;
     private static @Nullable NativePage sTestPage;
+    private final BackPressManager mBackPressManager;
 
     public NativePageFactory(
             Activity activity,
@@ -105,7 +107,8 @@ public class NativePageFactory {
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
-            StartupMetricsTracker startupMetricsTracker) {
+            StartupMetricsTracker startupMetricsTracker,
+            BackPressManager backPressManager) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -123,6 +126,7 @@ public class NativePageFactory {
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
+        mBackPressManager = backPressManager;
     }
 
     private NativePageBuilder getBuilder() {
@@ -146,7 +150,8 @@ public class NativePageFactory {
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetCoordinatorSupplier,
-                            mStartupMetricsTracker);
+                            mStartupMetricsTracker,
+                            mBackPressManager);
         }
         return mNativePageBuilder;
     }
@@ -179,6 +184,7 @@ public class NativePageFactory {
         private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
         private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
+        private final BackPressManager mBackPressManager;
 
         public NativePageBuilder(
                 Activity activity,
@@ -198,7 +204,8 @@ public class NativePageFactory {
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
                 ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
-                StartupMetricsTracker startupMetricsTracker) {
+                StartupMetricsTracker startupMetricsTracker,
+                BackPressManager backPressManager) {
             mActivity = activity;
             mNewTabPageCreationTracker = newTabPageCreationTracker;
             mBottomSheetController = sheetController;
@@ -217,6 +224,7 @@ public class NativePageFactory {
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
             mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
             mStartupMetricsTracker = startupMetricsTracker;
+            mBackPressManager = backPressManager;
         }
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
@@ -266,7 +274,8 @@ public class NativePageFactory {
                             mBrowserControlsManager,
                             mTabModelSelector,
                             mEdgeToEdgeControllerSupplier),
-                    mActivity.getComponentName());
+                    mActivity.getComponentName(),
+                    mBackPressManager);
         }
 
         protected NativePage buildDownloadsPage(Tab tab) {

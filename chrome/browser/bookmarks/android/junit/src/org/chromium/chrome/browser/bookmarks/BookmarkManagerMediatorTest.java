@@ -146,7 +146,10 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+@EnableFeatures({
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String EXAMPLE_URL_FORMATTED =
@@ -540,6 +543,7 @@ public class BookmarkManagerMediatorTest {
                         mOnScrollListenerConsumer,
                         mBookmarkManagerOpener,
                         mPriceDropNotificationManager);
+        mMediator.onAttachedToWindow();
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 
@@ -866,6 +870,10 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testAttachmentChanges() {
+        // The setUp() method already calls onAttachedToWindow() once. To test the detach/attach
+        // cycle cleanly, we reset the mock here.
+        reset(mBookmarkUndoController);
+
         mMediator.onAttachedToWindow();
         verify(mBookmarkUndoController).setEnabled(true);
 
@@ -2430,6 +2438,153 @@ public class BookmarkManagerMediatorTest {
         // This should no-op as the folder is gone.
         onClick3.run();
         verify(mBookmarkModel, never()).getChildIds(mFolderId3);
+    }
+
+    @Test
+    public void testBackPressStateSupplier_initialState() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_folderNavigation() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+
+        // Navigate into a folder, which should enable back press.
+        mMediator.openFolder(mFolderId1);
+        assertTrue(
+                "Supplier should be true after navigating into a folder.",
+                mBackPressStateSupplier.get());
+
+        // Navigate back, which should disable it again.
+        mMediator.onBackPressed();
+        assertFalse(
+                "Supplier should be false after navigating back to root.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_selectionMode() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false initially.", mBackPressStateSupplier.get());
+
+        // Simulate selection starting by updating the supplier the Mediator is observing.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(true);
+        assertTrue(
+                "Supplier should be true when selection is active.", mBackPressStateSupplier.get());
+
+        // Simulate selection ending.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(false);
+        assertFalse(
+                "Supplier should be false when selection is inactive.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_detachResetsStateAndAttachRestores() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertFalse("Supplier should be false initially.", mBackPressStateSupplier.get());
+
+        // Simulate selection starting by updating the supplier the Mediator is observing.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(true);
+        assertTrue(
+                "Supplier should be true when selection is active.", mBackPressStateSupplier.get());
+
+        // Detaching the view should immediately disable the handler.
+        mMediator.onDetachedFromWindow();
+        assertFalse(
+                "Supplier should be false immediately after detach.",
+                mBackPressStateSupplier.get());
+
+        // Re-attaching the view should restore the correct enabled state.
+        mMediator.onAttachedToWindow();
+        assertTrue(
+                "Supplier should be restored to true after re-attach.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testOnBackPressed_clearsSelection() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        // Simulate selection being active, which makes the layout's handler return true.
+        doReturn(true).when(mSelectableListLayout).onBackPressed();
+
+        // Perform the back press.
+        boolean result = mMediator.onBackPressed();
+
+        // Verify that the layout's handler was called and that the event was consumed.
+        verify(mSelectableListLayout).onBackPressed();
+        assertTrue("onBackPressed should return true when selection is cleared.", result);
+
+        // Verify folder navigation did NOT happen.
+        assertEquals(
+                "State stack should not be popped when clearing selection.",
+                1,
+                mMediator.getStateStackForTesting().size());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testBackPressStateSupplier_tabletSearch() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false initially on tablet.", mBackPressStateSupplier.get());
+
+        // Get the callback from the currently displayed search box model.
+        Callback<String> searchTextChangeCallback =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+
+        // Starting a search should enable back press.
+        searchTextChangeCallback.onResult("test");
+        assertTrue(
+                "Supplier should be true when searching on tablet.", mBackPressStateSupplier.get());
+
+        // Clearing the search should disable it.
+        searchTextChangeCallback.onResult("");
+        assertFalse(
+                "Supplier should be false when search is cleared on tablet.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testBackPressStateSupplier_tabletSearchInSubfolder() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+
+        mMediator.openFolder(mFolderId1);
+        assertTrue("Supplier should be true in a subfolder.", mBackPressStateSupplier.get());
+
+        Callback<String> searchTextChangeCallback =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        searchTextChangeCallback.onResult("test");
+        assertTrue(
+                "Supplier should remain true when searching in a subfolder.",
+                mBackPressStateSupplier.get());
+
+        searchTextChangeCallback.onResult("");
+        assertTrue(
+                "Supplier should still be true after clearing search in a subfolder.",
+                mBackPressStateSupplier.get());
+
+        mMediator.onBackPressed();
+        assertFalse(
+                "Supplier should be false after navigating back to root.",
+                mBackPressStateSupplier.get());
     }
 
     @Test

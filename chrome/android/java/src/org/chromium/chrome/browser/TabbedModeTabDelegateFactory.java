@@ -11,6 +11,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
@@ -87,6 +88,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
     private @Nullable NativePageFactory mNativePageFactory;
+    private final BackPressManager mBackPressManager;
 
     public TabbedModeTabDelegateFactory(
             Activity activity,
@@ -115,7 +117,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
-            @Nullable ExclusiveAccessManager exclusiveAccessManager) {
+            @Nullable ExclusiveAccessManager exclusiveAccessManager,
+            BackPressManager backPressManager) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -143,6 +146,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mExclusiveAccessManager = exclusiveAccessManager;
+        mBackPressManager = backPressManager;
     }
 
     @Override
@@ -212,7 +216,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
                             mTopInsetCoordinatorSupplier,
-                            mStartupMetricsTracker);
+                            mStartupMetricsTracker,
+                            mBackPressManager);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }

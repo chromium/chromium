@@ -26,6 +26,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -131,6 +132,7 @@ public class BookmarkManagerCoordinator
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final ModalDialogManager mModalDialogManager;
     private final ModelList mModelList;
+    private final @Nullable BackPressManager mBackPressManager;
 
     /**
      * Creates an instance of {@link BookmarkManagerCoordinator}. It also initializes resources,
@@ -145,6 +147,7 @@ public class BookmarkManagerCoordinator
      * @param bookmarkManagerOpener Helper class to open bookmark activities.
      * @param priceDropNotificationManager Manages price drop notifications.
      * @param edgeToEdgePadAdjusterGenerator Generator for the edge to edge pad adjuster.
+     * @param backPressManager BackPressManager for processing back press events.
      */
     public BookmarkManagerCoordinator(
             Context context,
@@ -155,7 +158,8 @@ public class BookmarkManagerCoordinator
             BookmarkOpener bookmarkOpener,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager,
-            @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
+            @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator,
+            @Nullable BackPressManager backPressManager) {
         mContext = context;
         mProfile = profile;
         mImageFetcher =
@@ -329,6 +333,13 @@ public class BookmarkManagerCoordinator
         if (!isDialogUi) {
             RecordUserAction.record("MobileBookmarkManagerPageOpen");
         }
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
+            mBackPressManager = backPressManager;
+        } else {
+            mBackPressManager = null;
+        }
     }
 
     // Public API implementation.
@@ -379,10 +390,18 @@ public class BookmarkManagerCoordinator
     @Override
     public void onViewAttachedToWindow(View view) {
         mMediator.onAttachedToWindow();
+
+        if (mBackPressManager != null) {
+            mBackPressManager.addHandler(this, BackPressHandler.Type.NATIVE_PAGE);
+        }
     }
 
     @Override
     public void onViewDetachedFromWindow(View view) {
+        if (mBackPressManager != null) {
+            mBackPressManager.removeHandler(this);
+        }
+
         mMediator.onDetachedFromWindow();
     }
 
@@ -391,6 +410,21 @@ public class BookmarkManagerCoordinator
     @Override
     public @BackPressResult int handleBackPress() {
         return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
+    }
+
+    @Override
+    public Boolean handleEscPress() {
+        // Delegate the escape key press event to the mediator, which contains the actual logic.
+        // The mediator's onEscapePressed() will return true if it cleared the search bar,
+        // and false otherwise.
+        return mMediator.onEscapePressed();
+    }
+
+    @Override
+    public boolean invokeBackActionOnEscape() {
+        // Back action should NOT be invoked on escape for tablets.
+        return !ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES);
     }
 
     @Override
@@ -585,5 +619,9 @@ public class BookmarkManagerCoordinator
                         mContext,
                         ManageSyncSettings.class,
                         ManageSyncSettings.createArguments(false));
+    }
+
+    @Nullable BackPressManager getBackPressManagerForTesting() {
+        return mBackPressManager;
     }
 }

@@ -48,7 +48,10 @@ import java.util.function.DoubleConsumer;
 @EnableFeatures({
     ChromeFeatureList.BOOKMARK_PANE_ANDROID,
 })
-@DisableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
+@DisableFeatures({
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class BookmarkPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

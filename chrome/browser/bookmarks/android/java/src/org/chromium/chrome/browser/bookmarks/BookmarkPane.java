@@ -146,7 +146,8 @@ public class BookmarkPane implements Pane {
                             new BookmarkManagerOpenerImpl(),
                             PriceDropNotificationManagerFactory.create(originalProfile),
                             // TODO(crbug.com/427776544): make bookmark pane support edge to edge.
-                            /* edgeToEdgePadAdjusterGenerator= */ null);
+                            /* edgeToEdgePadAdjusterGenerator= */ null,
+                            /* backPressManager= */ null);
             mBookmarkManager.updateForUrl(UrlConstants.BOOKMARKS_URL);
             mRootView.addView(mBookmarkManager.getView());
         } else if (loadHint == LoadHint.COLD) {

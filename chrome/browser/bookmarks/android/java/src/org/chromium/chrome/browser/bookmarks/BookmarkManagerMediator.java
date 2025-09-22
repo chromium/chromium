@@ -574,19 +574,38 @@ class BookmarkManagerMediator
     void onAttachedToWindow() {
         mBookmarkUndoController.setEnabled(true);
         maybeAutoFocusSearchBox();
+        // Immediately re-calculate and set the back press state
+        // upon attachment to ensure the supplier is not stale.
+        onBackPressStateChanged();
     }
 
     void onDetachedFromWindow() {
         mBookmarkUndoController.setEnabled(false);
+        // Explicitly disable the back press handler when the view is detached.
+        // This tells the BackPressManager to ignore this handler even if another
+        // component triggers an observer update in the background.
+        mBackPressStateSupplier.set(false);
     }
 
     /** See BookmarkManager(Coordinator)#onBackPressed. */
     boolean onBackPressed() {
         if (mIsDestroyed) return false;
 
-        // TODO(twellington): Replicate this behavior for other list UIs during unification.
         if (mSelectableListLayout.onBackPressed()) {
             return true;
+        }
+
+        // Selectable list layout is not handling back presses for this condition
+        // !mToolbar.isLargeScreenWithKeyboard(). That causes back press events not to be consumed.
+        // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                onClearSearchTextRunnable();
+                return true;
+            }
         }
 
         if (!mStateStack.isEmpty()) {
@@ -597,6 +616,34 @@ class BookmarkManagerMediator
             }
         }
         return false;
+    }
+
+    /**
+     * Handles the "Escape" key press. - On tablets: Clears the search bar if it contains text. Does
+     * nothing otherwise. - On non-tablets: Behaves identically to a standard back press.
+     *
+     * @return True if the event was consumed, false otherwise.
+     */
+    boolean onEscapePressed() {
+        assert ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+                : "This path should only be reached when the feature flag is enabled.";
+
+        if (mIsDestroyed) return false;
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            // Escape ONLY clears the search filter. It does not navigate back.
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                onClearSearchTextRunnable();
+                return true;
+            }
+            // If search is empty on a tablet, Escape does nothing.
+            return false;
+        } else {
+            // Escape behaves exactly the same as the back button.
+            return onBackPressed();
+        }
     }
 
     void onPromoVisibilityChange() {
@@ -973,9 +1020,27 @@ class BookmarkManagerMediator
             mBackPressStateSupplier.set(false);
             return;
         }
-        mBackPressStateSupplier.set(
-                Boolean.TRUE.equals(mSelectableListLayout.getHandleBackPressChangedSupplier().get())
-                        || mStateStack.size() > 1);
+
+        // Condition 1: Is selection mode active?
+        boolean selectionActive =
+                Boolean.TRUE.equals(
+                        mSelectableListLayout.getHandleBackPressChangedSupplier().get());
+
+        // Condition 2: Can we navigate back in the folder stack?
+        boolean canNavigateFolders = mStateStack.size() > 1;
+
+        // Condition 3: Are we on a tablet and actively searching?
+        // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
+        boolean isSearchingOnTablet = false;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            isSearchingOnTablet = !TextUtils.isEmpty(searchText);
+        }
+
+        // The handler is enabled if ANY of these conditions are true.
+        boolean isEnabled = selectionActive || canNavigateFolders || isSearchingOnTablet;
+
+        mBackPressStateSupplier.set(isEnabled);
     }
 
     /**
@@ -1699,6 +1764,10 @@ class BookmarkManagerMediator
                         mBookmarkQueryHandler.buildBookmarkListForSearch(
                                 searchText, mCurrentPowerFilter));
             }
+            // After any search text change on a tablet, the back press state may have changed.
+            // (e.g., from not-searching to searching, or vice-versa). We must explicitly
+            // re-evaluate and notify the supplier.
+            onBackPressStateChanged();
         } else {
             setState(BookmarkUiState.createSearchState(searchText));
         }
@@ -1835,5 +1904,9 @@ class BookmarkManagerMediator
 
     /* package */ void simulateSignInForTesting() {
         mBookmarkUiObserver.onFolderStateSet(getCurrentFolderId());
+    }
+
+    /* package */ Deque<BookmarkUiState> getStateStackForTesting() {
+        return mStateStack;
     }
 }

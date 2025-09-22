@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP;
 
 import android.content.ComponentName;
@@ -32,8 +35,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -56,7 +61,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(UNO_PHASE_2_FOLLOW_UP)
+@EnableFeatures({UNO_PHASE_2_FOLLOW_UP, ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class BookmarkPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -79,6 +84,7 @@ public class BookmarkPageUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mReauthenticatorBridge;
     @Mock private DestroyableObservableSupplier<Rect> mMarginSupplier;
+    @Mock private BackPressManager mBackPressManager;
 
     // Mock native methods.
     @Mock private BookmarkBridge.Natives mBookmarkNatives;
@@ -118,7 +124,27 @@ public class BookmarkPageUnitTest {
                                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                                         invocation.getArgument(0), mEdgeToEdgeSupplier));
         mBookmarkPage =
-                new BookmarkPage(mSnackbarManager, mProfile, mNativePageHost, mComponentName);
+                new BookmarkPage(
+                        mSnackbarManager,
+                        mProfile,
+                        mNativePageHost,
+                        mComponentName,
+                        mBackPressManager);
+    }
+
+    @Test
+    public void testBackPressManagerWiredWhenFeatureEnabled() {
+        assertNotNull(
+                "BackPressManager should be set on coordinator when feature is enabled.",
+                mBookmarkPage.getManagerForTesting().getBackPressManagerForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+    public void testBackPressManagerNotWiredWhenFeatureDisabled() {
+        assertNull(
+                "BackPressManager should NOT be set on coordinator when feature is disabled.",
+                mBookmarkPage.getManagerForTesting().getBackPressManagerForTesting());
     }
 
     @Test

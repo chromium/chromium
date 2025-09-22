@@ -38,6 +38,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
@@ -633,6 +634,102 @@ public class BookmarkTest {
                 mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
         runOnUiThreadBlocking(mBookmarkActivity.getOnBackPressedDispatcher()::onBackPressed);
         ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testSearchBookmarks_pressEscape() throws Exception {
+        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
+        BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
+        openBookmarkManager();
+        openFolder(folder);
+
+        // Enter search and select an item
+        runOnUiThreadBlocking(mDelegate::openSearchUi);
+        searchBookmarks("Google");
+        ImprovedBookmarkRow itemView = getNthBookmarkRow(1);
+        startSelectionThroughMoreMenu(itemView);
+        CriteriaHelper.pollUiThread(
+                itemView::isSelectedForTesting, "Expected item to become selected");
+        assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
+
+        // Pressing escape should clear selection but remain in search
+        pressEscapeKey();
+        CriteriaHelper.pollUiThread(
+                () -> !itemView.isSelectedForTesting(), "Expected item to become unselected");
+        assertEquals(BookmarkUiMode.SEARCHING, mDelegate.getCurrentUiMode());
+
+        // Pressing escape again should exit search
+        pressEscapeKey();
+        assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
+
+        // After exiting search, we are in a subfolder. Pressing Escape again
+        // should navigate up the folder hierarchy, just like the back button.
+        assertEquals(
+                "Handler should be active to navigate up from the folder.",
+                true,
+                mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
+        pressEscapeKey();
+        assertEquals(
+                "After third escape press, should be in the root folder.",
+                BookmarkUiMode.FOLDER,
+                mDelegate.getCurrentUiMode());
+
+        // At the root level, there are no more states to pop. The handler becomes inactive, and
+        // pressing Escape again should do nothing.
+        assertEquals(
+                "Handler should be inactive at the root level.",
+                false,
+                mBookmarkManagerCoordinator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    public void testTabletSearch_EscapeKeyClearsSearch() throws Exception {
+        // Setup: Add a bookmark so the folder isn't empty.
+        BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
+        openBookmarkManager();
+        openFolder(folder);
+
+        // Verify initial state.
+        assertEquals(
+                "Should be in folder view.", BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
+        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+
+        // Action 1: User types in the search bar.
+        onView(withId(R.id.row_search_text)).perform(replaceText("Google"));
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
+
+        // Verification 1: Search results are shown.
+        assertEquals("Search should find one item.", 1, getBookmarkCount());
+        onView(withText(TEST_PAGE_TITLE_GOOGLE)).check(matches(isDisplayed()));
+
+        // Action 2: User presses the Escape key.
+        pressEscapeKey();
+
+        // Verification 2: The search text is cleared, and the folder contents are restored.
+        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+        assertEquals("Clearing search should show all items in the folder.", 1, getBookmarkCount());
+        assertEquals(
+                "Should still be in folder mode.",
+                BookmarkUiMode.FOLDER,
+                mDelegate.getCurrentUiMode());
+
+        // Action 3: User presses Escape again.
+        // The handler should now be disabled, so we expect it to do nothing (return false).
+        runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            "handleEscPress should return false when search is empty.",
+                            false,
+                            mBookmarkManagerCoordinator.handleEscPress());
+                });
     }
 
     @Test
@@ -2209,5 +2306,11 @@ public class BookmarkTest {
         }
 
         return bookmarkCount;
+    }
+
+    private void pressEscapeKey() throws ExecutionException {
+        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_ESCAPE);
+        // Wait for any resulting UI updates to settle.
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
     }
 }

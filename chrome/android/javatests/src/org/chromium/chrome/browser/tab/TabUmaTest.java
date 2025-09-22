@@ -96,6 +96,7 @@ public class TabUmaTest {
                 new ObservableSupplierImpl<>(),
                 new ObservableSupplierImpl<>(),
                 cta.getStartupMetricsTracker(),
+                null,
                 null);
     }
 
