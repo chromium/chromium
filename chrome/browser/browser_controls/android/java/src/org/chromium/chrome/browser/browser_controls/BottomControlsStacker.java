@@ -348,7 +348,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     }
 
     @Override
-    public void onControlsConstraintsChanged(
+    public void onOffsetTagsInfoChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints,

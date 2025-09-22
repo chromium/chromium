@@ -362,7 +362,7 @@ public interface TabObserver {
     /**
      * @see BrowserControlsStateProvider.Observer#onControlsConstraintsChanged
      */
-    void onBrowserControlsConstraintsChanged(
+    void onOffsetTagsInfoChanged(
             Tab tab,
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,

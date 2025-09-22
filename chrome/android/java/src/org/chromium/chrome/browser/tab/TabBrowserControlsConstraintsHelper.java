@@ -230,8 +230,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         while (observers.hasNext()) {
             observers
                     .next()
-                    .onBrowserControlsConstraintsChanged(
-                            mTab, mOffsetTagsInfo, newOffsetTags, constraints);
+                    .onOffsetTagsInfoChanged(mTab, mOffsetTagsInfo, newOffsetTags, constraints);
         }
 
         mOffsetTagsInfo = newOffsetTags;

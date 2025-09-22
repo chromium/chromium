@@ -397,14 +397,14 @@ public class StaticLayoutUnitTest {
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsConstraintsChanged(null, tagsInfo, 0, false);
+                .onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
         assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
         assertEquals(0, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
 
         tagsInfo = new BrowserControlsOffsetTagsInfo();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsConstraintsChanged(null, tagsInfo, 0, true);
+                .onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertEquals(tagsInfo.getContentOffsetTag(), mModel.get(LayoutTab.CONTENT_OFFSET_TAG));
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }

@@ -161,7 +161,7 @@ public class EmptyTabObserver implements TabObserver {
             int bottomControlsMinHeightOffsetY) {}
 
     @Override
-    public void onBrowserControlsConstraintsChanged(
+    public void onOffsetTagsInfoChanged(
             Tab tab,
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,

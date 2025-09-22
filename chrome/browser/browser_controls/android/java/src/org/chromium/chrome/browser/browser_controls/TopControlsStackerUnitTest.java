@@ -234,7 +234,7 @@ public class TopControlsStackerUnitTest {
                         /* contributesToTotalHeight= */ true,
                         100);
         mTopControlsStacker.addControl(toolbar);
-        mTopControlsStacker.onControlsConstraintsChanged(
+        mTopControlsStacker.onOffsetTagsInfoChanged(
                 new BrowserControlsOffsetTagsInfo(),
                 new BrowserControlsOffsetTagsInfo(),
                 BrowserControlsState.SHOWN,
@@ -303,7 +303,7 @@ public class TopControlsStackerUnitTest {
                         100);
         mTopControlsStacker.addControl(toolbar);
         mTopControlsStacker.setScrollingDisabled(true);
-        mTopControlsStacker.onControlsConstraintsChanged(
+        mTopControlsStacker.onOffsetTagsInfoChanged(
                 new BrowserControlsOffsetTagsInfo(),
                 new BrowserControlsOffsetTagsInfo(),
                 BrowserControlsState.HIDDEN,

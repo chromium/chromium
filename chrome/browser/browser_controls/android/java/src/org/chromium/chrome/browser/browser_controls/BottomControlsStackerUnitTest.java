@@ -1711,7 +1711,7 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(170, 20);
 
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
         mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
 
         OffsetTag offsetTag = tagsInfo.getBottomControlsOffsetTag();
@@ -1735,7 +1735,7 @@ public class BottomControlsStackerUnitTest {
                 new OffsetTagConstraints(0, 0, 0, maxScrollOffset);
         assertTrue(newConstraints.equals(expectedConstraints));
 
-        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertLayerYOffset(top, -20);
         assertLayerYOffset(bottom, 0);
     }
@@ -1768,7 +1768,7 @@ public class BottomControlsStackerUnitTest {
         mBottomControlsStacker.requestLayerUpdate(false);
 
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
 
         assertNotNull(
                 "Top layer is scrollable and should have offset tag.", topLayer.getOffsetTag());

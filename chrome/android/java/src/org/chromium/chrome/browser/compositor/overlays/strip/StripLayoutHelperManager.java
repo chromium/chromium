@@ -1504,7 +1504,7 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onBrowserControlsConstraintsChanged(
+                    public void onOffsetTagsInfoChanged(
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,

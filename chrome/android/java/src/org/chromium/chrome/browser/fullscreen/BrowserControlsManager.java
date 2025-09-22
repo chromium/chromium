@@ -309,7 +309,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     }
 
                     @Override
-                    public void onBrowserControlsConstraintsChanged(
+                    public void onOffsetTagsInfoChanged(
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
@@ -995,7 +995,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints) {
         for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onControlsConstraintsChanged(
+            obs.onOffsetTagsInfoChanged(
                     oldOffsetTagsInfo,
                     offsetTagsInfo,
                     constraints,

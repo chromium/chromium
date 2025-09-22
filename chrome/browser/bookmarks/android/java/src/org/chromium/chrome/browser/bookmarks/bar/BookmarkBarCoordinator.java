@@ -516,7 +516,7 @@ public class BookmarkBarCoordinator
     }
 
     @Override
-    public void onControlsConstraintsChanged(
+    public void onOffsetTagsInfoChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             int constraints,

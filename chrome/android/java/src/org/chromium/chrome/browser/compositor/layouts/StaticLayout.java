@@ -173,7 +173,7 @@ public class StaticLayout extends Layout {
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
-                    public void onControlsConstraintsChanged(
+                    public void onOffsetTagsInfoChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints,
