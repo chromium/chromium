@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "components/language/core/common/language_util.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
@@ -29,8 +30,6 @@
 
 namespace lens {
 namespace {
-// Query parameter for the search text query.
-inline constexpr char kTextQueryParameterKey[] = "q";
 
 // Query parameter for denoting a search companion request.
 inline constexpr char kChromeSidePanelParameterKey[] = "gsc";
@@ -564,21 +563,6 @@ GURL AddPDFScrollToParametersToUrl(
   }
 
   return net::AppendOrReplaceRef(url, ref);
-}
-
-std::map<std::string, std::string> GetParametersMapWithoutQuery(
-    const GURL& url) {
-  std::map<std::string, std::string> additional_query_parameters;
-  net::QueryIterator query_iterator(url);
-  while (!query_iterator.IsAtEnd()) {
-    std::string_view key = query_iterator.GetKey();
-    if (kTextQueryParameterKey != key) {
-      additional_query_parameters.insert(std::make_pair(
-          query_iterator.GetKey(), query_iterator.GetUnescapedValue()));
-    }
-    query_iterator.Advance();
-  }
-  return additional_query_parameters;
 }
 
 }  // namespace lens

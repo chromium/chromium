@@ -59,8 +59,12 @@ class ComposeboxHandler
   // present in navigation or for the PageHandler's `SubmitQuery()` when there
   // was no match present. The latter only happens when submit is clicked with
   // only a file and no input.
-  void SubmitQuery(const std::string& query_text,
-                   WindowOpenDisposition disposition) override;
+  // If there is a match present in navigation, `additional_params` from the
+  // match's `detination_url` will be appended during url creation.
+  void SubmitQuery(
+      const std::string& query_text,
+      WindowOpenDisposition disposition,
+      std::map<std::string, std::string> additional_params) override;
 
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;

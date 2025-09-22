@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/sessions/content/session_tab_helper.h"

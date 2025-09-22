@@ -260,8 +260,10 @@ ComposeboxQueryController::GetNextRequestId(
   return request_id;
 }
 
-GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
-                                             base::Time query_start_time) {
+GURL ComposeboxQueryController::CreateAimUrl(
+    const std::string& query_text,
+    base::Time query_start_time,
+    std::map<std::string, std::string> additional_params) {
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
     // Since multiple file upload isn't supported right now, use the last file
@@ -282,16 +284,16 @@ GURL ComposeboxQueryController::CreateAimUrl(const std::string& query_text,
                            last_file->request_id_->media_type()),
           last_file->mime_type_,
           send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
-          base::UTF8ToUTF16(query_text));
+          base::UTF8ToUTF16(query_text), additional_params);
     }
   }
   // Treat queries in which the cluster info has expired, or the last file is
   // not valid, as unimodal text queries.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
   // expiration.
-  return GetUrlForAim(template_url_service_,
-                      omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
-                      query_start_time, base::UTF8ToUTF16(query_text));
+  return GetUrlForAim(
+      template_url_service_, omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT,
+      query_start_time, base::UTF8ToUTF16(query_text), additional_params);
 }
 
 void ComposeboxQueryController::AddObserver(FileUploadStatusObserver* obs) {

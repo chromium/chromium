@@ -95,8 +95,10 @@ void ComposeboxHandler::NotifySessionAbandoned() {
   metrics_recorder_->NotifySessionStateChanged(SessionState::kSessionAbandoned);
 }
 
-void ComposeboxHandler::SubmitQuery(const std::string& query_text,
-                                    WindowOpenDisposition disposition) {
+void ComposeboxHandler::SubmitQuery(
+    const std::string& query_text,
+    WindowOpenDisposition disposition,
+    std::map<std::string, std::string> additional_params) {
   // Update the query controller state to reflect any deleted contexts.
   std::erase_if(deleted_context_tokens_,
                 [this](const base::UnguessableToken& context_token) {
@@ -126,7 +128,8 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   // with the query.
   base::Time query_start_time = base::Time::Now();
   metrics_recorder_->NotifySessionStateChanged(SessionState::kQuerySubmitted);
-  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time),
+  OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time,
+                                          additional_params),
           disposition);
   metrics_recorder_->NotifySessionStateChanged(
       SessionState::kNavigationOccurred);
@@ -143,7 +146,7 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  SubmitQuery(query_text, disposition);
+  SubmitQuery(query_text, disposition, /*additional_params=*/{});
 }
 
 void ComposeboxHandler::FocusChanged(bool focused) {
