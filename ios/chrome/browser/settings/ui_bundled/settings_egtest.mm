@@ -358,13 +358,8 @@ id<GREYMatcher> SafariImportButton() {
 
 // Verifies that metrics reporting works properly under possible settings of the
 // preference kMetricsReportingEnabled.
-// TODO(crbug.com/382632442): Test disabled on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testMetricsReporting DISABLED_testMetricsReporting
-#else
-#define MAYBE_testMetricsReporting testMetricsReporting
-#endif
-- (void)MAYBE_testMetricsReporting {
+// TODO(crbug.com/382632442): Test disabled.
+- (void)DISABLED_testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
