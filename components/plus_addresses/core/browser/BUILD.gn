@@ -72,6 +72,7 @@ source_set("browser") {
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
+    "plus_address_client.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
