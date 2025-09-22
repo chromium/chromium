@@ -3006,6 +3006,8 @@ crbug.com/442871004 [ Mac15 ] external/wpt/focus/focus-double-sync-calls.html [ 
 crbug.com/442923115 [ Mac15 ] external/wpt/html/interaction/focus/processing-model/legend-focusable.html [ Timeout ]
 crbug.com/442873877 [ Mac15 ] external/wpt/uievents/order-of-events/focus-events/focus-automated-blink-webkit.html [ Timeout ]
 crbug.com/442871878 [ Win11-arm64 ] external/wpt/accelerometer/GravitySensor.https.html [ Failure Pass Timeout ]
+crbug.com/444416234 [ Win10.20h2 ] external/wpt/accelerometer/GravitySensor.https.html [ Pass Timeout ]
+crbug.com/444416234 [ Win11 ] external/wpt/accelerometer/GravitySensor.https.html [ Pass Timeout ]
 crbug.com/442769076 external/wpt/css/css-pseudo/before-as-flex-container.html [ Failure ]
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Timeout ]
