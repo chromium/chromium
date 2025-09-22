@@ -1,6 +1,10 @@
 {
     "chromium.android": {
         "android-10-x86-rel": {
+            "chrome_public_test_apk": {
+                "shards": 108,
+                "try_builder": "android-x86-rel"
+            },
             "webview_trichrome_cts_tests full_mode": {
                 "shards": 3,
                 "try_builder": "android-x86-rel"
@@ -94,7 +98,7 @@
                 "try_builder": "linux-chromeos-rel"
             },
             "unit_tests": {
-                "shards": 4,
+                "shards": 3,
                 "try_builder": "linux-chromeos-rel"
             }
         }
@@ -166,7 +170,7 @@
     "chromium.memory": {
         "Linux ASan LSan Tests (1)": {
             "components_unittests": {
-                "shards": 4,
+                "shards": 5,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "content_browsertests": {
@@ -174,11 +178,11 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 71,
+                "shards": 77,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
-                "shards": 9,
+                "shards": 10,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "unit_tests": {
