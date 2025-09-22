@@ -549,7 +549,7 @@ gCrWebLegacy.fill.getOptionStringsFromElement = function(
  * @param element An element to examine.
  * @return The value for `element`.
  */
-gCrWebLegacy.fill.value = function(
+function valueForElement(
     element: fillConstants.FormControlElement|HTMLOptionElement): string {
   let value = element.value;
   if (gCrWebLegacy.fill.isSelectElement(element)) {
@@ -566,7 +566,7 @@ gCrWebLegacy.fill.value = function(
     }
   }
   return (value || '').replace(/[\n\t]/gm, '');
-};
+}
 
 /**
  * Returns the coalesced child text of the elements who's ids are found in
@@ -712,4 +712,5 @@ export {
   FrameTokenWithPredecessor,
   setRemoteFrameToken,
   getRemoteFrameToken,
+  valueForElement,
 };

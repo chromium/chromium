@@ -7,7 +7,7 @@ import '//components/autofill/ios/form_util/resources/fill_util.js';
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -569,7 +569,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
     gCrWebLegacy.fill.getOptionStringsFromElement(element, field);
   }
 
-  let value = gCrWebLegacy.fill.value(element);
+  let value = fillUtil.valueForElement(element);
 
   // There is a constraint on the maximum data length in method
   // WebFormControlElementToFormField() in form_autofill_util.h in order to
