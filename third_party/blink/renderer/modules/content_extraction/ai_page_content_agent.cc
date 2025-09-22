@@ -563,7 +563,7 @@ void ProcessSVGNode(const LayoutSVGRoot& layout_svg,
   }
 
   auto svg_data = mojom::blink::AIPageContentSVGData::New();
-  svg_data->inner_text = element->innerText();
+  svg_data->inner_text = element->GetInnerTextWithoutUpdate();
   attributes.svg_data = std::move(svg_data);
 }
 
