@@ -4686,10 +4686,6 @@
       status: {"Android": "test"},
     },
     {
-      name: "SmilAutoSuspendOnLag",
-      status: "stable",
-    },
-    {
       name: "SmilKeyTimesKeyPointsAllowTrailingSemicolon",
       status: "stable",
     },
