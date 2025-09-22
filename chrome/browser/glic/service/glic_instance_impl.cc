@@ -9,6 +9,8 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
+#include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -35,11 +38,18 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
 GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
     InstanceId instance_id,
-    base::WeakPtr<AttachmentDelegate> attachment_delegate)
+    base::WeakPtr<AttachmentDelegate> attachment_delegate,
+    GlicMetrics* metrics)
     : profile_(profile),
       attachment_delegate_(attachment_delegate),
       id_(instance_id),
-      host_(std::make_unique<Host>(profile_, this, this)) {}
+      host_(std::make_unique<Host>(profile_, this, this)),
+      sharing_manager_(
+          std::make_unique<GlicEmptyFocusedTabManager>(),
+          std::make_unique<GlicEmptyFocusedBrowserManager>(),
+          std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
+          profile,
+          metrics) {}
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
@@ -118,9 +128,7 @@ GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForKey(EmbedderKey key) {
 }
 
 GlicSharingManager& GlicInstanceImpl::sharing_manager() {
-  // TODO(b:444463509): allow for per-instance sharing manager instances.
-  return GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
-      ->sharing_manager();
+  return sharing_manager_;
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {

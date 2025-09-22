@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
@@ -373,6 +374,9 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
 
   // Create a new conversation and instance.
   auto* new_instance = CreateGlicInstance();
+  if (tab) {
+    new_instance->sharing_manager().PinTabs({tab->GetHandle()});
+  }
   helper->SetInstanceId(new_instance->id());
   return new_instance;
 }
@@ -390,7 +394,8 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
   // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
   auto new_instance = std::make_unique<GlicInstanceImpl>(
-      profile_, instance_id, weak_ptr_factory_.GetWeakPtr());
+      profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics());
   auto* instance_ptr = new_instance.get();
   instances_[instance_id] = std::move(new_instance);
   return instance_ptr;

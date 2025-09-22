@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
@@ -63,7 +64,8 @@ class GlicInstanceImpl : public GlicInstance,
 
   GlicInstanceImpl(Profile* profile,
                    InstanceId instance_id,
-                   base::WeakPtr<AttachmentDelegate> attachment_delegate);
+                   base::WeakPtr<AttachmentDelegate> attachment_delegate,
+                   GlicMetrics* metrics);
   ~GlicInstanceImpl() override;
 
   GlicInstanceImpl(const GlicInstanceImpl&) = delete;
@@ -170,6 +172,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   std::unique_ptr<Host> host_;
   std::optional<std::string> conversation_id_;
+  GlicSharingManagerImpl sharing_manager_;
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 

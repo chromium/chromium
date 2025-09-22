@@ -230,6 +230,10 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   }
 
   bool Calculate() {
+    // TODO(b:444463509): Implement better calculation.
+    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      return true;
+    }
     if (panel_state_kind_ == glic::mojom::PanelState::Kind::kHidden) {
       return false;
     }
