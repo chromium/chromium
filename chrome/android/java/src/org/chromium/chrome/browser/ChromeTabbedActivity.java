@@ -170,6 +170,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocati
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -569,6 +570,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
     /** Keeps track of whether or not a specific tab was created based on the startup intent. */
     private boolean mCreatedTabOnStartup;
 
+    /** Keeps track if intent has incognito extra. */
+    private boolean mHasIncognitoExtra;
+
     // Whether or not the initial tab is being created.
     private boolean mPendingInitialTabCreation;
 
@@ -672,6 +676,20 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 () -> {
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            Intent intent = getIntent();
+            mHasIncognitoExtra =
+                    intent != null
+                            && (intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                                    || intent.getBooleanExtra(
+                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+        }
+        super.attachBaseContext(newBase);
     }
 
     @Override
@@ -3576,14 +3594,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
 
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            boolean hasIncognitoExtra =
-                    intent != null
-                            && (intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                                    || intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
             mSupportedProfileType =
-                    hasIncognitoExtra
+                    mHasIncognitoExtra
                             ? SupportedProfileType.OFF_THE_RECORD
                             : SupportedProfileType.REGULAR;
 
@@ -4870,5 +4882,26 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (metricsService == null) return;
         metricsService.initializeTracker(
                 mWindowId, this, mTabModelSelector, getLifecycleDispatcher());
+    }
+
+    @Override
+    protected NightModeStateProvider createNightModeStateProvider() {
+        NightModeStateProvider incognitoWindowNightModeStateProvider =
+                new NightModeStateProvider() {
+                    @Override
+                    public boolean isInNightMode() {
+                        // An incognito window should default night mode.
+                        return true;
+                    }
+
+                    @Override
+                    public void addObserver(Observer observer) {}
+
+                    @Override
+                    public void removeObserver(Observer observer) {}
+                };
+        return mHasIncognitoExtra
+                ? incognitoWindowNightModeStateProvider
+                : super.createNightModeStateProvider();
     }
 }
