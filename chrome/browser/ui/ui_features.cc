@@ -259,6 +259,12 @@ BASE_FEATURE_PARAM(int,
                    "snap_distance",
                    15);
 
+BASE_FEATURE_PARAM(int,
+                   kSideBySideIphTabSwitchCount,
+                   &kSideBySide,
+                   "side_by_side_iph_tab_switch_count",
+                   3);
+
 // When enabled along with SideBySide flag, split tabs will be restored on
 // startup.
 BASE_FEATURE(kSideBySideSessionRestore,

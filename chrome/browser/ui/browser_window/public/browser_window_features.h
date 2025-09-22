@@ -68,6 +68,7 @@ class ScrimViewController;
 class SidePanelCoordinator;
 class SidePanelUI;
 class SigninViewController;
+class SplitViewIphController;
 class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
 class TabListBridge;
@@ -676,6 +677,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<split_tabs::SplitTabHighlightController>
       split_tab_highlight_controller_;
+
+  std::unique_ptr<SplitViewIphController> split_view_iph_controller_;
 
   std::unique_ptr<RecentActivityBubbleCoordinator>
       recent_activity_bubble_coordinator_;

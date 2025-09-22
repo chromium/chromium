@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -139,6 +140,7 @@ constexpr std::initializer_list<Platforms> kComposePlatforms{
 
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 constexpr char kChromeThemeBackElementName[] = "ChromeThemeBackElement";
+constexpr char kLastInactiveTabElementName[] = "LastInactiveTab";
 
 class IfView : public user_education::TutorialDescription::If {
  public:
@@ -932,6 +934,7 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to encourage users to try out the reading "
                        "mode feature.")));
 
+  // kIPHSideBySidePinnableFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSideBySidePinnableFeature,
@@ -943,13 +946,46 @@ void MaybeRegisterChromeFeaturePromos(
                 GetBrowser(ctx)->GetProfile()->GetPrefs()->SetBoolean(
                     prefs::kPinSplitTabButton, true);
               }))
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kSplitViewCreated,
+                  AdditionalConditions::Constraint::kAtLeast, 2})))
           .SetBubbleTitleText(IDS_SPLIT_VIEW_TITLE_IPH)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetCustomActionDismissText(IDS_SPLIT_VIEW_DISMISS_ACTION_IPH)
+          .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetCustomActionIsDefault(true)
           .SetMetadata(
               141, "lugli@google.com",
               "Triggered when user tried to create split view twice.")));
+
+  // kIPHSideBySideTabSwitchFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForTutorialPromo(
+          feature_engagement::kIPHSideBySideTabSwitchFeature,
+          kBrowserViewElementId, IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_BODY,
+          kSplitViewTutorialId)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleTitleText(IDS_SPLIT_VIEW_TAB_SWITCH_ENTRY_IPH_TITLE)
+          .SetAnchorElementFilter(base::BindRepeating(
+              [](const ui::ElementTracker::ElementList& elements)
+                  -> ui::TrackedElement* {
+                if (elements.empty()) {
+                  return nullptr;
+                }
+                BrowserView* const browser_view =
+                    views::AsViewClass<BrowserView>(
+                        elements[0]->AsA<views::TrackedElementViews>()->view());
+
+                SplitViewIphController* split_view_iph_controller =
+                    SplitViewIphController::From(browser_view->browser());
+
+                return split_view_iph_controller->GetTabSwitchIPHAnchor(
+                    browser_view);
+              }))
+          .SetMetadata(141, "lugli@google.com",
+                       "Triggered when user swaps between two tabs three times "
+                       "quickly.")));
 
   // kIPHSidePanelGenericPinnableFeature:
   registry.RegisterFeature(std::move(
@@ -1681,6 +1717,56 @@ void MaybeRegisterChromeTutorials(
 
     tutorial_registry.AddTutorial(kLensOverlayTutorialId,
                                   std::move(lens_overlay_tutorial));
+  }
+
+  {  // Split view tutorial
+    auto split_view_tutorial =
+        TutorialDescription::Create<kSplitViewTutorialMetricPrefix>(
+            // Hidden step - name the last inactive tab
+            HiddenStep::WaitForShown(kBrowserViewElementId)
+                .NameElements(
+                    base::BindRepeating([](ui::InteractionSequence* sequence,
+                                           ui::TrackedElement* element) {
+                      BrowserView* const browser_view =
+                          views::AsViewClass<BrowserView>(
+                              element->AsA<views::TrackedElementViews>()
+                                  ->view());
+
+                      SplitViewIphController* split_view_iph_controller =
+                          SplitViewIphController::From(browser_view->browser());
+
+                      ui::TrackedElement* last_inactive_tab_element =
+                          split_view_iph_controller->GetTabSwitchIPHAnchor(
+                              browser_view);
+
+                      sequence->NameElement(
+                          last_inactive_tab_element,
+                          std::string_view(kLastInactiveTabElementName));
+                      return true;
+                    })),
+
+            // Bubble step - inactive tab to right click.
+            TutorialDescription::BubbleStep(kLastInactiveTabElementName)
+                .SetBubbleBodyText(IDS_SPLIT_VIEW_TAB_SWITCH_STEP_IPH_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
+
+            HiddenStep::WaitForShown(kToolbarSplitTabsToolbarButtonElementId),
+
+            // Completion of the tutorial after split view appears.
+            TutorialDescription::BubbleStep(kTabStripRegionElementId)
+                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+                .SetBubbleBodyText(
+                    IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kNone)
+                .InAnyContext());
+
+    split_view_tutorial.metadata.additional_description =
+        "Tutorial for the Split View.";
+    split_view_tutorial.metadata.launch_milestone = 141;
+    split_view_tutorial.metadata.owners = "lugli@google.com";
+
+    tutorial_registry.AddTutorial(kSplitViewTutorialId,
+                                  std::move(split_view_tutorial));
   }
 }
 
