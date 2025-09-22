@@ -81,6 +81,7 @@ source_set("unit_tests") {
   sources = [
     "drive_uploader_unittest.cc",
     "multipart_drive_uploader_unittest.cc",
+    "resumable_drive_uploader_unittest.cc",
     "time_remaining_calculator_unittest.cc",
   ]
   deps = [

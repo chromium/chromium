@@ -78,10 +78,6 @@ class DriveUploader {
   // Starts the upload process. This function should be called only once.
   void Start();
 
-  // Subclasses should implement this function to upload the file to Drive
-  // according to the protocol they are implementing.
-  virtual void UploadFile() = 0;
-
   DriveUploaderType get_drive_uploader_type_for_testing() const;
 
   void set_oauth_headers_for_testing(std::vector<std::string> oauth_headers);
@@ -94,6 +90,12 @@ class DriveUploader {
   };
 
  protected:
+  // Implemented by subclasses to upload the file to Drive using their specific
+  // protocol. This method assumes that OAuth headers have been created and
+  // `parent_folder_` is set. Retrying a failed upload by calling this method
+  // again will result in a new file being created on Drive.
+  virtual void UploadFile() = 0;
+
   // Convenience function to create an `EndpointFetcher` to make HTTP requests
   // to Drive.
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
