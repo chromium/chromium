@@ -407,9 +407,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // |grapheme_| is computed.
   void EnsureGraphemes(const StringView& text) const;
 
-  static unsigned CountGraphemesInCluster(base::span<const UChar>,
-                                          uint16_t start_index,
-                                          uint16_t end_index);
+  static unsigned CountGraphemesInClusterDeprecated(base::span<const UChar>,
+                                                    uint16_t start_index,
+                                                    uint16_t end_index);
 
   template <typename Iterator>
   void AddUnsafeToBreak(Iterator offsets_begin, const Iterator offsets_end);

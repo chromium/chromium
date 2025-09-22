@@ -64,7 +64,7 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 // platform UI conventions. One notable example where this can be different
 // from character break iterator is Thai prepend characters, see bug 24342.
 // Use this for insertion point and selection manipulations.
-PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
+PLATFORM_EXPORT TextBreakIterator* CursorMovementIteratorDeprecated(
     base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const StringView&);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);

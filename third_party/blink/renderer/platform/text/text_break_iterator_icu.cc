@@ -950,7 +950,8 @@ bool IsWordTextBreak(TextBreakIterator* iterator) {
   return rule_status != UBRK_WORD_NONE;
 }
 
-TextBreakIterator* CursorMovementIterator(base::span<const UChar> string) {
+TextBreakIterator* CursorMovementIteratorDeprecated(
+    base::span<const UChar> string) {
   // This rule set is based on character-break iterator rules of ICU 4.0
   // <http://source.icu-project.org/repos/icu/icu/tags/release-4-0/source/data/brkitr/char.txt>.
   // The major differences from the original ones are listed below:
