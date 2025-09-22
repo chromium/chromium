@@ -44,8 +44,6 @@ class Database;
 // relationship with IDBTransaction in Blink.
 class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
  public:
-  using Operation = base::OnceCallback<Status(Transaction*)>;
-
   enum State {
     CREATED,     // Created, but not yet started by coordinator.
     STARTED,     // Started by the coordinator.
@@ -113,10 +111,24 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   blink::mojom::IDBTransactionMode mode() const { return mode_; }
   const std::set<int64_t>& scope() const { return object_store_ids_; }
 
-  void ScheduleTask(Operation task) {
-    ScheduleTask(blink::mojom::IDBTaskType::Normal, std::move(task));
+  // Each task consists of an operation that actually does something, and
+  // optionally a preliminary verification step that verifies the operation can
+  // be completed given the inputs. If the verification step fails (returns
+  // something other than Status::OK), the operation will not be run. The
+  // purpose of the verification step is to catch errors that can only be
+  // detected at the point of running the operation. For example, a Mojo message
+  // that specifies an object store ID may arrive before the task that created
+  // that object store actually runs.
+  using Operation = base::OnceCallback<Status(Transaction*)>;
+  using VerificationCallback = base::OnceCallback<Status(Transaction&)>;
+
+  void ScheduleTask(Operation task, VerificationCallback verify = {}) {
+    ScheduleTask(blink::mojom::IDBTaskType::Normal, std::move(task),
+                 std::move(verify));
   }
-  void ScheduleTask(blink::mojom::IDBTaskType, Operation task);
+  void ScheduleTask(blink::mojom::IDBTaskType,
+                    Operation task,
+                    VerificationCallback verify = {});
   void RegisterOpenCursor(Cursor* cursor);
   void UnregisterOpenCursor(Cursor* cursor);
   void AddPreemptiveEvent() { pending_preemptive_events_++; }
@@ -124,6 +136,16 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     pending_preemptive_events_--;
     DCHECK_GE(pending_preemptive_events_, 0);
   }
+
+  // Common verifiers for mojo messages:
+  // Verifies that `object_store_id` exists.
+  static VerificationCallback ObjectStoreMustExist(int64_t object_store_id);
+  // Verifies that `object_store_id` exists in the metadata. If `index_id` is
+  // std::nullopt, it is ignored. If it is not nullopt, it must not be kInvalid
+  // and must exist in the provided object store.
+  static VerificationCallback ObjectStoreAndIndexMustExist(
+      int64_t object_store_id,
+      std::optional<int64_t> index_id);
 
   // Wraps `BackingStore::Transaction::BuildMojoValue` while injecting
   // appropriate helper functions.
@@ -278,6 +300,8 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   class TaskQueue {
    public:
+    typedef std::tuple<Operation, VerificationCallback> Task;
+
     TaskQueue();
 
     TaskQueue(const TaskQueue&) = delete;
@@ -285,13 +309,15 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
     ~TaskQueue();
     bool empty() const { return queue_.empty(); }
-    void push(Operation task) { queue_.push(std::move(task)); }
-    Operation pop();
+    void push(Operation task, VerificationCallback verify) {
+      queue_.push(std::make_tuple(std::move(task), std::move(verify)));
+    }
+    Task pop();
     void clear();
     size_t size() const { return queue_.size(); }
 
    private:
-    base::queue<Operation> queue_;
+    base::queue<Task> queue_;
   };
 
   TaskQueue task_queue_;

@@ -44,6 +44,8 @@
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1655,81 +1657,36 @@ TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithPrevNoDuplicateDirection) {
       expected_results));
 }
 
-TEST_F(DatabaseOperationTest, ObjectStoreGetAllKeysWithInvalidObjectStoreId) {
+// Verifies that a bad index id passed in a mojo call will cause an error to be
+// reported.
+TEST_F(DatabaseOperationTest, GetWithInvalidId) {
   ASSERT_EQ(0u, db_->metadata().object_stores.size());
 
-  // Call `Database::GetAllOperation` with an invalid object store id, which
-  // must fail with an invalid argument status.
-  FakeGetAllResultSink result_sink;
-  blink::mojom::IDBDatabase::GetAllCallback get_all_callback = base::BindOnce(
-      &FakeGetAllResultSink::BindReceiver, base::Unretained(&result_sink));
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
 
-  std::unique_ptr<Database::GetAllResultSinkWrapper> result_sink_wrapper =
-      std::make_unique<Database::GetAllResultSinkWrapper>(
-          transaction_->AsWeakPtr(), std::move(get_all_callback));
-  result_sink_wrapper->UseDedicatedReceiverForTesting();
+  base::RunLoop run_loop;
+  auto get_callback = base::BindLambdaForTesting(
+      [&](blink::mojom::IDBDatabaseGetResultPtr result) {
+        EXPECT_TRUE(result->is_error_result());
+        run_loop.Quit();
+      });
 
-  TestGetAllParameters get_all_parameters;
-
-  Status status = db_->GetAllOperation(
-      kTestObjectStoreId,
-      /*index_id=*/blink::IndexedDBIndexMetadata::kInvalidId,
-      std::move(get_all_parameters.key_range), get_all_parameters.result_type,
-      get_all_parameters.max_count, get_all_parameters.direction,
-      std::move(result_sink_wrapper), transaction_);
-  ASSERT_TRUE(status.IsInvalidArgument()) << status.ToString();
-
-  // Verify that the result sink received an error.
-  result_sink.WaitForResults();
-  ASSERT_NE(result_sink.GetError(), nullptr);
-  EXPECT_EQ(result_sink.GetError()->error_code,
-            blink::mojom::IDBException::kUnknownError);
+  request_.connection()->Get(
+      transaction_->id(), kTestObjectStoreId,
+      /*index_id=*/blink::IndexedDBIndexMetadata::kInvalidId, {},
+      /*key_only=*/true, std::move(get_callback));
+  // The operation will cause the database to be torn down, so avoid a dangling
+  // pointer.
+  db_ = nullptr;
+  run_loop.Run();
 
   // Perform cleanup.
   transaction_->SetCommitFlag();
   transaction_ = nullptr;
   RunPostedTasks();
-}
 
-TEST_F(DatabaseOperationTest, IndexGetAllKeysWithInvalidIndexId) {
-  // Create an object store.
-  ASSERT_EQ(0u, db_->metadata().object_stores.size());
-  Status status = transaction_->BackingStoreTransaction()->CreateObjectStore(
-      kTestObjectStoreId, u"store", IndexedDBKeyPath(),
-      /*auto_increment=*/false);
-  ASSERT_TRUE(status.ok()) << status.ToString();
-  ASSERT_EQ(1u, db_->metadata().object_stores.size());
-
-  // Call `Database::GetAllOperation` with an invalid index id, which must fail
-  // with an invalid argument status.
-  FakeGetAllResultSink result_sink;
-  blink::mojom::IDBDatabase::GetAllCallback get_all_callback = base::BindOnce(
-      &FakeGetAllResultSink::BindReceiver, base::Unretained(&result_sink));
-
-  std::unique_ptr<Database::GetAllResultSinkWrapper> result_sink_wrapper =
-      std::make_unique<Database::GetAllResultSinkWrapper>(
-          transaction_->AsWeakPtr(), std::move(get_all_callback));
-  result_sink_wrapper->UseDedicatedReceiverForTesting();
-
-  TestGetAllParameters get_all_parameters;
-
-  status = db_->GetAllOperation(
-      kTestObjectStoreId, kTestIndexId, std::move(get_all_parameters.key_range),
-      get_all_parameters.result_type, get_all_parameters.max_count,
-      get_all_parameters.direction, std::move(result_sink_wrapper),
-      transaction_);
-  ASSERT_TRUE(status.IsInvalidArgument()) << status.ToString();
-
-  // Verify that the result sink received an error.
-  result_sink.WaitForResults();
-  ASSERT_NE(result_sink.GetError(), nullptr);
-  EXPECT_EQ(result_sink.GetError()->error_code,
-            blink::mojom::IDBException::kUnknownError);
-
-  // Perform cleanup.
-  transaction_->SetCommitFlag();
-  transaction_ = nullptr;
-  RunPostedTasks();
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
 }
 
 TEST_F(DatabaseOperationTest,

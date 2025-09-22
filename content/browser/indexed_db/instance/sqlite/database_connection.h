@@ -345,6 +345,9 @@ class DatabaseConnection {
   // deleted). This invalidates all cursor statements operating on that store.
   void OnRecordsModified(int64_t object_store_id);
 
+  // Makes sure the given IDs exist in `metadata_`.
+  void ValidateInputs(int64_t object_store_id, int64_t index_id);
+
   // The expected path for `db_`, or empty for in-memory DBs.
   const base::FilePath path_;
 

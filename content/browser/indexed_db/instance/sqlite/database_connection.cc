@@ -1193,10 +1193,8 @@ Status DatabaseConnection::CreateObjectStore(
     blink::IndexedDBKeyPath key_path,
     bool auto_increment) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (metadata_.object_stores.contains(object_store_id) ||
-      object_store_id <= metadata_.max_object_store_id) {
-    return Status::InvalidArgument("Invalid object_store_id");
-  }
+  CHECK(!metadata_.object_stores.contains(object_store_id));
+  CHECK_GT(object_store_id, metadata_.max_object_store_id);
 
   blink::IndexedDBObjectStoreMetadata metadata(
       std::move(name), object_store_id, std::move(key_path), auto_increment);
@@ -1221,9 +1219,7 @@ Status DatabaseConnection::DeleteObjectStore(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
+  CHECK(metadata_.object_stores.contains(object_store_id));
   {
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
@@ -1258,9 +1254,8 @@ Status DatabaseConnection::RenameObjectStore(
     int64_t object_store_id,
     const std::u16string& new_name) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
+  CHECK(metadata_.object_stores.contains(object_store_id));
+
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "UPDATE object_stores SET name = ? WHERE id = ?"));
   statement.BindBlob(0, new_name);
@@ -1275,16 +1270,13 @@ Status DatabaseConnection::CreateIndex(
     int64_t object_store_id,
     blink::IndexedDBIndexMetadata index) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
+  CHECK(metadata_.object_stores.contains(object_store_id));
+
   blink::IndexedDBObjectStoreMetadata& object_store =
       metadata_.object_stores.at(object_store_id);
   int64_t index_id = index.id;
-  if (object_store.indexes.contains(index_id) ||
-      index_id <= object_store.max_index_id) {
-    return Status::InvalidArgument("Invalid index_id.");
-  }
+  CHECK(!object_store.indexes.contains(index_id));
+  CHECK_GT(index_id, object_store.max_index_id);
 
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1309,12 +1301,8 @@ Status DatabaseConnection::DeleteIndex(
     int64_t object_store_id,
     int64_t index_id) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
-  if (!metadata_.object_stores.at(object_store_id).indexes.contains(index_id)) {
-    return Status::InvalidArgument("Invalid index_id.");
-  }
+  ValidateInputs(object_store_id, index_id);
+
   {
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE,
@@ -1343,12 +1331,8 @@ Status DatabaseConnection::RenameIndex(
     int64_t index_id,
     const std::u16string& new_name) {
   CHECK(HasActiveVersionChangeTransaction());
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
-  if (!metadata_.object_stores.at(object_store_id).indexes.contains(index_id)) {
-    return Status::InvalidArgument("Invalid index_id.");
-  }
+  ValidateInputs(object_store_id, index_id);
+
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE indexes SET name = ? WHERE object_store_id = ? AND id = ?"));
@@ -1364,14 +1348,7 @@ Status DatabaseConnection::RenameIndex(
 StatusOr<int64_t> DatabaseConnection::GetKeyGeneratorCurrentNumber(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id) {
-  // TODO(crbug.com/419203257): this should be a CHECK, with the validation of
-  // the object store ID against `metadata_` performed at the agnostic layer
-  // which can immediately report a bad mojo argument.
-  if (!metadata_.object_stores.contains(object_store_id)) {
-    return base::unexpected(
-        Status::InvalidArgument("Invalid object_store_id."));
-  }
-
+  CHECK(metadata_.object_stores.contains(object_store_id));
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT key_generator_current_number "
@@ -1694,6 +1671,7 @@ Status DatabaseConnection::PutIndexDataForRecord(
     int64_t index_id,
     const blink::IndexedDBKey& key,
     const BackingStore::RecordIdentifier& record) {
+  ValidateInputs(object_store_id, index_id);
   // `PutIndexDataForRecord()` can be called more than once with the same `key`
   // and `record` - in the case of multi-entry indexes, for example.
   sql::Statement statement(db_->GetCachedStatement(
@@ -1715,6 +1693,7 @@ StatusOr<blink::IndexedDBKey> DatabaseConnection::GetFirstPrimaryKeyForIndexKey(
     int64_t object_store_id,
     int64_t index_id,
     const blink::IndexedDBKey& key) {
+  ValidateInputs(object_store_id, index_id);
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT MIN(record_key) FROM index_references "
@@ -1737,6 +1716,7 @@ StatusOr<uint32_t> DatabaseConnection::GetIndexKeyCount(
     int64_t object_store_id,
     int64_t index_id,
     blink::IndexedDBKeyRange key_range) {
+  ValidateInputs(object_store_id, index_id);
   std::vector<std::string_view> query_pieces{
       "SELECT COUNT() FROM index_references WHERE object_store_id = ?"
       " AND index_id = ?"};
@@ -2064,6 +2044,13 @@ Status DatabaseConnection::Fatal(Status s, SpecificEvent event) {
   LogEvent(event);
   marked_for_permanent_deletion_ = true;
   return s;
+}
+
+void DatabaseConnection::ValidateInputs(int64_t object_store_id,
+                                        int64_t index_id) {
+  auto iter = metadata_.object_stores.find(object_store_id);
+  CHECK(iter != metadata_.object_stores.end());
+  CHECK(iter->second.indexes.contains(index_id));
 }
 
 }  // namespace content::indexed_db::sqlite

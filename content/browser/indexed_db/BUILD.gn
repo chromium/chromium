@@ -178,6 +178,7 @@ source_set("unit_tests") {
     # of :indexed_db headers. This has to be done through //content/browser to
     # avoid doubling symbols.
     "//content/browser:for_content_tests",
+    "//mojo/public/cpp/test_support:test_utils",
     "//sql:test_support",
     "//storage/browser",
     "//storage/browser:test_support",

@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -125,10 +126,21 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // lock IDs.
   bool IsHoldingLocks(const std::vector<PartitionedLockId>& lock_ids) const;
 
+  // This should be called when handling a mojo message. It enforces that
+  // internal state is reasonable, returning an error if not, in which case
+  // the caller should abort handling the message, and pass the error back to
+  // the frontend if appropriate.
+  base::expected<Transaction*, DatabaseError> GetTransactionAndVerifyState(
+      int64_t transaction_id,
+      // When set, verifies that the transaction has this mode, killing the
+      // renderer if not.
+      std::optional<blink::mojom::IDBTransactionMode> required_mode = {});
+
  private:
   friend class TransactionTest;
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, ForcedClose);
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, PendingDelete);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest, GetWithInvalidId);
   FRIEND_TEST_ALL_PREFIXES(TransactionTest, PostedStartTaskRunAfterAbort);
 
   // blink::mojom::IDBDatabase implementation
@@ -200,6 +212,8 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // is no longer true.
   const storage::BucketInfo& GetBucketInfo();
   storage::BucketLocator GetBucketLocator();
+
+  // Gets the transaction, returning null if it doesn't exist.
   Transaction* GetTransaction(int64_t id) const;
 
   enum class CloseErrorHandling {

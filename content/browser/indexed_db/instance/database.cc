@@ -472,13 +472,6 @@ Status Database::GetOperation(int64_t object_store_id,
   TRACE_EVENT1("IndexedDB", "Database::GetOperation", "txn.id",
                transaction->id());
 
-  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
-    std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
-        CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                          "Bad request", transaction)));
-    return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
-  }
-
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
 
@@ -712,12 +705,6 @@ Status Database::GetAllOperation(
   TRACE_EVENT1("IndexedDB", "Database::GetAllOperation", "txn.id",
                transaction->id());
 
-  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
-    result_sink->Get()->OnError(CreateIDBErrorPtr(
-        blink::mojom::IDBException::kUnknownError, "Bad request", transaction));
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
-
   DCHECK_GT(max_count, 0);
 
   const IndexedDBObjectStoreMetadata& object_store_metadata =
@@ -854,11 +841,6 @@ Status Database::OpenCursorOperation(
   TRACE_EVENT1("IndexedDB", "Database::OpenCursorOperation", "txn.id",
                transaction->id());
 
-  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(params->object_store_id,
-                                                params->index_id)) {
-    return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
-  }
-
   // The frontend has begun indexing, so this pauses the transaction
   // until the indexing is complete. This can't happen any earlier
   // because we don't want to switch to early mode in case multiple
@@ -935,10 +917,6 @@ Status Database::CountOperation(
   TRACE_EVENT1("IndexedDB", "Database::CountOperation", "txn.id",
                transaction->id());
 
-  if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
-    return Status::InvalidArgument("Invalid object_store_id and/or index_id.");
-  }
-
   uint32_t count = -1;
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
     ASSIGN_OR_RETURN(
@@ -962,13 +940,8 @@ Status Database::DeleteRangeOperation(
   TRACE_EVENT1("IndexedDB", "Database::DeleteRangeOperation", "txn.id",
                transaction->id());
 
-  Status s;
-  if (IsObjectStoreIdInMetadata(object_store_id)) {
-    s = transaction->BackingStoreTransaction()->DeleteRange(object_store_id,
-                                                            key_range);
-  } else {
-    s = Status::InvalidArgument("Invalid object_store_id.");
-  }
+  Status s = transaction->BackingStoreTransaction()->DeleteRange(
+      object_store_id, key_range);
   if (s.ok()) {
     const IndexedDBObjectStoreMetadata& object_store_metadata =
         GetObjectStoreMetadata(object_store_id);
@@ -983,13 +956,6 @@ Status Database::GetKeyGeneratorCurrentNumberOperation(
     int64_t object_store_id,
     blink::mojom::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback,
     Transaction* transaction) {
-  if (!IsObjectStoreIdInMetadata(object_store_id)) {
-    std::move(callback).Run(
-        -1, CreateIDBErrorPtr(blink::mojom::IDBException::kDataError,
-                              "Object store id not valid.", transaction));
-    return Status::InvalidArgument("Invalid object_store_id.");
-  }
-
   ASSIGN_OR_RETURN(
       int64_t current_number,
       transaction->BackingStoreTransaction()->GetKeyGeneratorCurrentNumber(
@@ -1013,11 +979,8 @@ Status Database::ClearOperation(
     Transaction* transaction) {
   TRACE_EVENT1("IndexedDB", "Database::ClearOperation", "txn.id",
                transaction->id());
-  Status s = Status::InvalidArgument("Invalid object_store_id.");
-  if (IsObjectStoreIdInMetadata(object_store_id)) {
-    s = transaction->BackingStoreTransaction()->ClearObjectStore(
-        object_store_id);
-  }
+  Status s =
+      transaction->BackingStoreTransaction()->ClearObjectStore(object_store_id);
   if (s.ok()) {
     const IndexedDBObjectStoreMetadata& object_store_metadata =
         GetObjectStoreMetadata(object_store_id);
@@ -1029,11 +992,7 @@ Status Database::ClearOperation(
 }
 
 bool Database::IsObjectStoreIdInMetadata(int64_t object_store_id) const {
-  if (!base::Contains(metadata().object_stores, object_store_id)) {
-    DLOG(ERROR) << "Invalid object_store_id";
-    return false;
-  }
-  return true;
+  return base::Contains(metadata().object_stores, object_store_id);
 }
 
 bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
@@ -1044,12 +1003,8 @@ bool Database::IsObjectStoreIdAndMaybeIndexIdInMetadata(
   }
   const IndexedDBObjectStoreMetadata& object_store_metadata =
       GetObjectStoreMetadata(object_store_id);
-  if (index_id != IndexedDBIndexMetadata::kInvalidId &&
-      !base::Contains(object_store_metadata.indexes, index_id)) {
-    DLOG(ERROR) << "Invalid index_id";
-    return false;
-  }
-  return true;
+  return index_id == IndexedDBIndexMetadata::kInvalidId ||
+         base::Contains(object_store_metadata.indexes, index_id);
 }
 
 storage::mojom::IdbDatabaseMetadataPtr Database::GetIdbInternalsMetadata()
@@ -1185,7 +1140,7 @@ bool Database::CanBeDestroyed() {
 const IndexedDBObjectStoreMetadata& Database::GetObjectStoreMetadata(
     int64_t object_store_id) const {
   auto object_store_it = metadata().object_stores.find(object_store_id);
-  DCHECK(object_store_it != metadata().object_stores.end());
+  CHECK(object_store_it != metadata().object_stores.end());
   return object_store_it->second;
 }
 

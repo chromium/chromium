@@ -152,10 +152,15 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
     EXPECT_TRUE(pk->IsValid());
 
     EXPECT_TRUE(transaction->DeleteIndex(object_store_id, index_id).ok());
-    pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id, index_id,
-                                                    key2_);
-    EXPECT_TRUE(pk.has_value());
-    EXPECT_FALSE(pk->IsValid());
+
+    // The SQLite backing store CHECKs on invalid inputs, such as id which
+    // refers to now-deleted index.
+    if (!IsSqliteBackingStoreEnabled()) {
+      pk = transaction->GetFirstPrimaryKeyForIndexKey(object_store_id, index_id,
+                                                      key2_);
+      EXPECT_TRUE(pk.has_value());
+      EXPECT_FALSE(pk->IsValid());
+    }
 
     CommitTransactionAndVerify(*transaction);
   }
