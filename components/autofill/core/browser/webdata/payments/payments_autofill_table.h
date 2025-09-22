@@ -458,6 +458,11 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Method to clean up for crbug.com/411681430.
   bool CleanupForCrbug411681430();
 
+#if BUILDFLAG(IS_IOS)
+  // Method to clean up for crbug.com/445879524.
+  bool CleanupForCrbug445879524();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Methods to add, update, remove and get the metadata for server cards and
   // IBANs.
   // For get method, return true if the operations succeeded.

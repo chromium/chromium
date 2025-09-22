@@ -179,6 +179,11 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Method to clean up for crbug.com/411681430.
   void CleanupForCrbug411681430();
 
+#if BUILDFLAG(IS_IOS)
+  // Method to clean up for crbug.com/445879524.
+  void CleanupForCrbug445879524();
+#endif  // BUILDFLAG(IS_IOS)
+
   // Initiates the request for local/server credit cards.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the credit cards included in the argument |result|.  The

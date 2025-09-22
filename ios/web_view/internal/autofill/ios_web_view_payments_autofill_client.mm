@@ -36,7 +36,9 @@ IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
               client->GetIdentityManager(),
               &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),
-      web_state_(CHECK_DEREF(web_state)) {}
+      web_state_(CHECK_DEREF(web_state)) {
+  GetPaymentsDataManager().CleanupForCrbug445879524();
+}
 
 IOSWebViewPaymentsAutofillClient::~IOSWebViewPaymentsAutofillClient() = default;
 

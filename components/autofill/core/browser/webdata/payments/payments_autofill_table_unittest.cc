@@ -558,6 +558,31 @@ TEST_F(PaymentsAutofillTableTest, CleanupForCrbug411681430_Test) {
   ASSERT_FALSE(table_->GetCreditCard(card_2.guid())->cvc().empty());
 }
 
+#if BUILDFLAG(IS_IOS)
+TEST_F(PaymentsAutofillTableTest, CleanupForCrbug445879524_Test) {
+  CreditCard card_1 = test::GetCreditCard();
+  CreditCard card_2 = test::GetCreditCard2();
+  EXPECT_TRUE(table_->AddCreditCard(card_1));
+  EXPECT_TRUE(table_->AddCreditCard(card_2));
+
+  table_->CleanupForCrbug445879524();
+
+  sql::Statement statement(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT guid FROM credit_cards WHERE guid=?"));
+
+  // Verify `card_1` is deleted.
+  statement.BindString(0, card_1.guid());
+  ASSERT_TRUE(statement.is_valid());
+  EXPECT_FALSE(statement.Step());
+  statement.Reset(/*clear_bound_vars=*/true);
+
+  // Verify `card_2` is deleted.
+  statement.BindString(0, card_2.guid());
+  ASSERT_TRUE(statement.is_valid());
+  EXPECT_FALSE(statement.Step());
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 // Tests that verify add, update and clear server cvc function working as
 // expected.
 TEST_F(PaymentsAutofillTableTest, ServerCvc) {

@@ -132,7 +132,9 @@ enum class Result {
   kRemoveEntityInstancesModifiedBetween_Failure = 311,
   kCleanupForCrbug411681430_Success = 312,
   kCleanupForCrbug411681430_Failure = 313,
-  kMaxValue = kCleanupForCrbug411681430_Failure,
+  kCleanupForCrbug445879524_Success = 314,
+  kCleanupForCrbug445879524_Failure = 315,
+  kMaxValue = kCleanupForCrbug445879524_Failure,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWebDataBackendImplOperationResult)
 
@@ -910,6 +912,19 @@ WebDatabase::State AutofillWebDataBackendImpl::CleanupForCrbug411681430(
   ReportResult(Result::kCleanupForCrbug411681430_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
+
+#if BUILDFLAG(IS_IOS)
+WebDatabase::State AutofillWebDataBackendImpl::CleanupForCrbug445879524(
+    WebDatabase* db) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (PaymentsAutofillTable::FromWebDatabase(db)->CleanupForCrbug445879524()) {
+    ReportResult(Result::kCleanupForCrbug445879524_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kCleanupForCrbug445879524_Failure);
+  return WebDatabase::COMMIT_NOT_NEEDED;
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetPaymentsCustomerData(WebDatabase* db) {
