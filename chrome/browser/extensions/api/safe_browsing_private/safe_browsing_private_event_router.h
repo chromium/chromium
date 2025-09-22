@@ -38,40 +38,6 @@ namespace extensions {
 // An event router that observes Safe Browsing events and notifies listeners.
 class SafeBrowsingPrivateEventRouter : public KeyedService {
  public:
-  // Key names used with when building the dictionary to pass to the real-time
-  // reporting API.
-  static const char kKeyUrl[];
-  static const char kKeySource[];
-  static const char kKeyDestination[];
-  static const char kKeyUserName[];
-  static const char kKeyIsPhishingUrl[];
-  static const char kKeyProfileUserName[];
-  static const char kKeyFileName[];
-  static const char kKeyDownloadDigestSha256[];
-  static const char kKeyReason[];
-  static const char kKeyNetErrorCode[];
-  static const char kKeyClickedThrough[];
-  static const char kKeyTriggeredRuleName[];
-  static const char kKeyTriggeredRuleId[];
-  static const char kKeyTriggeredRuleInfo[];
-  static const char kKeyThreatType[];
-  static const char kKeyContentType[];
-  static const char kKeyContentSize[];
-  static const char kKeyReferrers[];
-  static const char kKeyTrigger[];
-  static const char kKeyEventResult[];
-  static const char kKeyScanId[];
-  static const char kKeyIsFederated[];
-  static const char kKeyFederatedOrigin[];
-  static const char kKeyLoginUserName[];
-  static const char kKeyUserJustification[];
-  static const char kKeyUrlCategory[];
-  static const char kKeyAction[];
-  static const char kKeyTabUrl[];
-  static constexpr char kKeyContentTransferMethod[] = "contentTransferMethod";
-  static constexpr char kKeyHasWatermarking[] = "hasWatermarking";
-  static const char kKeyUnscannedReason[];
-
   explicit SafeBrowsingPrivateEventRouter(content::BrowserContext* context);
 
   SafeBrowsingPrivateEventRouter(const SafeBrowsingPrivateEventRouter&) =

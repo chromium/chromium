@@ -17,8 +17,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
@@ -37,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::SafeBrowsingPrivateEventRouter;
 using ::testing::_;
 
 namespace enterprise_connectors::test {
@@ -46,6 +43,8 @@ namespace {
 
 // Namespace alias to reduce verbosity when using event protos.
 namespace proto = ::chrome::cros::reporting::proto;
+
+constexpr char kKeyProfileUserName[] = "profileUserName";
 
 proto::EventResult GetEventResultProto(const std::string& event_result) {
   if (event_result == "EVENT_RESULT_UNKNOWN") {
@@ -843,36 +842,27 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
   ASSERT_NE(nullptr, event);
 
   // The event should match the expected values.
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUrl, url_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTabUrl, tab_url_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeySource, source_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyDestination,
-                destination_);
+  ValidateField(event, kKeyUrl, url_);
+  ValidateField(event, kKeyTabUrl, tab_url_);
+  ValidateField(event, kKeySource, source_);
+  ValidateField(event, kKeyDestination, destination_);
   ValidateFilenameMappedAttributes(event);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyTrigger, trigger_);
+  ValidateField(event, kKeyTrigger, trigger_);
   // `content_size_` needs a conversion since int64 are strings in base::Value.
   std::optional<std::string> size =
       content_size_.has_value()
           ? std::optional<std::string>(base::NumberToString(*content_size_))
           : std::nullopt;
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyContentSize, size);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyThreatType,
-                threat_type_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUnscannedReason,
-                unscanned_reason_);
-  ValidateField(event,
-                SafeBrowsingPrivateEventRouter::kKeyContentTransferMethod,
-                content_transfer_method_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyUserJustification,
-                user_justification_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
-                username_);
+  ValidateField(event, kKeyContentSize, size);
+  ValidateField(event, kKeyThreatType, threat_type_);
+  ValidateField(event, kKeyUnscannedReason, unscanned_reason_);
+  ValidateField(event, kKeyContentTransferMethod, content_transfer_method_);
+  ValidateField(event, kKeyUserJustification, user_justification_);
+  ValidateField(event, kKeyProfileUserName, username_);
   ValidateField(event, RealtimeReportingClient::kKeyProfileIdentifier,
                 profile_identifier_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
-                is_federated_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyLoginUserName,
-                login_user_name_);
+  ValidateField(event, kKeyIsFederated, is_federated_);
+  ValidateField(event, kKeyLoginUserName, login_user_name_);
   ValidateField(event, kKeyWebAppSignedInAccount, active_content_area_user_);
   ValidateField(event, kKeySourceWebAppSignedInAccount,
                 source_active_content_area_user_);
@@ -888,10 +878,8 @@ void EventReportValidator::ValidateReport(const base::Value::Dict* report) {
 
 void EventReportValidator::ValidateFederatedOrigin(
     const base::Value::Dict* value) {
-  std::optional<bool> is_federated =
-      value->FindBool(SafeBrowsingPrivateEventRouter::kKeyIsFederated);
-  const std::string* federated_origin =
-      value->FindString(SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin);
+  std::optional<bool> is_federated = value->FindBool(kKeyIsFederated);
+  const std::string* federated_origin = value->FindString(kKeyFederatedOrigin);
   if (is_federated.has_value() && is_federated.value()) {
     EXPECT_NE(nullptr, federated_origin);
     EXPECT_EQ(federated_origin_, *federated_origin);
@@ -933,8 +921,7 @@ void EventReportValidator::ValidateIdentities(const base::Value::Dict* value) {
 }
 
 void EventReportValidator::ValidateMimeType(const base::Value::Dict* value) {
-  const std::string* type =
-      value->FindString(SafeBrowsingPrivateEventRouter::kKeyContentType);
+  const std::string* type = value->FindString(kKeyContentType);
   if (mimetypes_) {
     EXPECT_TRUE(base::Contains(*mimetypes_, *type))
         << *type << " is not an expected mimetype";
@@ -947,7 +934,7 @@ void EventReportValidator::ValidateDlpVerdict(
     const base::Value::Dict* value,
     const ContentAnalysisResponse::Result& result) {
   const base::Value::List* triggered_rules =
-      value->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+      value->FindList(kKeyTriggeredRuleInfo);
   ASSERT_NE(nullptr, triggered_rules);
   ASSERT_EQ(base::checked_cast<size_t>(result.triggered_rules_size()),
             triggered_rules->size());
@@ -960,15 +947,13 @@ void EventReportValidator::ValidateDlpVerdict(
 void EventReportValidator::ValidateDlpRule(
     const base::Value::Dict* value,
     const ContentAnalysisResponse::Result::TriggeredRule& expected_rule) {
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-                expected_rule.rule_name());
+  ValidateField(value, kKeyTriggeredRuleName, expected_rule.rule_name());
   if (expected_rule.rule_id().empty()) {
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                  std::optional<int>());
+    ValidateField(value, kKeyTriggeredRuleId, std::optional<int>());
   } else {
     int expected_rule_id = 0;
     ASSERT_TRUE(base::StringToInt(expected_rule.rule_id(), &expected_rule_id));
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+    ValidateField(value, kKeyTriggeredRuleId,
                   std::optional<int>(expected_rule_id));
   }
 }
@@ -976,15 +961,13 @@ void EventReportValidator::ValidateDlpRule(
 void EventReportValidator::ValidateFilenameMappedAttributes(
     const base::Value::Dict* value) {
   if (filenames_and_hashes_.empty()) {
-    ASSERT_FALSE(value->contains(SafeBrowsingPrivateEventRouter::kKeyFileName))
+    ASSERT_FALSE(value->contains(kKeyFileName))
         << "Expected no file name but found "
-        << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
+        << *value->FindString(kKeyFileName);
   } else {
-    ASSERT_TRUE(
-        value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    ASSERT_TRUE(value->FindString(kKeyFileName));
 
-    std::string filename =
-        *(value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    std::string filename = *(value->FindString(kKeyFileName));
     std::string filenames;
     for (const auto& fh : filenames_and_hashes_) {
       filenames += fh.first + "; ";
@@ -1003,20 +986,16 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     ASSERT_TRUE(base::Contains(filenames_and_hashes_, filename))
-        << "Mismatch in field " << SafeBrowsingPrivateEventRouter::kKeyFileName
+        << "Mismatch in field " << kKeyFileName
         << "\nActual filename: " << filename << "\nExpected one filename in: { "
         << filenames << "}";
-    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  results_[filename]);
-    ValidateField(value,
-                  SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256,
+    ValidateField(value, kKeyEventResult, results_[filename]);
+    ValidateField(value, kKeyDownloadDigestSha256,
                   filenames_and_hashes_[filename]);
     if (scan_ids_.count(filename)) {
-      ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    scan_ids_[filename]);
+      ValidateField(value, kKeyScanId, scan_ids_[filename]);
     } else {
-      ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyScanId,
-                    std::optional<std::string>());
+      ValidateField(value, kKeyScanId, std::optional<std::string>());
     }
     if (dlp_verdicts_.count(filename)) {
       ValidateDlpVerdict(value, dlp_verdicts_[filename]);
@@ -1027,25 +1006,23 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
 void EventReportValidator::ValidateDataControlsAttributes(
     const base::Value::Dict* event) {
   if (data_controls_result_) {
-    ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyEventResult,
-                  data_controls_result_);
+    ValidateField(event, kKeyEventResult, data_controls_result_);
 
     ASSERT_FALSE(data_controls_triggered_rules_.empty());
     const base::Value::List* triggered_rules =
-        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+        event->FindList(kKeyTriggeredRuleInfo);
     ASSERT_TRUE(triggered_rules);
     ASSERT_EQ(data_controls_triggered_rules_.size(), triggered_rules->size());
     size_t i = 0;
     for (const base::Value& rule : *triggered_rules) {
-      const std::string* name = rule.GetDict().FindString(
-          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName);
+      const std::string* name =
+          rule.GetDict().FindString(kKeyTriggeredRuleName);
       ASSERT_TRUE(name);
 
       ASSERT_TRUE(data_controls_triggered_rules_.count(i));
       ASSERT_EQ(data_controls_triggered_rules_[i].rule_name, *name);
 
-      std::optional<int> id = rule.GetDict().FindInt(
-          SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId);
+      std::optional<int> id = rule.GetDict().FindInt(kKeyTriggeredRuleId);
       if (id) {
         int expected_rule_id = 0;
         ASSERT_TRUE(base::StringToInt(data_controls_triggered_rules_[i].rule_id,
@@ -1070,7 +1047,7 @@ void EventReportValidator::ValidateDataMaskingAttributes(
                                   .Run()
                                   .triggered_rule_info;
     const base::Value::List* triggered_rules =
-        event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
+        event->FindList(kKeyTriggeredRuleInfo);
     ASSERT_TRUE(triggered_rules);
     ASSERT_EQ(data_masking_rules.size(), triggered_rules->size());
     size_t rule_index = 0;
@@ -1109,12 +1086,6 @@ EventReportValidatorHelper::EventReportValidatorHelper(Profile* profile,
   client_->SetDMToken("dm_token");
 
   if (!browser_test) {
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(
-            profile, base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new extensions::SafeBrowsingPrivateEventRouter(context));
-            }));
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(

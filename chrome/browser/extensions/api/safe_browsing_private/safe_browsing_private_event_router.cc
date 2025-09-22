@@ -35,47 +35,6 @@
 
 namespace extensions {
 
-// Key names used with when building the dictionary to pass to the real-time
-// reporting API.
-const char SafeBrowsingPrivateEventRouter::kKeyUrl[] = "url";
-const char SafeBrowsingPrivateEventRouter::kKeySource[] = "source";
-const char SafeBrowsingPrivateEventRouter::kKeyDestination[] = "destination";
-const char SafeBrowsingPrivateEventRouter::kKeyUserName[] = "userName";
-const char SafeBrowsingPrivateEventRouter::kKeyIsPhishingUrl[] =
-    "isPhishingUrl";
-const char SafeBrowsingPrivateEventRouter::kKeyProfileUserName[] =
-    "profileUserName";
-const char SafeBrowsingPrivateEventRouter::kKeyFileName[] = "fileName";
-const char SafeBrowsingPrivateEventRouter::kKeyDownloadDigestSha256[] =
-    "downloadDigestSha256";
-const char SafeBrowsingPrivateEventRouter::kKeyReason[] = "reason";
-const char SafeBrowsingPrivateEventRouter::kKeyNetErrorCode[] = "netErrorCode";
-const char SafeBrowsingPrivateEventRouter::kKeyClickedThrough[] =
-    "clickedThrough";
-const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName[] = "ruleName";
-const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId[] = "ruleId";
-const char SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo[] =
-    "triggeredRuleInfo";
-const char SafeBrowsingPrivateEventRouter::kKeyThreatType[] = "threatType";
-const char SafeBrowsingPrivateEventRouter::kKeyContentType[] = "contentType";
-const char SafeBrowsingPrivateEventRouter::kKeyContentSize[] = "contentSize";
-const char SafeBrowsingPrivateEventRouter::kKeyTrigger[] = "trigger";
-const char SafeBrowsingPrivateEventRouter::kKeyReferrers[] = "referrers";
-const char SafeBrowsingPrivateEventRouter::kKeyEventResult[] = "eventResult";
-const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
-const char SafeBrowsingPrivateEventRouter::kKeyIsFederated[] = "isFederated";
-const char SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin[] =
-    "federatedOrigin";
-const char SafeBrowsingPrivateEventRouter::kKeyLoginUserName[] =
-    "loginUserName";
-const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
-    "userJustification";
-const char SafeBrowsingPrivateEventRouter::kKeyUrlCategory[] = "urlCategory";
-const char SafeBrowsingPrivateEventRouter::kKeyAction[] = "action";
-const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
-    "unscannedReason";
-const char SafeBrowsingPrivateEventRouter::kKeyTabUrl[] = "tabUrl";
-
 SafeBrowsingPrivateEventRouter::SafeBrowsingPrivateEventRouter(
     content::BrowserContext* context)
     : context_(context) {
