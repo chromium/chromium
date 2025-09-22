@@ -1180,8 +1180,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.StartupBrowserCreator.LaunchBrowser" units="ms"
     expires_after="2026-02-01">
-  <owner>alemate@chromium.org</owner>
-  <owner>xiyuan@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <owner>junis@google.com</owner>
   <owner>cros-sw-perf+metrics@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>

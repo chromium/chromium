@@ -185,15 +185,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
     expires_after="2026-02-22">
-  <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>Tracks cryptohome failure during kiosk launch.</summary>
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
     expires_after="2026-02-22">
-  <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>
     Tracks Chrome OS Kiosk launch errors. Recorded when a Kiosk app fails to
     launch and returns to the login screen.
@@ -215,8 +215,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
     expires_after="2026-02-22">
-  <owner>xiyuan@chromium.org</owner>
   <owner>aghuie@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
   <summary>
     Records kiosk launches, whether it is an enterprise or consumer kiosk and
     whether it is an auto launch or manual launch.
