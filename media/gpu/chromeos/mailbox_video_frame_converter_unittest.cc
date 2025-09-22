@@ -30,6 +30,7 @@
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -198,11 +199,8 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
           Mock::VerifyAndClearExpectations(cb.get()) &&
           verified_for_mock_frame_destruction_cbs;
     }
-    bool verified_for_mock_release_cb =
-        Mock::VerifyAndClearExpectations(&mock_release_cb_);
     return verified_for_mock_gpu_delegate && verified_for_mock_output_cb &&
-           verified_for_mock_frame_destruction_cbs &&
-           verified_for_mock_release_cb;
+           verified_for_mock_frame_destruction_cbs;
   }
 
   void SetUp() override {
@@ -232,10 +230,6 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   // to VideoFrames.
   std::vector<std::unique_ptr<StrictMock<base::MockOnceCallback<void()>>>>
       mock_frame_destruction_cbs_;
-  StrictMock<
-      base::MockRepeatingCallback<bool(scoped_refptr<FrameResource> frame,
-                                       const gpu::SyncToken& sync_token)>>
-      mock_release_cb_;
 
   std::unique_ptr<FrameResourceConverter> converter_;
 };
@@ -249,9 +243,8 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
     auto mock_shared_image_interface =
         base::MakeRefCounted<StrictMock<MockSharedImageInterface>>();
     mock_shared_image_interface_ = mock_shared_image_interface.get();
-    converter_ =
-        base::WrapUnique<FrameResourceConverter>(new MailboxVideoFrameConverter(
-            std::move(mock_shared_image_interface), mock_release_cb_.Get()));
+    converter_ = MailboxVideoFrameConverter::Create(
+        std::move(mock_shared_image_interface));
     converter_->Initialize(
         /*parent_task_runner=*/base::SingleThreadTaskRunner::
             GetCurrentDefault(),
@@ -360,21 +353,16 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
                           shared_image_format,
                           needs_detiling ? kCodedSize : kVisibleRect.size()),
                       /*buffer_handle=*/Matcher<gfx::GpuMemoryBufferHandle>(_)))
-          .WillOnce([&mailboxes_seen_by_gpu_delegate, i, shared_image_size](
+          .WillOnce([&mailboxes_seen_by_gpu_delegate, i, this](
                         const gpu::SharedImageInfo& si_info,
                         gfx::GpuMemoryBufferHandle buffer_handle) {
-            gpu::SharedImageMetadata metadata;
-            metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
-            metadata.size = shared_image_size;
-            metadata.color_space = gfx::ColorSpace::CreateSRGB();
-            metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
-            metadata.alpha_type = kOpaque_SkAlphaType;
-            metadata.usage = gpu::SharedImageUsageSet();
-            auto shared_image =
-                gpu::ClientSharedImage::CreateForTesting(metadata);
+            auto shared_image = base::MakeRefCounted<gpu::ClientSharedImage>(
+                gpu::Mailbox::Generate(), si_info, gpu::SyncToken(),
+                mock_shared_image_interface_->holder(), buffer_handle.type);
             mailboxes_seen_by_gpu_delegate[i] = shared_image->mailbox();
             return shared_image;
           });
+      EXPECT_CALL(*mock_shared_image_interface_, VerifySyncToken(_)).Times(1);
       EXPECT_CALL(mock_output_cb_, Run(_))
           .WillOnce(SaveArg<0>(&converted_frames[i]));
     }
@@ -389,6 +377,7 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
     scoped_refptr<const VideoFrame> converted_frame = converted_frames[i];
     EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
     EXPECT_EQ(converted_frame->format(), mappable_frames[i]->format());
+    EXPECT_EQ(converted_frame->metadata().read_lock_fences_enabled, true);
     if (needs_detiling) {
       EXPECT_EQ(converted_frame->coded_size(), kCodedSize);
     } else {
@@ -408,28 +397,353 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
             mailboxes_seen_by_gpu_delegate[1]);
 
   // Now let's simulate that the client releases each of the |converted_frames|.
-  // The GpuDelegate should be invoked to wait on the right SyncToken. Then,
-  // since the MailboxVideoFrameConverter should be the sole owner of the
-  // corresponding Mappable FrameResource, the SharedImage for that frame
-  // should be destroyed and the destruction observer registered above for that
-  // frame should be invoked.
+  // |mappable_frame|, and the corresponding shared image should be destroyed
+  // with it.
   for (size_t i = 0; i < std::size(mappable_frames); i++) {
-    const gpu::SyncToken release_sync_token(
-        gpu::CommandBufferNamespace::GPU_IO,
-        gpu::CommandBufferId::FromUnsafeValue(1u), /*release_count=*/(1u + i));
-    Expectation wait_on_sync_token_and_release =
-        EXPECT_CALL(mock_release_cb_,
-                    Run(Property(&scoped_refptr<FrameResource>::get,
-                                 mappable_frames[i]),
-                        release_sync_token))
-            .WillOnce(Return(true));
-    EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run())
-        .After(wait_on_sync_token_and_release);
-    SimpleSyncTokenClient sync_token_client(release_sync_token);
-    converted_frames[i]->UpdateReleaseSyncToken(&sync_token_client);
+    EXPECT_CALL(*mock_shared_image_interface_,
+                DestroySharedImage(
+                    /*sync_token=*/_,
+                    /*mailbox=*/Matcher<const gpu::Mailbox&>(
+                        mailboxes_seen_by_gpu_delegate[i])))
+        .Times(1);
+    EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run()).Times(1);
     converted_frames[i].reset();
     ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
   }
+}
+
+// This test verifies reusing of the shared_images for identical frames.
+TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
+       CanConvertIdenticalFramesAndThenHandleTheirRelease) {
+  constexpr gfx::Size kCodedSize(640, 368);
+  constexpr gfx::Rect kVisibleRect(600, 300);
+  constexpr gfx::Size kNaturalSize(1200, 600);
+  const bool needs_detiling = GetParam();
+
+  // |mappable_frames| are the frames backed by Mappable shared images. In real
+  // usage, those are the frames that the hardware decoder decodes to and (when
+  // the MailboxVideoFrameConverter is configured to handle unwrapped frames)
+  // that the OOPVideoDecoder receives from the remote video decoder process.
+  // The OOPVideoDecoder transfers ownership of these frames to the
+  // MailboxVideoFrameConverter, but we keep raw pointers around in order to use
+  // them in test assertions.
+  std::array<FrameResource*, 2> mappable_frames;
+
+  // |mailboxes_seen_by_gpu_delegate| are the Mailboxes generated for each of
+  // the |mappable_frames|. These Mailboxes are generated in the
+  // MailboxVideoFrameConverter and supplied to the GpuDelegate to create the
+  // SharedImage for the the VideoFrame.
+  std::array<gpu::Mailbox, std::size(mappable_frames)>
+      mailboxes_seen_by_gpu_delegate;
+
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    mock_frame_destruction_cbs_.emplace_back(
+        std::make_unique<StrictMock<base::MockOnceCallback<void()>>>());
+  }
+
+  // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
+  std::array<scoped_refptr<VideoFrame>, std::size(mappable_frames)>
+      converted_frames;
+
+  // Let's now feed each of the |mappable_frames| to the
+  // MailboxVideoFrameConverter and verify that the GpuDelegate gets used
+  // correctly.
+  auto gmb_handle =
+      CreatePixmapHandle(kCodedSize, viz::MultiPlaneFormat::kNV12);
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image_size =
+      needs_detiling ? kCodedSize : gfx::Size(kVisibleRect.size());
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, shared_image_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage),
+       "MailboxVideoFrameConverterWithUnwrappedFramesTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+      std::move(gmb_handle));
+
+  // Create 1 frame that will be wrapped multiple times.
+  auto video_frame = VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+      base::NullCallback(), kVisibleRect, kNaturalSize, base::TimeDelta());
+  ASSERT_TRUE(video_frame);
+  video_frame->metadata().needs_detiling = needs_detiling;
+  scoped_refptr<FrameResource> original_frame =
+      VideoFrameResource::Create(video_frame);
+  original_frame->metadata().tracking_token = base::UnguessableToken::Create();
+
+  // Provide a way to retreive the original frame.
+  FrameResourceConverter::GetOriginalFrameCB get_original_cb =
+      base::BindRepeating(
+          // Using dangling raw_ptr in order to not prolong the lifetime of
+          // `original_frame` beyond `video_frame` and `original_frame` due to
+          // binding arg.
+          [](raw_ptr<FrameResource, DisableDanglingPtrDetection> original,
+             const base::UnguessableToken&) { return original.get(); },
+          base::UnsafeDangling(original_frame.get()));
+  converter_->set_get_original_frame_cb(get_original_cb);
+
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    scoped_refptr<FrameResource> mappable_frame =
+        original_frame->CreateWrappingFrame();
+    ASSERT_TRUE(mappable_frame);
+    mappable_frame->AddDestructionObserver(
+        mock_frame_destruction_cbs_[i]->Get());
+    mappable_frames[i] = mappable_frame.get();
+
+    {
+      InSequence sequence;
+      viz::SharedImageFormat shared_image_format = viz::MultiPlaneFormat::kNV12;
+      shared_image_format.SetPrefersExternalSampler();
+      // Note: the Matcher<gfx::GpuMemoryBufferHandle> is needed to disambiguate
+      // among all the CreateSharedImage() overloads.
+      if (i == 0) {
+        EXPECT_CALL(
+            *mock_shared_image_interface_,
+            CreateSharedImage(
+                /*si_info=*/IsValidSharedImageInfo(
+                    shared_image_format,
+                    needs_detiling ? kCodedSize : kVisibleRect.size()),
+                /*buffer_handle=*/Matcher<gfx::GpuMemoryBufferHandle>(_)))
+            .WillOnce([&mailboxes_seen_by_gpu_delegate, i, this](
+                          const gpu::SharedImageInfo& si_info,
+                          gfx::GpuMemoryBufferHandle buffer_handle) {
+              auto shared_image = base::MakeRefCounted<gpu::ClientSharedImage>(
+                  gpu::Mailbox::Generate(), si_info, gpu::SyncToken(),
+                  mock_shared_image_interface_->holder(), buffer_handle.type);
+              mailboxes_seen_by_gpu_delegate[i] = shared_image->mailbox();
+              return shared_image;
+            });
+        EXPECT_CALL(*mock_shared_image_interface_, VerifySyncToken(_)).Times(1);
+      } else {
+        EXPECT_CALL(*mock_shared_image_interface_, UpdateSharedImage(
+                                                       /*sync_token=*/_,
+                                                       /*mailbox=*/_))
+            .WillOnce([&mailboxes_seen_by_gpu_delegate, i](
+                          const gpu::SyncToken& sync_token,
+                          const gpu::Mailbox& mailbox) {
+              mailboxes_seen_by_gpu_delegate[i] = mailbox;
+            });
+        EXPECT_CALL(*mock_shared_image_interface_, GenVerifiedSyncToken())
+            .Times(1);
+      }
+      EXPECT_CALL(mock_output_cb_, Run(_))
+          .WillOnce(SaveArg<0>(&converted_frames[i]));
+    }
+
+    EXPECT_CALL(*mock_shared_image_interface_, GetCapabilities())
+        .WillRepeatedly(ReturnRef(si_cap_));
+    // Note: after this, the MailboxVideoFrameConverter should have full
+    // ownership of the *|mappable_frame|.
+    converter_->ConvertFrame(std::move(mappable_frame));
+    ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
+    ASSERT_TRUE(converted_frames[i]);
+    scoped_refptr<const VideoFrame> converted_frame = converted_frames[i];
+    EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
+    EXPECT_EQ(converted_frame->format(), mappable_frames[i]->format());
+    EXPECT_EQ(converted_frame->metadata().read_lock_fences_enabled, true);
+    if (needs_detiling) {
+      EXPECT_EQ(converted_frame->coded_size(), kCodedSize);
+    } else {
+      EXPECT_EQ(converted_frame->coded_size(),
+                mappable_frames[i]->visible_rect().size());
+    }
+    EXPECT_EQ(converted_frame->visible_rect(),
+              mappable_frames[i]->visible_rect());
+    EXPECT_EQ(converted_frame->natural_size(),
+              mappable_frames[i]->natural_size());
+    ASSERT_TRUE(converted_frame->HasSharedImage());
+    EXPECT_EQ(converted_frame->shared_image()->mailbox(),
+              mailboxes_seen_by_gpu_delegate[i]);
+  }
+
+  EXPECT_EQ(mailboxes_seen_by_gpu_delegate[0],
+            mailboxes_seen_by_gpu_delegate[1]);
+
+  // Now let's simulate that the client releases each of the |converted_frames|.
+  // |mappable_frame|.
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run()).Times(1);
+    converted_frames[i].reset();
+    ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
+  }
+
+  // Destorying the `original_frame` destroys the shared image.
+  EXPECT_CALL(*mock_shared_image_interface_,
+              DestroySharedImage(
+                  /*sync_token=*/_,
+                  /*mailbox=*/Matcher<const gpu::Mailbox&>(
+                      mailboxes_seen_by_gpu_delegate[0])))
+      .Times(1);
+  video_frame.reset();
+  original_frame.reset();
+  ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
+}
+
+// This test verifies that shared_image recreates if color space changes.
+TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
+       CanRecreateSharedImagesAndThenHandleTheirRelease) {
+  constexpr gfx::Size kCodedSize(640, 368);
+  constexpr gfx::Rect kVisibleRect(600, 300);
+  constexpr gfx::Size kNaturalSize(1200, 600);
+  const bool needs_detiling = GetParam();
+
+  // |mappable_frames| are the frames backed by Mappable shared images. In real
+  // usage, those are the frames that the hardware decoder decodes to and (when
+  // the MailboxVideoFrameConverter is configured to handle unwrapped frames)
+  // that the OOPVideoDecoder receives from the remote video decoder process.
+  // The OOPVideoDecoder transfers ownership of these frames to the
+  // MailboxVideoFrameConverter, but we keep raw pointers around in order to use
+  // them in test assertions.
+  std::array<FrameResource*, 2> mappable_frames;
+
+  // |mailboxes_seen_by_gpu_delegate| are the Mailboxes generated for each of
+  // the |mappable_frames|. These Mailboxes are generated in the
+  // MailboxVideoFrameConverter and supplied to the GpuDelegate to create the
+  // SharedImage for the the VideoFrame.
+  std::array<gpu::Mailbox, std::size(mappable_frames)>
+      mailboxes_seen_by_gpu_delegate;
+
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    mock_frame_destruction_cbs_.emplace_back(
+        std::make_unique<StrictMock<base::MockOnceCallback<void()>>>());
+  }
+
+  // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
+  std::array<scoped_refptr<VideoFrame>, std::size(mappable_frames)>
+      converted_frames;
+
+  // Let's now feed each of the |mappable_frames| to the
+  // MailboxVideoFrameConverter and verify that the GpuDelegate gets used
+  // correctly.
+  auto gmb_handle =
+      CreatePixmapHandle(kCodedSize, viz::MultiPlaneFormat::kNV12);
+  // Setting some default usage in order to get a mappable shared image.
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  auto shared_image_size =
+      needs_detiling ? kCodedSize : gfx::Size(kVisibleRect.size());
+  auto shared_image = test_sii_->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, shared_image_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage),
+       "MailboxVideoFrameConverterWithUnwrappedFramesTest"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+      std::move(gmb_handle));
+
+  // Create 1 frame that will be wrapped multiple times.
+  auto video_frame = VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+      base::NullCallback(), kVisibleRect, kNaturalSize, base::TimeDelta());
+  ASSERT_TRUE(video_frame);
+  video_frame->metadata().needs_detiling = needs_detiling;
+  scoped_refptr<FrameResource> original_frame =
+      VideoFrameResource::Create(video_frame);
+  original_frame->metadata().tracking_token = base::UnguessableToken::Create();
+
+  // Provide a way to retreive the original frame.
+  FrameResourceConverter::GetOriginalFrameCB get_original_cb =
+      base::BindRepeating(
+          // Using dangling raw_ptr in order to not prolong the lifetime of
+          // `original_frame` beyond `video_frame` and `original_frame` due to
+          // binding arg.
+          [](raw_ptr<FrameResource, DisableDanglingPtrDetection> original,
+             const base::UnguessableToken&) { return original.get(); },
+          base::UnsafeDangling(original_frame.get()));
+  converter_->set_get_original_frame_cb(get_original_cb);
+
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    scoped_refptr<FrameResource> mappable_frame =
+        original_frame->CreateWrappingFrame();
+    ASSERT_TRUE(mappable_frame);
+    // Change color space so shared_image needs to be recreated.
+    if (i != 0) {
+      mappable_frame->set_color_space(gfx::ColorSpace::CreateHDR10());
+    }
+    mappable_frame->AddDestructionObserver(
+        mock_frame_destruction_cbs_[i]->Get());
+    mappable_frames[i] = mappable_frame.get();
+
+    {
+      InSequence sequence;
+      viz::SharedImageFormat shared_image_format = viz::MultiPlaneFormat::kNV12;
+      shared_image_format.SetPrefersExternalSampler();
+      // Note: the Matcher<gfx::GpuMemoryBufferHandle> is needed to disambiguate
+      // among all the CreateSharedImage() overloads.
+      EXPECT_CALL(*mock_shared_image_interface_,
+                  CreateSharedImage(
+                      /*si_info=*/IsValidSharedImageInfo(
+                          shared_image_format,
+                          needs_detiling ? kCodedSize : kVisibleRect.size()),
+                      /*buffer_handle=*/Matcher<gfx::GpuMemoryBufferHandle>(_)))
+          .WillOnce([&mailboxes_seen_by_gpu_delegate, i, this](
+                        const gpu::SharedImageInfo& si_info,
+                        gfx::GpuMemoryBufferHandle buffer_handle) {
+            auto shared_image = base::MakeRefCounted<gpu::ClientSharedImage>(
+                gpu::Mailbox::Generate(), si_info, gpu::SyncToken(),
+                mock_shared_image_interface_->holder(), buffer_handle.type);
+            mailboxes_seen_by_gpu_delegate[i] = shared_image->mailbox();
+            return shared_image;
+          });
+      EXPECT_CALL(*mock_shared_image_interface_, VerifySyncToken(_)).Times(1);
+      EXPECT_CALL(mock_output_cb_, Run(_))
+          .WillOnce(SaveArg<0>(&converted_frames[i]));
+    }
+
+    EXPECT_CALL(*mock_shared_image_interface_, GetCapabilities())
+        .WillRepeatedly(ReturnRef(si_cap_));
+    // Note: after this, the MailboxVideoFrameConverter should have full
+    // ownership of the *|mappable_frame|.
+    converter_->ConvertFrame(std::move(mappable_frame));
+    ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
+    ASSERT_TRUE(converted_frames[i]);
+    scoped_refptr<const VideoFrame> converted_frame = converted_frames[i];
+    EXPECT_EQ(converted_frame->storage_type(), VideoFrame::STORAGE_OPAQUE);
+    EXPECT_EQ(converted_frame->format(), mappable_frames[i]->format());
+    EXPECT_EQ(converted_frame->metadata().read_lock_fences_enabled, true);
+    if (needs_detiling) {
+      EXPECT_EQ(converted_frame->coded_size(), kCodedSize);
+    } else {
+      EXPECT_EQ(converted_frame->coded_size(),
+                mappable_frames[i]->visible_rect().size());
+    }
+    EXPECT_EQ(converted_frame->visible_rect(),
+              mappable_frames[i]->visible_rect());
+    EXPECT_EQ(converted_frame->natural_size(),
+              mappable_frames[i]->natural_size());
+    ASSERT_TRUE(converted_frame->HasSharedImage());
+    EXPECT_EQ(converted_frame->shared_image()->mailbox(),
+              mailboxes_seen_by_gpu_delegate[i]);
+  }
+
+  EXPECT_NE(mailboxes_seen_by_gpu_delegate[0],
+            mailboxes_seen_by_gpu_delegate[1]);
+
+  // Now let's simulate that the client releases each of the |converted_frames|.
+  // |mappable_frame|.
+  for (size_t i = 0; i < std::size(mappable_frames); i++) {
+    EXPECT_CALL(*mock_frame_destruction_cbs_[i], Run()).Times(1);
+    converted_frames[i].reset();
+    ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
+  }
+
+  // Destorying the `original_frame` destroys both shared images.
+  EXPECT_CALL(*mock_shared_image_interface_,
+              DestroySharedImage(
+                  /*sync_token=*/_,
+                  /*mailbox=*/Matcher<const gpu::Mailbox&>(
+                      mailboxes_seen_by_gpu_delegate[0])))
+      .Times(1);
+  EXPECT_CALL(*mock_shared_image_interface_,
+              DestroySharedImage(
+                  /*sync_token=*/_,
+                  /*mailbox=*/Matcher<const gpu::Mailbox&>(
+                      mailboxes_seen_by_gpu_delegate[1])))
+      .Times(1);
+  video_frame.reset();
+  original_frame.reset();
+  ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
