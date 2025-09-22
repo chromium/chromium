@@ -929,6 +929,11 @@ IN_PROC_BROWSER_TEST_F(
   // are still propagated after the crash.
   SimulateNetworkServiceCrash();
 
+  // Even though the network service has crashed and restarted by this point,
+  // not all of its related interfaces have been notified of the crash yet.
+  // Flush them so they get the error message and restart.
+  GetProfile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+
   // Check that the settings are still propagated to IP Protection Core after
   // the crash.
   ip_protection::mojom::CoreControl* ipp_control_post_crash =
