@@ -648,6 +648,80 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
   }
 }
 
+// Tests that when multiple listeners return promises, the sender receives a
+// response from the first promise to resolve if the faster promise is
+// registered first.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_FasterPromiseRegisteredFirst) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_multi_promise_faster_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when multiple listeners return promises, the sender receives a
+// response from the first promise to resolve if the faster promise is
+// registered second.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_SlowerPromiseRegisteredFirst) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_multi_promise_slower_first",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when the first listener returns true and the second returns a
+// promise, the faster sendResponse response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromise) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_true_then_promise",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when the first listener returns true and the second returns a
+// promise, the faster promise response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromiseFaster) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_true_then_promise_faster",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when the first listener returns a promise and the second returns
+// true, the faster promise response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnPromiseThenTrue) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_then_true",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when the first listener returns a promise and the second returns
+// true, the faster sendResponse response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnPromiseThenTrueFaster) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_then_true_faster",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnRejectsBehavior) {
   ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(

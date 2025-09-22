@@ -887,9 +887,8 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
     return false;
   }
 
-  uint32_t results_count = results_array->Length();
-
-  for (uint32_t i = 0; i < results_count; ++i) {
+  bool will_reply_async = false;
+  for (uint32_t i = 0; i < results_array->Length(); ++i) {
     v8::MaybeLocal<v8::Value> maybe_result = results_array->Get(context, i);
     v8::Local<v8::Value> listener_return;
     // Assume the result could throw due to changes at runtime by the
@@ -902,12 +901,19 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
     // returning `true`.
     if (listener_return->IsBoolean() &&
         listener_return.As<v8::Boolean>()->Value()) {
+      will_reply_async = true;
+    }
+
+    // If promise returns are not supported, then we don't need to attach any
+    // callbacks and can return early once we find at least one listener that
+    // wants to reply asynchronously
+    if (!OnMessagePromisesSupported() && will_reply_async) {
       return true;
     }
 
-    // Check if any of the returns are a promise -- indicating the listener
-    // will reply async. If they do, handle both the promise resolving or
-    // rejecting.
+    // Check if any of the returns are a promise, indicating the listener will
+    // reply async. If they do, attach callbacks for both the promise resolving
+    // or rejecting.
     if (OnMessagePromisesSupported() && listener_return->IsPromise()) {
       v8::Local<v8::Function> promise_rejected_function =
           CreatePromiseRejectedFunction(isolate, context, port_id);
@@ -915,11 +921,11 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
           context, promise_resolved_function, promise_rejected_function);
       // TODO(crbug.com/40753031): Consider setting lastError for caller when
       // promise is rejected.
-      return true;
+      will_reply_async = true;
     }
   }
 
-  return false;
+  return will_reply_async;
 }
 
 void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
