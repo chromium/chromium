@@ -425,20 +425,20 @@ ComposeboxQueryController::CreateEndpointFetcher(
     const std::vector<std::string>& cors_exempt_headers,
     UploadProgressCallback upload_progress_callback) {
   return std::make_unique<EndpointFetcher>(
-      /*url_loader_factory=*/url_loader_factory_,
-      /*url=*/fetch_url,
-      /*content_type=*/kContentType,
-      /*timeout=*/timeout,
-      /*post_data=*/std::move(request_string),
-      /*headers=*/request_headers,
-      /*cors_exempt_headers=*/cors_exempt_headers,
-      /*channel=*/channel_,
-      /*request_params=*/
+      url_loader_factory_, /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(http_method,
                                               kTrafficAnnotationTag)
+          .SetAuthType(endpoint_fetcher::CHROME_API_KEY)
+          .SetChannel(channel_)
+          .SetContentType(kContentType)
+          .SetCorsExemptHeaders(cors_exempt_headers)
           .SetCredentialsMode(CredentialsMode::kInclude)
+          .SetHeaders(request_headers)
+          .SetPostData(std::move(request_string))
           .SetSetSiteForCookies(true)
+          .SetTimeout(timeout)
           .SetUploadProgressCallback(std::move(upload_progress_callback))
+          .SetUrl(fetch_url)
           .Build());
 }
 
