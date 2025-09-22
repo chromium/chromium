@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] interop / destroy device after export
-  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'requestDevice' on 'GPUAdapter': adapter is "consumed": it has already been used to create a device\n    at CreateDeviceInternal (..\\..\\third_party\\dawn\\src\\dawn\\native\\Adapter.cpp:313)\n"
-[FAIL] interop / destroy device before export
-  promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'requestDevice' on 'GPUAdapter': adapter is "consumed": it has already been used to create a device\n    at CreateDeviceInternal (..\\..\\third_party\\dawn\\src\\dawn\\native\\Adapter.cpp:313)\n"
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 
