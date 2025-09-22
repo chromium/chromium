@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_GWP_ASAN_CLIENT_THREAD_LOCAL_STATE_H_
 #define COMPONENTS_GWP_ASAN_CLIENT_THREAD_LOCAL_STATE_H_
 
+#include "base/allocator/buildflags.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 // On macOS and Android (before Q), the first use of a `thread_local` variable
 // on a new thread will cause an allocation, leading to infinite recursion.
@@ -30,9 +32,10 @@
 // any library function).
 #define THREAD_LOCAL_STATE_USES_PARTITION_ALLOC_TLS
 #endif
+#endif
 
 #if defined(THREAD_LOCAL_STATE_USES_PARTITION_ALLOC_TLS)
-#include "partition_alloc/partition_tls.h"
+#include "partition_alloc/partition_tls.h"  // nogncheck
 #endif
 
 namespace gwp_asan::internal {
