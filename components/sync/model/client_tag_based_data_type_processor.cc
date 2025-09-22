@@ -1028,6 +1028,74 @@ bool ClientTagBasedDataTypeProcessor::ValidateUpdate(
   return true;
 }
 
+ProcessorEntity* ClientTagBasedDataTypeProcessor::TrackEntityUponFullUpdate(
+    const UpdateResponseData& update) {
+  const ClientTagHash& client_tag_hash = update.entity.client_tag_hash;
+  if (client_tag_hash.value().empty()) {
+    // Ignore updates missing a client tag hash (e.g. permanent nodes).
+    return nullptr;
+  }
+  if (update.entity.is_deleted()) {
+    SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kTombstoneInFullUpdate,
+                                       type_);
+    DLOG(WARNING) << "Ignoring tombstone found during initial update: "
+                  << "client_tag_hash = " << client_tag_hash << " for "
+                  << DataTypeToDebugString(type_);
+    return nullptr;
+  }
+
+  if (!bridge_->IsEntityDataValid(update.entity)) {
+    SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
+                                       type_);
+    DLOG(WARNING) << "Received entity with invalid update for "
+                  << DataTypeToDebugString(type_);
+    return nullptr;
+  }
+
+  if (bridge_->SupportsGetClientTag() &&
+      client_tag_hash != ClientTagHash::FromUnhashed(
+                             type_, bridge_->GetClientTag(update.entity))) {
+    SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kInconsistentClientTag,
+                                       type_);
+    DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
+                  << " for " << DataTypeToDebugString(type_);
+    return nullptr;
+  }
+
+  std::string storage_key;
+  if (bridge_->SupportsGetStorageKey()) {
+    storage_key = bridge_->GetStorageKey(update.entity);
+    // TODO(crbug.com/40677711): Make this a DUMP_WILL_BE_CHECK as storage
+    // keys should not be empty after IsEntityDataValid() has been implemented
+    // by all bridges.
+    if (storage_key.empty()) {
+      SyncRecordDataTypeUpdateDropReason(
+          UpdateDropReason::kCannotGenerateStorageKey, type_);
+      DLOG(WARNING) << "Received entity with invalid update for "
+                    << DataTypeToDebugString(type_);
+      return nullptr;
+    }
+  }
+#if DCHECK_IS_ON()
+  // TODO(crbug.com/41406929): The CreateEntity() call below assumes that no
+  // entity with this client_tag_hash exists already, but in some cases it
+  // does.
+  if (entity_tracker_->GetEntityForTagHash(client_tag_hash)) {
+    DLOG(ERROR) << "Received duplicate client_tag_hash " << client_tag_hash
+                << " for " << DataTypeToDebugString(type_);
+  }
+#endif  // DCHECK_IS_ON()
+  std::optional<sync_pb::UniquePosition> unique_position;
+  if (bridge_->SupportsUniquePositions()) {
+    unique_position = bridge_->GetUniquePosition(update.entity.specifics);
+  }
+  return entity_tracker_->AddRemote(
+      storage_key, update,
+      bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
+          update.entity.specifics),
+      std::move(unique_position));
+}
+
 std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     const sync_pb::DataTypeState& data_type_state,
     UpdateResponseDataList updates,
@@ -1067,75 +1135,13 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
 
   EntityChangeList entity_data;
   for (syncer::UpdateResponseData& update : updates) {
-    const ClientTagHash& client_tag_hash = update.entity.client_tag_hash;
-    if (client_tag_hash.value().empty()) {
-      // Ignore updates missing a client tag hash (e.g. permanent nodes).
-      continue;
-    }
-    if (update.entity.is_deleted()) {
-      SyncRecordDataTypeUpdateDropReason(
-          UpdateDropReason::kTombstoneInFullUpdate, type_);
-      DLOG(WARNING) << "Ignoring tombstone found during initial update: "
-                    << "client_tag_hash = " << client_tag_hash << " for "
-                    << DataTypeToDebugString(type_);
-      continue;
-    }
-
-    if (!bridge_->IsEntityDataValid(update.entity)) {
-      SyncRecordDataTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
-                                         type_);
-      DLOG(WARNING) << "Received entity with invalid update for "
-                    << DataTypeToDebugString(type_);
-      continue;
-    }
-
-    if (bridge_->SupportsGetClientTag() &&
-        client_tag_hash != ClientTagHash::FromUnhashed(
-                               type_, bridge_->GetClientTag(update.entity))) {
-      SyncRecordDataTypeUpdateDropReason(
-          UpdateDropReason::kInconsistentClientTag, type_);
-      DLOG(WARNING) << "Received unexpected client tag hash: "
-                    << client_tag_hash << " for "
-                    << DataTypeToDebugString(type_);
-      continue;
-    }
-
-    std::string storage_key;
-    if (bridge_->SupportsGetStorageKey()) {
-      storage_key = bridge_->GetStorageKey(update.entity);
-      // TODO(crbug.com/40677711): Make this a DUMP_WILL_BE_CHECK as storage
-      // keys should not be empty after IsEntityDataValid() has been implemented
-      // by all bridges.
-      if (storage_key.empty()) {
-        SyncRecordDataTypeUpdateDropReason(
-            UpdateDropReason::kCannotGenerateStorageKey, type_);
-        DLOG(WARNING) << "Received entity with invalid update for "
-                      << DataTypeToDebugString(type_);
-        continue;
+    if (ProcessorEntity* entity = TrackEntityUponFullUpdate(update)) {
+      const std::string& storage_key = entity->storage_key();
+      entity_data.push_back(
+          EntityChange::CreateAdd(storage_key, std::move(update.entity)));
+      if (!storage_key.empty()) {
+        metadata_changes->UpdateMetadata(storage_key, entity->metadata());
       }
-    }
-#if DCHECK_IS_ON()
-    // TODO(crbug.com/41406929): The CreateEntity() call below assumes that no
-    // entity with this client_tag_hash exists already, but in some cases it
-    // does.
-    if (entity_tracker_->GetEntityForTagHash(client_tag_hash)) {
-      DLOG(ERROR) << "Received duplicate client_tag_hash " << client_tag_hash
-                  << " for " << DataTypeToDebugString(type_);
-    }
-#endif  // DCHECK_IS_ON()
-    std::optional<sync_pb::UniquePosition> unique_position;
-    if (bridge_->SupportsUniquePositions()) {
-      unique_position = bridge_->GetUniquePosition(update.entity.specifics);
-    }
-    ProcessorEntity* entity = entity_tracker_->AddRemote(
-        storage_key, update,
-        bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(
-            update.entity.specifics),
-        std::move(unique_position));
-    entity_data.push_back(
-        EntityChange::CreateAdd(storage_key, std::move(update.entity)));
-    if (!storage_key.empty()) {
-      metadata_changes->UpdateMetadata(storage_key, entity->metadata());
     }
   }
 

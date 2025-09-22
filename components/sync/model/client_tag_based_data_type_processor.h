@@ -209,9 +209,14 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
+  // Tracks a newly received entity during a full update. Returns the tracked
+  // entity if the update is valid, or null otherwise.
+  ProcessorEntity* TrackEntityUponFullUpdate(const UpdateResponseData& update);
+
   // Caches EntityData from the `data_batch` in the entity and checks
-  // that every entity in `storage_keys_to_load` was successfully loaded (or is
-  // not tracked by the processor any more). Reports failed checks to UMA.
+  // that every entity in `storage_keys_to_load` was successfully loaded (or
+  // is not tracked by the processor any more). Reports failed checks to
+  // UMA.
   void ConsumeDataBatch(absl::flat_hash_set<std::string> storage_keys_to_load,
                         std::unique_ptr<DataBatch> data_batch);
 
