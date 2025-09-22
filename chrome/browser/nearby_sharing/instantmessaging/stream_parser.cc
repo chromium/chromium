@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "net/base/io_buffer.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
@@ -48,7 +49,7 @@ StreamParser::Append(std::string_view data) {
 
   DCHECK_GE(unparsed_data_buffer_->RemainingCapacity(),
             static_cast<int>(data.size()));
-  UNSAFE_TODO(memcpy(unparsed_data_buffer_->data(), data.data(), data.size()));
+  unparsed_data_buffer_->span().copy_prefix_from(base::as_byte_span(data));
   unparsed_data_buffer_->set_offset(unparsed_data_buffer_->offset() +
                                     data.size());
   return ParseStreamIfAvailable();
