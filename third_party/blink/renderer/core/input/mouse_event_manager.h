@@ -27,6 +27,17 @@ class InputDeviceCapabilities;
 class LocalFrame;
 class ScrollManager;
 
+enum class DragHandlingResult {
+  // The event was not handled and callers should try to use the mouse event for
+  // something else.
+  kNotHandled,
+  // The drag attempt event was handled, but a drag was not started. For
+  // example, if `event.preventDefault()` was called on drag start.
+  kHandledDragNotStarted,
+  // The drag attempt successfully initiated a drag.
+  kHandledDragStarted,
+};
+
 // This class takes care of dispatching all mouse events and keeps track of
 // positions and states of mouse.
 class CORE_EXPORT MouseEventManager final
@@ -88,8 +99,9 @@ class CORE_EXPORT MouseEventManager final
   void SetLastKnownMousePosition(const WebMouseEvent&);
   void SetLastMousePositionAsUnknown();
 
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&,
-                                PointerId pointer_id);
+  DragHandlingResult HandleDragDropIfPossible(
+      const GestureEventWithHitTestResults&,
+      PointerId pointer_id);
 
   WebInputEventResult HandleMouseDraggedEvent(
       const MouseEventWithHitTestResults&);
@@ -185,7 +197,8 @@ class CORE_EXPORT MouseEventManager final
   // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropToolType)
 
   bool DragThresholdExceeded(const gfx::Point&) const;
-  bool HandleDrag(const MouseEventWithHitTestResults&, DragAndDropToolType);
+  DragHandlingResult HandleDrag(const MouseEventWithHitTestResults&,
+                                DragAndDropToolType);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;

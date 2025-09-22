@@ -24,6 +24,7 @@ class ScrollManager;
 class SelectionController;
 class PointerEventManager;
 class MouseEventManager;
+enum class DragHandlingResult;
 
 // This class takes care of gestures and delegating the action based on the
 // gesture to the responsible class.
@@ -93,8 +94,8 @@ class CORE_EXPORT GestureManager final
   PointerId GetPointerIdFromWebGestureEvent(
       const WebGestureEvent& gesture_event) const;
 
-  // Returns `true` if a drag was initiated.
-  bool HandleDragDropIfPossible(const GestureEventWithHitTestResults&);
+  DragHandlingResult HandleDragDropIfPossible(
+      const GestureEventWithHitTestResults&);
   bool DragEndOpensContextMenu();
 
   // NOTE: If adding a new field to this class please ensure that it is
