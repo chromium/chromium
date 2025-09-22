@@ -173,10 +173,8 @@ void ArcAppTest::SetUp(Profile* profile) {
           arc_service_manager_->arc_bridge_service()->intent_helper());
     }
 
-    if (start_app_service_publisher_) {
-      // Ensure that the singleton apps::ArcApps is constructed.
-      apps::ArcAppsFactory::GetForProfile(profile_);
-    }
+    // Ensure that the singleton apps::ArcApps is constructed.
+    apps::ArcAppsFactory::GetForProfile(profile_);
 
     arc_session_manager_->Initialize();
 
@@ -368,9 +366,7 @@ void ArcAppTest::TearDown() {
     arc_service_manager_.reset();
   arc::ResetArcAllowedCheckForTesting(profile_);
 
-  if (start_app_service_publisher_) {
-    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
-  }
+  apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
 
   // ConciergeClient may be initialized from other testing utility, such as
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
