@@ -27,6 +27,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
 #include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
@@ -306,14 +307,42 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
   WindowState* window_state = WindowState::Get(window);
 
   // Dragging floated windows in tablet mode is allowed.
-  // TODO(crbug.com/1338715): Investigate if we need to wrap the resizer in a
-  // DragWindowResizer.
   if (window_state->IsFloated() && window_component == HTCAPTION) {
     window_state->CreateDragDetails(point_in_parent, HTCAPTION, source);
     return std::make_unique<TabletModeFloatWindowResizer>(window_state);
   }
 
-  return nullptr;
+  // Don't allow dragging non-browser windows.
+  chromeos::AppType app_type = static_cast<chromeos::AppType>(
+      window->GetProperty(chromeos::kAppTypeKey));
+  if (app_type != chromeos::AppType::BROWSER) {
+    return nullptr;
+  }
+
+  if (!window_util::IsDraggingTabs(window)) {
+    CHECK(!window->GetProperty(kTabDraggingSourceWindowKey));
+    return nullptr;
+  }
+
+  if (!window->GetProperty(kTabDraggingSourceWindowKey)) {
+    return nullptr;
+  }
+
+  CHECK_EQ(WindowState::Get(window->GetProperty(kTabDraggingSourceWindowKey))
+               ->IsSnapped(),
+           SplitViewController::Get(Shell::GetPrimaryRootWindow())
+               ->InTabletSplitViewMode());
+
+  if (SplitViewController::Get(Shell::GetPrimaryRootWindow())
+          ->InSplitViewMode()) {
+    return nullptr;
+  }
+
+  window_state->CreateDragDetails(point_in_parent, window_component, source);
+  auto resizer = std::make_unique<TabletModeWindowResizer>(
+      window_state, std::make_unique<TabletModeWindowDragDelegate>());
+  window_state->OnDragStarted(window_component);
+  return resizer;
 }
 
 // When dragging, drags events have to moved pass this threshold before the

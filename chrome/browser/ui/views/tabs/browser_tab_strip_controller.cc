@@ -659,6 +659,11 @@ void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
   BrowserView* source_browser_view = GetSourceBrowserViewInTabDragging();
   if (source_browser_view && source_browser_view != browser_view_) {
     source_browser_view->frame()->SetTabDragKind(TabDragKind::kTab);
+#if BUILDFLAG(IS_CHROMEOS)
+    browser_view_->GetWidget()->GetNativeWindow()->SetProperty(
+        ash::kTabDraggingSourceWindowKey,
+        source_browser_view->GetNativeWindow());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -683,6 +688,8 @@ void BrowserTabStripController::OnStoppedDragging() {
 #if BUILDFLAG(IS_CHROMEOS)
   browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
       ash::kIsDraggingTabsKey);
+  browser_view_->GetWidget()->GetNativeWindow()->ClearProperty(
+      ash::kTabDraggingSourceWindowKey);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

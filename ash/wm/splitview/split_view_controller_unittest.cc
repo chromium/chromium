@@ -66,6 +66,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -4194,6 +4195,7 @@ TEST_F(SplitViewControllerTest, ResizeChangeOpacityOnTransientChild) {
 
 // The test class that enables the feature flag of portrait mode split view
 // virtual keyboard improvement and the virtual keyboard.
+namespace {
 class SplitViewKeyboardTest : public SplitViewControllerTest {
  public:
   SplitViewKeyboardTest() = default;
@@ -4211,6 +4213,7 @@ class SplitViewKeyboardTest : public SplitViewControllerTest {
     return keyboard::KeyboardUIController::Get();
   }
 };
+}  // namespace
 
 // Tests that when the input field in the bottom window is blocked by the
 // virtual keyboard (the bottom of the caret is less than
@@ -4588,6 +4591,182 @@ TEST_F(SplitViewKeyboardTest, NoCrashOnClamshellBoundsChange) {
                                            gfx::Size(0, kCaretHeightForTest)));
   input_client->Focus();
   EXPECT_TRUE(keyboard_controller->IsKeyboardVisible());
+}
+
+// Test dragging related functionalities in tablet mode.
+namespace {
+class SplitViewDraggingTest : public SplitViewControllerTest {
+ public:
+  SplitViewDraggingTest() = default;
+  SplitViewDraggingTest(const SplitViewDraggingTest&) = delete;
+  SplitViewDraggingTest& operator=(const SplitViewDraggingTest&) = delete;
+  ~SplitViewDraggingTest() override = default;
+
+ protected:
+  std::unique_ptr<WindowResizer> CreateWindowResizer(aura::Window* window,
+                                                     int window_component) {
+    return ::ash::CreateWindowResizer(window, gfx::PointF(), window_component,
+                                      ::wm::WINDOW_MOVE_SOURCE_TOUCH);
+  }
+
+  // Emulates dragging a tab (or tab group) out of a browser hosting multiple
+  // tabs (or tab groups).
+  std::pair<std::unique_ptr<WindowResizer>, std::unique_ptr<aura::Window>>
+  StartTabDrag(aura::Window* source_window) {
+    source_window->SetProperty(ash::kIsDraggingTabsKey, true);
+    std::unique_ptr<aura::Window> drag_window =
+        CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+    source_window->ClearProperty(ash::kIsDraggingTabsKey);
+    drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
+    drag_window->SetProperty(ash::kTabDraggingSourceWindowKey, source_window);
+    return std::make_pair(CreateWindowResizer(drag_window.get(), HTCAPTION),
+                          std::move(drag_window));
+  }
+
+  // Emulates dragging the window to a position relative to its initial
+  // position.
+  void DragWithOffset(WindowResizer* resizer, int delta_x, int delta_y) {
+    gfx::PointF location = resizer->GetInitialLocation();
+    location.set_x(location.x() + delta_x);
+    location.set_y(location.y() + delta_y);
+    resizer->Drag(location, 0);
+  }
+
+  // Emulates completing the tab drag and deletes `resizer`.
+  void CompleteTabDrag(std::unique_ptr<WindowResizer> resizer) {
+    resizer->CompleteDrag();
+    resizer->GetTarget()->ClearProperty(ash::kIsDraggingTabsKey);
+    resizer->GetTarget()->ClearProperty(ash::kTabDraggingSourceWindowKey);
+  }
+};
+}  // namespace
+
+TEST_F(SplitViewDraggingTest, WindowDraggingDisallowed) {
+  std::unique_ptr<aura::Window> window_chrome_app =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::CHROME_APP);
+  std::unique_ptr<aura::Window> window_non_app =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::NON_APP);
+  std::unique_ptr<aura::Window> window_arc =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::ARC_APP);
+  std::unique_ptr<aura::Window> window_browser =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+
+  std::unique_ptr<WindowResizer> resizer;
+
+  // The windows are maximized (the default in tablet mode).
+  EXPECT_TRUE(WindowState::Get(window_chrome_app.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window_non_app.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window_arc.get())->IsMaximized());
+  EXPECT_TRUE(WindowState::Get(window_browser.get())->IsMaximized());
+
+  // Simulate dragging each window.
+  resizer = CreateWindowResizer(window_chrome_app.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_non_app.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_arc.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+
+  // Also simulate dragging the sole tab (or sole tab group) of the browser.
+  window_browser->SetProperty(ash::kIsDraggingTabsKey, true);
+  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  window_browser->ClearProperty(ash::kIsDraggingTabsKey);
+
+  // Make the windows fullscreen.
+  WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  WindowState::Get(window_chrome_app.get())->OnWMEvent(&fullscreen_event);
+  WindowState::Get(window_non_app.get())->OnWMEvent(&fullscreen_event);
+  WindowState::Get(window_arc.get())->OnWMEvent(&fullscreen_event);
+  WindowState::Get(window_browser.get())->OnWMEvent(&fullscreen_event);
+  EXPECT_TRUE(WindowState::Get(window_chrome_app.get())->IsFullscreen());
+  EXPECT_TRUE(WindowState::Get(window_non_app.get())->IsFullscreen());
+  EXPECT_TRUE(WindowState::Get(window_arc.get())->IsFullscreen());
+  EXPECT_TRUE(WindowState::Get(window_browser.get())->IsFullscreen());
+
+  // Simulate dragging each window.
+  resizer = CreateWindowResizer(window_chrome_app.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_non_app.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_arc.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+
+  // Also simulate dragging the sole tab (or sole tab group) of the browser.
+  window_browser->SetProperty(ash::kIsDraggingTabsKey, true);
+  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
+  EXPECT_FALSE(resizer.get());
+  window_browser->ClearProperty(ash::kIsDraggingTabsKey);
+}
+
+TEST_F(SplitViewDraggingTest, TabDraggingFromMaximized) {
+  std::unique_ptr<aura::Window> source_window =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+  EXPECT_TRUE(WindowState::Get(source_window.get())->IsMaximized());
+
+  auto [resizer, _] = StartTabDrag(source_window.get());
+  EXPECT_TRUE(resizer.get());
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  CompleteTabDrag(std::move(resizer));
+}
+
+TEST_F(SplitViewDraggingTest, TabDraggingFromFloated) {
+  std::unique_ptr<aura::Window> source_window =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+  Shell::Get()->float_controller()->ToggleFloat(source_window.get());
+  EXPECT_TRUE(WindowState::Get(source_window.get())->IsFloated());
+
+  auto [resizer, _] = StartTabDrag(source_window.get());
+  EXPECT_TRUE(resizer.get());
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  CompleteTabDrag(std::move(resizer));
+}
+
+TEST_F(SplitViewDraggingTest, TabDraggingFromSnapped) {
+  std::unique_ptr<aura::Window> source_window =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+  std::unique_ptr<aura::Window> other_window =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+
+  split_view_controller()->SnapWindow(source_window.get(),
+                                      SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(other_window.get(),
+                                      SnapPosition::kSecondary);
+  EXPECT_TRUE(split_view_controller()->InTabletSplitViewMode());
+  EXPECT_TRUE(WindowState::Get(source_window.get())->IsSnapped());
+  EXPECT_TRUE(WindowState::Get(other_window.get())->IsSnapped());
+
+  auto [resizer, _] = StartTabDrag(source_window.get());
+  // Not yet supported.
+  EXPECT_FALSE(resizer.get());
+}
+
+TEST_F(SplitViewDraggingTest, NoBackDropDuringTabDragging) {
+  std::unique_ptr<aura::Window> source_window =
+      CreateAppWindow(gfx::Rect(), chromeos::AppType::BROWSER);
+  EXPECT_TRUE(WindowState::Get(source_window.get())->IsMaximized());
+
+  auto [resizer, drag_window] = StartTabDrag(source_window.get());
+  EXPECT_TRUE(resizer.get());
+
+  WindowBackdrop* backdrop = WindowBackdrop::Get(drag_window.get());
+  EXPECT_EQ(backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
+  EXPECT_EQ(backdrop->type(), WindowBackdrop::BackdropType::kOpaque);
+  EXPECT_TRUE(backdrop->temporarily_disabled());
+
+  DragWithOffset(resizer.get(), 5, 5);
+  EXPECT_TRUE(backdrop->temporarily_disabled());
+  EXPECT_EQ(backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
+  EXPECT_EQ(backdrop->type(), WindowBackdrop::BackdropType::kOpaque);
+
+  CompleteTabDrag(std::move(resizer));
+  EXPECT_FALSE(backdrop->temporarily_disabled());
+  EXPECT_EQ(backdrop->mode(), WindowBackdrop::BackdropMode::kAuto);
+  EXPECT_EQ(backdrop->type(), WindowBackdrop::BackdropType::kOpaque);
 }
 
 }  // namespace ash

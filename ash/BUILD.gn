@@ -3146,6 +3146,8 @@ component("ash") {
     "wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler.h",
     "wm/tablet_mode/tablet_mode_window_manager.cc",
     "wm/tablet_mode/tablet_mode_window_manager.h",
+    "wm/tablet_mode/tablet_mode_window_resizer.cc",
+    "wm/tablet_mode/tablet_mode_window_resizer.h",
     "wm/tablet_mode/tablet_mode_window_state.cc",
     "wm/tablet_mode/tablet_mode_window_state.h",
     "wm/tile_group/window_splitter.cc",

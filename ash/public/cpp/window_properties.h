@@ -16,6 +16,7 @@
 class SkRegion;
 
 namespace aura {
+class Window;
 template <typename T>
 using WindowProperty = ui::ClassProperty<T>;
 }  // namespace aura
@@ -95,6 +96,11 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 // dragged.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kIsDraggingTabsKey;
+
+// A property key to store the address of the source window that the drag
+// originated from if the window is currently in tab-dragging process.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<aura::Window*>* const
+    kTabDraggingSourceWindowKey;
 
 // If true, the window will be ignored when mirroring the desk contents into
 // the desk's mini_view.

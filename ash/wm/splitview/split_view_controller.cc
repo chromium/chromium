@@ -660,8 +660,10 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                      WindowSnapActionSource snap_action_source,
                                      bool activate_window,
                                      float snap_ratio) {
-  DCHECK(window && CanSnapWindow(window, snap_ratio));
+  DCHECK(window);
   DCHECK_NE(snap_position, SnapPosition::kNone);
+  DCHECK(CanSnapWindow(window, snap_ratio));
+
   if (IsDividerAnimating()) {
     StopSnapAnimation();
   }
@@ -1073,7 +1075,6 @@ void SplitViewController::OnWindowDragEnded(
     SnapPosition desired_snap_position,
     const gfx::Point& last_location_in_screen,
     WindowSnapActionSource snap_action_source) {
-  DCHECK(!window_util::IsDraggingTabs(dragged_window));
   EndWindowDragImpl(dragged_window, dragged_window->is_destroying(),
                     desired_snap_position, last_location_in_screen,
                     snap_action_source);
