@@ -254,8 +254,7 @@ TEST_F(ProcessTest, Terminate) {
 TEST_F(ProcessTest, TerminateProcessForBadMessage) {
   Process process(SpawnChild("SleepyChildProcess"));
   ASSERT_TRUE(process.IsValid());
-  // TODO(crbug.com/443196740): Replace literals with constants
-  int exit_code = 3;  // RESULT_CODE_KILLED_BAD_MESSAGE
+  int exit_code = Process::kResultCodeKilledBadMessage;
   EXPECT_TRUE(process.Terminate(exit_code, /* wait= */ false));
 }
 
