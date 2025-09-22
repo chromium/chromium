@@ -22,6 +22,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="bookmark_bar"
         android:order="2"
-        android:title="@string/bookmark_bar_setting" />
+        android:title="@string/bookmark_bar_setting"
+        android:summary="@string/bookmark_bar_setting_subtitle" />
 
 </PreferenceScreen>

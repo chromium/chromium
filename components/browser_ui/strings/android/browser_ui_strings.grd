@@ -736,11 +736,11 @@
         Tap to return to the site
       </message>
       <!-- Bookmarks -->
-      <message name="IDS_BOOKMARKS_BAR_EMPTY_MESSAGE" desc="Message shown in a popup menu when a bookmarks bar folder is opened and contains no bookmarks." translateable="false">
-        No bookmarks
+      <message name="IDS_BOOKMARKS_BAR_EMPTY_MESSAGE" desc="Message shown in a popup menu when a bookmarks bar folder is opened and contains no bookmarks.">
+        This folder is empty
       </message>
-      <message name="IDS_BOOKMARKS_BAR_IPH_MESSAGE" translateable="false" desc="IPH text bubble encouraging users to turn on the bookmarks bar in settings.">
-        Bookmarks bar can be turned on in appearance settings
+      <message name="IDS_BOOKMARKS_BAR_IPH_MESSAGE" desc="IPH text bubble encouraging users to turn on the bookmarks bar in settings.">
+        You can turn on the bookmarks bar in Settings > Appearance
       </message>
       <!-- USB -->
       <message name="IDS_CONNECTED_TO_USB_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a USB device.">

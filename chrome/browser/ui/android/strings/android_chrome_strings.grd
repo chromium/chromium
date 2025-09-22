@@ -804,6 +804,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_BOOKMARK_BAR_SETTING" desc="Title for the bookmark bar setting.">
         Show bookmarks bar
       </message>
+      <message name="IDS_BOOKMARK_BAR_SETTING_SUBTITLE" desc="Subtitle hint for the bookmark bar setting.">
+        Hidden on narrow screens
+      </message>
 
       <!-- Themes settings -->
       <message name="IDS_THEME_SETTINGS" desc="Title for the Theme settings. [CHAR_LIMIT=32]">
@@ -4368,14 +4371,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Bookmark bar strings -->
-      <message name="IDS_BOOKMARK_BAR_BUTTON_ICON_CONTENT_DESCRIPTION" desc="The content description for a bookmark bar button icon.">
-        Bookmark bar button icon
-      </message>
       <message name="IDS_BOOKMARK_BAR_ALL_BOOKMARKS_BUTTON_TITLE" desc="The title for the 'All Bookmarks' button in the bookmark bar.">
-        All Bookmarks
+        All bookmarks
       </message>
       <message name="IDS_BOOKMARK_BAR_OVERFLOW_BUTTON_CONTENT_DESCRIPTION" desc="The content description for the bookmark bar overflow button.">
-        Bookmark bar overflow button
+        More bookmarks
+      </message>
+      <message name="IDS_BOOKMARK_BAR_FOLDER_CONTENT_DESCRIPTION" desc="Accessibility label for a folder that appears in the bookmarks bar.">
+          <ph name="FOLDER_TITLE">%1$s<ex>My bookmarks</ex></ph> folder
       </message>
 
       <!-- Power bookmarks strings -->

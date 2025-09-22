@@ -141,7 +141,7 @@ public class BookmarkBarTest {
     @Test
     @MediumTest
     public void testOnAllBookmarksButtonClick() {
-        onViewDisplayed(bookmarkBarItemWithText("All Bookmarks")).perform(click());
+        onViewDisplayed(bookmarkBarItemWithText("All bookmarks")).perform(click());
         onViewDisplayed(bookmarkManagerToolbarWithText("Bookmarks"));
     }
 

@@ -20,7 +20,7 @@ found in the LICENSE file.
       android:layout_width="@dimen/bookmark_bar_button_icon_size"
       android:layout_height="@dimen/bookmark_bar_button_icon_size"
       android:layout_marginEnd="@dimen/bookmark_bar_button_icon_margin_end"
-      android:contentDescription="@string/bookmark_bar_button_icon_content_description"
+      android:importantForAccessibility="no"
       android:scaleType="fitCenter" />
 
   <TextView

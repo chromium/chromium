@@ -117,7 +117,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
      *     bookmark_bar view.
      * @param bookmarkBarView The bookmark_bar view that contains the entire bookmarks bar.
      */
-    public BookmarkBarMediator(
+    BookmarkBarMediator(
             Activity activity,
             PropertyModel allBookmarksButtonModel,
             Supplier<Pair<Integer, Integer>> controlsHeightSupplier,
@@ -656,10 +656,14 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         View.OnClickListener clickListener =
                 (v) -> BookmarkBarUtils.recordClick(BookmarkBarClickType.POP_UP_FOLDER);
 
-        // TODO(crbug.com/430057288): Add metric for more submenu folder clicks.
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
+                        .with(
+                                ListMenuItemProperties.CONTENT_DESCRIPTION,
+                                mActivity.getString(
+                                        R.string.bookmark_bar_folder_content_description,
+                                        bookmarkItem.getTitle()))
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)

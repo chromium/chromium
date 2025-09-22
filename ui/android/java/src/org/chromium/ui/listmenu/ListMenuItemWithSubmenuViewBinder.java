@@ -8,6 +8,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CONTENT_DESCRIPTION;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
@@ -39,6 +40,8 @@ class ListMenuItemWithSubmenuViewBinder {
         TextView textView = view.findViewById(R.id.menu_row_text);
         if (propertyKey == TITLE) {
             textView.setText(model.get(TITLE));
+        } else if (propertyKey == CONTENT_DESCRIPTION) {
+            view.setContentDescription(model.get(CONTENT_DESCRIPTION));
         } else if (propertyKey == START_ICON_BITMAP) {
             ImageView icon = view.findViewById(org.chromium.ui.R.id.menu_item_icon);
             Bitmap bitmap = model.get(ListMenuItemProperties.START_ICON_BITMAP);
