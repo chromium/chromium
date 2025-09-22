@@ -1883,7 +1883,7 @@ UserMediaProcessor::CreateAudioSource(
           ?
           // TODO(crbug.com://40247860, crbug.com://415952276): retire this
           // logic when restrictOwnAudio is launched.
-          MediaStreamAudioProcessingLayout::MakeForDisplayCapture(
+          MediaStreamAudioProcessingLayout::MaybeMakeForProcessedDisplayCapture(
               current_request_info_->audio_capture_settings()
                   .audio_processing_properties(),
               current_request_info_->audio_capture_settings().num_channels())
@@ -1899,6 +1899,9 @@ UserMediaProcessor::CreateAudioSource(
         *processing_layout, std::move(source_ready), task_runner_);
   }
 
+  // Now `processing_layout` being nullptr means we are capturing non-mic audio
+  // content and no processing is needed. If it's not nullptr, we are capturing
+  // microphone, and:
   // TODO(http://crbug.com/428837201)
   // At this point besides echo cancellation, `processing_layout` may have other
   // processing enableds/disabled in AudioProcessingProperties; also its
@@ -1907,14 +1910,17 @@ UserMediaProcessor::CreateAudioSource(
   // and only takes care of echo cancellation - which is a bug for microhpone
   // capture.
   MediaStreamAudioProcessingLayout local_source_processing_layout =
-      MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSource(
-          current_request_info_->audio_capture_settings()
-              .audio_processing_properties(),
-          device.input.effects());
+      processing_layout
+          ? MediaStreamAudioProcessingLayout::MakeForUnprocessedLocalSource(
+                current_request_info_->audio_capture_settings()
+                    .audio_processing_properties(),
+                device.input.effects())
+          : MediaStreamAudioProcessingLayout::None();
+
   CHECK(!local_source_processing_layout.NeedWebrtcAudioProcessing());
 
   SendLogMessage(
-      base::StringPrintf("%s => (no audiprocessing is used)", __func__));
+      base::StringPrintf("%s => (no audioprocessing is used)", __func__));
   return std::make_unique<blink::LocalMediaStreamAudioSource>(
       frame_, device,
       base::OptionalToPtr(current_request_info_->audio_capture_settings()
