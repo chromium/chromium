@@ -2306,12 +2306,20 @@ class PdfDownloadTestSplitCacheEnabled
   PdfDownloadTestSplitCacheEnabled()
       : split_cache_experiment_feature_list_(GetSplitCacheTestCase(),
                                              kTestCaseToFeatureMapping) {
+    // When `kPdfGetSaveDataInBlocks` is enabled, PDFs are saved to disk from
+    // memory and are not downloaded. Therefore these tests are only valid when
+    // the feature is disabled.
+    // TODO(crbug.com/394111292): Remove affected tests when the feature is
+    // launched.
+    std::vector<base::test::FeatureRef> disabled(
+        {chrome_pdf::features::kPdfGetSaveDataInBlocks});
+    std::vector<base::test::FeatureRef> enabled;
     if (UseOopif()) {
-      oopif_feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+      enabled.push_back(chrome_pdf::features::kPdfOopif);
     } else {
-      oopif_feature_list_.InitAndDisableFeature(
-          chrome_pdf::features::kPdfOopif);
+      disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
+    pdf_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
   bool UseOopif() const { return std::get<0>(GetParam()); }
@@ -2392,7 +2400,7 @@ class PdfDownloadTestSplitCacheEnabled
  private:
   net::test::ScopedMutuallyExclusiveFeatureList
       split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList oopif_feature_list_;
+  base::test::ScopedFeatureList pdf_feature_list_;
   pdf::TestPdfViewerStreamManagerFactory factory_;
 };
 
