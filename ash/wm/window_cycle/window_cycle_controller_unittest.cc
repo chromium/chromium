@@ -402,7 +402,7 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
   aura::Window* modal_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_SystemModalContainer);
   std::unique_ptr<Window> modal_window = aura::test::CreateTestWindow(
-      {.parent = modal_container, .window_id = -2});
+      {.parent = modal_container, .bounds = {100, 100}, .window_id = -2});
   modal_window->SetProperty(aura::client::kModalKey,
                             ui::mojom::ModalType::kSystem);
   wm::ActivateWindow(modal_window.get());
@@ -531,8 +531,8 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopWindow) {
 
   Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
-  std::unique_ptr<Window> window2 =
-      aura::test::CreateTestWindow({.parent = top_container, .window_id = 2});
+  std::unique_ptr<Window> window2 = aura::test::CreateTestWindow(
+      {.parent = top_container, .bounds = {100, 100}, .window_id = 2});
   wm::ActivateWindow(window0.get());
 
   // Simulate pressing and releasing Alt-tab.
@@ -559,10 +559,10 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultiWindow) {
 
   Window* top_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AlwaysOnTopContainer);
-  std::unique_ptr<Window> window2 =
-      aura::test::CreateTestWindow({.parent = top_container, .window_id = 2});
-  std::unique_ptr<Window> window3 =
-      aura::test::CreateTestWindow({.parent = top_container, .window_id = 3});
+  std::unique_ptr<Window> window2 = aura::test::CreateTestWindow(
+      {.parent = top_container, .bounds = {100, 100}, .window_id = 2});
+  std::unique_ptr<Window> window3 = aura::test::CreateTestWindow(
+      {.parent = top_container, .bounds = {100, 100}, .window_id = 3});
   wm::ActivateWindow(window0.get());
 
   // Simulate pressing and releasing Alt-tab.
@@ -594,8 +594,8 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultipleRootWindows) {
   EXPECT_EQ(root_windows[0], window0->GetRootWindow());
   Window* top_container0 =
       Shell::GetContainer(root_windows[0], kShellWindowId_AlwaysOnTopContainer);
-  std::unique_ptr<Window> window1 =
-      aura::test::CreateTestWindow({.parent = top_container0, .window_id = 1});
+  std::unique_ptr<Window> window1 = aura::test::CreateTestWindow(
+      {.parent = top_container0, .bounds = {100, 100}, .window_id = 1});
   EXPECT_EQ(root_windows[0], window1->GetRootWindow());
 
   // Move the active root window to the secondary root and create two windows.
@@ -605,8 +605,8 @@ TEST_F(WindowCycleControllerTest, AlwaysOnTopMultipleRootWindows) {
 
   Window* top_container1 =
       Shell::GetContainer(root_windows[1], kShellWindowId_AlwaysOnTopContainer);
-  std::unique_ptr<Window> window3 =
-      aura::test::CreateTestWindow({.parent = top_container1, .window_id = 3});
+  std::unique_ptr<Window> window3 = aura::test::CreateTestWindow(
+      {.parent = top_container1, .bounds = {100, 100}, .window_id = 3});
   EXPECT_EQ(root_windows[1], window3->GetRootWindow());
 
   wm::ActivateWindow(window2.get());

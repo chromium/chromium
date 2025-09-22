@@ -1878,7 +1878,7 @@ TEST_F(SplitViewControllerTest, LongPressExitsSplitViewWithTransientChild) {
   // Add a transient child to |right_window|, and activate it.
   aura::Window* transient_child =
       aura::test::CreateTestWindow(
-          {.parent = right_window.get(), .window_id = 0})
+          {.parent = right_window.get(), .bounds = {100, 100}, .window_id = 0})
           .release();
   ::wm::AddTransientChild(right_window.get(), transient_child);
   wm::ActivateWindow(transient_child);

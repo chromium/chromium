@@ -273,7 +273,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
       chromeos::AppType app_type = chromeos::AppType::BROWSER,
       base::Uuid desk_guid = base::Uuid()) {
     std::unique_ptr<aura::Window> window =
-        aura::test::CreateTestWindow({.window_id = id});
+        aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = id});
     window->SetProperty(chromeos::kAppTypeKey, app_type);
     window->SetProperty(app_restore::kWindowIdKey, id);
     app_restore::WindowInfo window_info;
@@ -286,8 +286,8 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
   std::unique_ptr<app_restore::WindowInfo> GetArcWindowInfo(
       int32_t restore_window_id) {
-    std::unique_ptr<aura::Window> window =
-        aura::test::CreateTestWindow({.window_id = restore_window_id});
+    std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow(
+        {.bounds = {100, 100}, .window_id = restore_window_id});
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
     window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     return FullRestoreReadHandler::GetInstance()->GetWindowInfo(window.get());

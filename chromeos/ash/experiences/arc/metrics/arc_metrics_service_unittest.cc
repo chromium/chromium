@@ -143,10 +143,10 @@ class ArcMetricsServiceTest : public testing::Test {
 
  private:
   void CreateFakeWindows() {
-    fake_arc_window_ = aura::test::CreateTestWindow();
+    fake_arc_window_ = aura::test::CreateTestWindow({.bounds = {100, 100}});
     fake_arc_window_->SetProperty(chromeos::kAppTypeKey,
                                   chromeos::AppType::ARC_APP);
-    fake_non_arc_window_ = aura::test::CreateTestWindow();
+    fake_non_arc_window_ = aura::test::CreateTestWindow({.bounds = {100, 100}});
   }
 
   content::BrowserTaskEnvironment task_environment_{

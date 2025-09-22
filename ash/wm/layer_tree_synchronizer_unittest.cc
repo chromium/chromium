@@ -303,15 +303,17 @@ TEST_F(WindowTreeSynchronizerTest, Basics) {
   // +---transient_window_2
 
   std::unique_ptr<aura::Window> root =
-      aura::test::CreateTestWindow({.window_id = 0});
-  std::unique_ptr<aura::Window> transient_parent =
-      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 1});
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
+  std::unique_ptr<aura::Window> transient_parent = aura::test::CreateTestWindow(
+      {.parent = root.get(), .bounds = {100, 100}, .window_id = 1});
   std::unique_ptr<aura::Window> child_window = aura::test::CreateTestWindow(
-      {.parent = transient_parent.get(), .window_id = 2});
+      {.parent = transient_parent.get(), .bounds = {100, 100}, .window_id = 2});
   std::unique_ptr<aura::Window> transient_window_1 =
-      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 3});
+      aura::test::CreateTestWindow(
+          {.parent = root.get(), .bounds = {100, 100}, .window_id = 3});
   std::unique_ptr<aura::Window> transient_window_2 =
-      aura::test::CreateTestWindow({.parent = root.get(), .window_id = 4});
+      aura::test::CreateTestWindow(
+          {.parent = root.get(), .bounds = {100, 100}, .window_id = 4});
 
   wm::AddTransientChild(transient_parent.get(), transient_window_1.get());
   wm::AddTransientChild(transient_parent.get(), transient_window_2.get());

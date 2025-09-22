@@ -22,7 +22,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptShowParamsTest,
   EXPECT_FALSE(params.WasParentDestroyed());
 
   std::unique_ptr<aura::Window> window_with_no_root_ancestor =
-      aura::test::CreateTestWindow({.window_id = 11});
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 11});
   ExtensionInstallPromptShowParams params2(GetProfile(),
                                            window_with_no_root_ancestor.get());
   // As `window_with_no_root_ancestor` is not parented to a root, it should

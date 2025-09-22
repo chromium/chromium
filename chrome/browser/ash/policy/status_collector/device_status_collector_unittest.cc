@@ -3816,7 +3816,7 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   EXPECT_TRUE(base::Time::FromString("29-MAR-2020 1:30pm", &start_time));
   test_clock_.SetNow(start_time);
   std::unique_ptr<aura::Window> window =
-      aura::test::CreateTestWindow({.window_id = 0});
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
   apps::InstanceParams params("id", window.get());
   params.state = std::make_pair(apps::InstanceState::kStarted, start_time);
   app_proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));

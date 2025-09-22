@@ -22,11 +22,11 @@ using WindowUtilTest = aura::test::AuraTestBase;
 // already been acquired.
 TEST_F(WindowUtilTest, RecreateLayers) {
   std::unique_ptr<aura::Window> window1 =
-      aura::test::CreateTestWindow({.window_id = 0});
-  std::unique_ptr<aura::Window> window11 =
-      aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 1});
-  std::unique_ptr<aura::Window> window12 =
-      aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 2});
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
+  std::unique_ptr<aura::Window> window11 = aura::test::CreateTestWindow(
+      {.parent = window1.get(), .bounds = {100, 100}, .window_id = 1});
+  std::unique_ptr<aura::Window> window12 = aura::test::CreateTestWindow(
+      {.parent = window1.get(), .bounds = {100, 100}, .window_id = 2});
 
   ASSERT_EQ(2u, window1->layer()->children().size());
 
@@ -55,11 +55,11 @@ TEST_F(WindowUtilTest, RecreateLayers) {
 // Test if map_func is correctly executed in RecreateLayerWithClosure.
 TEST_F(WindowUtilTest, RecreateLayersWithClosure) {
   std::unique_ptr<aura::Window> window1 =
-      aura::test::CreateTestWindow({.window_id = 0});
-  std::unique_ptr<aura::Window> window11 =
-      aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 1});
-  std::unique_ptr<aura::Window> window12 =
-      aura::test::CreateTestWindow({.parent = window1.get(), .window_id = 2});
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
+  std::unique_ptr<aura::Window> window11 = aura::test::CreateTestWindow(
+      {.parent = window1.get(), .bounds = {100, 100}, .window_id = 1});
+  std::unique_ptr<aura::Window> window12 = aura::test::CreateTestWindow(
+      {.parent = window1.get(), .bounds = {100, 100}, .window_id = 2});
 
   ASSERT_EQ(2u, window1->layer()->children().size());
 
