@@ -13309,17 +13309,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION" desc="A label describing the consequences of the 'reset profile settings' feature">
           This will reset your startup page, new tab page, search engine, and pinned tabs. It will also disable all extensions and clear temporary data like cookies. Your bookmarks, history and saved passwords will not be cleared.
         </message>
-        <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
-          This action will:
-          <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
-           • Reset some Chrome settings and Chrome shortcuts
-           <ph name="LINE_BREAK">&lt;br&gt;</ph>
-           • Disable extensions
-           <ph name="LINE_BREAK">&lt;br&gt;</ph>
-           • Delete cookies and other temporary site data
-            <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
-           Bookmarks, history, and saved passwords won't be affected.
-        </message>
         <message name="IDS_TRIGGERED_RESET_PROFILE_SETTINGS_TITLE" desc="Dialog title for reset dialog triggered by a third party tool">
           <ph name="THIRD_PARTY_TOOL_NAME">$1<ex>SuperDuper PC Cleaner Pro</ex></ph> wants to reset your settings.
         </message>

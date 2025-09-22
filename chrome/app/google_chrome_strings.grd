@@ -381,6 +381,18 @@ chromium_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
+      <!-- Reset Profile Settings strings -->
+      <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
+        This action will:
+        <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+          • Reset some Chrome settings and Chrome shortcuts
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          • Disable extensions
+          <ph name="LINE_BREAK">&lt;br&gt;</ph>
+          • Delete cookies and other temporary site data
+          <ph name="LINE_BREAKS">&lt;br&gt;&lt;br&gt;</ph>
+          Bookmarks, history, and saved passwords won't be affected.
+      </message>
       <if expr="not is_chromeos">
         <!-- Browser Window Title Format -->
         <message name="IDS_BROWSER_WINDOW_TITLE_FORMAT" desc="The format for titles displayed in tabs and popup windows">
