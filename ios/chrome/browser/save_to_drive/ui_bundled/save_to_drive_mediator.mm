@@ -147,6 +147,7 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
       break;
     }
     case FileDestination::kDrive: {
+      CHECK(identity);
       // Memorize the account that was picked.
       _prefService->SetString(prefs::kIosSaveToDriveDefaultGaiaId,
                               base::SysNSStringToUTF8(identity.gaiaID));

@@ -70,6 +70,9 @@
 
   // The configuration for the account picker.
   __strong AccountPickerConfiguration* _configuration;
+
+  // Whether the identity button has been hidden.
+  BOOL _identityButtonHidden;
 }
 
 #pragma mark - Public
@@ -125,6 +128,7 @@
   [_accountPickerConfirmationScreenCoordinator
       setIdentityButtonHidden:hidden
                      animated:animated];
+  _identityButtonHidden = hidden;
 }
 
 #pragma mark - ChromeCoordinator
@@ -162,6 +166,9 @@
 #pragma mark - Properties
 
 - (id<SystemIdentity>)selectedIdentity {
+  if (_identityButtonHidden) {
+    return nil;
+  }
   return _accountPickerConfirmationScreenCoordinator.selectedIdentity;
 }
 
@@ -218,7 +225,7 @@
 // Starts the validation flow.
 - (void)startValidation {
   if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) &&
-      !self.selectedIdentity.hasValidAuth) {
+      self.selectedIdentity && !self.selectedIdentity.hasValidAuth) {
     [self startReauthFlowWithIdentity:self.selectedIdentity];
     return;
   }

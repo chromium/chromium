@@ -135,7 +135,6 @@
             (AccountPickerCoordinator*)accountPickerCoordinator
                didSelectIdentity:(id<SystemIdentity>)identity
                     askEveryTime:(BOOL)askEveryTime {
-  CHECK(identity);
   [_mediator saveWithSelectedIdentity:identity];
 }
 

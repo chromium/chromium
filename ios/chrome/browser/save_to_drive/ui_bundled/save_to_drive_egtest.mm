@@ -217,6 +217,42 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                                               kWaitForDownloadTimeout];
 }
 
+// Tests that when the user is signed-in with an invalid auth, they can choose
+// "Files" as destination for their download in the file destination picker, tap
+// "Save" in the account picker. Tests that after a few seconds, the file has
+// been downloaded successfully and a "OPEN IN..." button is displayed.
+- (void)testCanDownloadToFilesWithInvalidAuth {
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey
+      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                           GaiaId(fakeIdentity.gaiaID))];
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "Drive" button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to appear, select "Files" and tap "Save".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:FileDestinationFilesButton()];
+  [[EarlGrey selectElementWithMatcher:FileDestinationFilesButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
+  // Check that after a few seconds, the "OPEN IN..." button appears.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::OpenInButton()
+                                  timeout:base::test::ios::
+                                              kWaitForDownloadTimeout];
+}
+
 // Tests that when the user is signed-in, the destination "Files" shows a
 // subtitle regarding download restrictions.
 - (void)testDownloadRestrictionToFiles {
