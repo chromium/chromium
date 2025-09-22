@@ -245,10 +245,15 @@ void AnimationTimeline::ServiceTriggers() {
 }
 
 void AnimationTimeline::UpdateAnimationTriggerAttachments() {
+  // Mitigation for  https://crbug.com/446159591 to avoid hang reports.
+  // TODO(crbug.com/c/446159591): This hang should be fixed before enabling
+  // AnimationTrigger.
+  if (!RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+    return;
+  }
   if (!GetDocument() || !GetDocument()->View()) {
     return;
   }
-
   for (Animation* animation : animations_) {
     CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation);
     if (!css_animation) {
