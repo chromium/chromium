@@ -35,7 +35,7 @@ BASE_DECLARE_FEATURE(kPageContentCache);
 
 // The maximum number of days to keep page content in the cache.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-extern base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays;
+extern const base::FeatureParam<int> kPageContentCacheMaxCacheAgeInDays;
 
 // The maximum number of "related searches" entries allowed to be maintained in
 // a least-recently-used cache for "related searches" data obtained via ZPS
