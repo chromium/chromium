@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -115,9 +116,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME},
       {"addPasswordTitle", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD},
       {"addShortcut", IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_TITLE},
-      {"allowedActorLoginSitesTitle",
+      {"actorLoginPermissionsTitle",
        IDS_PASSWORD_MANAGER_UI_ALLOWED_ACTOR_LOGIN_SITES_TITLE},
-      {"allowedActorLoginSitesDescription",
+      {"actorLoginPermissionsDescription",
        IDS_PASSWORD_MANAGER_UI_ALLOWED_ACTOR_LOGIN_SITES_DESCRIPTION},
       {"removeActorLoginDialogTitle",
        IDS_PASSWORD_MANAGER_UI_REMOVE_ACTOR_LOGIN_PERMISSION_DIALOG_TITLE},
@@ -654,6 +655,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddBoolean(
       "passkeyUpgradeSettingsToggleVisible",
       base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
+
+  source->AddBoolean(
+      "enableActorLoginPermissions",
+      base::FeatureList::IsEnabled(
+          password_manager::features::kEnableActorLoginPermissions));
 
   source->AddBoolean("passwordChangeAvailable",
                      PasswordChangeServiceFactory::GetForProfile(profile)

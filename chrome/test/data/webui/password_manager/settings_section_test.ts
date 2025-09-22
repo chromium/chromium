@@ -13,6 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {$$, eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
@@ -42,6 +43,14 @@ function assertBlockedSiteList(
     const blockedSite = blockedSiteList[index]!;
     assertEquals(blockedSite.urls.shown, node.textContent!.trim());
   }
+}
+
+/**
+ * Helper method that creates an ActorLoginPermission for tests.
+ */
+function createActorLoginPermission(
+    url: string, username: string): ActorLoginPermission {
+  return {url: {humanReadableUrl: url, link: `https://${url}`}, username};
 }
 
 suite('SettingsSectionTest', function() {
@@ -204,7 +213,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(isVisible(settings.$.blockedSitesList));
     assertBlockedSiteList(
         settings.$.blockedSitesList.querySelectorAll<HTMLElement>(
-            '.blocked-site-content'),
+            '.site-content'),
         passwordManager.data.blockedSites);
   });
 
@@ -234,7 +243,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(isVisible(settings.$.blockedSitesList));
     assertEquals(
         settings.$.blockedSitesList
-            .querySelectorAll<HTMLElement>('.blocked-site-content')
+            .querySelectorAll<HTMLElement>('.site-content')
             .length,
         1);
 
@@ -247,7 +256,7 @@ suite('SettingsSectionTest', function() {
     assertTrue(isVisible(settings.$.blockedSitesList));
     assertEquals(
         settings.$.blockedSitesList
-            .querySelectorAll<HTMLElement>('.blocked-site-content')
+            .querySelectorAll<HTMLElement>('.site-content')
             .length,
         2);
   });
@@ -501,6 +510,133 @@ suite('SettingsSectionTest', function() {
     await passwordManager.whenCalled('getBlockedSitesList');
 
     assertFalse(isVisible(settings.$.blockedSitesList));
+  });
+
+  test(
+      'actor login permissions section hidden if feature disabled',
+      async function() {
+        // The section should not be visible if the feature is disabled.
+        loadTimeData.overrideValues({enableActorLoginPermissions: false});
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await flushTasks();
+
+        assertFalse(
+            !!settings.shadowRoot!.querySelector('#actorLoginPermissions'));
+      });
+
+  test(
+      'actor login permissions section hidden when no sites', async function() {
+        loadTimeData.overrideValues({enableActorLoginPermissions: true});
+        passwordManager.data.actorLoginPermissions = [];
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await flushTasks();
+        await passwordManager.whenCalled('getActorLoginPermissions');
+
+        assertFalse(
+            !!settings.shadowRoot!.querySelector('#actorLoginPermissions'));
+      });
+
+  test('settings section shows actor login permissions', async function() {
+    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    passwordManager.data.actorLoginPermissions =
+        [createActorLoginPermission('test.com', 'testuser')];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getActorLoginPermissions');
+
+    assertTrue(!!settings.shadowRoot!.querySelector('#actorLoginPermissions'));
+  });
+
+  test(
+      'settings section shows multiple actor login permissions',
+      async function() {
+        loadTimeData.overrideValues({enableActorLoginPermissions: true});
+        const sites = [
+          createActorLoginPermission('test.com', 'testuser'),
+          createActorLoginPermission('test2.com', 'testuser2'),
+        ];
+        passwordManager.data.actorLoginPermissions = sites;
+        const settings = document.createElement('settings-section');
+        document.body.appendChild(settings);
+        await flushTasks();
+        await passwordManager.whenCalled('getActorLoginPermissions');
+
+        const list =
+            settings.shadowRoot!.querySelector('#actorLoginPermissions');
+        assertTrue(!!list);
+
+        const siteElements =
+            list.querySelectorAll<HTMLElement>('.site-content');
+        assertEquals(2, siteElements.length);
+
+        assertEquals(
+            sites[0]!.url.humanReadableUrl,
+            siteElements[0]!.querySelector<HTMLElement>(
+                                '.label')!.textContent!.trim());
+        assertEquals(
+            sites[0]!.username,
+            siteElements[0]!.querySelector<HTMLElement>(
+                                '.site-username')!.textContent!.trim());
+        assertEquals(
+            sites[1]!.url.humanReadableUrl,
+            siteElements[1]!.querySelector<HTMLElement>(
+                                '.label')!.textContent!.trim());
+        assertEquals(
+            sites[1]!.username,
+            siteElements[1]!.querySelector<HTMLElement>(
+                                '.site-username')!.textContent!.trim());
+      });
+
+  test('actor login permissions remove dialog', async function() {
+    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    passwordManager.data.actorLoginPermissions =
+        [createActorLoginPermission('test.com', 'testuser')];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getActorLoginPermissions');
+
+    const list = settings.shadowRoot!.querySelector('#actorLoginPermissions');
+    assertTrue(!!list);
+
+    list.querySelector<HTMLElement>(
+            '#removeActorLoginPermissionValueButton')!.click();
+    await flushTasks();
+
+    // Check that the removal dialog is now open.
+    const dialog = settings.shadowRoot!.querySelector(
+        'remove-actor-login-permission-dialog');
+    assertTrue(!!dialog);
+  });
+
+  test('actor login permissions updated on password change', async function() {
+    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    const sites = [
+      createActorLoginPermission('test.com', 'testuser'),
+      createActorLoginPermission('test2.com', 'testuser2'),
+    ];
+    passwordManager.data.actorLoginPermissions = sites;
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    // Check that two entries are shown.
+    const list = settings.shadowRoot!.querySelector('#actorLoginPermissions');
+    assertTrue(!!list);
+    assertEquals(2, list.querySelectorAll<HTMLElement>('.site-content').length);
+
+    passwordManager.data.actorLoginPermissions.pop();
+    // The listener for saved passwords also triggers a refresh of allowed
+    // actor login sites.
+    passwordManager.listeners.savedPasswordListChangedListener!
+        (passwordManager.data.passwords);
+    await flushTasks();
+
+    // Check that only one entry is shown now.
+    assertEquals(1, list.querySelectorAll<HTMLElement>('.site-content').length);
   });
 
   test('Move passwords to account button is visible', async function() {

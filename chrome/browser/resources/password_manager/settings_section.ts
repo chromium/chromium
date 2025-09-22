@@ -9,6 +9,7 @@ import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import './dialogs/disconnect_cloud_authenticator_dialog.js';
+import './dialogs/remove_actor_login_permission_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -26,6 +27,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 // <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
+import type {ActorLoginPermission} from './password_manager.mojom-webui.js';
 import type {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, ShouldShowAccountStorageToggleChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
@@ -72,6 +74,25 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       blockedSites_: {
         type: Array,
         value: () => [],
+      },
+
+      /** An array of sites with permissions for actor login. */
+      actorLoginPermissions_: {
+        type: Array,
+        value: () => [],
+      },
+
+      isActorLoginPermissionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableActorLoginPermissions');
+        },
+      },
+
+      shouldShowActorLoginPermissions_: {
+        type: Boolean,
+        computed: 'computeShouldShowActorLoginPermissions_(' +
+            'actorLoginPermissions_.length, isActorLoginPermissionsEnabled_)',
       },
 
       // <if expr="is_win or is_macosx or is_chromeos">
@@ -158,6 +179,10 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
+      removeActorLoginPermissionSite_: {
+        type: Object,
+      },
+
       localPasswordCount_: {
         type: Number,
         value: 0,
@@ -180,6 +205,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   declare private blockedSites_: BlockedSite[];
+  declare private actorLoginPermissions_: ActorLoginPermission[];
+  declare private isActorLoginPermissionsEnabled_: boolean;
+  declare private shouldShowActorLoginPermissions_: boolean;
   // <if expr="is_win or is_macosx or is_chromeos">
   declare private isBiometricAuthenticationForFillingToggleVisible_: boolean;
   // </if>
@@ -196,6 +224,8 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   declare private isDisconnectCloudAuthenticatorInProgress_: boolean;
   declare private toastMessage_: string;
   declare private showDisconnectCloudAuthenticatorDialog_: boolean;
+  declare private removeActorLoginPermissionSite_: ActorLoginPermission|
+      undefined;
   // This variable depend on the sync service API, which the Batch Upload Dialog
   // uses.
   declare private localPasswordCount_: number;
@@ -245,6 +275,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
               (localPasswordCount: number) => {
                 this.updateLocalPasswordCount_(localPasswordCount);
               });
+          if (this.isActorLoginPermissionsEnabled_) {
+            PasswordManagerImpl.getInstance().getActorLoginPermissions().then(
+                actorLoginPermissions => this.actorLoginPermissions_ =
+                    actorLoginPermissions);
+          }
         };
     PasswordManagerImpl.getInstance().getSavedPasswordList().then(
         this.setCredentialsChangedListener_);
@@ -361,6 +396,21 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().removeBlockedSite(event.model.item.id);
   }
 
+  private onRemoveActorLoginPermissionClick_(
+      event: DomRepeatEvent<ActorLoginPermission>) {
+    this.removeActorLoginPermissionSite_ = event.model.item;
+  }
+
+  private onCloseRemoveActorLoginPermissionDialog_() {
+    this.removeActorLoginPermissionSite_ = undefined;
+  }
+
+  private onRemoveActorLoginPermission_() {
+    // TODO(crbug.com/443241067): implement once the backend is ready.
+    console.info(this.removeActorLoginPermissionSite_!.url);
+    this.removeActorLoginPermissionSite_ = undefined;
+  }
+
   // <if expr="is_win or is_macosx or is_chromeos">
   private switchBiometricAuthBeforeFillingState_(e: Event) {
     const biometricAuthenticationForFillingToggle =
@@ -453,6 +503,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
 
     return !pref.value && isPolicyEnforced;
+  }
+
+  private computeShouldShowActorLoginPermissions_(
+      actorLoginPermissionsLength: number,
+      isActorLoginPermissionsEnabled: boolean): boolean {
+    return actorLoginPermissionsLength > 0 && isActorLoginPermissionsEnabled;
   }
 
   private onMovePasswordsClicked_(e: Event) {
