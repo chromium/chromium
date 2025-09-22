@@ -273,9 +273,10 @@ NSString* GetPromoLabelString(
           : l10n_util::GetNSString(IDS_CANCEL);
   [_consumer setSkipButtonText:skipButtonText];
 
-  [self selectSelectedIdentity];
+  [self selectDefaultIdentity];
 }
 
+// Sets `self.selectedIdentity` and update the UI.
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   if ([_selectedIdentity isEqual:identity]) {
     return;
@@ -286,9 +287,11 @@ NSString* GetPromoLabelString(
 
 #pragma mark - Private
 
-// Updates the default identity, or hide the default identity if there isn't
-// one present on the device.
-- (void)selectSelectedIdentity {
+// Selects the default identity to be either:
+// * the device default identity if any,
+// * otherwise nil.
+// Also updates the UI accordingly.
+- (void)selectDefaultIdentity {
   if (!_identityManager || !_accountManagerService) {
     return;
   }
@@ -352,10 +355,10 @@ NSString* GetPromoLabelString(
         !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
       // The currently selected identity is not valid anymore. Let’s select the
       // default identity instead.
-      [self selectSelectedIdentity];
+      [self selectDefaultIdentity];
     }
   } else {
-    [self selectSelectedIdentity];
+    [self selectDefaultIdentity];
   }
 }
 

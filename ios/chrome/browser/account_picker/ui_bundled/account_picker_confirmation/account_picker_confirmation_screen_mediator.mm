@@ -70,9 +70,10 @@
 
 - (void)setConsumer:(id<AccountPickerConfirmationScreenConsumer>)consumer {
   _consumer = consumer;
-  [self selectSelectedIdentity];
+  [self selectDefaultIdentity];
 }
 
+// Sets `self.selectedIdentity` and update the UI accordingly.
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   if ([_selectedIdentity isEqual:identity]) {
     return;
@@ -83,9 +84,12 @@
 
 #pragma mark - Private
 
-// Updates the default identity, or hide the default identity if there isn't
-// one present on the device.
-- (void)selectSelectedIdentity {
+// Selects the default identity to be either:
+// * the current primary identyt one if any
+// * the device default identity if any,
+// * otherwise nil.
+// Also updates the UI accordingly.
+- (void)selectDefaultIdentity {
   if (!_accountManagerService || !_identityManager) {
     return;
   }
@@ -152,7 +156,7 @@
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self selectSelectedIdentity];
+  [self selectDefaultIdentity];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
