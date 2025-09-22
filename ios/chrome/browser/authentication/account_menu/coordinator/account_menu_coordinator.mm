@@ -624,8 +624,9 @@ void maybeShowSettingsIPH(Browser* browser) {
   UINavigationController* navigationController = _navigationController;
   _navigationController = nil;
   _viewController = nil;
-  [navigationController dismissViewControllerAnimated:animated
-                                           completion:completion];
+  [navigationController.presentingViewController
+      dismissViewControllerAnimated:animated
+                         completion:completion];
 }
 
 #pragma mark - SigninReauthCoordinatorDelegate
