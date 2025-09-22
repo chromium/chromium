@@ -41,8 +41,12 @@ TEST_F(AnnotatedPageContentCapturerTest, CaptureEmptyPageContent) {
       completion_future;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer =
       CreateCapturer(completion_future.GetCallback());
+  optimization_guide::AIPageContentResult result;
+  const char kEmptyPageContentData[] = "\n\002B\000\020\002";
+  result.proto.ParseFromArray(kEmptyPageContentData,
+                              sizeof(kEmptyPageContentData) - 1);
   EXPECT_CALL(mock_get_page_content_, Run)
-      .WillOnce(RunOnceCallback<1>(optimization_guide::AIPageContentResult()));
+      .WillOnce(RunOnceCallback<1>(std::move(result)));
   capturer->DidStopLoading();
   EXPECT_FALSE(completion_future.IsReady());
 }
