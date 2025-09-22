@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
@@ -41,10 +40,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -359,78 +359,47 @@ public class ChromeTabUtils {
     }
 
     /**
-     * An observer that waits for a Tab to become interactable.
-     *
-     * Notifies the provided callback when:
-     *  - the page has become interactable
-     *  - the tab has been hidden and will not become interactable.
-     * Stops observing with a failure if the tab has crashed.
-     *
-     * We treat the hidden case as success to handle loads in which a page immediately closes itself
-     * or opens a new foreground tab (popup), and may not become interactable.
-     */
-    private static class TabPageInteractableObserver extends EmptyTabObserver {
-        private final Tab mTab;
-        private final CallbackHelper mCallback;
-
-        public TabPageInteractableObserver(Tab tab, CallbackHelper interactableCallback) {
-            mTab = tab;
-            mCallback = interactableCallback;
-        }
-
-        @Override
-        public void onCrash(Tab tab) {
-            mCallback.notifyFailed("Tab crashed :(");
-            mTab.removeObserver(this);
-        }
-
-        @Override
-        public void onHidden(Tab tab, @TabHidingType int type) {
-            mCallback.notifyCalled();
-            mTab.removeObserver(this);
-        }
-
-        @Override
-        public void onInteractabilityChanged(Tab tab, boolean interactable) {
-            if (interactable) {
-                mCallback.notifyCalled();
-                mTab.removeObserver(this);
-            }
-        }
-    }
-
-    /**
-     * Waits for the tab to become interactable. This occurs after load, once all view
-     * animations have completed.
+     * Waits for the tab to become interactable. This occurs after load, once all view animations
+     * have completed.
      *
      * @param tab The tab to wait for interactability on.
      */
     public static void waitForInteractable(final Tab tab) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
-        final CallbackHelper interactableCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    // Paint-holding drops input event to the page until the renderer has pushed
-                    // content to the GPU.  Not all browser tests produce renderer content or rely
-                    // on the content, so we are enabling input events here by simulting the end
-                    // of paint-holding.
-                    WebContentsUtils.simulateEndOfPaintHolding(tab.getWebContents());
+                    if (tab.isHidden()) return true;
+                    if (!tab.isUserInteractable()) return false;
 
-                    // If a tab is hidden, don't wait for interactivity. See note in
-                    // TabPageInteractableObserver.
-                    if (tab.isUserInteractable() || tab.isHidden()) {
-                        interactableCallback.notifyCalled();
-                        return;
+                    // There are many cases where we don't expect hit test data to be present for
+                    // the WebContents, so treat those as interactable.
+                    if (tab.getUrl().isEmpty()
+                            || tab.getUrl().getSpec().equals(ContentUrlConstants.ABOUT_BLANK_URL)) {
+                        return true;
                     }
-                    tab.addObserver(new TabPageInteractableObserver(tab, interactableCallback));
-                });
-
-        try {
-            interactableCallback.waitForCallback(0, 1, 10L, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            throw new AssertionError("Page never became interactable.", e);
-        }
+                    if (tab.isNativePage()) return true;
+                    if (tab.getWebContents() == null) return true;
+                    NavigationController controller =
+                            tab.getWebContents().getNavigationController();
+                    // HTTP 204/205 No Content/Download pages will not get committed and won't have
+                    // hit test data. I don't know why http status codes likes 204/205 aren't
+                    // propagated to the NavigationEntry and I'm scared to ask. I also don't know
+                    // why we update the committed index even through the page does not commit.
+                    // However, since the page hasn't *actually* committed, the lastCommittedUrl is
+                    // blank and the NavigationController still thinks it's on the initial
+                    // navigation (which is supposed to become false when there's a committed
+                    // entry). WebContents#hasUncommittedNavigationInPrimaryMainFrame also for some
+                    // reason returns false...
+                    if (controller.isInitialNavigation()
+                            && controller.getLastCommittedEntryIndex() != -1) {
+                        return true;
+                    }
+                    return tab.getWebContents().getMainFrame().hasHitTestDataForTesting();
+                },
+                "Page never became interactable.",
+                10000,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Switch to the given TabIndex in the current tabModel. */

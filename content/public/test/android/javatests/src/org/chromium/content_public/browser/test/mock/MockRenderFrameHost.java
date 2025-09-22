@@ -126,4 +126,9 @@ public class MockRenderFrameHost implements RenderFrameHost {
     @Override
     public void executeJavaScriptInIsolatedWorld(
             String script, int worldId, @Nullable JavaScriptCallback callback) {}
+
+    @Override
+    public boolean hasHitTestDataForTesting() {
+        return true;
+    }
 }

@@ -242,4 +242,9 @@ public interface RenderFrameHost {
      */
     void executeJavaScriptInIsolatedWorld(
             String script, int worldId, @Nullable JavaScriptCallback callback);
+
+    /**
+     * @return whether hit test data is available for this Frame.
+     */
+    boolean hasHitTestDataForTesting();
 }

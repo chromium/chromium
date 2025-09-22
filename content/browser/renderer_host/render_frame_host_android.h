@@ -104,6 +104,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       jint jworldId,
       const base::android::JavaParamRef<jobject>& jcallback);
 
+  bool HasHitTestDataForTesting(JNIEnv* env);
+
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:

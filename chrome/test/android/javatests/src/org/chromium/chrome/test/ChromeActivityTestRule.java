@@ -319,6 +319,20 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         return loadUrl(url.getSpec());
     }
 
+    public LoadUrlResult loadUrlNoWaiting(String url) throws IllegalArgumentException {
+        Tab tab = getActivityTab();
+        LoadUrlResult result =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tab.loadUrl(
+                                    new LoadUrlParams(
+                                            url,
+                                            PageTransition.TYPED
+                                                    | PageTransition.FROM_ADDRESS_BAR));
+                        });
+        return result;
+    }
+
     /**
      * @param url The URL of the page to load.
      * @param pageTransition The type of transition. see {@link org.chromium.ui.base.PageTransition}

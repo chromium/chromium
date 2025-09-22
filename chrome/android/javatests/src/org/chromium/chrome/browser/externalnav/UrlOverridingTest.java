@@ -105,7 +105,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
@@ -262,19 +261,16 @@ public class UrlOverridingTest {
 
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mFinishCallback;
-        private final CallbackHelper mFirstPaintCallback;
         private final CallbackHelper mDestroyedCallback;
         private final CallbackHelper mFailCallback;
         private final CallbackHelper mLoadCallback;
 
         TestTabObserver(
                 CallbackHelper finishCallback,
-                CallbackHelper firstPaintCallback,
                 CallbackHelper destroyedCallback,
                 CallbackHelper failCallback,
                 CallbackHelper loadCallback) {
             mFinishCallback = finishCallback;
-            mFirstPaintCallback = firstPaintCallback;
             mDestroyedCallback = destroyedCallback;
             mFailCallback = failCallback;
             mLoadCallback = loadCallback;
@@ -288,14 +284,6 @@ public class UrlOverridingTest {
         @Override
         public void onPageLoadFinished(Tab tab, GURL url) {
             mFinishCallback.notifyCalled();
-        }
-
-        @Override
-        public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-            // onPageLoadFinished does not account for UI page rendering. In case of interactions
-            // with a newly created tab, some rendered content is required. Otherwise the tab seems
-            // to become unresponsive (crbug.com/428702162).
-            mFirstPaintCallback.notifyCalled();
         }
 
         @Override
@@ -506,7 +494,6 @@ public class UrlOverridingTest {
     private OverrideUrlLoadingResult loadUrlAndWaitForIntentUrl(TestParams params)
             throws Exception {
         final CallbackHelper finishCallback = new CallbackHelper();
-        final CallbackHelper firstPaintCallback = new CallbackHelper();
         final CallbackHelper failCallback = new CallbackHelper();
         final CallbackHelper destroyedCallback = new CallbackHelper();
         final CallbackHelper newTabCallback = new CallbackHelper();
@@ -538,11 +525,7 @@ public class UrlOverridingTest {
                 () -> {
                     tab.addObserver(
                             new TestTabObserver(
-                                    finishCallback,
-                                    firstPaintCallback,
-                                    destroyedCallback,
-                                    failCallback,
-                                    loadCallback));
+                                    finishCallback, destroyedCallback, failCallback, loadCallback));
 
                     TabModelSelectorObserver selectorObserver =
                             new TabModelSelectorObserver() {
@@ -556,7 +539,6 @@ public class UrlOverridingTest {
                                     newTab.addObserver(
                                             new TestTabObserver(
                                                     finishCallback,
-                                                    firstPaintCallback,
                                                     destroyedCallback,
                                                     failCallback,
                                                     loadCallback));
@@ -594,9 +576,6 @@ public class UrlOverridingTest {
             finishCallback.waitForCallback(0, preClickFinishTarget, 20, TimeUnit.SECONDS);
         }
 
-        // Sometimes firstPaintCallback is not updated by the first navigation.
-        int preClickPaintCount = firstPaintCallback.getCallCount();
-
         if (params.needClick) {
             int loadCount = loadCallback.getCallCount();
             doClick(params.clickTargetId, tab);
@@ -630,15 +609,6 @@ public class UrlOverridingTest {
                                 GURL.isEmptyOrInvalid(latestTabHolder.value.getUrl()),
                                 Matchers.is(false));
                     });
-
-            if (UrlUtilities.isHttpOrHttps(latestTabHolder.value.getUrl())) {
-                firstPaintCallback.waitForCallback(
-                        "New Tab content was not drawn.",
-                        preClickPaintCount,
-                        1,
-                        20,
-                        TimeUnit.SECONDS);
-            }
         }
 
         if (params.shouldFailNavigation) {
@@ -1506,17 +1476,11 @@ public class UrlOverridingTest {
         final Tab tab = mTabbedActivityTestRule.getActivityTab();
 
         final CallbackHelper prerenderFinishCallback = new CallbackHelper();
-        final CallbackHelper paintFinishCallback = new CallbackHelper();
         WebContentsObserver observer =
                 new WebContentsObserver() {
                     @Override
                     public void didStopLoading(GURL url, boolean isKnownValid) {
                         prerenderFinishCallback.notifyCalled();
-                    }
-
-                    @Override
-                    public void didFirstVisuallyNonEmptyPaint() {
-                        paintFinishCallback.notifyCalled();
                     }
                 };
         ThreadUtils.runOnUiThreadBlocking(
@@ -1527,7 +1491,6 @@ public class UrlOverridingTest {
         mTabbedActivityTestRule.loadUrl(mTestServer.getURL(NAVIGATION_FROM_PRERENDER));
 
         prerenderFinishCallback.waitForCallback(0);
-        paintFinishCallback.waitForCallback(0);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

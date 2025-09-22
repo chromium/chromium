@@ -296,6 +296,12 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         mNativeRenderFrameHostAndroid, script, worldId, callback);
     }
 
+    @Override
+    public boolean hasHitTestDataForTesting() {
+        return RenderFrameHostImplJni.get()
+                .hasHitTestDataForTesting(mNativeRenderFrameHostAndroid); // IN-TEST
+    }
+
     @NativeMethods
     interface Natives {
         GURL getLastCommittedURL(long nativeRenderFrameHostAndroid);
@@ -359,5 +365,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String stript,
                 int isolatedWorldId,
                 @Nullable JavaScriptCallback callback);
+
+        boolean hasHitTestDataForTesting(long nativeRenderFrameHostAndroid);
     }
 }

@@ -15,8 +15,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/closewatcher/close_listener_host.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -303,6 +305,31 @@ void RenderFrameHostAndroid::InsertVisualStateCallback(
   render_frame_host()->InsertVisualStateCallback(
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
+bool RenderFrameHostAndroid::HasHitTestDataForTesting(JNIEnv* env) {
+  RenderWidgetHostViewBase* child_view =
+      render_frame_host()->GetRenderWidgetHost()->GetView();
+  if (!child_view) {
+    return false;
+  }
+  const viz::FrameSinkId& frame_sink_id = child_view->GetFrameSinkId();
+
+  for (auto& it : GetHostFrameSinkManager()->GetDisplayHitTestQuery()) {
+    if (it.second->ContainsActiveFrameSinkId(frame_sink_id)) {
+      const std::vector<viz::AggregatedHitTestRegion>& hit_test_data =
+          it.second->GetHitTestData();
+
+      for (auto& it2 : hit_test_data) {
+        if (it2.frame_sink_id == frame_sink_id &&
+            !(it2.flags & viz::HitTestRegionFlags::kHitTestNotActive)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 }  // namespace content
