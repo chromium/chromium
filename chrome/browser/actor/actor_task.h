@@ -109,21 +109,13 @@ class ActorTask {
   // Returns true if the given tab is part of this task's acting set.
   bool IsActingOnTab(tabs::TabHandle tab) const;
 
-  // Returns the tab to use to capture new context observations after an
-  // execution turn. In the future this will be extended to multiple tabs and
-  // windows. Currently this returns the first live tab in the set, since the
-  // actor framework doesn't yet support multi-tab.
-  // TODO(crbug.com/411462297): This will be replaced by GetTabs soon.
-  tabs::TabInterface* GetTabForObservation() const;
+  using TabHandleSet = absl::flat_hash_set<tabs::TabHandle>;
 
   // The set of tabs that have been acted on at any point during this task.
-  absl::flat_hash_set<tabs::TabHandle> GetTabs() const;
+  TabHandleSet GetTabs() const;
 
   // The set of tabs that were acted on by the last call to Act.
-  absl::flat_hash_set<tabs::TabHandle> GetLastActedTabs() const;
-
-  // The single tab that was acted on by the last call to Act.
-  tabs::TabHandle GetLastActedTab();
+  TabHandleSet GetLastActedTabs() const;
 
  private:
   struct ActingTabState {
@@ -173,9 +165,6 @@ class ActorTask {
 
   // Running number of steps this task has taken.
   size_t number_of_steps_ = 0;
-
-  // The last tab that was acutated on.
-  tabs::TabHandle last_actuated_tab_handle_;
 
   base::WeakPtrFactory<ui::UiEventDispatcher> ui_weak_ptr_factory_;
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

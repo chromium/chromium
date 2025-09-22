@@ -582,7 +582,19 @@ void GlicKeyedService::ResumeActorTask(
   }
 
   task->Resume();
-  tabs::TabInterface* tab_of_resumed_task = task->GetTabForObservation();
+
+  // TODO(crbug.com/420669167): GetLastActedTabs should only ever have 1 tab in
+  // it for now but once we support multi-tab we'll need to grab observations
+  // for all relevant tabs.
+  DCHECK_GT(task->GetLastActedTabs().size(), 0ul);
+  DCHECK_LT(task->GetLastActedTabs().size(), 2ul);
+  tabs::TabInterface* tab_of_resumed_task = nullptr;
+  for (tabs::TabHandle tab_handle : task->GetLastActedTabs()) {
+    if (tabs::TabInterface* tab = tab_handle.Get()) {
+      tab_of_resumed_task = tab;
+      break;
+    }
+  }
   if (!tab_of_resumed_task) {
     std::string error_message = "No tab for observation";
     actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,

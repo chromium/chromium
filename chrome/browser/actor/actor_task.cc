@@ -238,9 +238,6 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
                                   : mojom::ActionResultCode::kTaskWentAway)));
     return;
   }
-  // Make this tab the most recently actuated on, even if it was actuated on
-  // before.
-  last_actuated_tab_handle_ = tab_handle;
   if (acting_tabs_.contains(tab_handle)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
@@ -274,10 +271,6 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
 }
 
 void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
-  // Reset the last actuated tab if it is being removed.
-  if (tab_handle == last_actuated_tab_handle_) {
-    last_actuated_tab_handle_ = tabs::TabHandle::Null();
-  }
   // Erasing the entry from the map triggers the ScopedClosureRunner's
   // destructor (via std::optional's destructor), which automatically calls
   // DecrementCapturerCount on the WebContents.
@@ -312,28 +305,11 @@ bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {
   return acting_tabs_.contains(tab);
 }
 
-tabs::TabInterface* ActorTask::GetTabForObservation() const {
-  DCHECK_GT(acting_tabs_.size(), 0ul);
-  DCHECK_LT(acting_tabs_.size(), 2ul);
-  for (const auto& [handle, state] : acting_tabs_) {
-    if (tabs::TabInterface* tab = handle.Get()) {
-      return tab;
-    }
-  }
-
-  return nullptr;
-}
-
 absl::flat_hash_set<tabs::TabHandle> ActorTask::GetLastActedTabs() const {
-  // TODO(bokan): Currently the client only acts on a single tab but this
-  // should track which tabs were acted on in the last call to Act.
+  // TODO(crbug.com/420669167): Currently the client only acts on a single tab
+  // so we can return the full set but with multi-tab this will need to be
+  // smarter about which tabs are relevant to the last/current action.
   return GetTabs();
-}
-
-tabs::TabHandle ActorTask::GetLastActedTab() {
-  // TODO(crbug.com/441064175): Use GetLastActedTabs() or update implementation
-  // for multi-tab actuation.
-  return last_actuated_tab_handle_;
 }
 
 absl::flat_hash_set<tabs::TabHandle> ActorTask::GetTabs() const {

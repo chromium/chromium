@@ -716,8 +716,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // Check ExecutionEngine caches the last apc observation.
   auto CheckActorTabDataHasAnnotatedPageContentCache() {
     return Do([&]() {
+      // TODO(crbug.com/420669167): Needs to be reconsidered for multi-tab.
       const AnnotatedPageContent* cached_apc =
-          actor::ActorTabData::From(GetActorTask()->GetTabForObservation())
+          actor::ActorTabData::From(
+              GetActorTask()->GetLastActedTabs().begin()->Get())
               ->GetLastObservedPageContent();
       EXPECT_TRUE(cached_apc);
       EXPECT_THAT(*annotated_page_content_, EqualsProto(*cached_apc));
