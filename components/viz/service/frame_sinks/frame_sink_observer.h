@@ -54,6 +54,11 @@ class FrameSinkObserver {
 
   // Called when capturing is started for `frame_sink_id`.
   virtual void OnCaptureStarted(const FrameSinkId& frame_sink_id) {}
+
+  // Called when ViewTransition identified by `transition_token` has had its
+  // Save directive fulfilled.
+  virtual void OnViewTransitionSaved(
+      const blink::ViewTransitionToken& transition_token) {}
 };
 
 }  // namespace viz

@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -215,6 +216,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   void AddFrameSinkObserver(FrameSinkObserver* obs);
   void RemoveFrameSinkObserver(FrameSinkObserver* obs);
 
+  // Checks whether FrameSinkManager has view `transition_token`.
+  bool FrameSinkManagerHasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token);
+
   using CommitPredicate =
       base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;
   // Commits all surfaces in range and their referenced surfaces. For each
@@ -377,5 +382,21 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 };
 
 }  // namespace viz
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<viz::SurfaceManager, viz::FrameSinkObserver> {
+  static void AddObserver(viz::SurfaceManager* source,
+                          viz::FrameSinkObserver* observer) {
+    source->AddFrameSinkObserver(observer);
+  }
+  static void RemoveObserver(viz::SurfaceManager* source,
+                             viz::FrameSinkObserver* observer) {
+    source->RemoveFrameSinkObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_MANAGER_H_

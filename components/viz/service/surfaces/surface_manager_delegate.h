@@ -26,6 +26,10 @@ class VIZ_SERVICE_EXPORT SurfaceManagerDelegate {
 
   virtual void AddObserver(FrameSinkObserver* obs) = 0;
   virtual void RemoveObserver(FrameSinkObserver* obs) = 0;
+
+  // Checks whether FrameSinkManager has view `transition_token`.
+  virtual bool HasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token) = 0;
 };
 
 }  // namespace viz

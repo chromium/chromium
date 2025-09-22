@@ -577,6 +577,11 @@ void FrameSinkManagerImpl::AggregatedFrameSinksChanged() {
   hit_test_manager_.SetNeedsSubmit();
 }
 
+bool FrameSinkManagerImpl::HasViewTransitionToken(
+    const blink::ViewTransitionToken& transition_token) {
+  return transition_token_to_animation_manager_.contains(transition_token);
+}
+
 void FrameSinkManagerImpl::AddHitTestRegionObserver(
     HitTestRegionObserver* observer) {
   hit_test_region_observers_.AddObserver(observer);
@@ -1094,6 +1099,9 @@ void FrameSinkManagerImpl::CacheSurfaceAnimationManager(
   }
 
   transition_token_to_animation_manager_[transition_token] = std::move(manager);
+  for (auto& observer : observer_list_) {
+    observer.OnViewTransitionSaved(transition_token);
+  }
 }
 
 std::unique_ptr<SurfaceAnimationManager>

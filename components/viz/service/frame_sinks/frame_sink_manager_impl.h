@@ -239,6 +239,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void AggregatedFrameSinksChanged() override;
   void AddObserver(FrameSinkObserver* obs) override;
   void RemoveObserver(FrameSinkObserver* obs) override;
+  // Check if `transition_token_to_animation_manager_` contains entry for
+  // `transition_token`.
+  bool HasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token) override;
 
   // HitTestDataProvider implementation.
   // This is required to allow RenderWidgetHostInputEventRouter to find target
