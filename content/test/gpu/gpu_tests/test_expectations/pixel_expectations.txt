@@ -532,6 +532,9 @@ crbug.com/438515327 [ win11 nvidia-0x2783 ] Pixel_Canvas2DRedBoxScrgbLinear [ Re
 # Linux/AMD 780M failures
 crbug.com/445727123 [ linux amd-0x1900 ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
+# Win11 Canvas Timeout
+crbug.com/446719056 [ win11 angle-d3d11 qualcomm-0x41333430 graphite-disabled ] Pixel_OffscreenCanvas2DResizeOnWorker [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
