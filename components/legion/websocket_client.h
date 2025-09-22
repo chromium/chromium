@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_INFERENCE_WEBSOCKET_CLIENT_H_
-#define COMPONENTS_PRIVATE_INFERENCE_WEBSOCKET_CLIENT_H_
+#ifndef COMPONENTS_LEGION_WEBSOCKET_CLIENT_H_
+#define COMPONENTS_LEGION_WEBSOCKET_CLIENT_H_
 
 #include <queue>
 #include <string>
@@ -119,4 +119,4 @@ class WebSocketClient : public network::mojom::WebSocketHandshakeClient,
 
 }  // namespace legion
 
-#endif  // COMPONENTS_PRIVATE_INFERENCE_WEBSOCKET_CLIENT_H_
+#endif  // COMPONENTS_LEGION_WEBSOCKET_CLIENT_H_

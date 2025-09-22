@@ -4,13 +4,13 @@
 
 import("//testing/test.gni")
 
-source_set("private_inference") {
+source_set("legion") {
   sources = [
     "features.cc",
     "features.h",
+    "secure_channel_client.h",
     "secure_client.cc",
     "secure_client.h",
-    "secure_channel_client.h",
     "websocket_client.cc",
     "websocket_client.h",
   ]
@@ -27,7 +27,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "secure_client_unittest.cc" ]
   deps = [
-    ":private_inference",
+    ":legion",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",

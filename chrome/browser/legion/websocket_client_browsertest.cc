@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_inference/websocket_client.h"
+#include "components/legion/websocket_client.h"
 
 #include <string_view>
 
@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/private_inference/features.h"
+#include "components/legion/features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

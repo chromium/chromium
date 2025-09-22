@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_inference/secure_client.h"
+#include "components/legion/secure_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"

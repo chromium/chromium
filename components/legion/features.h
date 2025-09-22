@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_INFERENCE_FEATURES_H_
-#define COMPONENTS_PRIVATE_INFERENCE_FEATURES_H_
+#ifndef COMPONENTS_LEGION_FEATURES_H_
+#define COMPONENTS_LEGION_FEATURES_H_
 
 #include "base/features.h"
 #include "base/metrics/field_trial_params.h"
@@ -21,4 +21,4 @@ extern const base::FeatureParam<std::string> kLegionUrl;
 
 }  // namespace legion
 
-#endif  // COMPONENTS_PRIVATE_INFERENCE_FEATURES_H_
+#endif  // COMPONENTS_LEGION_FEATURES_H_

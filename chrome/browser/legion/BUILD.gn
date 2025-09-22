@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("private_inference") {
+source_set("legion") {
   sources = []
 
   deps = [
     "//base",
-    "//components/private_inference",
+    "//components/legion",
   ]
 }
 
@@ -18,11 +18,11 @@ if (!is_android) {
     sources = [ "websocket_client_browsertest.cc" ]
 
     deps = [
-      ":private_inference",
+      ":legion",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/test:test_support",
-      "//components/private_inference",
+      "//components/legion",
       "//content/test:test_support",
     ]
   }

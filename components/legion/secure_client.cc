@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_inference/secure_client.h"
+#include "components/legion/secure_client.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
-#include <optional>
 
 namespace legion {
 

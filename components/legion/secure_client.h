@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_INFERENCE_SECURE_CLIENT_H_
-#define COMPONENTS_PRIVATE_INFERENCE_SECURE_CLIENT_H_
+#ifndef COMPONENTS_LEGION_SECURE_CLIENT_H_
+#define COMPONENTS_LEGION_SECURE_CLIENT_H_
 
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/private_inference/secure_channel_client.h"
+#include "components/legion/secure_channel_client.h"
 
 namespace legion {
 
@@ -52,4 +52,4 @@ class SecureClient {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_PRIVATE_INFERENCE_SECURE_CLIENT_H_
+#endif  // COMPONENTS_LEGION_SECURE_CLIENT_H_

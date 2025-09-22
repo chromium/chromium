@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/private_inference/websocket_client.h"
+#include "components/legion/websocket_client.h"
 
 #include <limits>
 #include <utility>
@@ -20,7 +20,7 @@ namespace {
 constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("private_inference_client", R"(
+    net::DefineNetworkTrafficAnnotation("legion_client", R"(
         semantics {
           sender: "Legion Client"
           description:
