@@ -19,7 +19,9 @@
     <module name="EmptyStatement"/>
     <module name="InnerAssignment"/>
     <module name="OneStatementPerLine"/>
-    <module name="RedundantModifier"/>
+    <module name="RedundantModifier">
+      <property name="tokens" value="INTERFACE_DEF, METHOD_DEF"/>
+    </module>
     <module name="StringLiteralEquality"/>
     <module name="UnusedLocalVariable"/>
     <module name="AvoidStarImport">
