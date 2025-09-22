@@ -167,7 +167,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
   registry.AddPromo(NtpPromoSpecification(
       kNtpSignInPromoId,
       NtpPromoContent("account_circle", IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS,
-                      IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
+                      IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS),
       base::BindRepeating(&CheckSignInPromoEligibility),
       base::BindRepeating(&SignInPromoShown),
       base::BindRepeating(&InvokeSignInPromo),
@@ -179,7 +179,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
   registry.AddPromo(NtpPromoSpecification(
       kNtpCustomizationPromoId,
       NtpPromoContent("palette", IDS_NTP_CUSTOMIZATION_PROMO,
-                      IDS_NTP_CUSTOMIZATION_PROMO_ACTION_BUTTON),
+                      IDS_NTP_CUSTOMIZATION_PROMO),
       base::BindRepeating(&CheckCustomizationPromoEligibility),
       /*show_callback=*/base::DoNothing(),
       base::BindRepeating(&InvokeCustomizationPromo),
@@ -190,7 +190,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
   registry.AddPromo(NtpPromoSpecification(
       kNtpExtensionsPromoId,
       NtpPromoContent("my_extensions", IDS_NTP_EXTENSIONS_PROMO,
-                      IDS_NTP_EXTENSIONS_PROMO_ACTION_BUTTON),
+                      IDS_NTP_EXTENSIONS_PROMO),
       base::BindRepeating(&CheckExtensionsPromoEligibility),
       /*show_callback=*/base::DoNothing(),
       base::BindRepeating(&InvokeExtensionsPromo),
