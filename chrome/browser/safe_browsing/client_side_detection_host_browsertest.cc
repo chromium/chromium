@@ -1324,8 +1324,10 @@ class ClientSideDetectionHostCreditCardFormTest : public InProcessBrowserTest {
   std::string flatbuffer_model_str_;
 };
 
+// TODO(crbug.com/443098659): Deflake and re-enable this test before enabling
+// credit card form pings feature flag.
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
-                       CreditCardFormTriggersPreclassificationCheck) {
+                       DISABLED_CreditCardFormTriggersPreclassificationCheck) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -1360,8 +1362,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 }
 
+// TODO(crbug.com/443098659): Deflake and re-enable this test before enabling
+// credit card form pings feature flag.
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
-                       CreditCardFormClassificationTriggersCSDPing) {
+                       DISABLED_CreditCardFormClassificationTriggersCSDPing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
