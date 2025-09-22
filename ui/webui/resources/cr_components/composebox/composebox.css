@@ -620,10 +620,10 @@
 
 .carousel-divider {
   border-radius: 100px;
-  border-top: 1.5px solid
+  border-top: 1px solid
     var(--color-new-tab-page-composebox-file-carousel-divider);
   margin-inline-end: 16px;
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 8px;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }

@@ -57,8 +57,9 @@ export function getHtml(this: ComposeboxElement) {
           id="carousel"
           .files=${Array.from(this.files_.values())}
           @delete-file=${this.onDeleteFile_}>
-      </ntp-composebox-file-carousel>
-      <div class="carousel-divider"></div> ` : ''}
+        </ntp-composebox-file-carousel> ` : ''}
+      ${this.showDropdown_ ? html`
+      <div class="carousel-divider"></div>` : ''}
       <ntp-composebox-dropdown
           id="matches"
           role="listbox"
