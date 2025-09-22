@@ -226,7 +226,7 @@ public class BasicListMenu implements ListMenu {
         return result;
     }
 
-    public ModelListAdapter getContentAdapterForTesting() {
+    public ModelListAdapter getContentAdapter() {
         return mContentAdapter;
     }
 

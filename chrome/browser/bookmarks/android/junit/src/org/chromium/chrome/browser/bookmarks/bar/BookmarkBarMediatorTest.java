@@ -249,7 +249,7 @@ public class BookmarkBarMediatorTest {
         mMediator.setAnchoredPopupWindowForTesting(mAnchoredPopupWindow);
         when(mMockListMenu.getMenuDimensions()).thenReturn(new int[] {300, 100});
 
-        mMediator.configurePopupWindowSize(mMockListMenu, 5);
+        mMediator.configurePopupWindowSize(mMockListMenu);
 
         // Verify that the setDesiredContentSize method was called at least once with
         // any integer values.

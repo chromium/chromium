@@ -107,9 +107,9 @@ public class HomeModulesContextMenuManagerUnitTest {
     public void testGetListMenuContent() {
         // Obtains the first and second list views created by mManager.getListMenu().
         View listItemView1 =
-                mMenu.getContentAdapterForTesting().getView(0, null, mMenu.getListView());
+                mMenu.getContentAdapter().getView(0, null, mMenu.getListView());
         View listItemView2 =
-                mMenu.getContentAdapterForTesting().getView(1, null, mMenu.getListView());
+                mMenu.getContentAdapter().getView(1, null, mMenu.getListView());
         String listItemText1 =
                 ((TextView) listItemView1.findViewById(R.id.menu_item_text)).getText().toString();
         String listItemText2 =
