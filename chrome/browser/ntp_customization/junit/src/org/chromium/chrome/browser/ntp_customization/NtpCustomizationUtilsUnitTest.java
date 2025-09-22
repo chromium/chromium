@@ -31,6 +31,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -199,8 +202,59 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 color, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
 
-        NtpCustomizationUtils.resetBackgroundColor();
+        NtpCustomizationUtils.resetCustomizedColors();
         assertFalse(prefsManager.contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testUpdateCustomizedPrimaryColor() {
+        @ColorInt int color = Color.BLUE;
+
+        assertEquals(
+                NtpCustomizationConfigManager.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+
+        NtpCustomizationUtils.setCustomizedPrimaryColor(color);
+        assertEquals(color, NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_flagDisabled() {
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_THEME);
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_colorNotSet() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
+
+        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_colorSet() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.RED);
+
+        assertEquals(
+                Color.RED, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
     }
 
     @Test

@@ -227,6 +227,7 @@ robolectric_library("junit") {
     "//components/prefs/android:java",
     "//third_party/android_deps:org_robolectric_shadows_framework_java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",

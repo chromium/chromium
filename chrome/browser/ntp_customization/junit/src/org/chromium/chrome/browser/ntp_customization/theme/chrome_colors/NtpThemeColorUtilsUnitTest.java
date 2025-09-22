@@ -11,6 +11,9 @@ import static org.junit.Assert.assertNull;
 import android.content.Context;
 import android.graphics.drawable.LayerDrawable;
 
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -19,9 +22,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Tests for {@link NtpThemeColorUtils}. */
@@ -38,7 +43,8 @@ public class NtpThemeColorUtilsUnitTest {
 
     @Test
     public void testCreateThemeColorList() {
-        List<NtpThemeColorInfo> colorList = NtpThemeColorUtils.createThemeColorList(mContext);
+        List<NtpThemeColorInfo> colorList =
+                NtpThemeColorUtils.createThemeColorListForTesting(mContext);
         assertEquals(2, colorList.size());
         assertEquals(NtpThemeColorId.LIGHT_BLUE, colorList.get(0).id);
         assertEquals(NtpThemeColorId.BLUE, colorList.get(1).id);
@@ -61,6 +67,42 @@ public class NtpThemeColorUtilsUnitTest {
     }
 
     @Test
+    public void testInitColorsListAndFindPrimaryColorIndex_primaryColorNull() {
+        verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
+                /* primaryColor= */ null, RecyclerView.NO_POSITION);
+    }
+
+    @Test
+    public void testInitColorsListAndFindPrimaryColorIndex_primaryColorExist() {
+        verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
+                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary), 1);
+    }
+
+    @Test
+    public void testInitColorsListAndFindPrimaryColorIndex_primaryColorDoesNotExist() {
+        verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
+                ContextCompat.getColor(mContext, R.color.default_red), RecyclerView.NO_POSITION);
+    }
+
+    @Test
+    public void testInitColorsListAndFindPrimaryColorIndex_colorListNotEmpty() {
+        List<NtpThemeColorInfo> colorList =
+                NtpThemeColorUtils.createThemeColorListForTesting(mContext);
+        colorList.remove(1);
+        int originalSize = 1;
+        assertEquals(originalSize, colorList.size());
+        @ColorInt
+        Integer primaryColor =
+                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary);
+
+        int index =
+                NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
+                        mContext, colorList, primaryColor);
+        assertEquals(originalSize, colorList.size());
+        assertEquals(RecyclerView.NO_POSITION, index);
+    }
+
+    @Test
     public void testCreateColoredCircle() {
         int topColor = mContext.getColor(R.color.default_red);
         int bottomLeftColor = mContext.getColor(R.color.default_green);
@@ -71,5 +113,16 @@ public class NtpThemeColorUtilsUnitTest {
                         mContext, topColor, bottomLeftColor, bottomRightColor);
         assertNotNull(drawable);
         assertEquals(3, drawable.getNumberOfLayers());
+    }
+
+    private void verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
+            @Nullable @ColorInt Integer primaryColor, int expectedIndex) {
+        List<NtpThemeColorInfo> colorList = new ArrayList<>();
+
+        int index =
+                NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
+                        mContext, colorList, primaryColor);
+        assertEquals(2, colorList.size());
+        assertEquals(expectedIndex, index);
     }
 }

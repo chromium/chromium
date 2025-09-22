@@ -203,6 +203,10 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_BACKGROUND_COLOR =
             "Chrome.NtpCustomization.NtpBackgroundColor";
 
+    /** The primary color for customizing NTP. */
+    public static final String NTP_CUSTOMIZATION_PRIMARY_COLOR =
+            "Chrome.NtpCustomization.NtpCustomizationPrimaryColor";
+
     /** The transformation matrix for the NTP background image in portrait orientation. */
     public static final String NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX =
             "Chrome.NtpCustomization.BackgroundImagePortraitMatrix";
@@ -1090,6 +1094,7 @@ public final class ChromePreferenceKeys {
                 CONTEXT_MENU_SHOP_IMAGE_WITH_GOOGLE_LENS_CLICKED,
                 NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
+                NTP_CUSTOMIZATION_PRIMARY_COLOR,
                 NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX,
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,

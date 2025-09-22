@@ -181,6 +181,20 @@ public class NtpCustomizationUtils {
         }
     }
 
+    /** Returns the customized primary color if set, null otherwise. */
+    public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor() {
+        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
+                || (getNtpBackgroundImageType() != NtpBackgroundImageType.CHROME_COLOR)) {
+            return null;
+        }
+
+        @ColorInt int color = getCustomizedPrimaryColorFromSharedPreference();
+
+        if (color == NtpCustomizationConfigManager.COLOR_NOT_SET) return null;
+
+        return color;
+    }
+
     // Launch a new activity in the same task with the given uri as a CCT.
     public static void launchUriActivity(Context context, String uri) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -400,10 +414,29 @@ public class NtpCustomizationUtils {
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, defaultColor);
     }
 
-    /** Removes the NTP's background color key from the SharedPreference. */
-    static void resetBackgroundColor() {
+    /**
+     * Sets the customized primary color to the SharedPreference.
+     *
+     * @param color The new primary theme color.
+     */
+    static void setCustomizedPrimaryColor(@ColorInt int color) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, color);
+    }
+
+    /** Gets the customized primary color from the SharedPreference. */
+    static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR,
+                NtpCustomizationConfigManager.COLOR_NOT_SET);
+    }
+
+    /** Removes the NTP's background color key and primary color key from the SharedPreference. */
+    static void resetCustomizedColors() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
     }
 
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
@@ -457,6 +490,7 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX);
     }

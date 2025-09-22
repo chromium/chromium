@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.R;
 
 import java.util.List;
@@ -30,17 +30,16 @@ public class NtpChromeColorsAdapter
 
     // Variable to hold the position of the selected item.
     private int mSelectedPosition;
-    // The last selected ItemView.
-    private @Nullable View mSelectedItemView;
 
-    // TODO(https://crbug.com/440584354): Make NtpChromeColorsAdapter follow the MVC design patten.
     public NtpChromeColorsAdapter(
             Context context,
             List<NtpThemeColorInfo> colorInfoList,
-            Callback<NtpThemeColorInfo> onClickCallback) {
+            Callback<NtpThemeColorInfo> onClickCallback,
+            int selectedPosition) {
         mContext = context;
         mColorInfoList = colorInfoList;
         mOnClickCallback = onClickCallback;
+        mSelectedPosition = selectedPosition;
     }
 
     @NonNull
@@ -55,16 +54,9 @@ public class NtpChromeColorsAdapter
         return new ColorViewHolder(view);
     }
 
-    @SuppressWarnings("notifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
         NtpThemeColorInfo colorInfo = mColorInfoList.get(position);
-
-        if (mSelectedPosition == position) {
-            mSelectedItemView = holder.itemView;
-            holder.itemView.setActivated(true);
-        }
-
         View.OnClickListener clickListener =
                 v -> {
                     mOnClickCallback.onResult(colorInfo);
@@ -74,19 +66,17 @@ public class NtpChromeColorsAdapter
                         return;
                     }
 
-                    // De-select the previous selected item.
-                    if (mSelectedItemView != null) {
-                        mSelectedItemView.setActivated(false);
+                    // Notify the adapter to un-draw its selection.
+                    if (mSelectedPosition != RecyclerView.NO_POSITION) {
+                        notifyItemChanged(mSelectedPosition);
                     }
-                    holder.itemView.setActivated(true);
 
-                    // Set the new selected position.
+                    // Notify the adapter to draw the new selection.
                     mSelectedPosition = newPosition;
-                    mSelectedItemView = holder.itemView;
-
-                    notifyDataSetChanged();
+                    notifyItemChanged(newPosition);
                 };
-        holder.bind(colorInfo, clickListener);
+
+        holder.bind(colorInfo, clickListener, mSelectedPosition);
     }
 
     @Override
@@ -101,17 +91,43 @@ public class NtpChromeColorsAdapter
 
     /** ColorViewHolder that holds references to the views for a single color item. */
     public static class ColorViewHolder extends RecyclerView.ViewHolder {
-        private final ImageView mColorCircle;
+        private boolean mIsInitialized;
 
         public ColorViewHolder(@NonNull View itemView) {
             super(itemView);
-            mColorCircle = itemView.findViewById(R.id.color_circle);
         }
 
-        /** Binds a colorInfo and a click listener to the view. */
-        void bind(NtpThemeColorInfo colorInfo, View.OnClickListener onItemClickListener) {
-            mColorCircle.setForeground(colorInfo.iconDrawable);
-            itemView.setOnClickListener(onItemClickListener);
+        /** Binds a colorInfo, a click listener and the current selected position to the view. */
+        void bind(
+                NtpThemeColorInfo colorInfo,
+                View.OnClickListener onClickListener,
+                int selectedPosition) {
+            bindImpl(colorInfo, onClickListener, selectedPosition, getBindingAdapterPosition());
+        }
+
+        @VisibleForTesting
+        void bindImpl(
+                NtpThemeColorInfo colorInfo,
+                View.OnClickListener onClickListener,
+                int selectedPosition,
+                int bindingAdaptorPosition) {
+            if (!mIsInitialized) {
+                ImageView colorCircle = itemView.findViewById(R.id.color_circle);
+                colorCircle.setForeground(colorInfo.iconDrawable);
+                itemView.setOnClickListener(onClickListener);
+                mIsInitialized = true;
+            }
+
+            // Sets the activated status.
+            if (bindingAdaptorPosition == selectedPosition) {
+                itemView.setActivated(true);
+            } else {
+                itemView.setActivated(false);
+            }
+        }
+
+        public boolean getIsInitializedForTesting() {
+            return mIsInitialized;
         }
     }
 }

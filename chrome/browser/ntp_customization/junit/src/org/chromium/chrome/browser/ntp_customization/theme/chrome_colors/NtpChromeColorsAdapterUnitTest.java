@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -13,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -21,8 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,40 +42,79 @@ public class NtpChromeColorsAdapterUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Callback<NtpThemeColorInfo> mOnItemClickCallback;
+    @Mock private View.OnClickListener mOnClickListener;
     @Mock private View mItemView;
-    @Mock private View mItemView1;
     @Mock private ImageView mCircleView;
-    @Mock private ImageView mCircleView1;
-    @Captor private ArgumentCaptor<View.OnClickListener> mOnClickListenerCaptor;
-    @Captor private ArgumentCaptor<View.OnClickListener> mOnClickListenerCaptor1;
 
     private Context mContext;
-    private List<NtpThemeColorInfo> mColorResources;
+    private List<NtpThemeColorInfo> mColorInfoList;
     private NtpChromeColorsAdapter mAdapter;
     private NtpChromeColorsAdapter.ColorViewHolder mViewHolder;
-    private NtpChromeColorsAdapter.ColorViewHolder mViewHolder1;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mColorResources = NtpThemeColorUtils.createThemeColorList(mContext);
-        mAdapter = new NtpChromeColorsAdapter(mContext, mColorResources, mOnItemClickCallback);
+        mColorInfoList = NtpThemeColorUtils.createThemeColorListForTesting(mContext);
+        mAdapter =
+                new NtpChromeColorsAdapter(
+                        mContext, mColorInfoList, mOnItemClickCallback, /* selectedPosition= */ 0);
     }
 
     @Test
     public void testGetItemCount() {
         assertEquals(
                 "Item count should match the list size",
-                mColorResources.size(),
+                mColorInfoList.size(),
                 mAdapter.getItemCount());
 
         mAdapter =
-                new NtpChromeColorsAdapter(mContext, Collections.emptyList(), mOnItemClickCallback);
+                new NtpChromeColorsAdapter(
+                        mContext,
+                        Collections.emptyList(),
+                        mOnItemClickCallback,
+                        /* selectedPosition= */ 0);
         assertEquals("Item count should be 0 for an empty list", 0, mAdapter.getItemCount());
     }
 
     @Test
-    public void testOnBindViewHolder() {
+    public void testOnCreateViewHolder() {
+        ViewGroup parent = new FrameLayout(mContext);
+        NtpChromeColorsAdapter.ColorViewHolder viewHolder = mAdapter.onCreateViewHolder(parent, 0);
+        assertEquals(
+                R.id.color_circle, viewHolder.itemView.findViewById(R.id.color_circle).getId());
+    }
+
+    @Test
+    public void testBindViewHolder() {
+        ViewGroup parent = new FrameLayout(mContext);
+        mViewHolder = mAdapter.onCreateViewHolder(parent, /* viewType= */ 0);
+        assertFalse(mViewHolder.getIsInitializedForTesting());
+
+        int selectedPosition = 0;
+        int bindingAdaptorPosition = 0;
+
+        // Test selected item case.
+        mViewHolder.bindImpl(
+                mColorInfoList.get(bindingAdaptorPosition),
+                mOnClickListener,
+                selectedPosition,
+                bindingAdaptorPosition);
+        assertTrue(mViewHolder.itemView.isActivated());
+        assertTrue(mViewHolder.getIsInitializedForTesting());
+
+        // Test unselected item case.
+        selectedPosition = 1;
+        mViewHolder.bindImpl(
+                mColorInfoList.get(bindingAdaptorPosition),
+                mOnClickListener,
+                selectedPosition,
+                bindingAdaptorPosition);
+        assertFalse(mViewHolder.itemView.isActivated());
+        assertTrue(mViewHolder.getIsInitializedForTesting());
+    }
+
+    @Test
+    public void testBindViewHolder_setOnClickListener() {
         when(mItemView.getContext()).thenReturn(mContext);
         when(mItemView.findViewById(R.id.color_circle)).thenReturn(mCircleView);
         mViewHolder = new NtpChromeColorsAdapter.ColorViewHolder(mItemView);
@@ -81,26 +122,21 @@ public class NtpChromeColorsAdapterUnitTest {
         // Binds the first item view.
         int position = 0;
         mAdapter.onBindViewHolder(mViewHolder, position);
-
-        NtpThemeColorInfo colorInfo = mColorResources.get(position);
-        verify(mItemView).setActivated(eq(true));
-        verify(mItemView).setOnClickListener(mOnClickListenerCaptor.capture());
+        verify(mItemView).setOnClickListener(any(View.OnClickListener.class));
 
         clearInvocations(mItemView);
-        mOnClickListenerCaptor.getValue().onClick(mItemView);
-        verify(mOnItemClickCallback).onResult(eq(colorInfo));
+        verify(mItemView, never()).setOnClickListener(any(View.OnClickListener.class));
+    }
 
-        // Binds the second item view.
-        when(mItemView1.getContext()).thenReturn(mContext);
-        when(mItemView1.findViewById(R.id.color_circle)).thenReturn(mCircleView1);
-        mViewHolder1 = new NtpChromeColorsAdapter.ColorViewHolder(mItemView1);
-        position = 1;
+    @Test
+    public void testClickHandler() {
+        ViewGroup parent = new FrameLayout(mContext);
+        NtpChromeColorsAdapter.ColorViewHolder viewHolder =
+                mAdapter.onCreateViewHolder(parent, /* viewType= */ 0);
+        int position = 1;
+        mAdapter.onBindViewHolder(viewHolder, position);
 
-        mAdapter.onBindViewHolder(mViewHolder1, position);
-        verify(mItemView1, never()).setActivated(eq(true));
-        verify(mItemView1).setOnClickListener(mOnClickListenerCaptor1.capture());
-
-        mOnClickListenerCaptor1.getValue().onClick(mItemView1);
-        verify(mOnItemClickCallback).onResult(eq(mColorResources.get(position)));
+        viewHolder.itemView.performClick();
+        verify(mOnItemClickCallback).onResult(mColorInfoList.get(position));
     }
 }

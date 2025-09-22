@@ -124,7 +124,7 @@ public class NtpCustomizationConfigManager {
                     (bitmap) -> {
                         if (bitmap == null) {
                             // When failed to load image from the disk, resets to the default color.
-                            NtpCustomizationUtils.resetBackgroundColor();
+                            NtpCustomizationUtils.resetCustomizedColors();
                             return;
                         }
 
@@ -225,10 +225,11 @@ public class NtpCustomizationConfigManager {
                     /* fromInitialization= */ false,
                     oldType);
             NtpCustomizationUtils.setBackgroundColor(colorInfo.backgroundColor);
+            NtpCustomizationUtils.setCustomizedPrimaryColor(colorInfo.primaryColor);
         } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
             notifyBackgroundColorChanged(
                     getDefaultBackgroundColor(context), /* fromInitialization= */ false, oldType);
-            NtpCustomizationUtils.resetBackgroundColor();
+            NtpCustomizationUtils.resetCustomizedColors();
         }
     }
 

@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.launchUriActivity;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class NtpChromeColorsCoordinator {
     private final ColorGridView mChromeColorsRecyclerView;
     private final int mItemWidth;
     private final int mSpacing;
+    private @Nullable final @ColorInt Integer mPrimaryColor;
 
     public NtpChromeColorsCoordinator(Context context, BottomSheetDelegate delegate) {
         mContext = context;
@@ -74,6 +76,7 @@ public class NtpChromeColorsCoordinator {
                         .getDimensionPixelSize(
                                 R.dimen.ntp_customization_chrome_colors_grid_spacing);
 
+        mPrimaryColor = NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor();
         buildRecyclerView();
         setRecyclerViewMaxWidth(ntpChromeColorsBottomSheetView);
     }
@@ -82,9 +85,13 @@ public class NtpChromeColorsCoordinator {
         mChromeColorsRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 1));
         mChromeColorsRecyclerView.init(mItemWidth, mSpacing);
 
-        initColorsList();
+        int primaryColorIndex =
+                NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
+                        mContext, mChromeColorsList, mPrimaryColor);
         NtpChromeColorsAdapter adapter =
-                new NtpChromeColorsAdapter(mContext, mChromeColorsList, this::onItemClicked);
+                new NtpChromeColorsAdapter(
+                        mContext, mChromeColorsList, this::onItemClicked, primaryColorIndex);
+
         mChromeColorsRecyclerView.setAdapter(adapter);
     }
 
@@ -101,12 +108,6 @@ public class NtpChromeColorsCoordinator {
         constraintSet.constrainedWidth(recyclerViewContainer.getId(), true);
         constraintSet.constrainMaxWidth(recyclerViewContainer.getId(), maxWidthPx);
         constraintSet.applyTo(constraintLayout);
-    }
-
-    private void initColorsList() {
-        if (!mChromeColorsList.isEmpty()) return;
-
-        mChromeColorsList.addAll(NtpThemeColorUtils.createThemeColorList(mContext));
     }
 
     /**
