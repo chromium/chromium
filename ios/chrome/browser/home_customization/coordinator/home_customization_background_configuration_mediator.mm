@@ -9,6 +9,7 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
@@ -275,10 +276,16 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           NSError* fetchError = [NSError errorWithDomain:NSURLErrorDomain
                                                     code:NSURLErrorUnknown
                                                 userInfo:userInfo];
+          base::UmaHistogramBoolean("IOS.HomeCustomization.Background.Gallery."
+                                    "ImageDownloadSuccessful",
+                                    false);
           completion(nil, fetchError);
           return;
         }
         UIImage* uiImage = image.ToUIImage();
+        base::UmaHistogramBoolean(
+            "IOS.HomeCustomization.Background.Gallery.ImageDownloadSuccessful",
+            true);
         if (completion) {
           completion(uiImage, nil);
         }

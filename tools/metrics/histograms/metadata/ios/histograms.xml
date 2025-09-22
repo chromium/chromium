@@ -2473,6 +2473,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.HomeCustomization.Background.Gallery.CollectionImageFetchError"
+    enum="IOSNtpBackgroundServiceErrorType" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the type of error encountered when fetching an individual collection
+    with images for the iOS NTP background customization gallery. Logged each
+    time a collection images fetch operation happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.HomeCustomization.Background.Gallery.CollectionInfoFetchError"
+    enum="IOSNtpBackgroundServiceErrorType" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the type of error encountered when fetching background collection
+    info for the iOS NTP background customization gallery. Logged each time a
+    fetch operation happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.HomeCustomization.Background.Gallery.ImageDownloadSuccessful"
+    enum="Boolean" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records whether an individual image was successfully downloaded from the
+    image fetcher in the NTP background customization gallery. Logged for each
+    image download attempt.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
     enum="Boolean" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>

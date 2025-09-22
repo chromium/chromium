@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
+// LINT.IfChange(ErrorType)
 enum class ErrorType {
   // Data retrieved successfully.
   NONE,
@@ -22,7 +23,12 @@ enum class ErrorType {
 
   // Response from backend couldn't be read.
   SERVICE_ERROR,
+
+  // The highest value in this enum. Must be a copy of the last valid value.
+  // Used by UMA histograms.
+  kMaxValue = SERVICE_ERROR,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSNtpBackgroundServiceErrorType)
 
 // Retrieve the options to be added to a thumbnail image URL.
 std::string GetThumbnailImageOptions();

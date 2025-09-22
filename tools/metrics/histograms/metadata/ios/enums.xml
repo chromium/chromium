@@ -784,6 +784,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="No thanks tapped"/>
 </enum>
 
+<!-- LINT.IfChange(IOSNtpBackgroundServiceErrorType) -->
+
+<enum name="IOSNtpBackgroundServiceErrorType">
+  <int value="0" label="None"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Service error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/themes/ntp_background_data.h:ErrorType) -->
+
 <enum name="IOSNTPImpressionCustomizationState">
   <int value="0" label="All components enabled"/>
   <int value="1"

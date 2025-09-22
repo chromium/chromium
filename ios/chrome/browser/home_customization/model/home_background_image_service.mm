@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 
 #import "base/barrier_closure.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/themes/ntp_background_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -68,6 +69,10 @@ void HomeBackgroundImageService::OnCollectionImageInfoReceived(
         std::make_tuple(collection_name, collection_images);
   }
 
+  base::UmaHistogramEnumeration(
+      "IOS.HomeCustomization.Background.Gallery.CollectionImageFetchError",
+      error_type);
+
   // The `BarrierClosure` must be run regardless of the error type to ensure
   // that it is run `collection_count` times before the
   // `OnAllCollectionImagesReceived` callback can be run.
@@ -98,6 +103,10 @@ void HomeBackgroundImageService::OnAllCollectionImagesReceived() {
 void HomeBackgroundImageService::OnCollectionInfoAvailable() {
   const std::vector<CollectionInfo>& collection_infos =
       ntp_background_service_->collection_info();
+
+  base::UmaHistogramEnumeration(
+      "IOS.HomeCustomization.Background.Gallery.CollectionInfoFetchError",
+      ntp_background_service_->collection_error_info().error_type);
 
   if (collection_infos.empty()) {
     OnAllCollectionImagesReceived();
