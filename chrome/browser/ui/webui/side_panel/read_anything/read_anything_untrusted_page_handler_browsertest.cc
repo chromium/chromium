@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/read_anything/read_anything.mojom-data-view.h"
 #include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,21 +40,11 @@
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 #include "ui/gfx/geometry/size.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/test/bind.h"
-#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
-#include "chrome/browser/ui/webui/side_panel/read_anything/chrome_os_extension_wrapper.h"
-#include "extensions/browser/extension_host_test_helper.h"
-#include "extensions/browser/process_manager.h"
-using ash::language_packs::GetPackStateCallback;
-using ash::language_packs::OnInstallCompleteCallback;
-using ash::language_packs::PackResult;
-using read_anything::mojom::InstallationState;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 
 class MockPage : public read_anything::mojom::UntrustedPage {
  public:
@@ -118,25 +106,6 @@ class MockPage : public read_anything::mojom::UntrustedPage {
 
   mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 };
-
-#if BUILDFLAG(IS_CHROMEOS)
-class MockChromeOsExtensionWrapper : public ChromeOsExtensionWrapper {
- public:
-  MockChromeOsExtensionWrapper() = default;
-  ~MockChromeOsExtensionWrapper() override = default;
-
-  MOCK_METHOD(bool,
-              WakeEngine,
-              (Profile * profile, base::OnceCallback<void(bool)> callback));
-  MOCK_METHOD(void,
-              RequestLanguageInfo,
-              (const std::string& language, GetPackStateCallback callback));
-  MOCK_METHOD(void,
-              RequestLanguageInstall,
-              (const std::string& language,
-               OnInstallCompleteCallback callback));
-};
-#endif
 
 class TestReadAnythingUntrustedPageHandler
     : public ReadAnythingUntrustedPageHandler {
@@ -236,9 +205,6 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents_.get());
 
-#if BUILDFLAG(IS_CHROMEOS)
-    extension_wrapper_ = new MockChromeOsExtensionWrapper();
-#endif
     // Normally this would be done by ReadAnythingSidePanelControllerGlue as it
     // creates the WebView, but this unit test skips that step.
     ReadAnythingSidePanelControllerGlue::CreateForWebContents(
@@ -249,9 +215,6 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    extension_wrapper_ = nullptr;
-#endif
     handler_.reset();
     test_web_ui_.reset();
     web_contents_.reset();
@@ -383,9 +346,6 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<MockChromeOsExtensionWrapper> extension_wrapper_ = nullptr;
-#endif
   testing::NiceMock<MockPage> page_;
   FakeTtsEngineDelegate engine_delegate_;
   std::unique_ptr<ReadAnythingUntrustedPageHandler> handler_;
@@ -1167,317 +1127,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                       info->pack_state->get_installation_state());
             EXPECT_EQ(kLang, info->language);
           }));
-}
-#else
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, GetVoicePackInfo) {
-  const char kLang[] = "en-us";
-  PackResult result;
-  result.operation_error = PackResult::ErrorCode::kNone;
-  result.pack_state = PackResult::StatusCode::kInProgress;
-  result.language_code = kLang;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(kLang, language);
-            std::move(callback).Run(result);
-          });
-  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang, info->language);
-        EXPECT_EQ(InstallationState::kInstalling,
-                  info->pack_state->get_installation_state());
-        run_loop.Quit();
-      });
-
-  GetVoicePackInfo(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       GetVoicePackInfo_SendsErrorResult) {
-  const char kLang[] = "en-us";
-  PackResult result;
-  result.pack_state = PackResult::StatusCode::kUnknown;
-  result.operation_error = PackResult::ErrorCode::kWrongId;
-  result.language_code = kLang;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-  ON_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillByDefault(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            std::move(callback).Run(result);
-          });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine);
-  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang, info->language);
-        EXPECT_EQ(read_anything::mojom::ErrorCode::kWrongId,
-                  info->pack_state->get_error_code());
-        run_loop.Quit();
-      });
-
-  GetVoicePackInfo(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       GetVoicePackInfo_EngineFailsToWake_SendsErrorResult) {
-  const char kLang[] = "en-us";
-  ON_CALL(*extension_wrapper_, WakeEngine)
-      .WillByDefault(
-          [&](Profile* profile, base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-            return false;
-          });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // GetVoicePackInfo should wake the engine and request info.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine);
-  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ("", info->language);
-        EXPECT_EQ(read_anything::mojom::ErrorCode::kNotReached,
-                  info->pack_state->get_error_code());
-        run_loop.Quit();
-      });
-
-  GetVoicePackInfo(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, InstallVoicePack) {
-  const char kLang[] = "en-us";
-  PackResult result;
-  result.operation_error = PackResult::ErrorCode::kNone;
-  result.pack_state = PackResult::StatusCode::kInstalled;
-  result.language_code = kLang;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // InstallVoicePack should wake the engine and request installation.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(2);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInstall)
-      .WillOnce(
-          [&](const std::string& language, OnInstallCompleteCallback callback) {
-            EXPECT_EQ(language, kLang);
-            std::move(callback).Run(result);
-          });
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(language, kLang);
-            std::move(callback).Run(result);
-          });
-  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang, info->language);
-        EXPECT_EQ(InstallationState::kInstalled,
-                  info->pack_state->get_installation_state());
-        run_loop.Quit();
-      });
-
-  InstallVoicePack(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       InstallVoicePack_SendsErrorResult) {
-  const char kLang[] = "en-us";
-  PackResult result;
-  result.pack_state = PackResult::StatusCode::kUnknown;
-  result.operation_error = PackResult::ErrorCode::kWrongId;
-  result.language_code = kLang;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-  ON_CALL(*extension_wrapper_, RequestLanguageInstall)
-      .WillByDefault(
-          [&](const std::string& language, OnInstallCompleteCallback callback) {
-            std::move(callback).Run(result);
-          });
-
-  base::RunLoop run_loop;
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  EXPECT_CALL(*extension_wrapper_, WakeEngine);
-  EXPECT_CALL(page_, OnGetVoicePackInfo)
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang, info->language);
-        EXPECT_EQ(read_anything::mojom::ErrorCode::kWrongId,
-                  info->pack_state->get_error_code());
-        run_loop.Quit();
-      });
-
-  InstallVoicePack(kLang);
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       GetVoicePackInfo_RequestsAreQueued) {
-  base::RunLoop run_loop;
-  const char kLang1[] = "en-us";
-  const char kLang2[] = "fr-fr";
-  PackResult result1;
-  result1.operation_error = PackResult::ErrorCode::kNone;
-  result1.pack_state = PackResult::StatusCode::kInstalled;
-  result1.language_code = kLang1;
-  PackResult result2;
-  result2.operation_error = PackResult::ErrorCode::kNone;
-  result2.pack_state = PackResult::StatusCode::kNotInstalled;
-  result2.language_code = kLang2;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // Send two info requests. Only the first should be processed.
-  GetPackStateCallback callback1;
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(language, kLang1);
-            callback1 = std::move(callback);
-          });
-  GetVoicePackInfo(kLang1);
-  GetVoicePackInfo(kLang2);
-
-  // After we get the result from the first request, then send the second one.
-  GetPackStateCallback callback2;
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(language, kLang2);
-            callback2 = std::move(callback);
-          });
-  std::move(callback1).Run(result1);
-
-  EXPECT_CALL(page_, OnGetVoicePackInfo)
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang1, info->language);
-        EXPECT_EQ(InstallationState::kInstalled,
-                  info->pack_state->get_installation_state());
-      })
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang2, info->language);
-        EXPECT_EQ(InstallationState::kNotInstalled,
-                  info->pack_state->get_installation_state());
-        run_loop.Quit();
-      });
-  std::move(callback2).Run(result2);
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       InstallVoicePack_RequestsAreQueued) {
-  base::RunLoop run_loop;
-  const char kLang1[] = "en-us";
-  const char kLang2[] = "fr-fr";
-  PackResult result1;
-  result1.operation_error = PackResult::ErrorCode::kNone;
-  result1.pack_state = PackResult::StatusCode::kInstalled;
-  result1.language_code = kLang1;
-  PackResult result2;
-  result2.operation_error = PackResult::ErrorCode::kNone;
-  result2.pack_state = PackResult::StatusCode::kNotInstalled;
-  result2.language_code = kLang2;
-  ON_CALL(*extension_wrapper_, WakeEngine).WillByDefault(testing::Return(true));
-  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get());
-  handler_->SetChromeOsExtensionWrapperForTesting(
-      base::WrapUnique(extension_wrapper_.get()));
-
-  // Send two requests. Only the first install request should be processed.
-  OnInstallCompleteCallback installCallback;
-  GetPackStateCallback infoCallback;
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInstall)
-      .WillOnce(
-          [&](const std::string& language, OnInstallCompleteCallback callback) {
-            EXPECT_EQ(language, kLang1);
-            installCallback = std::move(callback);
-          });
-  InstallVoicePack(kLang1);
-  InstallVoicePack(kLang2);
-
-  // After getting the install callback, we first request info for that
-  // language, and that request should go through right away.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(language, kLang1);
-            infoCallback = std::move(callback);
-          });
-  std::move(installCallback).Run(result1);
-
-  // After getting the info callback, move to the next language in the queue.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInstall)
-      .WillOnce(
-          [&](const std::string& language, OnInstallCompleteCallback callback) {
-            EXPECT_EQ(language, kLang2);
-            installCallback = std::move(callback);
-          });
-  std::move(infoCallback).Run(result1);
-
-  // After receiving the install callback for lang2, we should request the
-  // status for that.
-  EXPECT_CALL(*extension_wrapper_, WakeEngine).Times(1);
-  EXPECT_CALL(*extension_wrapper_, RequestLanguageInfo)
-      .WillOnce(
-          [&](const std::string& language, GetPackStateCallback callback) {
-            EXPECT_EQ(language, kLang2);
-            infoCallback = std::move(callback);
-          });
-  std::move(installCallback).Run(result2);
-
-  EXPECT_CALL(page_, OnGetVoicePackInfo)
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang1, info->language);
-        EXPECT_EQ(InstallationState::kInstalled,
-                  info->pack_state->get_installation_state());
-      })
-      .WillOnce([&](read_anything::mojom::VoicePackInfoPtr info) {
-        EXPECT_EQ(kLang2, info->language);
-        EXPECT_EQ(InstallationState::kNotInstalled,
-                  info->pack_state->get_installation_state());
-        run_loop.Quit();
-      });
-  std::move(infoCallback).Run(result2);
-
-  run_loop.Run();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

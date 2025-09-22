@@ -9,14 +9,9 @@ const STATUS_SUCCESS = 'Successful response';
 const STATUS_FAILURE = 'Unsuccessful response';
 const PARSING_ERROR = 'Cannot parse LanguagePackManager response';
 
-// Expect to hear responses from the extension within 12 seconds. Otherwise,
-// infer it probably wasn't installed. 12 seconds was determined by
-// experimentation on ChromeOS, where the response can be slower since the tts
-// engine there gets put to sleep after some amount of inactivity. We have to
-// wake the engine and wait for the response in those cases. We can lower this
-// amount if that process gets faster or if the TTS engine stops being put to
-// sleep, or if ChromeOS stops being supported.
-export const EXTENSION_RESPONSE_TIMEOUT_MS = 12000;
+// Expect to hear responses from the extension within 6 seconds. Otherwise,
+// infer it probably wasn't installed.
+export const EXTENSION_RESPONSE_TIMEOUT_MS = 6000;
 
 // Representation of server-side LanguagePackManager state
 interface VoicePackServerResponseSuccess {
@@ -66,8 +61,7 @@ export enum VoicePackServerStatusErrorCode {
   WRONG_ID,              // If no language pack for this language
   NEED_REBOOT,           // Error installing and a reboot should help
   ALLOCATION,            // Error due to not enough memory
-  UNSUPPORTED_PLATFORM,  // Downloads not supported on this platform
-  NOT_REACHED,           // Can't reach the TTS engine
+  UNSUPPORTED_PLATFORM,  // Donloads not supported on this platform
 }
 
 // Our client-side representation tracking voice-pack states.
@@ -359,11 +353,6 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
     return {
       id: STATUS_FAILURE,
       code: VoicePackServerStatusErrorCode.UNSUPPORTED_PLATFORM,
-    };
-  } else if (mojoPackStatus === 'kNotReached') {
-    return {
-      id: STATUS_FAILURE,
-      code: VoicePackServerStatusErrorCode.NOT_REACHED,
     };
   } else {
     return {id: PARSING_ERROR, code: 'ParseError'};
