@@ -260,21 +260,18 @@ fuzzer_test("speech_audio_encoder_fuzzer") {
   ]
 }
 
-# TODO(crbug.com/446175453): Adapt this fuzzer to build and run on Android.
-if (!is_android) {
-  fuzzer_test("browser_accessibility_fuzzer") {
-    sources = [ "browser_accessibility_fuzzer.cc" ]
-    deps = [
-      "//content/app:for_content_tests",
-      "//content/browser",
-      "//content/public/browser:browser_sources",
-      "//content/test:test_support",
-      "//mojo/core/embedder",
-      "//services/network:test_support",
-      "//storage/browser:test_support",
-      "//ui/accessibility:test_support",
-    ]
-  }
+fuzzer_test("browser_accessibility_fuzzer") {
+  sources = [ "browser_accessibility_fuzzer.cc" ]
+  deps = [
+    "//content/app:for_content_tests",
+    "//content/browser",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//mojo/core/embedder",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
+    "//ui/accessibility:test_support",
+  ]
 }
 
 source_set("indexed_db_fuzzer_support") {
