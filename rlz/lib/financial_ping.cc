@@ -13,9 +13,9 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -53,8 +53,6 @@
 #include "url/gurl.h"
 
 namespace rlz_lib {
-
-using base::subtle::AtomicWord;
 
 bool FinancialPing::FormRequest(Product product,
     const AccessPoint* access_points, const char* product_signature,
@@ -227,12 +225,11 @@ scoped_refptr<RefCountedWaitableEvent>& GetPingResultEvent() {
 // The pointer to URLRequestContextGetter used by FinancialPing::PingServer().
 // It is atomic pointer because it can be accessed and modified by multiple
 // threads.
-AtomicWord g_URLLoaderFactory;
+std::atomic<network::mojom::URLLoaderFactory*> g_URLLoaderFactory;
 
 bool FinancialPing::SetURLLoaderFactory(
     network::mojom::URLLoaderFactory* factory) {
-  base::subtle::Release_Store(&g_URLLoaderFactory,
-                              reinterpret_cast<AtomicWord>(factory));
+  g_URLLoaderFactory.store(factory, std::memory_order_release);
   scoped_refptr<RefCountedWaitableEvent> event = GetPingResultEvent();
   if (!factory && event) {
     send_financial_ping_interrupted_for_test = true;
@@ -247,8 +244,7 @@ void PingRlzServer(std::string url,
   // in different thread. The instance is guaranteed to exist while
   // the method is running.
   network::mojom::URLLoaderFactory* url_loader_factory =
-      reinterpret_cast<network::mojom::URLLoaderFactory*>(
-          base::subtle::Acquire_Load(&g_URLLoaderFactory));
+      g_URLLoaderFactory.load(std::memory_order_acquire);
 
   // Browser shutdown will cause the factory to be reset to NULL.
   // ShutdownCheck will catch this.
