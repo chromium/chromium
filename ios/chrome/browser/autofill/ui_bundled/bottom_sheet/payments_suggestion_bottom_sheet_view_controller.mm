@@ -124,11 +124,9 @@ CGFloat const kTitleLogoHeight = 32;
 
   [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.class ])
-                       withAction:@selector(resizeLogoOnTraitChange)];
-  }
+  [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                    @[ UITraitUserInterfaceStyle.class ])
+                     withAction:@selector(resizeLogoOnTraitChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -137,20 +135,6 @@ CGFloat const kTitleLogoHeight = 32;
                                   self.imageViewAccessibilityLabel);
   [self.delegate paymentsBottomSheetViewDidAppear];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self resizeLogoOnTraitChange];
-  }
-}
-#endif
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];

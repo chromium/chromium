@@ -145,11 +145,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
         formInputAccessoryViewControllerDelegate;
     _keyboardWasClosed = YES;
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateUIOnTraitChange)];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateUIOnTraitChange)];
   }
   return self;
 }
@@ -163,17 +161,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     [self updateOmniboxTypingShieldVisibility];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 #pragma mark - UIViewController
 
