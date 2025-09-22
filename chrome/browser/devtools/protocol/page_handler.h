@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/page.h"
-#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,7 +49,6 @@ class PageHandler : public protocol::Page::Backend {
       const protocol::String& mode) override;
   protocol::Response SetRPHRegistrationMode(
       const protocol::String& mode) override;
-  protocol::Response SetPrewarmingAllowed(bool is_allowed) override;
   void GetInstallabilityErrors(
       std::unique_ptr<GetInstallabilityErrorsCallback> callback) override;
 
@@ -99,8 +97,6 @@ class PageHandler : public protocol::Page::Backend {
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   base::WeakPtr<content::WebContents> web_contents_;
-  std::unique_ptr<PrerenderManager::ScopedPrewarmDisabler>
-      scoped_prewarm_disabler_;
 
   bool enabled_ = false;
 
