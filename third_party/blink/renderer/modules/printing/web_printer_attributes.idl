@@ -46,7 +46,7 @@ dictionary WebPrintJobTemplateAttributes {
   WebPrintQuality printQuality;
   WebPrintingSides sides;
 
-  AbortSignal abortSignal;
+  AbortSignal signal;
 };
 
 dictionary WebPrinterAttributes {

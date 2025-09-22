@@ -38,7 +38,7 @@ bool AreFurtherStateUpdatesPossible(V8JobStateEnum state) {
 
 WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
                          mojom::blink::WebPrintJobInfoPtr print_job_info,
-                         AbortSignal* abort_signal)
+                         AbortSignal* signal)
     : ActiveScriptWrappable<WebPrintJob>({}),
       ExecutionContextClient(execution_context),
       attributes_(MakeGarbageCollected<WebPrintJobAttributes>()),
@@ -54,8 +54,8 @@ WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
   controller_.Bind(
       std::move(print_job_info->controller),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  if (abort_signal) {
-    cancel_handle_ = abort_signal->AddAlgorithm(
+  if (signal) {
+    cancel_handle_ = signal->AddAlgorithm(
         BindOnce(&WebPrintJob::cancel, WrapWeakPersistent(this)));
   }
 }

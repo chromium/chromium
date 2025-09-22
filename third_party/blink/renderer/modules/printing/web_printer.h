@@ -48,7 +48,7 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   void OnFetchAttributes(ScriptPromiseResolver<WebPrinterAttributes>*,
                          mojom::blink::WebPrinterFetchResultPtr result);
 
-  void OnPrint(AbortSignal* abort_signal,
+  void OnPrint(AbortSignal* signal,
                ScriptPromiseResolver<WebPrintJob>* resolver,
                mojom::blink::WebPrintResultPtr result);
 

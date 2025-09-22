@@ -31,7 +31,7 @@ class MODULES_EXPORT WebPrintJob
  public:
   WebPrintJob(ExecutionContext* execution_context,
               mojom::blink::WebPrintJobInfoPtr print_job_info,
-              AbortSignal* abort_signal = nullptr);
+              AbortSignal* signal = nullptr);
   ~WebPrintJob() override;
 
   // Web-exposed interfaces:
