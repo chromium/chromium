@@ -122,6 +122,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** The account that will be added by AddAccountActivityStub. */
     private AccountInfo mAccountToAdd;
 
+    /** Used as the result of {@link #didAccountFetchSucceed()}. */
     private boolean mDidAccountFetchingSucceed = true;
 
     /** Creates an object of FakeAccountManagerFacade. */
@@ -232,6 +233,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         return mDidAccountFetchingSucceed;
     }
 
+    /** Set the result of {@link #didAccountFetchSucceed()}. */
     public void setAccountFetchFailed() {
         mDidAccountFetchingSucceed = false;
     }

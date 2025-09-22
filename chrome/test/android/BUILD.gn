@@ -440,6 +440,7 @@ android_library("chrome_java_integration_test_support") {
     "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//google_apis/gaia/android:java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//services/device/public/mojom:mojom_java",

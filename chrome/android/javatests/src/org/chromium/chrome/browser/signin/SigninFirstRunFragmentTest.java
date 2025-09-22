@@ -104,7 +104,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -1102,7 +1101,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(TestAccounts.ACCOUNT1.getFullName())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock)
@@ -1121,7 +1120,7 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         checkFragmentWithSelectedAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         verify(mFirstRunPageDelegateMock)
@@ -1141,7 +1140,7 @@ public class SigninFirstRunFragmentTest {
             launchActivityWithFragment();
             onView(withText(R.string.signin_add_account_to_device)).perform(click());
             mSigninTestRule.setAddAccountFlowResult(TestAccounts.TEST_ACCOUNT_NO_NAME);
-            onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+            onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
             // The account is not visible and thus add account button is shown.
             onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));

@@ -4,14 +4,9 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.hamcrest.Matcher;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -21,27 +16,17 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
-import org.chromium.google_apis.gaia.GoogleServiceAuthError;
-import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 /**
- * This test rule mocks AccountManagerFacade.
+ * This test rule establishing a simulated account management environment for unit tests, using a
+ * FakeAccountManagerFacade and a FakeAccountInfoService.
  *
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // The matcher for the add account button in the fake add account activity.
-    public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =
-            withId(FakeAccountManagerFacade.AddAccountActivityStub.OK_BUTTON_ID);
-    // The matcher for the cancel button in the fake add account activity.
-    public static final Matcher<View> CANCEL_ADD_ACCOUNT_BUTTON_MATCHER =
-            withId(FakeAccountManagerFacade.AddAccountActivityStub.CANCEL_BUTTON_ID);
-
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
     // TODO(crbug.com/40234741): Revise this test rule and make this non-nullable.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService;
@@ -77,7 +62,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /** Sets up the AccountManagerFacade mock. */
-    public void setUpRule() {
+    private void setUpRule() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (mFakeAccountInfoService != null) {
@@ -88,7 +73,7 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /** Tears down the AccountManagerFacade mock and signs out if user is signed in. */
-    public void tearDownRule() {
+    private void tearDownRule() {
         if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }
 
@@ -136,40 +121,5 @@ public class AccountManagerTestRule implements TestRule {
     /** See {@link FakeAccountManagerFacade#blockGetAccounts(boolean)}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
         return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
-    }
-
-    /**
-     * Sets an error for the given `accountId` when requesting an access token through {@link
-     * AccountManagerFacade}. Future access token requests will return the `authError` provided.
-     * This method will propagate the error to native code as well through {@link
-     * IdentityManagerImpl}.
-     *
-     * <p>If the `authError` has the state {@link GoogleServiceAuthErrorState#NONE} then {@link
-     * AccountManagerFacade} will return valid access tokens instead of returning an error. Errors
-     * must be set through a previous call to {@link #addOrUpdateAccessTokenError} before they can
-     * be cleared this way.
-     *
-     * @param identityManager {@link IdentityManagerImpl} object to pass the error to native.
-     * @param accountId The {@link CoreAccountId} to set the authError to.
-     * @param authError A {@link GoogleServiceAuthError} to return on access token requests.
-     */
-    public void addOrUpdateAccessTokenError(
-            IdentityManagerImpl identityManager,
-            CoreAccountId accountId,
-            GoogleServiceAuthError authError) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mFakeAccountManagerFacade.addOrUpdateAccessTokenError(accountId, authError);
-                    identityManager.updateAuthErrorForTesting(accountId, authError);
-                });
-    }
-
-    /**
-     * Resolves the minor mode of {@param accountInfo} to restricted, so that the UI will be safe to
-     * show to minors.
-     */
-    public void resolveMinorModeToRestricted(CoreAccountId accountId) {
-        mFakeAccountManagerFacade.updateAccountCapabilities(
-                accountId, TestAccounts.MINOR_MODE_REQUIRED);
     }
 }

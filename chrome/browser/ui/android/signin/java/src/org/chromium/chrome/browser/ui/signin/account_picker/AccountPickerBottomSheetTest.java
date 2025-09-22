@@ -87,6 +87,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -1103,7 +1104,7 @@ public class AccountPickerBottomSheetTest {
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -1132,7 +1133,7 @@ public class AccountPickerBottomSheetTest {
 
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -1273,7 +1274,7 @@ public class AccountPickerBottomSheetTest {
         // Start sign-in and remove the account before completing the device lock.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
 
@@ -1293,7 +1294,7 @@ public class AccountPickerBottomSheetTest {
         // Start sign-in and remove the account before validating the management notice.
         onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
         mAccountManagerTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         waitForView(
                 (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
                 withId(R.id.account_picker_confirm_management_description));

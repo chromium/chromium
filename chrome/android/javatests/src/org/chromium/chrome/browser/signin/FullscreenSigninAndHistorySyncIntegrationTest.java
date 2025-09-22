@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -550,7 +549,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         onView(withText(TestAccounts.AADC_ADULT_ACCOUNT.getFullName())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));

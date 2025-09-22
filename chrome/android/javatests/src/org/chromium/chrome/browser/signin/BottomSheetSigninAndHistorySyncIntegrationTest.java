@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.SigninFeatures;
@@ -532,7 +531,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         onView(allOf(withText(R.string.signin_add_account_to_device), isCompletelyDisplayed()))
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
         addAccountStateWatcher.assertExpected();
     }
@@ -664,7 +663,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 withParent(withId(R.id.account_picker_state_no_account)),
                                 isCompletelyDisplayed()))
                 .perform(click());
-        onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         onViewWaiting(
                 allOf(
@@ -697,7 +696,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.REQUIRED);
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         signinStartedWatcher.assertExpected();
@@ -720,7 +719,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.REQUIRED);
-        onViewWaiting(AccountManagerTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.CANCEL_ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -846,7 +845,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                                 isCompletelyDisplayed()))
                 .perform(click());
         mSigninTestRule.setAddAccountFlowResult(TestAccounts.AADC_ADULT_ACCOUNT);
-        onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         signinHistogramWatcher.assertExpected();
 
