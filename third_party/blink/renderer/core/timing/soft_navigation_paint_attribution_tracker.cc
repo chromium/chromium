@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 
-#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -79,6 +78,14 @@ void SoftNavigationPaintAttributionTracker::MarkNodeForPaintTrackingIfNeeded(
   CHECK(node);
   CHECK(inherited_state);
 
+  // For pseudo elements with background images, `node` is the parent or shadow
+  // host, not the pseudo element, and it might not have an associated layout
+  // object. Ignore these (PaintTimingDetector does the same).
+  LayoutObject* layout_object = node->GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
+
   NodeState* previous_node_state = GetNodeState(node);
   if (previous_node_state && previous_node_state->ModificationId() >=
                                  inherited_state->ModificationId()) {
@@ -95,8 +102,7 @@ void SoftNavigationPaintAttributionTracker::MarkNodeForPaintTrackingIfNeeded(
                               /*is_directly_modified=*/false));
   if (!previous_node_state || previous_node_state->GetSoftNavigationContext() !=
                                   inherited_state->GetSoftNavigationContext()) {
-    NotifyPaintTimingDetectorOnContextChanged(
-        CHECK_DEREF(node->GetLayoutObject()));
+    NotifyPaintTimingDetectorOnContextChanged(*layout_object);
   }
 }
 
