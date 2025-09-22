@@ -591,6 +591,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                    size_t row_bytes,
                    int x,
                    int y) override;
+  void ClearUnusedResources() override { unused_resources_.clear(); }
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -607,7 +608,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     scoped_refptr<CanvasResourceSharedImage> resource;
   };
 
-  void ClearUnusedResources() override { unused_resources_.clear(); }
   void RegisterUnusedResource(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
