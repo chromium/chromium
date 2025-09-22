@@ -1255,6 +1255,31 @@ TEST_F(AddressDataManagerTest, CreateAccountNameEmailProfileAfterInitalLoad) {
                   &AutofillProfile::record_type,
                   AutofillProfile::RecordType::kAccountNameEmail)));
 }
+// Tests that `kAccountNameEmail` is deleted if the feature got disabled.
+TEST_F(AddressDataManagerTest, RemoveAccountNameEmailProfileIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableSupportForNameAndEmail};
+
+  const CoreAccountInfo core_info =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
+      core_info.account_id, core_info.email, core_info.gaia, "", "Full Name",
+      "Full", "en-US", "");
+  RecreateAddressDataManager();
+
+  // Verify that the profile got created.
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(testing::Property(
+                  &AutofillProfile::record_type,
+                  AutofillProfile::RecordType::kAccountNameEmail)));
+
+  feature_list.Reset();
+  RecreateAddressDataManager();
+  EXPECT_THAT(address_data_manager().GetProfilesByRecordType(
+                  AutofillProfile::RecordType::kAccountNameEmail),
+              testing::IsEmpty());
+}
 
 }  // namespace
 

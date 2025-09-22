@@ -193,6 +193,15 @@ void AddressDataManager::OnWebDataServiceRequestDone(
         account_name_email_store_->UpdateOrCreateAccountNameEmail(
             identity_manager_->FindExtendedAccountInfo(core_info.value()));
       }
+    } else {
+      // In case the feature got disabled the profile should be cleaned up.
+      if (!GetProfilesByRecordType(
+               AutofillProfile::RecordType::kAccountNameEmail)
+               .empty()) {
+        RemoveProfile(GetProfilesByRecordType(
+                          AutofillProfile::RecordType::kAccountNameEmail)[0]
+                          ->guid());
+      }
     }
     LogStoredDataMetrics();
   }
