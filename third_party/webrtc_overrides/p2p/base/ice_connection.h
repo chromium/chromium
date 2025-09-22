@@ -12,6 +12,7 @@
 
 #include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
@@ -56,13 +57,13 @@ class RTC_EXPORT IceConnection {
   WriteState write_state() const { return write_state_; }
 
   // Last time we sent a ping to the other side.
-  int64_t last_ping_sent() const { return last_ping_sent_; }
+  webrtc::Timestamp last_ping_sent() const { return last_ping_sent_; }
   // Last time we received a ping from the other side.
-  int64_t last_ping_received() const { return last_ping_received_; }
+  webrtc::Timestamp last_ping_received() const { return last_ping_received_; }
   // Last time we received date from the other side.
-  int64_t last_data_received() const { return last_data_received_; }
+  webrtc::Timestamp last_data_received() const { return last_data_received_; }
   // Last time we received a response to a ping from the other side.
-  int64_t last_ping_response_received() const {
+  webrtc::Timestamp last_ping_response_received() const {
     return last_ping_response_received_;
   }
   // The number of pings sent.
@@ -88,10 +89,10 @@ class RTC_EXPORT IceConnection {
   bool connected_;
   bool selected_;
   WriteState write_state_;
-  int64_t last_ping_sent_;
-  int64_t last_ping_received_;
-  int64_t last_data_received_;
-  int64_t last_ping_response_received_;
+  webrtc::Timestamp last_ping_sent_;
+  webrtc::Timestamp last_ping_received_;
+  webrtc::Timestamp last_data_received_;
+  webrtc::Timestamp last_ping_response_received_;
   int num_pings_sent_;
 
   std::vector<RttSample> rtt_samples_;

@@ -98,11 +98,11 @@ MATCHER_P(ConnectionEq,
          arg.remote_candidate() == conn->remote_candidate() &&
          arg.connected() == conn->connected() &&
          arg.selected() == conn->selected() &&
-         arg.last_ping_sent() == conn->last_ping_sent() &&
-         arg.last_ping_received() == conn->last_ping_received() &&
-         arg.last_data_received() == conn->last_data_received() &&
+         arg.last_ping_sent() == conn->LastPingSent() &&
+         arg.last_ping_received() == conn->LastPingReceived() &&
+         arg.last_data_received() == conn->LastDataReceived() &&
          arg.last_ping_response_received() ==
-             conn->last_ping_response_received() &&
+             conn->LastPingResponseReceived() &&
          arg.num_pings_sent() == conn->num_pings_sent();
 }
 
