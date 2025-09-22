@@ -9651,6 +9651,9 @@ crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCDataChannel-send-close-string
 
 crbug.com/407750483 http/tests/devtools/network/network-search.js [ Failure Pass ]
 
+# Text drag and drop does not work on mac for test_driver.
+crbug.com/440374233 [ Mac ] external/wpt/html/editing/dnd/drop/002.xhtml [ Timeout ]
+
 # Gardener 2025-08-18
 crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/invalid-bytes.html [ Failure Timeout ]
 crbug.com/428101918 [ Linux ] external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Failure Timeout ]
