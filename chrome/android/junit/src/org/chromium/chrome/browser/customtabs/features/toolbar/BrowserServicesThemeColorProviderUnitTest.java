@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.ContextThemeWrapper;
 
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
@@ -108,6 +109,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
         IntentUtils.setForceIsTrustedIntentForTesting(isOpenedByChrome);
 
         if (isIncognito) {
+            intent.setData(Uri.parse("http://www.example.com"));
             return new IncognitoCustomTabIntentDataProvider(intent, mContext, colorScheme);
         } else {
             return new CustomTabIntentDataProvider(intent, mContext, colorScheme);

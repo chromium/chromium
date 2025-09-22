@@ -2125,6 +2125,7 @@ public class CustomTabIntentDataProviderTest {
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testIsOptionalButtonSupported_incognitoCct() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.setData(Uri.parse("http://www.example.com"));
         var dataProvider =
                 new IncognitoCustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(

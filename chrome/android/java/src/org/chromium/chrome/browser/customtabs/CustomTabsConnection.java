@@ -1096,7 +1096,7 @@ public class CustomTabsConnection {
      *
      * <p>This is used for accounting.
      */
-    void registerLaunch(SessionHolder<?> session, String url) {
+    void registerLaunch(@Nullable SessionHolder<?> session, String url) {
         mClientManager.registerLaunch(session, url);
     }
 
@@ -1361,7 +1361,7 @@ public class CustomTabsConnection {
     /**
      * @see ClientManager#shouldSendNavigationInfoForSession(SessionHolder)
      */
-    public boolean shouldSendNavigationInfoForSession(SessionHolder<?> session) {
+    public boolean shouldSendNavigationInfoForSession(@Nullable SessionHolder<?> session) {
         return mClientManager.shouldSendNavigationInfoForSession(session);
     }
 
@@ -1405,7 +1405,7 @@ public class CustomTabsConnection {
     }
 
     /** See {@link ClientManager#setSendNavigationInfoForSession(SessionHolder, boolean)}. */
-    void setSendNavigationInfoForSession(SessionHolder<?> session, boolean send) {
+    void setSendNavigationInfoForSession(@Nullable SessionHolder<?> session, boolean send) {
         mClientManager.setSendNavigationInfoForSession(session, send);
     }
 
@@ -1476,7 +1476,10 @@ public class CustomTabsConnection {
      *     available for sharing.
      */
     public void sendNavigationInfo(
-            SessionHolder<?> session, String url, String title, @Nullable Uri snapshotPath) {}
+            @Nullable SessionHolder<?> session,
+            String url,
+            String title,
+            @Nullable Uri snapshotPath) {}
 
     /**
      * Called when the bottom bar for the custom tab has been hidden or shown completely by user
@@ -1596,7 +1599,7 @@ public class CustomTabsConnection {
     /**
      * @see {@link notifyNavigationEvent(SessionHolder, int, Optional<int>)}
      */
-    public boolean notifyNavigationEvent(SessionHolder<?> session, int navigationEvent) {
+    public boolean notifyNavigationEvent(@Nullable SessionHolder<?> session, int navigationEvent) {
         return notifyNavigationEvent(session, navigationEvent, Optional.empty());
     }
 
@@ -1612,7 +1615,7 @@ public class CustomTabsConnection {
      * @return true for success.
      */
     public boolean notifyNavigationEvent(
-            SessionHolder<?> session, int navigationEvent, Optional<Integer> errorCode) {
+            @Nullable SessionHolder<?> session, int navigationEvent, Optional<Integer> errorCode) {
         BrowserCallbackWrapper callback = mClientManager.getCallbackForSession(session);
         if (callback == null) return false;
         try {
@@ -1637,7 +1640,8 @@ public class CustomTabsConnection {
      * @return The {@link Bundle} to use as extra to {@link
      *     CustomTabsCallback#onNavigationEvent(int, Bundle)}
      */
-    protected Bundle getExtrasBundleForNavigationEventForSession(SessionHolder<?> session) {
+    protected Bundle getExtrasBundleForNavigationEventForSession(
+            @Nullable SessionHolder<?> session) {
         // SystemClock.uptimeMillis() is used here as it (as of June 2017) uses the same system call
         // as all the native side of Chrome, and this is the same clock used for page load metrics.
         Bundle extras = new Bundle();
@@ -2201,7 +2205,7 @@ public class CustomTabsConnection {
     /**
      * @return The CalledWarmup state for the session.
      */
-    public @CalledWarmup int getWarmupState(SessionHolder<?> session) {
+    public @CalledWarmup int getWarmupState(@Nullable SessionHolder<?> session) {
         return mClientManager.getWarmupState(session);
     }
 

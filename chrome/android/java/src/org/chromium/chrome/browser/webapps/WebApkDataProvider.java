@@ -120,7 +120,7 @@ public class WebApkDataProvider {
     }
 
     private static boolean isWithinScope(
-            String url, String initialUrl, List<String> additionalOrigins) {
+            String url, String initialUrl, @Nullable List<String> additionalOrigins) {
         Set<Origin> origins = new HashSet<>();
         origins.add(Origin.create(initialUrl));
 

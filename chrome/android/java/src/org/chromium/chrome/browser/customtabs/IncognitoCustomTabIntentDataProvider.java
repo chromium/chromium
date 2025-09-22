@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_ENTER_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_EXIT_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_PACKAGE_NAME;
@@ -21,12 +22,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -48,12 +51,13 @@ import java.util.List;
  * re-created when color scheme changes, which happens automatically since color scheme change leads
  * to activity re-creation.
  */
+@NullMarked
 public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentDataProvider {
     private static final int MAX_CUSTOM_MENU_ITEMS = 7;
     private final Intent mIntent;
-    private final SessionHolder<CustomTabsSessionToken> mSession;
+    private final @Nullable SessionHolder<CustomTabsSessionToken> mSession;
     private final boolean mIsTrustedIntent;
-    private final Bundle mAnimationBundle;
+    private final @Nullable Bundle mAnimationBundle;
     private final ColorProvider mColorProvider;
     private final int mTitleVisibilityState;
     private final Drawable mCloseButtonIcon;
@@ -61,7 +65,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
 
     private final String mUrlToLoad;
-    private final String mSendersPackageName;
+    private final @Nullable String mSendersPackageName;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -72,7 +76,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         assert intent != null;
         mIntent = intent;
-        mUrlToLoad = IntentHandler.getUrlFromIntent(intent);
+        mUrlToLoad = assertNonNull(IntentHandler.getUrlFromIntent(intent));
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         mSession = token != null ? new SessionHolder<>(token) : null;
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
@@ -232,7 +236,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return isTrusted;
     }
 
-    public String getSendersPackageName() {
+    public @Nullable String getSendersPackageName() {
         return mSendersPackageName;
     }
 
@@ -251,13 +255,14 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         return mSession;
     }
 
+    @EnsuresNonNullIf("mAnimationBundle")
     @Override
     public boolean shouldAnimateOnFinish() {
         return mAnimationBundle != null && mAnimationBundle.getString(BUNDLE_PACKAGE_NAME) != null;
     }
 
     @Override
-    public String getClientPackageName() {
+    public @Nullable String getClientPackageName() {
         return mSendersPackageName;
     }
 

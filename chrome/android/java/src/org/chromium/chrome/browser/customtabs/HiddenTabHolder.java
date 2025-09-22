@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -19,6 +20,8 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -52,18 +55,19 @@ import java.util.Objects;
  * Thread safety: Only access on UI Thread. <br>
  * Native: This class needs native to be loaded (since it creates Tabs).
  */
+@NullMarked
 public class HiddenTabHolder {
     /** Holds the parameters for the current hidden tab speculation. */
     @VisibleForTesting
     static final class SpeculationParams {
-        public final SessionHolder<?> session;
+        public final @Nullable SessionHolder<?> session;
         public final HiddenTab hiddenTab;
         public final String referrer;
         public final boolean isEarlyNav;
 
         private SpeculationParams(
-                SessionHolder<?> session,
-                String url,
+                @Nullable SessionHolder<?> session,
+                @Nullable String url,
                 Tab tab,
                 String referrer,
                 TabObserverRegistrar tabObserverRegistrar,
@@ -88,14 +92,14 @@ public class HiddenTabHolder {
         public final TabObserverRegistrar tabObserverRegistrar;
         public final CustomTabObserver customTabObserver;
         public final CustomTabNavigationEventObserver customTabNavigationEventObserver;
-        public final String url;
+        public final @Nullable String url;
 
         public HiddenTab(
                 Tab tab,
                 TabObserverRegistrar tabObserverRegistrar,
                 CustomTabObserver customTabObserver,
                 CustomTabNavigationEventObserver customTabNavigationEventObserver,
-                String url) {
+                @Nullable String url) {
             this.tab = tab;
             this.tabObserverRegistrar = tabObserverRegistrar;
             this.customTabObserver = customTabObserver;
@@ -112,12 +116,12 @@ public class HiddenTabHolder {
         }
 
         @Override
-        public void onActivityAttachmentChanged(Tab tab, WindowAndroid window) {
+        public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
             tab.removeObserver(this);
         }
     }
 
-    @Nullable private SpeculationParams mSpeculation;
+    private @Nullable SpeculationParams mSpeculation;
 
     /**
      * Creates a hidden tab and initiates a navigation.
@@ -223,8 +227,7 @@ public class HiddenTabHolder {
      *     Custom Tabs Intent.
      * @return The hidden tab, or null.
      */
-    @Nullable
-    HiddenTab takeHiddenTab(
+    @Nullable HiddenTab takeHiddenTab(
             @Nullable SessionHolder<?> session,
             boolean ignoreFragments,
             String url,
@@ -247,7 +250,7 @@ public class HiddenTabHolder {
 
             String referrer =
                     IntentHandler.getReferrerUrlIncludingExtraHeaders(
-                            intentDataProvider.getIntent());
+                            assertNonNull(intentDataProvider.getIntent()));
             if (referrer == null) referrer = "";
 
             if (urlsMatch && TextUtils.equals(speculationReferrer, referrer)) {
@@ -296,6 +299,7 @@ public class HiddenTabHolder {
                         .takeSpareTab(profile, true, TabLaunchType.FROM_EXTERNAL_APP);
 
         String url = IntentHandler.getUrlFromIntent(intent);
+        assert url != null;
         LoadUrlParams params = new LoadUrlParams(url);
         IntentHandler.addReferrerAndHeaders(params, intent);
         int transitionType =
@@ -360,12 +364,11 @@ public class HiddenTabHolder {
         return true;
     }
 
-    public Tab getHiddenTabForTesting() {
+    public @Nullable Tab getHiddenTabForTesting() {
         return mSpeculation != null ? mSpeculation.hiddenTab.tab : null;
     }
 
-    @Nullable
-    SpeculationParams getSpeculationParamsForTesting() {
+    @Nullable SpeculationParams getSpeculationParamsForTesting() {
         return mSpeculation;
     }
 }

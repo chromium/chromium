@@ -45,7 +45,7 @@ import java.util.List;
 @NullMarked
 public class CustomTabObserver extends EmptyTabObserver {
     private final @Nullable CustomTabsConnection mCustomTabsConnection;
-    private final SessionHolder<?> mSession;
+    private final @Nullable SessionHolder<?> mSession;
 
     private final NavigationInfoCaptureTrigger mNavigationInfoCaptureTrigger =
             new NavigationInfoCaptureTrigger(this::captureNavigationInfo);
@@ -151,7 +151,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
     }
 
-    public CustomTabObserver(boolean openedByChrome, SessionHolder<?> token) {
+    public CustomTabObserver(boolean openedByChrome, @Nullable SessionHolder<?> token) {
         mCustomTabsConnection = openedByChrome ? null : CustomTabsConnection.getInstance();
         mSession = token;
         resetPageLoadTracking();
