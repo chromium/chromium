@@ -7917,3 +7917,58 @@ def CheckEnabledByDefaultCommitMessage(input_api, output_api):
     if input_api.is_committing:
         return [output_api.PresubmitError(error_message)]
     return [output_api.PresubmitNotifyResult(error_message)]
+
+
+def CheckBaseFeatureMacro(input_api, output_api):
+    """Checks for correct usage of the BASE_FEATURE macro."""
+    pattern = input_api.re.compile(
+        r'\bBASE_FEATURE\s*\(\s*([^,]+)\s*,\s*([^,)]+)')
+    warnings = []
+
+    for f in input_api.AffectedFiles():
+        if not f.LocalPath().endswith(('.cc', '.mm')):
+            continue
+
+        # Create a set of changed line numbers.
+        changed_line_numbers = {line_num for line_num, _ in f.ChangedContents()}
+        if not changed_line_numbers:
+            continue
+
+        lines = list(f.NewContents())
+        contents = '\n'.join(lines)
+        for match in pattern.finditer(contents):
+            # Determine the line numbers that the match spans.
+            start_line = contents.count('\n', 0, match.start()) + 1
+            end_line = contents.count('\n', 0, match.end()) + 1
+
+            # Check if any line in the match is in the set of changed lines.
+            if not changed_line_numbers.intersection(
+                    range(start_line, end_line + 1)):
+                continue
+
+            # Heuristic to ignore commented out macros.
+            if lines[start_line - 1].strip().startswith('//'):
+                continue
+
+            param1 = match.group(1).strip()
+            param2 = match.group(2).strip()
+
+            if param2.startswith('"') and param2.endswith('"'):
+                warnings.append(
+                    '    %s:%d: The 3-argument BASE_FEATURE macro with a '
+                    'string literal is discouraged. Use the 2-argument '
+                    'version instead.' % (f.LocalPath(), start_line))
+
+            if not input_api.re.match(r'^k[A-Z]', param1):
+                warnings.append(
+                    '    %s:%d: Feature identifier "%s" should start with "k" '
+                    'followed by an uppercase letter.' %
+                    (f.LocalPath(), start_line, param1))
+
+    if not warnings:
+        return []
+
+    return [
+        output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
+                                          warnings)
+    ]
