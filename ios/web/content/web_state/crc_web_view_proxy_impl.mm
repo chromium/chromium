@@ -120,4 +120,12 @@
   return NO;
 }
 
+- (UIEdgeInsets)obscuredInsets {
+  return _contentView.obscuredInsets;
+}
+
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  [_contentView setObscuredInsets:obscuredInsets];
+}
+
 @end
