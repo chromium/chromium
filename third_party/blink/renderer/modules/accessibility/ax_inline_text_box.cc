@@ -291,16 +291,6 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (IsPartOfAListItem() &&
       ParentObject()->FirstChildIncludingIgnored() == this) {
     AXObject* candidate = ParentObject()->PreviousOnLine();
-    if (candidate) {
-      return candidate;
-    }
-
-    candidate = ParentObject()->UnignoredPreviousSiblingSlow();
-    if (candidate && candidate->IsLineBreakingObject() &&
-        (candidate->GetClosestNode()->GetTreeScope() ==
-         GetClosestNode()->GetTreeScope())) {
-      return nullptr;
-    }
     return candidate;
   }
 

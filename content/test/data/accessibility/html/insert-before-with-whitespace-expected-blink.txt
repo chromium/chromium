@@ -19,10 +19,10 @@ rootWebArea
 ++++++++++++inlineTextBox name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
 ++++++++++staticText name='world this' nextOnLineId=staticText:" "
-++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" " previousOnLineId=staticText:" "
+++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" "
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++staticText name='is just like docs, and your kitchen sink'
-++++++++++++inlineTextBox name='is just like docs, and your kitchen sink' previousOnLineId=staticText:" "
+++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
 === Start Continuation ===
 rootWebArea name='done'
 ++genericContainer ignored
@@ -40,10 +40,10 @@ rootWebArea name='done'
 ++++++++++++inlineTextBox name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
 ++++++++++staticText name='world this' nextOnLineId=staticText:" "
-++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" " previousOnLineId=staticText:" "
+++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" "
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++staticText name='is just like docs, and your kitchen sink'
-++++++++++++inlineTextBox name='is just like docs, and your kitchen sink' previousOnLineId=staticText:" "
+++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
 ++++++++listItem
 ++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"this is the second item (for now)"
 ++++++++++++staticText ignored

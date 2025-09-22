@@ -4874,6 +4874,8 @@ data/accessibility/html/list-text-expected-blink.txt
 data/accessibility/html/list-text-removal-expected-blink.txt
 data/accessibility/html/list-text-removal.html
 data/accessibility/html/list-text.html
+data/accessibility/html/list-with-multi-line-list-item-in-content-editable-expected-blink.txt
+data/accessibility/html/list-with-multi-line-list-item-in-content-editable.html
 data/accessibility/html/list.html
 data/accessibility/html/long-text-expected-blink.txt
 data/accessibility/html/long-text.html
@@ -6836,6 +6838,7 @@ data/browsing_topics/v1.init_too_new.sql
 data/browsing_topics/v1.no_hashed_to_unhashed_domains_table.sql
 data/browsing_topics/v1.sql
 data/btm/v1.sql
+data/btm/v10.sql
 data/btm/v2.sql
 data/btm/v3.sql
 data/btm/v4.sql
@@ -6844,7 +6847,6 @@ data/btm/v6.sql
 data/btm/v7.sql
 data/btm/v8.sql
 data/btm/v9.sql
-data/btm/v10.sql
 data/cache_storage/corrupt_utf16_cache_name/0430f1a484a0ea6d8de562488c5fbeec0111d16f/676288ed-4de0-44af-97d6-dbd75b07a8a3/4bfb34f348c2269e_0
 data/cache_storage/corrupt_utf16_cache_name/0430f1a484a0ea6d8de562488c5fbeec0111d16f/676288ed-4de0-44af-97d6-dbd75b07a8a3/index
 data/cache_storage/corrupt_utf16_cache_name/0430f1a484a0ea6d8de562488c5fbeec0111d16f/676288ed-4de0-44af-97d6-dbd75b07a8a3/index-dir/the-real-index
