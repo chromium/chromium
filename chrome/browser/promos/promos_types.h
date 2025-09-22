@@ -5,6 +5,14 @@
 #ifndef CHROME_BROWSER_PROMOS_PROMOS_TYPES_H_
 #define CHROME_BROWSER_PROMOS_PROMOS_TYPES_H_
 
-enum class IOSPromoType { kPassword, kAddress, kPayment };
+enum class IOSPromoType {
+  kPassword,
+  kAddress,
+  kPayment,
+  kEnhancedBrowsing,
+  kLens
+};
+
+enum class IOSPromoBubbleType { kQRCode, kReminder };
 
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_TYPES_H_

@@ -728,6 +728,12 @@ chromium-metrics-reviews@google.com.
   <int value="100329" label="ShelfNotebookLmAppPinRolls"/>
   <int value="100330" label="VerticalTabsEnabled"/>
   <int value="100331" label="SplitViewDragAndDropEnabled"/>
+  <int value="100332" label="iOSEnhancedBrowsingPromoLastImpressionTimestamp"/>
+  <int value="100333" label="iOSEnhancedBrowsingPromoImpressionsCounter"/>
+  <int value="100334" label="iOSEnhancedBrowsingPromoOptOut"/>
+  <int value="100335" label="iOSLensPromoLastImpressionTimestamp"/>
+  <int value="100336" label="iOSLensPromoImpressionsCounter"/>
+  <int value="100337" label="iOSLensPromoOptOut"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

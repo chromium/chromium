@@ -37,7 +37,8 @@ class IOSPasswordPromoBubbleTest : public DialogBrowserTest {
     IOSPromoBubble::ShowPromoBubble(
         button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage),
         button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage),
-        browser()->profile(), IOSPromoType::kPassword);
+        browser()->profile(), IOSPromoType::kPassword,
+        IOSPromoBubbleType::kQRCode);
   }
 };
 
@@ -61,7 +62,8 @@ class IOSAddressPromoBubbleTest : public DialogBrowserTest {
         button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage),
         button_provider->GetPageActionIconView(
             PageActionIconType::kAutofillAddress),
-        browser()->profile(), IOSPromoType::kAddress);
+        browser()->profile(), IOSPromoType::kAddress,
+        IOSPromoBubbleType::kQRCode);
   }
 };
 
@@ -83,7 +85,8 @@ class IOSPaymentPromoBubbleTest : public DialogBrowserTest {
     IOSPromoBubble::ShowPromoBubble(
         button_provider->GetAnchorView(kActionShowPaymentsBubbleOrPage),
         button_provider->GetPageActionIconView(PageActionIconType::kSaveCard),
-        browser()->profile(), IOSPromoType::kPayment);
+        browser()->profile(), IOSPromoType::kPayment,
+        IOSPromoBubbleType::kQRCode);
   }
 };
 

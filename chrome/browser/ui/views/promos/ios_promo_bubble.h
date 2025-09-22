@@ -19,6 +19,7 @@ struct IOSPromoTypeConfigs;
 
 class Profile;
 
+enum class IOSPromoBubbleType;
 enum class IOSPromoType;
 
 // A view for the iOS bubble promo which displays a QR code.
@@ -27,7 +28,8 @@ class IOSPromoBubble {
   // SetUpBubble sets up the promo constants (such as strings) depending
   // on the given promo type and returns the current IOSPromoBubble's config.
   static IOSPromoConstants::IOSPromoTypeConfigs SetUpBubble(
-      IOSPromoType promo_type);
+      IOSPromoType promo_type,
+      IOSPromoBubbleType bubble_type);
 
   static views::BubbleDialogDelegate* ios_promo_delegate_;
   static IOSPromoType current_promo_type_;
@@ -47,7 +49,8 @@ class IOSPromoBubble {
   static void ShowPromoBubble(views::View* anchor_view,
                               views::Button* highlighted_button,
                               Profile* profile,
-                              IOSPromoType promo_type);
+                              IOSPromoType promo_type,
+                              IOSPromoBubbleType bubble_type);
 
   // Hide closes the bubble.
   static void Hide();

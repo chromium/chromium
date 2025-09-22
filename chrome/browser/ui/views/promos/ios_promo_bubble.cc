@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -53,6 +54,12 @@ std::string GetIOSDesktopPromoQRCodeURL(IOSPromoType promo_type) {
       return IOSPromoConstants::kIOSPromoAddressBubbleQRCodeURL;
     case IOSPromoType::kPayment:
       return IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
+    case IOSPromoType::kEnhancedBrowsing:
+      // TODO(crbug.com/442562546): Return URL for kEnhancedBrowsing promo.
+      return IOSPromoConstants::kIOSPromoPaymentBubbleQRCodeURL;
+    case IOSPromoType::kLens:
+      // TODO(crbug.com/442562546): Return URL for kLens promo.
+      return IOSPromoConstants::kIOSPromoPasswordBubbleQRCodeURL;
   }
 }
 }  // namespace
@@ -243,7 +250,8 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateFooter(
 
 // static
 IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
-    IOSPromoType promo_type) {
+    IOSPromoType promo_type,
+    IOSPromoBubbleType bubble_type) {
   IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config;
 
   ios_promo_config.promo_qr_code_url = GetIOSDesktopPromoQRCodeURL(promo_type);
@@ -288,6 +296,40 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       ios_promo_config.decline_button_text_id =
           IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
+    case IOSPromoType::kEnhancedBrowsing:
+      switch (bubble_type) {
+        case IOSPromoBubbleType::kQRCode:
+          ios_promo_config.bubble_title_id =
+              IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_QR;
+          ios_promo_config.bubble_subtitle_id =
+              IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR;
+          break;
+        case IOSPromoBubbleType::kReminder:
+          ios_promo_config.bubble_title_id =
+              IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_REMINDER;
+          ios_promo_config.bubble_subtitle_id =
+              IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_REMINDER;
+          break;
+      }
+      ios_promo_config.decline_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE;
+      break;
+    case IOSPromoType::kLens:
+      switch (bubble_type) {
+        case IOSPromoBubbleType::kQRCode:
+          ios_promo_config.bubble_title_id =
+              IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR;
+          break;
+        case IOSPromoBubbleType::kReminder:
+          ios_promo_config.bubble_title_id =
+              IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;
+          break;
+      }
+      ios_promo_config.bubble_subtitle_id =
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
+      ios_promo_config.decline_button_text_id =
+          IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_DECLINE;
+      break;
   }
   return ios_promo_config;
 }
@@ -296,9 +338,10 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
 void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
                                      views::Button* highlighted_button,
                                      Profile* profile,
-                                     IOSPromoType promo_type) {
+                                     IOSPromoType promo_type,
+                                     IOSPromoBubbleType bubble_type) {
   IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config =
-      SetUpBubble(promo_type);
+      SetUpBubble(promo_type, bubble_type);
 
   if (ios_promo_delegate_) {
     return;

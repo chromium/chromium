@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/promos/promos_types.h"
 
 class Browser;
-
-enum class IOSPromoType;
 
 namespace ios_promos_utils {
 
@@ -17,7 +16,10 @@ namespace ios_promos_utils {
 // segmentation platform and then asynchronously calls
 // `OnIOSPromoClassificationResult` to determine whether or not the user should
 // be shown the promo.
-void VerifyIOSPromoEligibility(IOSPromoType promo_type, Browser* browser);
+void VerifyIOSPromoEligibility(
+    IOSPromoType promo_type,
+    Browser* browser,
+    IOSPromoBubbleType bubble_type = IOSPromoBubbleType::kQRCode);
 
 // Checks if the user should be shown the iOS Payment promo and attempts to show
 // it. This should only be called if a card was successfully uploaded and
