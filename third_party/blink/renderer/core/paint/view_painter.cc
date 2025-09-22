@@ -374,6 +374,7 @@ void ViewPainter::PaintRootElementGroup(
 
   recorder.UniteVisualRect(paint_rect);
 
+  GC_PLUGIN_IGNORE("crbug.com/446536462")
   BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =
       BoxModelObjectPainter(layout_view)

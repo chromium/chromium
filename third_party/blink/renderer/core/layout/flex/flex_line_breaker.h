@@ -24,7 +24,7 @@ struct InitialFlexLine {
         sum_flex_base_size(sum_flex_base_size),
         sum_hypothetical_main_size(sum_hypothetical_main_size) {}
 
-  base::span<FlexItem> line_items;
+  GC_PLUGIN_IGNORE("crbug.com/446536463") base::span<FlexItem> line_items;
   const LayoutUnit sum_flex_base_size;
   const LayoutUnit sum_hypothetical_main_size;
 };
