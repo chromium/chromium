@@ -365,9 +365,9 @@ void EndpointFetcher::PerformHttpRequest(
     simple_url_loader_->AttachStringForUpload(
         request_params_.post_data().value(), request_params_.content_type());
   }
-  if (!GetUploadProgressCallback().is_null()) {
-    simple_url_loader_->SetOnUploadProgressCallback(
-        GetUploadProgressCallback());
+  if (auto upload_progress_callback = GetUploadProgressCallback();
+      upload_progress_callback) {
+    simple_url_loader_->SetOnUploadProgressCallback(upload_progress_callback);
   }
 
   simple_url_loader_->SetRetryOptions(GetMaxRetries(),
@@ -390,13 +390,12 @@ void EndpointFetcher::OnResponseFetched(
     std::unique_ptr<std::string> response_body) {
   auto response = std::make_unique<EndpointResponse>();
   std::string mime_type;
-  if (simple_url_loader_->ResponseInfo() &&
-      simple_url_loader_->ResponseInfo()->headers) {
-    response->http_status_code =
-        simple_url_loader_->ResponseInfo()->headers->response_code();
-    mime_type = simple_url_loader_->ResponseInfo()->mime_type;
+  if (const auto* response_info = simple_url_loader_->ResponseInfo();
+      response_info && response_info->headers) {
+    response->http_status_code = response_info->headers->response_code();
+    mime_type = response_info->mime_type;
     response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        simple_url_loader_->ResponseInfo()->headers->raw_headers());
+        response_info->headers->raw_headers());
   }
   int net_error_code = simple_url_loader_->NetError();
   // The EndpointFetcher and its members will be destroyed after
@@ -426,13 +425,12 @@ void EndpointFetcher::OnResponseFetched(
 
   if (response_body) {
     response->response = *response_body;
-    std::move(endpoint_fetcher_callback).Run(std::move(response));
   } else {
     std::string net_error = net::ErrorToString(net_error_code);
     VLOG(1) << __func__ << " with response error: " << net_error;
     response->response = "There was a response error";
-    std::move(endpoint_fetcher_callback).Run(std::move(response));
   }
+  std::move(endpoint_fetcher_callback).Run(std::move(response));
 }
 
 network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() const {
@@ -451,24 +449,16 @@ network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() const {
 }
 
 int EndpointFetcher::GetMaxRetries() const {
-  if (!request_params_.max_retries.has_value()) {
-    return kNumRetries;
-  }
-  return request_params_.max_retries.value();
+  return request_params_.max_retries.value_or(kNumRetries);
 }
 
 bool EndpointFetcher::GetSetSiteForCookies() const {
-  if (!request_params_.set_site_for_cookies.has_value()) {
-    return false;
-  }
-  return request_params_.set_site_for_cookies.value();
+  return request_params_.set_site_for_cookies.value_or(false);
 }
 
 UploadProgressCallback EndpointFetcher::GetUploadProgressCallback() const {
-  if (!request_params_.upload_progress_callback.has_value()) {
-    return UploadProgressCallback();
-  }
-  return request_params_.upload_progress_callback.value();
+  return request_params_.upload_progress_callback.value_or(
+      UploadProgressCallback());
 }
 
 std::string EndpointFetcher::GetUrlForTesting() {
