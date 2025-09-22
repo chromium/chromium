@@ -563,6 +563,13 @@ public final class ProductionSupportedFlagList {
                 "When enabled, WebView can write data in background during system tracing."),
         Flag.baseFeature(UiAndroidFeatures.ANDROID_HDR, "Enables HDR support"),
         Flag.baseFeature(
+                UiAndroidFeatures.ANDROID_USE_CORRECT_DISPLAY_WORK_AREA,
+                "Enable accounting system UI for computing the display work area."),
+        Flag.baseFeature(
+                UiAndroidFeatures.ANDROID_USE_DISPLAY_TOPOLOGY,
+                "Enables usage of the display topology API to obtain information about all"
+                        + " displays."),
+        Flag.baseFeature(
                 UiAndroidFeatures.DEPRECATED_EXTERNAL_PICKER_FUNCTION,
                 "Deprecates old external file picker function."),
         Flag.baseFeature("ThreadGroupSemaphore"),
