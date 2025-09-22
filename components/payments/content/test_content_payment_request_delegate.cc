@@ -165,4 +165,9 @@ TestContentPaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
   return std::nullopt;
 }
 
+std::string TestContentPaymentRequestDelegate::
+    GetSecurePaymentConfirmationKeychainAccessGroup() const {
+  return "";
+}
+
 }  // namespace payments

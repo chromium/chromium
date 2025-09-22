@@ -435,6 +435,7 @@
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/chrome_browser_main_mac.h"
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
+#include "chrome/common/chrome_version.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/sandbox_serializer.h"
 #include "sandbox/policy/mac/params.h"
@@ -785,6 +786,12 @@ using web_apps::ChromeContentBrowserClientIsolatedWebAppsPart;
 namespace {
 
 const char kAIManagerUserDataKey[] = "ai_manager";
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kSecurePaymentConfirmationKeychainAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING
+                               ".secure-payment-confirmation";
+#endif  // BUILDFLAG(IS_MAC)
 
 // Whether to disable caching of the advanced-protection state in
 // ShouldEnableStrictSiteIsolation().
@@ -6846,8 +6853,13 @@ void ChromeContentBrowserClient::CreateSecurePaymentConfirmationService(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<payments::mojom::SecurePaymentConfirmationService>
         receiver) {
-  payments::CreateSecurePaymentConfirmationService(render_frame_host,
-                                                   std::move(receiver));
+  std::string spc_keychain_access_group;
+#if BUILDFLAG(IS_MAC)
+  spc_keychain_access_group = kSecurePaymentConfirmationKeychainAccessGroup;
+#endif  // BUILDFLAG(IS_MAC)
+  payments::CreateSecurePaymentConfirmationService(
+      render_frame_host, std::move(receiver),
+      std::move(spc_keychain_access_group));
 }
 
 std::unique_ptr<net::ClientCertStore>

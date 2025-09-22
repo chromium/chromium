@@ -24,7 +24,8 @@ namespace payments {
 
 void CreateSecurePaymentConfirmationService(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver) {
+    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
+    std::string browser_bound_key_store_keychain_access_group) {
   if (!content::IsFrameAllowedToUseSecurePaymentConfirmation(
           render_frame_host)) {
     return;
@@ -59,7 +60,8 @@ void CreateSecurePaymentConfirmationService(
           GetWebPaymentsWebDataServiceForBrowserContext(
               web_contents->GetBrowserContext(),
               ServiceAccessType::EXPLICIT_ACCESS),
-      std::move(maybe_authenticator));
+      std::move(maybe_authenticator),
+      std::move(browser_bound_key_store_keychain_access_group));
 }
 
 }  // namespace payments

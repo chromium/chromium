@@ -104,6 +104,11 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   virtual std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const = 0;
 
+  // Obtains the macOS keychain access group for the secure payment confirmation
+  // payment app.
+  virtual std::string GetSecurePaymentConfirmationKeychainAccessGroup()
+      const = 0;
+
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();
 

@@ -35,12 +35,6 @@ ConvertToListOfPublicKeyCredentialParameters(
 
 }  // namespace
 
-scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::MakeRefCounted<BrowserBoundKeyStoreAndroid>(
-      Java_BrowserBoundKeyStore_getInstance(env));
-}
-
 BrowserBoundKeyStoreAndroid::BrowserBoundKeyStoreAndroid(
     jni_zero::ScopedJavaLocalRef<jobject> impl)
     : impl_(impl) {}
@@ -68,5 +62,12 @@ bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
 }
 
 BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
+
+scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance(
+    BrowserBoundKeyStore::Config config) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::MakeRefCounted<BrowserBoundKeyStoreAndroid>(
+      Java_BrowserBoundKeyStore_getInstance(env));
+}
 
 }  // namespace payments

@@ -15,17 +15,21 @@
 namespace payments {
 
 class BrowserBoundKey;
-class BrowserBoundKeyStore;
-
-// Get a platform specific instance of the BrowserBoundKeyStore. This function
-// has per-platform implementations.
-scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance();
 
 // An interface for creating storing and retrieving browser bound keys.
 class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
  public:
   using CredentialInfoList =
       std::vector<device::PublicKeyCredentialParams::CredentialInfo>;
+
+  // Configuration parameters for the browser bound key store.
+  struct Config {
+#if BUILDFLAG(IS_MAC)
+    // The keychain access group for the unexportable key provider.
+    std::string keychain_access_group;
+#endif  // BUILDFLAG(IS_MAC)
+  };
+
   BrowserBoundKeyStore() = default;
   BrowserBoundKeyStore(const BrowserBoundKeyStore&) = delete;
   BrowserBoundKeyStore& operator=(const BrowserBoundKeyStore&) = delete;
@@ -54,6 +58,11 @@ class BrowserBoundKeyStore : public base::RefCounted<BrowserBoundKeyStore> {
  private:
   friend base::RefCounted<BrowserBoundKeyStore>;
 };
+
+// Get a platform specific instance of the BrowserBoundKeyStore. This function
+// has per-platform implementations.
+scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance(
+    BrowserBoundKeyStore::Config config = BrowserBoundKeyStore::Config{});
 
 }  // namespace payments
 

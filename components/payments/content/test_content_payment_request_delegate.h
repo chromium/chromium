@@ -80,6 +80,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
       base::OnceClosure opt_out_callback) override;
   std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
       const override;
+  std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;
 
   // Must be called if GetRenderFrameHost() needs to return non-null.
   void set_frame_routing_id(content::GlobalRenderFrameHostId frame_routing_id) {

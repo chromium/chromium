@@ -82,7 +82,8 @@ class SecurePaymentConfirmationServiceTestBase {
         new SecurePaymentConfirmationService(
             *web_contents_->GetPrimaryMainFrame(),
             /*receiver=*/std::move(receiver), mock_web_data_service_,
-            with_authenticator ? CreateMockInternalAuthenticator() : nullptr));
+            with_authenticator ? CreateMockInternalAuthenticator() : nullptr,
+            /*browser_bound_key_store_keychain_access_group=*/""));
   }
 
   content::BrowserTaskEnvironment task_environment_;

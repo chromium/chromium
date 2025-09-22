@@ -74,6 +74,10 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               GetChromeOSTWAInstanceId,
               (),
               (override, const));
+  MOCK_METHOD(std::string,
+              GetSecurePaymentConfirmationKeychainAccessGroup,
+              (),
+              (override, const));
 
   // PaymentRequestDelegate
   MOCK_METHOD(void,
