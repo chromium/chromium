@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -46,9 +47,6 @@ class OnDeviceAssetManager final
   // already registered.
   void RegisterTextSafetyAndLanguageModels();
 
-  // Whether the supplementary on-device models are registered.
-  bool IsSupplementaryModelRegistered();
-
   // OnDeviceModelComponentStateManager::Observer:
   void StateChanged(const OnDeviceModelComponentState* state) override;
 
@@ -70,8 +68,10 @@ class OnDeviceAssetManager final
   // that require model adaptation.
   AdaptationLoaderMap adaptation_loaders_;
 
-  // Whether the user registered for supplementary on-device models.
-  bool did_register_for_supplementary_on_device_models_ = false;
+  std::optional<OptimizationGuideModelProviderObservation>
+      text_safety_model_observation_;
+  std::optional<OptimizationGuideModelProviderObservation>
+      language_detection_model_observation_;
 };
 
 }  // namespace optimization_guide

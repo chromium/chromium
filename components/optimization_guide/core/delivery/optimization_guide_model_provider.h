@@ -43,6 +43,36 @@ class OptimizationGuideModelProvider {
   virtual ~OptimizationGuideModelProvider() = default;
 };
 
+class OptimizationGuideModelProviderObservation {
+ public:
+  OptimizationGuideModelProviderObservation(
+      OptimizationGuideModelProvider* model_provider,
+      proto::OptimizationTarget optimization_target,
+      const std::optional<proto::Any>& model_metadata,
+      OptimizationTargetModelObserver* observer)
+      : model_provider_(model_provider),
+        optimization_target_(optimization_target),
+        observer_(observer) {
+    model_provider_->AddObserverForOptimizationTargetModel(
+        optimization_target_, model_metadata, observer_);
+  }
+
+  ~OptimizationGuideModelProviderObservation() {
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        optimization_target_, observer_);
+  }
+
+  OptimizationGuideModelProviderObservation(
+      const OptimizationGuideModelProviderObservation&) = delete;
+  OptimizationGuideModelProviderObservation& operator=(
+      const OptimizationGuideModelProviderObservation&) = delete;
+
+ private:
+  const raw_ptr<OptimizationGuideModelProvider> model_provider_;
+  const proto::OptimizationTarget optimization_target_;
+  const raw_ptr<OptimizationTargetModelObserver> observer_;
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_OPTIMIZATION_GUIDE_MODEL_PROVIDER_H_

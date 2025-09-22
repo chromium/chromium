@@ -61,18 +61,6 @@ OnDeviceAssetManager::OnDeviceAssetManager(
 OnDeviceAssetManager::~OnDeviceAssetManager() {
   on_device_component_state_manager_->RemoveObserver(this);
   usage_tracker_->RemoveObserver(this);
-  if (did_register_for_supplementary_on_device_models_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        GetOptimizationTargetForSafetyModel(), this);
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        this);
-  }
-}
-
-// Whether the supplementary on-device models are registered.
-bool OnDeviceAssetManager::IsSupplementaryModelRegistered() {
-  return did_register_for_supplementary_on_device_models_;
 }
 
 void OnDeviceAssetManager::RegisterTextSafetyAndLanguageModels() {
@@ -84,12 +72,15 @@ void OnDeviceAssetManager::RegisterTextSafetyAndLanguageModels() {
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
     return;
   }
-  if (!did_register_for_supplementary_on_device_models_) {
-    did_register_for_supplementary_on_device_models_ = true;
-    model_provider_->AddObserverForOptimizationTargetModel(
-        GetOptimizationTargetForSafetyModel(),
+
+  if (!text_safety_model_observation_) {
+    text_safety_model_observation_.emplace(
+        &model_provider_.get(), GetOptimizationTargetForSafetyModel(),
         /*model_metadata=*/std::nullopt, this);
-    model_provider_->AddObserverForOptimizationTargetModel(
+  }
+  if (!language_detection_model_observation_) {
+    language_detection_model_observation_.emplace(
+        &model_provider_.get(),
         proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
         /*model_metadata=*/std::nullopt, this);
   }
