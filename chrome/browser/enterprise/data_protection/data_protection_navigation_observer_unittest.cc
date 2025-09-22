@@ -846,6 +846,31 @@ TEST_F(DataProtectionNavigationObserverTest,
   EXPECT_TRUE(settings.allow_screenshots);
 }
 
+TEST_F(DataProtectionNavigationObserverTest, TestVerdictCacheMaxSizeFlag) {
+  EXPECT_EQ(200UL, DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_data_protection::kEnableVerdictCache,
+        {{enterprise_data_protection::kVerdictCacheMaxSize.name,
+          base::ToString(0)}});
+    // Falls back to default value when set to an invalid value.
+    EXPECT_EQ(200UL,
+              DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_data_protection::kEnableVerdictCache,
+        {{enterprise_data_protection::kVerdictCacheMaxSize.name,
+          base::ToString(500UL)}});
+    EXPECT_EQ(500UL,
+              DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+  }
+}
+
 namespace {
 
 struct WatermarkStringParams {

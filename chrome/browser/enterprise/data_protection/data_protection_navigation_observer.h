@@ -110,6 +110,9 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
   static void SetLookupServiceForTesting(
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service);
 
+  // public for testing
+  static size_t GetVerdictCacheMaxSize();
+
  private:
   void OnLookupComplete(
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
