@@ -652,6 +652,11 @@
       name: "AvoidSelectionChangeOnCanvasClick",
       status: "stable"
     },
+    {
+      // Killswitch for https://crbug.com/40947850.
+      name: "BackdropRootForClipPathWithBackdropFilter",
+      status: "stable",
+    },
     // When enabled, enforces new interoperable semantics for 3D transforms.
     // See crbug.com/1008483.
     {
