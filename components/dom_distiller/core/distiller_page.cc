@@ -143,7 +143,7 @@ void DistillerPage::OnDistillationDone(const GURL& page_url,
   bool found_content;
   DistillationParseResult result;
 
-  if (value->is_none()) {
+  if (!value || value->is_none()) {
     found_content = false;
     result = DistillationParseResult::kNoData;
   } else {

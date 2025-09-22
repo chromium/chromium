@@ -44,7 +44,8 @@ class TestDistillerPage : public DistillerPage {
     kSuccess,
     kParseFailure,
     kNoResult,
-    kCustomResult
+    kCustomResult,
+    kNullResult,
   };
 
   TestDistillerPage() = default;
@@ -92,6 +93,10 @@ class TestDistillerPage : public DistillerPage {
       }
       case SimulatedResult::kCustomResult: {
         OnDistillationDone(url, &simulate_result_val_.value());
+        break;
+      }
+      case SimulatedResult::kNullResult: {
+        OnDistillationDone(url, nullptr);
         break;
       }
     }
@@ -145,6 +150,19 @@ TEST_F(DistillerPageTest, RecordsNoResultMetric) {
   distiller_page.SetNextResult(TestDistillerPage::SimulatedResult::kNoResult);
 
   distiller_page.DistillPage(GURL("http://example.com/no-result"),
+                             dom_distiller::proto::DomDistillerOptions(),
+                             base::DoNothing());
+
+  histogram_tester_.ExpectUniqueSample("DomDistiller.Distillation.Result",
+                                       DistillationParseResult::kNoResult, 1);
+}
+
+// Test that the kNullResult value is recorded when the distiller returns null.
+TEST_F(DistillerPageTest, RecordsNullResultMetric) {
+  TestDistillerPage distiller_page;
+  distiller_page.SetNextResult(TestDistillerPage::SimulatedResult::kNullResult);
+
+  distiller_page.DistillPage(GURL("http://example.com/null-result"),
                              dom_distiller::proto::DomDistillerOptions(),
                              base::DoNothing());
 
