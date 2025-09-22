@@ -53,6 +53,10 @@ using ScrollThread = cc::InputHandler::ScrollThread;
 
 namespace blink {
 namespace {
+// TODO(crbug.com/355578906): Assume 20px buffer for now. The main thread
+// counterpart is AdjustPointerEvent (see kStylusWritableAdjustmentSizeDip). The
+// buffer math on the main and cc thread(s) need to match.
+constexpr unsigned int kStylusWritingHitTestRadius = 20;
 
 using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 using ::perfetto::protos::pbzero::TrackEvent;
@@ -1312,6 +1316,16 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
                static_cast<bool>(allowed_touch_action));
   *is_touching_scrolling_layer = false;
   EventDisposition result = DROP_EVENT;
+
+  // Note that the radius is mostly relevant in stylus handwriting scenarios.
+  // For actions like swipe, we use the center point of the touch and ignore
+  // nearby scrollers.
+  const unsigned int hit_test_radius =
+      (touch_event.touches_length == 1 &&
+       (touch_event.touches[0].pointer_type ==
+        WebPointerProperties::PointerType::kPen))
+          ? kStylusWritingHitTestRadius
+          : 0;
   for (size_t i = 0; i < touch_event.touches_length; ++i) {
     if (touch_event.touch_start_or_first_touch_move)
       DCHECK(allowed_touch_action);
@@ -1324,11 +1338,18 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
     }
 
     cc::TouchAction touch_action = cc::TouchAction::kAuto;
+    const gfx::Point point(touch_event.touches[i].PositionInWidget().x(),
+                           touch_event.touches[i].PositionInWidget().y());
+    // TODO(crbug.com/355578906): This is just some rough math for now. The main
+    // thread counterpart is AdjustPointerEvent. The buffer math on the main and
+    // cc thread(s) need to match.
+    const gfx::Rect viewport_touch_rect(
+        point.x() - hit_test_radius, point.y() - hit_test_radius,
+        std::max(unsigned(1), hit_test_radius * 2),
+        std::max(unsigned(1), hit_test_radius * 2));
     cc::InputHandler::TouchStartOrMoveEventListenerType event_listener_type =
         input_handler_->EventListenerTypeForTouchStartOrMoveAt(
-            gfx::Point(touch_event.touches[i].PositionInWidget().x(),
-                       touch_event.touches[i].PositionInWidget().y()),
-            &touch_action);
+            viewport_touch_rect, &touch_action);
     if (allowed_touch_action && touch_action != cc::TouchAction::kAuto) {
       TRACE_EVENT_INSTANT1("input", "Adding TouchAction",
                            TRACE_EVENT_SCOPE_THREAD, "TouchAction",

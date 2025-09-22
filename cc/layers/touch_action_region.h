@@ -39,7 +39,8 @@ class CC_EXPORT TouchActionRegion {
   // given point. If the map is empty, |TouchAction::kAuto| is returned since no
   // touch actions have been explicitly defined and the default touch action
   // is auto.
-  TouchAction GetAllowedTouchAction(const gfx::Point&) const;
+  TouchAction GetAllowedTouchAction(const gfx::Rect& touch_rect) const;
+
   TouchActionRegion& operator=(const TouchActionRegion& other);
   TouchActionRegion& operator=(TouchActionRegion&& other);
   bool operator==(const TouchActionRegion& other) const;

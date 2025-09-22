@@ -624,6 +624,12 @@ class CC_EXPORT LayerTreeImpl {
   LayerImpl* FindLayerThatIsHitByPoint(const gfx::PointF& screen_space_point);
 
   LayerImpl* FindLayerThatIsHitByPointInTouchHandlerRegion(
+      const gfx::RectF& screen_space_touch_rect);
+
+  // TODO(crbug.com/355578906): This wrapper mostly exists because a lot of
+  // tests still use this variant of the function. Delete this once the
+  // references are updated.
+  LayerImpl* FindLayerThatIsHitByPointInTouchHandlerRegion(
       const gfx::PointF& screen_space_point);
 
   LayerImpl* FindLayerThatIsHitByPointInWheelEventHandlerRegion(
@@ -880,7 +886,7 @@ class CC_EXPORT LayerTreeImpl {
   void UpdateTransformAnimation(ElementId element_id, int transform_node_index);
   template <typename Functor>
   LayerImpl* FindLayerThatIsHitByPointInEventHandlerRegion(
-      const gfx::PointF& screen_space_point,
+      const gfx::RectF& screen_space_touch_rect,
       const Functor& func);
 
   // Update the geometries of all scrollbars (e.g., thumb size and position).

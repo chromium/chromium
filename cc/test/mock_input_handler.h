@@ -103,7 +103,7 @@ class MockInputHandler : public InputHandler {
                      EventListenerProperties(EventListenerClass event_class));
   MOCK_METHOD2(EventListenerTypeForTouchStartOrMoveAt,
                InputHandler::TouchStartOrMoveEventListenerType(
-                   const gfx::Point& point,
+                   const gfx::Rect& viewport_touch_rect,
                    TouchAction* touch_action));
   MOCK_CONST_METHOD1(HasBlockingWheelEventHandlerAt, bool(const gfx::Point&));
 

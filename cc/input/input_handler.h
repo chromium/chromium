@@ -380,17 +380,17 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   virtual bool HasBlockingWheelEventHandlerAt(
       const gfx::Point& viewport_point) const;
 
-  // It returns the type of a touch start or move event listener at
-  // |viewport_point|. Whether the page should be given the opportunity to
-  // suppress scrolling by consuming touch events that started at
-  // |viewport_point|, and whether |viewport_point| is on the currently
-  // scrolling layer.
-  // |out_touch_action| is assigned the allowed touch action for the
-  // |viewport_point|. In the case there are no touch handlers or touch action
-  // regions, |out_touch_action| is assigned TouchAction::kAuto since the
-  // default touch action is auto.
+  // It returns the type of a touch start or move event listener that intersects
+  // with |viewport_touch_rect|. Whether the page should be given the
+  // opportunity to suppress scrolling by consuming touch events that started at
+  // |viewport_touch_rect|, and whether |viewport_touch_rect| is on the
+  // currently scrolling layer.
+  // |out_touch_action| is assigned the allowed touch
+  // action for the |viewport_touch_rect|. In the case there are no touch
+  // handlers or touch action regions, |out_touch_action| is assigned
+  // TouchAction::kAuto since the default touch action is auto.
   virtual TouchStartOrMoveEventListenerType
-  EventListenerTypeForTouchStartOrMoveAt(const gfx::Point& viewport_point,
+  EventListenerTypeForTouchStartOrMoveAt(const gfx::Rect& viewport_touch_rect,
                                          TouchAction* out_touch_action);
 
   // Calling `CreateLatencyInfoSwapPromiseMonitor()` to get a scoped

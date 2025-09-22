@@ -759,24 +759,24 @@ class LayerTreeHostImplTestBase : public testing::Test,
     child->SetTouchActionRegion(child_touch_action_region);
 
     TouchAction touch_action = TouchAction::kAuto;
-    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(gfx::Point(10, 10),
-                                                             &touch_action);
+    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+        gfx::Rect(gfx::Point(10, 10), gfx::Size()), &touch_action);
     EXPECT_EQ(TouchAction::kPanLeft, touch_action);
     touch_action = TouchAction::kAuto;
-    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(gfx::Point(30, 30),
-                                                             &touch_action);
+    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+        gfx::Rect(gfx::Point(30, 30), gfx::Size()), &touch_action);
     EXPECT_EQ(TouchAction::kPanX, touch_action);
 
     TouchActionRegion new_child_region;
     new_child_region.Union(TouchAction::kPanY, gfx::Rect(0, 0, 25, 25));
     child->SetTouchActionRegion(new_child_region);
     touch_action = TouchAction::kAuto;
-    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(gfx::Point(10, 10),
-                                                             &touch_action);
+    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+        gfx::Rect(gfx::Point(10, 10), gfx::Size()), &touch_action);
     EXPECT_EQ(TouchAction::kPanY, touch_action);
     touch_action = TouchAction::kAuto;
-    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(gfx::Point(30, 30),
-                                                             &touch_action);
+    GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+        gfx::Rect(gfx::Point(30, 30), gfx::Size()), &touch_action);
     EXPECT_EQ(TouchAction::kPanX, touch_action);
   }
 
@@ -1723,7 +1723,7 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
   root->SetTouchActionRegion(std::move(touch_action_region));
   EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
             GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
-                gfx::Point(10, 10), &touch_action));
+                gfx::Rect(gfx::Point(10, 10), gfx::Size()), &touch_action));
   EXPECT_EQ(TouchAction::kPanLeft, touch_action);
 
   // But they don't influence the actual handling of the scroll gestures.
@@ -1741,18 +1741,18 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
 
   EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
             GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
-                gfx::Point(10, 30), &touch_action));
+                gfx::Rect(gfx::Point(10, 30), gfx::Size()), &touch_action));
   root->SetTouchActionRegion(TouchActionRegion());
   EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kNoHandler,
             GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
-                gfx::Point(10, 30), &touch_action));
+                gfx::Rect(gfx::Point(10, 30), gfx::Size()), &touch_action));
   EXPECT_EQ(TouchAction::kAuto, touch_action);
   touch_action_region = TouchActionRegion();
   touch_action_region.Union(TouchAction::kPanX, gfx::Rect(0, 0, 50, 50));
   child->SetTouchActionRegion(std::move(touch_action_region));
   EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
             GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
-                gfx::Point(10, 30), &touch_action));
+                gfx::Rect(gfx::Point(10, 30), gfx::Size()), &touch_action));
   EXPECT_EQ(TouchAction::kPanX, touch_action);
 }
 

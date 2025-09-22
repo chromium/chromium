@@ -870,14 +870,22 @@ bool InputHandler::HasBlockingWheelEventHandlerAt(
 
 InputHandler::TouchStartOrMoveEventListenerType
 InputHandler::EventListenerTypeForTouchStartOrMoveAt(
-    const gfx::Point& viewport_point,
+    const gfx::Rect& viewport_touch_rect,
     TouchAction* out_touch_action) {
-  gfx::PointF device_viewport_point = gfx::ScalePoint(
-      gfx::PointF(viewport_point), compositor_delegate_->DeviceScaleFactor());
+  gfx::RectF device_viewport_touch_rect =
+      gfx::ScaleRect(gfx::RectF(viewport_touch_rect),
+                     compositor_delegate_->DeviceScaleFactor());
 
+  // For stylus "near-miss" scenarios, we need to do a proximity based hit test.
+  // The compositor has incomplete information, as it's not aware of the DOM
+  // node type, layering order, nor the actual shape of the hit-test area for
+  // the content and isn't capable of providing a definitive answer except for
+  // "certainly not writable" or "possibly writable" (at-least one region may
+  // allow handwriting). If the compositor finds a region that may allow
+  // handwriting then the main thread must perform a more precise hit-test.
   LayerImpl* layer_impl_with_touch_handler =
       ActiveTree().FindLayerThatIsHitByPointInTouchHandlerRegion(
-          device_viewport_point);
+          device_viewport_touch_rect);
 
   if (layer_impl_with_touch_handler == nullptr) {
     if (out_touch_action)
@@ -894,11 +902,14 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
     gfx::Transform inverse_layer_screen_space =
         layer_screen_space_transform.GetCheckedInverse();
     bool clipped = false;
-    gfx::PointF hit_test_point_in_layer_space = MathUtil::ProjectPoint(
-        inverse_layer_screen_space, device_viewport_point, &clipped);
+    const gfx::RectF hit_test_rect_in_layer_space =
+        MathUtil::MapQuad(inverse_layer_screen_space,
+                          gfx::QuadF(device_viewport_touch_rect), &clipped)
+            .BoundingBox();
     const auto& region = layer_impl_with_touch_handler->touch_action_region();
-    gfx::Point point = gfx::ToRoundedPoint(hit_test_point_in_layer_space);
-    *out_touch_action = region.GetAllowedTouchAction(point);
+    *out_touch_action = region.GetAllowedTouchAction(
+        gfx::Rect(gfx::ToRoundedPoint(hit_test_rect_in_layer_space.origin()),
+                  gfx::ToRoundedSize(hit_test_rect_in_layer_space.size())));
   }
 
   if (!IsCurrentlyScrolling()) {
@@ -910,8 +921,11 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
   // pointer and has an event handler, otherwise it is null. We want to compare
   // the most inner layer we are hitting on which may not have an event listener
   // with the actual scrolling layer.
-  LayerImpl* layer_impl =
-      ActiveTree().FindLayerThatIsHitByPoint(device_viewport_point);
+  // TODO(crbug.com/445727120): Update FindLayerThatIsHitByPoint to work with
+  // rects in order to find layers that are potentially in close proximity to
+  // the touch_rect.
+  LayerImpl* layer_impl = ActiveTree().FindLayerThatIsHitByPoint(
+      device_viewport_touch_rect.CenterPoint());
 
   ScrollNode* currently_scroll_node = CurrentlyScrollingNode();
   if (currently_scroll_node &&
