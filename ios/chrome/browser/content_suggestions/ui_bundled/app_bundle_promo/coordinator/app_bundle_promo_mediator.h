@@ -10,8 +10,8 @@
 #import "base/ios/block_types.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
-@class AppBundlePromoCommands;
 @class AppBundlePromoConfig;
+enum class ContentSuggestionsModuleType;
 class AppStoreBundleService;
 
 // Handles App Bundle promo module events.
@@ -20,6 +20,9 @@ class AppStoreBundleService;
 // Indicates to the receiver that the App Bundle promo module should be removed.
 // The `completion` is called after the removal is finished.
 - (void)removeAppBundlePromoModuleWithCompletion:(ProceduralBlock)completion;
+
+// Logs a user Magic Stack engagement for module `type`.
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
 @end
 
