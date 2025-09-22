@@ -85,6 +85,7 @@ source_set("model") {
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/net",
+    "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/browsing_data",
     "//net",

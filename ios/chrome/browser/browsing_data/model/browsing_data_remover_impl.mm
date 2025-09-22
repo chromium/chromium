@@ -75,6 +75,7 @@
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/net/http_cache_helper.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/browsing_data/browsing_data_removing_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -762,7 +763,7 @@ void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(
     types |= web::ClearBrowsingDataMask::kRemoveServiceWorkers;
   }
 
-  web::ClearBrowsingData(profile_, types, delete_begin,
+  web::ClearBrowsingData(GetAnyKeyWindow(), profile_, types, delete_begin,
                          CreatePendingTaskCompletionClosure());
 }
 

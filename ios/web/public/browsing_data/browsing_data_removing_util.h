@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 
+@class UIWindow;
+
 namespace web {
 
 class BrowserState;
@@ -33,9 +35,16 @@ enum class ClearBrowsingDataMask {
 // Clears the browsing data store in the Web layer. `modified_since` is the data
 // since which all data is removed. `closure` is called when the browsing data
 // have been cleared.
+//
+// `window` is used to insert the WKWebView in the view hierarchy to ensure the
+// out-of-process process used by the WKWebView is not suspended (the process
+// appear to be sometimes suspended when the WKWebView is not part of the view
+// hierarchy according to the unit tests).
+//
 // TODO(crbug.com/40602822): Remove closure once WebStateObserver callback is
 // implemented.
-void ClearBrowsingData(BrowserState* browser_state,
+void ClearBrowsingData(UIWindow* window,
+                       BrowserState* browser_state,
                        ClearBrowsingDataMask types,
                        base::Time modified_since,
                        base::OnceClosure closure);
