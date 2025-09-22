@@ -31,6 +31,7 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 
@@ -209,6 +210,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Indicates that the set of frame sinks being aggregated for display has
   // changed since the previous aggregation.
   void AggregatedFrameSinksChanged();
+
+  // Add and Remove FrameSinkObserver
+  void AddFrameSinkObserver(FrameSinkObserver* obs);
+  void RemoveFrameSinkObserver(FrameSinkObserver* obs);
 
   using CommitPredicate =
       base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;

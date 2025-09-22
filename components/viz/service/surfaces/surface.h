@@ -26,6 +26,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface_client.h"
@@ -91,7 +92,7 @@ class SurfaceManager;
 // the queue, and when the display compositor draws, frames are committed from
 // the queue to the pending or active frame.
 
-class VIZ_SERVICE_EXPORT Surface final {
+class VIZ_SERVICE_EXPORT Surface final : public FrameSinkObserver {
  public:
   class PresentationHelper {
    public:
@@ -144,7 +145,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   Surface(const Surface&) = delete;
   Surface& operator=(const Surface&) = delete;
 
-  ~Surface();
+  ~Surface() override;
 
   void SetDependencyDeadline(
       std::unique_ptr<SurfaceDependencyDeadline> deadline);

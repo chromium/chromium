@@ -731,6 +731,18 @@ void SurfaceManager::AggregatedFrameSinksChanged() {
     delegate_->AggregatedFrameSinksChanged();
 }
 
+void SurfaceManager::AddFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->AddObserver(obs);
+  }
+}
+
+void SurfaceManager::RemoveFrameSinkObserver(FrameSinkObserver* obs) {
+  if (delegate_) {
+    return delegate_->RemoveObserver(obs);
+  }
+}
+
 void SurfaceManager::CommitFramesInRangeRecursively(
     const SurfaceRange& range,
     const CommitPredicate& predicate) {

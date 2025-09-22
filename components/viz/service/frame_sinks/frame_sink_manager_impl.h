@@ -237,6 +237,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   std::string_view GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const override;
   void AggregatedFrameSinksChanged() override;
+  void AddObserver(FrameSinkObserver* obs) override;
+  void RemoveObserver(FrameSinkObserver* obs) override;
 
   // HitTestDataProvider implementation.
   // This is required to allow RenderWidgetHostInputEventRouter to find target
@@ -300,9 +302,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   void OnFrameSinkMobileOptimizedChanged(const FrameSinkId& frame_sink_id,
                                          bool is_mobile_optimized);
-
-  void AddObserver(FrameSinkObserver* obs);
-  void RemoveObserver(FrameSinkObserver* obs);
 
   // Returns ids of all FrameSinks that were registered.
   std::vector<FrameSinkId> GetRegisteredFrameSinkIds() const;
