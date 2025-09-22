@@ -32,7 +32,6 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-data-view.h"
@@ -448,11 +447,6 @@ struct WebAppInstallInfo {
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   GURL note_taking_new_note_url;
-
-  // The link capturing behaviour to use for navigations into in the app's
-  // scope.
-  blink::mojom::CaptureLinks capture_links =
-      blink::mojom::CaptureLinks::kUndefined;
 
   // The window selection behaviour of app launches.
   std::optional<blink::Manifest::LaunchHandler> launch_handler;

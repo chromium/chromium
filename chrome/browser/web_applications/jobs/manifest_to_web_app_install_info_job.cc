@@ -632,8 +632,6 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
   PopulateWebAppShortcutsMenuItemInfos(manifest_->shortcuts,
                                        install_info_.get());
 
-  install_info_->capture_links = manifest_->capture_links;
-
   if (manifest_->manifest_url.is_valid()) {
     install_info_->manifest_url = manifest_->manifest_url;
   }

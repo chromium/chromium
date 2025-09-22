@@ -64,7 +64,6 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -158,32 +157,6 @@ apps::ShareTarget::Enctype ProtoToEnctype(proto::ShareTarget_Enctype enctype) {
       return apps::ShareTarget::Enctype::kFormUrlEncoded;
     case proto::ShareTarget::ENCTYPE_MULTIPART_FORM_DATA:
       return apps::ShareTarget::Enctype::kMultipartFormData;
-  }
-}
-
-blink::mojom::CaptureLinks ProtoToCaptureLinks(
-    proto::WebApp::CaptureLinks capture_links) {
-  switch (capture_links) {
-    case proto::WebApp_CaptureLinks_NONE:
-      return blink::mojom::CaptureLinks::kNone;
-    case proto::WebApp_CaptureLinks_NEW_CLIENT:
-      return blink::mojom::CaptureLinks::kNewClient;
-    case proto::WebApp_CaptureLinks_EXISTING_CLIENT_NAVIGATE:
-      return blink::mojom::CaptureLinks::kExistingClientNavigate;
-  }
-}
-
-proto::WebApp::CaptureLinks CaptureLinksToProto(
-    blink::mojom::CaptureLinks capture_links) {
-  switch (capture_links) {
-    case blink::mojom::CaptureLinks::kUndefined:
-      NOTREACHED();
-    case blink::mojom::CaptureLinks::kNone:
-      return proto::WebApp_CaptureLinks_NONE;
-    case blink::mojom::CaptureLinks::kNewClient:
-      return proto::WebApp_CaptureLinks_NEW_CLIENT;
-    case blink::mojom::CaptureLinks::kExistingClientNavigate:
-      return proto::WebApp_CaptureLinks_EXISTING_CLIENT_NAVIGATE;
   }
 }
 
@@ -1091,12 +1064,6 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
         ToRunOnOsLoginMode(proto.user_run_on_os_login_mode()));
   }
 
-  if (proto.has_capture_links()) {
-    web_app->SetCaptureLinks(ProtoToCaptureLinks(proto.capture_links()));
-  } else {
-    web_app->SetCaptureLinks(blink::mojom::CaptureLinks::kUndefined);
-  }
-
   if (proto.has_manifest_url()) {
     GURL manifest_url(proto.manifest_url());
     if (manifest_url.is_empty() || !manifest_url.is_valid()) {
@@ -1753,12 +1720,6 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   if (web_app.note_taking_new_note_url().is_valid()) {
     local_data->set_note_taking_new_note_url(
         web_app.note_taking_new_note_url().spec());
-  }
-
-  if (web_app.capture_links() != blink::mojom::CaptureLinks::kUndefined) {
-    local_data->set_capture_links(CaptureLinksToProto(web_app.capture_links()));
-  } else {
-    local_data->clear_capture_links();
   }
 
   if (web_app.manifest_url().is_valid()) {

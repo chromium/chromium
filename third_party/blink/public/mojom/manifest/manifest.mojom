@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
-import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
@@ -118,12 +117,6 @@ struct Manifest {
   // Defaults to the start URL (or document URL if start URL isn't present) with
   // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
-
-  // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/web-app-launch/blob/main/declarative_link_capturing.md#proposal
-  // As such, this field should not be exposed by default.
-  CaptureLinks capture_links;
 
   array<network.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy;
 

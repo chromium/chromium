@@ -98,7 +98,6 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
 #include "third_party/liburlpattern/part.h"
@@ -909,7 +908,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     app->SetNoteTakingNewNoteUrl(
         scope.Resolve("new_note" + base::NumberToString(random.next_uint())));
   }
-  app->SetCaptureLinks(random.next_enum<blink::mojom::CaptureLinks>());
 
   const int num_additional_search_terms = random.next_uint(8);
   std::vector<std::string> additional_search_terms(num_additional_search_terms);

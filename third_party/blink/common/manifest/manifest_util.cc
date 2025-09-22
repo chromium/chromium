@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -156,17 +155,6 @@ device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
   if (base::EqualsCaseInsensitiveASCII(orientation, "natural"))
     return device::mojom::ScreenOrientationLockType::NATURAL;
   return device::mojom::ScreenOrientationLockType::DEFAULT;
-}
-
-mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "none"))
-    return mojom::CaptureLinks::kNone;
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "new-client"))
-    return mojom::CaptureLinks::kNewClient;
-  if (base::EqualsCaseInsensitiveASCII(capture_links,
-                                       "existing-client-navigate"))
-    return mojom::CaptureLinks::kExistingClientNavigate;
-  return mojom::CaptureLinks::kUndefined;
 }
 
 std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(

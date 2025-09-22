@@ -810,8 +810,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
 
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
-  web_app.SetCaptureLinks(web_app_info.capture_links);
-
   web_app.SetManifestUrl(web_app_info.manifest_url);
 
   web_app.SetLaunchHandler(web_app_info.launch_handler);

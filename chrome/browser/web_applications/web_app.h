@@ -41,7 +41,6 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -275,8 +274,6 @@ class WebApp {
     return shortcuts_menu_item_infos_;
   }
 
-  blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
-
   const GURL& manifest_url() const { return manifest_url_; }
 
   webapps::ManifestId manifest_id() const;
@@ -486,7 +483,6 @@ class WebApp {
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncProto(sync_pb::WebAppSpecifics sync_proto);
-  void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const webapps::ManifestId& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
@@ -613,8 +609,6 @@ class WebApp {
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   sync_pb::WebAppSpecifics sync_proto_;
-  blink::mojom::CaptureLinks capture_links_ =
-      blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   // This can be empty.
   GURL manifest_url_;

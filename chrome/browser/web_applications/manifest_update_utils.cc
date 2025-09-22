@@ -275,9 +275,6 @@ ManifestDataChanges GetManifestDataChanges(
         new_install_info.note_taking_new_note_url) {
       return true;
     }
-    if (existing_web_app.capture_links() != new_install_info.capture_links) {
-      return true;
-    }
     if (existing_web_app.file_handlers() != new_install_info.file_handlers) {
       return true;
     }

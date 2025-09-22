@@ -4,7 +4,6 @@
 
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
@@ -80,24 +79,6 @@ TEST(ManifestUtilTest, WebScreenOrientationLockTypeConversions) {
   // blink::WebScreenOrientationLockDefault if the string isn't known.
   EXPECT_EQ(device::mojom::ScreenOrientationLockType::DEFAULT,
             WebScreenOrientationLockTypeFromString("random"));
-}
-
-TEST(ManifestUtilTest, CaptureLinksFromString) {
-  EXPECT_EQ(blink::mojom::CaptureLinks::kUndefined, CaptureLinksFromString(""));
-  EXPECT_EQ(blink::mojom::CaptureLinks::kNone, CaptureLinksFromString("none"));
-  EXPECT_EQ(blink::mojom::CaptureLinks::kNewClient,
-            CaptureLinksFromString("new-client"));
-  EXPECT_EQ(blink::mojom::CaptureLinks::kExistingClientNavigate,
-            CaptureLinksFromString("existing-client-navigate"));
-
-  // CaptureLinksFromString() should work with non-lowercase strings.
-  EXPECT_EQ(blink::mojom::CaptureLinks::kNewClient,
-            CaptureLinksFromString("NEW-CLIENT"));
-
-  // CaptureLinksFromString() should return CaptureLinks::kUndefined if the
-  // string isn't known.
-  EXPECT_EQ(blink::mojom::CaptureLinks::kUndefined,
-            CaptureLinksFromString("unknown-value"));
 }
 
 TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {

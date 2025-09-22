@@ -68,7 +68,6 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom-data-view.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -664,10 +663,6 @@ void WebApp::SetSyncProto(sync_pb::WebAppSpecifics sync_proto) {
   sync_proto_ = std::move(sync_proto);
 }
 
-void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
-  capture_links_ = capture_links;
-}
-
 void WebApp::SetLaunchQueryParams(
     std::optional<std::string> launch_query_params) {
   launch_query_params_ = std::move(launch_query_params);
@@ -994,7 +989,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_update_time_,
         app.run_on_os_login_mode_,
         app.sync_proto_,
-        app.capture_links_,
         app.manifest_url_,
         app.manifest_id_,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1070,8 +1064,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("allowed_launch_protocols", ConvertList(allowed_launch_protocols_));
 
   root.Set("background_color", ColorToString(background_color_));
-
-  root.Set("capture_links", base::ToString(capture_links_));
 
   root.Set("data_size_in_bytes", OptionalToStringValue(data_size_in_bytes_));
 
