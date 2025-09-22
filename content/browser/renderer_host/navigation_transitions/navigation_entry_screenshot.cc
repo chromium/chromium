@@ -149,12 +149,17 @@ size_t NavigationEntryScreenshot::SetCache(
     bitmap_.reset();
   }
 
-  if (shared_image_) {
-    return SkColorTypeBytesPerPixel(kN32_SkColorType) *
-           shared_image_->size().Area64();
+  if (IsBitmapReady()) {
+    return GetBitmap().SizeInBytes();
   }
 
-  return GetBitmap().SizeInBytes();
+  size_t pixel_size = SkColorTypeBytesPerPixel(kN32_SkColorType);
+  if (shared_image_) {
+    return pixel_size * shared_image_->size().Area64();
+  }
+
+  // The shared image was lost, but this is still occupying some space.
+  return pixel_size;
 }
 
 void NavigationEntryScreenshot::OnScenarioMatchChanged(
