@@ -397,45 +397,48 @@ if (use_blink) {
     ]
   }
 
-  fuzzer_test("fido_hid_message_fuzzer") {
-    sources = [ "hid/fido_hid_message_fuzzer.cc" ]
-    deps = [
-      ":fido",
-      "//base",
-    ]
-    libfuzzer_options = [ "max_len=2048" ]
-  }
+  # Android implementation of FIDO is delegated to GMSCore.
+  if (!is_android) {
+    fuzzer_test("fido_hid_message_fuzzer") {
+      sources = [ "hid/fido_hid_message_fuzzer.cc" ]
+      deps = [
+        ":fido",
+        "//base",
+      ]
+      libfuzzer_options = [ "max_len=2048" ]
+    }
 
-  fuzzer_test("fido_ble_frames_fuzzer") {
-    sources = [ "cable/fido_ble_frames_fuzzer.cc" ]
-    deps = [ ":fido" ]
-    libfuzzer_options = [ "max_len=65535" ]
-  }
+    fuzzer_test("fido_ble_frames_fuzzer") {
+      sources = [ "cable/fido_ble_frames_fuzzer.cc" ]
+      deps = [ ":fido" ]
+      libfuzzer_options = [ "max_len=65535" ]
+    }
 
-  fuzzer_test("ctap_response_fuzzer") {
-    sources = [ "ctap_response_fuzzer.cc" ]
-    deps = [
-      ":fido",
-      "//base",
-      "//base:i18n",
-      "//components/cbor",
-      "//components/device_event_log",
-    ]
-    seed_corpus = "response_data_fuzzer_corpus/"
-    libfuzzer_options = [ "max_len=65537" ]
-  }
+    fuzzer_test("ctap_response_fuzzer") {
+      sources = [ "ctap_response_fuzzer.cc" ]
+      deps = [
+        ":fido",
+        "//base",
+        "//base:i18n",
+        "//components/cbor",
+        "//components/device_event_log",
+      ]
+      seed_corpus = "response_data_fuzzer_corpus/"
+      libfuzzer_options = [ "max_len=65537" ]
+    }
 
-  fuzzer_test("fido_cable_handshake_handler_fuzzer") {
-    sources = [ "cable/fido_cable_handshake_handler_fuzzer.cc" ]
-    deps = [
-      ":fido",
-      "//base",
-      "//base/test:test_support",
-      "//device/bluetooth:mocks",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-    libfuzzer_options = [ "max_len=2048" ]
+    fuzzer_test("fido_cable_handshake_handler_fuzzer") {
+      sources = [ "cable/fido_cable_handshake_handler_fuzzer.cc" ]
+      deps = [
+        ":fido",
+        "//base",
+        "//base/test:test_support",
+        "//device/bluetooth:mocks",
+        "//testing/gmock",
+        "//testing/gtest",
+      ]
+      libfuzzer_options = [ "max_len=2048" ]
+    }
   }
 
   fuzzer_test("v2_handshake_fuzzer") {
