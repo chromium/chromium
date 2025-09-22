@@ -26,7 +26,7 @@ extensions_api_schema_files_ = [
   "runtime.json",
   "storage.json",
   "system_cpu.webidl",
-  "system_memory.idl",
+  "system_memory.webidl",
   "system_network.idl",
   "test.json",
   "types.json",
