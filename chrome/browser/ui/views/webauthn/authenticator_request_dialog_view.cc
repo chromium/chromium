@@ -232,18 +232,20 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     }
   }
 
-  auto* frame_view = GetBubbleFrameView();
-  if (model_->step() == Step::kGPMCreatePin ||
-      model_->step() == Step::kGPMCreateArbitraryPin ||
-      model_->step() == Step::kGPMChangePin ||
-      model_->step() == Step::kGPMChangeArbitraryPin ||
-      model_->step() == Step::kGPMEnterPin ||
-      model_->step() == Step::kGPMEnterArbitraryPin) {
-    frame_view->SetFootnoteView(
-        std::make_unique<AuthenticatorGpmAccountInfoView>(
-            static_cast<AuthenticatorGpmPinSheetModelBase*>(sheet_->model())));
-  } else {
-    frame_view->SetFootnoteView(nullptr);
+  if (auto* frame_view = GetBubbleFrameView(); frame_view) {
+    if (model_->step() == Step::kGPMCreatePin ||
+        model_->step() == Step::kGPMCreateArbitraryPin ||
+        model_->step() == Step::kGPMChangePin ||
+        model_->step() == Step::kGPMChangeArbitraryPin ||
+        model_->step() == Step::kGPMEnterPin ||
+        model_->step() == Step::kGPMEnterArbitraryPin) {
+      frame_view->SetFootnoteView(
+          std::make_unique<AuthenticatorGpmAccountInfoView>(
+              static_cast<AuthenticatorGpmPinSheetModelBase*>(
+                  sheet_->model())));
+    } else {
+      frame_view->SetFootnoteView(nullptr);
+    }
   }
 
   // Force re-layout of the entire dialog client view, which includes the sheet
