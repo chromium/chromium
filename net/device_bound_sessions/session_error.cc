@@ -61,6 +61,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
     case kTooManyRelyingOriginLabels:
+    case kBoundCookieSetForbidden:
       NOTREACHED();
   }
 }
@@ -108,6 +109,7 @@ bool SessionError::IsServerError() const {
     case kInvalidFederatedSession:
     case kInvalidFederatedKey:
     case kTooManyRelyingOriginLabels:
+    case kBoundCookieSetForbidden:
       NOTREACHED();
   }
 }

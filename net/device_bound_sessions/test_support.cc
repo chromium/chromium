@@ -89,25 +89,27 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     return response;
   } else if (request.relative_url == "/dbsc_register_session" ||
              request.relative_url == "/dbsc_refresh_session") {
-    response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
+    response->AddCustomHeader("Set-Cookie",
+                              "auth_cookie=abcdef0123;SameSite=None;Secure");
 
     const auto registration_response =
         base::Value::Dict()
             .Set("session_identifier", "session_id")
             .Set("refresh_url",
                  base_url.Resolve("/dbsc_refresh_session").spec())
-            .Set("scope", base::Value::Dict()
-                              .Set("scope_specification",
-                                   base::Value::List().Append(
-                                       base::Value::Dict()
-                                           .Set("type", "exclude")
-                                           .Set("domain", base_url.host())
-                                           .Set("path", "/favicon.ico"))))
+            .Set("scope",
+                 base::Value::Dict().Set("scope_specification",
+                                         base::Value::List().Append(
+                                             base::Value::Dict()
+                                                 .Set("type", "exclude")
+                                                 .Set("domain", base_url.host())
+                                                 .Set("path", "/favicon.ico"))))
             .Set("credentials",
-                 base::Value::List().Append(base::Value::Dict()
-                                                .Set("type", "cookie")
-                                                .Set("name", "auth_cookie")
-                                                .Set("attributes", "")));
+                 base::Value::List().Append(
+                     base::Value::Dict()
+                         .Set("type", "cookie")
+                         .Set("name", "auth_cookie")
+                         .Set("attributes", "SameSite=None; Secure")));
 
     std::optional<std::string> json = base::WriteJson(registration_response);
     EXPECT_TRUE(json.has_value());

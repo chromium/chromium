@@ -53,7 +53,8 @@ struct NET_EXPORT SessionError {
     kInvalidFederatedSession = 34,
     kInvalidFederatedKey = 35,
     kTooManyRelyingOriginLabels = 36,
-    kMaxValue = kTooManyRelyingOriginLabels,
+    kBoundCookieSetForbidden = 37,
+    kMaxValue = kBoundCookieSetForbidden,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

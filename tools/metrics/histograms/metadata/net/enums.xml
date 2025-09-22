@@ -265,6 +265,8 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Federated session invalid"/>
   <int value="35" label="Federated key invalid"/>
   <int value="36" label="Too many relying origin labels in .well-known"/>
+  <int value="37"
+      label="Registration in a context that cannot set bound cookies"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

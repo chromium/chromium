@@ -566,7 +566,20 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         Session::CreateIfValid(params_or_error.value());
     if (!session_or_error.has_value()) {
       RunCallback(RegistrationResult(std::move(session_or_error).error()));
-      // *this is deleted here
+      // *this is deleted here.
+      return;
+    }
+
+    // The registration endpoint is required to be same-site with the
+    // session. Therefore we don't need any FirstPartySetMetadata.
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsOriginTrialFeedback) &&
+        !(*session_or_error)
+             ->CanSetBoundCookie(url_fetcher_->request(),
+                                 FirstPartySetMetadata())) {
+      RunCallback(RegistrationResult{
+          SessionError{SessionError::ErrorType::kBoundCookieSetForbidden}});
+      // *this is deleted here.
       return;
     }
 
