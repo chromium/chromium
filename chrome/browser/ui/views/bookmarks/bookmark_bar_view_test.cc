@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,6 +26,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory_impl.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -317,6 +320,11 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    // Inject the publisher dependency to AppService.
+    publisher_host_factory_resetter_ =
+        apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
+            std::make_unique<apps::PublisherHostFactoryImpl>());
+
     InitializeActionIdStringMapping();
     content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
@@ -393,6 +401,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_content_client_.reset();
     content_client_.reset();
     content::SetContentClient(nullptr);
+
+    publisher_host_factory_resetter_.reset();
   }
 
  protected:
@@ -518,6 +528,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     model_->AddURL(of2, 1, u"of2b", GURL(test_base + "of2b"));
   }
 
+  std::optional<base::AutoReset<std::unique_ptr<apps::PublisherHostFactory>>>
+      publisher_host_factory_resetter_;
   std::unique_ptr<ChromeContentClient> content_client_;
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;

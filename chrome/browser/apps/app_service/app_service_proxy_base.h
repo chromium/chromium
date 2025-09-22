@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -50,6 +51,7 @@ class Publisher;
 class AppUpdate;
 class BrowserAppLauncher;
 class PreferredAppsListHandle;
+class PublisherHostFactory;
 
 struct IntentLaunchInfo {
   IntentLaunchInfo();
@@ -79,7 +81,9 @@ struct IntentLaunchInfo {
 class AppServiceProxyBase : public KeyedService,
                             public PreferredAppsImpl::Host {
  public:
-  explicit AppServiceProxyBase(Profile* profile);
+  // `publisher_host_factory` must be non-null and outlive this instance.
+  AppServiceProxyBase(Profile* profile,
+                      PublisherHostFactory* publisher_host_factory);
   AppServiceProxyBase(const AppServiceProxyBase&) = delete;
   AppServiceProxyBase& operator=(const AppServiceProxyBase&) = delete;
   ~AppServiceProxyBase() override;
@@ -431,6 +435,7 @@ class AppServiceProxyBase : public KeyedService,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update);
 
+  const raw_ref<PublisherHostFactory> publisher_host_factory_;
   base::flat_map<AppType, raw_ptr<Publisher, CtnExperimental>> publishers_;
 
   apps::AppRegistryCache app_registry_cache_;

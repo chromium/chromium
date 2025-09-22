@@ -23,7 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/apps/app_service/publisher_host_impl.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -78,7 +78,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
   using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
 
-  explicit AppServiceProxyAsh(Profile* profile);
+  explicit AppServiceProxyAsh(Profile* profile,
+                              PublisherHostFactory* publisher_host_factory);
   AppServiceProxyAsh(const AppServiceProxyAsh&) = delete;
   AppServiceProxyAsh& operator=(const AppServiceProxyAsh&) = delete;
   ~AppServiceProxyAsh() override;

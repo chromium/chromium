@@ -4,10 +4,15 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -87,6 +92,14 @@ AppServiceProxyFactory* AppServiceProxyFactory::GetInstance() {
   return instance.get();
 }
 
+base::AutoReset<std::unique_ptr<PublisherHostFactory>>
+AppServiceProxyFactory::SetPublisherHostFactory(
+    std::unique_ptr<PublisherHostFactory> publisher_host_factory) {
+  base::AutoReset result(&publisher_host_factory_,
+                         std::move(publisher_host_factory));
+  return result;
+}
+
 AppServiceProxyFactory::AppServiceProxyFactory()
     : BrowserContextKeyedServiceFactory(
           "AppServiceProxy",
@@ -108,8 +121,11 @@ AppServiceProxyFactory::~AppServiceProxyFactory() = default;
 std::unique_ptr<KeyedService>
 AppServiceProxyFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto proxy =
-      std::make_unique<AppServiceProxy>(Profile::FromBrowserContext(context));
+  CHECK(publisher_host_factory_)
+      << "PubliserHostFactory is not set. You'll need to call "
+      << "AppServiceProxyFactory::SetPublisherHostFactory to set it up";
+  auto proxy = std::make_unique<AppServiceProxy>(
+      Profile::FromBrowserContext(context), publisher_host_factory_.get());
   proxy->Initialize();
   return proxy;
 }

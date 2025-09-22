@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -30,6 +32,10 @@ class Profile;
 class StartupBrowserCreator;
 class ShutdownWatcherHelper;
 class WebUsbDetector;
+
+namespace apps {
+class PublisherHostFactory;
+}  // namespace apps
 
 namespace base {
 class CommandLine;
@@ -188,6 +194,11 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.
   bool restart_last_session_ = false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<base::AutoReset<std::unique_ptr<apps::PublisherHostFactory>>>
+      publisher_host_factory_resetter_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)

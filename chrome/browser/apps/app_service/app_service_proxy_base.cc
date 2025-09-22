@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -110,8 +112,11 @@ AppServiceProxyBase::AppInnerIconLoader::LoadIconFromIconKey(
   return nullptr;
 }
 
-AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
-    : app_inner_icon_loader_(this),
+AppServiceProxyBase::AppServiceProxyBase(
+    Profile* profile,
+    PublisherHostFactory* publisher_host_factory)
+    : publisher_host_factory_(CHECK_DEREF(publisher_host_factory)),
+      app_inner_icon_loader_(this),
       app_icon_coalescer_(&app_inner_icon_loader_),
       app_outer_icon_loader_(&app_icon_coalescer_,
                              IconCache::GarbageCollectionPolicy::kEager),

@@ -21,6 +21,7 @@ class Profile;
 namespace apps {
 
 class PublisherHost;
+class PublisherHostFactory;
 
 // Singleton (per Profile) proxy and cache of an App Service's apps in Chrome
 // browser.
@@ -28,7 +29,8 @@ class PublisherHost;
 // See components/services/app_service/README.md.
 class AppServiceProxy : public AppServiceProxyBase {
  public:
-  explicit AppServiceProxy(Profile* profile);
+  explicit AppServiceProxy(Profile* profile,
+                           PublisherHostFactory* publisher_host_factory);
   AppServiceProxy(const AppServiceProxy&) = delete;
   AppServiceProxy& operator=(const AppServiceProxy&) = delete;
   ~AppServiceProxy() override;

@@ -140,6 +140,8 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory_impl.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"
@@ -1202,6 +1204,11 @@ void ChromeBrowserMainParts::PreProfileInit() {
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
       .CleanUpDeletedProfiles();
+
+  // Inject the publisher dependency to AppService.
+  publisher_host_factory_resetter_ =
+      apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
+          std::make_unique<apps::PublisherHostFactoryImpl>());
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1863,6 +1870,8 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   restart_last_session_ = browser_shutdown::ShutdownPreThreadsStop();
   browser_process_->StartTearDown();
+
+  publisher_host_factory_resetter_.reset();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 
+#include <memory>
+
+#include "base/auto_reset.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -12,6 +15,8 @@
 class Profile;
 
 namespace apps {
+
+class PublisherHostFactory;
 
 // Singleton that owns all AppServiceProxy's and associates them with Profile.
 class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
@@ -38,6 +43,13 @@ class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
   AppServiceProxyFactory(const AppServiceProxyFactory&) = delete;
   AppServiceProxyFactory& operator=(const AppServiceProxyFactory&) = delete;
 
+  // Sets the factory of PublisherHost to be used on creation of
+  // AppServiceProxy.
+  // Returns AutoReset instance, whose destruction unsets the factory.
+  [[nodiscard]] base::AutoReset<std::unique_ptr<PublisherHostFactory>>
+  SetPublisherHostFactory(
+      std::unique_ptr<PublisherHostFactory> publisher_host_factory);
+
  private:
   friend base::NoDestructor<AppServiceProxyFactory>;
 
@@ -50,6 +62,8 @@ class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+
+  std::unique_ptr<PublisherHostFactory> publisher_host_factory_;
 };
 
 }  // namespace apps
