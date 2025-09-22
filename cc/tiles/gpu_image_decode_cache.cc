@@ -3560,55 +3560,9 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
 
   image_data->needs_mips = true;
 
-  // If we have no uploaded image, nothing to do other than update needs_mips.
-  // Mips will be generated during later upload.
-  if (!image_data->HasUploadedData() ||
-      image_data->mode != DecodedDataMode::kGpu)
-    return;
-
-  if (image_data->info.yuva.has_value()) {
-    // This path is no longer supported post-OOP-C.
-    return;
-  }
-  // Begin RGBX mip mapping.
-  // Need to generate mips. Take a reference on the image we're about to
-  // delete, delaying deletion.
-  sk_sp<SkImage> previous_image = image_data->upload.image();
-
-  // Generate a new image from the previous, adding mips.
-  sk_sp<SkImage> image_with_mips = SkImages::TextureFromImage(
-      context_->GrContext(), previous_image, skgpu::Mipmapped::kYes);
-
-  // Handle lost context.
-  if (!image_with_mips) {
-    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
-    return;
-  }
-
-  // No need to do anything if mipping this image results in the same texture.
-  // Deleting it below will result in lifetime issues.
-  if (GlIdFromSkImage(image_with_mips.get()) == image_data->upload.gl_id())
-    return;
-
-  // Skia owns our new image, take ownership.
-  sk_sp<SkImage> image_with_mips_owned = TakeOwnershipOfSkImageBacking(
-      context_->GrContext(), std::move(image_with_mips));
-
-  // Handle lost context
-  if (!image_with_mips_owned) {
-    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
-    return;
-  }
-
-  // The previous image might be in the in-use cache, potentially held
-  // externally. We must defer deleting it until the entry is unlocked.
-  image_data->upload.set_unmipped_image(image_data->upload.image());
-
-  // Set the new image on the cache.
-  image_data->upload.Reset();
-  image_data->upload.SetImage(std::move(image_with_mips_owned));
-  context_->RasterInterface()->InitializeDiscardableTextureCHROMIUM(
-      image_data->upload.gl_id());
+  // There is nothing to do here post-OOP-C.
+  // TODO(crbug.com/391648152): Remove this method entirely if/once
+  // `ImageData::needs_mips` is no longer used.
 }
 
 // static
