@@ -351,7 +351,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
          lensResultPageMediator:self
         didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kExploreBarTab];
   } else if (base::FeatureList::IsEnabled(kLensSearchHeadersCheckEnabled) &&
-             lens::IsGoogleHostURL(URL) && [self shouldAddHeaders:request]) {
+             requestInfo.target_frame_is_main && lens::IsGoogleHostURL(URL) &&
+             [self shouldAddHeaders:request]) {
+    // Only attach headers for navigation clicks targeting main frame.
     [self loadResultsURL:URL httpHeaders:_latestHttpHeaders];
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
   } else {
