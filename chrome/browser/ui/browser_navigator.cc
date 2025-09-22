@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -182,14 +183,13 @@ Browser::ValueSpecified GetOriginSpecified(const NavigateParams& params) {
 // incompatible. The tab index will be -1 unless a singleton or tab switch
 // was requested, in which case it might be the target tab index, or -1
 // if not found.
-std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
+std::tuple<BrowserWindowInterface*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
   switch (params.disposition) {
-    case WindowOpenDisposition::SWITCH_TO_TAB:
-    {
-      std::pair<Browser*, int> browser_and_index =
+    case WindowOpenDisposition::SWITCH_TO_TAB: {
+      std::pair<BrowserWindowInterface*, int> browser_and_index =
           GetIndexAndBrowserOfExistingTab(profile, params);
       if (browser_and_index.first) {
         return browser_and_index;
@@ -215,7 +215,7 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
       // it would load in a random window, potentially opening a second copy.
       // Instead, make an extra effort to see if there's an already open copy.
       if (!WindowCanOpenTabs(params)) {
-        std::pair<Browser*, int> browser_and_index =
+        std::pair<BrowserWindowInterface*, int> browser_and_index =
             GetIndexAndBrowserOfExistingTab(profile, params);
         if (browser_and_index.first) {
           return browser_and_index;
@@ -233,8 +233,7 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
       // Find a compatible window and re-execute this command in it. Otherwise
       // re-run with NEW_WINDOW.
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
-    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-    {
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE: {
       // The picture in picture window should be part of the opener's web app,
       // if any.
       std::string app_name;
@@ -642,8 +641,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     params->browser = override_params->browser();
     singleton_index = override_params->tab_index().value_or(-1);
   } else {
-    std::tie(params->browser, singleton_index) =
+    std::tuple<BrowserWindowInterface*, int> browser_and_index =
         GetBrowserAndTabForDisposition(*params);
+    params->browser =
+        std::get<0>(browser_and_index) == nullptr
+            ? nullptr
+            : std::get<0>(browser_and_index)->GetBrowserForMigrationOnly();
+    singleton_index = std::get<1>(browser_and_index);
   }
 
   if (!params->browser) {
@@ -899,9 +903,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;
 
-// At this point, the `params->navigated_or_inserted_contents` is guaranteed to
-// be non null, so perform tasks if the navigation has been captured by a web
-// app, like enqueueing launch params.
+  // At this point, the `params->navigated_or_inserted_contents` is guaranteed
+  // to be non null, so perform tasks if the navigation has been captured by a
+  // web app, like enqueueing launch params.
   if (app_navigation) {
     web_app::NavigationCapturingProcess::AfterWebContentsCreation(
         std::move(app_navigation), *params->navigated_or_inserted_contents,
