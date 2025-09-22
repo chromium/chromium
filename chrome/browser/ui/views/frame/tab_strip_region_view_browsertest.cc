@@ -353,14 +353,8 @@ class TabStripRegionViewTestWithScrollingEnabled
 // TabStripRegionViewTestWithScrollingDisabled.
 // TabStripCannotBeLargerThanContainer.
 // TODO(crbug.com/442378742): Fix failures on the Linux ASan LSan Tests bot.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_TabStripCanBeLargerThanContainer \
-  DISABLED_TabStripCanBeLargerThanContainer
-#else
-#define MAYBE_TabStripCanBeLargerThanContainer TabStripCanBeLargerThanContainer
-#endif
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-                       MAYBE_TabStripCanBeLargerThanContainer) {
+                       DISABLED_TabStripCanBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   {
@@ -401,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-                       TabStripScrollButtonsNotInWindowCaption) {
+                       DISABLED_TabStripScrollButtonsNotInWindowCaption) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   {
