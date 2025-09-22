@@ -252,6 +252,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "//modules/*",
     "//services/webnn/*",
     "//third_party/mediapipe/*",
+    "//third_party/webrtc/modules/*",
   ]
 
   conditional_deps = [ ":tflite" ]
