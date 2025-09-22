@@ -101,6 +101,7 @@ optimization_guide::proto::Actions MakeScroll(
 optimization_guide::proto::Actions MakeScrollTo(content::RenderFrameHost& rfh,
                                                 int content_node_id);
 optimization_guide::proto::Actions MakeDragAndRelease(
+    tabs::TabHandle tab_handle,
     const gfx::Point& from_point,
     const gfx::Point& to_point);
 optimization_guide::proto::Actions MakeWait();

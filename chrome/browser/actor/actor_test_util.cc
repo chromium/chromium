@@ -278,7 +278,8 @@ Actions MakeSelect(RenderFrameHost& rfh,
   return actions;
 }
 
-Actions MakeDragAndRelease(const gfx::Point& from_point,
+Actions MakeDragAndRelease(tabs::TabHandle tab_handle,
+                           const gfx::Point& from_point,
                            const gfx::Point& to_point) {
   Actions actions;
   DragAndReleaseAction* drag_and_release =
@@ -291,6 +292,7 @@ Actions MakeDragAndRelease(const gfx::Point& from_point,
       to_point.x());
   drag_and_release->mutable_to_target()->mutable_coordinate()->set_y(
       to_point.y());
+  drag_and_release->set_tab_id(tab_handle.raw_value());
   return actions;
 }
 
