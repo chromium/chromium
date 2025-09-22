@@ -149,6 +149,14 @@ void VerifySnackbarUI(NSString* title,
 
 // Tests that showing a new snackbar dismisses an existing one.
 - (void)testNewSnackbarDismissesOldSnackbar {
+// TODO(crbug.com/446695415): Test is flaky on iPhone device, re-enable when
+// fixed.
+#if !TARGET_OS_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Flaky on iPhone device.");
+  }
+#endif
+
   // Show the first message.
   VerifySnackbarUI(kTestTitle, nil, nil, nil, NO, NO);
 
