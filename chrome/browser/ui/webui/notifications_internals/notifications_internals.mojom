@@ -8,5 +8,5 @@ module notifications_internals.mojom;
 // interactivity.
 interface PageHandler {
   // Schedule a notification.
-  ScheduleNotification();
+  ScheduleNotification(string feature);
 };

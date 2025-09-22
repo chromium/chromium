@@ -17,10 +17,25 @@ let pageHandler: PageHandlerRemote|null = null;
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  getRequiredElement('schedule-notification')
+  getRequiredElement('esb-notification')
       .addEventListener('click', function() {
         assert(pageHandler);
-        pageHandler.scheduleNotification();
+        pageHandler.scheduleNotification('esb');
+      });
+  getRequiredElement('quick-delete-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('quick_delete');
+      });
+  getRequiredElement('google-lens-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('google_lens');
+      });
+  getRequiredElement('bottom-omnibox-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('bottom_omnibox');
       });
 }
 

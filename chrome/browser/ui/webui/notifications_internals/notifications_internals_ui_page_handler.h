@@ -29,7 +29,7 @@ class NotificationsInternalsUIPageHandler
   ~NotificationsInternalsUIPageHandler() override;
 
   // notifications_internals::mojom::PageHandler
-  void ScheduleNotification() override;
+  void ScheduleNotification(const std::string& feature_type) override;
 
  private:
   mojo::Receiver<notifications_internals::mojom::PageHandler> receiver_;
