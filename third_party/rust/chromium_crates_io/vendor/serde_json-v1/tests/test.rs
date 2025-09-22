@@ -11,6 +11,7 @@
     clippy::let_underscore_untyped,
     clippy::shadow_unrelated,
     clippy::too_many_lines,
+    clippy::uninlined_format_args,
     clippy::unreadable_literal,
     clippy::unseparated_literal_suffix,
     clippy::vec_init_then_push,

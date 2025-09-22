@@ -1,6 +1,6 @@
 [package]
 name = "serde_json"
-version = "1.0.143"
+version = "1.0.145"
 authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
 categories = ["encoding", "parser-implementations", "no-std"]
 description = "A JSON serialization file format"
@@ -9,14 +9,17 @@ edition = "2021"
 keywords = ["json", "serde", "serialization"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/json"
-rust-version = "1.56"
+rust-version = "1.61"
 
 [dependencies]
 indexmap = { version = "2.2.3", optional = true }
 itoa = "1.0"
 memchr = { version = "2", default-features = false }
 ryu = "1.0"
-serde = { version = "1.0.194", default-features = false }
+serde_core = { version = "1.0.220", default-features = false }
+
+[target.'cfg(any())'.dependencies]
+serde = { version = "1.0.220", default-features = false }
 
 [dev-dependencies]
 automod = "1.0.11"
@@ -27,7 +30,7 @@ serde = { version = "1.0.194", features = ["derive"] }
 serde_bytes = "0.11.10"
 serde_derive = "1.0.166"
 serde_stacker = "0.1.8"
-trybuild = { version = "1.0.81", features = ["diff"] }
+trybuild = { version = "1.0.108", features = ["diff"] }
 
 [package.metadata.docs.rs]
 features = ["preserve_order", "raw_value", "unbounded_depth"]
@@ -48,12 +51,12 @@ features = ["float_roundtrip", "raw_value", "unbounded_depth"]
 [features]
 default = ["std"]
 
-std = ["memchr/std", "serde/std"]
+std = ["memchr/std", "serde_core/std"]
 
 # Provide integration for heap-allocated collections without depending on the
 # rest of the Rust standard library.
 # NOTE: Disabling both `std` *and* `alloc` features is not supported yet.
-alloc = ["serde/alloc"]
+alloc = ["serde_core/alloc"]
 
 # Make serde_json::Map use a representation which maintains insertion order.
 # This allows data to be read into a Value and written back to a JSON string

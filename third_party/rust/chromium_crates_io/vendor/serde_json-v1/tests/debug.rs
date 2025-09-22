@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 use indoc::indoc;
 use serde_json::{json, Number, Value};
 

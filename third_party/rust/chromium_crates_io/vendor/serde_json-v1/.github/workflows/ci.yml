@@ -22,7 +22,7 @@ jobs:
         os: [ubuntu, windows]
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo test
       - run: cargo test --features preserve_order --tests -- --skip ui --exact
@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [beta, 1.65.0, 1.56.1]
+        rust: [beta, 1.65.0, 1.61.0]
         os: [ubuntu]
         include:
           - rust: stable
@@ -54,7 +54,7 @@ jobs:
             os: windows
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
@@ -68,11 +68,12 @@ jobs:
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,arbitrary_precision
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,raw_value
       - run: cargo check --manifest-path tests/crate/Cargo.toml --features serde_json/preserve_order
-        if: matrix.rust != '1.56.1'
+        if: matrix.rust != '1.61.0'
       - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features --features alloc,serde_json/preserve_order
-        if: matrix.rust != '1.56.1'
+        if: matrix.rust != '1.61.0'
       - name: Build without std
-        run: cargo check --manifest-path tests/crate/Cargo.toml --target ${{matrix.target}} --no-default-features --features alloc
+        run: cargo check --manifest-path tests/crate/Cargo.toml --target
+          ${{matrix.target}} --no-default-features --features alloc
         if: matrix.target
 
   minimal:
@@ -80,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo generate-lockfile -Z minimal-versions
       - run: cargo check --locked
@@ -104,7 +105,7 @@ jobs:
       MIRIFLAGS: -Zmiri-strict-provenance
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@miri
       - run: cargo miri setup
       - run: cargo miri test --target ${{matrix.target}}
@@ -116,7 +117,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@clippy
       - run: cargo clippy --tests -- -Dclippy::all -Dclippy::pedantic
       - run: cargo clippy --all-features --tests -- -Dclippy::all -Dclippy::pedantic
@@ -128,7 +129,7 @@ jobs:
     env:
       RUSTDOCFLAGS: -Dwarnings
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@nightly
       - uses: dtolnay/install@cargo-docs-rs
       - run: cargo docs-rs
@@ -138,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@nightly
       - uses: dtolnay/install@cargo-fuzz
       - run: cargo fuzz check
@@ -149,7 +150,7 @@ jobs:
     if: github.event_name != 'pull_request'
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --exit-code 1
