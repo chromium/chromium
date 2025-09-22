@@ -14,13 +14,22 @@
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_illustrated_empty_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+/// Size for the file icon image in the download list cells.
+constexpr CGFloat kFileIconImageSize = 44.0;
+
+}  // namespace
 
 // Diffable data source types using DownloadListGroupItem for section
 // identifiers.
@@ -47,7 +56,7 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   self.navigationItem.rightBarButtonItem = closeButton;
 
   // Configure table view.
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
   [self configureDiffableDataSource];
 
@@ -79,18 +88,22 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 /// path.
 - (UITableViewCell*)cellForItem:(DownloadListItem*)item
                     atIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
-  cell.textLabel.text = item.fileName;
-  NSString* detailText = item.detailText;
-  [cell setDetailText:detailText];
-  if (detailText.length > 0) {
-    cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-  }
-  [cell setIconImage:item.fileTypeIcon
-            tintColor:nil
-      backgroundColor:nil
-         cornerRadius:0];
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = item.fileTypeIcon;
+  imageConfiguration.imageSize =
+      CGSizeMake(kFileIconImageSize, kFileIconImageSize);
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = item.fileName;
+  configuration.subtitle = item.detailText;
+  configuration.leadingConfiguration = imageConfiguration;
+
+  TableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
+  cell.contentConfiguration = configuration;
+
   return cell;
 }
 
