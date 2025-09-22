@@ -366,6 +366,13 @@ id<GREYMatcher> BottomToolbar() {
 // Checks that the Autofill credit cards list view is in edit mode and the
 // Autofill credit cards / mandatory reauth switches are disabled.
 - (void)testListViewEditMode {
+  // TODO(crbug.com/446642688): Test is flaky on iPad simulator, re-enable when
+  // fixed.
+#if TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad simulator.");
+  }
+#endif
   [AutofillAppInterface saveLocalCreditCard];
   for (ReauthenticationResult result :
        {ReauthenticationResult::kFailure, ReauthenticationResult::kSuccess,
