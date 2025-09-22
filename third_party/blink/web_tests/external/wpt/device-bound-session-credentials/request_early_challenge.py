@@ -9,6 +9,16 @@ def main(request, response):
     if use_single_header is None:
         return (400, response.headers, "")
 
+    headers = []
+    if request.headers.get(b"origin") is not None:
+        # Some tests (e.g. third-party-registration.https.html) set
+        # challenges across origins. Allow cookies so that we can get
+        # the session_manager for the request.
+        headers = [
+            ("Access-Control-Allow-Origin", request.headers.get(b"origin")),
+            ("Access-Control-Allow-Credentials", "true"),
+        ]
+
     challenges = []
     for session_id in session_manager.find_for_request(request).get_session_ids():
         early_challenge = test_session_manager.get_early_challenge(session_id)
@@ -17,6 +27,6 @@ def main(request, response):
 
     if use_single_header:
         combined_challenges = [("Sec-Session-Challenge", ", ".join([challenge[1] for challenge in challenges]))]
-        return (200, combined_challenges, "")
+        return (200, headers + combined_challenges, "")
     else:
-        return (200, challenges, "")
+        return (200, headers + challenges, "")
