@@ -434,10 +434,6 @@ bool CanvasResourceProviderSharedImage::ShouldReplaceTargetBuffer(
     // Another context may have a read reference to this resource. Flush the
     // deferred queue in that context so that we don't need to copy.
     GetFlushForImageListener()->NotifyFlushForImage(content_id);
-
-    if (!use_oop_rasterization_) {
-      skgpu::ganesh::FlushAndSubmit(surface_);
-    }
   }
 
   return !resource_->HasOneRef();
