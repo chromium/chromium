@@ -178,7 +178,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "busy_loop_for",
                    base::Milliseconds(2));
 
-BASE_FEATURE(kNoGCOnInput, "NoGCOnInput", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNoGCOnInput, base::FEATURE_DISABLED_BY_DEFAULT);
 
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {

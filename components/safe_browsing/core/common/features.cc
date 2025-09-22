@@ -61,7 +61,6 @@ constexpr base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
     /*default_value=*/0};
 
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
-             "ClientSideDetectionCreditCardForm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate{
     &kClientSideDetectionCreditCardForm, "HCAcceptanceRate",
@@ -182,7 +181,6 @@ BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtendedReportingRemovePrefDependencyIos,
-             "ExtendedReportingRemovePrefDependencyIos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryConfiguration,

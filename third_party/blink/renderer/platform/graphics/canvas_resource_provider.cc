@@ -67,9 +67,7 @@
 
 namespace blink {
 
-BASE_FEATURE(kSkipRedundantWillDraw,
-             "SkipRedundantWillDraw",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSkipRedundantWillDraw, base::FEATURE_ENABLED_BY_DEFAULT);
 
 class FlushForImageListener {
   // With deferred rendering it's possible for a drawImage operation on a canvas

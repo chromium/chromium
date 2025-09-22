@@ -185,7 +185,7 @@ BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 BASE_FEATURE(kAiModeOmniboxEntryPoint, DISABLED);
 
 // When enabled, removes the Search Ready Omnibox feature.
-BASE_FEATURE(kRemoveSearchReadyOmnibox, "RemoveSearchReadyOmnibox", DISABLED);
+BASE_FEATURE(kRemoveSearchReadyOmnibox, DISABLED);
 
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as

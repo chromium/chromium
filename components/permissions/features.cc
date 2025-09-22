@@ -39,9 +39,7 @@ BASE_FEATURE(kPermissionsAIv3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionsAIv4, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermissionsAIv5,
-             "PermissionsAIv5",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPermissionsAIv5, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionPromiseLifetimeModulation,
              base::FEATURE_ENABLED_BY_DEFAULT);

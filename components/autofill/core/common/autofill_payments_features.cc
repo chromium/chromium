@@ -17,7 +17,6 @@ BASE_FEATURE(kAutofillCreditCardScannerIos, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, Chrome will extract the checkout amount from the checkout
 // page using server-side AI.
 BASE_FEATURE(kAutofillEnableAiBasedAmountExtraction,
-             "AutofillEnableAiBasedAmountExtraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

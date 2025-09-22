@@ -7,7 +7,6 @@
 namespace features {
 
 BASE_FEATURE(kBarhopperAztecRefineTransformFallback,
-             "BarhopperAztecRefineTransformFallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -812,7 +812,6 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kDnsFilteringDetails, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUpdateIsMainFrameOriginRecentlyAccessed,
-             "UpdateIsMainFrameOriginRecentlyAccessed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,

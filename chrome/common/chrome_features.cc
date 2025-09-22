@@ -331,9 +331,7 @@ const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
 
 BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicActorToctouValidation,
-             "GlicActorToctouValidation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_GLIC)
 // Controls whether the Glic feature is enabled.
@@ -628,9 +626,7 @@ const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
 BASE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicPersonalContext,
-             "GlicPersonalContext",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicPersonalContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicRecordActorJournal, base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<int> kGlicRecordActorJournalFeedbackProductId{

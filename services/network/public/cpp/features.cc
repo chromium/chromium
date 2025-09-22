@@ -275,9 +275,7 @@ BASE_FEATURE(kPreloadedDictionaryConditionalUse,
 
 // Enables support for explicitly setting the compression dictionary expiration
 // with the `ttl` parameter on the `use-as-dictionary` HTTP response header.
-BASE_FEATURE(kCompressionDictionaryTTL,
-             "CompressionDictionaryTTL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCompressionDictionaryTTL, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables support for the `Integrity-Policy` header with script destinations,
 // which enables developers to ensure all their external scripts have their

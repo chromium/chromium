@@ -429,7 +429,7 @@ BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 // details.
 #if BUILDFLAG(IS_ANDROID)
 // Enable AL device fluid resize.
-BASE_FEATURE(kFluidResize, "FluidResize", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFluidResize, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
@@ -1322,13 +1322,10 @@ BASE_FEATURE(kKeyboardLockApiOnAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Sets IO threads to kInteractive all the time.
-BASE_FEATURE(kIOThreadInteractiveThreadType,
-             "IOThreadInteractiveThreadType",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOThreadInteractiveThreadType, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Boosts IO threads and Browser main to kInteractive during input scenarios.
 BASE_FEATURE(kBoostThreadsPriorityDuringInputScenario,
-             "BoostThreadsPriorityDuringInputScenario",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default amount of days after which the global navigation capturing IPH

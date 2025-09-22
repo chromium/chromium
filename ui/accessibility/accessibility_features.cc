@@ -182,7 +182,6 @@ bool IsAccessibilityOnScreenAXModeEnabled() {
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAccessibilityWinAXFragmentRootParent,
-             "AccessibilityWinAXFragmentRootParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityWinAXFragmentRootParentEnabled() {
   return base::FeatureList::IsEnabled(

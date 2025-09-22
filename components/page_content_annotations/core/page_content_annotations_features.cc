@@ -148,15 +148,12 @@ BASE_FEATURE(kPageContentAnnotationsValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables fetching page metadata from the remote Optimization Guide service.
-BASE_FEATURE(kRemotePageMetadata,
-             "RemotePageMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRemotePageMetadata, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations,
              enabled_by_default_non_ios);
 
 BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
-             "PageContentAnnotationsPersistSalientImageMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,

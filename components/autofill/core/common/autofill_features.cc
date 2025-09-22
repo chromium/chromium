@@ -66,9 +66,7 @@ BASE_FEATURE(kAutofillAiAlwaysTriggerServerModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi entities will be deduped on every major milestone.
-BASE_FEATURE(kAutofillAiDedupeEntities,
-             "AutofillAiDedupeEntities",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiDedupeEntities, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch. If enabled, the EntityDataManager is created irrespective of
 // whether other features are enabled. This is necessary so that cleaning up the
@@ -245,7 +243,6 @@ BASE_FEATURE(kAutofillDeduplicateAccountAddresses,
 // hyphen-minus.
 // TODO(crbug.com/440039204): Remove when launched.
 BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
-             "AutofillDisallowMoreHyphenLikeLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_disallow_more_hyphen_like_labels)
 
