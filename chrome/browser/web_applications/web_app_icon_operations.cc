@@ -214,15 +214,4 @@ IconUrlSizeSet GetValidIconUrlsToDownload(
   return RemoveDuplicates(std::move(icon_urls_with_sizes));
 }
 
-IconUrlSizeSet GetValidIconUrlsNotFromManifestIconField(
-    const WebAppInstallInfo& web_app_info) {
-  std::vector<IconUrlWithSize> icon_urls_with_sizes;
-
-  base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
-
-  return RemoveDuplicates(std::move(icon_urls_with_sizes));
-}
-
 }  // namespace web_app
