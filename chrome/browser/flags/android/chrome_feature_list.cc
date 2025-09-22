@@ -572,6 +572,8 @@ BASE_FEATURE(kAndroidProgressBarVisualUpdate,
 
 BASE_FEATURE(kAndroidComposeplate, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidComposeplateAllLocales, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

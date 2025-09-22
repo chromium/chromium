@@ -50,13 +50,6 @@ public class ComposeplateUtilsUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
-    public void testIsComposeplateEnabled_DisabledByFeatureFlag() {
-        // Verifies that the function returns if the feature flag is disabled.
-        assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
-    }
-
-    @Test
     public void testIsComposeplateEnabled_DisabledByServerEligibility() {
         assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
 

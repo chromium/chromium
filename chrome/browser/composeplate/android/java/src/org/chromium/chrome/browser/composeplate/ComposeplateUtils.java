@@ -10,7 +10,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Utility class for the composeplate view. */
@@ -23,9 +22,7 @@ public class ComposeplateUtils {
      * @param profile The current profile.
      */
     public static boolean isComposeplateEnabled(boolean isTablet, Profile profile) {
-        return ChromeFeatureList.sAndroidComposeplate.isEnabled()
-                && !isTablet
-                && ComposeplateUtilsJni.get().isAimEntrypointEligible(profile);
+        return !isTablet && ComposeplateUtilsJni.get().isAimEntrypointEligible(profile);
     }
 
     @NativeMethods
