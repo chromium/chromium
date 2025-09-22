@@ -45,7 +45,7 @@ class FrameViewChromeOSUiTest : public ChromeOSBrowserUITest {
 };
 
 // Based on the existing Ash test of the same name in:
-//   //ash/frame/non_client_frame_view_ash_unittest.cc
+//   //ash/frame/frame_view_ash_unittest.cc
 //
 // Regression test for:
 //   - https://crbug.com/839955

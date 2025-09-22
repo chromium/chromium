@@ -881,7 +881,7 @@ class VIEWS_EXPORT WidgetDelegate {
   ClosureVector delete_delegate_callbacks_;
 
   ClientViewFactory client_view_factory_;
-  FrameViewFactory non_client_frame_view_factory_;
+  FrameViewFactory frame_view_factory_;
   OverlayViewFactory overlay_view_factory_;
 
   TitleChangedCallback title_changed_callback_;

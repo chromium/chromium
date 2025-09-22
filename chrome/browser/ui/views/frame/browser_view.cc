@@ -637,8 +637,8 @@ class TabContainerOverlayView : public views::View {
     auto* theme_service = ThemeServiceFactory::GetForProfile(
         browser_view_->browser()->GetProfile());
     if (!theme_service->UsingSystemTheme()) {
-      auto* non_client_frame_view = browser_view_->frame()->GetFrameView();
-      non_client_frame_view->PaintThemedFrame(canvas);
+      auto* frame_view = browser_view_->frame()->GetFrameView();
+      frame_view->PaintThemedFrame(canvas);
     }
   }
 
@@ -2085,10 +2085,10 @@ void BrowserView::FullscreenStateChanging() {
 
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
-  const auto* non_client_frame_view =
+  const auto* frame_view =
       static_cast<BrowserFrameViewChromeOS*>(frame_->GetFrameView());
   immersive_mode_controller()->SetEnabled(
-      non_client_frame_view->ShouldEnableImmersiveModeController());
+      frame_view->ShouldEnableImmersiveModeController());
 #endif
 
 #if BUILDFLAG(IS_MAC)

@@ -52,8 +52,7 @@ WidgetDelegate::WidgetDelegate()
     : widget_initialized_callbacks_(std::make_unique<ClosureVector>()),
       client_view_factory_(
           base::BindOnce(&CreateDefaultClientView, base::Unretained(this))),
-      non_client_frame_view_factory_(
-          base::BindRepeating(&CreateDefaultFrameView)),
+      frame_view_factory_(base::BindRepeating(&CreateDefaultFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
 
 WidgetDelegate::~WidgetDelegate() {
@@ -373,8 +372,8 @@ ClientView* WidgetDelegate::CreateClientView(Widget* widget) {
 }
 
 std::unique_ptr<FrameView> WidgetDelegate::CreateFrameView(Widget* widget) {
-  CHECK(non_client_frame_view_factory_);
-  return non_client_frame_view_factory_.Run(widget);
+  CHECK(frame_view_factory_);
+  return frame_view_factory_.Run(widget);
 }
 
 View* WidgetDelegate::CreateOverlayView() {
@@ -549,7 +548,7 @@ void WidgetDelegate::SetClientViewFactory(ClientViewFactory factory) {
 
 void WidgetDelegate::SetFrameViewFactory(FrameViewFactory factory) {
   DCHECK(!GetWidget());
-  non_client_frame_view_factory_ = std::move(factory);
+  frame_view_factory_ = std::move(factory);
 }
 
 void WidgetDelegate::SetOverlayViewFactory(OverlayViewFactory factory) {
