@@ -16,6 +16,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
+#import "components/image_fetcher/core/request_metadata.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
@@ -284,6 +285,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           base::UmaHistogramBoolean("IOS.HomeCustomization.Background.Gallery."
                                     "ImageDownloadSuccessful",
                                     false);
+          base::UmaHistogramSparse(
+              "IOS.HomeCustomization.Background.Gallery.ImageDownloadErrorCode",
+              metadata.http_response_code);
           completion(nil, fetchError);
           return;
         }

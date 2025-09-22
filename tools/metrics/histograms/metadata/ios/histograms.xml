@@ -2498,6 +2498,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="IOS.HomeCustomization.Background.Gallery.ImageDownloadErrorCode"
+    enum="HttpResponseCode" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the HTTP status response code of a background thumbnail download
+    attempt from the background customization gallery on iOS. Logged for each
+    image download attempt that failed.
+  </summary>
+</histogram>
+
+<histogram
     name="IOS.HomeCustomization.Background.Gallery.ImageDownloadSuccessful"
     enum="Boolean" expires_after="2026-03-01">
   <owner>cheickcisse@google.com</owner>
