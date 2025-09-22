@@ -3367,31 +3367,6 @@
             ]
         }
     ],
-    "AvoidUnnecessaryBeforeUnloadCheckSync": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "WithSendBeforeUnload",
-                    "params": {
-                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
-                    },
-                    "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheckSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvoidUnnecessaryForcedLayoutMeasurements": [
         {
             "platforms": [
@@ -23119,7 +23094,11 @@
             "experiments": [
                 {
                     "name": "PreflightForDSE",
+                    "params": {
+                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
+                    },
                     "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheckSync",
                         "PrewarmServiceWorkerRegistrationForDSE",
                         "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
                         "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"
@@ -23127,7 +23106,11 @@
                 },
                 {
                     "name": "BackgroundUpdateForScopeCache",
+                    "params": {
+                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
+                    },
                     "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheckSync",
                         "PrewarmServiceWorkerRegistrationForDSE",
                         "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
                         "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
@@ -23139,7 +23122,11 @@
                 },
                 {
                     "name": "BackgroundUpdateForRegistration",
+                    "params": {
+                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
+                    },
                     "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheckSync",
                         "PrewarmServiceWorkerRegistrationForDSE",
                         "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
                         "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
