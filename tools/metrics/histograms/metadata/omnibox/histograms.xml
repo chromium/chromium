@@ -27,6 +27,8 @@ chromium-metrics-reviews@google.com.
 <variants name="AimEligibilityRequestSource">
   <variant name="" summary="Aggregated across all request sources"/>
   <variant name=".CookieChange" summary="Requests triggered by cookie changes"/>
+  <variant name=".PrimaryAccountChange"
+      summary="Requests triggered by primary account changes"/>
   <variant name=".Startup" summary="Requests triggered on browser startup"/>
 </variants>
 
