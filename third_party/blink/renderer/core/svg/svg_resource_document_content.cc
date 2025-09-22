@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -284,12 +285,15 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
 
   Page* page = document.GetPage();
   auto& cache = page->GetSVGResourceDocumentCache();
-
   const SVGResourceDocumentCache::CacheKey key =
       SVGResourceDocumentCache::MakeCacheKey(params);
-  auto* cached_content = cache.Get(key);
-  if (cached_content && CanReuseContent(*cached_content)) {
-    return cached_content;
+
+  if (!RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    auto* cached_content = cache.Get(key);
+    if (cached_content && CanReuseContent(*cached_content)) {
+      return cached_content;
+    }
   }
 
   SVGDocumentResource* resource = SVGDocumentResource::Fetch(
@@ -297,7 +301,15 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   if (!resource) {
     return nullptr;
   }
-  cache.Put(key, resource->GetContent());
+
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    cache.AddResource(resource);
+    UseCounter::Count(document, WebFeature::kExternalSVGDocumentResources);
+  } else {
+    cache.Put(key, resource->GetContent());
+  }
+
   return resource->GetContent();
 }
 

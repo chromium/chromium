@@ -127,6 +127,10 @@ class SVGUseElement final : public SVGGraphicsElement,
   KURL element_url_;
   bool element_url_is_local_;
   bool needs_shadow_tree_recreation_;
+  // Tracks whether this element initiated a resource fetch and expects a call
+  // to `ResourceNotifyFinished()`. Used to filter out (redundant) multiple
+  // notifications for the same resource.
+  bool notification_pending_ = false;
   Member<IdTargetObserver> target_id_observer_;
 
   FRIEND_TEST_ALL_PREFIXES(SVGUseElementTest,

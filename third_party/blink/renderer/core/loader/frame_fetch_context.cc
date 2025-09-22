@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -1326,6 +1327,16 @@ void FrameFetchContext::AddCSPHashReport(
   CHECK(frame);
   GetContentSecurityPolicy()->AddHashReportIfNeeded(frame, url,
                                                     integrity_hashes);
+}
+
+String FrameFetchContext::GetSVGCacheIdentifier() const {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return BaseFetchContext::GetSVGCacheIdentifier();
+  }
+
+  Page* page = document_->GetPage();
+  DCHECK(page);
+  return page->GetSVGResourceDocumentCache().GetCacheIdentifier();
 }
 
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()

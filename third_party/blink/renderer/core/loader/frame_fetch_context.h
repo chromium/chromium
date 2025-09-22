@@ -216,6 +216,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void AddCSPHashReport(
       const String& url,
       const HashMap<HashAlgorithm, String>& integrity_hashes) override;
+  String GetSVGCacheIdentifier() const override;
+
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
   String GetReducedAcceptLanguage() const;

@@ -586,7 +586,9 @@ SVGResourceDocumentCache& Page::GetSVGResourceDocumentCache() {
   if (!svg_resource_document_cache_) {
     svg_resource_document_cache_ =
         MakeGarbageCollected<SVGResourceDocumentCache>(
-            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner());
+            GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
+            SVGResourceDocumentCache::MakeCacheIdentifier(
+                String(BrowsingContextGroupToken().ToString())));
   }
   return *svg_resource_document_cache_;
 }

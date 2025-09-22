@@ -199,7 +199,9 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
          // are tied to the requesting document. There's a document-scoped cache
          // in-front of the ResourceFetcher that will handle reuse (see
          // SVGResourceDocumentContent::Fetch()).
-         resource->GetType() != ResourceType::kSVGDocument;
+         (resource->GetType() != ResourceType::kSVGDocument ||
+          RuntimeEnabledFeatures::
+              SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled());
 }
 
 bool ShouldResourceBeKeptStrongReferenceByType(
@@ -1015,8 +1017,10 @@ Resource* ResourceFetcher::CreateResourceForStaticData(
     return nullptr;
   }
 
-  const String cache_identifier = GetCacheIdentifier(
-      url, params.GetResourceRequest().GetSkipServiceWorker());
+  const String cache_identifier =
+      GetCacheIdentifier(factory.GetType(), url,
+                         params.GetResourceRequest().GetSkipServiceWorker());
+
   // Most off-main-thread resource fetches use Resource::kRaw and don't reach
   // this point, but off-main-thread module fetches might.
   if (IsMainThread()) {
@@ -1447,11 +1451,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       // found, we may need to make it block the onload event.
       MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
     } else if (IsMainThread()) {
-      resource = MemoryCache::Get()->ResourceForURL(
-          params.Url(),
-          GetCacheIdentifier(
-              params.Url(),
-              params.GetResourceRequest().GetSkipServiceWorker()));
+      const String cache_identifier = GetCacheIdentifier(
+          resource_type, params.GetResourceRequest().Url(),
+          params.GetResourceRequest().GetSkipServiceWorker());
+
+      resource =
+          MemoryCache::Get()->ResourceForURL(params.Url(), cache_identifier);
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,
                                              is_static_data);
@@ -1769,7 +1774,7 @@ Resource* ResourceFetcher::CreateResourceForLoading(
     const FetchParameters& params,
     const ResourceFactory& factory) {
   const String cache_identifier =
-      GetCacheIdentifier(params.GetResourceRequest().Url(),
+      GetCacheIdentifier(factory.GetType(), params.GetResourceRequest().Url(),
                          params.GetResourceRequest().GetSkipServiceWorker());
   DCHECK(!IsMainThread() || params.IsStaleRevalidation() ||
          !MemoryCache::Get()->ResourceForURL(params.GetResourceRequest().Url(),
@@ -2927,6 +2932,24 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url,
   }
 
   return MemoryCache::DefaultCacheIdentifier();
+}
+
+String ResourceFetcher::GetCacheIdentifier(ResourceType type,
+                                           const KURL& url,
+                                           bool skip_service_worker) const {
+  // For SVG resource documents, use the SVG-specific cache identifier when the
+  // feature is enabled and a cache identifier is available from the fetch
+  // context.
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
+      type == ResourceType::kSVGDocument) {
+    String svg_cache_identifier = context_->GetSVGCacheIdentifier();
+    DCHECK(!svg_cache_identifier.empty());
+    return svg_cache_identifier;
+  }
+
+  // Fallback to the standard cache identifier logic.
+  return GetCacheIdentifier(url, skip_service_worker);
 }
 
 std::optional<base::UnguessableToken>

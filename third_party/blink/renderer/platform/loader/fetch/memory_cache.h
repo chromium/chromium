@@ -140,6 +140,11 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // releases all strong references held by the cache.
   void EvictResources();
 
+  // Evicts all resources corresponding to a specific cache identifier in the
+  // cache, such that they can no longer be retrieved with `ResourceForURL`,
+  // `ResourcesForURL` or `Contains`.
+  void EvictResourcesForCacheIdentifier(const String& cache_identifier);
+
   // Called to update MemoryCache::size().
   void Update(Resource*, size_t old_size, size_t new_size);
 
@@ -174,6 +179,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   void AddInternal(ResourceMap*, MemoryCacheEntry*);
   void RemoveInternal(ResourceMap*, const ResourceMap::iterator&);
+  void RemoveAllResourcesFromMap(ResourceMap* resources);
 
   // Multi-tiered pruning strategy for strong references.
   //

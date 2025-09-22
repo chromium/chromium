@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -33,19 +34,22 @@
 namespace blink {
 
 class FetchParameters;
+class SVGDocumentResource;
 class SVGResourceDocumentContent;
 
+// TODO(dmangal) Rename SVGResourceDocumentCache to SVGResourceDocumentTracker
 class CORE_EXPORT SVGResourceDocumentCache final
     : public GarbageCollected<SVGResourceDocumentCache> {
  public:
-  explicit SVGResourceDocumentCache(
-      scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit SVGResourceDocumentCache(scoped_refptr<base::SingleThreadTaskRunner>,
+                                    const String& cache_identifier);
 
   // The key is "URL (without fragment)" and the request mode (kSameOrigin or
   // kCors - other modes should be filtered by AllowedRequestMode).
   using CacheKey = std::pair<String, network::mojom::blink::RequestMode>;
 
   static CacheKey MakeCacheKey(const FetchParameters& params);
+  static String MakeCacheIdentifier(StringView browser_context_group_token);
 
   SVGResourceDocumentContent* Get(const CacheKey& key);
   void Put(const CacheKey& key, SVGResourceDocumentContent* content);
@@ -54,13 +58,21 @@ class CORE_EXPORT SVGResourceDocumentCache final
 
   void Trace(Visitor*) const;
 
+  void AddResource(SVGDocumentResource* resource);
+
+  const String& GetCacheIdentifier() const { return cache_identifier_; }
+
+  bool HasContentForTesting(SVGResourceDocumentContent* content) const;
+
  private:
   void DisposeUnobserved();
   void ProcessCustomWeakness(const LivenessBroker&);
 
   HeapHashMap<CacheKey, Member<SVGResourceDocumentContent>> entries_;
+  HeapHashSet<Member<SVGDocumentResource>> tracked_resources_;
   scoped_refptr<base::SingleThreadTaskRunner> dispose_task_runner_;
   bool dispose_task_pending_ = false;
+  String cache_identifier_;
 };
 
 }  // namespace blink

@@ -275,6 +275,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const String& url,
       const HashMap<HashAlgorithm, String>& integrity_hashes) {}
 
+  virtual String GetSVGCacheIdentifier() const { return String(); }
+
  protected:
   const Vector<KURL> empty_unused_preloads_;
 };

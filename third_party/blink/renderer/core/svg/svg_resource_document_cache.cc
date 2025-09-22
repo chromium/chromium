@@ -24,15 +24,19 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 SVGResourceDocumentCache::SVGResourceDocumentCache(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : dispose_task_runner_(std::move(task_runner)) {}
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const String& cache_identifier)
+    : dispose_task_runner_(std::move(task_runner)),
+      cache_identifier_(cache_identifier) {}
 
 SVGResourceDocumentCache::CacheKey SVGResourceDocumentCache::MakeCacheKey(
     const FetchParameters& params) {
@@ -40,6 +44,14 @@ SVGResourceDocumentCache::CacheKey SVGResourceDocumentCache::MakeCacheKey(
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
   return {url_without_fragment.GetString(),
           params.GetResourceRequest().GetMode()};
+}
+
+String SVGResourceDocumentCache::MakeCacheIdentifier(
+    StringView browser_context_group_token) {
+  // Setting a unique cache identifier allows us to use global `MemoryCache`
+  // to store SVG resources specific to each page.
+  constexpr char kSVGDocumentResourcePrefix[] = "svg-resources:";
+  return kSVGDocumentResourcePrefix + browser_context_group_token;
 }
 
 SVGResourceDocumentContent* SVGResourceDocumentCache::Get(const CacheKey& key) {
@@ -63,40 +75,79 @@ void SVGResourceDocumentCache::Put(const CacheKey& key,
 }
 
 void SVGResourceDocumentCache::WillBeDestroyed() {
-  for (SVGResourceDocumentContent* content : entries_.Values()) {
-    content->Dispose();
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    for (const auto& resource : tracked_resources_) {
+      resource->GetContent()->Dispose();
+    }
+    MemoryCache::Get()->EvictResourcesForCacheIdentifier(cache_identifier_);
+    tracked_resources_.clear();
+  } else {
+    for (SVGResourceDocumentContent* content : entries_.Values()) {
+      content->Dispose();
+    }
   }
 }
 
 void SVGResourceDocumentCache::DisposeUnobserved() {
   dispose_task_pending_ = false;
 
-  Vector<CacheKey> to_remove;
-  for (auto& entry : entries_) {
-    SVGResourceDocumentContent* content = entry.value;
-    if (content->HasObservers()) {
-      continue;
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    HeapVector<Member<SVGDocumentResource>> to_remove;
+    for (const auto& resource : tracked_resources_) {
+      if (!resource->GetContent()->HasObservers()) {
+        resource->GetContent()->Dispose();
+        to_remove.push_back(resource);
+        MemoryCache::Get()->Remove(resource);
+      }
     }
-    content->Dispose();
-    to_remove.push_back(entry.key);
+    tracked_resources_.RemoveAll(to_remove);
+  } else {
+    Vector<CacheKey> to_remove;
+    for (auto& entry : entries_) {
+      SVGResourceDocumentContent* content = entry.value;
+      if (content->HasObservers()) {
+        continue;
+      }
+      content->Dispose();
+      to_remove.push_back(entry.key);
+    }
+    entries_.RemoveAll(to_remove);
   }
-  entries_.RemoveAll(to_remove);
 }
 
 void SVGResourceDocumentCache::ProcessCustomWeakness(
     const LivenessBroker& info) {
   // Don't need to do anything if there's a pending dispose task or not entries
   // to process.
-  if (dispose_task_pending_ || entries_.empty()) {
-    return;
-  }
-  // Avoid scheduling spurious dispose tasks.
-  const bool all_entries_are_observed = std::ranges::all_of(
-      entries_.Values(), [](SVGResourceDocumentContent* content) {
-        return content->HasObservers();
-      });
-  if (all_entries_are_observed) {
-    return;
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    if (dispose_task_pending_ || tracked_resources_.empty()) {
+      return;
+    }
+
+    // Avoid scheduling spurious dispose tasks.
+    const bool all_resources_are_observed = std::ranges::all_of(
+        tracked_resources_, [](SVGDocumentResource* resource) {
+          return resource->GetContent()->HasObservers();
+        });
+    if (all_resources_are_observed) {
+      return;
+    }
+
+  } else {
+    if (dispose_task_pending_ || entries_.empty()) {
+      return;
+    }
+    // Avoid scheduling spurious dispose tasks.
+    const bool all_entries_are_observed = std::ranges::all_of(
+        entries_.Values(), [](SVGResourceDocumentContent* content) {
+          return content->HasObservers();
+        });
+    if (all_entries_are_observed) {
+      return;
+    }
   }
   dispose_task_pending_ = dispose_task_runner_->PostTask(
       FROM_HERE, BindOnce(&SVGResourceDocumentCache::DisposeUnobserved,
@@ -108,6 +159,19 @@ void SVGResourceDocumentCache::Trace(Visitor* visitor) const {
       SVGResourceDocumentCache,
       &SVGResourceDocumentCache::ProcessCustomWeakness>(this);
   visitor->Trace(entries_);
+  visitor->Trace(tracked_resources_);
+}
+
+void SVGResourceDocumentCache::AddResource(SVGDocumentResource* resource) {
+  tracked_resources_.insert(resource);
+}
+
+bool SVGResourceDocumentCache::HasContentForTesting(
+    SVGResourceDocumentContent* content) const {
+  return std::ranges::any_of(tracked_resources_,
+                             [content](const SVGDocumentResource* resource) {
+                               return resource->GetContent() == content;
+                             });
 }
 
 }  // namespace blink

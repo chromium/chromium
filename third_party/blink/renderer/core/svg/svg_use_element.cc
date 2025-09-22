@@ -194,6 +194,7 @@ void SVGUseElement::UpdateDocumentContent(
     return;
   }
   auto old_load_event_delayer = std::move(load_event_delayer_);
+  notification_pending_ = false;
   if (document_content_) {
     document_content_->RemoveObserver(this);
   }
@@ -201,6 +202,7 @@ void SVGUseElement::UpdateDocumentContent(
   if (document_content_) {
     load_event_delayer_ =
         std::make_unique<IncrementLoadEventDelayCount>(GetDocument());
+    notification_pending_ = true;
     document_content_->AddObserver(this);
   }
 }
@@ -645,7 +647,17 @@ void SVGUseElement::QueueOrDispatchPendingEvent(
 void SVGUseElement::ResourceNotifyFinished(
     SVGResourceDocumentContent* document_content) {
   DCHECK_EQ(document_content_, document_content);
+  // Early-out if we've already been notified for this resource.
+  // This can happen when a resource revalidation causes all observing <use>
+  // elements to be notified, but we only want to rebuild the shadow tree when
+  // this element has initiated the resource fetch.
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
+      !notification_pending_) {
+    return;
+  }
   load_event_delayer_.reset();
+  notification_pending_ = false;
   if (!isConnected())
     return;
   InvalidateShadowTree();

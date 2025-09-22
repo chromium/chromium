@@ -4861,6 +4861,10 @@
       status: "stable",
     },
     {
+      name: "SvgPartitionSVGDocumentResourcesInMemoryCache",
+      status: "stable",
+    },
+    {
       name: "SvgScriptElementAsyncAttribute",
       status: "stable",
     },
