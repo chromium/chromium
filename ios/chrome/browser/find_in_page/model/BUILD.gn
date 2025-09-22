@@ -21,7 +21,6 @@ source_set("model") {
     "java_script_find_tab_helper.mm",
   ]
   deps = [
-    ":util",
     "//base",
     "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
@@ -56,14 +55,6 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("util") {
-  sources = [
-    "util.h",
-    "util.mm",
-  ]
-  public_deps = [ "//base" ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -75,7 +66,6 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//ios/chrome/browser/find_bar/ui_bundled:constants",
-    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

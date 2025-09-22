@@ -116,7 +116,6 @@
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
@@ -2916,11 +2915,7 @@ enum class ToolbarKind {
   __weak __typeof(self) weakSelf = self;
 
   auto startFindInPage = ^{
-    if (IsNativeFindInPageAvailable()) {
-      [weakSelf showSystemFindPanel];
-    } else {
-      [weakSelf showFindBar];
-    }
+    [weakSelf showSystemFindPanel];
   };
 
   BOOL lensOverlayAvailable = IsLensOverlayAvailable(self.profile->GetPrefs());
@@ -2969,13 +2964,7 @@ enum class ToolbarKind {
     return;
   }
 
-  if (IsNativeFindInPageAvailable()) {
-    [self showSystemFindPanel];
-  } else if (!_toolbarAccessoryPresenter.isPresenting) {
-    DCHECK(!self.findBarCoordinator);
-    self.findBarCoordinator = [self newFindBarCoordinator];
-    [self.findBarCoordinator start];
-  }
+  [self showSystemFindPanel];
 }
 
 - (void)hideFindUI {
@@ -2983,23 +2972,14 @@ enum class ToolbarKind {
   if (!activeWebState) {
     return;
   }
-  if (IsNativeFindInPageAvailable()) {
-    auto* helper = FindTabHelper::FromWebState(activeWebState);
-    helper->DismissFindNavigator();
-  } else {
-    [self.findBarCoordinator stop];
-    self.findBarCoordinator = nil;
-  }
+  auto* helper = FindTabHelper::FromWebState(activeWebState);
+  helper->DismissFindNavigator();
 }
 
 - (void)defocusFindInPage {
-  if (IsNativeFindInPageAvailable()) {
     // The System Find Panel UI cannot be "defocused" so closing Find in Page
     // altogether instead.
     [self closeFindInPage];
-  } else {
-    [self.findBarCoordinator defocusFindBar];
-  }
 }
 
 - (void)searchFindInPage {

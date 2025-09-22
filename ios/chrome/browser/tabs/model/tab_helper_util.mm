@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/model/history_tab_helper.h"
@@ -174,12 +173,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
   InfoBarManagerImpl::CreateForWebState(web_state);
 
-  if (IsNativeFindInPageAvailable()) {
-    FindTabHelper::CreateForWebState(web_state);
-  } else {
-    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
-    JavaScriptFindTabHelper::CreateForWebState(web_state);
-  }
+  FindTabHelper::CreateForWebState(web_state);
 
   if (!for_lens_overlay) {
     HistoryTabHelper::CreateForWebState(web_state);

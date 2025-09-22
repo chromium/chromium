@@ -10,7 +10,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
 #import "ios/chrome/browser/find_bar/ui_bundled/java_script_find_in_page_controller_app_interface.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

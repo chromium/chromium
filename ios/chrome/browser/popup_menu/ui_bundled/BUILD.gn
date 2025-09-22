@@ -208,7 +208,6 @@ source_set("eg2_tests") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bubble/ui_bundled:constants",
-    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:eg_test_support+eg2",

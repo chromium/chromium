@@ -76,7 +76,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/drive/model:drive_tab_helper",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/find_in_page/model",
-    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/follow/model:tab_helper",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/history/model",

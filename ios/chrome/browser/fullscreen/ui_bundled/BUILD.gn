@@ -75,7 +75,6 @@ source_set("internal") {
     ":ui",
     "//base",
     "//ios/chrome/browser/broadcaster/ui_bundled",
-    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
