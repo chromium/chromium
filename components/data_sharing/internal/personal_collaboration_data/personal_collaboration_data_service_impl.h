@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_PERSONAL_COLLABORATION_DATA_PERSONAL_COLLABORATION_DATA_SERVICE_IMPL_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_PERSONAL_COLLABORATION_DATA_PERSONAL_COLLABORATION_DATA_SERVICE_IMPL_H_
 
+#include "base/containers/circular_deque.h"
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_sync_bridge.h"
@@ -63,11 +65,17 @@ class PersonalCollaborationDataServiceImpl
       std::unique_ptr<PersonalCollaborationDataSyncBridge> bridge);
 
  private:
+  void ProcessPendingActions();
+
   base::ObserverList<PersonalCollaborationDataService::Observer> observers_;
   std::unique_ptr<PersonalCollaborationDataSyncBridge> bridge_;
   base::ScopedObservation<PersonalCollaborationDataSyncBridge,
                           PersonalCollaborationDataSyncBridge::Observer>
       bridge_observer_{this};
+
+  // A list of pending actions to be performed once the bridge is initialized.
+  base::circular_deque<base::OnceClosure> pending_actions_;
+
   base::WeakPtrFactory<PersonalCollaborationDataServiceImpl> weak_ptr_factory_{
       this};
 };

@@ -598,54 +598,6 @@ TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldRemoveSpecifics) {
   EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
 }
 
-TEST_F(PersonalCollaborationDataSyncBridgeTest,
-       ShouldQueueActionsBeforeInitialization) {
-  const CollaborationId kCollaborationId(kTestCollaborationId);
-  const std::string kTestStorageKey2 = "storage_key_2";
-
-  // Create the bridge but don't initialize it.
-  ON_CALL(processor_, IsTrackingMetadata()).WillByDefault(Return(true));
-  bridge_ = std::make_unique<PersonalCollaborationDataSyncBridge>(
-      processor_.CreateForwardingProcessor(),
-      syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
-
-  ASSERT_FALSE(bridge().IsInitialized());
-
-  // Perform some actions.
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics1 =
-      CreateTabGroupAccountSpecifics(kCollaborationId, kTestTabGuid,
-                                     kTestGroupGuid, base::Time::Now());
-  bridge().CreateOrUpdateSpecifics(kTestStorageKey, specifics1);
-
-  sync_pb::SharedTabGroupAccountDataSpecifics specifics2 =
-      CreateTabGroupAccountSpecifics(kCollaborationId, "tab_guid_2",
-                                     "group_guid_2", base::Time::Now());
-  bridge().CreateOrUpdateSpecifics(kTestStorageKey2, specifics2);
-
-  bridge().RemoveSpecifics(kTestStorageKey2);
-
-  // Verify that nothing has been written to the store yet.
-  EXPECT_EQ(GetNumTabDetailsInStore(), 0u);
-
-  // Now, initialize the bridge.
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(processor_, ModelReadyToSync).WillOnce([&]() {
-    quit_closure.Run();
-  });
-  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
-                             syncer::EntityChangeList());
-  run_loop.Run();
-
-  ASSERT_TRUE(bridge().IsInitialized());
-
-  // Verify that the queued actions have been processed.
-  EXPECT_TRUE(bridge().GetSpecificsForStorageKey(kTestStorageKey).has_value());
-  EXPECT_FALSE(
-      bridge().GetSpecificsForStorageKey(kTestStorageKey2).has_value());
-  EXPECT_EQ(GetNumTabDetailsInStore(), 1u);
-}
-
 TEST_F(PersonalCollaborationDataSyncBridgeTest, ShouldHandleNoData) {
   InitializeBridge();
 

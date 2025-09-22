@@ -8,8 +8,6 @@
 #include <optional>
 #include <unordered_map>
 
-#include "base/containers/circular_deque.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -34,8 +32,8 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override = default;
 
-    // Called when the bridge(database) has been loaded. Will be called
-    // immediately if the bridge has already initialized.
+    // Called when the bridge(database) has been loaded and is syncing. Will be
+    // called immediately if the bridge has already initialized.
     virtual void OnInitialized() {}
 
     // Called when specifics have changed.
@@ -88,8 +86,7 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& storage_key,
       const syncer::EntityData& remote_data) const override;
 
-  // Returns whether the sync bridge has initialized by reading data
-  // from the on-disk store.
+  // Returns whether the sync bridge has initialized and is syncing.
   bool IsInitialized() const;
 
   std::optional<sync_pb::SharedTabGroupAccountDataSpecifics>
@@ -130,9 +127,7 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   void WriteEntityToSync(const std::string& storage_key,
                          std::unique_ptr<syncer::EntityData> entity);
 
-  // Processes any pending actions that were queued before the bridge was
-  // initialized.
-  void ProcessPendingActions();
+  void MaybeNotifyObserversInitialized();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -142,15 +137,15 @@ class PersonalCollaborationDataSyncBridge : public syncer::DataTypeSyncBridge {
   // Set to true once data is loaded from disk into the in-memory cache.
   bool is_initialized_ = false;
 
+  // Set to true once observers have been notified of initialization.
+  bool notified_observers_initialized_ = false;
+
   // In-memory data cache of specifics, keyed by its storage key.
   std::unordered_map<std::string, sync_pb::SharedTabGroupAccountDataSpecifics>
       specifics_;
 
   // List of observers.
   base::ObserverList<PersonalCollaborationDataSyncBridge::Observer> observers_;
-
-  // A list of pending actions to be performed once the bridge is initialized.
-  base::circular_deque<base::OnceClosure> pending_actions_;
 
   // Allows safe temporary use of the PersonalCollaborationDataSyncBridge
   // object if it exists at the time of use.
