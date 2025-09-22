@@ -1056,6 +1056,31 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void hideDialog_StoreModifiedGroupTitle_DeletedGroup() {
+        mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        // Mock that tab1 is in a group.
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
+
+        // Mock that we have a modified group title before dialog is hidden.
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
+        View.OnFocusChangeListener onFocusChangeListener =
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+        onFocusChangeListener.onFocusChange(mTitleTextView, true);
+        textWatcher.afterTextChanged(mEditable);
+        assertThat(
+                mMediator.getCurrentGroupModifiedTitleForTesting(),
+                equalTo(CUSTOMIZED_DIALOG_TITLE));
+
+        // Now mark the group as deleted and the filter should not be called.
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        mMediator.hideDialog(false);
+        verify(mTabGroupModelFilter, never()).setTabGroupTitle(any(), anyString());
+    }
+
+    @Test
     public void shareFlowStart_StoreModifiedGroupTitle() {
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
         mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);

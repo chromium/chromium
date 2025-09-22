@@ -13,8 +13,8 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import android.widget.ScrollView;
+
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
@@ -156,6 +156,8 @@ public class TabUiUtils {
      */
     public static boolean updateTabGroupColor(
             TabGroupModelFilter filter, Token tabGroupId, @TabGroupColorId int newGroupColor) {
+        if (!filter.tabGroupExists(tabGroupId)) return false;
+
         int curGroupColor = filter.getTabGroupColor(tabGroupId);
         if (curGroupColor != newGroupColor) {
             filter.setTabGroupColor(tabGroupId, newGroupColor);
@@ -175,6 +177,8 @@ public class TabUiUtils {
     public static boolean updateTabGroupTitle(
             TabGroupModelFilter filter, Token tabGroupId, String newGroupTitle) {
         assert newGroupTitle != null && !newGroupTitle.isEmpty();
+        if (!filter.tabGroupExists(tabGroupId)) return false;
+
         String curGroupTitle = filter.getTabGroupTitle(tabGroupId);
         if (!newGroupTitle.equals(curGroupTitle)) {
             filter.setTabGroupTitle(tabGroupId, newGroupTitle);

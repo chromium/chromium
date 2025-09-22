@@ -179,7 +179,7 @@ public class TabGroupVisualDataDialogManager {
                         if (model == mModel) {
                             // Focus the edit text and display the keyboard on dialog showing.
                             editTextView.requestFocus();
-                            // WHile showing the keyboard, prevent resizing of the modal dialog
+                            // While showing the keyboard, prevent resizing of the modal dialog
                             // which could cause UI issues by setting the window to pan only.
                             Window window = assumeNonNull(assumeNonNull(dialog).getWindow());
                             window.setSoftInputMode(
@@ -193,8 +193,8 @@ public class TabGroupVisualDataDialogManager {
         mModalDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
-    /** Hide the modal dialog and destroy the necessary components. */
-    public void hideDialog() {
+    /** Cleans up when hidden. */
+    public void onHideDialog() {
         // Reset the model to null after each usage.
         mModel = null;
         if (mModalDialogManagerObserver != null) {
