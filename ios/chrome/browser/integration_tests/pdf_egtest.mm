@@ -35,14 +35,7 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Regression test for crbug/981893. Repro steps: open a PDF in a new
 // tab, switch back and forth betweeen the new tab and the old one by
 // swiping in the toolbar. The regression is a crash.
-// TODO(crbug.com/435094983): Reenable this test.
 - (void)testSwitchToAndFromPDF {
-  if ([ChromeEarlGrey isIPhoneIdiom]) {
-    if (!@available(iOS 18, *)) {
-      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator");
-    }
-  }
-
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -70,9 +63,11 @@ const char kGreenPDFPath[] = "/green.pdf";
   // Swipe back and forth a few times. If this crashes, there may be a new
   // problem with how WKWebView snapshots PDFs.
   for (int i = 0; i < 3; i++) {
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
   }
 
@@ -83,13 +78,7 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Enter and leave the tab grid. Swipe back and forth repeatedly between
 // the two tabs in the toolbar. The regressiom is a crash anywhere in this
 // process.
-// TODO(crbug.com/443693972): Re-enable the test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSwitchBetweenPDFs DISABLED_testSwitchBetweenPDFs
-#else
-#define MAYBE_testSwitchBetweenPDFs testSwitchBetweenPDFs
-#endif
-- (void)MAYBE_testSwitchBetweenPDFs {
+- (void)testSwitchBetweenPDFs {
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -114,9 +103,11 @@ const char kGreenPDFPath[] = "/green.pdf";
   // Swipe back and forth a few times. If this crashes, there may be a new
   // problem with how WKWebView snapshots PDFs.
   for (int i = 0; i < 3; i++) {
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
   }
 }
