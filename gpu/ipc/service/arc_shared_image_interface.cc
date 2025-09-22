@@ -6,6 +6,7 @@
 
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -41,6 +42,10 @@ bool MakeContextCurrentOnGpuThread(SharedContextState* context_state,
 scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
     GpuChannelManager* gpu_channel_manager,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+  if (!base::FeatureList::IsEnabled(arc::kVideoEncodeUseMappableSI)) {
+    return nullptr;
+  }
+
   CHECK(gpu_task_runner->BelongsToCurrentThread());
 
   gpu::ContextResult result;
