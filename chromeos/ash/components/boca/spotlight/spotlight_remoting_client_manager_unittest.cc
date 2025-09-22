@@ -94,7 +94,8 @@ class SpotlightRemotingClientManagerImplTest : public testing::Test {
     return mock_proxy;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<SpotlightRemotingClientManagerImpl> manager_;
   raw_ptr<NiceMock<MockSpotlightOAuthTokenFetcher>> token_fetcher_ = nullptr;
@@ -213,6 +214,60 @@ TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceived) {
   run_loop.Run();
   frame_received_callback_.Run(SkBitmap(), nullptr);
   EXPECT_TRUE(frame_received_future.Wait());
+}
+
+TEST_F(SpotlightRemotingClientManagerImplTest, FrameReceivedTimeout) {
+  base::RunLoop start_run_loop;
+  base::RunLoop stop_run_loop;
+  base::test::RepeatingTestFuture<SkBitmap,
+                                  std::unique_ptr<webrtc::DesktopFrame>>
+      frame_received_future;
+  base::test::RepeatingTestFuture<CrdConnectionState> status_updated_future;
+  EXPECT_CALL(*token_fetcher_, Start)
+      .WillOnce(
+          [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
+            std::move(oauth_callback).Run(std::string(kTestOAuthToken));
+          });
+  EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
+      .WillOnce([&start_run_loop]() { start_run_loop.Quit(); });
+  manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
+                           frame_received_future.GetCallback(),
+                           status_updated_future.GetCallback());
+  start_run_loop.Run();
+  frame_received_callback_.Run(SkBitmap(), nullptr);
+  EXPECT_TRUE(frame_received_future.Wait());
+
+  EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
+      .WillOnce([&stop_run_loop]() { stop_run_loop.Quit(); });
+  task_environment_.FastForwardBy(base::Seconds(5));
+  stop_run_loop.Run();
+  EXPECT_EQ(status_updated_future.Take(), CrdConnectionState::kTimeout);
+}
+
+TEST_F(SpotlightRemotingClientManagerImplTest,
+       FrameReceivedTimeoutResetsOnEachFrame) {
+  base::RunLoop run_loop;
+  base::test::RepeatingTestFuture<SkBitmap,
+                                  std::unique_ptr<webrtc::DesktopFrame>>
+      frame_received_future;
+  EXPECT_CALL(*token_fetcher_, Start)
+      .WillOnce(
+          [](SpotlightOAuthTokenFetcher::OAuthTokenCallback oauth_callback) {
+            std::move(oauth_callback).Run(std::string(kTestOAuthToken));
+          });
+  EXPECT_CALL(*remoting_client_io_proxy_, StartCrdClient)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
+                           frame_received_future.GetCallback(),
+                           base::DoNothing());
+  run_loop.Run();
+  task_environment_.FastForwardBy(base::Seconds(3));
+  frame_received_callback_.Run(SkBitmap(), nullptr);
+  EXPECT_TRUE(frame_received_future.Wait());
+
+  EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient).Times(0);
+  task_environment_.FastForwardBy(base::Seconds(4));
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace ash::boca

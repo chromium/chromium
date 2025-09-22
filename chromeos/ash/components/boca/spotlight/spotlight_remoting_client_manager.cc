@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/boca/spotlight/remoting_client_io_proxy.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_oauth_token_fetcher.h"
@@ -103,11 +104,7 @@ void SpotlightRemotingClientManagerImpl::StopCrdClient() {
   }
 
   remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient);
-
-  crd_session_ended_callback_.Reset();
-  frame_received_callback_.Reset();
-  status_updated_callback_.Reset();
-  session_in_progress_ = false;
+  Reset();
 }
 
 std::string SpotlightRemotingClientManagerImpl::GetDeviceRobotEmail() {
@@ -150,9 +147,7 @@ void SpotlightRemotingClientManagerImpl::HandleCrdSessionEnded() {
     return;
   }
   std::move(crd_session_ended_callback_).Run();
-  frame_received_callback_.Reset();
-  status_updated_callback_.Reset();
-  session_in_progress_ = false;
+  Reset();
 }
 
 void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
@@ -161,6 +156,10 @@ void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
     return;
   }
   status_updated_callback_.Run(state);
+  if (state == CrdConnectionState::kTimeout) {
+    remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient);
+    Reset();
+  }
 }
 
 void SpotlightRemotingClientManagerImpl::HandleFrameReceived(
@@ -170,7 +169,22 @@ void SpotlightRemotingClientManagerImpl::HandleFrameReceived(
   if (!frame_received_callback_) {
     return;
   }
+  constexpr base::TimeDelta kFrameTimeout = base::Seconds(5);
+  frame_timeout_timer_.Stop();
+  frame_timeout_timer_.Start(
+      FROM_HERE, kFrameTimeout,
+      base::BindOnce(&SpotlightRemotingClientManagerImpl::UpdateState,
+                     weak_factory_.GetWeakPtr(), CrdConnectionState::kTimeout));
   frame_received_callback_.Run(std::move(bitmap), std::move(frame));
+}
+
+void SpotlightRemotingClientManagerImpl::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  crd_session_ended_callback_.Reset();
+  frame_received_callback_.Reset();
+  status_updated_callback_.Reset();
+  frame_timeout_timer_.Stop();
+  session_in_progress_ = false;
 }
 
 }  // namespace ash::boca

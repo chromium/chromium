@@ -63,7 +63,6 @@ class BocaAppHandler : public mojom::PageHandler,
 
   ~BocaAppHandler() override;
   // Static
-  inline static constexpr int kSpotlightFrameTimeout = 5;
   static void SetFloatModeAndBoundsForWindow(bool is_float_mode,
                                              aura::Window* window,
                                              SetFloatModeCallback callback);
@@ -251,8 +250,6 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void OnUpdateSessionBlockingRequestCompleted();
 
-  void OnSpotlightFrameTimeout();
-
   BocaSessionManager* GetSessionManager();
 
   void SetAccountImage(user_manager::User* user);
@@ -275,8 +272,6 @@ class BocaAppHandler : public mojom::PageHandler,
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
   raw_ptr<SpotlightService> spotlight_service_;
-  base::OneShotTimer spotlight_frame_timeout_timer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   const raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<content::WebUI> web_ui_;

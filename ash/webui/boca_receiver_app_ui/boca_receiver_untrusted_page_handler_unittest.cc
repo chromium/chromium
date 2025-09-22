@@ -63,6 +63,7 @@ constexpr std::string_view kPresenterName = "Presenter Name";
 constexpr std::string_view kConnectingPair = R"({"state":"CONNECTING"})";
 constexpr std::string_view kConnectedPair = R"({"state":"CONNECTED"})";
 constexpr std::string_view kDisconnectedPair = R"({"state":"DISCONNECTED"})";
+constexpr std::string_view kErrorPair = R"({"state":"ERROR"})";
 
 constexpr std::string_view kConnectionCodeJson = R"(
           "connectionCode": {
@@ -461,77 +462,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest,
-       CrdConnectionStateUpdated_Disconnected) {
-  url_loader_factory_.AddResponse(get_connection_url_.spec(),
-                                  CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
-  boca::SpotlightCrdStateUpdatedCallback state_updated_cb;
-  EXPECT_CALL(*remoting_client_,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
-      .WillOnce(
-          [&state_updated_cb](auto, auto, auto, auto state_updated_cb_param) {
-            state_updated_cb = std::move(state_updated_cb_param);
-          });
-  WaitForTokenUpload();
-
-  // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
-  url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), kConnectingPair);
-
-  ASSERT_FALSE(state_updated_cb.is_null());
-  base::test::TestFuture<mojom::ConnectionClosedReason>
-      connection_closed_future;
-  EXPECT_CALL(page_, OnConnectionClosed)
-      .WillOnce(
-          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
-            connection_closed_future.GetCallback().Run(reason);
-          });
-  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
-  state_updated_cb.Run(boca::CrdConnectionState::kDisconnected);
-
-  EXPECT_EQ(connection_closed_future.Get(),
-            mojom::ConnectionClosedReason::kPresenterConnectionLost);
-  EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
-}
-
-TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdConnectionStateUpdated_Error) {
-  url_loader_factory_.AddResponse(get_connection_url_.spec(),
-                                  CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
-  boca::SpotlightCrdStateUpdatedCallback state_updated_cb;
-  EXPECT_CALL(*remoting_client_,
-              StartCrdClient(std::string(kConnectionCode), _, _, _))
-      .WillOnce(
-          [&state_updated_cb](auto, auto, auto, auto state_updated_cb_param) {
-            state_updated_cb = std::move(state_updated_cb_param);
-          });
-  WaitForTokenUpload();
-
-  // Verify the first state update to CONNECTING.
-  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
-  url_loader_factory_.SimulateResponseForPendingRequest(
-      update_connection_url_.spec(), kConnectingPair);
-
-  ASSERT_FALSE(state_updated_cb.is_null());
-  base::test::TestFuture<mojom::ConnectionClosedReason>
-      connection_closed_future;
-  EXPECT_CALL(page_, OnConnectionClosed)
-      .WillOnce(
-          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
-            connection_closed_future.GetCallback().Run(reason);
-          });
-  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
-  state_updated_cb.Run(boca::CrdConnectionState::kFailed);
-
-  EXPECT_EQ(connection_closed_future.Get(),
-            mojom::ConnectionClosedReason::kError);
-  EXPECT_EQ(GetRequestBody(update_connection_url_), R"({"state":"ERROR"})");
-}
-
-TEST_F(BocaReceiverUntrustedPageHandlerTest,
        StartRequestedWithDifferentConnectionId) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
@@ -691,6 +621,76 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values("STOP_REQUESTED",
                                          "CONNECTING",
                                          "CONNECTED"));
+
+struct CrdStateTestCase {
+  std::string test_name;
+  boca::CrdConnectionState state;
+  mojom::ConnectionClosedReason expected_reason;
+  std::string_view expected_request_body;
+};
+
+class BocaReceiverUntrustedPageHandlerCrdStateTest
+    : public BocaReceiverUntrustedPageHandlerTest,
+      public testing::WithParamInterface<CrdStateTestCase> {};
+
+TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
+       CrdConnectionStateUpdated) {
+  url_loader_factory_.AddResponse(get_connection_url_.spec(),
+                                  CreateConnectionInfo(kConnectionId));
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  boca::SpotlightCrdStateUpdatedCallback state_updated_cb;
+  EXPECT_CALL(*remoting_client_,
+              StartCrdClient(std::string(kConnectionCode), _, _, _))
+      .WillOnce(
+          [&state_updated_cb](auto, auto, auto, auto state_updated_cb_param) {
+            state_updated_cb = std::move(state_updated_cb_param);
+          });
+  WaitForTokenUpload();
+
+  // Verify the first state update to CONNECTING.
+  EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      update_connection_url_.spec(), kConnectingPair);
+
+  ASSERT_FALSE(state_updated_cb.is_null());
+  base::test::TestFuture<mojom::ConnectionClosedReason>
+      connection_closed_future;
+  EXPECT_CALL(page_, OnConnectionClosed)
+      .WillOnce(
+          [&connection_closed_future](mojom::ConnectionClosedReason reason) {
+            connection_closed_future.GetCallback().Run(reason);
+          });
+  EXPECT_CALL(*remoting_client_, StopCrdClient).Times(1);
+  state_updated_cb.Run(GetParam().state);
+
+  EXPECT_EQ(connection_closed_future.Get(), GetParam().expected_reason);
+  EXPECT_EQ(GetRequestBody(update_connection_url_),
+            GetParam().expected_request_body);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BocaReceiverUntrustedPageHandlerCrdStateTest,
+    testing::ValuesIn<CrdStateTestCase>(
+        {{.test_name = "Disconnected",
+          .state = boca::CrdConnectionState::kDisconnected,
+          .expected_reason =
+              mojom::ConnectionClosedReason::kPresenterConnectionLost,
+          .expected_request_body = kDisconnectedPair},
+         {.test_name = "Timeout",
+          .state = boca::CrdConnectionState::kTimeout,
+          .expected_reason =
+              mojom::ConnectionClosedReason::kPresenterConnectionLost,
+          .expected_request_body = kDisconnectedPair},
+         {.test_name = "Failed",
+          .state = boca::CrdConnectionState::kFailed,
+          .expected_reason = mojom::ConnectionClosedReason::kError,
+          .expected_request_body = kErrorPair}}),
+    [](const testing::TestParamInfo<
+        BocaReceiverUntrustedPageHandlerCrdStateTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace ash::boca_receiver

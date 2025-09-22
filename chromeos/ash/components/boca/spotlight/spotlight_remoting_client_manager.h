@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/boca/spotlight/remoting_client_io_proxy.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
@@ -116,6 +117,8 @@ class SpotlightRemotingClientManagerImpl
   void HandleFrameReceived(SkBitmap bitmap,
                            std::unique_ptr<webrtc::DesktopFrame> frame);
 
+  void Reset();
+
   SEQUENCE_CHECKER(sequence_checker_);
   bool session_in_progress_ = false;
   // Dedicated IO Thread to run the `remoting_client_io_proxy_`. Webrtc
@@ -129,6 +132,7 @@ class SpotlightRemotingClientManagerImpl
   // The `SpotlightRemotingClientManagerImpl` is owned by the main/UI thread
   // however the remoting_client/webrtc processes on the IO sequence.
   std::unique_ptr<SequencedRemotingClientIOProxy> remoting_client_io_proxy_;
+  base::OneShotTimer frame_timeout_timer_;
 
   base::WeakPtrFactory<SpotlightRemotingClientManagerImpl> weak_factory_{this};
 };

@@ -325,6 +325,7 @@ void BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated(
     boca::CrdConnectionState state) {
   switch (state) {
     case boca::CrdConnectionState::kDisconnected:
+    case boca::CrdConnectionState::kTimeout:
       MaybeEndConnection(
           mojom::ConnectionClosedReason::kPresenterConnectionLost);
       break;
