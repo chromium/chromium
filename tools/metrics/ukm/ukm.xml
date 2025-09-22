@@ -2446,8 +2446,7 @@ be describing additional metrics about the same event.
   <owner>wilsonlow@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Recorded when a BNPL suggestion was added to the payments autofill dropdown
-    and shown to the user.
+    Recorded when a BNPL autofill suggestion was accepted on the current page.
   </summary>
   <metric name="Accepted" enum="Boolean">
     <summary>
@@ -2467,7 +2466,8 @@ be describing additional metrics about the same event.
   <owner>wilsonlow@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Recorded when a BNPL autofill suggestion was accepted on the current page.
+    Recorded when a BNPL suggestion was added to the payments autofill dropdown
+    and shown to the user.
   </summary>
   <metric name="Shown" enum="Boolean">
     <summary>
