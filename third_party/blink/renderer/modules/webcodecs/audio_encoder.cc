@@ -64,13 +64,8 @@ bool VerifyParameterValues(const T& value,
   StringBuilder error_builder;
   error_builder.Append(error_message_base_base);
   error_builder.Append(" Supported values: ");
-  for (auto i = 0u; i < supported_values.size(); i++) {
-    if (i != 0) {
-      error_builder.Append(", ");
-    }
-    error_builder.AppendNumber(supported_values[i]);
-  }
-  *js_error_message = error_builder.ToString();
+  error_builder.AppendRange(supported_values, ", ");
+  *js_error_message = error_builder.ReleaseString();
   return false;
 }
 

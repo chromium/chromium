@@ -201,14 +201,9 @@ String SVGTransform::ValueAsString() const {
 
   StringBuilder builder;
   builder.Append(TransformTypePrefixForParsing(transform_type_));
-
-  for (size_t i = 0; i < argument_count; ++i) {
-    if (i)
-      builder.Append(' ');
-    builder.AppendNumber(arguments[i]);
-  }
+  builder.AppendRange(base::span(arguments).first(argument_count), " ");
   builder.Append(')');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {

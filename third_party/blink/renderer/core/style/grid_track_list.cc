@@ -168,14 +168,9 @@ bool GridTrackList::AddRepeater(
 
 String GridTrackList::ToString() const {
   StringBuilder builder;
-  builder.Append("TrackList: {");
-  for (wtf_size_t i = 0; i < repeaters_.size(); ++i) {
-    builder.Append(" ");
-    builder.Append(repeaters_[i].ToString());
-    if (i + 1 != repeaters_.size()) {
-      builder.Append(", ");
-    }
-  }
+  builder.Append("TrackList: { ");
+  builder.AppendRange(repeaters_, ",  ",
+                      [](const auto& repeater) { return repeater.ToString(); });
   builder.Append(" } ");
   return builder.ToString();
 }

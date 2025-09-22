@@ -731,11 +731,9 @@ String URLPattern::ToString() const {
   builder.Append("(");
   Vector<String> components = {protocol(), username(), password(), hostname(),
                                port(),     pathname(), search(),   hash()};
-  for (wtf_size_t i = 0; i < components.size(); i++) {
-    builder.Append(components[i] == g_empty_string ? " " : components[i]);
-    if (i != components.size() - 1)
-      builder.Append(",");
-  }
+  builder.AppendRange(components, ",", [](const auto& component) {
+    return component == g_empty_string ? " " : component;
+  });
   builder.Append(")");
   return builder.ReleaseString();
 }

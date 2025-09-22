@@ -161,12 +161,8 @@ std::vector<const char*> CompositingReason::Descriptions(
 
 String CompositingReason::ToString(CompositingReasons reasons) {
   StringBuilder builder;
-  for (const char* name : ShortNames(reasons)) {
-    if (builder.length())
-      builder.Append(',');
-    builder.Append(name);
-  }
-  return builder.ToString();
+  builder.AppendRange(ShortNames(reasons), ",");
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

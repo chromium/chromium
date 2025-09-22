@@ -160,11 +160,7 @@ AtomicString SpaceSplitString::SerializeToString() const {
   if (size == 1)
     return (*data_)[0];
   StringBuilder builder;
-  builder.Append((*data_)[0]);
-  for (wtf_size_t i = 1; i < size; ++i) {
-    builder.Append(' ');
-    builder.Append((*data_)[i]);
-  }
+  builder.AppendRange(*data_, " ");
   return builder.ToAtomicString();
 }
 

@@ -236,11 +236,7 @@ String DocumentChunker::AggregateNode::CreatePassage() const {
     return String();
   }
   StringBuilder builder;
-  builder.Append(segments[0]);
-  for (unsigned int i = 1; i < segments.size(); i++) {
-    builder.Append(' ');
-    builder.Append(segments[i]);
-  }
+  builder.AppendRange(segments, " ");
   return builder.ReleaseString();
 }
 
