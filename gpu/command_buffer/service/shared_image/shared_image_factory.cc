@@ -722,6 +722,15 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
 }
 #endif
 
+bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion shared_memory) {
+  auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
+  CHECK(gmb_factory);
+  return gmb_factory->FillSharedMemoryRegionWithBufferContents(
+      std::move(buffer_handle), std::move(shared_memory));
+}
+
 #if BUILDFLAG(IS_WIN)
 bool SharedImageFactory::CopyToGpuMemoryBufferAsync(
     const Mailbox& mailbox,

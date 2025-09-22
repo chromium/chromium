@@ -645,9 +645,17 @@ void GpuChannelMessageFilter::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory,
     CopyNativeGmbToSharedMemoryAsyncCallback callback) {
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  if (!gpu_channel_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   std::move(callback).Run(
-      gpu_memory_buffer_factory_->FillSharedMemoryRegionWithBufferContents(
-          std::move(buffer_handle), std::move(shared_memory)));
+      gpu_channel_->shared_image_stub()
+          ->factory()
+          ->CopyNativeBufferToSharedMemoryAsync(std::move(buffer_handle),
+                                                std::move(shared_memory)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

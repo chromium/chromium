@@ -144,6 +144,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       gfx::BufferUsage usage);
 #endif
 
+  // Fills |shared_memory| with the contents of the provided
+  // |buffer_handle|. Returns whether the operation succeeded.
+  bool CopyNativeBufferToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion shared_memory);
 #if BUILDFLAG(IS_WIN)
   bool CopyToGpuMemoryBufferAsync(const Mailbox& mailbox,
                                   base::OnceCallback<void(bool)> callback);
