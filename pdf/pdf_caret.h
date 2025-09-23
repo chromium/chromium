@@ -55,10 +55,17 @@ class PdfCaret {
   // caret will not blink. No-op if `interval` is negative.
   void SetBlinkInterval(base::TimeDelta interval);
 
-  // Sets the caret's char position and updates its screen rect. Requires a
-  // page with at least one char and a valid char index (from 0 up to the page's
-  // char count, inclusive), otherwise crashes.
+  // Sets the caret's char position and updates its screen rect. Invalidates the
+  // old caret rect but not the new caret rect. Requires a page with at least
+  // one char and a valid char index (from 0 up to the page's char count,
+  // inclusive), otherwise crashes. Use this over `SetCharAndDraw()` when the
+  // new caret should not appear on screen (e.g. during text selection).
   void SetChar(const PageCharacterIndex& next_char);
+
+  // Same as `SetChar()`, but also draws the caret at the new position if
+  // visible. Use this over `SetChar()` when the caret should appear on screen
+  // immediately.
+  void SetCharAndDraw(const PageCharacterIndex& next_char);
 
   // Draws the caret on the canvas if it is visible within any paint updates in
   // `dirty_in_screen` and no text is selected. Returns true if the caret was
