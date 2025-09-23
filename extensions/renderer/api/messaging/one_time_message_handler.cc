@@ -84,9 +84,9 @@ struct OneTimeMessageContextData : public base::SupportsUserData::Data {
 
 constexpr char OneTimeMessageContextData::kPerContextDataKey[];
 
-bool OnMessagePromisesSupported() {
+bool OnMessagePolyfillSupportEnabled() {
   return base::FeatureList::IsEnabled(
-      extensions_features::kRuntimeOnMessagePromiseReturnSupport);
+      extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
 }
 
 // Returns an array from the `result` object's `property_name` if it exists,
@@ -452,7 +452,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
                                           script_context,
                                           /*close_port_on_collection=*/true);
 
-  if (OnMessagePromisesSupported()) {
+  if (OnMessagePolyfillSupportEnabled()) {
     port.message_response_function =
         v8::Global<v8::Function>(isolate, message_response_function);
   }
@@ -830,7 +830,7 @@ void OneTimeMessageHandler::PromiseRejectedResponse(const PortId& port_id,
   }
 
   debug::ScopedPromiseRejectedResponseCrashKeys promise_rejected_crash_keys(
-      /*promise_support_feature_enabled=*/OnMessagePromisesSupported());
+      /*promise_support_feature_enabled=*/OnMessagePolyfillSupportEnabled());
   v8::Local<v8::Value> promise_reject_reason;
   // This is safe to CHECK() because when a promise rejects it always provides a
   // value. Even if `reject()` (with no argument) is called we see `undefined`
@@ -907,14 +907,14 @@ bool OneTimeMessageHandler::CheckAndHandleAsyncListenerReply(
     // If promise returns are not supported, then we don't need to attach any
     // callbacks and can return early once we find at least one listener that
     // wants to reply asynchronously
-    if (!OnMessagePromisesSupported() && will_reply_async) {
+    if (!OnMessagePolyfillSupportEnabled() && will_reply_async) {
       return true;
     }
 
     // Check if any of the returns are a promise, indicating the listener will
     // reply async. If they do, attach callbacks for both the promise resolving
     // or rejecting.
-    if (OnMessagePromisesSupported() && listener_return->IsPromise()) {
+    if (OnMessagePolyfillSupportEnabled() && listener_return->IsPromise()) {
       v8::Local<v8::Function> promise_rejected_function =
           CreatePromiseRejectedFunction(isolate, context, port_id);
       std::ignore = listener_return.As<v8::Promise>()->Then(
@@ -980,7 +980,7 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
   }
 
   v8::Local<v8::Function> promise_resolved_function;
-  if (OnMessagePromisesSupported()) {
+  if (OnMessagePolyfillSupportEnabled()) {
     promise_resolved_function = port.message_response_function.Get(isolate);
     // Ensure the global function doesn't outlive port closing.
     port.message_response_function.SetWeak();

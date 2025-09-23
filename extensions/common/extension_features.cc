@@ -169,9 +169,6 @@ BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
 BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRuntimeOnMessagePromiseReturnSupport,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

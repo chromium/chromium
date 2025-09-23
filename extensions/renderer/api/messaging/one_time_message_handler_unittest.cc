@@ -840,7 +840,8 @@ class OneTimeMessageHandlerGarbageCollectionTest
  public:
   OneTimeMessageHandlerGarbageCollectionTest()
       : WithFeatureOverride(
-            extensions_features::kRuntimeOnMessagePromiseReturnSupport) {}
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+  }
 
   OneTimeMessageHandlerGarbageCollectionTest(
       const OneTimeMessageHandlerGarbageCollectionTest&) = delete;

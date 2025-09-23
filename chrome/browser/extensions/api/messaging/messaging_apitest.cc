@@ -619,7 +619,7 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
  public:
   OnMessagePromiseReturnMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeOnMessagePromiseReturnSupport);
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
   }
 
  private:
@@ -885,9 +885,9 @@ IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
 }
 
 // Helps in testing that
-// extensions_features::kRuntimeOnMessagePromiseReturnSupport doesn't regress
-// asynchronous listener behavior when multiple listeners can return for a
-// single message.
+// extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport doesn't
+// regress asynchronous listener behavior when multiple listeners can return for
+// a single message.
 class OnMessageMultiListenerMessagingApiTest
     : public MessagingApiTest,
       public testing::WithParamInterface<bool> {
@@ -895,13 +895,14 @@ class OnMessageMultiListenerMessagingApiTest
   OnMessageMultiListenerMessagingApiTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{extensions_features::
-                                    kRuntimeOnMessagePromiseReturnSupport},
+          /*enabled_features=*/
+          {extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{}, /*disabled_features=*/{
-              extensions_features::kRuntimeOnMessagePromiseReturnSupport});
+              extensions_features::
+                  kRuntimeOnMessageWebExtensionPolyfillSupport});
     }
   }
 
