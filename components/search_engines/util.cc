@@ -631,9 +631,14 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
   }
   // This param triggers AI mode as opposed to traditional search.
   result_url = net::AppendOrReplaceQueryParameter(result_url, "udm", "50");
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, "aep",
-      base::NumberToString(static_cast<int>(aim_entrypoint)));
+  // Don't override the aep param from `additional_params`. This value could be
+  // given alongside the match from the server. This should keep precedence
+  // over the generic entrypoint value.
+  if (!additional_params.contains("aep")) {
+    result_url = net::AppendOrReplaceQueryParameter(
+        result_url, "aep",
+        base::NumberToString(static_cast<int>(aim_entrypoint)));
+  }
   base::Time query_submission_time = base::Time::Now();
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kClientUploadDurationQueryParameter,
