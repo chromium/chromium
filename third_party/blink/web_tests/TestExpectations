@@ -1420,14 +1420,6 @@ crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animati
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/setting-start-time.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/setting-timeline.tentative.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/updating-the-finished-state.html [ Pass Timeout ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/block-view-timeline-current-time-vertical-rl.tentative.html [ Failure ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/block-view-timeline-current-time.tentative.html [ Failure ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/block-view-timeline-nested-subject.tentative.html [ Failure Pass ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/inline-subject.html [ Failure Pass ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/inline-view-timeline-current-time.tentative.html [ Failure ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/view-timeline-get-current-time-range-name.tentative.html [ Failure ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/view-timeline-get-set-range.html [ Failure Pass ]
-crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/view-timelines/view-timeline-snapport.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
