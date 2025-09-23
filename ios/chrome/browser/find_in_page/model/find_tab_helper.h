@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_FIND_IN_PAGE_MODEL_FIND_TAB_HELPER_H_
 
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -16,10 +16,14 @@ class FullscreenController;
 // Adds support for the Native Find in Page feature. Instantiates a
 // FindInPageController when the web state is realized which itself attaches and
 // interacts with a web-layer FindInPageManager.
-class FindTabHelper final : public AbstractFindTabHelper,
-                            public web::WebStateObserver,
+class FindTabHelper final : public web::WebStateObserver,
                             public web::WebStateUserData<FindTabHelper> {
  public:
+  enum FindDirection {
+    FORWARD,
+    REVERSE,
+  };
+
   FindTabHelper(const FindTabHelper&) = delete;
   FindTabHelper& operator=(const FindTabHelper&) = delete;
 
@@ -31,18 +35,16 @@ class FindTabHelper final : public AbstractFindTabHelper,
   // `FindInPageController`.
   void SetFullscreenController(FullscreenController* fullscreen_controller);
 
-  // AbstractFindTabHelper implementation
-  void SetResponseDelegate(
-      id<FindInPageResponseDelegate> response_delegate) final;
-  void StartFinding(NSString* search_string) final;
-  void ContinueFinding(FindDirection direction) final;
-  void StopFinding() final;
-  FindInPageModel* GetFindResult() const final;
-  bool CurrentPageSupportsFindInPage() const final;
-  bool IsFindUIActive() const final;
-  void SetFindUIActive(bool active) final;
-  void PersistSearchTerm() final;
-  void RestoreSearchTerm() final;
+  void SetResponseDelegate(id<FindInPageResponseDelegate> response_delegate);
+  void StartFinding(NSString* search_string);
+  void ContinueFinding(FindDirection direction);
+  void StopFinding();
+  FindInPageModel* GetFindResult() const;
+  bool CurrentPageSupportsFindInPage() const;
+  bool IsFindUIActive() const;
+  void SetFindUIActive(bool active);
+  void PersistSearchTerm();
+  void RestoreSearchTerm();
 
  private:
   friend class web::WebStateUserData<FindTabHelper>;

@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -306,8 +305,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_find"));
 
   // Find UI active.
-  AbstractFindTabHelper* helper =
-      GetConcreteFindTabHelperFromWebState(web_state);
+  FindTabHelper* helper = FindTabHelper::FromWebState(web_state);
   helper->SetFindUIActive(YES);
   EXPECT_TRUE(CanPerform(@"keyCommand_findNext"));
   EXPECT_TRUE(CanPerform(@"keyCommand_findPrevious"));

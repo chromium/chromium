@@ -113,7 +113,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/follow/model/follow_browser_agent.h"
@@ -2939,8 +2938,7 @@ enum class ToolbarKind {
     return;
   }
 
-  AbstractFindTabHelper* helper =
-      GetConcreteFindTabHelperFromWebState(activeWebState);
+  FindTabHelper* helper = FindTabHelper::FromWebState(activeWebState);
   DCHECK(helper);
   if (helper->IsFindUIActive()) {
     helper->StopFinding();
@@ -2948,8 +2946,8 @@ enum class ToolbarKind {
 }
 
 - (void)showFindUIIfActive {
-  auto* findHelper =
-      GetConcreteFindTabHelperFromWebState([self activeWebStateOrReaderMode]);
+  FindTabHelper* findHelper =
+      FindTabHelper::FromWebState([self activeWebStateOrReaderMode]);
   if (!findHelper || !findHelper->IsFindUIActive()) {
     return;
   }
@@ -2976,16 +2974,16 @@ enum class ToolbarKind {
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
   // TODO(crbug.com/40465124): Reshow find bar if necessary.
-  GetConcreteFindTabHelperFromWebState(activeWebState)
-      ->ContinueFinding(JavaScriptFindTabHelper::FORWARD);
+  FindTabHelper::FromWebState(activeWebState)
+      ->ContinueFinding(FindTabHelper::FORWARD);
 }
 
 - (void)findPreviousStringInPage {
   web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   DCHECK(activeWebState);
   // TODO(crbug.com/40465124): Reshow find bar if necessary.
-  GetConcreteFindTabHelperFromWebState(activeWebState)
-      ->ContinueFinding(JavaScriptFindTabHelper::REVERSE);
+  FindTabHelper::FromWebState(activeWebState)
+      ->ContinueFinding(FindTabHelper::REVERSE);
 }
 
 #pragma mark - FindInPageCommands Helpers
@@ -3295,8 +3293,7 @@ enum class ToolbarKind {
 - (void)openTextZoom {
   web::WebState* activeWebState = self.activeWebState;
   DCHECK(activeWebState);
-  AbstractFindTabHelper* findTabHelper =
-      GetConcreteFindTabHelperFromWebState(activeWebState);
+  FindTabHelper* findTabHelper = FindTabHelper::FromWebState(activeWebState);
   DCHECK(findTabHelper);
   if (findTabHelper->IsFindUIActive()) {
     // If Find UI is active, close Find in Page.

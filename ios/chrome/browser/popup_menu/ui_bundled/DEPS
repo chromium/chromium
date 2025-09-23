@@ -17,7 +17,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h",
   "+ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h",
   "+ios/chrome/browser/default_browser/model/default_browser_interest_signals.h",
-  "+ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h",
+  "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
   "+ios/chrome/browser/follow/model/follow_browser_agent.h",
   "+ios/chrome/browser/follow/model/follow_menu_updater.h",
   "+ios/chrome/browser/follow/model/follow_tab_helper.h",

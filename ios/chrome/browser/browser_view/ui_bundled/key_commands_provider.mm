@@ -16,7 +16,7 @@
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -578,7 +578,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage());
 }
 
@@ -589,7 +589,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->IsFindUIActive());
 }
 

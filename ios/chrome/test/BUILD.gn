@@ -292,7 +292,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/external_files/model:unit_tests",
     "//ios/chrome/browser/favicon/model:unit_tests",
     "//ios/chrome/browser/feature_engagement/model:unit_tests",
-    "//ios/chrome/browser/find_in_page/model:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/tos:unit_tests",
     "//ios/chrome/browser/first_run/ui_bundled/welcome_back/coordinator:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
