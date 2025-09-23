@@ -11,14 +11,17 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_test_util.h"
-#include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/views/chrome_views_test_base.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -46,26 +49,24 @@ class TestPermissionPromptBaseView : public PermissionPromptBaseView {
 BEGIN_METADATA(TestPermissionPromptBaseView)
 END_METADATA
 
-class PermissionPromptBaseViewTest : public ChromeViewsTestBase {
+class PermissionPromptBaseViewBrowserTest : public InProcessBrowserTest {
  public:
-  PermissionPromptBaseViewTest() = default;
-  PermissionPromptBaseViewTest(const PermissionPromptBaseViewTest&) = delete;
-  PermissionPromptBaseViewTest& operator=(const PermissionPromptBaseViewTest&) =
-      delete;
-  ~PermissionPromptBaseViewTest() override = default;
-
-  void SetUp() override {
+  PermissionPromptBaseViewBrowserTest() {
     feature_list_.InitAndEnableFeature(
         media::kPictureInPictureOcclusionTracking);
-    ChromeViewsTestBase::SetUp();
   }
+  PermissionPromptBaseViewBrowserTest(
+      const PermissionPromptBaseViewBrowserTest&) = delete;
+  PermissionPromptBaseViewBrowserTest& operator=(
+      const PermissionPromptBaseViewBrowserTest&) = delete;
+  ~PermissionPromptBaseViewBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PermissionPromptBaseViewTest,
-       DisablesButtonsWhenOccludedByPictureInPictureWindows) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
+                       DisablesButtonsWhenOccludedByPictureInPictureWindows) {
   // Set up a permission delegate with a request.
   TestPermissionBubbleViewDelegate delegate;
   std::vector<std::unique_ptr<permissions::PermissionRequest>> raw_requests;
@@ -73,14 +74,13 @@ TEST_F(PermissionPromptBaseViewTest,
       permissions::RequestType::kGeolocation));
   delegate.set_requests(std::move(raw_requests));
 
-  // Create a widget to parent the bubble.
-  std::unique_ptr<views::Widget> parent =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  parent->Show();
+  // Get the browser's widget to parent the bubble.
+  views::Widget* parent =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
 
   // Create the bubble.
   auto prompt_unique = std::make_unique<TestPermissionPromptBaseView>(
-      parent.get(), /*browser=*/nullptr, delegate.GetWeakPtr());
+      parent, browser(), delegate.GetWeakPtr());
   PermissionPromptBaseView* prompt = prompt_unique.get();
   views::Widget* bubble =
       views::BubbleDialogDelegateView::CreateBubble(std::move(prompt_unique));
@@ -107,9 +107,11 @@ TEST_F(PermissionPromptBaseViewTest,
   // Button presses should no longer be ignored.
   EXPECT_FALSE(prompt->ShouldIgnoreButtonPressedEventHandling(
       /*button=*/nullptr, ui::test::TestEvent()));
+  bubble->CloseNow();
 }
 
-TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
+IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
+                       IncludedInTrackedPictureInPictureWidgets) {
   // Set up a permission delegate with a request.
   TestPermissionBubbleViewDelegate delegate;
   std::vector<std::unique_ptr<permissions::PermissionRequest>> raw_requests;
@@ -117,23 +119,19 @@ TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
       permissions::RequestType::kGeolocation));
   delegate.set_requests(std::move(raw_requests));
 
-  // Create a widget to parent the bubble.
-  std::unique_ptr<views::Widget> parent =
-      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  parent->Show();
+  // Get the main browser's widget to parent the bubble.
+  views::Widget* parent =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
 
   // Create a picture-in-picture browser window to request the permission.
-  TestingProfile profile;
-  auto browser_window = std::make_unique<TestBrowserWindow>();
-  std::unique_ptr<Browser> browser;
-  Browser::CreateParams params(&profile, /*user_gesture=*/true);
-  params.type = Browser::TYPE_PICTURE_IN_PICTURE;
-  params.window = browser_window.release();
-  browser = Browser::DeprecatedCreateOwnedForTesting(params);
+  Browser::CreateParams params(Browser::TYPE_PICTURE_IN_PICTURE, GetProfile(),
+                               true);
+  Browser* pip_browser = Browser::Create(params);
+  pip_browser->window()->Show();
 
   // Create the bubble for a picture-in-picture-window.
   auto prompt_unique = std::make_unique<TestPermissionPromptBaseView>(
-      parent.get(), /*browser=*/browser.get(), delegate.GetWeakPtr());
+      parent, pip_browser, delegate.GetWeakPtr());
   views::Widget* bubble =
       views::BubbleDialogDelegateView::CreateBubble(std::move(prompt_unique));
   bubble->Show();
