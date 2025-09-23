@@ -2034,8 +2034,7 @@ suite('NewTabPageRealboxTest', () => {
   // Test Responsiveness Metrics
   //============================================================================
 
-  // TODO fix before submitting.
-  test.skip('responsiveness metrics are being recorded', async () => {
+  test('responsiveness metrics are being recorded', async () => {
     realbox.$.input.value = 'he';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
 

@@ -157,6 +157,8 @@ export class SearchboxDropdownElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
+    this.onResultRepaint_();
+
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
         [...this.shadowRoot.querySelectorAll('cr-searchbox-match')];
@@ -246,9 +248,7 @@ export class SearchboxDropdownElement extends CrLitElement {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 
-  // TODO(dpapad): Figure out how to port this to Lit, previously invoked on
-  // 'dom-change' events.
-  protected onResultRepaint_() {
+  private onResultRepaint_() {
     if (loadTimeData.getBoolean('reportMetrics')) {
       const metricsReporter = MetricsReporterImpl.getInstance();
       metricsReporter.measure('CharTyped')
