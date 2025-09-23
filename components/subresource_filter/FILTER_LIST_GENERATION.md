@@ -97,7 +97,7 @@ It can be useful for development and testing to create a custom ruleset to activ
 2. Build tools needed to build the ruleset: `autoninja -C out/Release subresource_filter_tools`
 3. Run `./out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=mock_easylist.txt --output_file=mock_easylist_unindexed`
 4. In `chrome://components` ensure "Subresource Filter Rules" has a non-0 version number or click "Check For Update". This ensures the path used in the following steps is created.
-5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Duplicate the latest version directory and increment the number: e.g. `cp -R 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
+5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Locate the latest version directory and increment the number: e.g. `mv 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
 6. Update the `version` property in `manifext.json` to match the incremented version number
 7. Overwrite `Filtering Rules` with the unindexed ruleset generated in step 3: `cp $CHROME_DIR/mock_easylist_indexed ./Filtering\ Rules`
 8. Remove `manifest.fingerprint` and `\_metadata`, leaving just `Filtering Rules`, `LICENSE.txt`, and `manifest.json`: `rm -rf manifest.fingerprint _metadata`
