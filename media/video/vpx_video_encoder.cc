@@ -831,13 +831,18 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
 }
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {
-  // Frame has duration in metadata, use it.
-  if (frame.metadata().frame_duration.has_value())
-    return frame.metadata().frame_duration.value();
-
-  // Options have framerate specified, use it.
-  if (options_.framerate.has_value())
+  // Video encoder config has the framerate specified,
+  // since framerate's main purpose is rate control, we use it to
+  // calculate frame's duration used for rate control.
+  if (options_.framerate.has_value() && options_.framerate.value() > 0.0) {
     return base::Seconds(1.0 / options_.framerate.value());
+  }
+
+  // Frame has duration in metadata, use it.
+  if (frame.metadata().frame_duration.has_value() &&
+      !frame.metadata().frame_duration->is_zero()) {
+    return frame.metadata().frame_duration.value();
+  }
 
   // No real way to figure out duration, use time passed since the last frame
   // as an educated guess, but clamp it within a reasonable limits.
