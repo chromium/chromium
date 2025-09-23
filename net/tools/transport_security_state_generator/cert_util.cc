@@ -8,11 +8,12 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "crypto/evp.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
@@ -125,13 +126,17 @@ bool ExtractSubjectNameFromCertificate(X509* certificate, std::string* name) {
 
 bool CalculateSPKIHashFromCertificate(X509* certificate, SPKIHash* out_hash) {
   DCHECK(certificate);
-  bssl::UniquePtr<EVP_PKEY> key(X509_get_pubkey(certificate));
-  if (!key) {
+  const X509_PUBKEY* pubkey = X509_get_X509_PUBKEY(certificate);
+  uint8_t *spki = nullptr;
+  int spki_len = i2d_X509_PUBKEY(pubkey, &spki);
+  if (spki_len < 0) {
     return false;
   }
-
-  std::vector<uint8_t> spki_der = crypto::evp::PublicKeyToBytes(key.get());
-  out_hash->CalculateFromBytes(spki_der);
+  bssl::UniquePtr<uint8_t> spki_deleter(spki);
+  // SAFETY: `i2d_X509_PUBKEY`, on success, sets `spki` to a buffer of length
+  // `spki_len`.
+  out_hash->CalculateFromBytes(
+      UNSAFE_BUFFERS(base::span(spki, base::checked_cast<size_t>(spki_len))));
   return true;
 }
 
