@@ -172,6 +172,15 @@ class CORE_EXPORT ViewTransitionSupplement
 
   bool in_get_computed_style_scope_ = false;
   bool last_update_had_computed_style_scope_ = false;
+
+  // This allow deferring starting a navigation transition until some conditions
+  // are met, such as existing transitions are finished.
+  struct PendingNavigationTransition {
+    blink::ViewTransitionToken navigation_id;
+    mojom::blink::PageSwapEventParamsPtr params;
+    ViewTransition::ViewTransitionStateCallback callback;
+  };
+  std::optional<PendingNavigationTransition> pending_navigation_transition_;
 };
 
 }  // namespace blink

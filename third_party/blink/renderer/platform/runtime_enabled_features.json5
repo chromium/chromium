@@ -5246,6 +5246,10 @@
       status: "experimental",
     },
     {
+      name: "TwoPhaseViewTransition",
+      status: "test",
+    },
+    {
       name: "UnclosedFormControlIsInvalid",
       status: "experimental",
     },

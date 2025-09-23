@@ -228,6 +228,15 @@ void ViewTransitionSupplement::StartTransition(
   // https://drafts.csswg.org/css-view-transitions-2/#setup-outbound-transition.
 
   if (document_transition_) {
+    // TODO(nrosenthal): limit eligible animations to those that started after
+    // navigation was initiated and have a short while before they are scheduled
+    // to end.
+    if (RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled() &&
+        document_transition_->HasActiveAnimations()) {
+      pending_navigation_transition_.emplace(PendingNavigationTransition{
+          navigation_id, std::move(params), std::move(callback)});
+      return;
+    }
     // We should skip a transition if one exists, regardless of how it was
     // created, since navigation transition takes precedence.
     document_transition_->SkipTransition();
@@ -277,6 +286,26 @@ void ViewTransitionSupplement::OnTransitionFinished(
   // prevent callers of GetTransition thinking there's an ongoing transition).
   if (transition == document_transition_) {
     document_transition_ = nullptr;
+    if (pending_navigation_transition_) {
+      CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+      GetSupplementable()
+          ->GetTaskRunner(TaskType::kDOMManipulation)
+          ->PostTask(
+              FROM_HERE,
+              BindOnce(
+                  [](ViewTransitionSupplement* supplement,
+                     PendingNavigationTransition
+                         pending_navigation_transition) {
+                    supplement->StartTransition(
+                        *supplement->GetSupplementable(),
+                        pending_navigation_transition.navigation_id,
+                        std::move(pending_navigation_transition.params),
+                        std::move(pending_navigation_transition.callback));
+                  },
+                  WrapWeakPersistent(this),
+                  std::move(*pending_navigation_transition_)));
+      pending_navigation_transition_.reset();
+    }
   } else {
     Element* scope = transition->Scope();
     element_transitions_.erase(scope);

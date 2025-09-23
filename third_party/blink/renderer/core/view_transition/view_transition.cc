@@ -984,6 +984,11 @@ gfx::Vector2d ViewTransition::GetFrameToSnapshotRootOffset() const {
   return style_tracker_->GetFrameToSnapshotRootOffset();
 }
 
+bool ViewTransition::HasActiveAnimations() const {
+  return (state_ == State::kAnimating) && style_tracker_ &&
+         style_tracker_->HasActiveAnimations();
+}
+
 void ViewTransition::PauseRendering() {
   DCHECK(!rendering_paused_scope_);
 
