@@ -48,6 +48,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 class KeyboardAccessoryProperties {
+    static final ReadableObjectPropertyKey<ListModel<BarItem>> BAR_ITEMS_FIXED =
+            new ReadableObjectPropertyKey<>("bar_items_fixed");
     static final ReadableObjectPropertyKey<ListModel<BarItem>> BAR_ITEMS =
             new ReadableObjectPropertyKey<>("bar_items");
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
@@ -81,6 +83,7 @@ class KeyboardAccessoryProperties {
     static PropertyModel.Builder defaultModelBuilder() {
         return new PropertyModel.Builder(
                         DISABLE_ANIMATIONS_FOR_TESTING,
+                        BAR_ITEMS_FIXED,
                         BAR_ITEMS,
                         VISIBLE,
                         SKIP_CLOSING_ANIMATION,
@@ -94,6 +97,7 @@ class KeyboardAccessoryProperties {
                         HAS_STICKY_LAST_ITEM,
                         ANIMATE_SUGGESTIONS_FROM_TOP,
                         ANIMATION_LISTENER)
+                .with(BAR_ITEMS_FIXED, new ListModel<>())
                 .with(BAR_ITEMS, new ListModel<>())
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)

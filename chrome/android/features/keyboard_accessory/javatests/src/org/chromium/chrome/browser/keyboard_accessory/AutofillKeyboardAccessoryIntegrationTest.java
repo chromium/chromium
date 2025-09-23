@@ -224,19 +224,16 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        for (int i = 0; i < mHelper.getAccessoryBarView().getAdapter().getItemCount(); i++) {
-            performOnRecyclerViewNthItem(
-                    withId(R.id.bar_items_view),
-                    i,
-                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED, false));
-            onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
-            performOnRecyclerViewNthItem(
-                    withId(R.id.bar_items_view),
-                    i,
-                    createClickActionWithFlags(
-                            MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED, false));
-            onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
-        }
+        performOnRecyclerViewNthItem(
+                withId(R.id.bar_items_view),
+                0,
+                createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED, false));
+        onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
+        performOnRecyclerViewNthItem(
+                withId(R.id.bar_items_view),
+                0,
+                createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED, false));
+        onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
 
         // Close the accessory by clicking on one of the suggestions.
         onView(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));

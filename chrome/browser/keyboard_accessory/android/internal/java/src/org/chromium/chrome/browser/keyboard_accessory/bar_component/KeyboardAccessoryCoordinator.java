@@ -223,6 +223,13 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
                                     createUiConfiguration(
                                             context,
                                             AutofillImageFetcherFactory.getForProfile(profile))));
+                    mView.setFixedBarItemsAdapter(
+                            createBarItemsAdapter(
+                                    mModel.get(KeyboardAccessoryProperties.BAR_ITEMS_FIXED),
+                                    mView,
+                                    createUiConfiguration(
+                                            context,
+                                            AutofillImageFetcherFactory.getForProfile(profile))));
                     mView.setFeatureEngagementTracker(TrackerFactory.getTrackerForProfile(profile));
                     mEdgeToEdgePadObserver =
                             new EdgeToEdgePadObserver(
