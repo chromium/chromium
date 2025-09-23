@@ -50,6 +50,7 @@ class FormData;
 class FormFieldData;
 class FormStructure;
 class LogManager;
+struct Suggestion;
 
 namespace autofill_metrics {
 class FormInteractionsUkmLogger;
@@ -192,7 +193,8 @@ class AutofillManager
                                         FieldTypeSource source) {}
 
     // Fired when the suggestions are *actually* shown or hidden.
-    virtual void OnSuggestionsShown(AutofillManager& manager) {}
+    virtual void OnSuggestionsShown(AutofillManager& manager,
+                                    base::span<const Suggestion> suggestions) {}
     virtual void OnSuggestionsHidden(AutofillManager& manager) {}
 
     // Fired when a form is filled or previewed with a AutofillProfile or

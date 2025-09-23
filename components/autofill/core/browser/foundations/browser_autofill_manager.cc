@@ -2210,7 +2210,7 @@ void BrowserAutofillManager::DidShowSuggestions(
     const FieldGlobalId& field_id,
     AutofillExternalDelegate::UpdateSuggestionsCallback
         update_suggestions_callback) {
-  NotifyObservers(&Observer::OnSuggestionsShown);
+  NotifyObservers(&Observer::OnSuggestionsShown, suggestions);
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);

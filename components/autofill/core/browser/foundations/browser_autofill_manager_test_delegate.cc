@@ -49,7 +49,8 @@ void BrowserAutofillManagerTestDelegate::OnFillOrPreviewForm(
 }
 
 void BrowserAutofillManagerTestDelegate::OnSuggestionsShown(
-    AutofillManager& manager) {
+    AutofillManager& manager,
+    base::span<const Suggestion> suggestions) {
   DidShowSuggestions();
 }
 

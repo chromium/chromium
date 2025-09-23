@@ -73,7 +73,9 @@ class ChromeComposeClient
         const std::u16string& text_value) override;
     // Used to reset the field content changes count when a new suggestions UI
     // is shown.
-    void OnSuggestionsShown(autofill::AutofillManager& manager) override;
+    void OnSuggestionsShown(
+        autofill::AutofillManager& manager,
+        base::span<const autofill::Suggestion> suggestions) override;
 
     // Asks Autofill to hide any open compose-related popups.
     void HideComposeNudges();

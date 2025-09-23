@@ -46,7 +46,8 @@ class BrowserAutofillManagerTestDelegate : public AutofillManager::Observer {
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload) override;
 
-  void OnSuggestionsShown(AutofillManager& manager) override;
+  void OnSuggestionsShown(AutofillManager& manager,
+                          base::span<const Suggestion> suggestions) override;
 
   void OnSuggestionsHidden(AutofillManager& manager) override;
 

@@ -511,8 +511,9 @@ class TestAutofillManagerSingleEventWaiter {
                                 FieldTypeSource source) override {
       MaybeQuit(&Observer::OnFieldTypesDetermined, manager, form, source);
     }
-    void OnSuggestionsShown(AutofillManager& manager) override {
-      MaybeQuit(&Observer::OnSuggestionsShown, manager);
+    void OnSuggestionsShown(AutofillManager& manager,
+                            base::span<const Suggestion> suggestions) override {
+      MaybeQuit(&Observer::OnSuggestionsShown, manager, suggestions);
     }
     void OnSuggestionsHidden(AutofillManager& manager) override {
       MaybeQuit(&Observer::OnSuggestionsHidden, manager);

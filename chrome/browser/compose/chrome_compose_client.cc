@@ -112,7 +112,8 @@ ChromeComposeClient::FieldChangeObserver::FieldChangeObserver(
 ChromeComposeClient::FieldChangeObserver::~FieldChangeObserver() = default;
 
 void ChromeComposeClient::FieldChangeObserver::OnSuggestionsShown(
-    autofill::AutofillManager& manager) {
+    autofill::AutofillManager& manager,
+    base::span<const autofill::Suggestion> suggestions) {
   text_field_value_change_event_count_ = 0;
 }
 
