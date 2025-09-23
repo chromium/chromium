@@ -19,8 +19,9 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
   // size violation.
   remaining_free_space_ = main_axis_inner_size - sum_flex_base_size;
 
-  ViolationsVector new_inflexible_items;
-  for (auto& flex_item : line_items_) {
+  ViolationsIndicesVector new_inflexible_items;
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
+    auto& flex_item = line_items_[i];
     DCHECK(!flex_item.frozen);
 
     total_flex_grow_ += flex_item.flex_grow;
@@ -36,37 +37,38 @@ LineFlexer::LineFlexer(base::span<FlexItem> line_items,
         (flex_sign_ == kNegative &&
          flex_item.base_content_size < flex_item.hypothetical_content_size)) {
       flex_item.flexed_content_size = flex_item.hypothetical_content_size;
-      new_inflexible_items.push_back(&flex_item);
+      new_inflexible_items.push_back(i);
     }
   }
   FreezeViolations(new_inflexible_items);
   initial_free_space_ = remaining_free_space_;
 }
 
-void LineFlexer::FreezeViolations(ViolationsVector& violations) {
-  for (auto* violation : violations) {
-    DCHECK(!violation->frozen);
+void LineFlexer::FreezeViolations(ViolationsIndicesVector& violations) {
+  for (auto violation_index : violations) {
+    auto& violation = line_items_[violation_index];
+    DCHECK(!violation.frozen);
     remaining_free_space_ -=
-        violation->flexed_content_size - violation->base_content_size;
-    total_flex_grow_ -= violation->flex_grow;
-    total_flex_shrink_ -= violation->flex_shrink;
+        violation.flexed_content_size - violation.base_content_size;
+    total_flex_grow_ -= violation.flex_grow;
+    total_flex_shrink_ -= violation.flex_shrink;
     total_weighted_flex_shrink_ -=
-        violation->flex_shrink * violation->base_content_size;
+        violation.flex_shrink * violation.base_content_size;
     // total_weighted_flex_shrink can be negative when we exceed the precision
     // of a double when we initially calculate total_weighted_flex_shrink. We
     // then subtract each child's weighted flex shrink with full precision, now
     // leading to a negative result. See
     // css3/flexbox/large-flex-shrink-assert.html
     total_weighted_flex_shrink_ = std::max(total_weighted_flex_shrink_, 0.0);
-    violation->frozen = true;
+    violation.frozen = true;
   }
 }
 
 bool LineFlexer::ResolveFlexibleLengths() {
   LayoutUnit total_violation;
   LayoutUnit used_free_space;
-  ViolationsVector min_violations;
-  ViolationsVector max_violations;
+  ViolationsIndicesVector min_violations;
+  ViolationsIndicesVector max_violations;
 
   const double sum_flex_factors =
       (flex_sign_ == kPositive) ? total_flex_grow_ : total_flex_shrink_;
@@ -77,7 +79,8 @@ bool LineFlexer::ResolveFlexibleLengths() {
     }
   }
 
-  for (auto& flex_item : line_items_) {
+  for (wtf_size_t i = 0; i < line_items_.size(); ++i) {
+    auto& flex_item = line_items_[i];
     if (flex_item.frozen) {
       continue;
     }
@@ -107,9 +110,9 @@ bool LineFlexer::ResolveFlexibleLengths() {
 
     const LayoutUnit violation = adjusted_child_size - child_size;
     if (violation > 0) {
-      min_violations.push_back(&flex_item);
+      min_violations.push_back(i);
     } else if (violation < 0) {
-      max_violations.push_back(&flex_item);
+      max_violations.push_back(i);
     }
     total_violation += violation;
   }
