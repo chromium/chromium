@@ -216,10 +216,11 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskCancelled() {
   autofill_metrics::LogRiskBasedAuthResult(
       CreditCard::RecordType::kMaskedServerCard,
       autofill_metrics::RiskBasedAuthEvent::kAuthenticationCancelled);
-
-  requester_->OnRiskBasedAuthenticationResponseReceived(
-      RiskBasedAuthenticationResponse().with_result(
-          RiskBasedAuthenticationResponse::Result::kAuthenticationCancelled));
+  if (requester_) {
+    requester_->OnRiskBasedAuthenticationResponseReceived(
+        RiskBasedAuthenticationResponse().with_result(
+            RiskBasedAuthenticationResponse::Result::kAuthenticationCancelled));
+  }
   Reset();
 }
 
