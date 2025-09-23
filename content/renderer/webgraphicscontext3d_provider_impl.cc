@@ -163,7 +163,7 @@ void WebGraphicsContext3DProviderImpl::OnContextLost() {
 
 cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
     SkColorType color_type) {
-  DCHECK(GetCapabilities().gpu_rasterization);
+  CHECK(GetCapabilities().gpu_rasterization);
   auto cache_iterator = image_decode_cache_map_.find(color_type);
   if (cache_iterator != image_decode_cache_map_.end())
     return cache_iterator->second.get();
@@ -173,13 +173,11 @@ cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
   // budget in cc::DecodedDrawImage.
   static const size_t kMaxWorkingSetBytes = 64 * 1024 * 1024;
 
-  // TransferCache is used only with OOP raster.
-  const bool use_transfer_cache = GetCapabilities().gpu_rasterization;
-
   auto insertion_result = image_decode_cache_map_.emplace(
       color_type,
       std::make_unique<cc::GpuImageDecodeCache>(
-          provider_.get(), use_transfer_cache, color_type, kMaxWorkingSetBytes,
+          provider_.get(), /*use_transfer_cache=*/true, color_type,
+          kMaxWorkingSetBytes,
           provider_->ContextCapabilities().max_texture_size, nullptr));
   DCHECK(insertion_result.second);
   cache_iterator = insertion_result.first;
