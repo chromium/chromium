@@ -440,10 +440,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     [self showLoadingSpinnerBackground];
   }
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:TraitCollectionSetForTraits(nil)
-                       withAction:@selector(stopEdittingBookmarkOnTraitChange)];
-  }
+  [self registerForTraitChanges:TraitCollectionSetForTraits(nil)
+                     withAction:@selector(stopEdittingBookmarkOnTraitChange)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -509,17 +507,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (BOOL)prefersStatusBarHidden {
   return NO;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self stopEdittingBookmarkOnTraitChange];
-}
-#endif
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleDefault;

@@ -123,12 +123,10 @@
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
   [self applyContentSizeCategoryStyles];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(applyContentSizeCategoryStyles)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(applyContentSizeCategoryStyles)];
 
   return self;
 }
@@ -138,20 +136,6 @@
   self.parentFolderNameLabel.text = nil;
   self.cloudSlashedView.hidden = YES;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self applyContentSizeCategoryStyles];
-  }
-}
-#endif
 
 - (void)applyContentSizeCategoryStyles {
   if (UIContentSizeCategoryIsAccessibilityCategory(
