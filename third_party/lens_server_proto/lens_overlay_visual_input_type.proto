@@ -16,5 +16,6 @@ enum LensOverlayVisualInputType {
 
   VISUAL_INPUT_TYPE_WEBPAGE = 5;
 
+  // fields.
   reserved 1, 2, 3;
 }

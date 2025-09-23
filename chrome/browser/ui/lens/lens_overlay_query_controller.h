@@ -639,6 +639,7 @@ class LensOverlayQueryController {
   // Gets the visual search interaction log data param as a base64url
   // encoded string.
   std::string GetEncodedVisualSearchInteractionLogData(
+      const std::optional<std::string>& selected_text,
       lens::LensOverlaySelectionType selection_type);
 
   // Creates the metadata for an interaction request using the latest

@@ -600,8 +600,8 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // interactions in quick succession.
   if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
       IsLensTextSelectionType(lens_selection_type)) {
-    std::string encoded_vsint =
-        GetEncodedVisualSearchInteractionLogData(lens_selection_type);
+    std::string encoded_vsint = GetEncodedVisualSearchInteractionLogData(
+        query_text, lens_selection_type);
     suggest_inputs_.set_encoded_visual_search_interaction_log_data(
         encoded_vsint);
     additional_search_query_params.insert(
@@ -1861,7 +1861,7 @@ void LensOverlayQueryController::CreateSearchUrlAndSendToCallback(
   // so that is_parent_query can be accurately set if the user issues multiple
   // interactions in quick succession.
   std::string encoded_vsint =
-      GetEncodedVisualSearchInteractionLogData(selection_type);
+      GetEncodedVisualSearchInteractionLogData(query_text, selection_type);
   additional_search_query_params.insert(
       {kVisualSearchInteractionDataQueryParameterKey, encoded_vsint});
   suggest_inputs_.set_encoded_visual_search_interaction_log_data(encoded_vsint);
@@ -2118,6 +2118,7 @@ LensOverlayQueryController::CreateOAuthHeadersAndContinue(
 
 std::string
 LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
+    const std::optional<std::string>& selected_text,
     lens::LensOverlaySelectionType selection_type) {
   lens::LensOverlayVisualSearchInteractionData interaction_data;
   interaction_data.mutable_log_data()->mutable_filter_data()->set_filter_type(
@@ -2159,6 +2160,10 @@ LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
     // set to text selection.
     interaction_data.set_interaction_type(
         lens::LensOverlayInteractionRequestMetadata::TEXT_SELECTION);
+  }
+  if (selected_text.has_value()) {
+    interaction_data.mutable_text_select()->set_selected_texts(
+        selected_text.value());
   }
 
   parent_query_sent_ = true;
