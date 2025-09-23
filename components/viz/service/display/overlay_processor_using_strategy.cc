@@ -392,6 +392,8 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     DBG_DRAW_RECT("overlay.surface.damage", each);
   }
 
+  last_successful_strategy_ = nullptr;
+
   // If we have any copy requests, we can't remove any quads for overlays or
   // CALayers because the framebuffer would be missing the removed quads'
   // contents.
@@ -781,7 +783,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds,
     gfx::Rect* incoming_damage) {
-  last_successful_strategy_ = nullptr;
   std::vector<OverlayProposedCandidate> proposed_candidates;
   for (const auto& strategy : strategies_) {
     strategy->Propose(output_color_matrix, render_pass_filters,
