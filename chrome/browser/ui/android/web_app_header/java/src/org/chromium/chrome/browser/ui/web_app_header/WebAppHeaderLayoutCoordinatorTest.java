@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -90,6 +91,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock public WebappExtras mWebAppExtras;
     @Mock public Tab mTab;
+    @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
 
     private WebAppHeaderLayoutCoordinator mCoordinator;
     private Activity mActivity;
@@ -128,7 +130,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mThemeColorProvider,
                         mIntentDataProvider,
                         mScrimManager,
-                        mHistoryDelegate);
+                        mHistoryDelegate,
+                        mSetHeaderAsOverlayCallback);
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {
@@ -290,7 +293,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
         verifyControlsVisibility(View.VISIBLE);
         assertTrue("Reload button should be enabled", reloadButton.isEnabled());
         assertFalse("Back button should be disabled", backButton.isEnabled());
-        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectNonDraggableAreas());
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectControlPositions());
     }
 
     @Test
@@ -338,7 +341,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
         // Verify buttons visible and draggable area is updated.
         verifyControlsVisibility(View.VISIBLE);
-        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectNonDraggableAreas());
+        verifyHeaderContainsNonDraggableAreas(mCoordinator.collectControlPositions());
     }
 
     @Test

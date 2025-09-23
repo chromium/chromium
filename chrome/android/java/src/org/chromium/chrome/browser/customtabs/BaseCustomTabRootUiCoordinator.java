@@ -13,6 +13,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -719,6 +720,26 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 });
     }
 
+    /**
+     * Controls if the system UI controls (minimize, maximize, etc) should be rendered as an overlay
+     * on top of the web contents. If set to true, the system UI controls will partially occlude the
+     * web contents.
+     */
+    private void setHeaderAsOverlay(boolean headerAsOverlay) {
+        View contentView = mActivity.findViewById(WebAppHeaderUtils.getWebAppHeaderContentId());
+        RelativeLayout.LayoutParams layoutParams =
+                new RelativeLayout.LayoutParams(contentView.getLayoutParams());
+        if (headerAsOverlay) {
+            layoutParams.removeRule(RelativeLayout.BELOW);
+        } else {
+            layoutParams.addRule(
+                    RelativeLayout.BELOW,
+                    org.chromium.chrome.browser.web_app_header.R.id.web_app_header_layout);
+        }
+
+        contentView.setLayoutParams(layoutParams);
+    }
+
     @Override
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
@@ -732,7 +753,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mIntentDataProvider.get());
 
         final var intentDataProvider = mIntentDataProvider.get();
-        if (WebAppHeaderUtils.isMinimalUiEnabled(intentDataProvider)) {
+        if (WebAppHeaderUtils.isWebAppHeaderEnabled(intentDataProvider)) {
             final var desktopWindowStateManager = getDesktopWindowStateManager();
             assert desktopWindowStateManager != null;
 
@@ -752,7 +773,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 fullHistoryIntent.putExtra(IntentHandler.EXTRA_OPEN_HISTORY, true);
                                 IntentUtils.addTrustedIntentExtras(fullHistoryIntent);
                                 mActivity.startActivity(fullHistoryIntent);
-                            });
+                            },
+                            this::setHeaderAsOverlay);
+            mBrowserControlsManager.addObserver(mWebAppHeaderLayoutCoordinator);
         }
     }
 
@@ -865,6 +888,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && mWebAppHeaderLayoutCoordinator != null) {
+            mBrowserControlsManager.removeObserver(mWebAppHeaderLayoutCoordinator);
             mWebAppHeaderLayoutCoordinator.destroy();
             mWebAppHeaderLayoutCoordinator = null;
         }

@@ -145,6 +145,14 @@ public class WebAppHeaderUtils {
                 && ChromeFeatureList.sAndroidWindowControlsOverlay.isEnabled();
     }
 
+    /** Checks whether a display mode that requires the custom web app header is enabled. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWebAppHeaderEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        return isMinimalUiEnabled(intentDataProvider)
+                || isWindowControlsOverlayEnabled(intentDataProvider);
+    }
+
     /**
      * Provides layout id of the webapp header.
      *

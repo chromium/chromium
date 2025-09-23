@@ -19,6 +19,7 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
 
     private @Nullable Callback<Integer> mOnWidthChanged;
     private @Nullable Callback<Integer> mOnVisibilityChangedCallback;
+    private final CutoutDrawable mBackgroundDrawable = new CutoutDrawable();
 
     public WebAppHeaderLayout(Context context) {
         super(context);
@@ -32,6 +33,7 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
     protected void onFinishInflate() {
         super.onFinishInflate();
         addOnLayoutChangeListener(this);
+        setBackground(mBackgroundDrawable);
     }
 
     @Override
@@ -47,6 +49,14 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
             int oldBottom) {
         if (mOnWidthChanged == null) return;
         mOnWidthChanged.onResult(right - left);
+    }
+
+    public void setBackgroundDrawableColor(int color) {
+        mBackgroundDrawable.setColor(color);
+    }
+
+    public void setBackgroundDrawableBarWidths(float leftBarWidth, float rightBarWidth) {
+        mBackgroundDrawable.setBarWidths(leftBarWidth, rightBarWidth);
     }
 
     /**

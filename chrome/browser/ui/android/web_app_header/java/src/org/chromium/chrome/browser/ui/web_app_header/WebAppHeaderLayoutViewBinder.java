@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
@@ -43,7 +44,18 @@ class WebAppHeaderLayoutViewBinder {
         } else if (key == WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK) {
             view.setOnWidthChanged(model.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK));
         } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_COLOR) {
-            view.setBackgroundColor(model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+            view.setBackgroundDrawableColor(
+                    model.get(WebAppHeaderLayoutProperties.BACKGROUND_COLOR));
+        } else if (key == WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS) {
+            final Pair<Float, Float> barWidths =
+                    model.get(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS);
+            float leftBarWidth = -1;
+            float rightBarWidth = -1;
+            if (barWidths != null) {
+                leftBarWidth = barWidths.first;
+                rightBarWidth = barWidths.second;
+            }
+            view.setBackgroundDrawableBarWidths(leftBarWidth, rightBarWidth);
         } else if (key == WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK) {
             view.setOnVisibilityChangedCallback(
                     model.get(WebAppHeaderLayoutProperties.VISIBILITY_CHANGED_CALLBACK));

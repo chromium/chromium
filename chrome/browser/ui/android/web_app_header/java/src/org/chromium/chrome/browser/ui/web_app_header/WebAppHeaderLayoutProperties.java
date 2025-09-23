@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
+import android.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -41,6 +42,9 @@ class WebAppHeaderLayoutProperties {
     /** Background color of the header */
     static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
+    static final WritableObjectPropertyKey<Pair<Float, Float>> BACKGROUND_BAR_WIDTHS =
+            new WritableObjectPropertyKey<>();
+
     /** The set of all model properties. */
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -50,6 +54,7 @@ class WebAppHeaderLayoutProperties {
                 NON_DRAGGABLE_AREAS,
                 WIDTH_CHANGED_CALLBACK,
                 BACKGROUND_COLOR,
+                BACKGROUND_BAR_WIDTHS,
                 VISIBILITY_CHANGED_CALLBACK,
             };
 

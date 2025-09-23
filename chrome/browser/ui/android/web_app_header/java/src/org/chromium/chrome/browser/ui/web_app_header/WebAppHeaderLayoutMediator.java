@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -47,7 +49,7 @@ class WebAppHeaderLayoutMediator
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final ScrimManager mScrimManager;
-    private final Supplier<List<Rect>> mNonDraggableAreasSupplier;
+    private final Supplier<List<Rect>> mHeaderControlPositionSupplier;
     private final ObservableSupplierImpl<Integer> mWidthSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final int mWebAppMinHeaderHeight;
@@ -56,11 +58,14 @@ class WebAppHeaderLayoutMediator
     private final ObservableSupplierImpl<Integer> mAppHeaderUnoccludedWidthSupplier;
     private final Callback<Boolean> mScrimVisibilityObserver;
     private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
+    private final Callback<Boolean> mSetHeaderAsOverlayCallback;
+    private boolean mHeaderAsOverlay;
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
+    private boolean mBrowserControlsVisible;
 
     /**
      * Constructs the instance of {@link WebAppHeaderLayoutMediator}.
@@ -74,25 +79,28 @@ class WebAppHeaderLayoutMediator
      * @param webAppHeaderMinHeightFromResources minimal height from resources in px that web app
      *     header must take
      */
-    public WebAppHeaderLayoutMediator(
+    WebAppHeaderLayoutMediator(
             PropertyModel model,
             WebAppHeaderDelegate headerDelegate,
             DesktopWindowStateManager desktopWindowStateManager,
             ScrimManager scrimManager,
             ObservableSupplier<@Nullable Tab> tabSupplier,
-            Supplier<List<Rect>> nonDraggableAreasSupplier,
+            Supplier<List<Rect>> headerControlPositionSupplier,
             ThemeColorProvider themeColorProvider,
             int webAppHeaderMinHeightFromResources,
             int headerButtonHeight,
-            int displayMode) {
+            int displayMode,
+            Callback<Boolean> setHeaderAsOverlayCallback) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
         mDesktopWindowStateManager = desktopWindowStateManager;
         mTabSupplier = tabSupplier;
-        mNonDraggableAreasSupplier = nonDraggableAreasSupplier;
+        mHeaderControlPositionSupplier = headerControlPositionSupplier;
         mHeaderButtonHeight = headerButtonHeight;
         mDisplayMode = displayMode;
+        mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
+        mHeaderAsOverlay = mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY;
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -127,6 +135,14 @@ class WebAppHeaderLayoutMediator
         mThemeColorProvider.addThemeColorObserver(this);
     }
 
+    private void updateHeaderAsOverlay() {
+        mHeaderAsOverlay =
+                mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY && !mBrowserControlsVisible;
+        mSetHeaderAsOverlayCallback.onResult(mHeaderAsOverlay);
+        updateBackgroundBars();
+        updateNonDraggableAreas();
+    }
+
     private void onLayoutWidthUpdated(int width) {
         mWidthSupplier.set(width);
 
@@ -141,6 +157,19 @@ class WebAppHeaderLayoutMediator
         }
     }
 
+    private void updateBackgroundBars() {
+        if (mCurrentHeaderState == null || !mHeaderAsOverlay) {
+            mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS, null);
+            return;
+        }
+
+        final float leftPadding = mCurrentHeaderState.getLeftPadding();
+        final float rightPadding = mCurrentHeaderState.getRightPadding();
+        mModel.set(
+                WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS,
+                new Pair<Float, Float>(leftPadding, rightPadding));
+    }
+
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {
         mDesktopWindowStateManager.updateForegroundColor(color);
@@ -152,6 +181,7 @@ class WebAppHeaderLayoutMediator
         mCurrentHeaderState = newState;
 
         updatePaddings();
+        updateBackgroundBars();
 
         mAppHeaderUnoccludedWidthSupplier.set(mCurrentHeaderState.getUnoccludedRectWidth());
         mModel.set(
@@ -223,7 +253,23 @@ class WebAppHeaderLayoutMediator
             return;
         }
 
-        final var areas = mNonDraggableAreasSupplier.get();
+        List<Rect> areas = new ArrayList<>();
+
+        List<Rect> controlPositions = mHeaderControlPositionSupplier.get();
+        if (controlPositions != null) {
+            areas.addAll(controlPositions);
+        }
+
+        if (mHeaderAsOverlay) {
+            areas.add(
+                    new Rect(
+                            mCurrentHeaderState.getLeftPadding(),
+                            0,
+                            mCurrentHeaderState.getLeftPadding()
+                                    + mCurrentHeaderState.getUnoccludedRectWidth(),
+                            mCurrentHeaderState.getAppHeaderHeight()));
+        }
+
         mModel.set(
                 WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS,
                 areas == null || areas.isEmpty() ? List.of(EMPTY_NON_DRAGGABLE_AREA) : areas);
@@ -304,5 +350,11 @@ class WebAppHeaderLayoutMediator
 
     int getButtonBottomInsetForTesting() {
         return mButtonBottomInset;
+    }
+
+    /** Called to update the mediator if browser controls (e.g. CCT banner) are visible. */
+    public void setBrowserControlsVisible(boolean visible) {
+        mBrowserControlsVisible = visible;
+        updateHeaderAsOverlay();
     }
 }

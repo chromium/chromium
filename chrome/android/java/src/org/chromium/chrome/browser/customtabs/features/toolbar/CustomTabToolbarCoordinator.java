@@ -119,7 +119,7 @@ public class CustomTabToolbarCoordinator {
     }
 
     private void observeDesktopWindowingState() {
-        if (!WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)) {
+        if (!WebAppHeaderUtils.isWebAppHeaderEnabled(mIntentDataProvider)) {
             return;
         }
         // Guaranteed by the check above.
@@ -207,7 +207,7 @@ public class CustomTabToolbarCoordinator {
         }
         showCustomButtonsOnToolbar();
 
-        if (WebAppHeaderUtils.isMinimalUiEnabled(mIntentDataProvider)
+        if (WebAppHeaderUtils.isWebAppHeaderEnabled(mIntentDataProvider)
                 && mDesktopWindowStateManager != null) {
             updateToolbarControlsVisibilityForDesktopWindowing();
         }
