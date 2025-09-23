@@ -19,6 +19,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,15 +84,17 @@ public class GamepadList {
      * prepare itself for gamepad input. It must be called before {@link onGenericMotionEvent} and
      * {@link dispatchKeyEvent}.
      */
-    public static void onAttachedToWindow(Context context) {
+    public static void onAttachedToWindow() {
         assert ThreadUtils.runningOnUiThread();
-        getInstance().attachedToWindow(context);
+        getInstance().attachedToWindow();
     }
 
-    private void attachedToWindow(Context context) {
+    private void attachedToWindow() {
         if (mAttachedToWindowCounter++ == 0) {
-            mInputManager = (InputManager) context.getApplicationContext()
-                    .getSystemService(Context.INPUT_SERVICE);
+            mInputManager =
+                    (InputManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.INPUT_SERVICE);
             synchronized (mLock) {
                 initializeDevices();
             }
