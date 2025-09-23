@@ -380,6 +380,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:gles2_sources",
     "//gpu/command_buffer/common:raster_sources",
     "//gpu/command_buffer/common:webgpu_sources",
+    "//gpu/ipc/common:surface_handle_type",
     "//skia",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/dawn/include/dawn:cpp_headers",
