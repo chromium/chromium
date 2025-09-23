@@ -60,7 +60,6 @@ class VisitedLinkWriter;
 namespace android_webview {
 
 class AwBrowserContextIoThreadHandle;
-class AwContentsOriginMatcher;
 class AwFormDatabaseService;
 class AwQuotaManagerBridge;
 class CookieManager;
@@ -188,8 +187,6 @@ class AwBrowserContext : public content::BrowserContext,
 
   void ClearPersistentOriginTrialStorageForTesting(JNIEnv* env);
 
-  scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
-
   void SetExtraHeadersForUrl(const GURL& url, const std::string& headers);
 
   // Set a static header name-value pair to be sent to origins that match the
@@ -288,8 +285,6 @@ class AwBrowserContext : public content::BrowserContext,
 
   AwFileSystemAccessPermissionContext fsa_permission_context_;
   SimpleFactoryKey simple_factory_key_;
-
-  scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher_;
 
   // Map of extra headers for specific URLs supplied through the loadUrl(String,
   // Map) API.

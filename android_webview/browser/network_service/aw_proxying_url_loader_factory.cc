@@ -131,7 +131,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
       bool intercept_only,
       std::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle);
 
@@ -257,7 +256,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
       this};
   mojo::Remote<network::mojom::URLLoader> target_loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
   std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
   std::vector<std::string> attached_origin_matched_headers_;
   scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle_;
@@ -360,7 +358,6 @@ InterceptedRequest::InterceptedRequest(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     bool intercept_only,
     std::optional<AwProxyingURLLoaderFactory::SecurityOptions> security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle)
     : get_cookie_header_(get_cookie_header),
@@ -376,7 +373,6 @@ InterceptedRequest::InterceptedRequest(
       proxied_loader_receiver_(this, std::move(loader_receiver)),
       target_client_(std::move(client)),
       target_factory_(std::move(target_factory)),
-      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
       origin_matched_headers_(std::move(origin_matched_headers)),
       browser_context_handle_(std::move(browser_context_handle)) {
   // If there is a client error, clean up the request.
@@ -968,7 +964,6 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
     std::optional<SecurityOptions> security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
     std::optional<int64_t> navigation_id)
@@ -978,7 +973,6 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
       frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
       security_options_(security_options),
-      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
       origin_matched_headers_(std::move(origin_matched_headers)),
       browser_context_handle_(std::move(browser_context_handle)),
       navigation_id_(navigation_id) {
@@ -1013,7 +1007,6 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     std::optional<SecurityOptions> security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
     std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
     scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
     std::optional<int64_t> navigation_id) {
@@ -1024,8 +1017,8 @@ void AwProxyingURLLoaderFactory::CreateProxy(
       std::move(cookie_manager), cookie_access_policy, isolation_info,
       web_contents_key, frame_tree_node_id, std::move(loader_receiver),
       std::move(target_factory_remote), false, security_options,
-      std::move(xrw_allowlist_matcher), std::move(origin_matched_headers),
-      std::move(browser_context_handle), navigation_id);
+      std::move(origin_matched_headers), std::move(browser_context_handle),
+      navigation_id);
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -1130,16 +1123,14 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
         web_contents_key_, frame_tree_node_id_, request_id, options,
         std::move(request), traffic_annotation, std::move(loader),
         std::move(client), std::move(target_factory_clone), intercept_only_,
-        security_options_, xrw_allowlist_matcher_, origin_matched_headers_,
-        browser_context_handle_);
+        security_options_, origin_matched_headers_, browser_context_handle_);
   } else {
     req = new InterceptedRequest(
         std::move(get_cookie_header), std::move(set_cookie_header),
         web_contents_key_, frame_tree_node_id_, request_id, options, request,
         traffic_annotation, std::move(loader), std::move(client),
         std::move(target_factory_clone), intercept_only_, security_options_,
-        xrw_allowlist_matcher_, origin_matched_headers_,
-        browser_context_handle_);
+        origin_matched_headers_, browser_context_handle_);
   }
   req->Restart();
 }

@@ -222,6 +222,10 @@ public class Features {
     // WebSettingsCompat.getRequestedWithHeaderAllowList
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderAllowList
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderAllowList
+    /**
+     * @deprecated API has been disabled since the XRW origin trial ended.
+     */
+    @Deprecated
     public static final String REQUESTED_WITH_HEADER_ALLOW_LIST =
             "REQUESTED_WITH_HEADER_ALLOW_LIST";
 

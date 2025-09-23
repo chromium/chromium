@@ -107,7 +107,6 @@ AwSettings::AwSettings(JNIEnv* env,
                        const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -830,21 +829,6 @@ bool AwSettings::GetAllowFileAccess() {
 
 bool AwSettings::GetAllowFileAccessFromFileURLs() {
   return allow_file_access_from_file_urls_;
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray>
-AwSettings::UpdateXRequestedWithAllowListOriginMatcher(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& jrules) {
-  std::vector<std::string> rules;
-  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
-  std::vector<std::string> bad_rules =
-      xrw_allowlist_matcher_->UpdateRuleList(rules);
-  return base::android::ToJavaArrayOfStrings(env, bad_rules);
-}
-
-scoped_refptr<AwContentsOriginMatcher> AwSettings::xrw_allowlist_matcher() {
-  return xrw_allowlist_matcher_;
 }
 
 static jlong JNI_AwSettings_Init(JNIEnv* env,

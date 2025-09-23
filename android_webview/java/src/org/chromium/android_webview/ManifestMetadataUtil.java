@@ -9,21 +9,14 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Utility class to fetch metadata declared in the ApplicationManifest.xml file of the embedding
@@ -49,18 +42,17 @@ public class ManifestMetadataUtil {
     // Do not change value, it is used by external AndroidManifest.xml files
     private static final String METADATA_HOLDER_SERVICE_NAME =
             "android.webkit.MetaDataHolderService";
+
+    /**
+     * @noinspection unused Suppress warnings to keep this field in the code for the future.
+     * @deprecated This was previously used, and is maintained here to avoid accidental reuse in the
+     *     future.
+     */
     // Do not change value, it is used by external AndroidManifest.xml files
+    @Deprecated
+    @SuppressWarnings("UnusedVariable")
     private static final String XRW_ALLOWLIST_METADATA_NAME =
             "REQUESTED_WITH_HEADER_ORIGIN_ALLOW_LIST";
-    private static final String XRW_PARSING_ERROR_MESSAGE =
-            "Value of meta-data "
-                    + XRW_ALLOWLIST_METADATA_NAME
-                    + " in service "
-                    + METADATA_HOLDER_SERVICE_NAME
-                    + " must be a resource ID referencing a string-array resource.";
-
-    /** Used in tests. */
-    @Nullable private static Set<String> sXrwAllowlistForTesting;
 
     @Nullable private static volatile MetadataCache sMetadataCache;
 
@@ -75,7 +67,6 @@ public class ManifestMetadataUtil {
         private final @Nullable Boolean mContextExperimentValue;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
-        private final Set<String> mXRequestedAllowList;
 
         public MetadataCache(Context context) {
             // Cache app level metadata.
@@ -89,8 +80,6 @@ public class ManifestMetadataUtil {
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
             mContextExperimentValue = shouldEnableContextExperiment(metadataHolderServiceMetadata);
-            mXRequestedAllowList =
-                    getXRequestedWithAllowList(context, metadataHolderServiceMetadata);
         }
     }
 
@@ -212,59 +201,6 @@ public class ManifestMetadataUtil {
     }
 
     /**
-     * Get the configured allow-list for X-Requested-With origins, if present, otherwise {@code
-     * null}.
-     *
-     * The allowlist should be declared in the manifest with the snippet
-     * <pre>
-     *    &lt;service android:name="androidx.webkit.MetaDataHolderService"
-     *         android:enabled="false"
-     *         android:exported="false"&gt;
-     *       &lt;meta-data
-     *           android:name=
-     *             "androidx.webkit.MetaDataHolderService.REQUESTED_WITH_HEADER_ORIGIN_ALLOW_LIST"
-     *           android:resource="@array/xrw_origin_allowlist"/&gt;
-     *     &lt;/service&gt;
-     * </pre>
-     * where {@code @array/xrw_origin_allowlist} should be a resource of the type {@code
-     * string-array}.
-     *
-     * @return Allowlist to use by default.
-     */
-    @NonNull
-    public static Set<String> getXRequestedWithAllowList() {
-        if (sXrwAllowlistForTesting != null) {
-            return sXrwAllowlistForTesting;
-        }
-        return getMetadataCache().mXRequestedAllowList;
-    }
-
-    /**
-     * Pulls out X-Requested-With header from the metadata bundle, if present, and caches it. Will
-     * cache an empty Set if unable to find the key.
-     *
-     * @param context Application context.
-     * @param metadataHolderServiceBundle the metadata holder service bundle to extract the resource
-     *     from.
-     */
-    @NonNull
-    @VisibleForTesting
-    public static Set<String> getXRequestedWithAllowList(
-            final Context context, final @Nullable Bundle metadataHolderServiceBundle) {
-        if (metadataHolderServiceBundle == null
-                || !metadataHolderServiceBundle.containsKey(XRW_ALLOWLIST_METADATA_NAME)) {
-            return Collections.emptySet();
-        }
-        int metadataResourceId = metadataHolderServiceBundle.getInt(XRW_ALLOWLIST_METADATA_NAME);
-        try {
-            String[] stringArray = context.getResources().getStringArray(metadataResourceId);
-            return new HashSet<>(Arrays.asList(stringArray));
-        } catch (NotFoundException e) {
-            throw new IllegalArgumentException(XRW_PARSING_ERROR_MESSAGE, e);
-        }
-    }
-
-    /**
      * Get the app level metadata bundle from the AndroidManifest.
      *
      * @return Metadata bundle or {@code null} if no metadata was found;
@@ -304,15 +240,5 @@ public class ManifestMetadataUtil {
         } catch (NameNotFoundException e) {
             return null;
         }
-    }
-
-    /**
-     * Set the value to be returned by {@link ManifestMetadataUtil#getXRequestedWithAllowList()}.
-     *
-     * @return AutoCloseable that will reset the value when closed.
-     */
-    public static AutoCloseable setXRequestedWithAllowListScopedForTesting(Set<String> allowList) {
-        sXrwAllowlistForTesting = allowList;
-        return () -> sXrwAllowlistForTesting = null;
     }
 }

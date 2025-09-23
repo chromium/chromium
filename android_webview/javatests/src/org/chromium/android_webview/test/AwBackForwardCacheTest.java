@@ -543,8 +543,6 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         verifyPageEvictedWithSettingsChange(
                 () -> settings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_SINGLE_COLUMN));
         verifyPageEvictedWithSettingsChange(
-                () -> settings.setRequestedWithHeaderOriginAllowList(null));
-        verifyPageEvictedWithSettingsChange(
                 () -> settings.setSupportMultipleWindows(!settings.supportMultipleWindows()));
         verifyPageEvictedWithSettingsChange(() -> settings.setBlockSpecialFileUrls(true));
         verifyPageEvictedWithSettingsChange(() -> settings.setCssHexAlphaColorEnabled(true));

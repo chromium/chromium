@@ -14,7 +14,6 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 import java.lang.reflect.InvocationHandler;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Mock adapter for WebSettings that doesn't do anything.
@@ -112,17 +111,6 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     public @WebauthnSupport int getWebauthnSupport() {
         recordApiCall(ApiCall.WEB_SETTINGS_GET_WEBAUTHN_SUPPORT);
         return WebauthnSupport.NONE;
-    }
-
-    @Override
-    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        recordApiCall(ApiCall.WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-    }
-
-    @Override
-    public Set<String> getRequestedWithHeaderOriginAllowList() {
-        recordApiCall(ApiCall.WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-        return Collections.emptySet();
     }
 
     @Override

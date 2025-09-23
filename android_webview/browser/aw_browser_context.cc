@@ -203,9 +203,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
       is_default_(is_default),
       context_storage_path_(BuildStoragePath(relative_path_)),
       http_cache_path_(BuildHttpCachePath(relative_path_)),
-      simple_factory_key_(GetPath(), IsOffTheRecord()),
-      service_worker_xrw_allowlist_matcher_(
-          base::MakeRefCounted<AwContentsOriginMatcher>()) {
+      simple_factory_key_(GetPath(), IsOffTheRecord()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT("startup", "AwBrowserContext::AwBrowserContext", "name", name_);
 
@@ -271,17 +269,6 @@ base::FilePath AwBrowserContext::GetPrefStorePath() {
 
 base::FilePath AwBrowserContext::GetCookieStorePath() {
   return GetCookieManager()->GetCookieStorePath();
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray>
-AwBrowserContext::UpdateServiceWorkerXRequestedWithAllowListOriginMatcher(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& jrules) {
-  std::vector<std::string> rules;
-  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
-  std::vector<std::string> bad_rules =
-      service_worker_xrw_allowlist_matcher_->UpdateRuleList(rules);
-  return base::android::ToJavaArrayOfStrings(env, bad_rules);
 }
 
 // static
@@ -662,11 +649,6 @@ AwBrowserContext::GetJavaBrowserContext() {
 
 jlong AwBrowserContext::GetQuotaManagerBridge(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(GetQuotaManagerBridge());
-}
-
-scoped_refptr<AwContentsOriginMatcher>
-AwBrowserContext::service_worker_xrw_allowlist_matcher() {
-  return service_worker_xrw_allowlist_matcher_;
 }
 
 void AwBrowserContext::SetExtraHeadersForUrl(const GURL& url,

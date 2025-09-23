@@ -964,7 +964,6 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 mojo::NullRemote(),
                 /* intercept_only=*/true,
                 /* security_options=*/std::nullopt,
-                /* xrw_allowlist_matcher=*/nullptr,
                 /* origin_matched_headers=*/{},
                 std::move(browser_context_handle),
                 /* navigation_id=*/std::nullopt);
@@ -1147,9 +1146,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
     std::optional<WebContentsKey> web_contents_key;
     web_contents_key = GetWebContentsKey(*web_contents);
 
-    auto xrw_allowlist_matcher =
-        AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();
-
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
@@ -1157,7 +1153,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
                        isolation_info, web_contents_key,
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
-                       std::move(xrw_allowlist_matcher),
                        aw_browser_context->GetOriginMatchedHeaders(),
                        std::move(browser_context_handle), navigation_id));
   } else {
@@ -1172,7 +1167,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             /*web_contents_key=*/std::nullopt, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
-            aw_browser_context->service_worker_xrw_allowlist_matcher(),
             aw_browser_context->GetOriginMatchedHeaders(),
             std::move(browser_context_handle), navigation_id));
   }

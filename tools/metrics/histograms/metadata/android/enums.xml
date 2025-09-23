@@ -587,13 +587,17 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="WebMessagePayload.getAsString"/>
   <int value="67" label="WebMessagePayload.getAsArrayBuffer"/>
   <int value="68"
-      label="WebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
+      label="WebSettingsCompat.setRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="69"
-      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
+      label="WebViewCompat.WebSettingsCompat.getRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="70"
-      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderOriginAllowList"/>
+      label="ServiceWorkerWebSettingsCompat.setRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="71"
-      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderOriginAllowList"/>
+      label="ServiceWorkerWebSettingsCompat.getRequestedWithHeaderOriginAllowList
+             (deprecated)"/>
   <int value="72"
       label="WebViewProviderFactory.getDropDataProviderImplementation"/>
   <int value="73"

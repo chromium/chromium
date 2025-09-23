@@ -34,8 +34,6 @@ struct ResourceRequest;
 
 namespace android_webview {
 
-class AwContentsOriginMatcher;
-
 // URL Loader Factory for Android WebView. This is the entry point for handling
 // Android WebView callbacks (i.e. error, interception and other callbacks) and
 // loading of android specific schemes and overridden responses.
@@ -84,7 +82,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       bool intercept_only,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
@@ -106,7 +103,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       std::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
       std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers,
       scoped_refptr<AwBrowserContextIoThreadHandle> browser_context_handle,
       std::optional<int64_t> navigation_id);
@@ -158,8 +154,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   bool intercept_only_;
 
   std::optional<SecurityOptions> security_options_;
-
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   std::vector<scoped_refptr<AwOriginMatchedHeader>> origin_matched_headers_;
 

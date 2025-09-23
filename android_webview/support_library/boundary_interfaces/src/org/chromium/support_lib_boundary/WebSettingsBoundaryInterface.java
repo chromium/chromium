@@ -15,7 +15,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationHandler;
 import java.util.Map;
-import java.util.Set;
 
 // Technically this interface is not needed until we add a method to WebSettings with an
 // android.webkit parameter or android.webkit return value. But for forwards compatibility all
@@ -72,10 +71,6 @@ public interface WebSettingsBoundaryInterface {
 
     @WebauthnSupport
     int getWebauthnSupport();
-
-    void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
-
-    Set<String> getRequestedWithHeaderOriginAllowList();
 
     void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled);
 

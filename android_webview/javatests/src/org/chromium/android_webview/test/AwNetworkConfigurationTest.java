@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.SettableFuture;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,7 +22,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
 import org.chromium.base.test.util.Batch;
@@ -32,10 +30,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
 import java.net.URLEncoder;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -63,13 +59,6 @@ public class AwNetworkConfigurationTest extends AwParameterizedTest {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        // Clean up any X-Requested-With allow-lists that test may have set.
-        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
-        awSettings.setRequestedWithHeaderOriginAllowList(Collections.emptySet());
     }
 
     @Test
@@ -114,23 +103,6 @@ public class AwNetworkConfigurationTest extends AwParameterizedTest {
                 "X-Requested-With header should be the app package name",
                 getPackageName(),
                 getXRequestedWithFromResultBody());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Network"})
-    public void testRequestedWithHeaderMainFrameInvalidOriginPattern() throws Throwable {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        InstrumentationRegistry.getInstrumentation().getContext());
-        AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
-        try {
-            // An origin pattern must have a scheme, so this is expected to fail
-            awSettings.setRequestedWithHeaderOriginAllowList(Set.of("google.com"));
-            Assert.fail("An IllegalArgumentException was expected");
-        } catch (IllegalArgumentException expected) {
-            // Expected
-        }
     }
 
     private String getXRequestedWithFromIframe() throws Exception {

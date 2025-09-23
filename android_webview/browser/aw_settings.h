@@ -18,7 +18,6 @@ struct WebPreferences;
 
 namespace android_webview {
 
-class AwContentsOriginMatcher;
 class AwRenderViewHostExt;
 
 // Lifetime: WebView
@@ -168,7 +167,6 @@ class AwSettings : public content::WebContentsObserver {
   UpdateXRequestedWithAllowListOriginMatcher(
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& rules);
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher();
 
   bool geolocation_enabled() { return geolocation_enabled_; }
 
@@ -207,8 +205,6 @@ class AwSettings : public content::WebContentsObserver {
   // TODO(https://crbug.com/40615943): Remove this once we carry over the
   // initial page scale correctly.
   bool initial_page_scale_is_non_default_ = false;
-
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   JavaObjectWeakGlobalRef aw_settings_;
 

@@ -7977,42 +7977,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize"
-    units="entries" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the size of the XRequestedWithHeaderAllowList that was used on page
-    navigation. This is recorded to gain insight into the distribution of size
-    when used, which will give an idea of the impact to the ecosystem.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the size of the allow-list passed to
-    WebSettingsCompat#setRequestedWithHeaderOriginAllowList when called by the
-    embedding app.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.RequestedWithHeader.SetServiceWorkerRequestedWithHeaderModeAllowListSize"
-    units="entries" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the size of the allow-list passed to
-    ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList when
-    called by the embedding app.
-  </summary>
-</histogram>
-
-<histogram
     name="Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache"
     enum="BooleanMatched" expires_after="2026-06-01">
   <owner>pbirk@chromium.org</owner>

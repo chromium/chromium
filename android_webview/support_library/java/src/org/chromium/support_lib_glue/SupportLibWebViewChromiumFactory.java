@@ -94,7 +94,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
                 Features.GET_COOKIE_INFO,
                 Features.WEB_MESSAGE_ARRAY_BUFFER,
-                Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
                 Features.IMAGE_DRAG_DROP,
                 Features.USER_AGENT_METADATA,
                 Features.MULTI_PROFILE,
@@ -365,10 +364,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int WEB_MESSAGE_PAYLOAD_GET_TYPE = 65;
         int WEB_MESSAGE_PAYLOAD_GET_AS_STRING = 66;
         int WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER = 67;
-        int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 68;
-        int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 69;
-        int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
-        int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
+        @Deprecated int WEB_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 68;
+        @Deprecated int WEB_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 69;
+        @Deprecated int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
+        @Deprecated int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
         int GET_IMAGE_DRAG_DROP_IMPLEMENTATION = 72;
         @Deprecated int RESTRICT_SENSITIVE_WEB_CONTENT = 73;
         int JS_REPLY_POST_MESSAGE_WITH_PAYLOAD = 74;
@@ -526,7 +525,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
     private static class StaticsAdapter implements StaticsBoundaryInterface {
         private final SharedStatics mSharedStatics;
 
-        public StaticsAdapter(SharedStatics sharedStatics) {
+        StaticsAdapter(SharedStatics sharedStatics) {
             mSharedStatics = sharedStatics;
         }
 

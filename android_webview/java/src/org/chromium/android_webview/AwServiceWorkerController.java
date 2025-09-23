@@ -35,7 +35,7 @@ public class AwServiceWorkerController {
 
     public AwServiceWorkerController(Context applicationContext, AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
-        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext, mBrowserContext);
+        mServiceWorkerSettings = new AwServiceWorkerSettings(applicationContext);
         mShouldInterceptRequestMediator = new ServiceWorkerShouldInterceptRequestMediator();
         mServiceWorkerIoThreadClient = new ServiceWorkerIoThreadClient();
         mBrowserContext.setServiceWorkerIoThreadClient(mServiceWorkerIoThreadClient);
