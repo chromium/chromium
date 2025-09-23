@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
@@ -69,7 +70,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/download/download_browsertest_utils.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -392,11 +392,14 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FormSubmission) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/formSubmission")) << message_;
 }
 
+// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
+// the API is ported and chrome.tabs becomes available.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Test that WebNavigation API does not emit the same event twice when providing
 // filters in addListener. Regression test for https://crbug.com/439995191.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40276609): Re-enable this test on Mac.
-// TODO(crbug.com/371432404): Flaky on Android.
 #define MAYBE_MultipleListenersWithFilterDontDuplicateEvents \
   DISABLED_MultipleListenersWithFilterDontDuplicateEvents
 #else
@@ -434,8 +437,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest,
   TestEventRouterObserver event_router_observer(EventRouter::Get(profile()));
 
   // Navigate to trigger the onCompleted events.
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            embedded_test_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
 
   // Check that the EventRouter has received and will dispatch the event.
   ASSERT_TRUE(base::Contains(event_router_observer.events(),
@@ -486,8 +489,6 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiPrerenderTestWithServiceWorker,
   EXPECT_TRUE(RunExtensionTest("webnavigation/prerendering")) << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432404): Fix for desktop Android. Times out.
 // TODO(crbug.com/40791797):
 // WebNavigationApiTestWithContextType.Download test is flaky.
 #if BUILDFLAG(IS_WIN)
@@ -506,9 +507,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Download) {
   ASSERT_TRUE(result) << message_;
 }
 
-// TODO(crbug.com/371432404): Port to desktop Android. Fails due to differences
-// in behavior between ExtensionBrowserTest::NavigateToURL() and
-// ui_test_utils::NavigateToURL().
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
                        ServerRedirectSingleProcess) {
   // TODO(crbug.com/40248833): Use https in the test and remove these allowlist
@@ -544,7 +542,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, ForwardBack) {
   ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
@@ -591,9 +588,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, FilteredTest) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/filtered")) << message_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Skipped on Android because RenderViewContextMenu only exists on
-// Win/Mac/Linux.
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -634,12 +628,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432404): Port to desktop Android. Fails due to differences
-// in behavior between ExtensionBrowserTest::NavigateToURL() and
-// ui_test_utils::NavigateToURL().
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
   // Wait for the extension to set itself up and return control to us.
   ASSERT_TRUE(RunExtensionTest("webnavigation/requestOpenTab")) << message_;
@@ -677,9 +666,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/371432404): Port to desktop Android. Fails due to differences
-// in behavior between ExtensionBrowserTest::NavigateToURL() and
-// ui_test_utils::NavigateToURL().
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, TargetBlank) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -719,9 +705,6 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, TargetBlank) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// TODO(crbug.com/371432404): Port to desktop Android. Fails due to differences
-// in behavior between ExtensionBrowserTest::PlatformOpenURLOffTheRecord() and
-// OpenURLOffTheRecord().
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
                        TargetBlankIncognito) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -761,15 +744,10 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, History) {
   ASSERT_TRUE(RunExtensionTest("webnavigation/history")) << message_;
 }
-
-// TODO(crbug.com/371432404): Port more tests to desktop Android as the rest of
-// the API is ported and chrome.tabs becomes available.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, CrossProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
