@@ -1156,6 +1156,22 @@
             ]
         }
     ],
+    "AndroidUseCorrectDisplayWorkArea": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidUseCorrectDisplayWorkArea"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseCorrectWindowBounds": [
         {
             "platforms": [
@@ -1220,8 +1236,7 @@
     "AndroidWindowManagementWebApi": [
         {
             "platforms": [
-                "android",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
