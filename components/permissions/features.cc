@@ -28,9 +28,6 @@ BASE_FEATURE(kKeyboardLockPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPermissionElementPromptPositioning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionPredictionsV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionsAIv1, base::FEATURE_DISABLED_BY_DEFAULT);
