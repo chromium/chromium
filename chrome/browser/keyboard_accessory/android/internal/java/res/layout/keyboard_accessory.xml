@@ -38,17 +38,11 @@ found in the LICENSE file.
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bar_items_view"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:requiresFadingEdge="horizontal"
             android:fadingEdgeLength="@dimen/keyboard_accessory_scroll_shadow_width"
             android:clipToPadding="false"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fixed_bar_items_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
 
     </LinearLayout>
 

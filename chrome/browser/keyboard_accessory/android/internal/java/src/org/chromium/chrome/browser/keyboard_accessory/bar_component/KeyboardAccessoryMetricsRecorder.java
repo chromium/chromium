@@ -55,7 +55,6 @@ class KeyboardAccessoryMetricsRecorder {
             }
             if (propertyKey == KeyboardAccessoryProperties.STYLE
                     || propertyKey == KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION
-                    || propertyKey == KeyboardAccessoryProperties.BAR_ITEMS_FIXED
                     || propertyKey == KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING
                     || propertyKey == KeyboardAccessoryProperties.SHOW_SWIPING_IPH
                     || propertyKey == KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK

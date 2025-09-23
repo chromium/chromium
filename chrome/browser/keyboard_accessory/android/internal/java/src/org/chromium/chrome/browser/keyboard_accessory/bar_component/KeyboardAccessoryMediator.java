@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS_FIXED;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
@@ -122,7 +121,15 @@ class KeyboardAccessoryMediator
     void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
         List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
         retainedItems.addAll(toBarItems(suggestions, delegate));
-        setBarContents(retainedItems);
+        retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
+        // TODO(crbug.com/441006939): Show dismiss on first launch too.
+        if (mIsLargeFormFactorSupplier.get()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
+            retainedItems.add(retainedItems.size(), mModel.get(DISMISS_ITEM));
+        }
+        mModel.get(BAR_ITEMS).set(retainedItems);
+        mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
     }
 
     private boolean barHasSuggestions() {
@@ -146,39 +153,19 @@ class KeyboardAccessoryMediator
         retainedItems.addAll(
                 typeId == AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY ? retainedItems.size() : 0,
                 toBarItems(actions));
-        setBarContents(retainedItems);
-        TraceEvent.end("KeyboardAccessoryMediator#onItemAvailable");
-    }
-
-    /**
-     * Sets the contents of the accessory bar.
-     *
-     * <p>This method updates the fixed items, adds the sheet opener to the scrollable items if not
-     * present in the fixed ones, and then sets the final scrollable item list on the model,
-     * updating the suggestion state.
-     *
-     * @param scrollableItems The list of {@link BarItem}s to be set on the scrollable part of the
-     *     bar.
-     */
-    private void setBarContents(List<BarItem> scrollableItems) {
-        // TODO(crbug.com/441006939): Show dismiss on first launch too.
-        List<BarItem> fixedBarItems = new ArrayList<BarItem>();
+        retainedItems.add(retainedItems.size(), mModel.get(SHEET_OPENER_ITEM));
         if (mIsLargeFormFactorSupplier.get()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
-            fixedBarItems.add(mModel.get(SHEET_OPENER_ITEM));
-            fixedBarItems.add(mModel.get(DISMISS_ITEM));
-        } else {
-            scrollableItems.add(mModel.get(SHEET_OPENER_ITEM));
+            retainedItems.add(mModel.get(DISMISS_ITEM));
         }
-        mModel.get(BAR_ITEMS_FIXED).set(fixedBarItems);
-        mModel.get(BAR_ITEMS).set(scrollableItems);
+        mModel.get(BAR_ITEMS).set(retainedItems);
         mModel.set(HAS_SUGGESTIONS, barHasSuggestions());
+        TraceEvent.end("KeyboardAccessoryMediator#onItemAvailable");
     }
 
     private List<BarItem> collectItemsToRetain(@AccessoryAction int actionType) {
         List<BarItem> retainedItems = new ArrayList<>();
-        // Fallback sheet menu and dismiss button are never retained.
         for (BarItem item : mModel.get(BAR_ITEMS)) {
             if (item.getAction() == null) continue;
             if (item.getAction().getActionType() == AccessoryAction.DISMISS) continue;
@@ -339,8 +326,7 @@ class KeyboardAccessoryMediator
                 || propertyKey == HAS_SUGGESTIONS
                 || propertyKey == HAS_STICKY_LAST_ITEM
                 || propertyKey == ANIMATE_SUGGESTIONS_FROM_TOP
-                || propertyKey == ANIMATION_LISTENER
-                || propertyKey == BAR_ITEMS_FIXED) {
+                || propertyKey == ANIMATION_LISTENER) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";

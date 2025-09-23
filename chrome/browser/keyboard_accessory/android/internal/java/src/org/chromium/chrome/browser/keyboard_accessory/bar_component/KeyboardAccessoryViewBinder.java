@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS_FIXED;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
@@ -365,8 +364,8 @@ class KeyboardAccessoryViewBinder {
      * @param propertyKey A {@link PropertyKey}.
      */
     static void bind(PropertyModel model, KeyboardAccessoryView view, PropertyKey propertyKey) {
-        if (propertyKey == BAR_ITEMS || propertyKey == BAR_ITEMS_FIXED) {
-            // Intentionally empty. The adapter will observe changes to bar items.
+        if (propertyKey == BAR_ITEMS) {
+            // Intentionally empty. The adapter will observe changes to BAR_ITEMS.
         } else if (propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
             if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) {
                 view.disableAnimationsForTesting(); // IN-TEST

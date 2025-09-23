@@ -63,7 +63,6 @@ class KeyboardAccessoryView extends LinearLayout {
     private boolean mAnimateSuggestionsFromTop;
 
     protected RecyclerView mBarItemsView;
-    protected RecyclerView mFixedBarItemsView;
 
     /** Interface that allows to react to animations. */
     interface AnimationListener {
@@ -239,9 +238,6 @@ class KeyboardAccessoryView extends LinearLayout {
 
         mBarItemsView = findViewById(R.id.bar_items_view);
         initializeHorizontalRecyclerView(mBarItemsView);
-        mFixedBarItemsView = findViewById(R.id.fixed_bar_items_view);
-        mFixedBarItemsView.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         // Apply RTL layout changes to the view's children:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
@@ -412,26 +408,18 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     void setBarItemsAdapter(RecyclerView.Adapter adapter) {
-        registerAdapter(adapter, mBarItemsView);
-    }
-
-    void setFixedBarItemsAdapter(RecyclerView.Adapter adapter) {
-        registerAdapter(adapter, mFixedBarItemsView);
-    }
-
-    private void registerAdapter(RecyclerView.Adapter adapter, RecyclerView view) {
         // Make sure the view updates the fallback icon padding whenever new items arrive.
         adapter.registerAdapterDataObserver(
                 new RecyclerView.AdapterDataObserver() {
                     @Override
                     public void onItemRangeChanged(int positionStart, int itemCount) {
                         super.onItemRangeChanged(positionStart, itemCount);
-                        view.scrollToPosition(0);
-                        view.invalidateItemDecorations();
+                        mBarItemsView.scrollToPosition(0);
+                        mBarItemsView.invalidateItemDecorations();
                         onItemsChanged();
                     }
                 });
-        view.setAdapter(adapter);
+        mBarItemsView.setAdapter(adapter);
     }
 
     private void show() {
