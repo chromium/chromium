@@ -317,8 +317,9 @@ IN_PROC_BROWSER_TEST_P(LinkCapturingNavigationThrottleBrowserTest,
                 ->is_in_app_window());
 }
 
+// TODO(crbug.com/405508964): Test is flaky.
 IN_PROC_BROWSER_TEST_P(LinkCapturingNavigationThrottleBrowserTest,
-                       TriggeredByNoClickJavaScriptWindowOpen) {
+                       DISABLED_TriggeredByNoClickJavaScriptWindowOpen) {
   ui_test_utils::UrlLoadObserver load_observer(start_url_);
   ASSERT_TRUE(content::ExecJs(
       GetBrowserTab(),
