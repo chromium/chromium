@@ -184,10 +184,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // for WebGPU interop. Backend subclasses should implement this to
   // asynchronously create a platform-specific tensor from a shared image.
   virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-  CreateTensorFromMailboxImpl(
+  CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox) = 0;
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) = 0;
 
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;

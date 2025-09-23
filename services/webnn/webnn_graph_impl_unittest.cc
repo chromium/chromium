@@ -102,6 +102,15 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   // `WebNNGraphImpl::Dispatch()` function.
   void ReadTensorImpl(ReadTensorCallback callback) override {}
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {}
+  // Interop is not required by tests.
+  bool ImportTensorImpl(
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
+      override {
+    return false;
+  }
+  void ExportTensorImpl(
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
+      override {}
 };
 
 // A fake WebNNContext Mojo interface implementation that binds a pipe for
@@ -155,10 +164,10 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   }
 
   base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-  CreateTensorFromMailboxImpl(
+  CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      gpu::Mailbox mailbox) override {
+      std::unique_ptr<gpu::WebNNTensorRepresentation> representation) override {
     return base::unexpected(mojom::Error::New(
         mojom::Error::Code::kNotSupportedError, "Not implemented"));
   }

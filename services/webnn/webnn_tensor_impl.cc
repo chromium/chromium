@@ -123,8 +123,18 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
         CHECK(self->representation_)
             << "Tensor must have a representation to import.";
 
-        self->representation_access_ =
-            self->representation_->BeginScopedAccess();
+        auto representation_access = self->representation_->BeginScopedAccess();
+        if (!representation_access) {
+          LOG(ERROR) << "[WebNN] Failed to begin access from shared image.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
+
+        if (!self->ImportTensorImpl(std::move(representation_access))) {
+          LOG(ERROR) << "[WebNN] Failed to import tensor from shared image.";
+          std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
+          return;
+        }
       },
       base::RetainedRef(this), GetMojoReceiver().GetBadMessageCallback()));
 }
@@ -146,11 +156,8 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
           return;
         }
 
-        CHECK(self->representation_)
-            << "Tensor must have a representation to export.";
-
         // End WebNN access which makes the tensor be exported.
-        self->representation_access_.reset();
+        self->ExportTensorImpl(std::move(self->representation_access_));
 
         // Output a fence which must be waited to ensure WebNN has completed
         // execution.

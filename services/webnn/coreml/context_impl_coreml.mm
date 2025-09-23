@@ -82,24 +82,10 @@ ContextImplCoreml::CreateTensorImpl(
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-ContextImplCoreml::CreateTensorFromMailboxImpl(
+ContextImplCoreml::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
-    gpu::Mailbox mailbox) {
-  gpu::SharedImageManager* shared_image_manager =
-      context_provider()->shared_image_manager();
-  CHECK(shared_image_manager);
-
-  // TODO(crbug.com/345352987): give WebNN its own memory source and tracker.
-  std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
-      shared_image_manager->ProduceWebNNTensor(
-          mailbox,
-          context_provider()->shared_context_state()->memory_type_tracker());
-  if (!representation) {
-    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                              "Failed to create tensor."));
-  }
-
+    std::unique_ptr<gpu::WebNNTensorRepresentation> representation) {
   return TensorImplCoreml::Create(std::move(receiver), AsWeakPtr(),
                                   std::move(tensor_info),
                                   std::move(representation));

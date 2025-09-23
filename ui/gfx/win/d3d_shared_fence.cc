@@ -271,4 +271,8 @@ bool D3DSharedFence::IncrementAndSignalD3D11() {
   return true;
 }
 
+Microsoft::WRL::ComPtr<ID3D12Fence> D3DSharedFence::GetD3D12Fence() const {
+  return d3d12_signal_fence_;
+}
+
 }  // namespace gfx

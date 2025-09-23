@@ -35,6 +35,12 @@ class TensorImplOrt final : public WebNNTensorImpl {
 
   void ReadTensorImpl(ReadTensorCallback callback) override;
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override;
+  bool ImportTensorImpl(
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
+      override;
+  void ExportTensorImpl(
+      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
+      override;
 
   scoped_refptr<QueueableResourceState<BufferContentOrt>> buffer_state_
       GUARDED_BY_CONTEXT(gpu_sequence_checker_);

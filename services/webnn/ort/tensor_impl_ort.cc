@@ -5,6 +5,7 @@
 #include "services/webnn/ort/tensor_impl_ort.h"
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/ort/platform_functions_ort.h"
@@ -112,6 +113,17 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
           context_->AsWeakPtr(), buffer_state_, std::move(src_buffer),
           std::move(scoped_trace)));
   task->Enqueue();
+}
+
+bool TensorImplOrt::ImportTensorImpl(
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void TensorImplOrt::ExportTensorImpl(
+    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace webnn::ort
