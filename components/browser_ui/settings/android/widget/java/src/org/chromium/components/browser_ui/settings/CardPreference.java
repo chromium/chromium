@@ -4,8 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
+
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -19,6 +20,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
@@ -45,13 +47,11 @@ public class CardPreference extends TextMessagePreference {
         super(context, attrs);
         setLayoutResource(R.layout.card_preference);
         setSelectable(false);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
-        mBackgroundStyle =
-                a.getInt(
-                        R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
-        mBackgroundColor =
-                a.getInt(R.styleable.ChromeBasePreference_backgroundColor, DEFAULT_COLOR);
-        a.recycle();
+
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
+                parseContainmentAttributes(context, attrs);
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
+        mBackgroundColor = containmentAttributes.backgroundColor;
     }
 
     @Override

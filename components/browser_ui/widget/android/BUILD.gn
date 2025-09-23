@@ -70,6 +70,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/chips/ChipViewBinder.java",
     "java/src/org/chromium/components/browser_ui/widget/chips/ChipsCoordinator.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainedLinearLayout.java",
+    "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentUiUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/CustomStyledContainer.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/DisplayStyleObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/DisplayStyleObserverAdapter.java",

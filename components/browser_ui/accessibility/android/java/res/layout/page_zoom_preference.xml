@@ -17,7 +17,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:backgroundStyle="card">
 
         <TextView
             style="@style/PreferenceTitle"
@@ -48,7 +49,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:backgroundStyle="card">
 
         <TextView
             android:id="@+id/text_size_contrast_title"
@@ -87,7 +89,9 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        app:backgroundStyle="card"
+        app:backgroundColor="?attr/colorSurfaceContainerHighest">
 
         <TextView
             style="@style/PreferenceTitle"

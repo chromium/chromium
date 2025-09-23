@@ -16,16 +16,6 @@ found in the LICENSE file.
         <attr name="iconTint" format="color" />
         <!-- Name of a user action that will be logged when this preference is clicked -->
         <attr name="userAction" format="string" />
-        <!-- LINT.IfChange-->
-        <!-- The background style for the preference -->
-        <attr name="backgroundStyle" format="enum">
-            <enum name="standard" value="0" />
-            <enum name="card" value="1" />
-            <enum name="none" value="2" />
-        </attr>
-        <!-- LINT.ThenChange(//components/browser_ui/settings/android/java/src/org/chromium/components/browser_ui/settings/CustomStyledContainer.java) -->
-        <!-- The background color for the preference. -->
-        <attr name="backgroundColor" format="color|reference" />
     </declare-styleable>
 
 

@@ -4,8 +4,9 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
+
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
 import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /** A Chrome switch preference that supports managed preferences. */
@@ -59,11 +61,9 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat
     public ChromeSwitchPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
-        mBackgroundStyle =
-                a.getInt(
-                        R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
-        a.recycle();
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
+                parseContainmentAttributes(context, attrs);
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
 
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
         mUseSummaryAsTitle = true;

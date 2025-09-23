@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -17,6 +19,7 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
 import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /**
@@ -61,12 +64,12 @@ public class ChromeBasePreference extends Preference implements CustomStyledCont
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
         mIconTint = a.getColorStateList(R.styleable.ChromeBasePreference_iconTint);
         mUserAction = a.getString(R.styleable.ChromeBasePreference_userAction);
-        mBackgroundStyle =
-                a.getInt(
-                        R.styleable.ChromeBasePreference_backgroundStyle, BackgroundStyle.STANDARD);
-        mBackgroundColor =
-                a.getInt(R.styleable.ChromeBasePreference_backgroundColor, DEFAULT_COLOR);
         a.recycle();
+
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
+                parseContainmentAttributes(context, attrs);
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
+        mBackgroundColor = containmentAttributes.backgroundColor;
 
         mHasCustomLayout = ManagedPreferencesUtils.isCustomLayoutApplied(context, attrs);
     }

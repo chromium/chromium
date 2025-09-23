@@ -28,7 +28,7 @@ public interface CustomStyledContainer {
         int NONE = 2;
     }
 
-    // LINT.ThenChange(//components/browser_ui/settings/android/java/res/values/attrs.xml)
+    // LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/attrs.xml)
 
     /**
      * Returns the custom background style for the container. By default, the standard background
