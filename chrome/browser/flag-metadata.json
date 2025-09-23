@@ -7940,11 +7940,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "partition-visited-link-database-with-self-links",
-    "owners": ["janiceliu@chromium.org", "kyraseevers@chromium.org"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "partitioned-popins",
     "owners": [ "arichiv@chromium.org", "johannhof@chromium.org", "sandormajor@chromium.org" ],
     "expiry_milestone": 138

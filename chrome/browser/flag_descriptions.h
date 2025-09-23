@@ -1891,9 +1891,6 @@ extern const char kPartitionAllocMemoryTaggingDescription[];
 extern const char kPartitionAllocWithAdvancedChecksName[];
 extern const char kPartitionAllocWithAdvancedChecksDescription[];
 
-extern const char kPartitionVisitedLinkDatabaseWithSelfLinksName[];
-extern const char kPartitionVisitedLinkDatabaseWithSelfLinksDescription[];
-
 extern const char kPartitionedPopinsName[];
 extern const char kPartitionedPopinsDescription[];
 
