@@ -41,6 +41,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -434,6 +435,10 @@ class InteractiveGlicTestT : public T {
       }
     }
     return nullptr;
+  }
+
+  content::WebContents* FindGlicWebUIContents() {
+    return GetHostForActiveTab()->webui_contents();
   }
 
   glic::GlicTestEnvironment& glic_test_environment() {

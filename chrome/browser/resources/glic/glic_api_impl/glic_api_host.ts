@@ -59,7 +59,8 @@ export enum DetailedWebClientState {
   RESPONSIVE = 6,
   RESPONSIVE_INACTIVE = 7,
   UNRESPONSIVE_INACTIVE = 8,
-  MAX_VALUE = UNRESPONSIVE_INACTIVE,
+  MOJO_PIPE_CLOSED_UNEXPECTEDLY = 9,
+  MAX_VALUE = MOJO_PIPE_CLOSED_UNEXPECTEDLY,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDetailedWebClientState)
 
@@ -1176,6 +1177,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
     ungatedSender.setLoggingEnabled(loadTimeData.getBoolean('loggingEnabled'));
     this.sender = new GatedSender(ungatedSender);
     this.handler = new WebClientHandlerRemote();
+    this.handler.onConnectionError.addListener(() => {
+      if (this.webClientState.getCurrentValue() !== WebClientState.ERROR) {
+        console.warn(`Mojo connection error in glic host`);
+        this.detailedWebClientState =
+            DetailedWebClientState.MOJO_PIPE_CLOSED_UNEXPECTEDLY;
+        this.webClientState.assignAndSignal(WebClientState.ERROR);
+      }
+    });
+    this.handler.$.close();
     this.browserProxy.handler.createWebClient(
         this.handler.$.bindNewPipeAndPassReceiver());
     this.messageHandler =

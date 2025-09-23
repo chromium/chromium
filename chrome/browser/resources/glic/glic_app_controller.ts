@@ -50,6 +50,7 @@ interface PageElementTypes {
   disabledByAdminCloseButton: HTMLButtonElement;
   signInButton: HTMLButtonElement;
   unresponsiveOverlay: HTMLElement;
+  reload: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -151,6 +152,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
     }
     $.profilePickerButton.addEventListener('click', () => {
       this.openProfilePicker();
+    });
+    $.reload.addEventListener('click', () => {
+      this.reload();
     });
     $.disabledByAdminCloseButton.addEventListener('click', () => {
       this.browserProxy.handler.closePanel();

@@ -105,6 +105,8 @@ class ApiTests extends ApiTestFixtureBase {
     await waitFor(closedPromise.promise);
   }
 
+  async testErrorShownOnMojoPipeError() {}
+
   async testShowProfilePicker() {
     assertDefined(this.host.showProfilePicker);
     this.host.showProfilePicker();
