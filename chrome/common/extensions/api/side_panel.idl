@@ -108,6 +108,22 @@ namespace sidePanel {
     DOMString path;
   };
 
+  // Information about the closed side panel. It is fired when the extension's
+  // side panel is closed.
+  dictionary PanelClosedInfo {
+    // The ID of the window where the side panel was closed. This is available
+    // for both global and tab-specific panels.
+    long windowId;
+
+    // The optional ID of the tab where the side panel was closed. This is
+    // provided only when the panel is tab-specific.
+    long? tabId;
+
+    // The path of the local resource within the extension package whose content
+    // is displayed in the panel.
+    DOMString path;
+  };
+
   callback VoidCallback = void();
   callback PanelOptionsCallback = void(PanelOptions options);
   callback PanelBehaviorCallback = void(PanelBehavior behavior);
@@ -165,5 +181,8 @@ namespace sidePanel {
   interface Events {
     // Fired when the extension's side panel is opened.
     static void onOpened(PanelOpenedInfo info);
+
+    // Fired when the extension's side panel is closed.
+    [nodoc] static void onClosed(PanelClosedInfo info);
   };
 };

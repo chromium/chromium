@@ -74,6 +74,10 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Dispatch the onOpened event when the panel is opened.
   void OnOpened();
 
+  // Dispatches the onClosed event when the panel is closed or its WebContents
+  // is destroyed.
+  void OnClosed();
+
   SidePanelEntry::Key GetEntryKey() const;
 
   SidePanelEntry* GetEntry() const;
@@ -161,6 +165,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Track whether the side panel is currently active for this entry.
   bool is_panel_active_ = false;
+
+  // The ID of the browser window in which the panel is shown.
+  std::optional<int> window_id_;
 
   // Whether this coordinator is tab-scoped or window-scoped.
   const bool for_tab_;
