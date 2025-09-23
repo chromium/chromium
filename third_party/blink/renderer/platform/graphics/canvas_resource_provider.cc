@@ -1656,7 +1656,9 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
     }
 
     auto raster_mode = cc::PlaybackImageProvider::RasterMode::kSoftware;
-    if (UseHardwareDecodeCache()) {
+
+    // Adjust the raster mode if we will be able to use an accelerated cache.
+    if (IsAccelerated() && context_provider_wrapper_) {
       raster_mode = UseOopRasterization()
                         ? cc::PlaybackImageProvider::RasterMode::kOop
                         : cc::PlaybackImageProvider::RasterMode::kGpu;
@@ -1910,7 +1912,7 @@ uint32_t CanvasResourceProvider::ContentUniqueID() const {
 }
 
 cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheRGBA8() {
-  if (UseHardwareDecodeCache()) {
+  if (IsAccelerated() && context_provider_wrapper_) {
     return context_provider_wrapper_->ContextProvider().ImageDecodeCache(
         kN32_SkColorType);
   }
@@ -1919,7 +1921,7 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheRGBA8() {
 }
 
 cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
-  if (UseHardwareDecodeCache()) {
+  if (IsAccelerated() && context_provider_wrapper_) {
     return context_provider_wrapper_->ContextProvider().ImageDecodeCache(
         kRGBA_F16_SkColorType);
   }

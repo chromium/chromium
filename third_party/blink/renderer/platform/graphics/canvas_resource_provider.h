@@ -421,9 +421,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
   virtual bool UseOopRasterization() { return false; }
-  bool UseHardwareDecodeCache() const {
-    return IsAccelerated() && context_provider_wrapper_;
-  }
   // Notifies before any drawing will be done on the resource used by this
   // provider.
   virtual void WillDraw() {}
