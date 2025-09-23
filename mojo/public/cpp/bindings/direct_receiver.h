@@ -69,7 +69,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
   // Indicates whether a ThreadLocalNode instance exists for the current thread.
   static bool CurrentThreadHasInstance();
 
-  IpczHandle node() const { return node_->value(); }
+  IpczHandle node() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return node_->value();
+  }
 
   // Transfers `pipe` from the process's global node to the thread-local ipcz
   // node owned by this object and returns a new pipe handle for it.
@@ -87,7 +90,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
   THREAD_CHECKER(thread_checker_);
 
   // A dedicated node created for this object.
-  ScopedHandle node_;
+  ScopedHandle node_ GUARDED_BY_CONTEXT(thread_checker_);
 
   // A portal on the local node which is connected to `global_portal_`. Used to
   // receive pipes from the global node.
@@ -95,12 +98,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
 
   // A portal on the global node which is connected to `local_portal_`. Used to
   // transfer pipes from the global node to the local one.
-  ScopedHandle global_portal_;
+  ScopedHandle global_portal_ GUARDED_BY_CONTEXT(thread_checker_);
 
   // Tracks pending portal merges. See AdoptPortal() implementation for gritty
   // details.
-  uint64_t next_merge_id_ = 0;
-  std::map<uint64_t, ScopedHandle> pending_merges_;
+  uint64_t next_merge_id_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
+  std::map<uint64_t, ScopedHandle> pending_merges_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   base::WeakPtrFactory<ThreadLocalNode> weak_ptr_factory_
       GUARDED_BY_CONTEXT(thread_checker_){this};
@@ -138,10 +142,12 @@ class DirectReceiverKey {
 //
 // As long as any DirectReceiver exists on a thread, there is a thread-local
 // ThreadLocalNode instance which lives on that thread to receive IPC directly
-// from out-of-process peers. When a DirectReceiver is bound, it transfers its
-// pipe to that node so that its IPCs are routed to the thread-local node
-// instead if the global node, thus ensuring that the receiver's messages are
-// received directly on its bound thread.
+// from out-of-process peers. When one of these DirectReceivers is bound to a
+// pipe, it indicates that the pipe will be receiving messages on the thread.
+// For that to happen the pipe is 'transferred' to the ThreadLocalNode.
+//
+// TODO(crbug.com/40266729): Find a way to transfer without creating another
+// ipcz pipe.
 //
 // SUBTLE: DirectReceiver internally allocates a LIMITED SYSTEM RESOURCE on many
 // systems (including Android and Chrome OS) and must therefore be used
@@ -162,6 +168,7 @@ class DirectReceiver {
       "This interface must be marked with the [DirectReceiver] attribute.");
 
  public:
+  // Creates a DirectReceiver bound to the current thread.
   DirectReceiver(DirectReceiverKey, T* impl) : receiver_(impl) {}
   ~DirectReceiver() = default;
 
@@ -176,7 +183,7 @@ class DirectReceiver {
   }
 
   // Binds this object to `receiver` to receive IPC directly on the calling
-  // thread.
+  // thread, which must be the same thread the DirectReceiver was created on.
   void Bind(PendingReceiver<T> receiver) {
     receiver_.Bind(receiver.is_valid() ? PendingReceiver<T>(node_->AdoptPipe(
                                              receiver.PassPipe()))

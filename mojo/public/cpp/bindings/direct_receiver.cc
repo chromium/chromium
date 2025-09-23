@@ -188,14 +188,26 @@ bool ThreadLocalNode::CurrentThreadHasInstance() {
 
 ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
     ScopedMessagePipeHandle pipe) {
-  // TODO(crbug.com/40266729): Require that this runs on `thread_checker_` and
-  // and GUARDED_BY_CONTEXT annotations to the variables it uses.
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const IpczAPI& ipcz = core::GetIpczAPI();
 
+  IpczHandle portal_to_adopt = pipe.release().value();
+
+  // `portal_to_adopt` is currently routed to the global node. To update its
+  // routing to the local node, it needs to be sent over the link to that node
+  // (by writing it to `global_portal_` and reading it from `local_portal_`).
+  // But this is asynchronous, and AdoptPipe needs to return a portal routed to
+  // the local node immediately.
+  //
   // Create a new portal pair within our local node. One of these portals is
-  // returned and the other will be merged with `pipe` once it's transferred
-  // to the local node. This allows us to synchronously return a pipe while
-  // the portal transfer remains asynchronous.
+  // returned and the other will be merged with `portal_to_adopt` once it's
+  // transferred to the local node. This allows us to synchronously return a
+  // pipe while the portal transfer remains asynchronous.
+  //
+  // TODO(crbug.com/40266729): Find a way to make the transfer synchronous.
+  // This would require copying the portal-transfer logic from
+  // RemoteRouterLink::AcceptParcel, which currently only runs as part of
+  // deserializing messages over a link.
   IpczHandle portal_to_bind, portal_to_merge;
   const IpczResult open_result =
       ipcz.OpenPortals(node_->value(), IPCZ_NO_FLAGS, nullptr, &portal_to_bind,
@@ -212,11 +224,10 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
   const uint64_t merge_id = next_merge_id_++;
   pending_merges_[merge_id] = ScopedHandle{Handle{portal_to_merge}};
 
-  // Send `pipe` to the local node along with our unique merge ID.
-  IpczHandle portal = pipe.release().value();
-  const IpczResult put_result =
-      ipcz.Put(global_portal_->value(), &merge_id, sizeof(merge_id),
-               /*handles=*/&portal, /*num_handles=*/1, IPCZ_NO_FLAGS, nullptr);
+  // Send `portal_to_adopt` to the local node along with our unique merge ID.
+  const IpczResult put_result = ipcz.Put(
+      global_portal_->value(), &merge_id, sizeof(merge_id),
+      /*handles=*/&portal_to_adopt, /*num_handles=*/1, IPCZ_NO_FLAGS, nullptr);
   if (put_result != IPCZ_RESULT_OK) {
     // TODO(crbug.com/445243335): Remove the crash key after investigating. This
     // is left as a CHECK_EQ even though it's temporarily wrapped in an if so

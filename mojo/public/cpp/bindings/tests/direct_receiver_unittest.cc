@@ -320,18 +320,18 @@ TEST_F(DirectReceiverTest, ThreadLocalInstanceShared) {
 
     impl2 = std::make_unique<ServiceImpl>(io_thread.task_runner());
     impl2->receiver().Bind(std::move(receiver2));
-  });
 
-  // Both receivers should be using the same node to receive I/O.
-  EXPECT_EQ(impl1->receiver().node_for_testing().node(),
-            impl2->receiver().node_for_testing().node());
+    // Both receivers should be using the same node to receive I/O.
+    EXPECT_EQ(impl1->receiver().node_for_testing().node(),
+              impl2->receiver().node_for_testing().node());
+  });
 
   // For good measure, verify that the receivers actually work too.
   base::RunLoop loop1;
   remote1->Ping(loop1.QuitClosure());
   loop1.Run();
   base::RunLoop loop2;
-  remote1->Ping(loop2.QuitClosure());
+  remote2->Ping(loop2.QuitClosure());
   loop2.Run();
 
   RunOn(io_thread, [&] {
@@ -362,25 +362,27 @@ TEST_F(DirectReceiverTest, UniqueNodePerThread) {
   Remote<mojom::Service> remote2;
   auto receiver1 = remote1.BindNewPipeAndPassReceiver();
   auto receiver2 = remote2.BindNewPipeAndPassReceiver();
+  IpczHandle node1, node2;
   RunOn(io_thread1, [&] {
     impl1 = std::make_unique<ServiceImpl>(io_thread1.task_runner());
     impl1->receiver().Bind(std::move(receiver1));
+    node1 = impl1->receiver().node_for_testing().node();
   });
   RunOn(io_thread2, [&] {
     impl2 = std::make_unique<ServiceImpl>(io_thread2.task_runner());
     impl2->receiver().Bind(std::move(receiver2));
+    node2 = impl2->receiver().node_for_testing().node();
   });
 
   // Both receivers should be using different nodes to receive I/O.
-  EXPECT_NE(impl1->receiver().node_for_testing().node(),
-            impl2->receiver().node_for_testing().node());
+  EXPECT_NE(node1, node2);
 
   // For good measure, verify that the receivers actually work too.
   base::RunLoop loop1;
   remote1->Ping(loop1.QuitClosure());
   loop1.Run();
   base::RunLoop loop2;
-  remote1->Ping(loop2.QuitClosure());
+  remote2->Ping(loop2.QuitClosure());
   loop2.Run();
 
   RunOn(io_thread1, [&] {
