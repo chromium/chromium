@@ -6,6 +6,10 @@
 
 #include <memory>
 
+#include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -19,8 +23,10 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
 namespace {
@@ -61,6 +67,43 @@ MATCHER_P3(ApproximatelyEquals,
   return false;
 }
 
+enum class WindowState { kNormal, kMaximized };
+
+std::string WindowStateToString(WindowState state) {
+  constexpr std::array kWindowStateNames = {"Normal", "Maximized",
+                                            "Fullscreen"};
+  return kWindowStateNames[static_cast<int>(state)];
+}
+
+class WidgetResizedWaiter : public views::WidgetObserver {
+ public:
+  explicit WidgetResizedWaiter(views::Widget* widget)
+      : original_bounds_(widget->GetWindowBoundsInScreen()) {
+    observation_.Observe(widget);
+  }
+
+  bool Wait() {
+    run_loop_.Run();
+    return resized_;
+  }
+
+ private:
+  // WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget*,
+                             const gfx::Rect& new_bounds) override {
+    resized_ =
+        new_bounds != original_bounds_ && new_bounds.Contains(original_bounds_);
+    run_loop_.Quit();
+  }
+  void OnWidgetDestroying(views::Widget*) override { observation_.Reset(); }
+
+  const gfx::Rect original_bounds_;
+  bool resized_ = false;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+};
+
 gfx::Rect GetBoundsInWindow(views::View* view) {
   auto* const widget = view->GetWidget();
   auto* const root = widget->GetRootView();
@@ -69,10 +112,28 @@ gfx::Rect GetBoundsInWindow(views::View* view) {
 
 }  // namespace
 
-class BrowserViewLayoutDelegateImplBrowsertest : public InteractiveBrowserTest {
+class BrowserViewLayoutDelegateImplBrowsertest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<WindowState> {
  public:
   BrowserViewLayoutDelegateImplBrowsertest() = default;
   ~BrowserViewLayoutDelegateImplBrowsertest() override = default;
+
+  void ApplyWindowState(Browser* browser) {
+    switch (GetParam()) {
+      case WindowState::kNormal:
+        break;
+      case WindowState::kMaximized: {
+        auto* const widget =
+            BrowserView::GetBrowserViewForBrowser(browser)->GetWidget();
+        WidgetResizedWaiter waiter(widget);
+        widget->Maximize();
+        ASSERT_TRUE(waiter.Wait());
+        ASSERT_TRUE(widget->IsMaximized());
+        break;
+      }
+    }
+  }
 
   void SetUseLayoutDelegate(Browser* browser, bool use_new_delegate) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
@@ -98,7 +159,19 @@ class BrowserViewLayoutDelegateImplBrowsertest : public InteractiveBrowserTest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowserViewLayoutDelegateImplBrowsertest,
+#if BUILDFLAG(IS_MAC)
+                         testing::Values(WindowState::kNormal),
+#else
+                         testing::Values(WindowState::kNormal,
+                                         WindowState::kMaximized),
+#endif
+                         [](testing::TestParamInfo<WindowState> info) {
+                           return WindowStateToString(info.param);
+                         });
+
+IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        CompareOldAndNewLayout_TabbedBrowser) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -106,6 +179,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
   ToolbarView* const toolbar = browser_view->toolbar();
   gfx::Rect tabstrip_bounds;
   gfx::Rect toolbar_bounds;
+
+  ApplyWindowState(browser());
 
   // Get the bounds using the old layout.
   {
@@ -143,13 +218,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        CompareOldAndNewLayout_AppBrowser) {
   Browser* const app_browser = CreateAppBrowser();
   WebAppFrameToolbarView* const toolbar =
       BrowserView::GetBrowserViewForBrowser(app_browser)
           ->web_app_frame_toolbar_for_testing();
   gfx::Rect toolbar_bounds;
+
+  ApplyWindowState(app_browser);
 
   // Get the bounds using the old layout.
   {
@@ -165,9 +242,11 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        Screenshot_TabbedBrowser) {
   SetUseLayoutDelegate(browser(), true);
+
+  ApplyWindowState(browser());
 
   gfx::Rect bounds;
   RunTestSequence(
@@ -186,10 +265,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
                  std::ref(bounds)));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLayoutDelegateImplBrowsertest,
+IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        Screenshot_AppBrowser) {
   // App browser can't be created inside RunTestSequence due to RunLoop issues.
   auto* const app_browser = CreateAppBrowser();
+
+  ApplyWindowState(app_browser);
 
   gfx::Rect bounds;
   RunTestSequence(
