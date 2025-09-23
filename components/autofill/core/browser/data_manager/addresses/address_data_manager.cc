@@ -311,9 +311,10 @@ void AddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   UpdateProfileInDB(profile);
 }
 
-void AddressDataManager::RemoveProfile(const std::string& guid,
-                                       bool is_deduplication_initiated) {
-  RemoveProfileImpl(guid, is_deduplication_initiated);
+void AddressDataManager::RemoveProfile(
+    const std::string& guid,
+    bool non_permanent_account_profile_removal) {
+  RemoveProfileImpl(guid, non_permanent_account_profile_removal);
 }
 
 void AddressDataManager::RemoveLocalProfilesModifiedBetween(base::Time begin,
@@ -818,8 +819,9 @@ void AddressDataManager::LogStoredDataMetrics() const {
   }
 }
 
-void AddressDataManager::RemoveProfileImpl(const std::string& guid,
-                                           bool is_deduplication_initiated) {
+void AddressDataManager::RemoveProfileImpl(
+    const std::string& guid,
+    bool non_permanent_account_profile_removal) {
   if (!webdata_service_) {
     return;
   }
@@ -842,12 +844,12 @@ void AddressDataManager::RemoveProfileImpl(const std::string& guid,
   }
 
   ongoing_profile_changes_.emplace_back(
-      AutofillProfileChange(
-          (profile->IsAccountProfile() && is_deduplication_initiated) ||
-                  profile->IsHomeAndWorkProfile()
-              ? AutofillProfileChange::HIDE_IN_AUTOFILL
-              : AutofillProfileChange::REMOVE,
-          guid, *profile),
+      AutofillProfileChange((profile->IsAccountProfile() &&
+                             non_permanent_account_profile_removal) ||
+                                    profile->IsHomeAndWorkProfile()
+                                ? AutofillProfileChange::HIDE_IN_AUTOFILL
+                                : AutofillProfileChange::REMOVE,
+                            guid, *profile),
       /*is_ongoing=*/false);
   HandleNextProfileChange();
 }

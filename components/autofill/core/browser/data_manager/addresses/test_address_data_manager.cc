@@ -84,8 +84,9 @@ void TestAddressDataManager::ClearProfiles() {
   profiles_.clear();
 }
 
-void TestAddressDataManager::RemoveProfileImpl(const std::string& guid,
-                                           bool is_deduplication_initiated) {
+void TestAddressDataManager::RemoveProfileImpl(
+    const std::string& guid,
+    bool non_permanent_account_profile_removal) {
   profiles_.erase(std::ranges::find(profiles_, guid, &AutofillProfile::guid));
   NotifyObservers();
 }

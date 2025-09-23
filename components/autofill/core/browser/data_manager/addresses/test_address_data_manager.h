@@ -54,7 +54,7 @@ class TestAddressDataManager : public AddressDataManager {
 
  private:
   void RemoveProfileImpl(const std::string& guid,
-                         bool is_deduplication_initiated) override;
+                         bool non_permanent_account_profile_removal) override;
 
   std::optional<AddressCountryCode> default_country_code_;
   std::optional<bool> autofill_profile_enabled_;

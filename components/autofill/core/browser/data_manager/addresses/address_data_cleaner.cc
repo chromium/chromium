@@ -88,7 +88,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
                                      comparator.app_locale());
       adm.UpdateProfile(*merge_candidate);
       adm.RemoveProfile(local_profile_it->guid(),
-                        /*is_deduplication_initiated=*/true);
+                        /*non_permanent_account_profile_removal=*/true);
       num_profiles_deleted++;
       continue;
     }
@@ -103,7 +103,7 @@ void DeduplicateProfiles(const AutofillProfileComparator& comparator,
             });
         superset_account_profile != profiles.end()) {
       adm.RemoveProfile(local_profile_it->guid(),
-                        /*is_deduplication_initiated=*/true);
+                        /*non_permanent_account_profile_removal=*/true);
       num_profiles_deleted++;
       // Account profiles track from which service they originate. This allows
       // Autofill to distinguish between Chrome and non-Chrome account
@@ -194,7 +194,7 @@ void DeduplicateWithAccountProfiles(const AutofillProfileComparator& comparator,
     }
   }
   for (const std::string& guid : guids_to_delete) {
-    adm.RemoveProfile(guid, /*is_deduplication_initiated=*/true);
+    adm.RemoveProfile(guid, /*non_permanent_account_profile_removal=*/true);
   }
   autofill_metrics::LogNumberOfProfilesRemovedDuringDedupe(
       guids_to_delete.size());
@@ -377,8 +377,9 @@ void AddressDataCleaner::DeleteDisusedAddresses() {
     }
   }
   for (const std::string& guid : guids_to_delete) {
-    address_data_manager_->RemoveProfile(guid,
-                                         /*is_deduplication_initiated=*/true);
+    address_data_manager_->RemoveProfile(
+        guid,
+        /*non_permanent_account_profile_removal=*/true);
   }
   autofill_metrics::LogNumberOfAddressesDeletedForDisuse(
       guids_to_delete.size());

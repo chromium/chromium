@@ -643,7 +643,7 @@ TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
       UnorderedElementsAre(Pointee(local_profile1), Pointee(account_profile)));
 }
 
-TEST_F(AddressDataManagerTest, RemoveProfileTriggeredByDeduplication) {
+TEST_F(AddressDataManagerTest, HideAccountProfile) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillDeduplicateAccountAddresses};
   AutofillProfile local_profile1 = test::GetFullProfile();
@@ -660,29 +660,33 @@ TEST_F(AddressDataManagerTest, RemoveProfileTriggeredByDeduplication) {
   AddProfileToAddressDataManager(account_profile1);
   AddProfileToAddressDataManager(account_profile2);
 
-  // Expect that local profiles or deletions not triggered by deduplication, are
-  // permanently removed.
+  // Expect that local profiles or permanent account deletions, result in
+  // `AutofillProfileChange::REMOVE`.
   testing::NiceMock<MockWebDataServiceObserver> observer;
   profile_database_service_->AddObserver(&observer);
   EXPECT_CALL(observer,
               AutofillProfileChanged(AutofillProfileChangeHasCorrectType(
                   AutofillProfileChange::REMOVE)))
       .Times(3);
-  address_data_manager().RemoveProfile(local_profile1.guid(),
-                                       /*is_deduplication_initiated=*/false);
-  address_data_manager().RemoveProfile(local_profile2.guid(),
-                                       /*is_deduplication_initiated=*/false);
-  address_data_manager().RemoveProfile(account_profile1.guid(),
-                                       /*is_deduplication_initiated=*/false);
+  address_data_manager().RemoveProfile(
+      local_profile1.guid(),
+      /*non_permanent_account_profile_removal=*/false);
+  address_data_manager().RemoveProfile(
+      local_profile2.guid(),
+      /*non_permanent_account_profile_removal=*/false);
+  address_data_manager().RemoveProfile(
+      account_profile1.guid(),
+      /*non_permanent_account_profile_removal=*/false);
   task_environment_.RunUntilIdle();
 
-  // Expect that account profile deletions triggered by deduplication, are
-  // marked as hide in autofill.
+  // Expect that non permanent account profile deletions result in
+  // `AutofillProfileChange::HIDE_IN_AUTOFILL`.
   EXPECT_CALL(observer,
               AutofillProfileChanged(AutofillProfileChangeHasCorrectType(
                   AutofillProfileChange::HIDE_IN_AUTOFILL)));
-  address_data_manager().RemoveProfile(account_profile2.guid(),
-                                       /*is_deduplication_initiated=*/true);
+  address_data_manager().RemoveProfile(
+      account_profile2.guid(),
+      /*non_permanent_account_profile_removal=*/true);
   task_environment_.RunUntilIdle();
 }
 
