@@ -818,6 +818,8 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
     const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
   // Android doesn't have an OpenURLOffTheRecord() helper so we roll our own.
+  // TODO(crbug.com/424860292): Delete this code when CreateBrowserWindow()
+  // works on desktop Android for incognito windows.
   Profile* incognito_profile =
       this->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   // Close any old incognito tabs before creating the new tab model.

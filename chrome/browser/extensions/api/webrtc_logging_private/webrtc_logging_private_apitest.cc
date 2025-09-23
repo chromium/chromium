@@ -998,15 +998,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(SetUpPeerConnection(session_id));
   const int max_size_bytes = kMaxRemoteLogFileSizeBytes;
   constexpr bool expect_success = false;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/445765670): Figure out why Android complains about the tab
-  // first, rather than the feature. It's probably related to how this test
-  // sets up its incognito web contents.
-  const std::string error_message =
-      extensions::ExtensionTabUtil::kTabNotFoundError;
-#else
   const std::string error_message = kStartRemoteLoggingFailureFeatureDisabled;
-#endif
   StartEventLogging(session_id, max_size_bytes, 0, kWebAppId, expect_success,
                     error_message);
 }

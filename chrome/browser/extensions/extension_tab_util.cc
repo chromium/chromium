@@ -897,7 +897,35 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
       }
     }
   }
-
+#if BUILDFLAG(IS_ANDROID)
+  // Some Android test code can create a tab model without a corresponding
+  // browser window (e.g. ExtensionBrowserTest::PlatformOpenURLOffTheRecord) so
+  // search those tab models as well.
+  // TODO(crbug.com/424860292): Delete this code when CreateBrowserWindow()
+  // works on desktop Android, including for incognito windows.
+  for (const TabModel* const tab_model : TabModelList::models()) {
+    if (tab_model->GetProfile() != profile &&
+        tab_model->GetProfile() != incognito_profile) {
+      continue;
+    }
+    for (int i = 0; i < tab_model->GetTabCount(); ++i) {
+      WebContents* contents = tab_model->GetWebContentsAt(i);
+      if (!contents) {
+        continue;
+      }
+      if (sessions::SessionTabHelper::IdForTab(contents).id() != tab_id) {
+        continue;
+      }
+      if (out_contents) {
+        *out_contents = contents;
+      }
+      if (out_tab_index) {
+        *out_tab_index = i;
+      }
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   // Prerendering tab is not visible and it cannot be in `TabStripModel`, if the
   // tab id exists as a prerendering tab, and the API will returns
   // `api::tabs::TAB_INDEX_NONE` for `out_tab_index` and a valid `WebContents`.
