@@ -141,7 +141,8 @@ class ExecutionEngine : public ToolDelegate {
 
   static std::string StateToString(State state);
 
-  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle);
+  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
+                            UserConfirmationDialogCallback callback);
 
   void AddObserver(StateObserver* observer);
 
@@ -198,6 +199,11 @@ class ExecutionEngine : public ToolDelegate {
   // It is an error to call this when an action is not in progress.
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
+
+  void OnPromptToConfirmNavigationDecision(
+      url::Origin navigation_origin,
+      UserConfirmationDialogCallback callback,
+      webui::mojom::UserConfirmationDialogResponsePtr response);
 
   State state_ = State::kInit;
 

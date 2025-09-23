@@ -167,23 +167,55 @@ std::string ExecutionEngine::StateToString(State state) {
 }
 
 bool ExecutionEngine::ShouldGateNavigation(
-    content::NavigationHandle& navigation_handle) {
+    content::NavigationHandle& navigation_handle,
+    ExecutionEngine::UserConfirmationDialogCallback callback) {
   if (!base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
     return false;
   }
 
-  const GURL& navigation_url = navigation_handle.GetURL();
+  auto navigation_origin = url::Origin::Create(navigation_handle.GetURL());
+
+  // Assumes the initiator origin is safe since it is currently being actuated
+  // on.
+  const std::optional<url::Origin>& initiator_origin =
+      navigation_handle.GetInitiatorOrigin();
+  if (initiator_origin &&
+      initiator_origin->IsSameOriginWith(navigation_origin)) {
+    return false;
+  }
 
   for (const auto& origin : allowed_navigation_origins_) {
-    if (origin.IsSameOriginWith(navigation_url)) {
+    if (origin.IsSameOriginWith(navigation_origin)) {
       return false;
     }
   }
 
-  const std::optional<url::Origin>& initiator_origin =
-      navigation_handle.GetInitiatorOrigin();
-  return initiator_origin &&
-         !initiator_origin->IsSameOriginWith(navigation_url);
+  // Do not prompt user for permission in pre-rendered frames.
+  if (navigation_handle.IsInPrerenderedMainFrame()) {
+    return true;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ExecutionEngine::PromptToConfirmCrossOriginNavigation, GetWeakPtr(),
+          navigation_origin,
+          base::BindOnce(&ExecutionEngine::OnPromptToConfirmNavigationDecision,
+                         GetWeakPtr(), navigation_origin,
+                         std::move(callback))));
+
+  return true;
+}
+
+void ExecutionEngine::OnPromptToConfirmNavigationDecision(
+    url::Origin navigation_origin,
+    ExecutionEngine::UserConfirmationDialogCallback callback,
+    webui::mojom::UserConfirmationDialogResponsePtr response) {
+  if (response->result->is_permission_granted() &&
+      response->result->get_permission_granted()) {
+    allowed_navigation_origins_.insert(std::move(navigation_origin));
+  }
+  std::move(callback).Run(std::move(response));
 }
 
 void ExecutionEngine::AddObserver(StateObserver* observer) {

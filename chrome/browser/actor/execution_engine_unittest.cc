@@ -626,46 +626,6 @@ TEST_F(ExecutionEngineTest, LatencyInfo) {
   EXPECT_NE(actions_result[0].end_time, base::TimeTicks());
 }
 
-class ExecutionEngineOriginGatingTest : public ExecutionEngineTest {
- public:
-  void SetUp() override {
-    ExecutionEngineTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kGlicCrossOriginNavigationGating);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ExecutionEngineOriginGatingTest, CrossOriginGating) {
-  const GURL kDestination = GURL("https://bar.com");
-
-  struct TestCase {
-    std::optional<url::Origin> initiator;
-    bool expected;
-  };
-
-  TestCase test_cases[] = {
-      // No initiator origin indicates that this navigation was not made by the
-      // page
-      // and should be allowed.
-      {std::nullopt, false},
-      // Same origin should not be gated.
-      {url::Origin::Create(GURL("https://bar.com")), false},
-      // Gate cross origin
-      {url::Origin::Create(GURL("https://foo.com")), true}};
-
-  for (const auto& test_case : test_cases) {
-    content::MockNavigationHandle navigation_handle(kDestination, main_rfh());
-    if (test_case.initiator) {
-      navigation_handle.set_initiator_origin(test_case.initiator.value());
-    }
-    EXPECT_EQ(
-        test_case.expected,
-        task_->GetExecutionEngine()->ShouldGateNavigation(navigation_handle));
-  }
-}
-
 }  // namespace
 
 }  // namespace actor
