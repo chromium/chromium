@@ -114,7 +114,6 @@ export class SearchboxDropdownElement extends CrLitElement {
 
   /** The list of selectable match elements. */
   private selectableMatchElements_: SearchboxMatchElement[] = [];
-  private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
   constructor() {
@@ -124,19 +123,9 @@ export class SearchboxDropdownElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.resizeObserver_ = new ResizeObserver(
-        (entries: ResizeObserverEntry[]) =>
-            this.pageHandler_.popupElementSizeChanged({
-              width: entries[0].contentRect.width,
-              height: entries[0].contentRect.height,
-            }));
-    this.resizeObserver_.observe(this.$.content);
   }
 
   override disconnectedCallback() {
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-    }
     super.disconnectedCallback();
   }
 

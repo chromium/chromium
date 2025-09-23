@@ -93,7 +93,6 @@ WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
 void WebuiOmniboxHandler::AddObserver(
     OmniboxWebuiPopupChangeObserver* observer) {
   observers_.AddObserver(observer);
-  observer->OnPopupElementSizeChanged(webui_size_);
 }
 
 void WebuiOmniboxHandler::RemoveObserver(

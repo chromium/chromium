@@ -58,6 +58,12 @@ class OmniboxPopupPresenter : public views::WebView,
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
 
+  // content::WebContentsDelegate:
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override;
+
+  void SetWidgetContentHeight(int content_height);
+
  private:
   friend class OmniboxPopupViewWebUITest;
 
@@ -77,9 +83,6 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_ = false;
-
-  // Last reported WebUI element size.
-  gfx::Size webui_element_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

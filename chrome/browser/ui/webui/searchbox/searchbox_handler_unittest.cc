@@ -558,16 +558,6 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
   std::unique_ptr<OmniboxController> omnibox_controller_;
 };
 
-TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxObservationWorks) {
-  TestObserver observer;
-  EXPECT_FALSE(observer.called());
-  handler_->AddObserver(&observer);
-  EXPECT_TRUE(handler_->HasObserver(&observer));
-  handler_->RemoveObserver(&observer);
-  EXPECT_FALSE(handler_->HasObserver(&observer));
-  EXPECT_TRUE(observer.called());
-}
-
 TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
   searchbox::mojom::OmniboxPopupSelectionPtr old_selection;
   searchbox::mojom::OmniboxPopupSelectionPtr selection;
