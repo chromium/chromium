@@ -5,6 +5,10 @@
   program: {
     runner: "elf",
     binary: "web_engine_exe",
+    // Enable graceful teardown, otherwise the ELF Runner will simply kill the
+    // component's job if requested to destroy it, resulting in arbitrary
+    // teardown order of sub-processes and jobs, potentially provoking crashes.
+    lifecycle: { stop_event: "notify" },
   },
   capabilities: [
     {

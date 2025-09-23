@@ -22,6 +22,7 @@
 
 namespace base {
 class FuchsiaIntlProfileWatcher;
+class ProcessLifecycle;
 }
 
 namespace aura {
@@ -159,6 +160,10 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
       network_quality_observer_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+
+  // Allows the instance to respond gracefully to explicit teardown via the
+  // component framework.
+  std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 
   base::OnceClosure quit_closure_;
 };

@@ -21,6 +21,7 @@
 #include "base/fuchsia/intl_profile_watcher.h"
 #include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/process_lifecycle.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
@@ -274,19 +275,12 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
       fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>(fit::bind_member(
           this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
-  // TODO(crbug.com/42050460): Create a base::ProcessLifecycle instance here, to
-  // trigger graceful shutdown on component stop, when migrated to CFv2.
-
   // Manage network-quality signals and send them to renderers. Provides input
   // for networking-related Client Hints.
   network_quality_tracker_ = std::make_unique<network::NetworkQualityTracker>(
       base::BindRepeating(&content::GetNetworkService));
   network_quality_observer_ =
       content::CreateNetworkQualityObserver(network_quality_tracker_.get());
-
-  // Now that all services have been published, it is safe to start processing
-  // requests to the service directory.
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   // TODO(crbug.com/40162984): Update tests to make a service connection to the
   // Context and remove this workaround.
@@ -299,6 +293,15 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
 void WebEngineBrowserMainParts::WillRunMainMessageLoop(
     std::unique_ptr<base::RunLoop>& run_loop) {
+  // Allow the browser to teardown gracefully when explicitly destroyed by the
+  // framework.
+  lifecycle_ =
+      std::make_unique<base::ProcessLifecycle>(run_loop->QuitClosure());
+
+  // Now that all services have been published, it is safe to start processing
+  // requests to the service directory.
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+
   quit_closure_ = run_loop->QuitClosure();
 }
 
