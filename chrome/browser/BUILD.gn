@@ -6419,6 +6419,8 @@ static_library("browser") {
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
       "performance_manager/policies/dll_pre_read_policy_win.cc",
+      "performance_manager/policies/priority_boost_disabler.cc",
+      "performance_manager/policies/priority_boost_disabler.h",
       "performance_manager/public/dll_pre_read_policy_win.h",
       "performance_monitor/metric_evaluator_helper_win.cc",
       "performance_monitor/metric_evaluator_helper_win.h",

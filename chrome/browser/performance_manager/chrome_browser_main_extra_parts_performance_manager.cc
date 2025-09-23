@@ -34,6 +34,7 @@
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/common/chrome_features.h"
 #include "components/performance_manager/decorators/page_aggregator.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
@@ -93,6 +94,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_disabler.h"
 #endif
 
 namespace {
@@ -196,6 +198,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::features::kTerminationTargetPolicy)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
+  }
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
+      features::kDisableBoostPriorityMode.Get() ==
+          features::DisableBoostPriorityMode::kAfterLoading) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::PriorityBoostDisabler>());
   }
 #endif  // BUILDFLAG(IS_WIN)
 

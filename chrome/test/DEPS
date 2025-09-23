@@ -77,6 +77,7 @@ include_rules = [
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/performance_manager/public",
+  "+components/performance_manager/scenario_api",
   "+components/permissions",
   "+components/policy",
   "+components/power_bookmarks/core",

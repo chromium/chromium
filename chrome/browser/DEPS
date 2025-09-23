@@ -253,6 +253,7 @@ include_rules = [
   "+components/payments/core",
   "+components/performance_manager/public",
   "+components/performance_manager/embedder",
+  "+components/performance_manager/scenario_api",
   "+components/performance_manager/test_support",
   "+components/permissions",
   "+components/push_messaging",

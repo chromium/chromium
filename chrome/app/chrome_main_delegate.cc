@@ -929,7 +929,9 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   bool is_browser_process = process_type.empty();
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority)) {
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
+      features::kDisableBoostPriorityMode.Get() ==
+          features::DisableBoostPriorityMode::kAtStartup) {
     // The second argument to this function *disables* boosting if true. See
     // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost
     SetProcessPriorityBoost(/*hProcess=*/base::GetCurrentProcessHandle(),
