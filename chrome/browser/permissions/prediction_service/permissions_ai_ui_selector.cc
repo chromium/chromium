@@ -192,7 +192,8 @@ void PermissionsAiUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
         prediction_model_handler_provider->GetPredictionModelHandler(
             request_metadata.request_type);
   }
-  if (prediction_model_handler && prediction_model_handler->ModelAvailable()) {
+  if (prediction_model_handler && prediction_model_handler->ModelAvailable() &&
+      prediction_model_handler->GetModelInfo().has_value()) {
     VLOG(1) << "[CPSS] Using locally available CPSSv1 model";
     auto proto_request = GetPredictionRequestProto(features);
     cpss_v1_model_holdback_probability_ =
