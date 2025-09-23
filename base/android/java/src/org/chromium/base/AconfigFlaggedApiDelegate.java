@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
 import android.util.SparseArray;
+import android.view.View;
 import android.view.Window;
 
 import org.chromium.build.annotations.NullMarked;
@@ -134,4 +135,16 @@ public interface AconfigFlaggedApiDelegate {
      */
     default void rebindService(
             Context context, ServiceConnection connection, BindServiceFlags flags) {}
+
+    /**
+     * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,
+     * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS}.
+     *
+     * @param view view on which the method should be called
+     * @param rect the rect to request on screen, in coordinates relative to {@code view}
+     * @return whether the Android API was invoked
+     */
+    default boolean requestInputFocusOnScreen(View view, Rect boundsInView) {
+        return false;
+    }
 }

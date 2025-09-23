@@ -154,6 +154,8 @@ public abstract class ChromeFeatureList {
 
     // Feature names.
     // keep-sorted start group_prefixes=["public static final String"]
+    public static final String ACCESSIBILITY_MAGNIFICATION_FOLLOWS_INPUT_FOCUS =
+            "AccessibilityMagnificationFollowsInputFocus";
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =
             "AccountForSuppressedKeyboardInsets";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 =

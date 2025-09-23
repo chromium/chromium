@@ -925,8 +925,8 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void OnWebContentsLostFocus(RenderWidgetHost* render_widget_host) {}
 
   // Notification that a RenderFrameHost inside this WebContents has updated
-  // its focused element. |details| contains information on the element
-  // that has received focus. This allows for observing focus changes
+  // its focused element. `details` is non-null and contains information on the
+  // element that has received focus. This allows for observing focus changes
   // within WebContents, as opposed to OnWebContentsFocused/LostFocus
   // which allows observation that the RenderWidgetHost for the
   // WebContents has gained/lost focus.

@@ -79,6 +79,7 @@
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -138,6 +139,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
+    &features::kAccessibilityMagnificationFollowsInputFocus,
     &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kAndroidAnimatedProgressBarInViz,
     &features::kAndroidBcivBottomControls,

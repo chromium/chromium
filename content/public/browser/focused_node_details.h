@@ -12,7 +12,10 @@ namespace content {
 
 struct FocusedNodeDetails {
   bool is_editable_node;
+  // TODO(crbug.com/446734707): Investigate which uses of
+  // `node_bounds_in_screen` can be replaced by `node_bounds_in_root_view`.
   gfx::Rect node_bounds_in_screen;
+  gfx::Rect node_bounds_in_root_view;
   blink::mojom::FocusType focus_type;
 };
 

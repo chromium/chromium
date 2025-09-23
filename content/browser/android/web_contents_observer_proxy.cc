@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -355,6 +356,16 @@ void WebContentsObserverProxy::OnWebContentsFocused(RenderWidgetHost*) {
 void WebContentsObserverProxy::OnWebContentsLostFocus(RenderWidgetHost*) {
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_onWebContentsLostFocus(env, java_observer_);
+}
+
+void WebContentsObserverProxy::OnFocusChangedInPage(
+    FocusedNodeDetails* details) {
+  CHECK(details);
+  const gfx::Rect& bounds = details->node_bounds_in_root_view;
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsObserverProxy_onFocusChangedInPage(
+      env, java_observer_, details->is_editable_node, bounds.x(), bounds.y(),
+      bounds.right(), bounds.bottom(), static_cast<jint>(details->focus_type));
 }
 
 void WebContentsObserverProxy::MediaSessionCreated(MediaSession* session) {

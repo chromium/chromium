@@ -19,6 +19,7 @@ namespace content {
 class MediaSession;
 class WebContents;
 class RenderFrameHost;
+struct FocusedNodeDetails;
 
 // Extends WebContentsObserver for providing a public Java API for some of the
 // the calls it receives.
@@ -85,6 +86,7 @@ class WebContentsObserverProxy : public WebContentsObserver {
   void VirtualKeyboardModeChanged(ui::mojom::VirtualKeyboardMode mode) override;
   void OnWebContentsFocused(RenderWidgetHost*) override;
   void OnWebContentsLostFocus(RenderWidgetHost*) override;
+  void OnFocusChangedInPage(FocusedNodeDetails*) override;
   void MediaSessionCreated(MediaSession* media_session) override;
   void DidUpdateAudioMutingState(bool muted) override;
 

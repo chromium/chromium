@@ -286,6 +286,12 @@ AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSwitchAccess();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityInlineLineSeparators);
 AX_BASE_EXPORT bool IsAccessibilityInlineLineSeparatorsEnabled();
 
+// Propagate bounding rectangles of input events to the Android platform to
+// allow Magnification to follow them
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilityMagnificationFollowsInputFocus);
+AX_BASE_EXPORT bool IsAccessibilityMagnificationFollowsInputFocusEnabled();
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
