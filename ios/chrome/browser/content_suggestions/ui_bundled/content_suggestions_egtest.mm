@@ -130,16 +130,7 @@ void TapMagicStackEditButton() {
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
     config.features_disabled.push_back(kContentPushNotifications);
   }
-  // TODO(crbug.com/444436598): Update EG tests so that they can pass without
-  // needing to disable the App Bundle promo or Default Browser promo Magic
-  // Stack card.
-  if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
-      [self isRunningTest:@selector(testMagicStackLongPressHide)]) {
-    config.features_disabled.push_back(
-        segmentation_platform::features::kAppBundlePromoEphemeralCard);
-    config.features_disabled.push_back(
-        segmentation_platform::features::kDefaultBrowserMagicStackIos);
-  }
+
   return config;
 }
 
@@ -406,9 +397,8 @@ void TapMagicStackEditButton() {
       performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
 
   // Assert Set Up List is not there. If it is, it is always the first module.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   [NewTabPageAppInterface setUpListTitle])]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          set_up_list::kSetUpListContainerID)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -416,9 +406,9 @@ void TapMagicStackEditButton() {
 // card from the Magic Stack.
 - (void)testMagicStackLongPressHide {
   [self prepareToTestSetUpListInMagicStack];
-  NSString* setupListTitle =
-      l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TIPS_TITLE);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(setupListTitle)]
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          set_up_list::kSetUpListContainerID)]
       performAction:grey_longPress()];
 
   NSString* setupListHideTitle = l10n_util::GetNSStringF(
@@ -435,7 +425,9 @@ void TapMagicStackEditButton() {
   if (iOS26_OR_ABOVE()) {
     ConditionBlock condition = ^{
       NSError* error = nil;
-      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(setupListTitle)]
+      [[EarlGrey
+          selectElementWithMatcher:grey_accessibilityID(
+                                       set_up_list::kSetUpListContainerID)]
           assertWithMatcher:grey_notVisible()
                       error:&error];
       return error == nil;
@@ -444,7 +436,8 @@ void TapMagicStackEditButton() {
                                                             condition),
                @"Timeout waiting for the Set Up List card to dismissing.");
   } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(setupListTitle)]
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            set_up_list::kSetUpListContainerID)]
         assertWithMatcher:grey_notVisible()];
   }
 }

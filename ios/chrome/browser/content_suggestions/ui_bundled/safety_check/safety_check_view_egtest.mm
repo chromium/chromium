@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
@@ -50,6 +51,22 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   }
 }
 
+// Scrolls to the Safety Check module.
+void ScrollToSafetyCheckModule() {
+  id<GREYMatcher> magicStackScrollView =
+      grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier);
+  CGFloat moduleSwipeAmount = kMagicStackWideWidth * 0.6;
+  id<GREYMatcher> safetyCheckMatcher =
+      grey_allOf(grey_accessibilityID(safety_check::kSafetyCheckViewID),
+                 grey_sufficientlyVisible(), nil);
+
+  [[[EarlGrey selectElementWithMatcher:safetyCheckMatcher]
+         usingSearchAction:GREYScrollInDirectionWithStartPoint(
+                               kGREYDirectionRight, moduleSwipeAmount, 0.9, 0.5)
+      onElementWithMatcher:magicStackScrollView]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 }  // namespace
 
 // Test case for the Safety Check view, i.e. Safety Check (Magic Stack) module.
@@ -74,13 +91,6 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
-  // TODO(crbug.com/444436598): Update EG tests so that they can pass without
-  // needing to disable the App Bundle promo or Default Browser promo Magic
-  // Stack card.
-  config.features_disabled.push_back(
-      segmentation_platform::features::kAppBundlePromoEphemeralCard);
-  config.features_disabled.push_back(
-      segmentation_platform::features::kDefaultBrowserMagicStackIos);
 
   return config;
 }
@@ -104,6 +114,9 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
       ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
 
   [ChromeEarlGrey openNewTab];
+
+  // Scroll to the Safety Check module in case it is not the first module.
+  ScrollToSafetyCheckModule();
 
   WaitUntilSafetyCheckModuleVisibleOrTimeout(true);
 
