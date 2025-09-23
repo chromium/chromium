@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_BREAK_TOKEN_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -35,7 +37,11 @@ struct GridBreakTokenData final : BlockBreakTokenData {
       const Vector<GridItemPlacementData>& grid_items_placement_data,
       const Vector<LayoutUnit>& row_offset_adjustments,
       const Vector<EBreakBetween>& row_break_between,
-      const HeapVector<Member<LayoutBox>>& oof_children)
+      const HeapVector<Member<LayoutBox>>& oof_children,
+      const GapGeometry* full_gap_geometry,
+      Vector<wtf_size_t>& track_idx_to_set_idx,
+      LayoutUnit cumulative_gap_offset_adjustment,
+      wtf_size_t first_unprocessed_row_gap_idx)
       : BlockBreakTokenData(kGridBreakTokenData, break_token_data),
         grid_items(std::move(grid_items)),
         grid_layout_subtree(std::move(grid_layout_subtree)),
@@ -44,11 +50,16 @@ struct GridBreakTokenData final : BlockBreakTokenData {
         grid_items_placement_data(grid_items_placement_data),
         row_offset_adjustments(row_offset_adjustments),
         row_break_between(row_break_between),
-        oof_children(oof_children) {}
+        oof_children(oof_children),
+        full_gap_geometry(full_gap_geometry),
+        track_idx_to_set_idx(track_idx_to_set_idx),
+        cumulative_gap_offset_adjustment(cumulative_gap_offset_adjustment),
+        first_unprocessed_row_gap_idx(first_unprocessed_row_gap_idx) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(grid_items);
     visitor->Trace(oof_children);
+    visitor->Trace(full_gap_geometry);
     BlockBreakTokenData::Trace(visitor);
   }
 
@@ -66,6 +77,28 @@ struct GridBreakTokenData final : BlockBreakTokenData {
   Vector<LayoutUnit> row_offset_adjustments;
   Vector<EBreakBetween> row_break_between;
   HeapVector<Member<LayoutBox>> oof_children;
+
+  // Holds the gap geometry for the unfragmented grid pass before fragmentation
+  // is applied. This helps retain the original gap positions, which is
+  // important for suppressing row gaps that cross fragmentainer boundaries, or
+  // when they are the last content in a fragmentainer, and for building
+  // fragment-specific gap geometry.
+  Member<const GapGeometry> full_gap_geometry;
+
+  // Represents the mapping where the index in the vector corresponds to the row
+  // gap index, and the value at that index is the corresponding set index. It
+  // is used to determine the appropriate row offset adjustments for each track.
+  Vector<wtf_size_t> track_idx_to_set_idx;
+
+  // Cumulative offset that tracks how much row gap offsets have been adjusted
+  // across fragments as a result of gap suppression. Decreases as further
+  // suppression happens due to fragmentation.
+  LayoutUnit cumulative_gap_offset_adjustment;
+
+  // The index of the first unprocessed row gap. This is used to keep track of
+  // which row gaps have already been processed in previous fragments, so that
+  // we can continue processing from this index in subsequent fragments.
+  wtf_size_t first_unprocessed_row_gap_idx;
 };
 
 template <>

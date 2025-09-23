@@ -124,6 +124,32 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   explicit GapGeometry(ContainerType container_type)
       : container_type_(container_type) {}
 
+  // This copy-esque constructor allows creating a new GapGeometry
+  // instance based on an existing one, while replacing the main gaps and
+  // content block offsets. This is useful for fragmentation where most states
+  // remain the same, but the content block offsets and main gaps may differ.
+  GapGeometry(const GapGeometry& other,
+              MainGaps&& main_gaps,
+              LayoutUnit content_block_start,
+              LayoutUnit content_block_end)
+      : column_intersections_(other.column_intersections_),
+        row_intersections_(other.row_intersections_),
+        inline_gap_size_(other.inline_gap_size_),
+        block_gap_size_(other.block_gap_size_),
+        container_type_(other.container_type_),
+        main_gaps_(std::move(main_gaps)),
+        cross_gaps_(other.cross_gaps_),
+        content_inline_start_(other.content_inline_start_),
+        content_inline_end_(other.content_inline_end_),
+        content_block_start_(content_block_start),
+        content_block_end_(content_block_end),
+        row_gaps_to_blocked_column_ranges_(
+            other.row_gaps_to_blocked_column_ranges_),
+        column_gaps_to_blocked_row_ranges_(
+            other.column_gaps_to_blocked_row_ranges_),
+        main_direction_(other.main_direction_),
+        main_gap_running_index_(other.main_gap_running_index_) {}
+
   void Trace(Visitor* visitor) const {}
 
   void SetGapIntersections(GridTrackSizingDirection track_direction,
