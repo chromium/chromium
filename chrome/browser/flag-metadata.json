@@ -6616,7 +6616,7 @@
       "chrome-privacy-controls@google.com",
       "bling-flags@google.com"
     ],
-    "expiry_milestone": 134
+    "expiry_milestone": 146
   },
   {
     "name": "list-all-display-modes",
