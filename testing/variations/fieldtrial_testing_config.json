@@ -23980,21 +23980,6 @@
             ]
         }
     ],
-    "SlimDirectReceiverIpc": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SlimDirectReceiverIpc"
-                    ]
-                }
-            ]
-        }
-    ],
     "SlopBucket": [
         {
             "platforms": [
