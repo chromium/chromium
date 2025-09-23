@@ -637,4 +637,10 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
+#pragma mark - PageInfoTrackingProtectionConsumer
+
+- (void)setTrackingProtectionInfo:(PageInfoTrackingProtectionInfo*)info {
+  // TODO - implement this method to update the UI
+}
+
 @end

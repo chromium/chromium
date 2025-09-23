@@ -1,0 +1,16 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "page_info_tracking_protection_mediator.h",
+    "page_info_tracking_protection_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//ios/chrome/browser/page_info/tracking_protection/ui",
+    "//ios/web/public",
+  ]
+}

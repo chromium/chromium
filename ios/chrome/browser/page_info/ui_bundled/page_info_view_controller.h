@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/page_info/tracking_protection/ui/page_info_tracking_protection_consumer.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_about_this_site_consumer.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_history_consumer.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_presentation_commands.h"
@@ -24,6 +25,7 @@
     : ChromeTableViewController <PageInfoAboutThisSiteConsumer,
                                  PageInfoHistoryConsumer,
                                  PermissionsConsumer,
+                                 PageInfoTrackingProtectionConsumer,
                                  UIAdaptivePresentationControllerDelegate>
 
 // Designated initializer.
