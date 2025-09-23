@@ -149,4 +149,24 @@ enum class BackgroundSelectionOutcome : NSInteger {
   kMaxValue = kCanceledAfterSelection,
 };
 
+// Records errors that can occur during the user uploaded image.
+// LINT.IfChange(UserUploadedImageError)
+enum class UserUploadedImageError : NSInteger {
+  // No error.
+  kNone,
+
+  // Failed to create the directory for storing the image.
+  kFailedToCreateDirectory,
+
+  // Failed to write the image data to a file.
+  kFailedToWriteFile,
+
+  // Failed to convert the image to JPEG.
+  kFailedToConvertToJPEG,
+
+  // Must be last.
+  kMaxValue = kFailedToConvertToJPEG,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSUserUploadedImageError)
+
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UTILS_HOME_CUSTOMIZATION_CONSTANTS_H_

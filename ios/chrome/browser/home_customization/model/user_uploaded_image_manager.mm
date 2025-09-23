@@ -13,9 +13,11 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_forward.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/strcat.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 namespace {
 
@@ -30,12 +32,18 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
   // Create directory if it doesn't exist.
   if (!base::CreateDirectory(directory_path)) {
     LOG(ERROR) << "Failed to create directory: " << directory_path.value();
+    base::UmaHistogramEnumeration(
+        "IOS.HomeCustomization.Background.UserUploaded.Error",
+        UserUploadedImageError::kFailedToCreateDirectory);
     return base::FilePath();
   }
 
   // Convert image to JPEG.
   NSData* image_data = UIImageJPEGRepresentation(image, 0.9);
   if (!image_data) {
+    base::UmaHistogramEnumeration(
+        "IOS.HomeCustomization.Background.UserUploaded.Error",
+        UserUploadedImageError::kFailedToConvertToJPEG);
     return base::FilePath();
   }
 
@@ -49,9 +57,15 @@ base::FilePath SaveImageToDirectory(const base::FilePath& directory_path,
       reinterpret_cast<const char*>([image_data bytes]), [image_data length]);
   if (!base::WriteFile(file_path, data_string)) {
     LOG(ERROR) << "Failed to write file: " << file_path.value();
+    base::UmaHistogramEnumeration(
+        "IOS.HomeCustomization.Background.UserUploaded.Error",
+        UserUploadedImageError::kFailedToWriteFile);
     return base::FilePath();
   }
 
+  base::UmaHistogramEnumeration(
+      "IOS.HomeCustomization.Background.UserUploaded.Error",
+      UserUploadedImageError::kNone);
   return image_relative_file_path;
 }
 

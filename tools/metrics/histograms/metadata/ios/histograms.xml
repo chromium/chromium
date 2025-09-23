@@ -2521,6 +2521,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.UserUploaded.Error"
+    enum="IOSUserUploadedImageError" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the result of a user attempting to upload an image for the ntp
+    background. This is logged on each attempt to upload an image from the
+    customization menu even if there is no error.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
     enum="Boolean" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>

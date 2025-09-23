@@ -1312,6 +1312,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Invalid Version"/>
 </enum>
 
+<!-- LINT.IfChange(IOSUserUploadedImageError) -->
+
+<enum name="IOSUserUploadedImageError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Failed to create directory"/>
+  <int value="2" label="Failed to write file"/>
+  <int value="3" label="Failed to convert to JPEG"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/home_customization/utils/home_customization_constants.h:UserUploadedImageError) -->
+
 <enum name="IOSWebFileInputAttributes">
   <int value="0" label="No Accept"/>
   <int value="1" label="No Accept, Multiple files"/>
