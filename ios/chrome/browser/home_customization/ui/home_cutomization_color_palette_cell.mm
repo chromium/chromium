@@ -48,6 +48,7 @@ const CGFloat kGapBorderWidth = 3.0;
   if (self) {
     self.contentView.backgroundColor = UIColor.clearColor;
     self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     // Outer container view that holds the highlight border.
     _borderWrapperView = [[UIView alloc] init];
@@ -152,18 +153,11 @@ const CGFloat kGapBorderWidth = 3.0;
     _borderWrapperView.layer.borderColor =
         [UIColor colorNamed:kStaticBlueColor].CGColor;
     _borderWrapperView.layer.borderWidth = kHighlightBorderWidth;
-    self.accessibilityValue = l10n_util::GetNSString(
-        IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_SELECTED_ACCESSIBILITY_VALUE);
   } else {
     _borderWrapperView.layer.borderColor = nil;
     _borderWrapperView.layer.borderWidth = 0;
     self.accessibilityValue = nil;
   }
-}
-
-- (UIAccessibilityTraits)accessibilityTraits {
-  return UIAccessibilityTraitButton |
-         (self.isSelected ? UIAccessibilityTraitSelected : 0);
 }
 
 @end

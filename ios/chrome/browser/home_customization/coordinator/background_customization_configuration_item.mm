@@ -68,7 +68,8 @@
 }
 
 - (instancetype)initWithNtpCustomBackground:
-    (const sync_pb::NtpCustomBackground&)customBackground {
+                    (const sync_pb::NtpCustomBackground&)customBackground
+                          accessibilityName:(NSString*)accessibilityName {
   self = [super init];
   if (self) {
     _customBackground = customBackground;
@@ -80,6 +81,7 @@
         stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
                          _backgroundStyle,
                          base::SysUTF8ToNSString(customBackground.url())];
+    _accessibilityName = accessibilityName;
   }
   return self;
 }

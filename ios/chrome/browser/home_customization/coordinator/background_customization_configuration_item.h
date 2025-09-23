@@ -35,7 +35,8 @@ class NtpCustomBackground;
 // with the provided NtpCustomBackground, which is the sync/persistence data
 // type for app-provided images.
 - (instancetype)initWithNtpCustomBackground:
-    (const sync_pb::NtpCustomBackground&)customBackground;
+                    (const sync_pb::NtpCustomBackground&)customBackground
+                          accessibilityName:(NSString*)accessibilityName;
 
 // Initializes a new instance of the background customization configuration
 // with the provided background color, its accessibility name and a variant.

@@ -2907,9 +2907,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_ROSE_ACCESSIBILITY_LABEL" desc="Accessibility label for the 'Rose' color theme.">
         Rose theme
       </message>
-      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_SELECTED_ACCESSIBILITY_VALUE" desc="Accessibility value read by Voice-over to indicate that a color theme is currently selected.">
-        Selected
-      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_VIOLET_ACCESSIBILITY_LABEL" desc="Accessibility label for the 'Violet' color theme.">
         Violet theme
       </message>
@@ -2924,6 +2921,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_FRAMING_VIEW_SAVE_BUTTON_LABEL" desc="Label for the save button in the framing view that saves the selected framing configuration for the image.">
         Save
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACCESSIBILITY_LABEL" desc="Accessibility label for the background picker.">
+        Action button
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_COLOR_TITLE" desc="Title of an option in the background customization action sheet that allows the user to pick a solid background color.">
         Colors

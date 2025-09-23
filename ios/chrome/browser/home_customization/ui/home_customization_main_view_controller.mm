@@ -133,6 +133,8 @@
                                     NSString* itemIdentifier) {
                cell.mutator = weakSelf.mutator;
                cell.delegate = weakSelf.backgroundPickerPresentationDelegate;
+               cell.accessibilityLabel = l10n_util::GetNSString(
+                   IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PICKER_ACCESSIBILITY_LABEL);
              }];
   }
 

@@ -146,6 +146,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   // Create and add a background configuration with no background applied.
   BackgroundCustomizationConfigurationItem* defaultConfig =
       [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
+  defaultConfig.accessibilityName = l10n_util::GetNSString(
+      IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_DEFAULT_ACCESSIBILITY_LABEL);
   collectionConfiguration.configurations[defaultConfig.configurationID] =
       defaultConfig;
   [collectionConfiguration.configurationOrder
@@ -539,8 +541,23 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             customBackground)) {
       sync_pb::NtpCustomBackground ntpCustomBackground =
           std::get<sync_pb::NtpCustomBackground>(customBackground);
+      std::vector<std::string> attributions;
+
+      if (ntpCustomBackground.has_attribution_line_1() &&
+          !ntpCustomBackground.attribution_line_1().empty()) {
+        attributions.push_back(ntpCustomBackground.attribution_line_1());
+      }
+      if (ntpCustomBackground.has_attribution_line_2() &&
+          !ntpCustomBackground.attribution_line_2().empty()) {
+        attributions.push_back(ntpCustomBackground.attribution_line_2());
+      }
+
+      NSString* accessibilityName =
+          base::SysUTF8ToNSString(base::JoinString(attributions, " "));
+
       return [[BackgroundCustomizationConfigurationItem alloc]
-          initWithNtpCustomBackground:ntpCustomBackground];
+          initWithNtpCustomBackground:ntpCustomBackground
+                    accessibilityName:accessibilityName];
     } else {
       HomeUserUploadedBackground currentUserUploadedBackground =
           std::get<HomeUserUploadedBackground>(customBackground);
