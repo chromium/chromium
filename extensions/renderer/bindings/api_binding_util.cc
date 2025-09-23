@@ -71,7 +71,6 @@ void ContextInvalidationData::AddListener(
 
 void ContextInvalidationData::RemoveListener(
     ContextInvalidationListener* listener) {
-  DCHECK(is_context_valid_);
   DCHECK(invalidation_listeners_.HasObserver(listener));
   invalidation_listeners_.RemoveObserver(listener);
 }
@@ -156,16 +155,23 @@ ContextInvalidationListener::ContextInvalidationListener(
 }
 
 ContextInvalidationListener::~ContextInvalidationListener() {
-  if (!on_invalidated_)
-    return;  // Context was invalidated.
-
-  DCHECK(context_invalidation_data_);
-  context_invalidation_data_->RemoveListener(this);
+  // We may have already removed ourselves as a listener (in OnInvalidated())
+  // if the context was invalidated previously. Check the context first.
+  if (context_invalidation_data_) {
+    context_invalidation_data_->RemoveListener(this);
+  }
 }
 
 void ContextInvalidationListener::OnInvalidated() {
-  DCHECK(on_invalidated_);
+  DCHECK(on_invalidated_) << "OnInvalidated() called twice!";
+  DCHECK(context_invalidation_data_);
+
+  // The ContextInvalidationData will be cleaned up soon, so we can't store a
+  // reference to it. We also remove ourselves as an observer proactively to
+  // avoid leaving a dangling pointer in ContextInvalidationData.
+  context_invalidation_data_->RemoveListener(this);
   context_invalidation_data_ = nullptr;
+
   std::move(on_invalidated_).Run();
 }
 
