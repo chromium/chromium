@@ -17,3 +17,14 @@ static_library("wallet") {
     "//components/wallet/core/browser",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "walletable_pass_barcode_detector_browsertest.cc" ]
+  deps = [
+    "//chrome/test:test_support",
+    "//components/wallet/content/browser",
+    "//components/wallet/content/common/mojom",
+  ]
+}

@@ -2568,6 +2568,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/watermark",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/usb:browser_tests",
+      "//chrome/browser/wallet:browser_tests",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:prevent_close_test_support",
