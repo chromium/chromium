@@ -4803,7 +4803,6 @@ enum class ToolbarKind {
 #pragma mark - DownloadListCommands
 
 - (void)hideDownloadList {
-  DCHECK(self.downloadListCoordinator);
   [self.downloadListCoordinator stop];
   self.downloadListCoordinator = nil;
 }
