@@ -1111,10 +1111,6 @@ bool operator==(const AXPosition& a, const AXPosition& b) {
                   "have the same type.";
 }
 
-bool operator!=(const AXPosition& a, const AXPosition& b) {
-  return !(a == b);
-}
-
 bool operator<(const AXPosition& a, const AXPosition& b) {
 #if DCHECK_IS_ON()
   String failure_reason;

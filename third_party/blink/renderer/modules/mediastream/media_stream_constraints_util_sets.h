@@ -356,7 +356,6 @@ class MODULES_EXPORT ResolutionSet {
 
     // Exact equality/inequality operators.
     bool operator==(const Point& other) const;
-    bool operator!=(const Point& other) const;
 
     // Returns true if the coordinates of this point and |other| are
     // approximately equal.

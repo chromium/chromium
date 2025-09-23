@@ -349,10 +349,6 @@ inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {
          a.fragment == b.fragment;
 }
 
-inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
-  return !(a == b);
-}
-
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
 // These are mainly for DCHECK and unit tests. They don't output debug names of
 // DisplayItemClients. Use the argumented version of DisplayItem::Id::ToString()

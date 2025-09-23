@@ -172,7 +172,6 @@ class BLINK_COMMON_EXPORT Manifest {
     bool client_mode_valid_and_specified() const;
 
     bool operator==(const LaunchHandler& other) const;
-    bool operator!=(const LaunchHandler& other) const;
 
     bool TargetsExistingClients() const;
     bool NeverNavigateExistingClients() const;

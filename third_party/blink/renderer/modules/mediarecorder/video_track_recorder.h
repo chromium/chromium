@@ -132,9 +132,6 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
       return (codec_id == others.codec_id) && (profile == others.profile) &&
              (level == others.level);
     }
-    bool operator!=(const CodecProfile& others) const {
-      return !(*this == others);
-    }
   };
 
   using OnEncodedVideoCB = CrossThreadFunction<void(

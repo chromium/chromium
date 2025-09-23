@@ -219,9 +219,6 @@ class CORE_EXPORT CascadePriority {
   bool operator==(const CascadePriority& o) const {
     return high_bits_ == o.high_bits_ && low_bits_ == o.low_bits_;
   }
-  bool operator!=(const CascadePriority& o) const {
-    return high_bits_ != o.high_bits_ || low_bits_ != o.low_bits_;
-  }
 
  private:
   friend class StyleCascade;

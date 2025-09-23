@@ -31,9 +31,6 @@ class CORE_EXPORT StyleInheritedVariables
   bool operator==(const StyleInheritedVariables& other) const {
     return variables_ == other.variables_;
   }
-  bool operator!=(const StyleInheritedVariables& other) const {
-    return !(*this == other);
-  }
 
   void SetData(const AtomicString& name, CSSVariableData* value) {
     DCHECK(!value || !value->NeedsVariableResolution());

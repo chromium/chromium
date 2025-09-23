@@ -42,9 +42,6 @@ struct IdentifiableTokenKey {
     return token == other.token && is_deleted_value == other.is_deleted_value &&
            is_empty_value == other.is_empty_value;
   }
-  bool operator!=(const IdentifiableTokenKey& other) const {
-    return !(*this == other);
-  }
 };
 
 // A helper that defines the hash function and the invalid 'empty value' that

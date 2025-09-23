@@ -43,7 +43,6 @@ class RayMode {
     return size_ == other.size_ && contain_ == other.contain_ &&
            coord_box_ == other.coord_box_;
   }
-  bool operator!=(const RayMode& other) const { return !(*this == other); }
 
  private:
   StyleRay::RaySize size_;

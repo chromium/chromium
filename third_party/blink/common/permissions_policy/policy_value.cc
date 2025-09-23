@@ -102,10 +102,6 @@ bool operator==(const PolicyValue& lhs, const PolicyValue& rhs) {
   NOTREACHED();
 }
 
-bool operator!=(const PolicyValue& lhs, const PolicyValue& rhs) {
-  return !(lhs == rhs);
-}
-
 bool PolicyValue::IsCompatibleWith(const PolicyValue& required) const {
   DCHECK_EQ(type_, required.Type());
   switch (type_) {

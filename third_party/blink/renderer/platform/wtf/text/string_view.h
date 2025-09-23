@@ -419,10 +419,6 @@ inline bool operator==(const StringView& a, const StringView& b) {
   return EqualStringView(a, b);
 }
 
-inline bool operator!=(const StringView& a, const StringView& b) {
-  return !(a == b);
-}
-
 inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
                                    wtf_size_t start) const {
   return Is8Bit() ? blink::Find(Span8(), match_function, start)

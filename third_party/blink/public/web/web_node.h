@@ -209,10 +209,6 @@ inline bool operator==(const WebNode& a, const WebNode& b) {
   return a.Equals(b);
 }
 
-inline bool operator!=(const WebNode& a, const WebNode& b) {
-  return !(a == b);
-}
-
 inline bool operator<(const WebNode& a, const WebNode& b) {
   return a.LessThan(b);
 }

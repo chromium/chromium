@@ -99,7 +99,6 @@ class SelectionTemplate final {
   SelectionTemplate& operator=(const SelectionTemplate&) = default;
 
   bool operator==(const SelectionTemplate&) const;
-  bool operator!=(const SelectionTemplate&) const;
 
   const PositionTemplate<Strategy>& Anchor() const;
   const PositionTemplate<Strategy>& Focus() const;

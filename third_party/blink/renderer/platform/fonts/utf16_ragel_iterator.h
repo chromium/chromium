@@ -135,10 +135,6 @@ class PLATFORM_EXPORT UTF16RagelIterator {
            buffer_.size() == other.buffer_.size() && cursor_ == other.cursor_;
   }
 
-  bool operator!=(const UTF16RagelIterator& other) const {
-    return !(*this == other);
-  }
-
   // Peeks the next codepoint. Note: Does not peak the
   // `EmojiSegmentationCategory` as does `operator*()`. For performance reasons,
   // this method is simplified to return U+FFFD when the cursor is at the end of

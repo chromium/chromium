@@ -126,10 +126,6 @@ bool Point::operator==(const Point& other) const {
   return height_ == other.height_ && width_ == other.width_;
 }
 
-bool Point::operator!=(const Point& other) const {
-  return !(*this == other);
-}
-
 bool Point::IsApproximatelyEqualTo(const Point& other) const {
   return AreApproximatelyEqual(height_, other.height_) &&
          AreApproximatelyEqual(width_, other.width_);

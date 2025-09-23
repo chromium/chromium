@@ -58,9 +58,6 @@ class CORE_EXPORT OptionListIterator final {
   bool operator==(const OptionListIterator& other) const {
     return current_ == other.current_;
   }
-  bool operator!=(const OptionListIterator& other) const {
-    return !(*this == other);
-  }
 
  private:
   void Advance(HTMLOptionElement* current);

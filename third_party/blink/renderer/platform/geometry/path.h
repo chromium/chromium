@@ -86,7 +86,6 @@ class PLATFORM_EXPORT Path {
   Path& operator=(const Path&);
   Path& operator=(const SkPath&);
   bool operator==(const Path&) const;
-  bool operator!=(const Path& other) const { return !(*this == other); }
 
   bool Contains(const gfx::PointF&) const;
   bool Contains(const gfx::PointF&, WindRule) const;

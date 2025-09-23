@@ -169,9 +169,6 @@ class CORE_EXPORT MediaQueryExpValue {
         return base::ValuesEquivalent(ratio_, other.ratio_);
     }
   }
-  bool operator!=(const MediaQueryExpValue& other) const {
-    return !(*this == other);
-  }
 
   // Consume a MediaQueryExpValue for the provided feature, which must already
   // be lower-cased.
@@ -224,9 +221,6 @@ struct CORE_EXPORT MediaQueryExpComparison {
   bool operator==(const MediaQueryExpComparison& o) const {
     return value == o.value && op == o.op;
   }
-  bool operator!=(const MediaQueryExpComparison& o) const {
-    return !(*this == o);
-  }
 
   bool IsValid() const { return value.IsValid(); }
 
@@ -272,7 +266,6 @@ struct CORE_EXPORT MediaQueryExpBounds {
   bool operator==(const MediaQueryExpBounds& o) const {
     return left == o.left && right == o.right;
   }
-  bool operator!=(const MediaQueryExpBounds& o) const { return !(*this == o); }
 
   MediaQueryExpComparison left;
   MediaQueryExpComparison right;
@@ -314,9 +307,6 @@ class CORE_EXPORT MediaQueryExp {
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
 
   bool operator==(const MediaQueryExp& other) const;
-  bool operator!=(const MediaQueryExp& other) const {
-    return !(*this == other);
-  }
 
   bool IsViewportDependent() const;
 

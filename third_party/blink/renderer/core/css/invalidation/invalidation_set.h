@@ -100,7 +100,6 @@ class CORE_EXPORT InvalidationSet
   InvalidationSet& operator=(const InvalidationSet&) = delete;
 
   bool operator==(const InvalidationSet&) const;
-  bool operator!=(const InvalidationSet& o) const { return !(*this == o); }
 
   InvalidationType GetType() const {
     return static_cast<InvalidationType>(type_);
@@ -339,7 +338,6 @@ class CORE_EXPORT InvalidationSet
         }
         return hash_set_iterator_ == other.hash_set_iterator_;
       }
-      bool operator!=(const Iterator& other) const { return !(*this == other); }
       void operator++() {
         if (type_ == Type::kString) {
           string_ = g_null_atom;

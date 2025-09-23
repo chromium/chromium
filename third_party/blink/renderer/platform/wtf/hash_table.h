@@ -369,14 +369,8 @@ class HashTableConstIterator final
   bool operator==(const const_iterator& other) const {
     return position_ == other.position_;
   }
-  bool operator!=(const const_iterator& other) const {
-    return position_ != other.position_;
-  }
   bool operator==(const iterator& other) const {
     return *this == static_cast<const_iterator>(other);
-  }
-  bool operator!=(const iterator& other) const {
-    return *this != static_cast<const_iterator>(other);
   }
 
   std::ostream& PrintTo(std::ostream& stream) const {
@@ -485,14 +479,8 @@ class HashTableIterator final
   bool operator==(const iterator& other) const {
     return iterator_ == other.iterator_;
   }
-  bool operator!=(const iterator& other) const {
-    return iterator_ != other.iterator_;
-  }
   bool operator==(const const_iterator& other) const {
     return iterator_ == other;
-  }
-  bool operator!=(const const_iterator& other) const {
-    return iterator_ != other;
   }
 
   operator const_iterator() const { return iterator_; }
@@ -2285,24 +2273,12 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-// All 4 combinations of ==, != and Const,non const.
+// Both combinations of Const, non const.
 template <typename T, typename U>
 inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
@@ -2310,21 +2286,9 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableConstIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
-}
-
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
 }
 
 template <typename Collection1, typename Collection2>

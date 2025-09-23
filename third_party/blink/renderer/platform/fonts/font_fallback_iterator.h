@@ -33,9 +33,6 @@ class PLATFORM_EXPORT FontFallbackIterator {
   FontFallbackIterator& operator=(const FontFallbackIterator&) = delete;
 
   bool operator==(const FontFallbackIterator& other) const;
-  bool operator!=(const FontFallbackIterator& other) const {
-    return !(*this == other);
-  }
 
   bool HasNext() const { return fallback_stage_ != kOutOfLuck; }
   // Returns whether the next call to Next() needs a full hint list, or whether

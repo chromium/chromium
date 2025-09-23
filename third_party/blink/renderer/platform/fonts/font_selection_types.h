@@ -72,7 +72,6 @@ class PLATFORM_EXPORT FontSelectionValue {
   constexpr FontSelectionValue operator/(const FontSelectionValue& other) const;
   constexpr FontSelectionValue operator-() const;
   constexpr bool operator==(const FontSelectionValue& other) const;
-  constexpr bool operator!=(const FontSelectionValue& other) const;
   constexpr bool operator<(const FontSelectionValue& other) const;
   constexpr bool operator<=(const FontSelectionValue& other) const;
   constexpr bool operator>(const FontSelectionValue& other) const;
@@ -135,11 +134,6 @@ inline constexpr FontSelectionValue FontSelectionValue::operator-() const {
 inline constexpr bool FontSelectionValue::operator==(
     const FontSelectionValue& other) const {
   return backing_ == other.backing_;
-}
-
-inline constexpr bool FontSelectionValue::operator!=(
-    const FontSelectionValue& other) const {
-  return !operator==(other);
 }
 
 inline constexpr bool FontSelectionValue::operator<(
@@ -313,10 +307,6 @@ struct PLATFORM_EXPORT FontSelectionRequest {
            slope == other.slope;
   }
 
-  bool operator!=(const FontSelectionRequest& other) const {
-    return !operator==(other);
-  }
-
   String ToString() const;
 
   FontSelectionValue weight;
@@ -382,10 +372,6 @@ struct FontSelectionCapabilities {
     return width == other.width && slope == other.slope &&
            weight == other.weight &&
            is_deleted_value_ == other.is_deleted_value_;
-  }
-
-  bool operator!=(const FontSelectionCapabilities& other) const {
-    return !(*this == other);
   }
 
   FontSelectionRange width{kFontSelectionZeroValue, kFontSelectionZeroValue};

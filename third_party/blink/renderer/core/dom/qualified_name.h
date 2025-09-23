@@ -151,9 +151,6 @@ class CORE_EXPORT QualifiedName {
   bool operator==(const QualifiedName& other) const {
     return impl_ == other.impl_;
   }
-  bool operator!=(const QualifiedName& other) const {
-    return !(*this == other);
-  }
 
   bool Matches(const QualifiedName& other) const {
     return impl_ == other.impl_ || (LocalName() == other.LocalName() &&
@@ -236,14 +233,8 @@ inline const QualifiedName& AnyQName() {
 inline bool operator==(const AtomicString& a, const QualifiedName& q) {
   return a == q.LocalName();
 }
-inline bool operator!=(const AtomicString& a, const QualifiedName& q) {
-  return a != q.LocalName();
-}
 inline bool operator==(const QualifiedName& q, const AtomicString& a) {
   return a == q.LocalName();
-}
-inline bool operator!=(const QualifiedName& q, const AtomicString& a) {
-  return a != q.LocalName();
 }
 
 inline unsigned HashComponents(const QualifiedNameComponents& buf) {

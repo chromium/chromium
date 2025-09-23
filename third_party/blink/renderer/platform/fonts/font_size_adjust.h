@@ -33,9 +33,6 @@ class PLATFORM_EXPORT FontSizeAdjust {
     return value_ == other.Value() && metric_ == other.GetMetric() &&
            IsFromFont() == other.IsFromFont();
   }
-  bool operator!=(const FontSizeAdjust& other) const {
-    return !operator==(other);
-  }
 
   bool IsFromFont() const { return type_ == ValueType::kFromFont; }
   float Value() const { return value_; }

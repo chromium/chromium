@@ -38,10 +38,6 @@ struct TimelineOffset {
            style_dependent_offset == other.style_dependent_offset;
   }
 
-  bool operator!=(const TimelineOffset& other) const {
-    return !(*this == other);
-  }
-
   static String TimelineRangeNameToString(NamedRange range_name);
 
   static std::optional<TimelineOffset> Create(Element* element,

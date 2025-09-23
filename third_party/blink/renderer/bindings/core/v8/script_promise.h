@@ -275,10 +275,6 @@ class ScriptPromise {
     return promise_ == value.promise_;
   }
 
-  bool operator!=(const ScriptPromise<IDLResolvedType>& value) const {
-    return !operator==(value);
-  }
-
   template <typename ResolveReactType,
             typename RejectReactType = IDLUndefined,
             typename ResolveClass,

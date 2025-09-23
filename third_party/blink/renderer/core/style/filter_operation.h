@@ -110,7 +110,6 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
   bool operator==(const FilterOperation& o) const {
     return IsSameType(o) && IsEqualAssumingSameType(o);
   }
-  bool operator!=(const FilterOperation& o) const { return !(*this == o); }
 
   OperationType GetType() const { return type_; }
   virtual bool IsSameType(const FilterOperation& o) const {

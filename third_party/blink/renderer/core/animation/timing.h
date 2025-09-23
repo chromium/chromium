@@ -115,8 +115,6 @@ struct CORE_EXPORT Timing {
              relative_delay == other.relative_delay;
     }
 
-    bool operator!=(const Delay& other) const { return !(*this == other); }
-
     bool IsNonzeroTimeBasedDelay() const {
       return !relative_delay && !time_delay.is_zero();
     }
@@ -164,8 +162,6 @@ struct CORE_EXPORT Timing {
            base::ValuesEquivalent(timing_function.get(),
                                   other.timing_function.get());
   }
-
-  bool operator!=(const Timing& other) const { return !(*this == other); }
 
   // Explicit changes to animation timing through the web animations API,
   // override timing changes due to CSS style.

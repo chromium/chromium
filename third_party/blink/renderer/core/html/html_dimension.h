@@ -62,9 +62,6 @@ class HTMLDimension {
   bool operator==(const HTMLDimension& other) const {
     return type_ == other.type_ && value_ == other.value_;
   }
-  bool operator!=(const HTMLDimension& other) const {
-    return !(*this == other);
-  }
 
  private:
   HTMLDimensionType type_;

@@ -60,7 +60,6 @@ class MODULES_EXPORT AXRange final {
 };
 
 MODULES_EXPORT bool operator==(const AXRange&, const AXRange&);
-MODULES_EXPORT bool operator!=(const AXRange&, const AXRange&);
 MODULES_EXPORT std::ostream& operator<<(std::ostream&, const AXRange&);
 
 }  // namespace blink

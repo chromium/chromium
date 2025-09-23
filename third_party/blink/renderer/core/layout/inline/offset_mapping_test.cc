@@ -41,10 +41,6 @@ bool operator==(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
          unit.TextContentEnd() == other.TextContentEnd();
 }
 
-bool operator!=(const OffsetMappingUnit& unit, const OffsetMappingUnit& other) {
-  return !operator==(unit, other);
-}
-
 void PrintTo(const OffsetMappingUnit& unit, std::ostream* ostream) {
   static const std::array<const char*, 3> kTypeNames = {"Identity", "Collapsed",
                                                         "Expanded"};

@@ -38,7 +38,6 @@ class CORE_EXPORT StyleTimeline {
     bool operator==(const ScrollData& other) const {
       return axis_ == other.axis_ && scroller_ == other.scroller_;
     }
-    bool operator!=(const ScrollData& other) const { return !(*this == other); }
 
     TimelineAxis GetAxis() const { return axis_; }
     const TimelineScroller& GetScroller() const { return scroller_; }
@@ -62,7 +61,6 @@ class CORE_EXPORT StyleTimeline {
     bool operator==(const ViewData& other) const {
       return axis_ == other.axis_ && inset_ == other.inset_;
     }
-    bool operator!=(const ViewData& other) const { return !(*this == other); }
 
     TimelineAxis GetAxis() const { return axis_; }
     TimelineInset GetInset() const { return inset_; }
@@ -87,9 +85,6 @@ class CORE_EXPORT StyleTimeline {
       return base::ValuesEquivalent(&GetName(), &other.GetName());
     }
     return data_ == other.data_;
-  }
-  bool operator!=(const StyleTimeline& other) const {
-    return !(*this == other);
   }
 
   bool IsKeyword() const { return std::holds_alternative<CSSValueID>(data_); }

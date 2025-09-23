@@ -192,24 +192,12 @@ inline bool operator==(const WebString& a, const char* b) {
   return a.Equals(b);
 }
 
-inline bool operator!=(const WebString& a, const char* b) {
-  return !(a == b);
-}
-
 inline bool operator==(const char* a, const WebString& b) {
   return b == a;
 }
 
-inline bool operator!=(const char* a, const WebString& b) {
-  return !(b == a);
-}
-
 inline bool operator==(const WebString& a, const WebString& b) {
   return a.Equals(b);
-}
-
-inline bool operator!=(const WebString& a, const WebString& b) {
-  return !(a == b);
 }
 
 }  // namespace blink

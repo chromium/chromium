@@ -59,7 +59,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   virtual ~StyleImage() = default;
 
   bool operator==(const StyleImage& other) const { return IsEqual(other); }
-  bool operator!=(const StyleImage& other) const { return !(*this == other); }
 
   // Returns a CSSValue representing the origin <image> value. May not be the
   // actual CSSValue from which this StyleImage was originally created if the

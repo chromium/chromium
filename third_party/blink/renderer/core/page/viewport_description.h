@@ -144,10 +144,6 @@ struct CORE_EXPORT ViewportDescription {
            viewport_fit_ == other.viewport_fit_;
   }
 
-  bool operator!=(const ViewportDescription& other) const {
-    return !(*this == other);
-  }
-
   bool IsLegacyViewportType() const {
     return type >= kHandheldFriendlyMeta && type <= kViewportMeta;
   }

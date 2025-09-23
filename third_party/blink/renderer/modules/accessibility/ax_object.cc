@@ -8824,10 +8824,6 @@ bool operator==(const AXObject& first, const AXObject& second) {
   return false;
 }
 
-bool operator!=(const AXObject& first, const AXObject& second) {
-  return !(first == second);
-}
-
 bool operator<(const AXObject& first, const AXObject& second) {
   if (first.IsDetached() || second.IsDetached())
     return false;

@@ -62,9 +62,6 @@ struct CORE_EXPORT LayoutOpportunity final {
   }
 
   bool operator==(const LayoutOpportunity& other) const;
-  bool operator!=(const LayoutOpportunity& other) const {
-    return !operator==(other);
-  }
 
  private:
   LayoutUnit ComputeLineLeftOffset(const ConstraintSpace&,

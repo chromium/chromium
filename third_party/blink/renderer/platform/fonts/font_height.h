@@ -32,7 +32,6 @@ struct PLATFORM_EXPORT FontHeight {
   bool operator==(const FontHeight& other) const {
     return ascent == other.ascent && descent == other.descent;
   }
-  bool operator!=(const FontHeight& other) const { return !operator==(other); }
 
   // True if `other`'s ascent and descent are both equal to or less than `this`.
   bool Contains(const FontHeight& other) const {

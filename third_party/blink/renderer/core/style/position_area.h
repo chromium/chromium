@@ -89,7 +89,6 @@ class CORE_EXPORT PositionArea {
            span1_end_ == other.span1_end_ &&
            span2_start_ == other.span2_start_ && span2_end_ == other.span2_end_;
   }
-  bool operator!=(const PositionArea& other) const { return !(*this == other); }
   bool IsNone() const { return span1_start_ == PositionAreaRegion::kNone; }
   bool ContainsAny() const {
     return span1_start_ == PositionAreaRegion::kAny ||

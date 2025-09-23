@@ -35,10 +35,6 @@ class CORE_EXPORT FindResults {
       return IsAtEnd() == other.IsAtEnd();
     }
 
-    bool operator!=(const Iterator& other) const {
-      return IsAtEnd() != other.IsAtEnd();
-    }
-
     const MatchResultICU operator*() const;
 
     void operator++();

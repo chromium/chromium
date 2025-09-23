@@ -25,9 +25,6 @@ class CORE_EXPORT AnchorScopedName : public GarbageCollected<AnchorScopedName> {
     return base::ValuesEquivalent(name_, other.name_) &&
            anchor_scope_element_ == other.anchor_scope_element_;
   }
-  bool operator!=(const AnchorScopedName& other) const {
-    return !operator==(other);
-  }
 
   unsigned GetHash() const {
     unsigned hash = name_->GetHash();

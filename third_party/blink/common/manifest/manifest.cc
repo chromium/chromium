@@ -98,10 +98,6 @@ bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
   return parsed_client_mode() == other.parsed_client_mode();
 }
 
-bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
-  return !(*this == other);
-}
-
 bool Manifest::LaunchHandler::TargetsExistingClients() const {
   switch (parsed_client_mode()) {
     case ClientMode::kAuto:

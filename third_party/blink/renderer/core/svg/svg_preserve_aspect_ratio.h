@@ -64,9 +64,6 @@ class SVGPreserveAspectRatio final : public SVGPropertyBase {
   SVGPreserveAspectRatio* Clone() const;
 
   bool operator==(const SVGPreserveAspectRatio&) const;
-  bool operator!=(const SVGPreserveAspectRatio& other) const {
-    return !operator==(other);
-  }
 
   void SetAlign(SVGPreserveAspectRatioType align) { align_ = align; }
   SVGPreserveAspectRatioType Align() const { return align_; }

@@ -66,11 +66,6 @@ inline bool operator==(const mojom::blink::TextAutosizerPageInfo& lhs,
          lhs.device_scale_adjustment == rhs.device_scale_adjustment;
 }
 
-inline bool operator!=(const mojom::blink::TextAutosizerPageInfo& lhs,
-                       const mojom::blink::TextAutosizerPageInfo& rhs) {
-  return !(lhs == rhs);
-}
-
 // Single-pass text autosizer. Documentation at:
 // http://tinyurl.com/TextAutosizer
 

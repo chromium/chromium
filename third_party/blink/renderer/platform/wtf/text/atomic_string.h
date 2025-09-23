@@ -264,22 +264,6 @@ inline bool operator==(const char* a, const AtomicString& b) {
   return b == a;
 }
 
-inline bool operator!=(const AtomicString& a, const AtomicString& b) {
-  return a.Impl() != b.Impl();
-}
-inline bool operator!=(const AtomicString& a, const String& b) {
-  return !(a == b);
-}
-inline bool operator!=(const String& a, const AtomicString& b) {
-  return !(a == b);
-}
-inline bool operator!=(const AtomicString& a, const char* b) {
-  return !(a == b);
-}
-inline bool operator!=(const char* a, const AtomicString& b) {
-  return !(a == b);
-}
-
 // Define external global variables for the commonly used atomic strings.
 // These are only usable from the main thread.
 WTF_EXPORT extern const AtomicString& g_null_atom;

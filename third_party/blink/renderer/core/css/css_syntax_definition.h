@@ -51,9 +51,6 @@ class CORE_EXPORT CSSSyntaxDefinition {
   bool operator==(const CSSSyntaxDefinition& a) const {
     return Components() == a.Components();
   }
-  bool operator!=(const CSSSyntaxDefinition& a) const {
-    return Components() != a.Components();
-  }
 
   CSSSyntaxDefinition IsolatedCopy() const;
   String ToString() const;

@@ -42,10 +42,6 @@ inline bool operator==(const RasterInvalidationInfo& a,
          a.client_debug_name == b.client_debug_name && a.rect == b.rect &&
          a.reason == b.reason;
 }
-inline bool operator!=(const RasterInvalidationInfo& a,
-                       const RasterInvalidationInfo& b) {
-  return !(a == b);
-}
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const RasterInvalidationInfo& info) {

@@ -99,7 +99,6 @@ class AnchorQueryBase : public GarbageCollectedMixin {
       return named_map_iterator_ == other.named_map_iterator_ &&
              implicit_map_iterator_ == other.implicit_map_iterator_;
     }
-    bool operator!=(const Iterator& other) const { return !operator==(other); }
 
     Iterator& operator++() {
       if (named_map_iterator_ != anchor_query_->named_anchors_.end())

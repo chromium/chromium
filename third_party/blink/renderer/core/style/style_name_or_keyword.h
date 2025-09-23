@@ -35,9 +35,6 @@ class CORE_EXPORT StyleNameOrKeyword {
   bool operator==(const StyleNameOrKeyword& other) const {
     return keyword_ == other.keyword_ && name_ == other.name_;
   }
-  bool operator!=(const StyleNameOrKeyword& other) const {
-    return !(*this == other);
-  }
 
  private:
   CSSValueID keyword_;

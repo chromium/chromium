@@ -143,7 +143,6 @@ class PseudoIdFlags {
   }
 
   bool operator==(const PseudoIdFlags& o) const { return bits_ == o.bits_; }
-  bool operator!=(const PseudoIdFlags& o) const { return bits_ != o.bits_; }
 
   PseudoIdFlags& operator|=(const PseudoIdFlags& o) {
     bits_ |= o.bits_;

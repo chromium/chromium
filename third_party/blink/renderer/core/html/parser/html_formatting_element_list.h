@@ -69,12 +69,9 @@ class HTMLFormattingElementList {
     }
     void ReplaceElement(HTMLStackItem* item) { item_ = item; }
 
-    // Needed for use with Vector.  These are super-hot and must be inline.
+    // Needed for use with Vector.  This is super-hot and must be inline.
     bool operator==(Element* element) const {
       return !item_ ? !element : item_->GetElement() == element;
-    }
-    bool operator!=(Element* element) const {
-      return !item_ ? !!element : item_->GetElement() != element;
     }
 
     void Trace(Visitor* visitor) const { visitor->Trace(item_); }

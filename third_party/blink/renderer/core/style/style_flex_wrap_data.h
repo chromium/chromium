@@ -36,8 +36,6 @@ class StyleFlexWrapData {
            min_line_count_ == o.min_line_count_;
   }
 
-  bool operator!=(const StyleFlexWrapData& o) const { return !(*this == o); }
-
  private:
   uint16_t wrap_mode_ : 2;  // FlexWrapMode
   uint16_t is_balanced_ : 1;

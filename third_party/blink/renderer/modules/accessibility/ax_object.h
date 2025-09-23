@@ -236,11 +236,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       return left.current_ == right.current_;
     }
 
-    MODULES_EXPORT friend bool operator!=(const AncestorsIterator& left,
-                                          const AncestorsIterator& right) {
-      return !(left == right);
-    }
-
    private:
     explicit AncestorsIterator(AXObject& current) : current_(&current) {}
 
@@ -1763,7 +1758,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 };
 
 MODULES_EXPORT bool operator==(const AXObject& first, const AXObject& second);
-MODULES_EXPORT bool operator!=(const AXObject& first, const AXObject& second);
 MODULES_EXPORT bool operator<(const AXObject& first, const AXObject& second);
 MODULES_EXPORT bool operator<=(const AXObject& first, const AXObject& second);
 MODULES_EXPORT bool operator>(const AXObject& first, const AXObject& second);

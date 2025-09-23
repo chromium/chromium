@@ -68,9 +68,6 @@ class WTF_EXPORT TextEncoding final {
 inline bool operator==(const TextEncoding& a, const TextEncoding& b) {
   return a.GetName() == b.GetName();
 }
-inline bool operator!=(const TextEncoding& a, const TextEncoding& b) {
-  return a.GetName() != b.GetName();
-}
 
 WTF_EXPORT const TextEncoding& AsciiEncoding();
 WTF_EXPORT const TextEncoding& Latin1Encoding();

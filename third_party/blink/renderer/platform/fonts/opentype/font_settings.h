@@ -70,7 +70,6 @@ class FontSettings {
   bool operator==(const FontSettings& other) const {
     return list_ == other.list_;
   }
-  bool operator!=(const FontSettings& other) const { return !(*this == other); }
   String ToString() const {
     StringBuilder builder;
     wtf_size_t num_features = size();

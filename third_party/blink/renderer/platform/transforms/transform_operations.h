@@ -51,7 +51,6 @@ class PLATFORM_EXPORT TransformOperations {
   void Trace(Visitor* visitor) const { visitor->Trace(operations_); }
 
   bool operator==(const TransformOperations& o) const;
-  bool operator!=(const TransformOperations& o) const { return !(*this == o); }
 
   // Constructs a transformation matrix from the operations. The parameter
   // |border_box_size| is used when computing styles that are size-dependent.

@@ -46,7 +46,6 @@ class PLATFORM_EXPORT QuotesData : public RefCounted<QuotesData> {
   bool operator==(const QuotesData& o) const {
     return quote_pairs_ == o.quote_pairs_;
   }
-  bool operator!=(const QuotesData& o) const { return !(*this == o); }
 
   void AddPair(const std::pair<String, String> quote_pair);
   const String GetOpenQuote(int index) const;

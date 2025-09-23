@@ -217,9 +217,6 @@ class TableCollapsedEdge {
   bool operator==(const TableCollapsedEdge& rhs) const {
     return edge_index_ == rhs.edge_index_;
   }
-  bool operator!=(const TableCollapsedEdge& rhs) const {
-    return !(*this == rhs);
-  }
 
  private:
   void InitCachedProps() {

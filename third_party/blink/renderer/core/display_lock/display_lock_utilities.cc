@@ -47,10 +47,9 @@ class AncestorTraversal {
     explicit Iterator(const Node* start)
         : current_node_(const_cast<Node*>(start)) {}
 
-    bool operator==(const Iterator& other) {
+    bool operator==(const Iterator& other) const {
       return other.current_node_ == current_node_;
     }
-    bool operator!=(const Iterator& other) { return !(*this == other); }
     Iterator& operator++() {
       if (auto* element = DynamicTo<Element>(current_node_);
           element && element->IsScrollMarkerPseudoElement()) {

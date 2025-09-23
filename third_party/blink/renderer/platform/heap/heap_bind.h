@@ -74,7 +74,6 @@ class HeapCallback<Ret(Args...)> final {
   explicit operator bool() const { return !!closure_; }
 
   bool operator==(const HeapCallback& r) const = default;
-  bool operator!=(const HeapCallback& r) const = default;
 
   Ret Run(Args... args) {
     DCHECK(closure_);

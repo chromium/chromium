@@ -163,7 +163,6 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   ~VisualProperties();
   VisualProperties& operator=(const VisualProperties& other);
   bool operator==(const VisualProperties& other) const;
-  bool operator!=(const VisualProperties& other) const;
 };
 
 }  // namespace blink

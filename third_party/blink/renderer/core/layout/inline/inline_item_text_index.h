@@ -19,9 +19,6 @@ struct CORE_EXPORT InlineItemTextIndex {
   bool operator==(const InlineItemTextIndex& other) const {
     return text_offset == other.text_offset && item_index == other.item_index;
   }
-  bool operator!=(const InlineItemTextIndex& other) const {
-    return !operator==(other);
-  }
   bool operator>(const InlineItemTextIndex& other) const {
     return text_offset > other.text_offset || item_index > other.item_index;
   }

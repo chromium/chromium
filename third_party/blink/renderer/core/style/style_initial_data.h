@@ -29,9 +29,6 @@ class CORE_EXPORT StyleInitialData : public GarbageCollected<StyleInitialData> {
   void Trace(Visitor* visitor) const { visitor->Trace(variables_); }
 
   bool operator==(const StyleInitialData& other) const;
-  bool operator!=(const StyleInitialData& other) const {
-    return !(*this == other);
-  }
 
   bool HasInitialVariables() const { return !variables_.IsEmpty(); }
 

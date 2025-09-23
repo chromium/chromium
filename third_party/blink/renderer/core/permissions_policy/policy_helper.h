@@ -80,9 +80,6 @@ struct FeatureNameMapCacheKey {
            is_deleted_value == other.is_deleted_value &&
            is_empty_value == other.is_empty_value;
   }
-  bool operator!=(const FeatureNameMapCacheKey& other) const {
-    return !(*this == other);
-  }
 };
 using FeatureNameMap =
     HashMap<String, network::mojom::PermissionsPolicyFeature>;

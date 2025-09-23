@@ -31,10 +31,6 @@ class StyleOverflowClipMargin {
            GetMargin() == o.GetMargin();
   }
 
-  bool operator!=(const StyleOverflowClipMargin& o) const {
-    return !(*this == o);
-  }
-
  private:
   ReferenceBox reference_box_;
   LayoutUnit margin_;

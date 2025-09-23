@@ -46,9 +46,6 @@ class UnzoomedLength {
   bool operator==(const UnzoomedLength& other) const {
     return length_ == other.length_;
   }
-  bool operator!=(const UnzoomedLength& other) const {
-    return !operator==(other);
-  }
 
   const Length& length() const { return length_; }
 

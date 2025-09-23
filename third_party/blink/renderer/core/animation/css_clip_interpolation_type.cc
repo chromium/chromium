@@ -46,7 +46,6 @@ struct ClipAutos {
            is_bottom_auto == other.is_bottom_auto &&
            is_left_auto == other.is_left_auto;
   }
-  bool operator!=(const ClipAutos& other) const { return !(*this == other); }
 
   bool is_auto;
   bool is_top_auto;

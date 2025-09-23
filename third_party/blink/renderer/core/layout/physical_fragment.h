@@ -587,9 +587,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       bool operator==(const ConstIterator& other) const {
         return current_ == other.current_;
       }
-      bool operator!=(const ConstIterator& other) const {
-        return current_ != other.current_;
-      }
 
      private:
       void SkipInvalidAndSetPostLayout() {

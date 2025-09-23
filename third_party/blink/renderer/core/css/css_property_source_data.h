@@ -49,7 +49,6 @@ class SourceRange {
   bool operator==(const SourceRange& o) const {
     return start == o.start && end == o.end;
   }
-  bool operator!=(const SourceRange& o) const { return !operator==(o); }
 
   unsigned start = 0;
   unsigned end = 0;

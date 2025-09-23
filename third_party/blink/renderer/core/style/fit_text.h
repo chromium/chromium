@@ -37,7 +37,6 @@ class CORE_EXPORT FitText {
     return target_ == other.target_ && method_ == other.method_ &&
            size_limit_ == other.size_limit_;
   }
-  bool operator!=(const FitText& other) const { return !(*this == other); }
 
   FitTextTarget Target() const { return target_; }
   FitTextMethod Method() const {

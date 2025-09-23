@@ -54,7 +54,6 @@ class PaintChunkSubset {
       DCHECK_EQ(subset_, other.subset_);
       return subset_index_ == other.subset_index_;
     }
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
     const Iterator& operator++() {
       ++subset_index_;
       return *this;

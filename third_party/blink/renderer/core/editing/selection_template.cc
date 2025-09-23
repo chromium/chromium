@@ -45,12 +45,6 @@ bool SelectionTemplate<Strategy>::operator==(
 }
 
 template <typename Strategy>
-bool SelectionTemplate<Strategy>::operator!=(
-    const SelectionTemplate& other) const {
-  return !operator==(other);
-}
-
-template <typename Strategy>
 void SelectionTemplate<Strategy>::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_);
   visitor->Trace(focus_);

@@ -47,9 +47,6 @@ class CORE_EXPORT MenuItemListIterator final {
   bool operator==(const MenuItemListIterator& other) const {
     return current_ == other.current_;
   }
-  bool operator!=(const MenuItemListIterator& other) const {
-    return !(*this == other);
-  }
 
  private:
   // These functions returns only a MENUITEM descendant of owner_menu_.

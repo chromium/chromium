@@ -114,7 +114,6 @@ class TestVector {
       return iter;
     }
     bool operator==(const Iterator& other) const { return p_ == other.p_; }
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
     T& operator*() const { return *p_; }
 
    private:

@@ -43,10 +43,6 @@ bool SelectionForUndoStep::operator==(const SelectionForUndoStep& other) const {
          is_anchor_first_ == other.is_anchor_first_;
 }
 
-bool SelectionForUndoStep::operator!=(const SelectionForUndoStep& other) const {
-  return !operator==(other);
-}
-
 SelectionInDOMTree SelectionForUndoStep::AsSelection() const {
   if (IsNone()) {
     return SelectionInDOMTree();

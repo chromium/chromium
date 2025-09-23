@@ -110,9 +110,6 @@ class AllConstraintSets {
       DCHECK_EQ(constraints_, other.constraints_);
       return index_ == other.index_;
     }
-    bool operator!=(const ForwardIterator& other) const {
-      return !(*this == other);
-    }
 
    private:
     Persistent<const MediaTrackConstraints> constraints_;

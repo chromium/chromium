@@ -61,9 +61,6 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
     bool operator==(const const_iterator& other) const {
       return wrapped_ == other.wrapped_;
     }
-    bool operator!=(const const_iterator& other) const {
-      return !operator==(other);
-    }
     const ItemPropertyType* operator->() const {
       return To<ItemPropertyType>(wrapped_->Get());
     }

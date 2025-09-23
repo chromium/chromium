@@ -115,7 +115,6 @@ class CORE_EXPORT GridTrackList {
 
   void operator=(const GridTrackList& o);
   bool operator==(const GridTrackList& o) const;
-  bool operator!=(const GridTrackList& o) const { return !(*this == o); }
 
  private:
   // Returns the amount of tracks available before overflow.

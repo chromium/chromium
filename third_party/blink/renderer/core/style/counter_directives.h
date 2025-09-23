@@ -98,10 +98,6 @@ class CounterDirectives {
   std::optional<int> set_value_;
 };
 
-inline bool operator!=(const CounterDirectives& a, const CounterDirectives& b) {
-  return !(a == b);
-}
-
 // Not to be deleted through a pointer to HashMap.
 class CounterDirectiveMap : public HashMap<AtomicString, CounterDirectives> {
  public:

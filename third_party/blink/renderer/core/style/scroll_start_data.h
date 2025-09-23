@@ -30,10 +30,6 @@ struct ScrollStartData {
     return value_type == other.value_type && value == other.value;
   }
 
-  bool operator!=(const ScrollStartData& other) const {
-    return !(*this == other);
-  }
-
 #if DCHECK_IS_ON()
   String ToString() const;
 #endif

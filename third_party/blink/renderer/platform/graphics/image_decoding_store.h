@@ -71,11 +71,6 @@ static inline bool operator==(const DecoderCacheKey& a,
          a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
 }
 
-static inline bool operator!=(const DecoderCacheKey& a,
-                              const DecoderCacheKey& b) {
-  return !(a == b);
-}
-
 // Base class for all cache entries.
 class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   USING_FAST_MALLOC(CacheEntry);

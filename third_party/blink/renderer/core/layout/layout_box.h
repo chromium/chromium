@@ -689,9 +689,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       bool operator==(const Iterator& other) const {
         return iterator_ == other.iterator_;
       }
-      bool operator!=(const Iterator& other) const {
-        return !operator==(other);
-      }
 
      private:
       LayoutResultList::const_iterator iterator_;

@@ -435,21 +435,9 @@ inline bool operator==(const HashTableConstKeysIterator<T, U, V>& a,
 }
 
 template <typename T, typename U, typename V>
-inline bool operator!=(const HashTableConstKeysIterator<T, U, V>& a,
-                       const HashTableConstKeysIterator<T, U, V>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U, typename V>
 inline bool operator==(const HashTableConstValuesIterator<T, U, V>& a,
                        const HashTableConstValuesIterator<T, U, V>& b) {
   return a.impl_ == b.impl_;
-}
-
-template <typename T, typename U, typename V>
-inline bool operator!=(const HashTableConstValuesIterator<T, U, V>& a,
-                       const HashTableConstValuesIterator<T, U, V>& b) {
-  return a.impl_ != b.impl_;
 }
 
 template <typename T, typename U, typename V>
@@ -459,21 +447,9 @@ inline bool operator==(const HashTableKeysIterator<T, U, V>& a,
 }
 
 template <typename T, typename U, typename V>
-inline bool operator!=(const HashTableKeysIterator<T, U, V>& a,
-                       const HashTableKeysIterator<T, U, V>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U, typename V>
 inline bool operator==(const HashTableValuesIterator<T, U, V>& a,
                        const HashTableValuesIterator<T, U, V>& b) {
   return a.impl_ == b.impl_;
-}
-
-template <typename T, typename U, typename V>
-inline bool operator!=(const HashTableValuesIterator<T, U, V>& a,
-                       const HashTableValuesIterator<T, U, V>& b) {
-  return a.impl_ != b.impl_;
 }
 
 }  // namespace blink

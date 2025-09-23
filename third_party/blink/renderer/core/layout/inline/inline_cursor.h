@@ -59,9 +59,6 @@ class CORE_EXPORT InlineCursorPosition {
   bool operator==(const InlineCursorPosition& other) const {
     return item_ == other.item_;
   }
-  bool operator!=(const InlineCursorPosition& other) const {
-    return !operator==(other);
-  }
 
   // True if the current position is a text. It is error to call at end.
   bool IsText() const { return item_->IsText(); }
@@ -255,9 +252,6 @@ class CORE_EXPORT InlineCursor {
   InlineCursor() = default;
 
   bool operator==(const InlineCursor& other) const;
-  bool operator!=(const InlineCursor& other) const {
-    return !operator==(other);
-  }
 
   // True if this cursor has the root to traverse. Only the default constructor
   // creates a cursor without the root.

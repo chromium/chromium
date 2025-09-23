@@ -59,7 +59,6 @@ class OrdinalNumber final {
   bool operator==(OrdinalNumber other) const {
     return zero_based_value_ == other.zero_based_value_;
   }
-  bool operator!=(OrdinalNumber other) const { return !((*this) == other); }
 
   static OrdinalNumber First() { return OrdinalNumber(0); }
   static OrdinalNumber BeforeFirst() { return OrdinalNumber(-1); }
@@ -84,9 +83,6 @@ class TextPosition final {
 
   bool operator==(const TextPosition& other) const {
     return line_ == other.line_ && column_ == other.column_;
-  }
-  bool operator!=(const TextPosition& other) const {
-    return !((*this) == other);
   }
   WTF_EXPORT OrdinalNumber ToOffset(const Vector<unsigned>&);
 

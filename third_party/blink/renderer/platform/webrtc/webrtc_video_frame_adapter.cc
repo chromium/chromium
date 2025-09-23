@@ -368,11 +368,6 @@ bool WebRtcVideoFrameAdapter::ScaledBufferSize::operator==(
   return visible_rect == rhs.visible_rect && natural_size == rhs.natural_size;
 }
 
-bool WebRtcVideoFrameAdapter::ScaledBufferSize::operator!=(
-    const ScaledBufferSize& rhs) const {
-  return !(*this == rhs);
-}
-
 WebRtcVideoFrameAdapter::ScaledBufferSize
 WebRtcVideoFrameAdapter::ScaledBufferSize::CropAndScale(
     int offset_x,

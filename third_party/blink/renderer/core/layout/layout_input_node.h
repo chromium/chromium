@@ -292,10 +292,6 @@ class CORE_EXPORT LayoutInputNode {
     return box_ == other.box_ && type_ == other.type_;
   }
 
-  bool operator!=(const LayoutInputNode& other) const {
-    return !(*this == other);
-  }
-
 #if DCHECK_IS_ON()
   String DumpNodeTree(const LayoutInputNode* target = nullptr) const;
 

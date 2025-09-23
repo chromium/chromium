@@ -109,8 +109,6 @@ class CORE_EXPORT ScriptValue final {
     return value_ == value.value_;
   }
 
-  bool operator!=(const ScriptValue& value) const { return !operator==(value); }
-
   // This creates a new local Handle; Don't use this in performance-sensitive
   // places.
   bool IsFunction() const {
@@ -212,10 +210,6 @@ class CORE_EXPORT ScriptObject final {
 
   bool operator==(const ScriptObject& object) const {
     return object_ == object.object_;
-  }
-
-  bool operator!=(const ScriptObject& object) const {
-    return !operator==(object);
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(object_); }

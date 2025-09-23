@@ -16,9 +16,6 @@ struct StyleOffsetRotation {
   bool operator==(const StyleOffsetRotation& other) const {
     return angle == other.angle && type == other.type;
   }
-  bool operator!=(const StyleOffsetRotation& other) const {
-    return !(*this == other);
-  }
 
   float angle;
   OffsetRotationType type;

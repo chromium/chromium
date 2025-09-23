@@ -235,7 +235,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   void ReResolveUrl(const Document&) const;
 
   bool operator==(const CSSValue&) const;
-  bool operator!=(const CSSValue& o) const { return !(*this == o); }
 
   // Returns the same CSS value, but populated with the given tree scope for
   // tree-scoped names and references.

@@ -69,8 +69,6 @@ class BLINK_COMMON_EXPORT PolicyValue {
 
 bool BLINK_COMMON_EXPORT operator==(const PolicyValue& lhs,
                                     const PolicyValue& rhs);
-bool BLINK_COMMON_EXPORT operator!=(const PolicyValue& lhs,
-                                    const PolicyValue& rhs);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_POLICY_VALUE_H_

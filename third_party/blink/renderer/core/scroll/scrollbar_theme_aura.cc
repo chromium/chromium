@@ -84,10 +84,6 @@ bool operator==(const PartPaintingParams& a, const PartPaintingParams& b) {
              std::tie(b.should_paint, b.part, b.state);
 }
 
-bool operator!=(const PartPaintingParams& a, const PartPaintingParams& b) {
-  return !(a == b);
-}
-
 PartPaintingParams ButtonPartPaintingParams(const Scrollbar& scrollbar,
                                             float position,
                                             ScrollbarPart part) {

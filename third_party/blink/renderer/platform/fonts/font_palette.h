@@ -186,7 +186,6 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
   String ToString() const;
 
   bool operator==(const FontPalette& other) const;
-  bool operator!=(const FontPalette& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
 

@@ -77,9 +77,6 @@ class CORE_EXPORT CSSParserContext final
                    ResourceFetchRestriction resource_fetch_restriction);
 
   bool operator==(const CSSParserContext&) const;
-  bool operator!=(const CSSParserContext& other) const {
-    return !(*this == other);
-  }
 
   CSSParserMode Mode() const { return mode_; }
   const KURL& BaseURL() const { return base_url_; }

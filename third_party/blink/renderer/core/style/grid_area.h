@@ -255,8 +255,6 @@ struct GridArea {
     return columns == o.columns && rows == o.rows;
   }
 
-  bool operator!=(const GridArea& o) const { return !(*this == o); }
-
   GridSpan columns;
   GridSpan rows;
 };

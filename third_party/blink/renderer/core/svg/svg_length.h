@@ -77,7 +77,6 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
   }
 
   bool operator==(const SVGLength&) const;
-  bool operator!=(const SVGLength& other) const { return !operator==(other); }
 
   Length ConvertToLength(const SVGLengthConversionData&) const;
   float Value(const SVGLengthConversionData&, float dimension) const;

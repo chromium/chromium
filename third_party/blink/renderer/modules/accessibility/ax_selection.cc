@@ -471,10 +471,6 @@ bool operator==(const AXSelection& a, const AXSelection& b) {
   return a.Anchor() == b.Anchor() && a.Focus() == b.Focus();
 }
 
-bool operator!=(const AXSelection& a, const AXSelection& b) {
-  return !(a == b);
-}
-
 std::ostream& operator<<(std::ostream& ostream, const AXSelection& selection) {
   return ostream << selection.ToString().Utf8();
 }

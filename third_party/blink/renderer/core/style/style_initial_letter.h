@@ -19,7 +19,6 @@ class CORE_EXPORT StyleInitialLetter {
   StyleInitialLetter(float size, int sink);
 
   bool operator==(const StyleInitialLetter& other) const;
-  bool operator!=(const StyleInitialLetter& other) const;
 
   bool IsDrop() const { return sink_type_ == kDrop; }
   bool IsIntegerSink() const { return sink_type_ == kInteger; }

@@ -69,10 +69,6 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
     return site_as_origin_->IsSameOriginWith(rhs.site_as_origin_.get());
   }
 
-  bool operator!=(const BlinkSchemefulSite& rhs) const {
-    return !operator==(rhs);
-  }
-
   bool IsOpaque() const { return site_as_origin_->IsOpaque(); }
 
  private:

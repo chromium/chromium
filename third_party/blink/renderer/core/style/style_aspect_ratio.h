@@ -50,8 +50,6 @@ class CORE_EXPORT StyleAspectRatio {
     return type_ == o.type_ && ratio_ == o.ratio_;
   }
 
-  bool operator!=(const StyleAspectRatio& o) const { return !(*this == o); }
-
  private:
   unsigned type_ : 2;  // EAspectRatioType
   gfx::SizeF ratio_;

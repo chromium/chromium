@@ -23,7 +23,6 @@ class CORE_EXPORT StyleInterestDelay {
   bool IsNormal() const { return seconds_ < 0; }
 
   bool operator==(const StyleInterestDelay& other) const;
-  bool operator!=(const StyleInterestDelay& other) const;
 
  private:
   double seconds_ = -1;
@@ -32,11 +31,6 @@ class CORE_EXPORT StyleInterestDelay {
 inline bool StyleInterestDelay::operator==(
     const StyleInterestDelay& other) const {
   return seconds_ == other.seconds_;
-}
-
-inline bool StyleInterestDelay::operator!=(
-    const StyleInterestDelay& other) const {
-  return !operator==(other);
 }
 
 }  // namespace blink

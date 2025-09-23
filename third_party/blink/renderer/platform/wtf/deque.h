@@ -276,7 +276,6 @@ class DequeIterator : public DequeIteratorBase<T, InlineCapacity, Allocator> {
   T* operator->() const { return Base::After(); }
 
   bool operator==(const Iterator& other) const { return Base::IsEqual(other); }
-  bool operator!=(const Iterator& other) const { return !Base::IsEqual(other); }
 
   Iterator& operator++() {
     Base::Increment();
@@ -338,7 +337,6 @@ class DequeConstIterator
   const T* operator->() const { return Base::After(); }
 
   bool operator==(const Iterator& other) const { return Base::IsEqual(other); }
-  bool operator!=(const Iterator& other) const { return !Base::IsEqual(other); }
 
   Iterator& operator++() {
     Base::Increment();

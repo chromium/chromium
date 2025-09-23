@@ -88,7 +88,6 @@ class CORE_EXPORT TryTacticTransform {
   bool operator==(const TryTacticTransform& o) const {
     return bits_ == o.bits_;
   }
-  bool operator!=(const TryTacticTransform& o) const { return !(*this == o); }
 
   template <typename T>
   struct LogicalSides {

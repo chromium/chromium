@@ -42,9 +42,6 @@ class CORE_EXPORT PropertyHandle {
                            : g_null_atom) {}
 
   bool operator==(const PropertyHandle&) const;
-  bool operator!=(const PropertyHandle& other) const {
-    return !(*this == other);
-  }
 
   unsigned GetHash() const;
 

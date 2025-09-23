@@ -311,10 +311,6 @@ class RuleMap {
       DCHECK_EQ(rule_map, other.rule_map);
       return sub_it == other.sub_it;
     }
-    bool operator!=(const ConstIterator& other) const {
-      DCHECK_EQ(rule_map, other.rule_map);
-      return sub_it != other.sub_it;
-    }
     ConstIterator& operator++() {
       ++sub_it;
       return *this;

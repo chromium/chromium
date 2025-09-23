@@ -73,9 +73,6 @@ class PLATFORM_EXPORT FontVariantAlternates
   bool IsNormal() const;
 
   bool operator==(const FontVariantAlternates& other) const;
-  bool operator!=(const FontVariantAlternates& other) const {
-    return !(*this == other);
-  }
 
  private:
   FontVariantAlternates();

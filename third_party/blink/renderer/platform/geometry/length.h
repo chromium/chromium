@@ -190,7 +190,6 @@ class PLATFORM_EXPORT Length {
       return value_ == o.value_;
     }
   }
-  bool operator!=(const Length& o) const { return !(*this == o); }
 
   static const Length& Auto() { return g_auto_length; }
   static const Length& Stretch() { return g_stretch_length; }

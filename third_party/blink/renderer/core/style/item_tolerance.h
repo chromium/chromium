@@ -42,7 +42,6 @@ class ItemTolerance {
   }
 
   bool operator==(const ItemTolerance& o) const = default;
-  bool operator!=(const ItemTolerance& o) const = default;
 
  private:
   enum class ItemToleranceType { kNormal, kInfinite, kLength };

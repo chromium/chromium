@@ -405,10 +405,6 @@ class VectorBackedLinkedListIterator {
     return iterator_ == other.iterator_;
   }
 
-  bool operator!=(const VectorBackedLinkedListIterator& other) const {
-    return !(*this == other);
-  }
-
   operator const_iterator() const { return iterator_; }
 
   // Returns the index number of an element to which this iterator points.
@@ -482,10 +478,6 @@ class VectorBackedLinkedListConstIterator {
   bool operator==(const VectorBackedLinkedListConstIterator& other) const {
     DCHECK_EQ(container_, other.container_);
     return index_ == other.index_;
-  }
-
-  bool operator!=(const VectorBackedLinkedListConstIterator& other) const {
-    return !(*this == other);
   }
 
  protected:
@@ -566,10 +558,6 @@ class VectorBackedLinkedListReverseIterator {
 
   bool operator==(const VectorBackedLinkedListReverseIterator& other) const {
     return iterator_ == other.iterator_;
-  }
-
-  bool operator!=(const VectorBackedLinkedListReverseIterator& other) const {
-    return !(*this == other);
   }
 
   operator const_reverse_iterator() const { return iterator_; }

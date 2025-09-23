@@ -58,9 +58,6 @@ class BLINK_COMMON_EXPORT PageState {
 
   // Support DCHECK_EQ(a, b), etc.
   bool operator==(const PageState& other) const { return this->Equals(other); }
-  bool operator!=(const PageState& other) const {
-    return !(this->Equals(other));
-  }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 

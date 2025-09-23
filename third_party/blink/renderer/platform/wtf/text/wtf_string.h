@@ -593,16 +593,6 @@ inline bool operator==(const char* a, const String& b) {
   return b == a;
 }
 
-inline bool operator!=(const String& a, const String& b) {
-  return !(a == b);
-}
-inline bool operator!=(const String& a, const char* b) {
-  return !(a == b);
-}
-inline bool operator!=(const char* a, const String& b) {
-  return !(a == b);
-}
-
 inline bool EqualIgnoringNullity(const String& a, const String& b) {
   return EqualIgnoringNullity(a.Impl(), b.Impl());
 }

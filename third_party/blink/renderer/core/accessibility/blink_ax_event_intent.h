@@ -74,8 +74,6 @@ class CORE_EXPORT BlinkAXEventIntent final {
 
   CORE_EXPORT friend bool operator==(const BlinkAXEventIntent& a,
                                      const BlinkAXEventIntent& b);
-  CORE_EXPORT friend bool operator!=(const BlinkAXEventIntent& a,
-                                     const BlinkAXEventIntent& b);
 
   const ui::AXEventIntent& intent() const { return intent_; }
   ui::AXEventIntent& intent() { return intent_; }

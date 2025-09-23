@@ -20,8 +20,6 @@ struct PLATFORM_EXPORT TouchActionRect {
     return rect == rhs.rect && allowed_touch_action == rhs.allowed_touch_action;
   }
 
-  bool operator!=(const TouchActionRect& rhs) const { return !(*this == rhs); }
-
   String ToString() const;
 };
 

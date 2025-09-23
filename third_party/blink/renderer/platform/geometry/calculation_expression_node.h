@@ -62,9 +62,6 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
   }
-  bool operator!=(const CalculationExpressionNode& other) const {
-    return !operator==(other);
-  }
 
   bool HasAuto() const { return has_auto_; }
   bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }

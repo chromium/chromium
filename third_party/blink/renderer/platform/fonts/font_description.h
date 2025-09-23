@@ -135,9 +135,6 @@ class PLATFORM_EXPORT FontDescription {
   FontDescription& operator=(const FontDescription&);
 
   bool operator==(const FontDescription&) const;
-  bool operator!=(const FontDescription& other) const {
-    return !(*this == other);
-  }
 
   struct VariantLigatures {
     STACK_ALLOCATED();

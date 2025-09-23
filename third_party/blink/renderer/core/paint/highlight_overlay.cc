@@ -133,10 +133,6 @@ bool HighlightLayer::operator==(const HighlightLayer& other) const {
   return type == other.type && name == other.name;
 }
 
-bool HighlightLayer::operator!=(const HighlightLayer& other) const {
-  return !operator==(other);
-}
-
 int8_t HighlightLayer::ComparePaintOrder(
     const HighlightLayer& other,
     const HighlightRegistry* registry) const {
@@ -164,10 +160,6 @@ HighlightRange::HighlightRange(unsigned from, unsigned to)
 
 bool HighlightRange::operator==(const HighlightRange& other) const {
   return from == other.from && to == other.to;
-}
-
-bool HighlightRange::operator!=(const HighlightRange& other) const {
-  return !operator==(other);
 }
 
 String HighlightRange::ToString() const {
@@ -231,10 +223,6 @@ bool HighlightEdge::operator==(const HighlightEdge& other) const {
          layer_type == other.layer_type && layer_index == other.layer_index;
 }
 
-bool HighlightEdge::operator!=(const HighlightEdge& other) const {
-  return !operator==(other);
-}
-
 HighlightDecoration::HighlightDecoration(HighlightLayerType type,
                                          uint16_t layer_index,
                                          HighlightRange range,
@@ -259,10 +247,6 @@ bool HighlightDecoration::operator==(const HighlightDecoration& other) const {
          range == other.range;
 }
 
-bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
-  return !operator==(other);
-}
-
 String HighlightBackground::ToString() const {
   StringBuilder result{};
   result.AppendNumber(layer_index);
@@ -278,10 +262,6 @@ bool HighlightBackground::operator==(const HighlightBackground& other) const {
          color == other.color;
 }
 
-bool HighlightBackground::operator!=(const HighlightBackground& other) const {
-  return !operator==(other);
-}
-
 String HighlightTextShadow::ToString() const {
   StringBuilder result{};
   result.AppendNumber(layer_index);
@@ -295,10 +275,6 @@ String HighlightTextShadow::ToString() const {
 bool HighlightTextShadow::operator==(const HighlightTextShadow& other) const {
   return type == other.type && layer_index == other.layer_index &&
          current_color == other.current_color;
-}
-
-bool HighlightTextShadow::operator!=(const HighlightTextShadow& other) const {
-  return !operator==(other);
 }
 
 HighlightPart::HighlightPart(HighlightLayerType type,
@@ -375,10 +351,6 @@ bool HighlightPart::operator==(const HighlightPart& other) const {
   return type == other.type && layer_index == other.layer_index &&
          range == other.range && decorations == other.decorations &&
          backgrounds == other.backgrounds && text_shadows == other.text_shadows;
-}
-
-bool HighlightPart::operator!=(const HighlightPart& other) const {
-  return !operator==(other);
 }
 
 HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(

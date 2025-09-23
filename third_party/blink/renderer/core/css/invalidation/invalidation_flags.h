@@ -12,7 +12,6 @@ namespace blink {
 class InvalidationFlags {
  public:
   bool operator==(const InvalidationFlags&) const;
-  bool operator!=(const InvalidationFlags& o) const { return !(*this == o); }
 
   // Merges two sets of flags together by orring all fields.
   void Merge(const InvalidationFlags& other);

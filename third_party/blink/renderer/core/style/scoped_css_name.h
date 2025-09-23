@@ -37,9 +37,6 @@ class CORE_EXPORT ScopedCSSName : public GarbageCollected<ScopedCSSName> {
   bool operator==(const ScopedCSSName& other) const {
     return name_ == other.name_ && tree_scope_ == other.tree_scope_;
   }
-  bool operator!=(const ScopedCSSName& other) const {
-    return !operator==(other);
-  }
 
   unsigned GetHash() const {
     unsigned hash = blink::GetHash(name_);
@@ -77,9 +74,6 @@ class CORE_EXPORT ScopedCSSNameList
                               [](const auto& a, const auto& b) {
                                 return base::ValuesEquivalent(a, b);
                               });
-  }
-  bool operator!=(const ScopedCSSNameList& other) const {
-    return !operator==(other);
   }
 
   void Trace(Visitor* visitor) const;

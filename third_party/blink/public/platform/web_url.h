@@ -113,10 +113,6 @@ inline bool operator==(const WebURL& a, const WebURL& b) {
   return a.GetString().Equals(b.GetString());
 }
 
-inline bool operator!=(const WebURL& a, const WebURL& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_H_

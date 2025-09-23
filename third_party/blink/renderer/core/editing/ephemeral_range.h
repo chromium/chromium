@@ -103,7 +103,6 @@ class EphemeralRangeTemplate final {
       const EphemeralRangeTemplate<Strategy>& other);
 
   bool operator==(const EphemeralRangeTemplate<Strategy>& other) const;
-  bool operator!=(const EphemeralRangeTemplate<Strategy>& other) const;
 
   Document& GetDocument() const;
   PositionTemplate<Strategy> StartPosition() const;

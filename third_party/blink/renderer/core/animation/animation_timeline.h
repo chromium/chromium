@@ -33,9 +33,6 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
     bool operator==(const PhaseAndTime& other) const {
       return phase == other.phase && time == other.time;
     }
-    bool operator!=(const PhaseAndTime& other) const {
-      return !(*this == other);
-    }
   };
 
   AnimationTimeline(Document*);

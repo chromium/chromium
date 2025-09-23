@@ -127,7 +127,6 @@ class PLATFORM_EXPORT FontPlatformData
     avoid_embedded_bitmaps_ = embedded_bitmaps;
   }
   bool operator==(const FontPlatformData&) const;
-  bool operator!=(const FontPlatformData& a) const { return !operator==(a); }
   FontPlatformData& operator=(const FontPlatformData&) = delete;
 
   bool IsHashTableDeletedValue() const { return is_hash_table_deleted_value_; }

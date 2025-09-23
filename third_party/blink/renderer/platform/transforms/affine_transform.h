@@ -144,10 +144,6 @@ class PLATFORM_EXPORT AffineTransform {
                             gfx::LoadDouble4(&m2.transform_[2]));
   }
 
-  bool operator!=(const AffineTransform& other) const {
-    return !(*this == other);
-  }
-
   // *this = *this * t (i.e., a multRight)
   AffineTransform& operator*=(const AffineTransform& t) { return PreConcat(t); }
 

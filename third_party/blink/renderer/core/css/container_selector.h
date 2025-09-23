@@ -63,7 +63,6 @@ class CORE_EXPORT ContainerSelector {
            (has_scroll_direction_query_ == o.has_scroll_direction_query_) &&
            (has_anchored_query_ == o.has_anchored_query_);
   }
-  bool operator!=(const ContainerSelector& o) const { return !(*this == o); }
 
   unsigned GetHash() const;
 

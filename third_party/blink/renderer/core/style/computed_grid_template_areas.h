@@ -30,10 +30,6 @@ class CORE_EXPORT ComputedGridTemplateAreas
            column_count == other.column_count;
   }
 
-  bool operator!=(const ComputedGridTemplateAreas& other) const {
-    return !(*this == other);
-  }
-
   static NamedGridLinesMap CreateImplicitNamedGridLinesFromGridArea(
       const NamedGridAreaMap& named_areas,
       GridTrackSizingDirection direction);

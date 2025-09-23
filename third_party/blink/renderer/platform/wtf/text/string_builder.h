@@ -370,20 +370,11 @@ bool Equal(const StringBuilder& a, const StringType& b) {
 inline bool operator==(const StringBuilder& a, const StringBuilder& b) {
   return Equal(a, b);
 }
-inline bool operator!=(const StringBuilder& a, const StringBuilder& b) {
-  return !Equal(a, b);
-}
 inline bool operator==(const StringBuilder& a, const String& b) {
   return Equal(a, b);
 }
-inline bool operator!=(const StringBuilder& a, const String& b) {
-  return !Equal(a, b);
-}
 inline bool operator==(const String& a, const StringBuilder& b) {
   return Equal(b, a);
-}
-inline bool operator!=(const String& a, const StringBuilder& b) {
-  return !Equal(b, a);
 }
 
 }  // namespace blink

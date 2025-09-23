@@ -61,7 +61,6 @@ class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
     {% endfor %}
     );
   }
-  bool operator!=(const {{group.type_name}}& other) const { return !(*this == other); }
 
   {% for subgroup in group.subgroups %}
   Member<{{subgroup.type_name}}> {{subgroup.member_name}};

@@ -372,7 +372,6 @@ class PLATFORM_EXPORT Color {
            param1_ == other.param1_ && param2_ == other.param2_ &&
            alpha_ == other.alpha_;
   }
-  inline bool operator!=(const Color& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
 

@@ -173,7 +173,6 @@ struct SideTypes {
     }
     return true;
   }
-  bool operator!=(const SideTypes& other) const { return !(*this == other); }
 
   std::array<SideType, kSideIndexCount> type;
 };

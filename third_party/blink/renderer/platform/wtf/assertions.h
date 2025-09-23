@@ -74,13 +74,16 @@
 // Allow equality comparisons of Objects by reference or pointer,
 // interchangeably.  This can be only used on types whose equality makes no
 // other sense than pointer equality.
-#define DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(Type)                    \
-  inline bool operator==(const Type& a, const Type& b) { return &a == &b; }  \
-  inline bool operator==(const Type& a, const Type* b) { return &a == b; }   \
-  inline bool operator==(const Type* a, const Type& b) { return a == &b; }   \
-  inline bool operator!=(const Type& a, const Type& b) { return !(a == b); } \
-  inline bool operator!=(const Type& a, const Type* b) { return !(a == b); } \
-  inline bool operator!=(const Type* a, const Type& b) { return !(a == b); }
+#define DEFINE_COMPARISON_OPERATORS_WITH_REFERENCES(Type) \
+  inline bool operator==(const Type& a, const Type& b) {  \
+    return &a == &b;                                      \
+  }                                                       \
+  inline bool operator==(const Type& a, const Type* b) {  \
+    return &a == b;                                       \
+  }                                                       \
+  inline bool operator==(const Type* a, const Type& b) {  \
+    return a == &b;                                       \
+  }
 
 // Check at compile time that related enums stay in sync.
 #define STATIC_ASSERT_ENUM(a, b)                            \

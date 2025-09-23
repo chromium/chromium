@@ -43,8 +43,4 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          resizable == other.resizable;
 }
 
-bool VisualProperties::operator!=(const VisualProperties& other) const {
-  return !operator==(other);
-}
-
 }  // namespace blink

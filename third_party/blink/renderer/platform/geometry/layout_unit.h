@@ -495,14 +495,6 @@ inline bool operator>(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) > b;
 }
 
-inline bool operator!=(const int a, const LayoutUnit& b) {
-  return LayoutUnit(a) != b;
-}
-
-inline bool operator!=(const LayoutUnit& a, int b) {
-  return a != LayoutUnit(b);
-}
-
 inline bool operator==(const LayoutUnit& a, int b) {
   return a == LayoutUnit(b);
 }

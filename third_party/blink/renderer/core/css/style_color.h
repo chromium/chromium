@@ -156,10 +156,6 @@ class CORE_EXPORT StyleColor {
                                                     color2_type_);
     }
 
-    bool operator!=(const UnresolvedColorMix& other) const {
-      return !(*this == other);
-    }
-
    private:
     Color::ColorSpace color_interpolation_space_ = Color::ColorSpace::kNone;
     Color::HueInterpolationMethod hue_interpolation_method_ =
@@ -289,10 +285,6 @@ class CORE_EXPORT StyleColor {
 
     return color_or_unresolved_color_function_.color ==
            other.color_or_unresolved_color_function_.color;
-  }
-
-  inline bool operator!=(const StyleColor& other) const {
-    return !(*this == other);
   }
 
  protected:

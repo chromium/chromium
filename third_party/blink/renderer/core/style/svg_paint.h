@@ -64,7 +64,6 @@ struct SVGPaint {
   }
 
   CORE_EXPORT bool operator==(const SVGPaint&) const;
-  bool operator!=(const SVGPaint& other) const { return !(*this == other); }
 
   CORE_EXPORT static SVGPaint CreateInitial();
   CORE_EXPORT static SVGPaint CreateInitialBlack();

@@ -128,10 +128,6 @@ class LinkedHashSet {
       return iterator_ == other.iterator_;
     }
 
-    bool operator!=(const IteratorWrapper& other) const {
-      return !(*this == other);
-    }
-
    protected:
     IteratorWrapper(const T& it, const Map& map)
         : iterator_(it), map_iterator_(map.begin()) {}

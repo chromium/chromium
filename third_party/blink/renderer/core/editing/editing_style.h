@@ -241,7 +241,6 @@ class StyleChange {
            apply_font_face_ == other.apply_font_face_ &&
            apply_font_size_ == other.apply_font_size_;
   }
-  bool operator!=(const StyleChange& other) { return !(*this == other); }
 
  private:
   void ExtractTextStyles(Document*,

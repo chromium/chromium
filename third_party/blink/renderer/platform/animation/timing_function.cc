@@ -303,9 +303,4 @@ bool operator==(const TimingFunction& lhs, const TimingFunction& rhs) {
   }
 }
 
-// No need to define specific operator!= as they can all come via this function.
-bool operator!=(const TimingFunction& lhs, const TimingFunction& rhs) {
-  return !(lhs == rhs);
-}
-
 }  // namespace blink

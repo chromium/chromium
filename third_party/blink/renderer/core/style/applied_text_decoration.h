@@ -38,9 +38,6 @@ class CORE_EXPORT AppliedTextDecoration {
   Length UnderlineOffset() const { return underline_offset_; }
 
   bool operator==(const AppliedTextDecoration&) const;
-  bool operator!=(const AppliedTextDecoration& o) const {
-    return !(*this == o);
-  }
 
  private:
   unsigned lines_ : kTextDecorationLineBits;

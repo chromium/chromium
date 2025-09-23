@@ -43,8 +43,6 @@ class StyleIntrinsicLength {
            length_ == o.length_;
   }
 
-  bool operator!=(const StyleIntrinsicLength& o) const { return !(*this == o); }
-
  private:
   bool has_auto_ = false;
   bool matches_element_ = false;

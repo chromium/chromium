@@ -30,7 +30,6 @@ class CORE_EXPORT StyleAnchorScope {
            base::ValuesEquivalent(all_tree_scope_, o.all_tree_scope_) &&
            base::ValuesEquivalent(names_, o.names_);
   }
-  bool operator!=(const StyleAnchorScope& o) const { return !operator==(o); }
 
   bool IsNone() const { return type_ == Type::kNone; }
   bool IsAll() const { return type_ == Type::kAll; }

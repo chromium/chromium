@@ -155,7 +155,6 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     ScaledBufferSize(gfx::Rect visible_rect, gfx::Size natural_size);
 
     bool operator==(const ScaledBufferSize& rhs) const;
-    bool operator!=(const ScaledBufferSize& rhs) const;
 
     // Applies crop-and-scale relative to the current natural size.
     ScaledBufferSize CropAndScale(int offset_x,

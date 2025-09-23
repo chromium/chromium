@@ -66,9 +66,6 @@ class VisibleSelectionTemplate {
   VisiblePositionTemplate<Strategy> VisibleFocus() const;
 
   bool operator==(const VisibleSelectionTemplate&) const;
-  bool operator!=(const VisibleSelectionTemplate& other) const {
-    return !operator==(other);
-  }
 
   bool IsNone() const;
   bool IsCaret() const;

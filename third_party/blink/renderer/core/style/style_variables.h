@@ -399,9 +399,6 @@ class CORE_EXPORT StyleVariables {
   }
 
   bool operator==(const StyleVariables& other) const;
-  bool operator!=(const StyleVariables& other) const {
-    return !(*this == other);
-  }
 
   std::optional<CSSVariableData*> GetData(const AtomicString& name) const {
     return data_root_->Get(name);

@@ -43,9 +43,6 @@ inline bool operator==(const DOMRect& lhs, const DOMRect& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y() &&
          lhs.width() == rhs.width() && lhs.height() == rhs.height();
 }
-inline bool operator!=(const DOMRect& lhs, const DOMRect& rhs) {
-  return !(lhs == rhs);
-}
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_RECT_H_

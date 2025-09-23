@@ -262,11 +262,6 @@ bool operator==(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
 }
 
 template <typename T, typename U, typename V>
-inline bool operator!=(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
-  return !(a == b);
-}
-
-template <typename T, typename U, typename V>
 inline wtf_size_t HashSet<T, U, V>::size() const {
   return impl_.size();
 }

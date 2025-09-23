@@ -60,9 +60,6 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   // For reference filters, this equality operator compares pointers of the
   // image_filter fields instead of their values.
   bool operator==(const CompositorFilterOperations&) const;
-  bool operator!=(const CompositorFilterOperations& o) const {
-    return !(*this == o);
-  }
 
   String ToString() const;
 

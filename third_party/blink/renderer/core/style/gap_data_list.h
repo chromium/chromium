@@ -117,8 +117,6 @@ class CORE_EXPORT GapDataList {
     return gap_data_list_ == o.gap_data_list_;
   }
 
-  bool operator!=(const GapDataList& o) const { return !(*this == o); }
-
  private:
   GapDataVector gap_data_list_;
 };

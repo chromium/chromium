@@ -161,7 +161,6 @@ struct RobinHoodMap {
       return *this;
     }
     bool operator==(const iterator& other) const { return pos_ == other.pos_; }
-    bool operator!=(const iterator& other) const { return pos_ != other.pos_; }
 
    private:
     Bucket* pos_;
@@ -186,9 +185,6 @@ struct RobinHoodMap {
     }
     bool operator==(const const_iterator& other) const {
       return pos_ == other.pos_;
-    }
-    bool operator!=(const const_iterator& other) const {
-      return pos_ != other.pos_;
     }
 
    private:

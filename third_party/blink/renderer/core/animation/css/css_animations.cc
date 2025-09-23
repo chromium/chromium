@@ -801,7 +801,6 @@ class SpecifiedTimelines {
     void operator++() { index_ = timelines_.SkipPastNullptr(index_ + 1); }
 
     bool operator==(const Iterator& o) const { return index_ == o.index_; }
-    bool operator!=(const Iterator& o) const { return index_ != o.index_; }
 
    private:
     wtf_size_t index_;

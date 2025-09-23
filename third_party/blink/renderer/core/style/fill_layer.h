@@ -47,7 +47,6 @@ struct FillSize {
   bool operator==(const FillSize& o) const {
     return type == o.type && size == o.size;
   }
-  bool operator!=(const FillSize& o) const { return !(*this == o); }
 
   EFillSizeType type;
   LengthSize size;
@@ -58,7 +57,6 @@ struct FillRepeat {
   EFillRepeat y{EFillRepeat::kRepeatFill};
 
   bool operator==(const FillRepeat& r) const { return x == r.x && y == r.y; }
-  bool operator!=(const FillRepeat& r) const { return !(*this == r); }
 };
 
 class FillLayerWrapper;
@@ -213,7 +211,6 @@ class CORE_EXPORT FillLayer {
   FillLayer(const FillLayer&);
 
   bool operator==(const FillLayer&) const;
-  bool operator!=(const FillLayer& o) const { return !(*this == o); }
 
   bool VisuallyEqual(const FillLayer&) const;
 

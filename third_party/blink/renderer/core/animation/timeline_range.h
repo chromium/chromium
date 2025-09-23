@@ -56,9 +56,6 @@ class CORE_EXPORT TimelineRange {
       return entry_crossing_distance == other.entry_crossing_distance &&
              exit_crossing_distance == other.exit_crossing_distance;
     }
-    bool operator!=(const ViewOffsets& other) const {
-      return !(*this == other);
-    }
     double entry_crossing_distance = 0;
     double exit_crossing_distance = 0;
   };
@@ -76,10 +73,6 @@ class CORE_EXPORT TimelineRange {
   bool operator==(const TimelineRange& other) const {
     return offsets_ == other.offsets_ && view_offsets_ == other.view_offsets_ &&
            scroll_limits_ == other.scroll_limits_;
-  }
-
-  bool operator!=(const TimelineRange& other) const {
-    return !(*this == other);
   }
 
   bool IsEmpty() const;

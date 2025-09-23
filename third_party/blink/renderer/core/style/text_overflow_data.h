@@ -27,9 +27,6 @@ class CORE_EXPORT TextOverflowData final {
   bool operator==(const TextOverflowData& other) const {
     return type_ == other.type_ && string_value_ == other.string_value_;
   }
-  bool operator!=(const TextOverflowData& other) const {
-    return !(*this == other);
-  }
 
   bool IsClip() const { return type_ == Type::kClip; }
   bool IsEllipsis() const { return type_ == Type::kEllipsis; }

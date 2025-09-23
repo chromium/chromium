@@ -2468,15 +2468,6 @@ bool operator==(const Vector<T, InlineCapacityA, Allocator>& a,
                                                      a.size());
 }
 
-template <typename T,
-          wtf_size_t InlineCapacityA,
-          wtf_size_t InlineCapacityB,
-          typename Allocator>
-inline bool operator!=(const Vector<T, InlineCapacityA, Allocator>& a,
-                       const Vector<T, InlineCapacityB, Allocator>& b) {
-  return !(a == b);
-}
-
 namespace internal {
 template <typename Allocator, typename VisitorDispatcher, typename T>
 void TraceInlinedBuffer(VisitorDispatcher visitor,

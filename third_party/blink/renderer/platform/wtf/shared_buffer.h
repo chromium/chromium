@@ -88,7 +88,6 @@ class WTF_EXPORT SegmentedBuffer {
     bool operator==(const Iterator& that) const {
       return std::ranges::equal(value_, that.value_) && buffer_ == that.buffer_;
     }
-    bool operator!=(const Iterator& that) const { return !(*this == that); }
     const base::span<const char>& operator*() const {
       DCHECK(!IsEnd());
       return value_;

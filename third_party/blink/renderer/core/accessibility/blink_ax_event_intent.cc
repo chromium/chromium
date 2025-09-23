@@ -417,10 +417,6 @@ bool operator==(const BlinkAXEventIntent& a, const BlinkAXEventIntent& b) {
          BlinkAXEventIntentHashTraits::GetHash(b);
 }
 
-bool operator!=(const BlinkAXEventIntent& a, const BlinkAXEventIntent& b) {
-  return !(a == b);
-}
-
 bool BlinkAXEventIntent::IsHashTableDeletedValue() const {
   return is_deleted_;
 }

@@ -988,9 +988,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
   // inheritedEquals().
   CORE_EXPORT bool operator==(const ComputedStyle& other) const;
-  bool operator!=(const ComputedStyle& other) const {
-    return !(*this == other);
-  }
 
   bool InheritedEqual(const ComputedStyle&) const;
   bool NonInheritedEqual(const ComputedStyle&) const;

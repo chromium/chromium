@@ -99,7 +99,6 @@ struct CORE_EXPORT BoxStrut {
                     other.block_end) ==
            std::tie(inline_start, inline_end, block_start, block_end);
   }
-  bool operator!=(const BoxStrut& other) const { return !(*this == other); }
 
   String ToString() const;
 

@@ -50,10 +50,6 @@ class StyleContentAlignmentData {
            overflow_ == o.overflow_;
   }
 
-  bool operator!=(const StyleContentAlignmentData& o) const {
-    return !(*this == o);
-  }
-
  private:
   unsigned position_ : 4;      // ContentPosition
   unsigned distribution_ : 3;  // ContentDistributionType

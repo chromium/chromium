@@ -75,7 +75,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   void Trace(Visitor* visitor) const { visitor->Trace(font_fallback_list_); }
 
   bool operator==(const Font& other) const;
-  bool operator!=(const Font& other) const { return !(*this == other); }
 
   const FontDescription& GetFontDescription() const {
     return font_description_;

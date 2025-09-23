@@ -86,10 +86,6 @@ inline bool operator==(const WebTextInputInfo& a, const WebTextInputInfo& b) {
   return a.Equals(b);
 }
 
-inline bool operator!=(const WebTextInputInfo& a, const WebTextInputInfo& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_INFO_H_

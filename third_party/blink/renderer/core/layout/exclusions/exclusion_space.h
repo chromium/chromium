@@ -256,9 +256,6 @@ class CORE_EXPORT ExclusionSpaceInternal final
   }
 
   bool operator==(const ExclusionSpaceInternal& other) const;
-  bool operator!=(const ExclusionSpaceInternal& other) const {
-    return !(*this == other);
-  }
 
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const ExclusionSpaceInternal& other) const {
@@ -784,9 +781,6 @@ class CORE_EXPORT ExclusionSpace {
     if (exclusion_space_ && other.exclusion_space_)
       return *exclusion_space_ == *other.exclusion_space_;
     return false;
-  }
-  bool operator!=(const ExclusionSpace& other) const {
-    return !(*this == other);
   }
 
 #if DCHECK_IS_ON()

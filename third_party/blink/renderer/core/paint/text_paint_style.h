@@ -46,9 +46,6 @@ struct CORE_EXPORT TextPaintStyle {
            selection_decoration_color == other.selection_decoration_color &&
            paint_order == other.paint_order;
   }
-  bool operator!=(const TextPaintStyle& other) const {
-    return !(*this == other);
-  }
 };
 
 }  // namespace blink

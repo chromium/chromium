@@ -127,8 +127,6 @@ struct FontCacheKey {
            is_unique_match_ == other.is_unique_match_;
   }
 
-  bool operator!=(const FontCacheKey& other) const { return !(*this == other); }
-
   static constexpr unsigned PrecisionMultiplier() {
     return kFontSizePrecisionMultiplier;
   }

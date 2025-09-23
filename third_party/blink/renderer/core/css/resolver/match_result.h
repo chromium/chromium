@@ -78,9 +78,6 @@ struct CORE_EXPORT MatchedProperties {
     bool operator==(const Data& other) const {
       return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) == 0;
     }
-    bool operator!=(const Data& other) const {
-      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) != 0;
-    }
   };
 
   MatchedProperties(CSSPropertyValueSet* properties_arg,
@@ -288,10 +285,6 @@ class CORE_EXPORT MatchResult {
 inline bool operator==(const MatchedProperties& a, const MatchedProperties& b) {
   return a.properties == b.properties &&
          a.data_.link_match_type == b.data_.link_match_type;
-}
-
-inline bool operator!=(const MatchedProperties& a, const MatchedProperties& b) {
-  return !(a == b);
 }
 
 }  // namespace blink
