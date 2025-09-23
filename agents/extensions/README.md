@@ -11,7 +11,17 @@ Configuration are provided in [gemini-cli extensions] format.
 
 ## Managing Configurations
 
-Use `agents/extensions/install.py` to manage extensions.
+Use `agents/extensions/install.py` to manage extensions. This script is a
+wrapper around the `gemini extensions` commands.
+
+### Migrating from Project-Level Extensions
+
+If you have previously installed extensions at the project-level, you will be
+prompted to run the `fix` command to migrate them to the new user-level model:
+
+```bash
+vpython3 agents/extensions/install.py fix
+```
 
 ### Listing Extensions
 
@@ -21,35 +31,29 @@ To see a list of available extensions and their install status:
 vpython3 agents/extensions/install.py list
 ```
 
-Example output:
-```
-Extension           AVAILABLE  INSTALLED  SCOPE   SYMLINKED  STATUS
-------------------  ---------  ---------  ------  ---------  ----------
-blink_spec          1.0.0      -          -       -          -
-build_information   1.0.0      1.0.0      global  yes        active
-depot_tools         1.0.0      1.0.0      local   no         active
-                    1.0.0      1.0.0      global  yes        overridden
-landmines           1.0.0      1.0.0      local   yes        active
-perf                1.0.0      -          -       -          -
-```
-
 ### Adding Extensions
 
-```bash
-# Copies directory to //.gemini/extensions.
-vpython3 agents/extensions/install.py add <extension_name_1> <extension_name_2>
+By default, extensions are installed as links in your user-level extension
+directory (`~/.gemini/extensions`).
 
-# Copies directory to ~/.gemini/extensions
-vpython3 agents/extensions/install.py add --global <extension_name_1> <extension_name_2> 
+```bash
+vpython3 agents/extensions/install.py add <extension_name_1> <extension_name_2>
+```
+
+To copy the extension directory instead of creating a link, use the `--copy`
+flag:
+
+```bash
+vpython3 agents/extensions/install.py add --copy <extension_name_1>
 ```
 
 ### Updating Extensions
 
 ```bash
-vpython3 agents/extensions/install.py update <server_name>
+vpython3 agents/extensions/install.py update <extension_name>
 ```
 
-You can also update all installed servers at once:
+You can also update all installed extensions at once:
 
 ```bash
 vpython3 agents/extensions/install.py update
@@ -58,7 +62,7 @@ vpython3 agents/extensions/install.py update
 ### Removing Extensions
 
 ```bash
-vpython3 agents/extensions/install.py remove <server_name>
+vpython3 agents/extensions/install.py remove <extension_name>
 ```
 
 ## Types of MCP Servers
