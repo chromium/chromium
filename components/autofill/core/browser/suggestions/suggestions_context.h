@@ -51,11 +51,6 @@ struct SuggestionsContext {
   // TODO(crbug.com/409962888): Remove once each suggestion generator is capable
   // of checking all of their requirements.
   bool do_not_generate_autofill_suggestions = false;
-  // Indicates whether fetching the list of plus addresses is required to
-  // generate the overall list of suggestions.
-  // TODO(crbug.com/409962888): Remove once each suggestion generator is capable
-  // of checking all of their requirements.
-  bool field_is_relevant_for_plus_addresses = false;
   AutofillSuggestionTriggerSource trigger_source =
       AutofillSuggestionTriggerSource::kUnspecified;
 };

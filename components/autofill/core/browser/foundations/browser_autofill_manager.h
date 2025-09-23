@@ -544,7 +544,11 @@ class BrowserAutofillManager : public AutofillManager {
   // OTP values fetching) in the middle.
   //
   // Phase 3 requires the list of `plus_addresses` as these can influence how
-  // address profile suggestions are shown. Other flows that rely on the
+  // address profile suggestions are shown. If `plus_addresses` is std::nullopt
+  // it means that plus addresses are irrelevant for the current suggestion
+  // context.
+  //
+  // Other flows that rely on the
   // `external_delegate_` to show their suggestions, pass the suggestions list
   // to the delegate via `OnGenerateSuggestionsComplete` and request them to be
   // shown (via `show_suggestions`).
@@ -557,13 +561,13 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
-      std::vector<std::string> plus_addresses);
+      std::optional<std::vector<std::string>> plus_addresses);
   void GenerateSuggestionsAndMaybeShowUIPhase3(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
-      const std::vector<std::string>& plus_addresses,
+      std::optional<std::vector<std::string>> plus_addresses,
       std::vector<std::string> one_time_passwords);
 
   // Receives the lists of plus address and single field form fill suggestions

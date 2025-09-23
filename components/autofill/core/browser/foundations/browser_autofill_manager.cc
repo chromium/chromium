@@ -1320,7 +1320,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);
-  context.field_is_relevant_for_plus_addresses =
+  const bool field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
        context.is_autofill_available &&
@@ -1334,16 +1334,20 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
-  if (context.field_is_relevant_for_plus_addresses) {
+  if (field_is_relevant_for_plus_addresses) {
+    auto callback =
+        base::BindOnce([](std::vector<std::string> plus_addresses) {
+          // Noop to make function signatures fit.
+          return std::optional<std::vector<std::string>>(
+              std::move(plus_addresses));
+        }).Then(std::move(generate_suggestions_and_maybe_show_ui_phase2));
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
-        client().GetLastCommittedPrimaryMainFrameOrigin(),
-        std::move(generate_suggestions_and_maybe_show_ui_phase2));
-
+        client().GetLastCommittedPrimaryMainFrameOrigin(), std::move(callback));
     return;
   }
 
   std::move(generate_suggestions_and_maybe_show_ui_phase2)
-      .Run(/*plus_addresses=*/{});
+      .Run(/*plus_addresses=*/std::nullopt);
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
@@ -1351,7 +1355,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
-    std::vector<std::string> plus_addresses) {
+    std::optional<std::vector<std::string>> plus_addresses) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1364,7 +1368,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   auto generate_suggestions_and_maybe_show_ui_phase3 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3,
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,
-      plus_addresses);
+      std::move(plus_addresses));
 
   // `otp_manager_` may not be instantiated on all platforms. If a focused field
   // is not classified, `autofill_field` is null but the field may be filled by
@@ -1385,7 +1389,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
-    const std::vector<std::string>& plus_addresses,
+    std::optional<std::vector<std::string>> plus_addresses,
     std::vector<std::string> one_time_passwords) {
   OnGenerateSuggestionsCallback callback =
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
@@ -1403,7 +1407,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions = GetAvailableSuggestions(
       form, form_structure, field, autofill_field, trigger_source,
-      GetPlusAddressOverride(client().GetPlusAddressDelegate(), plus_addresses),
+      GetPlusAddressOverride(
+          client().GetPlusAddressDelegate(),
+          plus_addresses.value_or(std::vector<std::string>())),
       one_time_passwords, context, ranking_context);
 
   if (context.is_autofill_available &&
@@ -1472,7 +1478,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // suggestions are not shown if the plus address email override was applied on
   // at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
-      context.field_is_relevant_for_plus_addresses && autofill_field &&
+      plus_addresses && autofill_field &&
       autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) &&
       !suggestions.empty() &&
       !WasEmailOverrideAppliedOnSuggestions(suggestions);
@@ -1492,7 +1498,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
                   kAutofillProfileOnEmailField;
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
             password_form_classification, trigger_source);
@@ -1565,7 +1571,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
 
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
-      context.field_is_relevant_for_plus_addresses && autofill_field &&
+      plus_addresses && autofill_field &&
       (autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) ||
        autofill_field->Type().GetTypes().contains(FieldType::USERNAME) ||
        autofill_field->Type().GetTypes().contains(FieldType::SINGLE_USERNAME));
@@ -1585,7 +1591,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   if (should_offer_plus_addresses) {
     plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             client().IsOffTheRecord(), form, field,
             GetFieldTypeGroupsFromFormStructure(form_structure),
             password_form_classification, trigger_source);
