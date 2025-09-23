@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/shared/webui_shared.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
@@ -46,6 +49,9 @@ bool GlicFreUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
+      {"disabledByAdminNoticeCloseButton",
+       IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON},
+      {"disabledByAdminNoticeHeader", IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER},
       {"errorNotice", IDS_GLIC_ERROR_NOTICE},
       {"errorNoticeActionButton", IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON},
       {"errorNoticeHeader", IDS_GLIC_ERROR_NOTICE_HEADER},
@@ -65,6 +71,7 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Explicitly add source shared with chrome://glic.
   source->AddResourcePath("glic/glic_request_headers.js",
       IDR_GLIC_GLIC_REQUEST_HEADERS_JS);
+  source->AddResourcePath("glic_logo.svg", GetResourceID(IDR_GLIC_LOGO));
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicFreResources, IDR_GLIC_FRE_FRE_HTML);
@@ -72,6 +79,12 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
 
+  // Add parameterized admin notice string.
+  source->AddString("disabledByAdminNotice",
+                    l10n_util::GetStringFUTF16(
+                        IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_WITH_LINK,
+                        base::UTF8ToUTF16(features::kGlicCaaLinkUrl.Get()),
+                        base::UTF8ToUTF16(features::kGlicCaaLinkText.Get())));
   // Set up FRE URL via cli flag, or default to the finch param value.
   const GURL guest_url =
       GetFreURL(Profile::FromBrowserContext(browser_context));
@@ -83,6 +96,8 @@ GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   int reload_max_loading_time_ms = features::kGlicReloadMaxLoadingTimeMs.Get();
   source->AddInteger("reloadMaxLoadingTimeMs", reload_max_loading_time_ms);
+  source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(
+                                          features::kGlicCaaGuestError));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicFreUI)

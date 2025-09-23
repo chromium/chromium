@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -37,6 +38,8 @@ namespace {
 using glic::test::internal::kGlicFreShowingDialogState;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
+                                    kOpenedTabUrlState);
 
 const InteractiveBrowserTestApi::DeepQuery kMockFreClientNoThanksButton = {
     "#noThanks"};
@@ -80,6 +83,46 @@ class GlicFreControllerUiTestBase : public test::InteractiveGlicTest {
     return glic_service()->fre_controller();
   }
 
+  auto WaitForAndInstrumentGlicFre() {
+    MultiStep steps = Steps(
+        UninstrumentWebContents(test::kGlicFreContentsElementId, false),
+        UninstrumentWebContents(test::kGlicFreHostElementId, false),
+        ObserveState(kGlicFreShowingDialogState, std::ref(GetFreController())),
+        InAnyContext(
+            Steps(InstrumentNonTabWebView(
+                      test::kGlicFreHostElementId,
+                      GlicFreDialogView::kWebViewElementIdForTesting),
+                  InstrumentInnerWebContents(test::kGlicFreContentsElementId,
+                                             test::kGlicFreHostElementId, 0),
+                  WaitForWebContentsReady(test::kGlicFreContentsElementId))),
+        WaitForState(kGlicFreShowingDialogState, true),
+        StopObservingState(kGlicFreShowingDialogState));
+
+    AddDescriptionPrefix(steps, "WaitForAndInstrumentGlicFre");
+    return steps;
+  }
+
+  auto CheckFreDialogIsShowing(bool is_showing) {
+    return CheckResult(
+        [this]() { return GetFreController().IsShowingDialog() == true; },
+        is_showing, "CheckFreDialogIsShowing");
+  }
+
+  auto WaitForTabOpenedTo(int tab, GURL url) {
+    return Steps(
+        PollState(kOpenedTabUrlState,
+                  [this, tab]() {
+                    auto* const model = browser()->tab_strip_model();
+                    auto* tab_at_index = model->GetTabAtIndex(tab);
+                    if (!tab_at_index) {
+                      return GURL();
+                    }
+                    return tab_at_index->GetContents()->GetVisibleURL();
+                  }),
+        WaitForState(kOpenedTabUrlState, url),
+        StopObservingState(kOpenedTabUrlState));
+  }
+
   net::EmbeddedTestServer& fre_server() { return fre_server_; }
   const GURL& fre_url() { return fre_url_; }
 
@@ -117,37 +160,12 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
     GlicFreControllerUiTestBase::SetUp();
   }
 
-  auto WaitForAndInstrumentGlicFre() {
-    MultiStep steps = Steps(
-        UninstrumentWebContents(test::kGlicFreContentsElementId, false),
-        UninstrumentWebContents(test::kGlicFreHostElementId, false),
-        ObserveState(kGlicFreShowingDialogState, std::ref(GetFreController())),
-        InAnyContext(
-            Steps(InstrumentNonTabWebView(
-                      test::kGlicFreHostElementId,
-                      GlicFreDialogView::kWebViewElementIdForTesting),
-                  InstrumentInnerWebContents(test::kGlicFreContentsElementId,
-                                             test::kGlicFreHostElementId, 0),
-                  WaitForWebContentsReady(test::kGlicFreContentsElementId))),
-        WaitForState(kGlicFreShowingDialogState, true),
-        StopObservingState(kGlicFreShowingDialogState));
-
-    AddDescriptionPrefix(steps, "WaitForAndInstrumentGlicFre");
-    return steps;
-  }
-
   auto ForceInvalidateAccount() {
     return Do([this]() { InvalidateAccount(GetFreController().profile()); });
   }
 
   auto ForceReauthAccount() {
     return Do([this]() { ReauthAccount(GetFreController().profile()); });
-  }
-
-  auto CheckFreDialogIsShowing(bool is_showing) {
-    return CheckResult(
-        [this]() { return GetFreController().IsShowingDialog() == true; },
-        is_showing, "CheckFreDialogIsShowing");
   }
 
   // Ensures a mock fre button is present and then clicks it. Works even if the
@@ -334,26 +352,26 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
                        RecordTerminationStatusOnWebUICrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
-  RunTestSequence(
-      ObserveState(kFreWebUiState, std::ref(GetFreController())),
-      PressButton(kGlicButtonElementId), WaitForAndInstrumentGlicFre(),
-      WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-      // Crash the renderer process for the FRE WebUI.
-      Do([this]() {
-        content::WebContents* fre_web_contents =
-            GetFreController().GetWebContents();
-        ASSERT_TRUE(fre_web_contents);
-        content::RenderProcessHost* rph =
-            fre_web_contents->GetPrimaryMainFrame()->GetProcess();
-        ASSERT_TRUE(rph);
-        rph->Shutdown(content::RESULT_CODE_KILLED);
-      }),
-      WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
-      InAnyContext(Do([this]() {
-        histogram_tester().ExpectUniqueSample(
-            "Glic.Fre.WebUITerminationStatus",
-            base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1);
-      })));
+  RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
+                  PressButton(kGlicButtonElementId),
+                  WaitForAndInstrumentGlicFre(),
+                  WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
+                  // Crash the renderer process for the FRE WebUI.
+                  Do([this]() {
+                    content::WebContents* fre_web_contents =
+                        GetFreController().GetWebContents();
+                    ASSERT_TRUE(fre_web_contents);
+                    content::RenderProcessHost* rph =
+                        fre_web_contents->GetPrimaryMainFrame()->GetProcess();
+                    ASSERT_TRUE(rph);
+                    rph->Shutdown(content::RESULT_CODE_KILLED);
+                  }),
+                  WaitForHide(GlicFreDialogView::kWebViewElementIdForTesting),
+                  InAnyContext(Do([this]() {
+                    histogram_tester().ExpectUniqueSample(
+                        "Glic.Fre.WebUITerminationStatus",
+                        base::TERMINATION_STATUS_PROCESS_WAS_KILLED, 1);
+                  })));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest,
@@ -454,6 +472,54 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
 
     GlicFreControllerUiTestBase::SetUp();
   }
+};
+
+class GlicFreControllerRedirectTest : public GlicFreControllerUiTestBase,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    fre_server().AddDefaultHandlers();
+    ASSERT_TRUE(fre_server().InitializeAndListen());
+
+    admin_hostname_ =
+        GetParam() ? "admin.google.com" : "access.workspace.google.com";
+
+    embedded_https_test_server().SetCertHostnames(
+        {admin_hostname_, "127.0.0.1"});
+    embedded_https_test_server().AddDefaultHandlers();
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+    GURL admin_url_base = embedded_https_test_server().GetURL("/echo?");
+    GURL::Replacements replacements;
+    replacements.SetHostStr(admin_hostname_);
+    GURL admin_url = admin_url_base.ReplaceComponents(replacements);
+
+    fre_url_ = fre_server_.GetURL(
+        base::StrCat({"/server-redirect-302?", admin_url.spec()}));
+
+    destination_url_ =
+        fre_server_.GetURL("/echo").ReplaceComponents(replacements);
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicDebugWebview, {}},
+        {features::kGlicCaaGuestError,
+         {{"glic-caa-link-url", destination_url_.spec()}}}};
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+    GlicFreControllerUiTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule(admin_hostname_, "127.0.0.1");
+
+    GlicFreControllerUiTestBase::SetUpOnMainThread();
+  }
+  const GURL& destination_url() { return destination_url_; }
+
+ private:
+  GURL destination_url_;
+  std::string admin_hostname_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTimeoutTest,
@@ -577,6 +643,36 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, DISABLED_CloseWithXButton) {
             mojom::FreWebUiState::kReady, 1);
       })));
 }
+
+IN_PROC_BROWSER_TEST_P(GlicFreControllerRedirectTest, AccessDeniedAdmin) {
+  auto server_running = fre_server().StartAcceptingConnectionsAndReturnHandle();
+  auto https_server_running =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
+  RunTestSequence(
+      ObserveState(kFreWebUiState, std::ref(GetFreController())),
+      PressButton(kGlicButtonElementId),
+
+      WaitForState(kFreWebUiState, mojom::FreWebUiState::kDisabledByAdmin),
+
+      InstrumentNonTabWebView(test::kGlicFreHostElementId,
+                              GlicFreDialogView::kWebViewElementIdForTesting),
+      InAnyContext(
+          WaitForElementVisible(test::kGlicFreHostElementId,
+                                {"#disabledByAdminPanel:not([hidden])"})),
+      CheckTabCount(1),
+      InAnyContext(WaitForElementVisible(test::kGlicFreHostElementId,
+                                         {"#disabledByAdminPanel .notice a"})),
+      InAnyContext(ClickElement(test::kGlicFreHostElementId,
+                                {"#disabledByAdminPanel .notice a"})),
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount(
+                      "Glic.Fre.DisabledByAdminPanelLinkClicked"),
+                  1);
+      })),
+      WaitForTabOpenedTo(1, destination_url()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, GlicFreControllerRedirectTest, ::testing::Bool());
 
 }  // namespace
 }  // namespace glic

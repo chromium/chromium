@@ -51,7 +51,9 @@ export type PageType =
     // A page that should be displayed.
     |'regular'
     // A error page that should be displayed.
-    |'guestError';
+    |'guestError'
+    // An error page that indicates access loss.
+    |'guestCaaError';
 
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
@@ -61,6 +63,8 @@ export interface WebviewDelegate {
   webviewUnresponsive(): void;
   // Called when a page commits inside the webview.
   webviewPageCommit(pageType: PageType): void;
+  // Called when the webview redirects to an access error page.
+  webviewDeniedByAdmin(): void;
 }
 
 // To match needed pieces of tools/typescript/definitions/web_request.d.ts,
@@ -308,7 +312,8 @@ export class WebviewController {
     }
     this.browserProxy.handler.webviewCommitted({url});
 
-    // TODO(https://crbug.com/388328847): Remove when login issues are resolved.
+    // TODO(https://crbug.com/388328847): Remove when login issues are
+    // resolved.
     if (url.startsWith('https://login.corp.google.com/') ||
         url.startsWith('https://accounts.google.com/') ||
         url.startsWith('https://accounts.googlers.com/') ||
@@ -344,6 +349,18 @@ export class WebviewController {
     event.stopPropagation();
   }
 
+  private urlMatchesAdminBlockedUrl(url: string) {
+    const adminBlockedRedirectOrigins =
+        loadTimeData.getString('adminBlockedRedirectOrigins');
+    if (adminBlockedRedirectOrigins &&
+        adminBlockedRedirectOrigins.split(' ').some(
+            origin => matcherForOrigin(origin.trim())?.test(url))) {
+      console.warn(`CAA error page detected.`);
+      return true;
+    }
+    return false;
+  }
+
   private onBeforeRequest:
       ChromeEventFunctionType<typeof chrome.webRequest.onBeforeRequest> =
           (details) => {
@@ -351,6 +368,11 @@ export class WebviewController {
             if (details.frameId !== 0) {
               return {};
             }
+            if (this.urlMatchesAdminBlockedUrl(details.url)) {
+              this.delegate.webviewDeniedByAdmin();
+              return {cancel: true};
+            }
+
             return {cancel: !urlMatchesAllowedOrigin(details.url)};
           };
 }

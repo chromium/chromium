@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "net/dns/mock_host_resolver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
@@ -606,6 +609,118 @@ IN_PROC_BROWSER_TEST_F(GlicWithMultipleProfilesTest, OpenGlicInEachProfile) {
   RunTestSequence(
       CheckControllerShowing(false),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly));
+}
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
+                                    kOpenedTabUrlState);
+
+class GlicApiUiRedirectTest : public test::InteractiveGlicTest,
+                              public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    admin_hostname_ =
+        GetParam() ? "admin.google.com" : "access.workspace.google.com";
+
+    embedded_https_test_server().SetCertHostnames(
+        {admin_hostname_, "gemini.google.com", "127.0.0.1"});
+    embedded_https_test_server().AddDefaultHandlers();
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+
+    GURL admin_url_base = embedded_https_test_server().GetURL("/echo?");
+    GURL::Replacements replacements;
+    replacements.SetHostStr(admin_hostname_);
+    GURL admin_url = admin_url_base.ReplaceComponents(replacements);
+
+    SetGlicPagePath("/server-redirect-302");
+    add_mock_glic_query_param(admin_url.spec());
+
+    replacements.SetHostStr("gemini.google.com");
+    destination_url_ =
+        embedded_https_test_server().GetURL("/echo").ReplaceComponents(
+            replacements);
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicDebugWebview, {}},
+        {features::kGlicCaaGuestError,
+         {{"glic-caa-link-url", destination_url_.spec()}}}};
+
+    redirect_features_.InitWithFeaturesAndParameters(enabled_features,
+                                                     /*disabled_features=*/{});
+    test::InteractiveGlicTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule(admin_hostname_, "127.0.0.1");
+    host_resolver()->AddRule("gemini.google.com", "127.0.0.1");
+
+    test::InteractiveGlicTest::SetUpOnMainThread();
+  }
+  const GURL& destination_url() { return destination_url_; }
+
+ protected:
+  auto WaitForTabOpenedTo(int tab, GURL url) {
+    return Steps(
+        PollState(kOpenedTabUrlState,
+                  [this, tab]() {
+                    auto* const model = browser()->tab_strip_model();
+                    auto* tab_at_index = model->GetTabAtIndex(tab);
+                    if (!tab_at_index) {
+                      return GURL();
+                    }
+                    return tab_at_index->GetContents()->GetVisibleURL();
+                  }),
+        WaitForState(kOpenedTabUrlState, url),
+        StopObservingState(kOpenedTabUrlState));
+  }
+
+  base::UserActionTester& user_action_tester() { return user_action_tester_; }
+
+ private:
+  GURL destination_url_;
+  std::string admin_hostname_;
+  base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList redirect_features_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiUiRedirectTest, AccessDeniedAdmin) {
+  auto https_server_running =
+      embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
+
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(WaitForElementVisible(
+          test::kGlicHostElementId, {"#disabledByAdminPanel:not([hidden])"})),
+      CheckTabCount(1),
+      InAnyContext(WaitForElementVisible(test::kGlicHostElementId,
+                                         {"#disabledByAdminPanel .notice a"})),
+      ClickElement(test::kGlicHostElementId,
+                   {"#disabledByAdminPanel .notice a"})
+          .SetContext(ui::InteractionSequence::ContextMode::kAny)
+          .SetMustRemainVisible(false),
+      InAnyContext(Do([&]() {
+        EXPECT_EQ(user_action_tester().GetActionCount(
+                      "Glic.DisabledByAdminPanelLinkClicked"),
+                  1);
+      })),
+      WaitForTabOpenedTo(1, destination_url()), CheckControllerShowing(false));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, GlicApiUiRedirectTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, AccessDeniedAdminWithoutLink) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
+      InAnyContext(Do([&]() {
+        browser()->profile()->GetPrefs()->SetInteger(
+            ::prefs::kGeminiSettings,
+            static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
+      })),
+
+      InAnyContext(WaitForElementVisible(
+          test::kGlicHostElementId, {"#disabledByAdminPanel:not(.show-disabled-"
+                                     "by-admin-link) .without-link"})),
+      InAnyContext(EnsureNotVisible(test::kGlicHostElementId,
+                                    {"#disabledByAdminPanel a"})));
 }
 
 }  // namespace glic

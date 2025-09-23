@@ -129,6 +129,22 @@ webview:not([hidden]) {
   color: var(--color--primary);
 }
 
+#disabledByAdminPanel .without-link {
+  display: inline-block;
+}
+
+#disabledByAdminPanel .with-link {
+  display: none;
+}
+
+#disabledByAdminPanel.show-disabled-by-admin-link .with-link {
+  display: inline-block;
+}
+
+#disabledByAdminPanel.show-disabled-by-admin-link .without-link {
+  display: none;
+}
+
 .dialog p {
   margin: 0 0 8px;
 }

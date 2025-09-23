@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GlicRequestHeaderInjector} from '/glic/glic_request_headers.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {GlicRequestHeaderInjector} from '/glic/glic_request_headers.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FrePageHandlerFactory, FrePageHandlerRemote, FreWebUiState} from './glic_fre.mojom-webui.js';
@@ -40,7 +41,8 @@ const $: PageElementTypes = new Proxy({}, {
   },
 });
 
-type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel'|'loadingPanel';
+type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel'|'loadingPanel'|
+    'disabledByAdminPanel';
 
 interface StateDescriptor {
   onEnter?: () => void;
@@ -99,6 +101,30 @@ export class FreAppController {
         }
       }
 
+      const disabledByAdminButton =
+          document.getElementById('disabledByAdminCloseButton');
+      assert(disabledByAdminButton);
+
+      const parentPanel = disabledByAdminButton.closest('.panel');
+      assert(parentPanel);
+
+      disabledByAdminButton.addEventListener('click', () => {
+        chrome.metricsPrivate.recordUserAction(
+            'Glic.Fre.DisabledByAdminPanelCloseButton');
+        freHandler.dismissFre(this.panelIdToEnum(parentPanel.id));
+      });
+
+      document.querySelector('#disabledByAdminPanel a')
+          ?.addEventListener('click', (e) => {
+            e.preventDefault();
+            chrome.metricsPrivate.recordUserAction(
+                'Glic.Fre.DisabledByAdminPanelLinkClicked');
+            freHandler.validateAndOpenLinkInNewTab({
+              url: (e.target as HTMLAnchorElement).href,
+            });
+            e.stopPropagation();
+          });
+
       document.getElementById('reload')?.addEventListener('click', () => {
         this.reload();
       });
@@ -130,6 +156,13 @@ export class FreAppController {
     }
     const url = new URL(e.url);
     const urlHash = url.hash;
+
+    if (loadTimeData.getBoolean('caaGuestError') &&
+        (url.hostname === 'access.workspace.google.com' ||
+         url.hostname === 'admin.google.com')) {
+      this.setState(FreWebUiState.kDisabledByAdmin);
+      return;
+    }
 
     // Fragment navigations are used to represent actions taken in the web
     // client following this mapping: “Continue” button navigates to
@@ -241,6 +274,15 @@ export class FreAppController {
           this.useReloadTimeout = false;
           this.destroyWebview();
           this.showPanel('errorPanel');
+        },
+      },
+    ],
+    [
+      FreWebUiState.kDisabledByAdmin,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('disabledByAdminPanel');
         },
       },
     ],
@@ -424,6 +466,8 @@ export class FreAppController {
         return FreWebUiState.kError;
       case 'loadingPanel':
         return FreWebUiState.kShowLoading;
+      case 'disabledByAdminPanel':
+        return FreWebUiState.kDisabledByAdmin;
       default:
         return FreWebUiState.kUninitialized;
     }

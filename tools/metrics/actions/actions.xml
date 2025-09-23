@@ -12626,6 +12626,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.DisabledByAdminPanelLinkClicked">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <description>
+    Recorded whenever the user clicked a link to follow up about why the Glic
+    feature was blocked by admin.
+  </description>
+</action>
+
 <action name="Glic.Enabled">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
@@ -12702,6 +12711,15 @@ should be able to be added at any place in this file.
   <owner>birnie@google.com</owner>
   <description>
     User clicked the 'X' button to close the Glic First Run Experience dialog.
+  </description>
+</action>
+
+<action name="Glic.Fre.DisabledByAdminPanelClosed">
+  <owner>dewittj@google.com</owner>
+  <owner>glic@google.com</owner>
+  <description>
+    User closed the disabled by admin panel in the FRE by clicking the
+    confirmation button.
   </description>
 </action>
 

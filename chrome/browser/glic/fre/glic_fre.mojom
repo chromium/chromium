@@ -68,5 +68,7 @@ enum FreWebUiState {
   kOffline,
   // Web view is displayed.
   kReady,
+  // The admin has explicitly disabled Glic.
+  kDisabledByAdmin,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:FreWebUiState)

@@ -93,6 +93,9 @@
   <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" desc="This is the text of the Gemini disabled by admin notice.">
     Contact your administrator for more information
   </message>
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_WITH_LINK" desc="This is the text of the Gemini disabled by admin notice, with a link for more information..">
+    Contact your administrator or check <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;</ph><ph name="LINK_TEXT">$2<ex>gemini.google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph> for more information
+  </message>
   <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
     Got it
   </message>

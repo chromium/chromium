@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
 #include "ui/webui/webui_util.h"
@@ -86,6 +88,13 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
+
+  // Add parameterized admin notice string.
+  source->AddString("disabledByAdminNoticeWithLink",
+                    l10n_util::GetStringFUTF16(
+                        IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_WITH_LINK,
+                        base::UTF8ToUTF16(features::kGlicCaaLinkUrl.Get()),
+                        base::UTF8ToUTF16(features::kGlicCaaLinkText.Get())));
 
   // Register auto-granted permissions.
   auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);
@@ -158,6 +167,13 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean("enableWebClientUnresponsiveMetrics",
                      base::FeatureList::IsEnabled(
                          features::kGlicWebClientUnresponsiveMetrics));
+  if (base::FeatureList::IsEnabled(features::kGlicCaaGuestError)) {
+    source->AddString(
+        "adminBlockedRedirectOrigins",
+        "https://access.workspace.google.com https://admin.google.com");
+  } else {
+    source->AddString("adminBlockedRedirectOrigins", "");
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

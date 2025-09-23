@@ -134,6 +134,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="'Something went wrong' error panel is displayed."/>
   <int value="6" label="Connection offline panel is displayed."/>
   <int value="7" label="Web view is displayed."/>
+  <int value="8" label="'Disabled by Admin' error panel is displayed."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre.mojom:FreWebUiState) -->

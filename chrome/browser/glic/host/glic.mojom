@@ -133,6 +133,9 @@ interface PageHandler {
   // Opens the profile picker, and closes the Glic panel.
   OpenProfilePickerAndClosePanel();
 
+  // Opens the disabled by admin link, and closes the Glic panel.
+  OpenDisabledByAdminLinkAndClosePanel();
+
   // Opens the sign-in page, and closes the Glic panel.
   SignInAndClosePanel();
 

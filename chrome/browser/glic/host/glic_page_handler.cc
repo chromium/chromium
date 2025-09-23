@@ -66,6 +66,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -1733,6 +1735,18 @@ void GlicPageHandler::ClosePanel(ClosePanelCallback callback) {
 void GlicPageHandler::OpenProfilePickerAndClosePanel() {
   glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
   GetGlicService()->ClosePanel();
+}
+
+void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
+  GURL disabled_by_admin_link_url = GURL(features::kGlicCaaLinkUrl.Get());
+  NavigateParams params(Profile::FromBrowserContext(browser_context_),
+                        disabled_by_admin_link_url,
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+  GetGlicService()->ClosePanel();
+  base::RecordAction(
+      base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));
 }
 
 void GlicPageHandler::SignInAndClosePanel() {
