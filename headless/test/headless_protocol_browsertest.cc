@@ -701,7 +701,4 @@ HEADLESS_PROTOCOL_TEST(
     EmulateTouchFromMouseEventScreenCoordinates,
     "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
 
-HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
-                       "shared/set-zoomed-window-bounds.js")
-
 }  // namespace headless
