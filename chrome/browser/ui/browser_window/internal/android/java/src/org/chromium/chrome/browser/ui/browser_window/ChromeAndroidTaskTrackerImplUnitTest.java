@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.mojom.WindowShowState;
 
+import java.util.OptionalInt;
+
 /** Unit tests for {@link ChromeAndroidTaskTrackerImpl}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
@@ -76,6 +78,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Test
     public void createPendingTask_createsAndStoresPendingTask() {
         // Arrange.
+        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
 
@@ -85,6 +88,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNotNull(task);
         assertFalse(task.getPendingId().isEmpty());
+        assertNotNull(
+                mChromeAndroidTaskTracker.getPendingTaskForTesting(task.getPendingId().getAsInt()));
+        assertEquals(1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertTrue(task.getId().isEmpty());
         assertEquals(mockParams.getProfile(), task.getProfile());
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
@@ -158,6 +164,60 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void obtainTask_withPendingId_adoptsPendingTask() {
+        // Arrange.
+        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
+
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var pendingTask = mChromeAndroidTaskTracker.createPendingTask(mockParams);
+        int pendingId = pendingTask.getPendingId().getAsInt();
+
+        int taskId = 123;
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mock(Profile.class));
+
+        // Act.
+        var task =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.of(pendingId));
+
+        // Assert.
+        assertNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingId));
+        assertEquals(1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+        assertEquals(activityWindowAndroid, task.getActivityWindowAndroid());
+        assertEquals("The pending task should be adopted.", pendingTask, task);
+        assertEquals("Task ID should be updated.", taskId, task.getId().getAsInt());
+        assertTrue("Pending ID should be cleared.", task.getPendingId().isEmpty());
+    }
+
+    @Test
+    public void obtainTask_withInvalidPendingId_throwsException() {
+        // Arrange.
+        int taskId = 1;
+        var activityWindowAndroid =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
+        var tabModel = mock(TabModel.class);
+        when(tabModel.getProfile()).thenReturn(mock(Profile.class));
+        int invalidPendingId = 12345;
+
+        // Act and Assert.
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mChromeAndroidTaskTracker.obtainTask(
+                                BrowserWindowType.NORMAL,
+                                activityWindowAndroid,
+                                tabModel,
+                                OptionalInt.of(invalidPendingId)));
+    }
+
+    @Test
     public void obtainTask_activityWindowAndroidBelongsToNewTask_createsNewTask() {
         // Arrange.
         var activityWindowAndroid =
@@ -167,7 +227,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Assert.
         assertEquals(1, chromeAndroidTask.getId().getAsInt());
@@ -186,7 +249,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask1 =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
 
         // (2) Clear the ActivityWindowAndroid from the task.
         // This simulates the case where ChromeActivity is killed in the background, but the Task
@@ -202,7 +268,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Act.
         var chromeAndroidTask2 =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid2, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid2,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Assert.
         assertEquals(chromeAndroidTask1, chromeAndroidTask2);
@@ -222,7 +291,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
 
         // (2) Clear the ActivityWindowAndroid from the task.
         // This simulates the case where ChromeActivity is killed in the background, but the Task
@@ -241,7 +313,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 AssertionError.class,
                 () -> {
                     mChromeAndroidTaskTracker.obtainTask(
-                            BrowserWindowType.POPUP, activityWindowAndroid2, tabModel);
+                            BrowserWindowType.POPUP,
+                            activityWindowAndroid2,
+                            tabModel,
+                            OptionalInt.empty());
                 });
     }
 
@@ -254,7 +329,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act & Assert.
         assertEquals(chromeAndroidTask, mChromeAndroidTaskTracker.get(/* taskId= */ 1));
@@ -268,7 +346,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var tabModel = mock(TabModel.class);
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         mChromeAndroidTaskTracker.obtainTask(
-                BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                BrowserWindowType.NORMAL, activityWindowAndroid, tabModel, OptionalInt.empty());
 
         // Act & Assert.
         assertEquals(null, mChromeAndroidTaskTracker.get(/* taskId= */ 2));
@@ -285,7 +363,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
@@ -308,7 +389,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid2);
@@ -329,7 +413,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act.
         mChromeAndroidTaskTracker.onActivityWindowAndroidDestroy(activityWindowAndroid);
@@ -351,7 +438,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act.
         mChromeAndroidTaskTracker.remove(taskId);
@@ -370,7 +460,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Act.
         mChromeAndroidTaskTracker.remove(/* taskId= */ 2);
@@ -393,7 +486,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var chromeAndroidTask =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid,
+                        tabModel,
+                        OptionalInt.empty());
 
         // Assert (add task).
         verify(observer).onTaskAdded(chromeAndroidTask);
@@ -426,7 +522,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var task1 =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
         ((TopResumedActivityChangedWithNativeObserver) task1)
                 .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
         ((TopResumedActivityChangedWithNativeObserver) task1)
@@ -455,7 +554,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
         var task1 =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid1, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        tabModel,
+                        OptionalInt.empty());
         ((TopResumedActivityChangedWithNativeObserver) task1)
                 .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
         assertNotNull(activityWindowAndroid1.getActivity().get());
@@ -470,7 +572,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 2);
         var task2 =
                 mChromeAndroidTaskTracker.obtainTask(
-                        BrowserWindowType.NORMAL, activityWindowAndroid2, tabModel);
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid2,
+                        tabModel,
+                        OptionalInt.empty());
         // Switch the order of activation.
         ((TopResumedActivityChangedWithNativeObserver) task1)
                 .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);

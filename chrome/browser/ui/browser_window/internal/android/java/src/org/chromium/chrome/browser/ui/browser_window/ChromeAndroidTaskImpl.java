@@ -257,7 +257,8 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public long getOrCreateNativeBrowserWindowPtr() {
-        assertAlive();
+        assert getState() == State.PENDING || getState() == State.ALIVE
+                : "This Task is not pending or alive.";
         return mAndroidBrowserWindow.getOrCreateNativePtr();
     }
 

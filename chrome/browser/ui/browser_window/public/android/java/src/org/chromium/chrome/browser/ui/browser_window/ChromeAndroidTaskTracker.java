@@ -9,6 +9,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
+import java.util.OptionalInt;
+
 /**
  * Tracks {@link ChromeAndroidTask}s.
  *
@@ -46,11 +48,15 @@ public interface ChromeAndroidTaskTracker {
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with the
      *     returned {@link ChromeAndroidTask}.
      * @param tabModel The tab model associated with the returned {@link ChromeAndroidTask}.
+     * @param pendingId The unique ID of the pending {@link ChromeAndroidTask} that the newly
+     *     created {@code ChromeActivity} should adopt. May be {@link OptionalInt#empty()} when the
+     *     activity is not associated with a pending {@link ChromeAndroidTask}.
      */
     ChromeAndroidTask obtainTask(
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
-            TabModel tabModel);
+            TabModel tabModel,
+            OptionalInt pendingId);
 
     /**
      * Creates a pending {@link ChromeAndroidTask} that is not yet associated with an {@code
