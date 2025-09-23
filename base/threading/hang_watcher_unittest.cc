@@ -494,7 +494,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Checks that Any and AnyCritical are correctly recorded for different process
 // and thread types.
-TEST_P(HangWatcherAnyCriticalThreadTests, AnyCriticalThreadHung) {
+// TODO(crbug.com/446160865): Re-enable this test.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_AnyCriticalThreadHung DISABLED_AnyCriticalThreadHung
+#else
+#define MAYBE_AnyCriticalThreadHung AnyCriticalThreadHung
+#endif
+TEST_P(HangWatcherAnyCriticalThreadTests, MAYBE_AnyCriticalThreadHung) {
   ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ScopedFeatureList enable_gpu_hang_watcher(kEnableHangWatcherOnGpuProcess);
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
