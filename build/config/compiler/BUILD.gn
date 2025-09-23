@@ -1194,6 +1194,14 @@ config("libcxx_hardening") {
   if (use_safe_libstdcxx) {
     defines += [ "_GLIBCXX_ASSERTIONS=1" ]
   }
+
+  # Propagate all definitions for hardening to the swift compiler.
+  if (is_ios) {
+    swiftflags = []
+    foreach(_define, defines) {
+      swiftflags += [ "-Xcc=-D$_define" ]
+    }
+  }
 }
 
 # The BUILDCONFIG file sets this config on targets by default, which means when
