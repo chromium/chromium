@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType) {
   EmptyThumbnailLayoutTypeLandscape = 1,
   EmptyThumbnailLayoutTypePortrait,
   EmptyThumbnailLayoutTypeCenteredPortrait,
+  EmptyThumbnailLayoutTypeLandscapeLeading,
 };
 
 // Returns the aspect ratio (height / width) of an item based on the container

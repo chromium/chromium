@@ -22,7 +22,7 @@ const CGFloat kShortBarFraction = 2.0f / 3.0f;
 
 // Margin constants.
 const CGFloat kStackViewHorizonalMargin = 8;
-const CGFloat kStackViewCenteredPortraitHorizontalMargin = 12;
+const CGFloat kStackViewCenteredPortraitAndLandscapeLeadingMargin = 12;
 const CGFloat kStackViewLandscapeTopMargin = 14;
 
 // Group cell constants.
@@ -46,6 +46,7 @@ const CGFloat kGridCellBarHeight = 22;
   NSMutableArray<NSLayoutConstraint*>* _portraitCenteredConstraints;
   // Constraints for landscape mode.
   NSMutableArray<NSLayoutConstraint*>* _landscapeConstraints;
+  NSMutableArray<NSLayoutConstraint*>* _landscapeLeadingConstraints;
 }
 
 - (instancetype)initWithType:(EmptyThumbnailType)type {
@@ -68,6 +69,7 @@ const CGFloat kGridCellBarHeight = 22;
   [NSLayoutConstraint deactivateConstraints:_portraitConstraints];
   [NSLayoutConstraint deactivateConstraints:_portraitCenteredConstraints];
   [NSLayoutConstraint deactivateConstraints:_landscapeConstraints];
+  [NSLayoutConstraint deactivateConstraints:_landscapeLeadingConstraints];
   switch (_layoutType) {
     case EmptyThumbnailLayoutTypePortrait:
       [NSLayoutConstraint activateConstraints:_portraitConstraints];
@@ -82,6 +84,11 @@ const CGFloat kGridCellBarHeight = 22;
     case EmptyThumbnailLayoutTypeLandscape:
       [NSLayoutConstraint activateConstraints:_landscapeConstraints];
       _stackView.alignment = UIStackViewAlignmentTrailing;
+      _stackView.spacing = kSmallVerticalSpacing;
+      break;
+    case EmptyThumbnailLayoutTypeLandscapeLeading:
+      [NSLayoutConstraint activateConstraints:_landscapeLeadingConstraints];
+      _stackView.alignment = UIStackViewAlignmentLeading;
       _stackView.spacing = kSmallVerticalSpacing;
       break;
   }
@@ -100,6 +107,7 @@ const CGFloat kGridCellBarHeight = 22;
   _portraitConstraints = [NSMutableArray array];
   _portraitCenteredConstraints = [NSMutableArray array];
   _landscapeConstraints = [NSMutableArray array];
+  _landscapeLeadingConstraints = [NSMutableArray array];
   for (int i = 0; i < kNumberOfBars; i++) {
     UIView* barView = [self createBar];
     [_stackView addArrangedSubview:barView];
@@ -114,6 +122,10 @@ const CGFloat kGridCellBarHeight = 22;
           addObject:[barView.widthAnchor
                         constraintEqualToAnchor:_stackView.widthAnchor
                                      multiplier:kShortBarFraction]];
+      [_landscapeLeadingConstraints
+          addObject:[barView.widthAnchor
+                        constraintEqualToAnchor:_stackView.widthAnchor
+                                     multiplier:kShortBarFraction]];
       // Full width for landscape.
       [_landscapeConstraints
           addObject:[barView.widthAnchor
@@ -125,6 +137,9 @@ const CGFloat kGridCellBarHeight = 22;
           addObject:[barView.widthAnchor
                         constraintEqualToAnchor:_stackView.widthAnchor]];
       [_portraitCenteredConstraints
+          addObject:[barView.widthAnchor
+                        constraintEqualToAnchor:_stackView.widthAnchor]];
+      [_landscapeLeadingConstraints
           addObject:[barView.widthAnchor
                         constraintEqualToAnchor:_stackView.widthAnchor]];
       // 2/3 width for landscape.
@@ -150,14 +165,33 @@ const CGFloat kGridCellBarHeight = 22;
                        constant:-kStackViewHorizonalMargin],
   ]];
 
+  [_landscapeLeadingConstraints addObjectsFromArray:@[
+    [_stackView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:
+                           kStackViewCenteredPortraitAndLandscapeLeadingMargin],
+    [_stackView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:
+                           kStackViewCenteredPortraitAndLandscapeLeadingMargin],
+    [_stackView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor
+                       constant:
+                           -
+                           kStackViewCenteredPortraitAndLandscapeLeadingMargin],
+  ]];
+
   [_portraitCenteredConstraints addObjectsFromArray:@[
     [_stackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     [_stackView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
-                       constant:kStackViewCenteredPortraitHorizontalMargin],
+                       constant:
+                           kStackViewCenteredPortraitAndLandscapeLeadingMargin],
     [_stackView.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kStackViewCenteredPortraitHorizontalMargin],
+                       constant:
+                           -
+                           kStackViewCenteredPortraitAndLandscapeLeadingMargin],
   ]];
   [_portraitConstraints addObjectsFromArray:@[
     [_stackView.bottomAnchor
