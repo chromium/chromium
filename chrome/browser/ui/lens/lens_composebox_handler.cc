@@ -108,10 +108,6 @@ void LensComposeboxHandler::ClearFiles() {
   // composebox is not yet supported.
 }
 
-void LensComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
-  // Ignored, intentionally unimplemented for Lens.
-}
-
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   NOTREACHED();

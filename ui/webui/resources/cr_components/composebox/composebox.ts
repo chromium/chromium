@@ -18,7 +18,7 @@ import {mojoString16ToString, stringToMojoString16} from '//resources/js/mojo_ty
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -90,6 +90,7 @@ export class ComposeboxElement extends I18nMixinLit
       files_: {type: Object},
       input_: {type: String},
       imageFileTypes_: {type: String},
+      tabSuggestions_: {type: Array},
       isCollapsible: {
         reflect: true,
         type: Boolean,
@@ -155,6 +156,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');
+  protected accessor tabSuggestions_: TabInfo[] = [];
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
@@ -516,6 +518,13 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected openFileUpload_() {
     this.$.fileInput.click();
+  }
+
+  protected async refreshTabSuggestions_(
+      e: CustomEvent<{onRefreshComplete: () => void}>) {
+    const {tabs} = await this.searchboxHandler_.getRecentTabs();
+    this.tabSuggestions_ = tabs;
+    e.detail.onRefreshComplete();
   }
 
   protected onCancelClick_() {

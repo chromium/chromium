@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -68,6 +69,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
+  void GetRecentTabs(GetRecentTabsCallback callback) override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);

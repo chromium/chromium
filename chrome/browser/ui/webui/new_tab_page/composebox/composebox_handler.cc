@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>
@@ -27,7 +26,6 @@
 #include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "content/public/browser/page_navigator.h"
-#include "content/public/common/url_constants.h"
 
 using composebox::SessionState;
 
@@ -268,76 +266,6 @@ void ComposeboxHandler::OnGetTabPageContext(
 void ComposeboxHandler::ClearFiles() {
   deleted_context_tokens_.clear();
   query_controller_->ClearFiles();
-}
-
-void ComposeboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
-  std::vector<composebox::mojom::TabInfoPtr> tabs;
-
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
-  if (!browser_window_interface) {
-    std::move(callback).Run(std::move(tabs));
-    return;
-  }
-
-  // Iterate through the tab strip model, getting the data for each tab
-  auto* tab_strip_model = browser_window_interface->GetTabStripModel();
-  UMA_HISTOGRAM_COUNTS_1000(
-      "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen",
-      tab_strip_model->count());
-
-  for (int i = 0; i < tab_strip_model->count(); i++) {
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
-    TabRendererData tab_renderer_data =
-        TabRendererData::FromTabInModel(tab_strip_model, i);
-    const auto& last_committed_url = tab_renderer_data.last_committed_url;
-    // Skip tabs that are still loading, and skip webui.
-    if (!last_committed_url.is_valid() || last_committed_url.is_empty() ||
-        last_committed_url.SchemeIs(content::kChromeUIScheme) ||
-        last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-      continue;
-    }
-    auto tab_data = composebox::mojom::TabInfo::New();
-    tab_data->tab_id = tab->GetHandle().raw_value();
-    tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
-    tab_data->url = last_committed_url;
-    tab_data->last_active =
-        std::max(web_contents->GetLastActiveTimeTicks(),
-                 web_contents->GetLastInteractionTimeTicks());
-    tabs.push_back(std::move(tab_data));
-  }
-
-  // Count duplicate tab titles to record in an UMA histogram.
-  // For example, If 2 tabs with title "Wikipedia" and 3 tabs with title
-  // "Weather" are open, this histogram will record 2.
-  std::map<std::string, int> title_counts;
-  for (const auto& tab : tabs) {
-    title_counts[tab->title]++;
-  }
-  int duplicate_count =
-      std::count_if(title_counts.begin(), title_counts.end(),
-                    [](const std::pair<const std::string, int>& pair) {
-                      return pair.second > 1;
-                    });
-  UMA_HISTOGRAM_COUNTS_100000(
-      "NewTabPage.Composebox.DuplicateTabTitlesShownCount", duplicate_count);
-
-  // Sort the tabs by last active time, and truncate to the maximum number of
-  // tabs to return.
-  int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()),
-               ntp_composebox::kContextMenuMaxTabSuggestions.Get());
-  std::partial_sort(
-      tabs.begin(), tabs.begin() + max_tab_suggestions, tabs.end(),
-      [](const composebox::mojom::TabInfoPtr& a,
-         const composebox::mojom::TabInfoPtr& b) {
-        return a->last_active > b->last_active;
-      });
-  tabs.resize(max_tab_suggestions);
-
-  // Invoke the callback with the results.
-  std::move(callback).Run(std::move(tabs));
 }
 
 void ComposeboxHandler::OnFileUploadStatusChanged(

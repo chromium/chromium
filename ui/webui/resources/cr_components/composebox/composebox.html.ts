@@ -72,9 +72,11 @@ export function getHtml(this: ComposeboxElement) {
     ${this.contextMenuEnabled_ ? html`
       <composebox-context-menu-entrypoint id="contextEntrypoint"
           class="icon-fade upload-icon no-overlap"
+          .tabSuggestions="${this.tabSuggestions_}"
           @open-image-upload="${this.openImageUpload_}"
           @open-file-upload="${this.openFileUpload_}"
           @add-tab-context="${this.addTabContext_}"
+          @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           ?inputs-disabled="${this.inputsDisabled_}">
       </composebox-context-menu-entrypoint>
     ` : html`

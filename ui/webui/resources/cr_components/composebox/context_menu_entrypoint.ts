@@ -12,9 +12,8 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import type {PageHandlerRemote, TabInfo} from './composebox.mojom-webui.js';
-import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
@@ -45,37 +44,32 @@ export class ContextMenuEntrypointElement extends CrLitElement {
   static override get properties() {
     return {
       inputsDisabled: {type: Boolean},
-      tabSuggestions_: {type: Array},
+      tabSuggestions: {type: Array},
     };
   }
 
   accessor inputsDisabled: boolean = false;
-  protected accessor tabSuggestions_: TabInfo[] = [];
-  private pageHandler_: PageHandlerRemote;
+  accessor tabSuggestions: TabInfo[] = [];
 
   constructor() {
     super();
-
-    this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
   }
 
-  protected async onEntrypointClick_() {
-    const {tabs} = await this.pageHandler_.getRecentTabs();
-    this.tabSuggestions_ = tabs;
-
-    this.$.menu.showAt(this.$.entrypointIcon, {
-      top: this.$.entrypointIcon.getBoundingClientRect().bottom,
-      width: MENU_WIDTH_PX,
-      anchorAlignmentX: AnchorAlignment['AFTER_START'],
-    });
+  protected onEntrypointClick_() {
+    this.fire('refresh-tab-suggestions', {onRefreshComplete: () => {
+      this.$.menu.showAt(this.$.entrypointIcon, {
+        top: this.$.entrypointIcon.getBoundingClientRect().bottom,
+        width: MENU_WIDTH_PX,
+        anchorAlignmentX: AnchorAlignment['AFTER_START'],
+      });
+    }});
   }
 
   protected addTabContext(e: Event) {
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLButtonElement;
-    const tabInfo =
-        this.tabSuggestions_[Number(tabElement.dataset['index'])];
+    const tabInfo = this.tabSuggestions[Number(tabElement.dataset['index'])];
 
     if (!tabInfo) {
       return;

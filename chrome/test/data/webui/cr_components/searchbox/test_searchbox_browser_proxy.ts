@@ -31,6 +31,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'toggleSuggestionGroupIdVisibility',
       'onFocusChanged',
       'popupElementSizeChanged',
+      'getRecentTabs',
     ]);
   }
 
@@ -101,6 +102,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   toggleSuggestionGroupIdVisibility(suggestionGroupId: number) {
     this.methodCalled('toggleSuggestionGroupIdVisibility', {suggestionGroupId});
+  }
+
+  getRecentTabs() {
+    this.methodCalled('getRecentTabs');
+    return Promise.resolve({ tabs: [] });
   }
 }
 
