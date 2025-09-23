@@ -645,17 +645,18 @@ public class MainSettingsFragmentTest {
         @Policies.Item(key = "PasswordManagerEnabled", string = "false"),
         @Policies.Item(key = "BrowserSignin", string = "0")
     })
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testPasswordsItemClickableWhenManaged() {
         startSettings();
+        var managedStrMatcher =
+                allOf(withText(R.string.managed_by_your_organization), isDisplayed());
         onData(withKey(MainSettings.PREF_PASSWORDS))
                 .inAdapterView(
                         allOf(
-                                isDisplayed(),
                                 hasDescendant(withText(R.string.password_manager_settings_title)),
-                                hasDescendant(
-                                        allOf(
-                                                withText(R.string.managed_by_your_organization),
-                                                isDisplayed()))));
+                                hasDescendant(managedStrMatcher)))
+                .check(matches(isDisplayed()));
+        ;
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
         Assert.assertNotNull(
                 mMainSettings
@@ -669,17 +670,17 @@ public class MainSettingsFragmentTest {
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testPasswordsItemEnabledWhenNotManaged() throws InterruptedException {
         startSettings();
+        var managedStrMatcher =
+                allOf(withText(R.string.managed_by_your_organization), not(isDisplayed()));
         onData(withKey(MainSettings.PREF_PASSWORDS))
                 .inAdapterView(
                         allOf(
-                                isDisplayed(),
                                 hasDescendant(withText(R.string.password_manager_settings_title)),
-                                hasDescendant(
-                                        allOf(
-                                                withText(R.string.managed_by_your_organization),
-                                                not(isDisplayed())))));
+                                hasDescendant(managedStrMatcher)))
+                .check(matches(isDisplayed()));
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
         Assert.assertNotNull(
                 mMainSettings

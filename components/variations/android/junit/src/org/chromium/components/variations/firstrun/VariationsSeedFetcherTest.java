@@ -5,6 +5,7 @@
 package org.chromium.components.variations.firstrun;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -335,7 +336,7 @@ public class VariationsSeedFetcherTest {
         assertEquals(curSeedInfo.country, updatedSeedInfo.country);
         assertEquals(curSeedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
         assertEquals(34567L, updatedSeedInfo.date);
-        Arrays.equals(curSeedInfo.seedData, updatedSeedInfo.seedData);
+        assertArrayEquals(curSeedInfo.seedData, updatedSeedInfo.seedData);
 
         assertEquals("savedSerialNumber", curSeedInfo.getParsedVariationsSeed().getSerialNumber());
     }

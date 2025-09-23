@@ -23,7 +23,6 @@
       <property name="tokens" value="INTERFACE_DEF, METHOD_DEF"/>
     </module>
     <module name="StringLiteralEquality"/>
-    <module name="UnusedLocalVariable"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>

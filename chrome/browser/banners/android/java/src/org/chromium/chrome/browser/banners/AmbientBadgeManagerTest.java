@@ -351,7 +351,7 @@ public class AmbientBadgeManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (accept) {
-                        model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                        var unused = model.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
                     } else {
                         dispatcher.dismissMessage(model, DismissReason.GESTURE);
                     }

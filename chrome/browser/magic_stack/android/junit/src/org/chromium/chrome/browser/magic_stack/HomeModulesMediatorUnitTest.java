@@ -620,7 +620,7 @@ public class HomeModulesMediatorUnitTest {
                         /* onDemandExecution= */ true,
                         /* canUpdateCacheForFutureRequests= */ true,
                         /* fallbackAllowed= */ true);
-        actualOptions.equals(expectedOptions);
+        assertEquals(expectedOptions, actualOptions);
     }
 
     @Test
@@ -635,7 +635,7 @@ public class HomeModulesMediatorUnitTest {
         // Verifies that createPredictionOptions() returns cache prediction options.
         PredictionOptions actualOptions = mMediator.createPredictionOptions();
         PredictionOptions expectedOptions = new PredictionOptions(false);
-        actualOptions.equals(expectedOptions);
+        assertEquals(expectedOptions, actualOptions);
     }
 
     @Test

@@ -188,7 +188,7 @@ public class TripBuilder {
     @CheckReturnValue
     public TripBuilder enterFacilitiesAnd(Facility<?>... facilities) {
         for (Facility<?> facility : facilities) {
-            enterFacilityAnd(facility);
+            var unused = enterFacilityAnd(facility);
         }
         return this;
     }
@@ -213,7 +213,7 @@ public class TripBuilder {
     @CheckReturnValue
     public TripBuilder exitFacilitiesAnd(Facility<?>... facilities) {
         for (Facility<?> facility : facilities) {
-            exitFacilityAnd(facility);
+            var unused = exitFacilityAnd(facility);
         }
         return this;
     }

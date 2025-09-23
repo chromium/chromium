@@ -90,6 +90,6 @@ public class MediaNotificationInfoTest {
         assertNotNull(info);
 
         // Make sure hashCode() doesn't crash.
-        info.hashCode();
+        var unused = info.hashCode();
     }
 }

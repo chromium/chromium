@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -19,7 +17,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -3624,13 +3621,14 @@ public class SiteSettingsTest {
                                     SingleCategorySettings.ADD_EXCEPTION_KEY);
                     Assert.assertFalse(addExceptionPreference.isEnabled());
 
-                    onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
-                            .inAdapterView(
-                                    allOf(
-                                            withContentDescription(
-                                                    R.string.managed_by_your_organization),
-                                            withText(R.string.managed_by_your_organization),
-                                            isDisplayed()));
+                    // Proabably never worked. crbug.com/446200399
+                    // onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
+                    //         .inAdapterView(
+                    //                 allOf(
+                    //                         withContentDescription(
+                    //                                 R.string.managed_by_your_organization),
+                    //                         withText(R.string.managed_by_your_organization)))
+                    //         .check(matches(isDisplayed()));
 
                     settingsActivity.finish();
                 });
@@ -3677,13 +3675,14 @@ public class SiteSettingsTest {
                                     SingleCategorySettings.ADD_EXCEPTION_KEY);
                     Assert.assertFalse(addExceptionPreference.isEnabled());
 
-                    onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
-                            .inAdapterView(
-                                    allOf(
-                                            withContentDescription(
-                                                    R.string.managed_by_your_organization),
-                                            withText(R.string.managed_by_your_organization),
-                                            isDisplayed()));
+                    // Proabably never worked. crbug.com/446200399
+                    // onData(withKey(SingleCategorySettings.ALLOWED_GROUP))
+                    //         .inAdapterView(
+                    //                 allOf(
+                    //                         withContentDescription(
+                    //                                 R.string.managed_by_your_organization),
+                    //                         withText(R.string.managed_by_your_organization)))
+                    //         .check(matches(isDisplayed()));
 
                     settingsActivity.finish();
                 });
@@ -4347,12 +4346,13 @@ public class SiteSettingsTest {
          * then checks that the content description and the summary text reflect the managed state.
          */
         onView(ViewMatchers.withId(android.R.id.content)).perform(swipeUp());
-        onData(withKey(setting))
-                .inAdapterView(
-                        allOf(
-                                withContentDescription(R.string.managed_by_your_organization),
-                                withText(R.string.managed_by_your_organization),
-                                isDisplayed()));
+        // Proabably never worked. crbug.com/446200399
+        // onData(withKey(setting))
+        //         .inAdapterView(
+        //                 allOf(
+        //                         withContentDescription(R.string.managed_by_your_organization),
+        //                         withText(R.string.managed_by_your_organization)))
+        //         .check(matches(isDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

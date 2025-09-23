@@ -56,6 +56,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -749,9 +750,12 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "This never worked. https://crbug.com/446200399")
     public void testContentDescription() {
-        onView(withContentDescription(R.string.accessibility_tab_selection_editor_back_button));
-        onView(withContentDescription(R.string.accessibility_tab_selection_editor));
+        onView(withContentDescription(R.string.accessibility_tab_selection_editor_back_button))
+                .check(matches(isDisplayed()));
+        onView(withContentDescription(R.string.accessibility_tab_selection_editor))
+                .check(matches(isDisplayed()));
     }
 
     @Test

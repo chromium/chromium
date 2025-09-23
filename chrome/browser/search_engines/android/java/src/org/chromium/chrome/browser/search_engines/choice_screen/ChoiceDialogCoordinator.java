@@ -134,7 +134,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             return false;
         }
 
-        coordinatorFactory.apply(searchEngineChoiceService);
+        var unused = coordinatorFactory.apply(searchEngineChoiceService);
 
         // If the dialog is suppressed, we won't show the UI regardless of the backend response, so
         // we can let other promos get triggered after this one.

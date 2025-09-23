@@ -323,7 +323,7 @@ public final class TranslateMessageTest {
         translateMessage.clearNativePointer();
 
         // No native methods should be called after clearing the native pointer.
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var unused = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         messageProperties.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.GESTURE);
         Assert.assertNull(
                 translateMessage.handleSecondaryMenuItemClicked(

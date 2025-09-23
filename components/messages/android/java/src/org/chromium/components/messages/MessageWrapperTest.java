@@ -106,7 +106,7 @@ public class MessageWrapperTest {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var unused = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock).handleSecondaryActionClick(nativePtr);
@@ -125,7 +125,7 @@ public class MessageWrapperTest {
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.clearNativePtr();
-        messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+        var unused = messageProperties.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(nativePtr);

@@ -142,8 +142,8 @@ public class JavascriptTabModalDialogTest {
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
         onView(withText(R.string.ok)).check(matches(isDisplayed()));
-        onView(allOf(withText(R.string.cancel), isDisplayed()));
-
+        // TODO(446200399): Unclear why this check fails:
+        // onView(withText(R.string.cancel)).check(matches(isDisplayed()));
         onView(withText(R.string.ok)).perform(click());
         Assert.assertTrue(
                 "JavaScript execution should continue after closing dialog.",

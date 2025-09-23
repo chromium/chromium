@@ -619,14 +619,12 @@ public class PageInfoViewTest {
         String testUrl =
                 mTestServerRule.getServer().getURLWithHostName("xn--allestrungen-9ib.ch", "/");
         loadUrlAndOpenPageInfo(testUrl);
-        onView(
-                withText(
-                        allOf(
-                                containsString("allestörungen.ch"),
-                                not(containsString("https://")))));
+        onView(withText(allOf(containsString("allestörungen.ch"), not(containsString("https://")))))
+                .check(matches(isDisplayed()));
         // Expand to full URL.
         onView(withId(R.id.page_info_url_wrapper)).perform(click());
-        onView(withText(allOf(containsString("allestörungen.ch"), containsString("https://"))));
+        onView(withText(allOf(containsString("allestörungen.ch"), containsString("https://"))))
+                .check(matches(isDisplayed()));
     }
 
     /** Tests PageInfo on an insecure website. */
@@ -821,7 +819,7 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
         onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
-        onView(allOf(withText(containsString("Sound")), isDisplayed()));
+        onView(withText(containsString("Sound"))).check(matches(isDisplayed()));
     }
 
     @Test

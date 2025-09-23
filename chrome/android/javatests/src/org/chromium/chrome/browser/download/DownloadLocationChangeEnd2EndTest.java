@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -137,8 +139,12 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
         String sdCardOptionName =
                 ApplicationProvider.getApplicationContext()
                         .getString(R.string.downloads_location_sd_card);
-        onData(new DirectoryOptionMatcher(equalTo(defaultOptionName))).atPosition(0);
-        onData(new DirectoryOptionMatcher(equalTo(sdCardOptionName))).atPosition(1);
+        onData(new DirectoryOptionMatcher(equalTo(defaultOptionName)))
+                .atPosition(0)
+                .check(matches(isDisplayed()));
+        onData(new DirectoryOptionMatcher(equalTo(sdCardOptionName)))
+                .atPosition(1)
+                .check(matches(isDisplayed()));
     }
 
     /**

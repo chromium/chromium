@@ -139,10 +139,10 @@ public class FingerprintingProtectionSettingsFragmentTest {
         String enterpriseSublabel =
                 mFragment.getContext().getString(R.string.managed_by_your_organization);
         onView(
-                allOf(
-                        withText(PREF_TOGGLE_LABEL),
-                        hasSibling(withText(containsString(fppSublabel))),
-                        isDisplayed()));
+                        allOf(
+                                withText(PREF_TOGGLE_LABEL),
+                                hasSibling(withText(containsString(fppSublabel)))))
+                .check(matches(isDisplayed()));
         onView(withText(containsString(enterpriseSublabel))).check(matches(isDisplayed()));
     }
 }

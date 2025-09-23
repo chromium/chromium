@@ -450,31 +450,34 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testEmptyBookmarkFolder() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        onView(withText("You'll find your bookmarks here"));
+        onView(withText("You'll find your bookmarks here")).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "https://crbug.com/41484383")
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testEmptyReadingListFolder() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openReadingList(mItemsContainer, mDelegate, mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        onView(withText("You'll find your reading list here"));
+        onView(withText("You'll find your reading list here")).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testEmptySearch() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        onView(withText("You'll find your bookmarks here"));
+        onView(withText("You'll find your bookmarks here")).check(matches(isDisplayed()));
     }
 
     @Test

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -59,6 +58,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -187,18 +187,20 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
     public void testFocusAnimation_menuButtonHidesAndShows() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.onUrlFocusChange(true);
                 });
-        onView(allOf(withId(R.id.menu_button_wrapper), withEffectiveVisibility(Visibility.GONE)));
+        ViewUtils.onViewWaiting(
+                allOf(withId(R.id.menu_button_wrapper), withEffectiveVisibility(Visibility.GONE)));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbar.onUrlFocusChange(false);
                 });
-        onView(
+        ViewUtils.onViewWaiting(
                 allOf(
                         withId(R.id.menu_button_wrapper),
                         withEffectiveVisibility(Visibility.VISIBLE)));

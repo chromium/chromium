@@ -377,7 +377,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
                 mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         // First simulate a long click to verify it does nothing.
-        model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER).getAsBoolean();
+        var unused =
+                model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER).getAsBoolean();
         assertEquals(
                 mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));

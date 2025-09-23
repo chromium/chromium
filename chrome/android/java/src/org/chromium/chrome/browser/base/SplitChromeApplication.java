@@ -196,10 +196,11 @@ public class SplitChromeApplication extends SplitCompatApplication {
                                                 // the chrome ClassLoader, and perform loading of
                                                 // classes used early in startup in the
                                                 // background.
-                                                chromeContext
-                                                        .getClassLoader()
-                                                        .loadClass(sChromePreloadName)
-                                                        .newInstance();
+                                                var unused =
+                                                        chromeContext
+                                                                .getClassLoader()
+                                                                .loadClass(sChromePreloadName)
+                                                                .newInstance();
                                             } catch (ReflectiveOperationException e) {
                                                 throw new RuntimeException(e);
                                             }
