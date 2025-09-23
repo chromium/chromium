@@ -189,6 +189,9 @@ class TabStripActionContainer : public views::View,
   // active.
   // Adds a toggle-like background.
   std::unique_ptr<views::FlexLayoutView> CreateGlicActorButtonContainer();
+  // Update the Glic and GlicActor button borders when showing or hiding the
+  // task icon container.
+  void UpdateGlicActorButtonContainerBorders();
 #endif
 
   void OnTabDeclutterButtonClicked();
@@ -267,6 +270,10 @@ class TabStripActionContainer : public views::View,
   std::list<base::CallbackListSubscription> subscriptions_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
+
+  // Border insets as passed down from the TabStripRegionView, used to update
+  // button view borders.
+  gfx::Insets border_insets_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_ACTION_CONTAINER_H_
