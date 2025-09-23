@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -1080,6 +1082,13 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
 }
 
 class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
+ public:
+  HistoryTaskTagBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicActor},
+        /*disabled_features=*/{actor::kGlicActionAllowlist});
+  }
+
  protected:
   actor::TaskId LatestTaskIdFromNavigationData(
       const TestNavigationUIDataObserver& observer) {
@@ -1109,17 +1118,36 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
 
     return id;
   }
+
+  GURL GetActorInitialUrl() {
+    return embedded_https_test_server().GetURL("/empty.html");
+  }
+
+  GURL GetActorUrl1() {
+    return embedded_https_test_server().GetURL("/title1.html");
+  }
+
+  GURL GetActorUrl2() {
+    return embedded_https_test_server().GetURL("/title2.html");
+  }
+
+  actor::ActorKeyedService* actor_service() {
+    return actor::ActorKeyedService::Get(profile());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that history entry is correctly tagged when actor is active.
 IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, ActingTask) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestNavigationUIDataObserver observer(web_contents);
-
   actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
 
   ASSERT_TRUE(LatestTaskIdFromNavigationData(observer));
   EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
@@ -1129,15 +1157,16 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, ActingTask) {
 // Test that history entry is correctly tagged when actor is active, but not
 // acting/reflecting.
 IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseTask) {
-  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestNavigationUIDataObserver observer(web_contents);
 
   actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
-  actor_service->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
+  actor_service()->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
 
   // Since the actor was paused when the navigation happened, it should *not* be
   // tagged with the task id.
@@ -1147,11 +1176,12 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseTask) {
 
 // Test that history entry is correctly tagged when actor is inactive.
 IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, NoActiveTask) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestNavigationUIDataObserver observer(web_contents);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
 
   EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
   EXPECT_FALSE(IsHistoryEntryTaggedWithActorId());
@@ -1160,42 +1190,46 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, NoActiveTask) {
 // Test that history entry is correctly tagged when actor goes through multiple
 // states.
 IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseThenResumeTask) {
-  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestNavigationUIDataObserver observer(web_contents);
 
   actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
   EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
   EXPECT_TRUE(IsHistoryEntryTaggedWithActorId());
 
-  actor_service->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  actor_service()->GetTask(test_actor_task_id)->Pause(/*from_actor=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl2()));
   EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
   EXPECT_FALSE(IsHistoryEntryTaggedWithActorId());
 
-  actor_service->GetTask(test_actor_task_id)->Resume();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  actor_service()->GetTask(test_actor_task_id)->Resume();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
   EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
   EXPECT_TRUE(IsHistoryEntryTaggedWithActorId());
 }
 
 // Test that history entry is correctly tagged only on active tab.
 IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, TwoTabs) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
   content::WebContents* web_contents_tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestNavigationUIDataObserver observer_tab1(web_contents_tab1);
 
   // Navigate on first tab.
   actor::TaskId test_actor_task_id = CreateActingTask(web_contents_tab1);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl1()));
   EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer_tab1));
   EXPECT_TRUE(IsHistoryEntryTaggedWithActorId());
 
   // Open a new tab and navigate on it so it becomes active.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GetTestUrl(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      browser(), GetActorInitialUrl(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Set up the test observer for this new tab.
@@ -1204,9 +1238,29 @@ IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, TwoTabs) {
   TestNavigationUIDataObserver observer_tab2(web_contents_tab2);
 
   // Navigate and check bit.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorUrl2()));
   EXPECT_FALSE(LatestTaskIdFromNavigationData(observer_tab2));
   EXPECT_FALSE(IsHistoryEntryTaggedWithActorId());
+}
+
+// Test that history entry is correctly tagged on renderer-initiated
+// navigations.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, RendererInitiated) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetActorInitialUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver data_observer(web_contents);
+  actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
+
+  // Page-initiated navigation.
+  content::TestFrameNavigationObserver observer(web_contents);
+  EXPECT_TRUE(ExecJs(web_contents,
+                     content::JsReplace("location = $1;", GetActorUrl1())));
+  observer.Wait();
+
+  EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(data_observer));
+  EXPECT_TRUE(IsHistoryEntryTaggedWithActorId());
 }
 
 // MPArch means Multiple Page Architecture, each WebContents may have additional

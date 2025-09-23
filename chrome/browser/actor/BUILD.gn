@@ -12,6 +12,7 @@ source_set("actor") {
     ":browser_tests",
   ]
   public = [
+    "actor_features.h",
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
     "actor_metrics.h",
@@ -70,7 +71,6 @@ source_set("actor") {
 source_set("impl") {
   sources = [
     "actor_features.cc",
-    "actor_features.h",
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
     "actor_metrics.cc",

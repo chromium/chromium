@@ -75,7 +75,8 @@ void ActorKeyedService::SetActorUiStateManagerForTesting(
 
 const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
     content::WebContents* web_contents) {
-  if (auto* tab_interface = tabs::TabModel::GetFromContents(web_contents)) {
+  if (auto* tab_interface =
+          tabs::TabModel::MaybeGetFromContents(web_contents)) {
     // There should only be one active task per tab.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
       if (actor_task->IsActingOnTab(tab_interface->GetHandle()) &&
