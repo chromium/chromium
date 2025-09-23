@@ -154,7 +154,7 @@ class GlicProfileManagerUiTest
           return false;
         }
         auto* contents =
-            service->GetHostForActiveTab(nullptr)->webui_contents();
+            service->GetInstanceForActiveTab(nullptr)->host().webui_contents();
         if (!contents) {
           contents = service->fre_controller().GetWebContents();
         }

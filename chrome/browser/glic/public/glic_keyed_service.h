@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -230,7 +231,6 @@ class GlicKeyedService : public KeyedService,
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  std::vector<Host*> GetAllHosts();
   HostManager& host_manager();
   GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
     return *zero_state_suggestions_manager_;
@@ -242,9 +242,9 @@ class GlicKeyedService : public KeyedService,
   // chrome://glic.
   bool IsGlicWebUi(content::WebContents* web_contents);
 
-  // Get the Host associated with the given browser's active tab, or null
-  // if there is none. `bwi` can be null if preloaded with no browser open.
-  Host* GetHostForActiveTab(BrowserWindowInterface* bwi);
+  // Get the GlicInstance associated with the given browser's active tab, or
+  // null if there is none. `bwi` can be null if preloaded with no browser open.
+  GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
