@@ -572,9 +572,23 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             return;
         }
 
-         // Measure the size of the menu_list, which includes all items plus padding.
-         int[] measuredDimensions = popupListMenu.getMenuDimensions();
-         mAnchoredPopupWindow.setDesiredContentSize(finalWidth, measuredDimensions[1]);
+        // Measure the size of the menu_list, which includes all items plus padding.
+        int[] measuredDimensions = popupListMenu.getMenuDimensions();
+        int desiredHeight = measuredDimensions[1];
+
+        // When there is a non-null rect provider, we can set scroll bars to only be shown when
+        // the desired height for the content is more than the available height.
+        if (mBrowserControlsRectProvider != null
+                && mBrowserControlsRectProvider.getRect() != null) {
+            int availableHeight = mBrowserControlsRectProvider.getRect().height();
+
+            ListView menuList = popupListMenu.getContentView().findViewById(R.id.menu_list);
+            boolean needsScrollbar = desiredHeight > availableHeight;
+            menuList.setVerticalScrollBarEnabled(needsScrollbar);
+            menuList.setScrollbarFadingEnabled(needsScrollbar);
+        }
+
+        mAnchoredPopupWindow.setDesiredContentSize(finalWidth, desiredHeight);
     }
 
     private int getIndexInBookmarksBar(BookmarkItem item) {
