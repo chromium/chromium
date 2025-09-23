@@ -504,8 +504,6 @@ async def test_browsing_context_download_behavior_global_and_per_user_context(
     # Global config should affect user context's one.
     await assert_success_download_events(context_id)
 
-    pytest.xfail(
-        "https://github.com/GoogleChromeLabs/chromium-bidi/issues/3743")
     await execute_command(
         websocket, {
             'method': 'browser.setDownloadBehavior',
