@@ -71,10 +71,6 @@ class AwSettings : public content::WebContentsObserver {
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
-  // Static accessor to get the currently configured default value based
-  // on feature flags and trial config
-  static RequestedWithHeaderMode GetDefaultRequestedWithHeaderMode();
-
   AwSettings(JNIEnv* env,
              const jni_zero::JavaRef<jobject>& obj,
              content::WebContents* web_contents);

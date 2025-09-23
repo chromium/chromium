@@ -95,17 +95,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   ~AwProxyingURLLoaderFactory() override;
 
-  // Allows telling the loader whether the XRW origin trial is enabled for a
-  // navigation URL. This is an optimization that avoids hopping to the UI
-  // thread before starting a request.
-  static void SetXrwResultForNavigation(
-      content::OriginTrialsControllerDelegate* delegate,
-      const GURL& url,
-      blink::mojom::ResourceType resource_type,
-      content::FrameTreeNodeId frame_tree_node_id,
-      int64_t navigation_id);
-  static void ClearXrwResultForNavigation(int64_t navigation_id);
-
   // static
   static void CreateProxy(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,

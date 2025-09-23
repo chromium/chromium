@@ -172,37 +172,6 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
-BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A throttle which checks if the XRW origin trial is enabled for this
-// navigation, and forwards it to the proxying loader factory.
-class XrwNavigationThrottle : public content::NavigationThrottle {
- public:
-  explicit XrwNavigationThrottle(content::NavigationThrottleRegistry& registry)
-      : NavigationThrottle(registry) {}
-  ~XrwNavigationThrottle() override {
-    AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
-        navigation_handle()->GetNavigationId());
-  }
-
-  ThrottleCheckResult WillStartRequest() override {
-    auto* handle = navigation_handle();
-    content::OriginTrialsControllerDelegate* delegate =
-        handle->GetWebContents()
-            ->GetBrowserContext()
-            ->GetOriginTrialsControllerDelegate();
-    AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
-        delegate, handle->GetURL(),
-        handle->IsInOutermostMainFrame()
-            ? blink::mojom::ResourceType::kMainFrame
-            : blink::mojom::ResourceType::kSubFrame,
-        handle->GetFrameTreeNodeId(), handle->GetNavigationId());
-    return content::NavigationThrottle::PROCEED;
-  }
-
-  const char* GetNameForLogging() override { return "XrwNavigationThrottle"; }
-};
 
 // Get async check tracker to make Safe Browsing v5 check asynchronous
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
@@ -699,9 +668,6 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
       AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
 
   AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
-  if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
-    registry.AddThrottle(std::make_unique<XrwNavigationThrottle>(registry));
-  }
 
   if ((navigation_handle.GetNavigatingFrameType() ==
            FrameType::kPrimaryMainFrame ||

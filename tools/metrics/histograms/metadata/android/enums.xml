@@ -904,13 +904,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Disallow"/>
 </enum>
 
-<enum name="CommittedRequestedWithHeaderMode">
-  <int value="0" label="No header set"/>
-  <int value="1" label="App package name"/>
-  <int value="2" label="Constant string 'WebView'"/>
-  <int value="3" label="Header set by client code"/>
-</enum>
-
 <enum name="ContactsPickerDialogAction">
   <int value="0" label="Cancel"/>
   <int value="1" label="Contact(s) selected"/>

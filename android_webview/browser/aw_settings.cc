@@ -167,33 +167,12 @@ bool AwSettings::GetAllowSniffingFileUrls() {
   return Java_AwSettings_getAllowSniffingFileUrls(env);
 }
 
-AwSettings::RequestedWithHeaderMode
-AwSettings::GetDefaultRequestedWithHeaderMode() {
-  // If the control feature is not enabled, the default is the old behavior,
-  // which is to send the app package name.
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewXRequestedWithHeaderControl))
-    return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
-
-  int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
-  switch (configuredValue) {
-    case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
-      return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
-    case AwSettings::RequestedWithHeaderMode::NO_HEADER:
-      return AwSettings::RequestedWithHeaderMode::NO_HEADER;
-    default:
-      // If the field trial config is broken for some reason, use the
-      // package name.
-      return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
-  }
-}
-
 AwRenderViewHostExt* AwSettings::GetAwRenderViewHostExt() {
   if (!web_contents())
-    return NULL;
+    return nullptr;
   AwContents* contents = AwContents::FromWebContents(web_contents());
   if (!contents)
-    return NULL;
+    return nullptr;
   return contents->render_view_host_ext();
 }
 

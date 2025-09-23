@@ -7976,36 +7976,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
-    enum="CommittedRequestedWithHeaderMode" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the type of X-Requested-With HTTP header that is set on request from
-    WebView. This enum is recorded by
-    |InterceptedRequest::InterceptResponseReceived| for all requests. It may
-    differ from the user settings, as it also captures if the header has been
-    set explicitly on the request by other means, such as javascript or
-    embedding code.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.WebView.RequestedWithHeader.HadWebContentsForPartitionOrigin"
-    enum="BooleanAvailable" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records whether a suitable WebContents was available for use to look up the
-    partition origin for the XRequestedWith deprecation origin trial. This
-    histogram is recorded when the AwProxyingUrlLoader attemps to get the last
-    committed origin of the top frame for partitioning use, which is on all
-    requests that are not top frame navigation requests. If the WebContents is
-    not available, an opaque origin will be used for partitioning, which will
-    result in a failed lookup.
-  </summary>
-</histogram>
-
 <histogram
     name="Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize"
     units="entries" expires_after="2025-09-01">
@@ -8015,30 +7985,6 @@ chromium-metrics-reviews@google.com.
     Records the size of the XRequestedWithHeaderAllowList that was used on page
     navigation. This is recorded to gain insight into the distribution of size
     when used, which will give an idea of the impact to the ecosystem.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.RequestedWithHeader.OriginTrialEnabled"
-    enum="BooleanEnabled" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records if the WebViewXRequestedWithDeprecation Origin Trial was enabled on
-    a resource request. This histogram is recorded on every request sent by
-    WebView if Persistent Origin Trials are enabled.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.RequestedWithHeader.PageSchemeIsCryptographic"
-    enum="BooleanSecure" expires_after="2025-09-01">
-  <owner>pbirk@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records if the WebViewXRequestedWithDeprecation Origin Trial was enabled on
-    a resource request with a scheme that uses cryptography, i.e. HTTPS or WSS.
-    This histogram is recorded on every request sent by WebView if the
-    WebViewXRequestedWithDeprecation trial is enabled and the scheme is either
-    HTTP/HTTPS or WS/WSS.
   </summary>
 </histogram>
 

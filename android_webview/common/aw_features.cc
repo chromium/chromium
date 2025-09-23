@@ -100,18 +100,6 @@ BASE_FEATURE(kWebViewPropagateNetworkChangeSignals,
 // regardless of the user agent reduction policy.
 BASE_FEATURE(kWebViewUnreducedProductVersion, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Control the default behaviour for the XRequestedWith header.
-// TODO(crbug.com/40286009): enable by default after M120 branch point.
-BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Default value of the XRequestedWith header mode when
-// WebViewXRequestedWithHeaderControl is enabled. Defaults to
-// |AwSettings::RequestedWithHeaderMode::NO_HEADER| Must be value declared in in
-// |AwSettings::RequestedWithHeaderMode|
-const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
-    &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
-
 // If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
 // otherwise the zoom picker is persistently shown from scroll start to scroll
 // end plus the usual delay in hiding.
