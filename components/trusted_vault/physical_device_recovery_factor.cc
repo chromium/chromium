@@ -292,11 +292,6 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
 
   auto* per_user_vault = GetPrimaryAccountVault();
 
-  // Registration is only attempted if there was no previous failure with
-  // `kLocalDataObsolete`. If this precondition wasn't guaranteed here, the
-  // field would need to be reset for some cases below such as `kSuccess` and
-  // `kAlreadyRegistered`.
-  CHECK(!per_user_vault->last_registration_returned_local_data_obsolete());
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
@@ -306,6 +301,7 @@ void PhysicalDeviceRecoveryFactor::OnRegistered(
           ->set_device_registered(true);
       per_user_vault->mutable_local_device_registration_info()
           ->set_device_registered_version(kCurrentDeviceRegistrationVersion);
+      per_user_vault->clear_last_registration_returned_local_data_obsolete();
       storage_->WriteDataToDisk();
       break;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
