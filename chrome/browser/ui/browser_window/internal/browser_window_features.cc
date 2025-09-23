@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views_impl.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
@@ -705,6 +706,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
       std::make_unique<WindowsTaskbarIconUpdater>(*browser_view);
 #endif
 
+  zoom_bubble_coordinator_ =
+      GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(*browser_,
+                                                                 *browser_view);
+
   user_education_->Init(browser_view);
 
   find_bar_owner_ = std::make_unique<FindBarOwnerViews>(browser_view);
@@ -734,6 +739,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
     download_toolbar_ui_controller_->TearDownPreBrowserWindowDestruction();
   }
 #endif
+
+  zoom_bubble_coordinator_.reset();
 
   comments_side_panel_coordinator_.reset();
 

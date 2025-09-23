@@ -29,6 +29,7 @@ source_set("location_bar") {
       "omnibox_chip_theme.h",
       "selected_keyword_view.h",
       "star_view.h",
+      "zoom_bubble_coordinator.h",
       "zoom_bubble_view.h",
     ]
 
@@ -83,6 +84,7 @@ source_set("impl") {
       "omnibox_chip_button.cc",
       "selected_keyword_view.cc",
       "star_view.cc",
+      "zoom_bubble_coordinator.cc",
       "zoom_bubble_view.cc",
     ]
 

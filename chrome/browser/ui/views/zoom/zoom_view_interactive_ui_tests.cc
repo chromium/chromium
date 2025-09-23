@@ -8,9 +8,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -80,14 +82,16 @@ class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
     DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                         kZoomBubbleVisible);
 
-    return Steps(PollState(kZoomBubbleVisible,
-                           [&, visible]() {
-                             bool is_visible =
-                                 ZoomBubbleView::GetZoomBubble() != nullptr;
-                             return is_visible == visible;
-                           }),
-                 WaitForState(kZoomBubbleVisible, true),
-                 StopObservingState(kZoomBubbleVisible));
+    return Steps(
+        PollState(kZoomBubbleVisible,
+                  [&, visible]() {
+                    const bool is_visible =
+                        ZoomBubbleCoordinator::From(browser())->bubble() !=
+                        nullptr;
+                    return is_visible == visible;
+                  }),
+        WaitForState(kZoomBubbleVisible, true),
+        StopObservingState(kZoomBubbleVisible));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
