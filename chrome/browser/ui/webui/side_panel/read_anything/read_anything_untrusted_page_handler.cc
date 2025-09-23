@@ -573,6 +573,10 @@ void ReadAnythingUntrustedPageHandler::OnTtsEngineAwake(bool success) {
     if (!queued_language_requests_.empty()) {
       queued_language_requests_.pop_front();
     }
+    auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
+    voicePackInfo->pack_state =
+        VoicePackInstallationState::NewErrorCode(ErrorCode::kNotReached);
+    OnGetVoicePackInfo(std::move(voicePackInfo));
     return;
   }
 
