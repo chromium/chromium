@@ -129,24 +129,6 @@ TEST_F(ONCTranslatorOncToShillTest,
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }
 
-TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnPolicies) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kApnRevamp,
-                            chromeos::features::kApnPolicies},
-      /*disabled_features=*/{});
-
-  base::Value::Dict onc_network =
-      test_utils::ReadTestDictionary("cellular_apn_policies.onc");
-  base::Value::Dict expected_shill_network =
-      test_utils::ReadTestDictionary("shill_cellular_apn_policies.json");
-
-  base::Value::Dict translation = TranslateONCObjectToShill(
-      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
-
-  EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
-}
-
 // First parameter: Filename of source Shill json.
 // Second parameter: Filename of expected translated ONC network part.
 //

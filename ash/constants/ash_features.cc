@@ -2430,10 +2430,6 @@ bool IsApnRevampEnabled() {
   return base::FeatureList::IsEnabled(kApnRevamp);
 }
 
-bool IsApnRevampAndPoliciesEnabled() {
-  return IsApnRevampEnabled() && chromeos::features::IsApnPoliciesEnabled();
-}
-
 bool IsAutoNightLightEnabled() {
   return base::FeatureList::IsEnabled(kAutoNightLight);
 }

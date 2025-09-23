@@ -1029,7 +1029,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAltClickAndSixPackCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientEQDefaultOff();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAnnotatorModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsApnRevampAndPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowApnModificationPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsApnRevampAndAllowApnModificationPolicyEnabled();

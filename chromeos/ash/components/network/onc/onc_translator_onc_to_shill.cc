@@ -542,37 +542,7 @@ void LocalTranslator::TranslateApn() {
       onc_object_->FindList(::onc::cellular_apn::kApnTypes);
   DCHECK(apn_types) << "APN must have APN types";
 
-  if (ash::features::IsApnRevampAndPoliciesEnabled()) {
-    const std::string* apn_source =
-        onc_object_->FindString(::onc::cellular_apn::kSource);
-    if (apn_source) {
-      // APNs being translated from ONC to Shill should only ever be provided by
-      // an admin or by the user via the UI.
-      const bool is_unexpected_source =
-          *apn_source != ::onc::cellular_apn::kSourceAdmin &&
-          *apn_source != ::onc::cellular_apn::kSourceUi;
-
-      if (is_unexpected_source) {
-        NET_LOG(ERROR) << R"(Unexpected ONC to Shill APN source type of ")"
-                       << *apn_source
-                       << R"(". Setting Shill APN source type to ")"
-                       << shill::kApnSourceUi << R"(".)";
-
-        shill_dictionary_->Set(shill::kApnSourceProperty, shill::kApnSourceUi);
-      } else {
-        TranslateWithTableAndSet(*apn_source, kApnSourceTranslationTable,
-                                 shill::kApnSourceProperty);
-      }
-    } else {
-      // Shill expects that APNs provided Chrome will only ever be provided by
-      // the UI or by an admin. We default to the source being the UI but check
-      // if it was provided by an admin. For more information see
-      // b/329714110#comment5 and b/333100319.
-      shill_dictionary_->Set(shill::kApnSourceProperty, shill::kApnSourceUi);
-    }
-  } else {
-    shill_dictionary_->Set(shill::kApnSourceProperty, shill::kApnSourceUi);
-  }
+  shill_dictionary_->Set(shill::kApnSourceProperty, shill::kApnSourceUi);
 
   // Convert array of APN types to comma-delimited, de-duped string, i.e.
   // ["Default", "Attach", "Default"] -> "DEFAULT,IA".
