@@ -422,8 +422,9 @@ TEST_F(SessionStoreImplTest, LoadSavedSessions) {
 }
 
 TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
-  feature_list_.InitAndDisableFeature(
-      features::kDeviceBoundSessionsOriginTrialFeedback);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kDeviceBoundSessions,
+      {{features::kDeviceBoundSessionsSchemaVersion.name, "1"}});
   CreateStoreAndLoadSessions();
   SessionCfgList cfgs = {
       {"https://a.foo.test/index.html", "session0", "https://foo.test"},
@@ -435,8 +436,9 @@ TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(
-      features::kDeviceBoundSessionsOriginTrialFeedback);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kDeviceBoundSessions,
+      {{features::kDeviceBoundSessionsSchemaVersion.name, "2"}});
   MimicRestart();
 
   SessionStore::SessionsMap loaded_sessions = LoadSessions();
@@ -444,8 +446,9 @@ TEST_F(SessionStoreImplTest, DropLowerSchemaVersionSessions) {
 }
 
 TEST_F(SessionStoreImplTest, DropHigherSchemaVersionSessions) {
-  feature_list_.InitAndEnableFeature(
-      features::kDeviceBoundSessionsOriginTrialFeedback);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kDeviceBoundSessions,
+      {{features::kDeviceBoundSessionsSchemaVersion.name, "2"}});
   CreateStoreAndLoadSessions();
   SessionCfgList cfgs = {
       {"https://a.foo.test/index.html", "session0", "https://foo.test"},
@@ -457,8 +460,9 @@ TEST_F(SessionStoreImplTest, DropHigherSchemaVersionSessions) {
       CreateAndSaveSessions(cfgs, unexportable_key_service(), store());
 
   feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      features::kDeviceBoundSessionsOriginTrialFeedback);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kDeviceBoundSessions,
+      {{features::kDeviceBoundSessionsSchemaVersion.name, "1"}});
   MimicRestart();
 
   SessionStore::SessionsMap loaded_sessions = LoadSessions();

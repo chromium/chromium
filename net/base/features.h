@@ -708,6 +708,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDeviceBoundSessionsCheckFederatedRegistration);
+// This feature controls the database schema version for stored sessions.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeviceBoundSessionsSchemaVersion);
 // This feature will enable breaking changes to Device Bound Session
 // Credentials from after the Origin Trial started. This is disabled by
 // default to facilitate implementation of feedback from the Origin

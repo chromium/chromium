@@ -588,6 +588,11 @@ BASE_FEATURE_PARAM(bool,
                    &kDeviceBoundSessions,
                    "CheckFederatedRegistration",
                    true);
+BASE_FEATURE_PARAM(int,
+                   kDeviceBoundSessionsSchemaVersion,
+                   &kDeviceBoundSessions,
+                   "SchemaVersion",
+                   1);
 BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

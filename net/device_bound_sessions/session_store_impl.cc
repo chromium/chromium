@@ -48,15 +48,11 @@ SessionStoreImpl::DBStatus InitializeOnDbSequence(
     return SessionStoreImpl::DBStatus::kFailure;
   }
 
-  // Increase the schema version for Origin Trial #2 so that OT #1 sessions are
-  // not reused in OT #2.
-  int current_schema_version =
-      base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionsOriginTrialFeedback)
-          ? 2
-          : 1;
+  // Control the schema version with a feature param so that the database can be
+  // wiped between Origin Trials and going into the final release.
   table_manager->InitializeOnDbSequence(
-      db, std::vector<std::string>{kSessionTableName}, current_schema_version);
+      db, std::vector<std::string>{kSessionTableName},
+      features::kDeviceBoundSessionsSchemaVersion.Get());
   session_data->InitializeOnDBSequence();
 
   return SessionStoreImpl::DBStatus::kSuccess;
