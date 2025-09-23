@@ -242,7 +242,7 @@ These models execute first to generate the relevance score.
 - **Model**: `kOnDeviceAiv5AndServerSideModel`
 
   - **Preconditions**: The AIv5 feature is enabled
-    (`permissions::features::kPermissionsAIv5`).
+    (`permissions::features::kPermissionsAIP92`).
   - **Input**:
     - A snapshot of the web page.
     - Text embeddings generated from the page's content (requires page

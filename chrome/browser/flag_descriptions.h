@@ -1942,8 +1942,8 @@ extern const char kPermissionsAIv3Description[];
 extern const char kPermissionsAIv4Name[];
 extern const char kPermissionsAIv4Description[];
 
-extern const char kPermissionsAIv5Name[];
-extern const char kPermissionsAIv5Description[];
+extern const char kPermissionsAIP92Name[];
+extern const char kPermissionsAIP92Description[];
 
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];

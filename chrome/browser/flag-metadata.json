@@ -8051,6 +8051,15 @@
     "expiry_milestone": 145
   },
   {
+    "name": "permissions-ai-p92",
+    "owners": [
+      "elklm@chromium.org",
+      "hempjudith@google.com",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "permissions-ai-v1",
     "owners": [
       "elklm@chromium.org",
@@ -8069,15 +8078,6 @@
   },
   {
     "name": "permissions-ai-v4",
-    "owners": [
-      "elklm@chromium.org",
-      "hempjudith@google.com",
-      "//components/permissions/PERMISSIONS_OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "permissions-ai-v5",
     "owners": [
       "elklm@chromium.org",
       "hempjudith@google.com",

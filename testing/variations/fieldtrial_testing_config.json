@@ -18210,6 +18210,25 @@
             ]
         }
     ],
+    "PermissionsAIP92": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionsAIP92"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionsAIv1": [
         {
             "platforms": [
@@ -18259,24 +18278,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PermissionsAIv4"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PermissionsAIv5": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PermissionsAIv5"
                     ]
                 }
             ]
