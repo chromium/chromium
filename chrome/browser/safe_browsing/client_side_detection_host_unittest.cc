@@ -2139,7 +2139,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   csd_host_->RegisterAutofillManager();
 
-  TestFuture<void> future;
+  TestFuture<ClientSideDetectionType> future;
   csd_host_->set_preclassification_started_callback_for_testing(
       future.GetRepeatingCallback());
 
@@ -2169,11 +2169,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // feature is disabled.
   csd_host_->RegisterAutofillManager();
 
-  TestFuture<void> future;
+  TestFuture<ClientSideDetectionType> future;
   csd_host_->set_preclassification_started_callback_for_testing(
       future.GetRepeatingCallback());
 
-  auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
 
   // Preclassification should not have been triggered by OnFormsSeen.
@@ -2203,11 +2204,12 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // This won't actually register for Autofill events since ESB is disabled.
   csd_host_->RegisterAutofillManager();
 
-  TestFuture<void> future;
+  TestFuture<ClientSideDetectionType> future;
   csd_host_->set_preclassification_started_callback_for_testing(
       future.GetRepeatingCallback());
 
-  auto form_data = autofill::test::CreateTestEmailOrLoyaltyCardFormData();
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
 
   // Preclassification should not have been triggered by OnFormsSeen.

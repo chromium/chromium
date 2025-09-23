@@ -825,7 +825,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   if (!preclassification_started_cb_for_testing_.is_null()) {
-    preclassification_started_cb_for_testing_.Run();
+    preclassification_started_cb_for_testing_.Run(request_type);
   }
 
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
@@ -1018,6 +1018,11 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     bool is_sample_ping,
     std::optional<bool> did_match_high_confidence_allowlist) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!preclassification_done_cb_for_testing_.is_null()) {
+    preclassification_done_cb_for_testing_.Run(request_type);
+  }
+
   if (should_classify) {
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 

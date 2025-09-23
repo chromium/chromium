@@ -397,13 +397,22 @@ class ClientSideDetectionHost
     intelligent_scan_delegate_ = intelligent_scan_delegate;
   }
 
-  // A callback for when preclassification is started.
-  using PreclassificationStarted = base::RepeatingClosure;
+  // Callbacks for when preclassification is started/done.
+  using PreclassificationStarted =
+      base::RepeatingCallback<void(ClientSideDetectionType)>;
+  using PreclassificationDone =
+      base::RepeatingCallback<void(ClientSideDetectionType)>;
 
   // Sets a callback to be notified when preclassification is started.
   void set_preclassification_started_callback_for_testing(
       const PreclassificationStarted& callback) {
     preclassification_started_cb_for_testing_ = callback;
+  }
+
+  // Sets a callback to be notified when preclassification is done.
+  void set_preclassification_done_callback_for_testing(
+      const PreclassificationDone& callback) {
+    preclassification_done_cb_for_testing_ = callback;
   }
 
   // Check if CSD can get an access Token. Should be enabled only for ESB
@@ -534,6 +543,10 @@ class ClientSideDetectionHost
   // Callback settable by tests for verifying whether
   // MaybeStartPreClassification resulted in starting preclassification.
   PreclassificationStarted preclassification_started_cb_for_testing_;
+
+  // Callback settable by tests for verifying whether
+  // OnPhishingPreClassificationDone was called at the end of preclassification.
+  PreclassificationDone preclassification_done_cb_for_testing_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };
