@@ -105,6 +105,22 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
     return server().GetURL("www.chromium.org", "/");
   }
 
+  GURL GetChromiumToChromiumRedirectUrl() {
+    return server().GetURL("www.chromium.org", "/redirectChromiumToChromium");
+  }
+
+  GURL GetChromiumToGoogleRedirectUrl() {
+    return server().GetURL("www.chromium.org", "/redirectChromiumToGoogle");
+  }
+
+  GURL GetGoogleToChromiumRedirectUrl() {
+    return server().GetURL("www.google.com", "/redirectGoogleToChromium");
+  }
+
+  GURL GetGoogleToGoogleRedirectUrl() {
+    return server().GetURL("www.google.com", "/redirectGoogleToGoogle");
+  }
+
   // Returns whether a given `header` has been received for a `url`. If
   // `url` has not been observed, fails with ADD_FAILURE() and returns false.
   bool HasReceivedHeader(const GURL& url, std::string_view header) const {
@@ -191,6 +207,21 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
         // Placeholder Script
         )");
       http_response->set_content_type("text/javascript");
+    } else if (request.relative_url ==
+               GetChromiumToChromiumRedirectUrl().path()) {
+      http_response->set_code(net::HTTP_FOUND);
+      http_response->AddCustomHeader("Location", GetChromiumUrl().spec());
+    } else if (request.relative_url ==
+               GetChromiumToGoogleRedirectUrl().path()) {
+      http_response->set_code(net::HTTP_FOUND);
+      http_response->AddCustomHeader("Location", GetGoogleUrl().spec());
+    } else if (request.relative_url ==
+               GetGoogleToChromiumRedirectUrl().path()) {
+      http_response->set_code(net::HTTP_FOUND);
+      http_response->AddCustomHeader("Location", GetChromiumUrl().spec());
+    } else if (request.relative_url == GetGoogleToGoogleRedirectUrl().path()) {
+      http_response->set_code(net::HTTP_FOUND);
+      http_response->AddCustomHeader("Location", GetGoogleUrl().spec());
     } else {
       http_response->set_code(net::HTTP_OK);
       http_response->set_content("hello");
@@ -244,9 +275,53 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetGoogleScriptPageUrl()));
   GURL dynamic_script_url = GetGoogleScriptDynamicScriptUrl();
-  WaitForRequest(GetGoogleScriptDynamicScriptUrl());
+  WaitForRequest(dynamic_script_url);
   EXPECT_TRUE(
       HasReceivedHeader(dynamic_script_url, LASTCHANGE_YEAR_HEADER_NAME));
   EXPECT_TRUE(HasReceivedHeader(dynamic_script_url, VALIDATE_HEADER_NAME));
   EXPECT_TRUE(HasReceivedHeader(dynamic_script_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromChromiumToChromium) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetChromiumToChromiumRedirectUrl()));
+  GURL target_url = GetChromiumUrl();
+  WaitForRequest(target_url);
+  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromChromiumToGoogle) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetChromiumToGoogleRedirectUrl()));
+  GURL target_url = GetGoogleUrl();
+  WaitForRequest(target_url);
+  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromGoogleToChromium) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetGoogleToChromiumRedirectUrl()));
+  GURL target_url = GetChromiumUrl();
+  WaitForRequest(target_url);
+  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       RedirectFromGoogleToGoogle) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetGoogleToGoogleRedirectUrl()));
+  GURL target_url = GetGoogleUrl();
+  WaitForRequest(target_url);
+  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
+  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
 }

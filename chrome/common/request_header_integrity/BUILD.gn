@@ -62,7 +62,9 @@ source_set("unit_tests") {
   deps = [
     ":request_header_integrity",
     "//build:branding_buildflags",
+    "//net",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
