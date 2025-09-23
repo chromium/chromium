@@ -699,8 +699,6 @@ void ReadingListModelImpl::StoreLoaded(
   DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
   loaded_ = true;
 
-  RecordCountMetrics(".OnModelLoaded");
-
   {
     // In rare cases, ModelReadyToSync() leads to the deletion of all local
     // entries. Such deletions should not be propagated to observers, because
@@ -710,6 +708,8 @@ void ReadingListModelImpl::StoreLoaded(
     sync_bridge_.ModelReadyToSync(/*model=*/this,
                                   std::move(result_or_error.value().second));
   }
+
+  RecordCountMetrics(".OnModelLoaded");
 
   for (auto& observer : observers_) {
     observer.ReadingListModelLoaded(this);

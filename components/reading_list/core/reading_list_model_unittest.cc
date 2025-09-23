@@ -6,6 +6,7 @@
 
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
@@ -954,6 +955,15 @@ TEST_F(ReadingListModelTest, TestTrimmingTitle) {
   EXPECT_EQ(entry->Title(), "test");
   model_->SetEntryTitleIfExists(url, title);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
+}
+
+TEST_F(ReadingListModelTest, RecordsHistogramUponLoadWithSyncingStorage) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  histogram_tester.ExpectUniqueSample(
+      "ReadingList.Unread.Count.OnModelLoaded.LocalStorageSyncing",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace
