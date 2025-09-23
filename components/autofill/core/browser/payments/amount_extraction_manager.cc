@@ -21,7 +21,6 @@
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/suggestions/suggestions_context.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -68,16 +67,17 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
 }
 
 DenseSet<AmountExtractionManager::EligibleFeature>
-AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
+AmountExtractionManager::GetEligibleFeatures(bool is_autofill_payments_enabled,
                                              bool should_suppress_suggestions,
                                              bool has_suggestions,
+                                             FillingProduct filling_product,
                                              FieldType field_type) const {
   // If there is an ongoing search, do not trigger the search.
   if (search_request_pending_) {
     return {};
   }
   // If autofill is not available, do not trigger the search.
-  if (!context.is_autofill_available) {
+  if (!is_autofill_payments_enabled) {
     return {};
   }
 
@@ -97,7 +97,7 @@ AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
     return {};
   }
   // Amount extraction is only offered for Credit Card filling scenarios.
-  if (context.filling_product != FillingProduct::kCreditCard) {
+  if (filling_product != FillingProduct::kCreditCard) {
     return {};
   }
 

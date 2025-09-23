@@ -11,12 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 class AutofillDriver;
 class BrowserAutofillManager;
-struct SuggestionsContext;
 }  // namespace autofill
 
 namespace autofill::payments {
@@ -67,7 +67,7 @@ class AmountExtractionManager {
 
   // Returns the set of all eligible features that depend on amount extraction
   // result when:
-  //   Autofill is available in the given `SuggestionsContext`;
+  //   Autofill Payment Methods are enabled for the user;
   //   Autofill provides non-empty, non-suppressed suggestions;
   //   The form being interacted with is a credit card form but not the CVC
   //   field of the credit card form;
@@ -75,9 +75,10 @@ class AmountExtractionManager {
   //   checkout page;
   //   Amount Extraction feature is enabled;
   DenseSet<EligibleFeature> GetEligibleFeatures(
-      const SuggestionsContext& context,
+      bool is_autofill_payments_enabled,
       bool should_suppress_suggestions,
       bool has_suggestions,
+      FillingProduct filling_product,
       FieldType field_type) const;
 
   // Trigger the search for the final checkout amount from the DOM of the

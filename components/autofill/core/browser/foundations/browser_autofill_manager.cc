@@ -446,7 +446,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
 
 void LogSuggestionsCount(const SuggestionsContext& context,
                          const std::vector<Suggestion>& suggestions) {
-  if (suggestions.empty() || !context.is_autofill_available) {
+  if (suggestions.empty()) {
     return;
   }
 
@@ -1166,11 +1166,6 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     return context;
   }
   context.is_context_secure = !IsFormNonSecure(form);
-
-  context.is_autofill_available =
-      client().IsAutofillEnabled() &&
-      (IsAutofillManuallyTriggered(trigger_source) || got_autofillable_form);
-
   return context;
 }
 
@@ -1323,7 +1318,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
   const bool field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
       (!context.should_show_mixed_content_warning &&
-       context.is_autofill_available &&
+       // TODO(crbug.com/409962888): Figure out if plus addresses should be
+       // conditioned on Address Autofill being enabled.
+       client().IsAutofillProfileEnabled() &&
        !context.do_not_generate_autofill_suggestions && autofill_field &&
        plus_address_delegate &&
        plus_address_delegate->IsFieldEligibleForPlusAddress(*autofill_field) &&
@@ -1412,13 +1409,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
           plus_addresses.value_or(std::vector<std::string>())),
       one_time_passwords, context, ranking_context);
 
-  if (context.is_autofill_available &&
-      ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
+  if (ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
     if (context.suppress_reason == SuppressReason::kAblation) {
       CHECK(suggestions.empty());
       client().GetSingleFieldFillRouter().CancelPendingQueries();
-      std::move(callback).Run(/*show_suggestions=*/true, {}, std::nullopt);
     }
+    std::move(callback).Run(/*show_suggestions=*/true, /*suggestions=*/{},
+                            /*ranking_context=*/std::nullopt);
     return;
   }
 
@@ -1449,6 +1446,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
              ai_manager->ShouldDisplayIph(*form_structure, field.global_id()) &&
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
+    std::move(callback).Run(/*show_suggestions=*/false, /*suggestions=*/{},
+                            /*ranking_context=*/std::nullopt);
     return;
   }
 
@@ -1737,9 +1736,10 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   if (autofill_field) {
     const DenseSet<AmountExtractionManager::EligibleFeature> eligible_features =
         GetAmountExtractionManager().GetEligibleFeatures(
-            context,
+            client().IsAutofillPaymentMethodsEnabled(),
             ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
-            !suggestions.empty(), autofill_field->Type().GetCreditCardType());
+            !suggestions.empty(), context.filling_product,
+            autofill_field->Type().GetCreditCardType());
 
     if (!eligible_features.empty()) {
       for (AmountExtractionManager::EligibleFeature eligible_feature :
@@ -3254,8 +3254,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                    SuggestionType::kMixedFormMessage)};
   }
 
-  if (!context.is_autofill_available ||
-      context.do_not_generate_autofill_suggestions) {
+  if (context.do_not_generate_autofill_suggestions) {
     return {};
   }
 
@@ -3266,9 +3265,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   std::vector<Suggestion> suggestions;
   switch (context.filling_product) {
     case FillingProduct::kAddress:
-      suggestions =
-          GetProfileSuggestions(form, *form_structure, field, *autofill_field,
-                                std::move(plus_address_email_override));
+      if (client().IsAutofillProfileEnabled()) {
+        suggestions =
+            GetProfileSuggestions(form, *form_structure, field, *autofill_field,
+                                  std::move(plus_address_email_override));
+      }
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
           autofill_field->Type().GetLoyaltyCardType() ==
@@ -3288,8 +3289,10 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kCreditCard:
-      suggestions = GetCreditCardSuggestions(form, *form_structure, field,
-                                             *autofill_field, ranking_context);
+      if (client().IsAutofillPaymentMethodsEnabled()) {
+        suggestions = GetCreditCardSuggestions(
+            form, *form_structure, field, *autofill_field, ranking_context);
+      }
       break;
     case FillingProduct::kLoyaltyCard:
       if (base::FeatureList::IsEnabled(
