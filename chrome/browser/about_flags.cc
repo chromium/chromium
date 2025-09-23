@@ -13240,6 +13240,14 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasks)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"create-new-tab-group-app-menu-top-level",
+     flag_descriptions::kCreateNewTabGroupAppMenuTopLevelName,
+     flag_descriptions::kCreateNewTabGroupAppMenuTopLevelDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCreateNewTabGroupAppMenuTopLevel)}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

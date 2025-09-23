@@ -1995,6 +1995,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "create-new-tab-group-app-menu-top-level",
+    "owners": [
+      "dominicaustria@google.com",
+      "yuhengh@chromium.org",
+      "top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "credential-management-third-party-web-api-request-forwarding",
     "owners": [
       "izuzic@google.com",

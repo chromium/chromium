@@ -8232,6 +8232,7 @@ from previous Chrome versions.
   <int value="-2112737666" label="FedCmAutoSelectedFlag:enabled"/>
   <int value="-2112601037" label="OmniboxRefinedFocusState:enabled"/>
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
+  <int value="-2112407515" label="CreateNewTabGroupAppMenuTopLevel:disabled"/>
   <int value="-2111491589" label="CameraAppCrosEvents:enabled"/>
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
@@ -15709,6 +15710,7 @@ from previous Chrome versions.
   <int value="569523789" label="BackgroundNotPerceptibleBinding:enabled"/>
   <int value="570445904" label="WGIGamepadTriggerRumble:disabled"/>
   <int value="570469494" label="LoginDetection:disabled"/>
+  <int value="570767180" label="CreateNewTabGroupAppMenuTopLevel:enabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="571562912" label="InstallableAmbientBadgeMessage:disabled"/>
