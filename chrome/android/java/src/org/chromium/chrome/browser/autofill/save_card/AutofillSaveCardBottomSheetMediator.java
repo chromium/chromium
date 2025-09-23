@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>This mediator sends UI events (OnUiShown, OnUiAccepted, etc.) to the bridge.
  */
+@NullMarked
 /*package*/ class AutofillSaveCardBottomSheetMediator
         implements AutofillSaveCardBottomSheetLifecycle.ControllerDelegate {
     @VisibleForTesting

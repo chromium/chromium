@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +15,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -24,14 +29,15 @@ import org.chromium.ui.base.WindowAndroid;
  * Bridge class providing an entry point for autofill client to trigger the save card bottom sheet.
  */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillSaveCardBottomSheetBridge
         implements AutofillSaveCardBottomSheetCoordinator.NativeDelegate {
     private long mNativeAutofillSaveCardBottomSheetBridge;
     private final TabModel mTabModel;
-    private final Context mContext;
-    private final BottomSheetController mBottomSheetController;
-    private final LayoutStateProvider mLayoutStateProvider;
-    private AutofillSaveCardBottomSheetCoordinator mCoordinator;
+    private final @Nullable Context mContext;
+    private final @Nullable BottomSheetController mBottomSheetController;
+    private final @Nullable LayoutStateProvider mLayoutStateProvider;
+    private @Nullable AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
     @VisibleForTesting
@@ -56,6 +62,9 @@ public class AutofillSaveCardBottomSheetBridge
     @CalledByNative
     public void requestShowContent(AutofillSaveCardUiInfo uiInfo, boolean skipLoadingForFixFlow) {
         if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        assertNonNull(mContext);
+        assertNonNull(mBottomSheetController);
+        assertNonNull(mLayoutStateProvider);
         mCoordinator =
                 new AutofillSaveCardBottomSheetCoordinator(
                         mContext,
@@ -75,7 +84,8 @@ public class AutofillSaveCardBottomSheetBridge
     @CalledByNative
     public void hide() {
         if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
-        mCoordinator.hide(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
+        assumeNonNull(mCoordinator)
+                .hide(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
     }
 
     /** Called when the bottom sheet has been shown. */

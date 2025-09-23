@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.autofill;
 
 import android.graphics.Rect;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.content_public.browser.WebContents;
@@ -30,11 +30,12 @@ import java.util.function.Supplier;
  * - A Bottom Inset supplier for the Soft-keyboard.
  * </pre>
  */
+@NullMarked
 class WebContentsViewRectProvider extends RectProvider {
     private final WebContents mWebContents;
-    private ObservableSupplier<BrowserControlsManager> mBrowserControlsSupplier;
-    private ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
-    private ObservableSupplier<Integer> mBottomInsetSupplier;
+    private @Nullable ObservableSupplier<BrowserControlsManager> mBrowserControlsSupplier;
+    private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private @Nullable ObservableSupplier<Integer> mBottomInsetSupplier;
 
     private final Callback<ManualFillingComponent> mOnManualFillingComponentChanged =
             fillComponent -> observeBottomInsetSupplier(fillComponent.getBottomInsetSupplier());
