@@ -2011,7 +2011,7 @@ CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
       shared_image_interface_provider, delegate);
 }
 
-std::unique_ptr<CanvasResourceProvider>
+std::unique_ptr<CanvasResourceProviderSharedImage>
 CanvasResourceProvider::CreateSharedImageProvider(
     gfx::Size size,
     const Canvas2DColorParams& color_params,

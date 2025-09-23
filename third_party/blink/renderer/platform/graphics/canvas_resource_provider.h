@@ -197,14 +197,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       Delegate* delegate = nullptr);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateSharedImageProvider(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      Delegate* delegate = nullptr);
+  static std::unique_ptr<CanvasResourceProviderSharedImage>
+  CreateSharedImageProvider(gfx::Size size,
+                            const Canvas2DColorParams& color_params,
+                            ShouldInitialize initialize_provider,
+                            base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
+                            RasterMode raster_mode,
+                            gpu::SharedImageUsageSet shared_image_usage_flags,
+                            Delegate* delegate = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       gfx::Size size,
@@ -290,25 +290,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            size_t row_bytes,
                            int x,
                            int y);
-
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents unless the caller's usage model makes such a
-  // wait unnecessary (in which case the client should pass `nullptr` for the
-  // token together with an explanation at the callsite).
-  // `required_shared_image_usages` is a set of usages that the passed-back
-  // ClientSharedImage must support. A copy will be performed if either (a) the
-  // display compositor is reading the current resource or (b) the current
-  // resource does not support `required_shared_image_usages.` In these cases,
-  // `was_copy_performed` will be set to true if it is non-null.
-  virtual scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForExternalWrite(
-      gpu::SharedImageUsageSet required_shared_image_usages,
-      gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed = nullptr) {
-    return nullptr;
-  }
 
   // Signals that an external write has completed, passing the token that should
   // be waited on to ensure that the service-side operations of the external
@@ -556,11 +537,23 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsValid() const override;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
   bool HasUnusedResourcesForTesting() const override;
+
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents unless the caller's usage model makes such a
+  // wait unnecessary (in which case the client should pass `nullptr` for the
+  // token together with an explanation at the callsite).
+  // `required_shared_image_usages` is a set of usages that the passed-back
+  // ClientSharedImage must support. A copy will be performed if either (a) the
+  // display compositor is reading the current resource or (b) the current
+  // resource does not support `required_shared_image_usages.` In these cases,
+  // `was_copy_performed` will be set to true if it is non-null.
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SharedImageUsageSet required_shared_image_usages,
       gpu::SyncToken& internal_access_sync_token,
-      bool* was_copy_performed = nullptr) override;
+      bool* was_copy_performed = nullptr);
   void EndExternalWrite(
       const gpu::SyncToken& external_write_sync_token) override;
   scoped_refptr<StaticBitmapImage> Snapshot(
@@ -587,6 +580,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                    int x,
                    int y) override;
   void ClearUnusedResources() override { unused_resources_.clear(); }
+  bool IsSingleBuffered() const override;
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -620,7 +614,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void WillDrawInternal(bool write_to_local_texture);
   void WillDraw() override;
   bool IsSoftwareSharedImageGpuChannelLost() const override;
-  bool IsSingleBuffered() const override;
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
       override;

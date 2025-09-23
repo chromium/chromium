@@ -408,7 +408,7 @@ ExternalTexture CreateExternalTexture(
     return external_texture;
   }
 
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 

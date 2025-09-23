@@ -847,7 +847,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
 
-  std::unique_ptr<CanvasResourceProvider> resource_provider;
+  std::unique_ptr<CanvasResourceProviderSharedImage> resource_provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
@@ -1962,7 +1962,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     }
   }
 
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider) {
     // As a last resort, try to create and return an unaccelerated snapshot.
@@ -2026,7 +2026,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
   return nullptr;
 }
 
-CanvasResourceProvider*
+CanvasResourceProviderSharedImage*
 WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
   // If `cached_snapshot_` is non-null, it means that
   // PaintRenderingResultsToSnapshot() was unable to populate
@@ -2115,7 +2115,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     return resource_provider_.get();
   }
 
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       GetOrCreateCanvasResourceProvider();
   if (!resource_provider)
     return nullptr;
@@ -2144,7 +2144,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
 }
 
 bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
-    CanvasResourceProvider* resource_provider,
+    CanvasResourceProviderSharedImage* resource_provider,
     SourceDrawingBuffer source_buffer) {
   DCHECK(resource_provider);
   DCHECK(!resource_provider->IsSingleBuffered());

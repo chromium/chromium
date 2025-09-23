@@ -1513,7 +1513,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   gpu::SyncToken canvas_access_sync_token;
   bool performed_copy = false;
   scoped_refptr<gpu::ClientSharedImage> client_si =
-      GetResourceProvider()->GetBackingClientSharedImageForExternalWrite(
+      provider->GetBackingClientSharedImageForExternalWrite(
           gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
               gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
           canvas_access_sync_token, &performed_copy);
