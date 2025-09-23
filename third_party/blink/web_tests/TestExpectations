@@ -5004,19 +5004,6 @@ crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001
 crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Skip Timeout ]
 crbug.com/446634532 external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Skip Timeout ]
 
-crbug.com/446634532 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/hasStorageAccess-ABA.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/hasStorageAccess.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-cross-origin-fetch.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation-relax.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-cross-site-fetch.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-dedicated-worker.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/requestStorageAccess-web-socket.sub.https.window.html [ Failure ]
-crbug.com/446634532 external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure ]
-
 # ====== Tests that rely on third-party cookies being blocked end here ======
 
 crbug.com/930297 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/utf-16be.html?include=workers [ Skip Timeout ]
