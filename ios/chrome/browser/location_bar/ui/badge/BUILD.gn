@@ -13,8 +13,11 @@ source_set("badge") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/badges/ui_bundled",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/location_bar/ui_bundled:badges",
     "//ios/chrome/browser/reader_mode/coordinator:chip",
+    "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
   frameworks = [ "UIKit.framework" ]

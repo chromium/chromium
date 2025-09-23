@@ -9,7 +9,6 @@
 
 @implementation LocationBarBadgeCoordinator {
   LocationBarBadgeViewController* _viewController;
-  LocationBarBadgeMediator* _mediator;
 }
 
 - (void)start {

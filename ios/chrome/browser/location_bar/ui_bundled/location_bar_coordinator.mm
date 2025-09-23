@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
 #import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_coordinator.h"
+#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_mediator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -301,6 +302,16 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
+    LocationBarBadgeMediator* locationBarBadgeMediator =
+        self.locationBarBadgeCoordinator.mediator;
+    // TODO(crbug.com/445786272): Properly create mediator delegate.
+    self.readerModeChipCoordinator.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.contextualPanelEntrypointCoordinator.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.incognitoBadgeViewController.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.badgeViewController.visibilityDelegate = locationBarBadgeMediator;
   }
 
   // Create button factory that wil be used by the ViewController to get
