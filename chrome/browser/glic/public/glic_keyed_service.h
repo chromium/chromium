@@ -140,6 +140,9 @@ class GlicKeyedService : public KeyedService,
       std::optional<std::vector<std::string>> supported_tools,
       glic::mojom::WebClientHandler::
           GetZeroStateSuggestionsForFocusedTabCallback callback) override;
+  void RegisterConversation(
+      glic::mojom::ConversationInfoPtr info,
+      mojom::WebClientHandler::RegisterConversationCallback callback) override;
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);

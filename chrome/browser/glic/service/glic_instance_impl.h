@@ -97,7 +97,7 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicInstance:
   Host& host() override;
   const InstanceId& id() const override;
-  const std::optional<std::string>& conversation_id() const;
+  std::optional<std::string> conversation_id() const;
   void set_conversation_id(const std::string& conversation_id);
 
   // Host::InstanceDelegate:
@@ -114,6 +114,9 @@ class GlicInstanceImpl : public GlicInstance,
       std::optional<std::vector<std::string>> supported_tools,
       glic::mojom::WebClientHandler::
           GetZeroStateSuggestionsForFocusedTabCallback callback) override;
+  void RegisterConversation(
+      glic::mojom::ConversationInfoPtr info,
+      mojom::WebClientHandler::RegisterConversationCallback callback) override;
 
   // GlicUiEmbedder::Delegate:
   void SwitchConversation(
@@ -137,6 +140,11 @@ class GlicInstanceImpl : public GlicInstance,
 
     std::unique_ptr<GlicUiEmbedder> embedder;
     base::CallbackListSubscription destruction_subscription;
+  };
+
+  struct ConversationInfo {
+    std::string conversation_id;
+    std::string conversation_title;
   };
 
   EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
@@ -171,7 +179,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<EmbedderKey> active_embedder_key_;
 
   Host host_;
-  std::optional<std::string> conversation_id_;
+  std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };

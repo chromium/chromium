@@ -124,6 +124,13 @@ void Host::SwitchConversation(
   delegate_->SwitchConversation(std::move(info), std::move(callback));
 }
 
+void Host::RegisterConversation(
+    glic::mojom::ConversationInfoPtr info,
+    mojom::WebClientHandler::RegisterConversationCallback callback) {
+  instance_delegate().RegisterConversation(std::move(info),
+                                           std::move(callback));
+}
+
 void Host::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

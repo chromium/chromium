@@ -90,6 +90,10 @@ class Host : public GlicSharingManagerProvider {
         std::optional<std::vector<std::string>> supported_tools,
         glic::mojom::WebClientHandler::
             GetZeroStateSuggestionsForFocusedTabCallback callback) = 0;
+
+    virtual void RegisterConversation(
+        glic::mojom::ConversationInfoPtr info,
+        mojom::WebClientHandler::RegisterConversationCallback callback) = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -143,6 +147,10 @@ class Host : public GlicSharingManagerProvider {
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback);
+
+  void RegisterConversation(
+      glic::mojom::ConversationInfoPtr info,
+      mojom::WebClientHandler::RegisterConversationCallback callback);
 
   // Delete the owned web contents and prepare for destruction.
   void Shutdown();

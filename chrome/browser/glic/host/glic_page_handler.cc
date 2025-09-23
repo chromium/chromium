@@ -595,15 +595,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void RegisterConversation(glic::mojom::ConversationInfoPtr info,
                             RegisterConversationCallback callback) override {
-    // TODO(crbug.com/443793992): Plumb the conversation switch into
-    // `GlicInstance`.
-    NOTIMPLEMENTED() << "RegisterConversation called with: "
-                     << info->conversation_id;
     if (info->conversation_id.empty()) {
       receiver_.ReportBadMessage("conversation_id cannot be empty.");
     }
-    std::move(callback).Run(
-        glic::mojom::RegisterConversationErrorReason::kUnknown);
+    page_handler_->host().RegisterConversation(std::move(info),
+                                               std::move(callback));
   }
 
   void WebClientCreated(

@@ -330,6 +330,13 @@ void GlicKeyedService::FetchZeroStateSuggestions(
   }
 }
 
+void GlicKeyedService::RegisterConversation(
+    glic::mojom::ConversationInfoPtr info,
+    mojom::WebClientHandler::RegisterConversationCallback callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(mojom::RegisterConversationErrorReason::kUnknown);
+}
+
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   host_manager().GuestAdded(guest_contents);
 }

@@ -134,6 +134,20 @@ GlicSharingManager& GlicInstanceImpl::sharing_manager() {
 void GlicInstanceImpl::CloseInstanceAndShutdown() {
   NOTIMPLEMENTED();
 }
+
+void GlicInstanceImpl::RegisterConversation(
+    glic::mojom::ConversationInfoPtr info,
+    mojom::WebClientHandler::RegisterConversationCallback callback) {
+  if (conversation_info_) {
+    std::move(callback).Run(mojom::RegisterConversationErrorReason::
+                                kInstanceAlreadyHasConversationId);
+    return;
+  }
+  conversation_info_ =
+      ConversationInfo{info->conversation_id, info->conversation_title};
+  std::move(callback).Run(std::nullopt);
+}
+
 void GlicInstanceImpl::CreateTab() {
   NOTIMPLEMENTED();
 }
@@ -235,13 +249,16 @@ void GlicInstanceImpl::OnZeroStateSuggestionsFetched(
   std::move(callback).Run(std::move(suggestions));
 }
 
-const std::optional<std::string>& GlicInstanceImpl::conversation_id() const {
-  return conversation_id_;
+std::optional<std::string> GlicInstanceImpl::conversation_id() const {
+  if (conversation_info_) {
+    return conversation_info_->conversation_id;
+  }
+  return std::nullopt;
 }
 
 void GlicInstanceImpl::set_conversation_id(const std::string& conversation_id) {
-  CHECK(!conversation_id_);
-  conversation_id_ = conversation_id;
+  CHECK(!conversation_info_);
+  conversation_info_ = ConversationInfo{conversation_id, ""};
 }
 
 GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(
