@@ -2225,26 +2225,3 @@ group("cronet_package_ci") {
     "//components/cronet/license/tests/target_a",
   ]
 }
-
-group("cronet_android_mainline") {
-  # Target for android mainline which removed unnecessary deps from
-  # "cronet_package_android"
-
-  # Enforce building with ICU alternatives, crbug.com/611621.
-  # Enforce that arm_use_neon==false when building for ARMv7 by
-  # not including any deps in cronet_package target otherwise.
-  if (use_platform_icu_alternatives &&
-      (!(target_cpu == "arm" && arm_version == 7) || !arm_use_neon)) {
-    deps = [
-      ":cronet_package_copy_native_lib",
-      ":jar_cronet_api_source",
-      ":repackage_api",
-      ":repackage_impl_common",
-      ":repackage_native",
-      ":repackage_shared",
-    ]
-    if (current_cpu == "arm" && arm_version == 7) {
-      deps += [ ":enforce_no_neon" ]
-    }
-  }
-}
