@@ -15,7 +15,7 @@ suite('ViewerJs', function() {
         '<a href="ftp://example.com">another bad link</a>';
     document.body.appendChild(container);
 
-    sanitizeLinks();
+    sanitizeLinks(container);
 
     assert.equal(
         container.innerHTML,

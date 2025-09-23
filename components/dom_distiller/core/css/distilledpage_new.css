@@ -89,9 +89,23 @@ h2, h3, h4, h5, h6 {
 
 /* Styles for images and captions. */
 
+/* Default image styles (base) */
 img {
-    width: 100%;
-    height: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Styles for inline images */
+img.distilled-inline-img {
+  display: inline;
+  vertical-align: middle;
+  width: auto;
+}
+
+/* Styles for full-width images */
+img.distilled-full-width-img {
+  display: block;
+  width: 100%;
 }
 
 img, figcaption, picture:first-child + p:last-child {

@@ -31,19 +31,198 @@ function addToPage(html) {
   $('content').appendChild(div);
   // Readability will leave iframes around, but they need the proper structure
   // and classes to be styled correctly.
-  addClassesToYoutubeIFrames();
+  addClassesToYoutubeIFrames(div);
   // DomDistiller will leave placeholders, which need to be replaced with
   // actual iframes.
-  fillYouTubePlaceholders();
-  sanitizeLinks();
+  fillYouTubePlaceholders(div);
+  sanitizeLinks(div);
+  ImageClassifier.processImagesIn(div);
+}
+
+/**
+ * A utility class for classifying images in distilled content.
+ *
+ * This class uses a multi-stage heuristic to determine whether an image should
+ * be displayed as a small inline element (e.g., an icon, symbol, or inline
+ * formula) or as a full-width block element (e.g., a feature image). The
+ * classification is density-aware to ensure consistent behavior across
+ * different screen resolutions.
+ *
+ * The primary entry point is the static method `processImagesIn()`, which finds
+ * all images within a given DOM element and applies the appropriate CSS class
+ * (`distilled-inline-img` or `distilled-full-width-img`).
+ */
+class ImageClassifier {
+  static INLINE_CLASS = 'distilled-inline-img';
+  static FULL_WIDTH_CLASS = 'distilled-full-width-img';
+
+  constructor() {
+    const density = window.devicePixelRatio || 1;
+
+    // Baseline thresholds in density-independent units (dp).
+    const SMALL_AREA_UPPER_BOUND_DP = 64 * 64;
+    const INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP = 300;
+
+    // Calculate density-aware thresholds in pixels (px) once.
+    this.smallAreaUpperBoundPx =
+        SMALL_AREA_UPPER_BOUND_DP * (density * density);
+    this.inlineWidthFallbackUpperBoundPx =
+        INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP * density;
+
+    // Matches common keywords for icons or mathematical formulas.
+    const mathyKeywords =
+        ['math', 'latex', 'equation', 'formula', 'tex', 'icon'];
+    this._mathyKeywordsRegex =
+        new RegExp('\\b(' + mathyKeywords.join('|') + ')\\b', 'i');
+
+    // Matches characters commonly found in inline formulas.
+    this._mathyAltTextRegex = /[+\-=_^{}\\]/;
+
+    // Extracts the filename from a URL path.
+    this._filenameRegex = /(?:.*\/)?([^?#]*)/;
+  }
+
+  /**
+   * Checks for strong signals that the image is INLINE.
+   * @param {HTMLImageElement} img The image element to check.
+   * @return {boolean} True if the image should be inline.
+   * @private
+   */
+  _isDefinitelyInline(img) {
+    // Accept small images, but skip unloaded or broken ones (area == 0).
+    const area = img.width * img.height;
+    if (area > 0 && area < this.smallAreaUpperBoundPx) {
+      return true;
+    }
+
+    // "Mathy" or decorative clues in attributes.
+    const classAndId = (img.className + ' ' + img.id);
+    if (this._mathyKeywordsRegex.test(classAndId)) {
+      return true;
+    }
+
+    // Check the filename of the src URL, ignoring data URIs.
+    if (img.src && !img.src.startsWith('data:')) {
+      const filename = img.src.match(this._filenameRegex)?.[1] || '';
+      if (filename && this._mathyKeywordsRegex.test(filename)) {
+        return true;
+      }
+    }
+
+    // "Mathy" alt text.
+    const alt = img.getAttribute('alt') || '';
+    if (alt.length > 0 && alt.length < 80 &&
+        this._mathyAltTextRegex.test(alt)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Checks if the image is the primary content of its container.
+   * @param {HTMLImageElement} img The image element to check.
+   * @return {boolean} True if the image should be full-width.
+   * @private
+   */
+  _isDefinitelyFullWidth(img) {
+    // Image is in a <figure> with a <figcaption>.
+    const parent = img.parentElement;
+    if (parent && parent.tagName === 'FIGURE' &&
+        parent.querySelector('figcaption')) {
+      return true;
+    }
+
+    // Image is the only significant content in its container.
+    let container = parent;
+    while (container &&
+           !['P', 'DIV', 'FIGURE', 'BODY'].includes(container.tagName)) {
+      container = container.parentElement;
+    }
+
+    if (container) {
+      for (const child of container.childNodes) {
+        // Skip insignificant nodes.
+        if (child === img) continue;
+        if (child.tagName === 'BR') continue;
+        if (child.nodeType === Node.TEXT_NODE &&
+            child.textContent.trim() === '') {
+          continue;
+        }
+
+        // If we reach this point, the node must be significant.
+        return false;
+      }
+      // If we finish the loop, no significant siblings were found.
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Classifies the image based on a simple width fallback.
+   * @param {HTMLImageElement} img The image element to check.
+   * @return {string} The CSS class to apply.
+   * @private
+   */
+  _classifyByFallback(img) {
+    return img.width > this.inlineWidthFallbackUpperBoundPx ?
+        ImageClassifier.FULL_WIDTH_CLASS :
+        ImageClassifier.INLINE_CLASS;
+  }
+
+  /**
+   * Determines if an image should be displayed inline or as a full-width block.
+   * @param {HTMLImageElement} img The image element to classify.
+   * @return {string} The CSS class to apply.
+   */
+  classify(img) {
+    if (this._isDefinitelyInline(img)) {
+      return ImageClassifier.INLINE_CLASS;
+    }
+
+    if (this._isDefinitelyFullWidth(img)) {
+      return ImageClassifier.FULL_WIDTH_CLASS;
+    }
+
+    return this._classifyByFallback(img);
+  }
+
+  /**
+   * Post-processes all images in an element to apply classification classes.
+   * @param {HTMLElement} element The element to search for images in.
+   */
+  static processImagesIn(element) {
+    const classifier = new ImageClassifier();
+    const images = element.getElementsByTagName('img');
+
+    const imageLoadHandler = (event) => {
+      const img = event.currentTarget;
+      const classification = classifier.classify(img);
+      img.classList.add(classification);
+    };
+
+    for (const img of images) {
+      img.onload = imageLoadHandler;
+
+      // If the image is already loaded (e.g., from cache), manually trigger.
+      if (img.complete) {
+        // We use .call() to ensure `this` is correctly bound if the handler
+        // were a traditional function, and to pass a mock event object.
+        imageLoadHandler.call(img, {currentTarget: img});
+      }
+    }
+  }
 }
 
 /**
  * Visits all links on the page, preserve http and https links and have them
  * open to new tab. Remove (i.e., unwrap) otherwise.
+ * @param {HTMLElement} element The element to sanitize links in.
  */
-function sanitizeLinks() {
-  const allLinks = document.querySelectorAll('a');
+function sanitizeLinks(element) {
+  const allLinks = element.querySelectorAll('a');
 
   allLinks.forEach(linkElement => {
     const href = linkElement.getAttribute('href');
@@ -89,10 +268,12 @@ function sanitizeLinks() {
 /**
  * Locates youtube embeds generated by DomDistiller, and creates an iframe for
  * each.
+ * @param {HTMLElement} element The element to search for placeholders in.
  */
-function fillYouTubePlaceholders() {
-  const placeholders = document.getElementsByClassName('embed-placeholder');
-  for (let i = 0; i < placeholders.length; i++) {
+function fillYouTubePlaceholders(element) {
+  const placeholders = element.getElementsByClassName('embed-placeholder');
+  for (let i = 0; i < placeholders.length;
+ i++) {
     if (!placeholders[i].hasAttribute('data-type') ||
         placeholders[i].getAttribute('data-type') !== 'youtube' ||
         !placeholders[i].hasAttribute('data-id')) {
@@ -113,9 +294,10 @@ function fillYouTubePlaceholders() {
  * is only relevant to readability which leave iframes in the result.
  * DomDistiller leaves behind placeholders, which are handled by
  * #fillYouTubePlaceholders.
+ * @param {HTMLElement} element The element to search for iframes in.
  */
-function addClassesToYoutubeIFrames() {
-  const iframes = document.getElementsByTagName('iframe');
+function addClassesToYoutubeIFrames(element) {
+  const iframes = element.getElementsByTagName('iframe');
   for (let i = 0; i < iframes.length; i++) {
     const iframe = iframes[i];
     if (!isYouTubeIframe(iframe.src)) {

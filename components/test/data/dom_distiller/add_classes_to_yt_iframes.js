@@ -14,7 +14,7 @@ suite('AddClassesToYTIFramesTest', function() {
     iframe.setAttribute('src', 'https://www.youtube.com');
     document.body.appendChild(container);
     container.appendChild(iframe);
-    addClassesToYoutubeIFrames();
+    addClassesToYoutubeIFrames(container);
 
     const ytContainers = document.getElementsByClassName('youtubeContainer');
     assert.equal(1, ytContainers.length);
@@ -34,7 +34,7 @@ suite('AddClassesToYTIFramesTest', function() {
     iframe.setAttribute('src', 'https://www.tubeyou.com');
     document.body.appendChild(container);
     container.appendChild(iframe);
-    addClassesToYoutubeIFrames();
+    addClassesToYoutubeIFrames(container);
 
 
     const ytContainers = document.getElementsByClassName('youtubeContainer');

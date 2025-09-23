@@ -8,6 +8,7 @@
 //components/test/data/dom_distiller/core_features.json
 //components/test/data/dom_distiller/derived_features.json
 //components/test/data/dom_distiller/font_size_slider_tester.js
+//components/test/data/dom_distiller/image_classifier_tester.js
 //components/test/data/dom_distiller/invisible_style.html
 //components/test/data/dom_distiller/markup_article.html
 //components/test/data/dom_distiller/non_og_article.html
