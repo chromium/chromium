@@ -441,6 +441,31 @@ TEST_F(TileDisplayLayerImplTest,
   EXPECT_EQ(mask_uv_size, gfx::SizeF(0.5f, 0.5f));
 }
 
+// Tests that GetContentsResourceId() returns viz::kInvalidResourceId if the
+// layer has more than one tiling, as masks are only supported if they fit on a
+// single tile.
+TEST_F(TileDisplayLayerImplTest,
+       GetContentsResourceIdReturnsInvalidIdForMultipleTilings) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetIsBackdropFilterMask(true);
+
+  // Create two tilings.
+  raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+
+  viz::ResourceId mask_resource_id;
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  raw_layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                                   &mask_uv_size);
+
+  EXPECT_EQ(mask_resource_id, viz::kInvalidResourceId);
+}
+
 class TileDisplayLayerImplWithEdgeAADisabledTest
     : public TileDisplayLayerImplTest {
  public:
