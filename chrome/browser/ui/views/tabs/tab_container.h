@@ -122,7 +122,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
       Tab* tab) const = 0;
 
   virtual void UpdateHoverCard(
-      views::View* view,
+      Tab* tab,
       TabSlotController::HoverCardUpdateType update_type) = 0;
 
   virtual void HandleLongTap(ui::GestureEvent* event) = 0;

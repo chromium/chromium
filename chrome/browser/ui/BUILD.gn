@@ -4333,8 +4333,6 @@ static_library("ui") {
       "views/tabs/groups/avatar_container_view.h",
       "views/tabs/groups/manage_sharing_row.cc",
       "views/tabs/groups/manage_sharing_row.h",
-      "views/tabs/hover_card_anchor_view_delegate.cc",
-      "views/tabs/hover_card_anchor_view_delegate.h",
       "views/tabs/new_tab_button.cc",
       "views/tabs/new_tab_button.h",
       "views/tabs/overflow_view.cc",

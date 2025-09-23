@@ -318,7 +318,7 @@ Tab::~Tab() {
   tab_close_button_observer_.reset();
   if (controller_->HoverCardIsShowingForTab(this)) {
     controller_->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kViewRemoved);
+        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
   }
 }
 
@@ -907,7 +907,7 @@ void Tab::ActiveStateChanged() {
 void Tab::AlertStateChanged() {
   if (controller_->HoverCardIsShowingForTab(this)) {
     controller_->UpdateHoverCard(
-        this, TabSlotController::HoverCardUpdateType::kViewDataChanged);
+        this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
   }
   DeprecatedLayoutImmediately();
 }

@@ -70,8 +70,7 @@ class FakeTabSlotController : public TabSlotController {
   std::vector<Tab*> GetTabsInSplit(const Tab* tab) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override {}
-  void UpdateHoverCard(views::View* view,
-                       HoverCardUpdateType update_type) override {}
+  void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
   bool HoverCardIsShowingForTab(Tab* tab) override;
   void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override {}
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}

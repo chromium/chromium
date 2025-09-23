@@ -12,20 +12,10 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/tabs/hover_card_anchor_view_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
-#include "testing/gmock/include/gmock/gmock.h"
-
-class MockHoverCardAnchorViewDelegateObserver
-    : public HoverCardAnchorViewDelegate::Observer {
- public:
-  ~MockHoverCardAnchorViewDelegateObserver() override = default;
-
-  MOCK_METHOD(void, OnAnchorViewRemoved, (), (override));
-};
 
 // These are regression tests for possible crashes.
 
@@ -35,41 +25,24 @@ class TabHoverCardControllerTest : public TestWithBrowserView {
     feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
   }
 
-  void SetUp() override {
-    TestWithBrowserView::SetUp();
-    observer_ = std::make_unique<MockHoverCardAnchorViewDelegateObserver>();
-  }
-
   void SimulateMemoryPressure(
       base::MemoryPressureMonitor::MemoryPressureLevel level) {
     fake_memory_monitor_.SetAndNotifyMemoryPressure(level);
   }
 
-  std::unique_ptr<HoverCardAnchorViewDelegate> CreateDelegate(
-      views::View* view) {
-    return std::make_unique<HoverCardAnchorViewDelegate>(observer_.get(), view);
-  }
-
  private:
-  std::unique_ptr<MockHoverCardAnchorViewDelegateObserver> observer_;
   base::test::ScopedFeatureList feature_list_;
   memory_pressure::test::FakeMemoryPressureMonitor fake_memory_monitor_;
 };
 
 TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
-  AddTab(browser_view()->browser(), GURL("http://foo1.com"));
-  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-
   auto controller =
       std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
-
-  Tab* const tab1 = browser_view()->tabstrip()->tab_at(0);
-  controller->delegate_ = CreateDelegate(tab1);
-
   // Create some completely invalid pointer values (these should never be
   // dereferenced).
-  Tab* const tab2 = reinterpret_cast<Tab*>(3);
-
+  Tab* const tab1 = reinterpret_cast<Tab*>(3);
+  Tab* const tab2 = reinterpret_cast<Tab*>(7);
+  controller->target_tab_ = tab1;
   // If the safeguard is not in place, this will crash because the target tab is
   // not a valid pointer.
   controller->ShowHoverCard(false, tab2);
@@ -96,9 +69,9 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForTab) {
       std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
 
   Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
-  controller->CreateHoverCard();
+  controller->CreateHoverCard(target_tab);
   EXPECT_TRUE(controller->ArePreviewsEnabled());
 }
 
@@ -114,9 +87,9 @@ TEST_F(TabHoverCardControllerTest, DisablePreviewsForTab) {
       std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
 
   Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
-  controller->CreateHoverCard();
+  controller->CreateHoverCard(target_tab);
   EXPECT_FALSE(controller->ArePreviewsEnabled());
 }
 
@@ -135,10 +108,10 @@ TEST_F(TabHoverCardControllerTest, HidePreviewsForDiscardedTab) {
   TabRendererData data;
   data.is_tab_discarded = true;
   target_tab->SetData(std::move(data));
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
-  controller->CreateHoverCard();
-  controller->UpdateCardContent();
+  controller->CreateHoverCard(target_tab);
+  controller->UpdateCardContent(target_tab);
 
   EXPECT_EQ(controller->thumbnail_observer_.get()->current_image(), nullptr);
   EXPECT_EQ(controller->thumbnail_wait_state_,
@@ -162,9 +135,9 @@ TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
   tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
   data.tab_resource_usage = std::move(tab_resource_usage);
   target_tab->SetData(std::move(data));
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
-  controller->CreateHoverCard();
+  controller->CreateHoverCard(target_tab);
   EXPECT_FALSE(controller->hover_card_memory_usage_enabled_);
 }
 
@@ -198,11 +171,11 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
   TabRendererData data;
   data.is_tab_discarded = true;
   target_tab->SetData(std::move(data));
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
   TestThumbnailImageDelegate delegate;
   auto image = base::MakeRefCounted<ThumbnailImage>(&delegate);
-  controller->CreateHoverCard();
+  controller->CreateHoverCard(target_tab);
   controller->thumbnail_observer_.get()->Observe(image);
 
   EXPECT_NE(controller->thumbnail_observer_.get()->current_image(), nullptr);
@@ -226,7 +199,7 @@ TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
   TestThumbnailImageDelegate delegate;
   data.thumbnail = base::MakeRefCounted<ThumbnailImage>(&delegate);
   target_tab->SetData(std::move(data));
-  controller->delegate_ = CreateDelegate(target_tab);
+  controller->target_tab_ = target_tab;
 
   SimulateMemoryPressure(base::MemoryPressureMonitor::MemoryPressureLevel::
                              MEMORY_PRESSURE_LEVEL_CRITICAL);
