@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -29,20 +30,22 @@
 
 namespace {
 
-bool BrowserMatchesURL(Browser* browser, const GURL& url) {
-  return browser->tab_strip_model()
+bool BrowserMatchesURL(BrowserWindowInterface* browser, const GURL& url) {
+  return browser->GetFeatures()
+      .tab_strip_model()
       ->GetActiveWebContents()
       ->GetVisibleURL()
       .EqualsIgnoringRef(url);
 }
 
-bool BrowserMatches(Browser* browser,
+bool BrowserMatches(BrowserWindowInterface* browser,
                     Profile* profile,
                     webapps::AppId app_id,
                     Browser::Type type,
                     const GURL& url) {
-  return browser->profile() == profile && browser->type() == type &&
-         web_app::GetAppIdFromApplicationName(browser->app_name()) == app_id &&
+  return browser->GetProfile() == profile && browser->GetType() == type &&
+         web_app::GetAppIdFromApplicationName(
+             browser->GetBrowserForMigrationOnly()->app_name()) == app_id &&
          (url.is_empty() || BrowserMatchesURL(browser, url));
 }
 
@@ -77,22 +80,30 @@ BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->window()->IsVisible()) {
-      return GetDelegate(browser);
-    }
-  }
-  return nullptr;
+  BrowserDelegate* browser_delegate = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetWindow()->IsVisible()) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_delegate;
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->profile()->IsOffTheRecord() &&
-        browser->window()->IsVisible()) {
-      return GetDelegate(browser);
-    }
-  }
-  return nullptr;
+  BrowserDelegate* browser_delegate = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (!browser->GetProfile()->IsOffTheRecord() &&
+            browser->GetWindow()->IsVisible()) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_delegate;
 }
 
 void BrowserControllerImpl::ForEachBrowser(
@@ -107,12 +118,13 @@ void BrowserControllerImpl::ForEachBrowser(
       }
       break;
     case BrowserOrder::kAscendingActivationTime:
-      for (Browser* browser :
-           BrowserList::GetInstance()->OrderedByActivation()) {
-        if (callback(*GetDelegate(browser)) == kBreakIteration) {
-          break;
-        }
-      }
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [&](BrowserWindowInterface* browser) {
+            if (callback(*GetDelegate(browser)) == kBreakIteration) {
+              return false;  // stop iterating
+            }
+            return true;  // continue iterating
+          });
       break;
   }
 }
@@ -136,14 +148,18 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
         browser_type == BrowserType::kAppPopup);
   Browser::Type internal_type = ToInternalBrowserType(browser_type);
 
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->is_delete_scheduled() &&
-        BrowserMatches(browser, profile, app_id, internal_type, url)) {
-      return GetDelegate(browser);
-    }
-  }
+  BrowserDelegate* browser_delegate = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (!browser->GetBrowserForMigrationOnly()->is_delete_scheduled() &&
+            BrowserMatches(browser, profile, app_id, internal_type, url)) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
 
-  return nullptr;
+  return browser_delegate;
 }
 
 BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
