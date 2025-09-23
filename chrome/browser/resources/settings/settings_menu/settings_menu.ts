@@ -68,17 +68,37 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAiPage'),
       },
+
+      enableYourSavedInfoSettingsPage_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage');
+        },
+      },
     };
   }
 
   declare private pageVisibility_?: PageVisibility;
   declare private showAiPage_: boolean;
+  declare private enableYourSavedInfoSettingsPage_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
   private showAiPageMenuItem_(): boolean {
     return this.showAiPage_ &&
         (!this.pageVisibility_ || this.pageVisibility_.ai !== false);
+  }
+
+  private showYourSavedInfoPageMenuItem_(): boolean {
+    return this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.yourSavedInfo !== false);
+  }
+
+  private showAutofillPageMenuItem_(): boolean {
+    return !this.enableYourSavedInfoSettingsPage_ &&
+        (!this.pageVisibility_ ||
+          this.pageVisibility_.autofill !== false);
   }
 
   override currentRouteChanged(newRoute: Route) {

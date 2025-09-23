@@ -20,6 +20,7 @@ import '../performance_page/performance_page_index.js';
 import '../privacy_page/privacy_page_index.js';
 import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page_index.js';
+import '../your_saved_info_page/your_saved_info_page_index.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 
@@ -269,6 +270,11 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
   private showAiPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
+  }
+
+  private showYourSavedInfoPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage') &&
+        this.showPage_(visibility);
   }
 
   private showManagedHeader_(): boolean {

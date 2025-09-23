@@ -124,3 +124,5 @@ export {SettingsUiElement} from './settings_ui/settings_ui.js';
 export {SiteFaviconElement} from './site_favicon.js';
 export {convertDateToWindowsEpoch} from './time.js';
 export {TooltipMixin, TooltipMixinInterface} from './tooltip_mixin.js';
+export {SettingsYourSavedInfoPageElement} from './your_saved_info_page/your_saved_info_page.js';
+export {SettingsYourSavedInfoPageIndexElement} from './your_saved_info_page/your_saved_info_page_index.js';

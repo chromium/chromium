@@ -89,6 +89,18 @@
     </div>
   </template>
 
+  <template is="dom-if" if="[[showYourSavedInfoPage_(
+      pageVisibility_.yourSavedInfo)]]">
+    <div slot="view" id="yourSavedInfo">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.YOUR_SAVED_INFO, lastRoute_, inSearchMode_)]]">
+        <settings-your-saved-info-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-your-saved-info-page-index>
+      </template>
+    </div>
+  </template>
+
   <template is="dom-if" if="[[showPage_(pageVisibility_.performance)]]">
     <div slot="view" id="performance">
       <template is="dom-if" if="[[renderPlugin_(

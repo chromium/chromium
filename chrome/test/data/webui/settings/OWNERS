@@ -15,3 +15,4 @@ per-file site_details_*test*.ts=rainhard@chromium.org,sideyilmaz@chromium.org,fs
 per-file *site_settings_*.ts=rainhard@chromium.org,sideyilmaz@chromium.org,fsenra@google.com
 per-file test_privacy_page_browser_proxy.ts=rainhard@chromium.org,sideyilmaz@chromium.org
 per-file test_safety_hub_browser_proxy.ts=sideyilmaz@chromium.org,rainhard@chromium.org
+per-file your_saved_info_page*.ts=file://chrome/browser/resources/settings/your_saved_info_page/OWNERS

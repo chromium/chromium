@@ -403,6 +403,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               content_settings::features::
                                   kBlockV8OptimizerOnUnfamiliarSitesSetting));
 
+  html_source->AddBoolean("enableYourSavedInfoSettingsPage",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kYourSavedInfoSettingsPage));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

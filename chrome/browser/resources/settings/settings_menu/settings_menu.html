@@ -57,8 +57,19 @@
           $i18n{peoplePageTitle}
           <cr-ripple></cr-ripple>
         </a>
+        <a role="menuitem" id="yourSavedInfo" href="/yourSavedInfo"
+            hidden="[[!showYourSavedInfoPageMenuItem_(
+                enableYourSavedInfoSettingsPage_,
+                pageVisibility_.yourSavedInfo)]]"
+            class="cr-nav-menu-item">
+          <cr-icon icon="settings:assignment"></cr-icon>
+          $i18n{yourSavedInfoPageTitle}
+          <cr-ripple></cr-ripple>
+        </a>
         <a role="menuitem" id="autofill" href="/autofill"
-            hidden="[[!pageVisibility_.autofill]]"
+            hidden="[[!showAutofillPageMenuItem_(
+                enableYourSavedInfoSettingsPage_,
+                pageVisibility_.autofill)]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:assignment"></cr-icon>
           $i18n{autofillPageTitle}

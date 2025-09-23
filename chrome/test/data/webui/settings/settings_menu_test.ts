@@ -178,4 +178,37 @@ suite('SettingsMenu', function() {
     await microtasksFinished();
     assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
   });
+
+  test('yourSavedInfoHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertFalse(isVisible(entry));
+  });
+
+  test('yourSavedInfoMenuItemClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    entry.click();
+    await microtasksFinished();
+
+    const selector = settingsMenu.$.menu;
+    assertTrue(!!selector.selected);
+    assertEquals('/yourSavedInfo', selector.selected.toString());
+    assertEquals(
+        routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
+  });
 });

@@ -253,6 +253,8 @@ build_webui("build") {
     "site_settings_page/recent_site_permissions.ts",
     "site_settings_page/site_settings_list.ts",
     "site_settings_page/site_settings_page.ts",
+    "your_saved_info_page/your_saved_info_page.ts",
+    "your_saved_info_page/your_saved_info_page_index.ts",
   ]
 
   if (enable_glic) {

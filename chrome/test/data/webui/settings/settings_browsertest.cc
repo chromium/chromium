@@ -400,6 +400,14 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_GlicSubpage) {
           "runMochaSuite('GlicSubpage Default')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, YourSavedInfoPage) {
+  RunTest("settings/your_saved_info_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, YourSavedInfoPageIndex) {
+  RunTest("settings/your_saved_info_page_index_test.js", "mocha.run()");
+}
+
 class SettingsGlicSubpageLearnMoreTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubpageLearnMoreTest() {

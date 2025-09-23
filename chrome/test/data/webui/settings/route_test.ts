@@ -397,6 +397,18 @@ suite('Basic', function() {
     assertTrue(!!routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
   });
 
+  test('Your saved info route existence', function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    assertFalse(!!routes.YOUR_SAVED_INFO);
+
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    assertTrue(!!routes.YOUR_SAVED_INFO);
+  });
+
   // <if expr="not is_chromeos">
   test('account route existence', function() {
     resetPageVisibilityForTesting({people: true});

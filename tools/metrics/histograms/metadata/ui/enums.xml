@@ -509,6 +509,7 @@ chromium-metrics-reviews@google.com.
   <int value="60238454" label="/content/ads"/>
   <int value="91791837" label="/content/localFonts"/>
   <int value="104900992" label="/content/insecureContent"/>
+  <int value="111607686" label="/yourSavedInfo"/>
   <int value="223791833" label="/help/about"/>
   <int value="254445609" label="/content/filesystem"/>
   <int value="273561147" label="/autofill"/>

@@ -113,6 +113,7 @@ export interface SettingsRoutes {
   SYNC_ADVANCED: Route;
   SYSTEM: Route;
   TRIGGERED_RESET_DIALOG: Route;
+  YOUR_SAVED_INFO: Route;
 
   // <if expr="not is_chromeos">
   ACCOUNT: Route;

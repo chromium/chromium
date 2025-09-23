@@ -239,6 +239,13 @@ function createRoutes(): SettingsRoutes {
     // </if>
   }
 
+  if (visibility.yourSavedInfo !== false &&
+      loadTimeData.getBoolean('enableYourSavedInfoSettingsPage')) {
+    r.YOUR_SAVED_INFO = r.BASIC.createSection(
+        '/yourSavedInfo', 'yourSavedInfo',
+        loadTimeData.getString('yourSavedInfoPageTitle'));
+  }
+
   if (visibility.privacy !== false) {
     r.PRIVACY = r.BASIC.createSection(
         '/privacy', 'privacy', loadTimeData.getString('privacyPageTitle'));
