@@ -115,16 +115,16 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             auto jwt = sdjwt::Jwt::From(*jwt_json);
             EXPECT_TRUE(jwt);
 
-            auto header = sdjwt::Header::From(
-                *base::JSONReader::ReadDict(jwt->header.value()));
+            auto header = sdjwt::Header::From(*base::JSONReader::ReadDict(
+                jwt->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(header);
             EXPECT_EQ(header->typ, "JWT");
             EXPECT_EQ(header->alg, "RS256");
             // Asserts that the JWK is present in the header.
             EXPECT_TRUE(header->jwk);
 
-            auto payload = sdjwt::Payload::From(
-                *base::JSONReader::ReadDict(jwt->payload.value()));
+            auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
+                jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(payload);
             EXPECT_EQ(payload->aud,
                       url::Origin::Create(kIssuerUrl).Serialize());
@@ -173,8 +173,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   EXPECT_TRUE(kb_jwt_json);
   auto kb_jwt = sdjwt::Jwt::From(*kb_jwt_json);
   EXPECT_TRUE(kb_jwt);
-  auto kb_payload = sdjwt::Payload::From(
-      *base::JSONReader::ReadDict(kb_jwt->payload.value()));
+  auto kb_payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
+      kb_jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(kb_payload);
   EXPECT_EQ(kb_payload->aud, kRpOrigin.Serialize());
   EXPECT_EQ(kb_payload->nonce, kNonce);

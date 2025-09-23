@@ -48,7 +48,8 @@ std::optional<base::Value::Dict> ReadFileToDict(
   if (!base::ReadFileToString(file_path, &file_content)) {
     return std::nullopt;
   }
-  return base::JSONReader::ReadDict(file_content);
+  return base::JSONReader::ReadDict(file_content,
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 class BookmarkMergedSurfaceOrderingStorageTest : public testing::Test {

@@ -1975,7 +1975,8 @@ class WebIdDelegationBrowserTest : public WebIdBrowserTest {
           EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "holder_key",
                                                  &holder_key_json));
 
-          auto holder_key_value = base::JSONReader::ReadDict(holder_key_json);
+          auto holder_key_value = base::JSONReader::ReadDict(
+              holder_key_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           EXPECT_TRUE(holder_key_value);
           auto holder_key = sdjwt::Jwk::From(*holder_key_value);
           EXPECT_TRUE(holder_key);

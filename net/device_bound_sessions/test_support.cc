@@ -290,7 +290,7 @@ bool VerifyEs256Jwt(std::string_view jwt) {
 
   // Extract the JWK.
   const std::optional<base::Value::Dict> payload_json =
-      base::JSONReader::ReadDict(payload);
+      base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json) {
     return false;
   }

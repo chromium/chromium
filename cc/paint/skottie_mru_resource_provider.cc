@@ -28,7 +28,8 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     std::string_view animation_json) {
   base::flat_map<std::string, gfx::Size> image_asset_sizes;
 
-  auto animation_dict = base::JSONReader::ReadDict(animation_json);
+  auto animation_dict = base::JSONReader::ReadDict(
+      animation_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!animation_dict) {
     LOG(ERROR) << "Failed to parse Lottie animation json";
     return image_asset_sizes;

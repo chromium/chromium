@@ -47,7 +47,8 @@ std::optional<InstanceIdentityToken> InstanceIdentityToken::Create(
                  << encoded_header;
     return std::nullopt;
   }
-  auto header = base::JSONReader::ReadDict(decoded_header);
+  auto header = base::JSONReader::ReadDict(
+      decoded_header, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!header.has_value()) {
     LOG(WARNING) << "Failed to parse instance identity token header: "
                  << decoded_header;
@@ -68,7 +69,8 @@ std::optional<InstanceIdentityToken> InstanceIdentityToken::Create(
                  << encoded_payload;
     return std::nullopt;
   }
-  auto payload = base::JSONReader::ReadDict(decoded_payload);
+  auto payload = base::JSONReader::ReadDict(
+      decoded_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload.has_value()) {
     LOG(WARNING) << "Failed to parse instance identity token payload: "
                  << decoded_payload;

@@ -135,8 +135,8 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  std::optional<base::Value::Dict> token_data =
-      base::JSONReader::ReadDict(file_contents);
+  std::optional<base::Value::Dict> token_data = base::JSONReader::ReadDict(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!token_data) {
     LOG(ERROR) << "File contents were not valid JSON, "
                << "could not retrieve token.";
@@ -175,8 +175,8 @@ bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
     }
   }
 
-  std::optional<base::Value::Dict> token_data =
-      base::JSONReader::ReadDict(file_contents);
+  std::optional<base::Value::Dict> token_data = base::JSONReader::ReadDict(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!token_data) {
     LOG(ERROR) << "Invalid token file format, could not store token.";
     return false;

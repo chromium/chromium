@@ -144,7 +144,8 @@ static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
 
 void SetPreferencesFromJson(Profile* profile, const std::string& json) {
-  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(json);
+  std::optional<base::Value::Dict> parsed =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return;
   }

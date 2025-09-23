@@ -99,8 +99,8 @@ std::unique_ptr<GaiaConfig>* GaiaConfig::GetGlobalConfig() {
 // static
 std::unique_ptr<GaiaConfig> GaiaConfig::ReadConfigFromString(
     const std::string& config_contents) {
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(config_contents);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      config_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     LOG(FATAL) << "Couldn't parse Gaia config file";
   }

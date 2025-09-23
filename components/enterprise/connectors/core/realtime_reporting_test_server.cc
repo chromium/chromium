@@ -156,8 +156,8 @@ std::optional<UploadEventsRequest> ParseUploadEventsRequest(
 
   // Fall back to parsing the legacy JSON event format. For simplicity, ignore
   // fields that aren't asserted by any test.
-  std::optional<base::Value::Dict> request_json =
-      base::JSONReader::ReadDict(request.content);
+  std::optional<base::Value::Dict> request_json = base::JSONReader::ReadDict(
+      request.content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!request_json) {
     return std::nullopt;
   }

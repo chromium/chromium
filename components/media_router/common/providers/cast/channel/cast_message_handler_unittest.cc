@@ -75,8 +75,8 @@ std::optional<base::Value::Dict> GetDictionaryFromCastMessage(
     return std::nullopt;
   }
 
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(message.payload_utf8());
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      message.payload_utf8(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }
@@ -449,8 +449,8 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
       static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing));
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
-  const std::optional<base::Value::Dict> json =
-      base::JSONReader::ReadDict(kAppParams);
+  const std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+      kAppParams, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"},

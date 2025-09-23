@@ -441,8 +441,8 @@ Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
       return std::nullopt;
     }
 
-    std::optional<base::Value::Dict> message =
-        base::JSONReader::ReadDict(message_json);
+    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message) {
       return std::nullopt;
     }

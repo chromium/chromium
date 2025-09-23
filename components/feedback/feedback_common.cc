@@ -241,8 +241,8 @@ void FeedbackCommon::PrepareReport(
   }
   if (!ai_metadata_.empty()) {
     // Add feedback data for each key/value pair.
-    std::optional<base::Value::Dict> dict =
-        base::JSONReader::ReadDict(ai_metadata_);
+    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+        ai_metadata_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(dict);
     for (auto pair : dict.value()) {
       AddFeedbackData(feedback_data, pair.first, pair.second.GetString());

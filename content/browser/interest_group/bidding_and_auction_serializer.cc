@@ -384,8 +384,8 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
     // Currently it's probably not worth it to deserialize this at the same time
     // we load the interest group from the database. We will want to revisit
     // this in the future.
-    std::optional<base::Value::Dict> ad =
-        base::JSONReader::ReadDict(prev_win->ad_json);
+    std::optional<base::Value::Dict> ad = base::JSONReader::ReadDict(
+        prev_win->ad_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!ad) {
       // This should not happen unless the DB is corrupted.
       // Just do our best regardless.

@@ -261,8 +261,8 @@ int GetSampleCountForHistogram(const std::string& histogram_name) {
   histogram->WriteJSON(
       &json_output,
       base::JSONVerbosityLevel::JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
-  std::optional<base::Value::Dict> json_dict =
-      base::JSONReader::ReadDict(json_output);
+  std::optional<base::Value::Dict> json_dict = base::JSONReader::ReadDict(
+      json_output, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_dict) {
     LOG(ERROR) << "Error parsing JSON of histogram data";
     return 0;

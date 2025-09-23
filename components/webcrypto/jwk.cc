@@ -208,8 +208,8 @@ Status JwkReader::Init(base::span<const uint8_t> bytes,
   {
     // Limit the visibility for |value| as it is moved to |dict_| (via
     // |dict_value|) once it has been loaded successfully.
-    std::optional<base::Value::Dict> dict =
-        base::JSONReader::ReadDict(json_string);
+    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+        json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (!dict) {
       return Status::ErrorJwkNotDictionary();

@@ -413,7 +413,8 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenSuccessResponse(
     const std::string& response_body,
     OAuth2AccessTokenConsumer::TokenResponse* token_response) {
   CHECK(token_response);
-  auto dict = base::JSONReader::ReadDict(response_body);
+  auto dict = base::JSONReader::ReadDict(response_body,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return false;
   }
@@ -451,7 +452,8 @@ bool OAuth2AccessTokenFetcherImpl::ParseGetAccessTokenFailureResponse(
   CHECK(error);
   CHECK(error_subtype);
   CHECK(error_description);
-  auto dict = base::JSONReader::ReadDict(response_body);
+  auto dict = base::JSONReader::ReadDict(response_body,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return false;
   }

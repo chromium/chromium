@@ -488,7 +488,8 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     return false;
   }
   response.remove_prefix(5);  // Skips leading )]}'\n
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(response);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     DVLOG(1) << "not a dictionary";
     return false;

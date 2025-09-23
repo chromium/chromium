@@ -73,7 +73,8 @@ std::string MakeListResponse(const std::vector<PlusProfile>& profiles) {
   base::Value::List list;
   for (const PlusProfile& profile : profiles) {
     std::string json = MakePlusProfile(profile);
-    std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(json);
+    std::optional<base::Value::Dict> dict =
+        base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(dict.has_value());
     list.Append(std::move(dict.value()));
   }
@@ -129,8 +130,8 @@ HandleRequestToPlusAddressWithSuccess(
   }
 
   bool is_refresh = [&]() {
-    std::optional<base::Value::Dict> body =
-        base::JSONReader::ReadDict(request.content);
+    std::optional<base::Value::Dict> body = base::JSONReader::ReadDict(
+        request.content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!body) {
       return false;
     }

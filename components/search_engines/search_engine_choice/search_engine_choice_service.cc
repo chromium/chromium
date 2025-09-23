@@ -147,7 +147,8 @@ bool ShouldRepromptFromFeatureParams(
   }
 
   std::optional<base::Value::Dict> reprompt_params_json =
-      base::JSONReader::ReadDict(reprompt_params);
+      base::JSONReader::ReadDict(reprompt_params,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   // Not a valid JSON.
   if (!reprompt_params_json) {
     base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,

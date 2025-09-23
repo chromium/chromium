@@ -70,7 +70,8 @@ const char kConnectionIdParam[] = "connectionId";
 static bool ParseNotification(const std::string& json,
                               std::string& method,
                               std::optional<base::Value::Dict>& params) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
   }
@@ -90,7 +91,8 @@ static bool ParseNotification(const std::string& json,
 static bool ParseResponse(const std::string& json,
                           int* command_id,
                           int* error_code) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
   }

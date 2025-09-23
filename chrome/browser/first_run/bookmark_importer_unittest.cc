@@ -29,7 +29,7 @@ namespace {
 
 base::Value::Dict ParseJSONIfValid(std::string_view json) {
   std::optional<base::Value::Dict> parsed_json =
-      base::JSONReader::ReadDict(json);
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     ADD_FAILURE() << "JSON parsing failed";
     return {};

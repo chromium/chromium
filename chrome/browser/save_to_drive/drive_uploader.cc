@@ -98,8 +98,8 @@ std::optional<DriveUploader::Item> ParseClientFolderResponse(
       endpoint_response->http_status_code != net::HTTP_OK) {
     return std::nullopt;
   }
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(endpoint_response->response);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      endpoint_response->response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return std::nullopt;
   }
@@ -126,8 +126,8 @@ SaveToDriveProgress CreateSuccessProgress(
   if (endpoint_response.response.empty()) {
     return progress;
   }
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(endpoint_response.response);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      endpoint_response.response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return progress;
   }

@@ -276,7 +276,8 @@ bool ProtocolParserJSON::DoParse(std::string_view response_json,
     return false;
   }
   const auto doc =
-      base::JSONReader::ReadDict(response_json.substr(kJSONPrefix.size()));
+      base::JSONReader::ReadDict(response_json.substr(kJSONPrefix.size()),
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!doc) {
     ParseError("JSON read error.");
     return false;

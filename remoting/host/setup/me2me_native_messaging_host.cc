@@ -93,7 +93,7 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
 
   base::Value::Dict response;
   std::optional<base::Value::Dict> message_dict =
-      base::JSONReader::ReadDict(message);
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_dict) {
     OnError("Received a message that's not a dictionary.");
     return;

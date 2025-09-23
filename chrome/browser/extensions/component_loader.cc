@@ -224,8 +224,8 @@ void ComponentLoader::LoadAll() {
 
 std::optional<base::Value::Dict> ComponentLoader::ParseManifest(
     std::string_view manifest_contents) const {
-  std::optional<base::Value::Dict> manifest =
-      base::JSONReader::ReadDict(manifest_contents);
+  std::optional<base::Value::Dict> manifest = base::JSONReader::ReadDict(
+      manifest_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!manifest) {
     LOG(ERROR) << "Failed to parse extension manifest.";
     return std::nullopt;

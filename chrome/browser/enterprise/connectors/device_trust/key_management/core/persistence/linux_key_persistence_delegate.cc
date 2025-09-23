@@ -182,7 +182,8 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get dictionary key info.
-  auto keyinfo = base::JSONReader::ReadDict(file_content);
+  auto keyinfo = base::JSONReader::ReadDict(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!keyinfo) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,

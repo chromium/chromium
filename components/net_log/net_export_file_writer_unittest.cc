@@ -213,8 +213,8 @@ ReadCompleteLogFile(const base::FilePath& log_path) {
     return base::unexpected(::testing::AssertionFailure()
                             << log_path.value() << " could not be read.");
   }
-  std::optional<base::Value::Dict> log_parsed =
-      base::JSONReader::ReadDict(log_string);
+  std::optional<base::Value::Dict> log_parsed = base::JSONReader::ReadDict(
+      log_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!log_parsed) {
     return base::unexpected(::testing::AssertionFailure()
                             << "Contents of " << log_path.value()

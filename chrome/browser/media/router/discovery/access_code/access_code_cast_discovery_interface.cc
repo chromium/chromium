@@ -303,8 +303,8 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     return;
   }
 
-  std::optional<base::Value::Dict> response_value =
-      base::JSONReader::ReadDict(response->response);
+  std::optional<base::Value::Dict> response_value = base::JSONReader::ReadDict(
+      response->response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   AddSinkResultCode result_code = IsResponseValid(response_value);
   if (result_code != AddSinkResultCode::OK) {

@@ -60,7 +60,8 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
 }
 
 std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(json);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }

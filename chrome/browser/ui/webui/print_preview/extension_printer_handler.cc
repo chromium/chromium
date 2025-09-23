@@ -134,7 +134,8 @@ ExtensionPrinterSettings ParseExtensionPrinterSettings(
       settings.FindInt(kSettingPageHeight).value_or(0));
   CHECK(!parsed_settings.page_size.IsEmpty());
   parsed_settings.ticket =
-      *base::JSONReader::ReadDict(*settings.FindString(kSettingTicket));
+      *base::JSONReader::ReadDict(*settings.FindString(kSettingTicket),
+                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return parsed_settings;
 }
 

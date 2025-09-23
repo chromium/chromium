@@ -154,9 +154,14 @@ class SaveAndFillManagerImplTest : public testing::Test {
               result, u"context_token",
               create_valid_legal_message
                   ? std::make_unique<base::Value::Dict>(
-                        base::JSONReader::ReadDict(kLegalMessageLines).value())
+                        base::JSONReader::ReadDict(
+                            kLegalMessageLines,
+                            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                            .value())
                   : std::make_unique<base::Value::Dict>(
-                        base::JSONReader::ReadDict(kInvalidLegalMessageLines)
+                        base::JSONReader::ReadDict(
+                            kInvalidLegalMessageLines,
+                            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                             .value()),
               supported_card_bin_ranges);
           return RequestId("11223344");

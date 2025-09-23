@@ -50,7 +50,8 @@ constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
-  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(data);
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return nullptr;
   }
@@ -94,7 +95,8 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
   if (response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return GaiaAuthConsumer::TokenRevocationStatus::kServerError;
 
-  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(data);
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
   }
@@ -112,7 +114,8 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
 }
 
 base::Value::Dict ParseJSONDict(const std::string& data) {
-  return base::JSONReader::ReadDict(data).value_or(base::Value::Dict());
+  return base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+      .value_or(base::Value::Dict());
 }
 
 GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(

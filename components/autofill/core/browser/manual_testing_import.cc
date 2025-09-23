@@ -231,8 +231,8 @@ std::optional<std::vector<T>> DataModelsFromJSON(
 // If parsing fails the error is logged and std::nullopt is returned.
 std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  std::optional<base::Value::Dict> json =
-      base::JSONReader::ReadDict(file_content);
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json) {
     LOG(ERROR) << "Failed to parse JSON file.";
     return std::nullopt;

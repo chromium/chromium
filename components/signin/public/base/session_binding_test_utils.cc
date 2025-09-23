@@ -132,7 +132,8 @@ std::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
     return std::nullopt;
   }
 
-  return base::JSONReader::ReadDict(*header);
+  return base::JSONReader::ReadDict(*header,
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
@@ -141,7 +142,8 @@ std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
     return std::nullopt;
   }
 
-  return base::JSONReader::ReadDict(*payload);
+  return base::JSONReader::ReadDict(*payload,
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 std::string EncryptValueWithEphemeralKey(

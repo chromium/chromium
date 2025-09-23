@@ -40,8 +40,8 @@ ParseInitializeClientHintsStorage() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kInitializeClientHintsStorage);
 
-  std::optional<base::Value::Dict> maybe_value =
-      base::JSONReader::ReadDict(raw_client_hint_json);
+  std::optional<base::Value::Dict> maybe_value = base::JSONReader::ReadDict(
+      raw_client_hint_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!maybe_value) {
     LOG(WARNING)

@@ -466,8 +466,8 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
     const std::string& version_response,
     bool& is_chrome) {
   // Parse version, append to package name if available,
-  std::optional<base::Value::Dict> value_dict =
-      base::JSONReader::ReadDict(version_response);
+  std::optional<base::Value::Dict> value_dict = base::JSONReader::ReadDict(
+      version_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value_dict) {
     return;
   }

@@ -43,7 +43,8 @@ TEST_F(SdJwtTest, JwkParsing) {
       "y": "Xv5zWwuoaTgdS6hV43yI6gBwTnjukmFQQnJ_kCxzqk8"
     })";
 
-  auto jwk = Jwk::From(*base::JSONReader::ReadDict(json));
+  auto jwk = Jwk::From(
+      *base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(jwk);
 
   EXPECT_EQ(jwk->kty, "EC");
@@ -83,7 +84,8 @@ TEST_F(SdJwtTest, JwkParsingAndSerializingRs256) {
   auto serialized = jwk.Serialize();
   ASSERT_TRUE(serialized);
 
-  auto parsed = Jwk::From(*base::JSONReader::ReadDict(*serialized));
+  auto parsed = Jwk::From(*base::JSONReader::ReadDict(
+      *serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_TRUE(parsed);
   EXPECT_EQ(parsed->kty, "RSA");
   EXPECT_EQ(parsed->alg, "RS256");
@@ -179,8 +181,8 @@ TEST_F(SdJwtTest, HeaderParsingAndSerializing) {
             Base64String("eyJhbGciOiJmb28iLCJ0eXAiOiJiYXIifQ"));
 
   // Test that we can go back from base64 to value.
-  auto parsed =
-      Header::From(*base::JSONReader::ReadDict(R"({"alg":"foo","typ":"bar"})"));
+  auto parsed = Header::From(*base::JSONReader::ReadDict(
+      R"({"alg":"foo","typ":"bar"})", base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(parsed);
   EXPECT_EQ(parsed->alg, "foo");
   EXPECT_EQ(parsed->typ, "bar");
@@ -195,7 +197,8 @@ TEST_F(SdJwtTest, PayloadParsingAndSerializing) {
   EXPECT_EQ(payload.Serialize(), Base64String("eyJzdWIiOiJmb28ifQ"));
 
   // Test that we can go back from base64 to value.
-  auto parsed = Payload::From(*base::JSONReader::ReadDict(R"({"sub":"foo"})"));
+  auto parsed = Payload::From(*base::JSONReader::ReadDict(
+      R"({"sub":"foo"})", base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(parsed);
   EXPECT_EQ(parsed->sub, "foo");
 }
@@ -259,15 +262,15 @@ TEST_F(SdJwtTest, JwtParsingRFC) {
 
   EXPECT_STREQ(token->payload.value().c_str(), expected.c_str());
 
-  auto header =
-      Header::From(*base::JSONReader::ReadDict(token->header.value()));
+  auto header = Header::From(*base::JSONReader::ReadDict(
+      token->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(header);
 
   EXPECT_EQ(header->typ, "example+sd-jwt");
   EXPECT_EQ(header->alg, "ES256");
 
-  auto payload =
-      Payload::From(*base::JSONReader::ReadDict(token->payload.value()));
+  auto payload = Payload::From(*base::JSONReader::ReadDict(
+      token->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(payload);
 
   EXPECT_EQ(payload->iss, "https://issuer.example.com");
@@ -482,13 +485,15 @@ TEST_F(SdJwtTest, SdJwtKb_Bind) {
 
   // Checks KB headers:
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.3
-  auto header = Header::From(*base::JSONReader::ReadDict(kb.header.value()));
+  auto header = Header::From(*base::JSONReader::ReadDict(
+      kb.header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(header);
   // typ MUST be "kb+jwt".
   EXPECT_EQ(header->typ, "kb+jwt");
   EXPECT_EQ(header->alg, "ES256");
 
-  auto payload = Payload::From(*base::JSONReader::ReadDict(kb.payload.value()));
+  auto payload = Payload::From(*base::JSONReader::ReadDict(
+      kb.payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(payload);
   // aud is required.
   EXPECT_EQ(payload->aud, "https://verifier.example");

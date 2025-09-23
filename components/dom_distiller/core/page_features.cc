@@ -152,8 +152,8 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(stringified_json->GetString());
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      stringified_json->GetString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return std::vector<double>();
   }

@@ -171,7 +171,8 @@ void DevToolsHost::sendMessageToEmbedder(const String& message) {
   if (client_) {
     // Strictly convert, as we expect message to be serialized JSON.
     auto value =
-        base::JSONReader::ReadDict(message.Utf8(Utf8ConversionMode::kStrict));
+        base::JSONReader::ReadDict(message.Utf8(Utf8ConversionMode::kStrict),
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
       if (!script_state)

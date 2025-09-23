@@ -71,8 +71,8 @@ std::string GetPostData() {
         }
       ]
     })";
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(post_data_string);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      post_data_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return base::WriteJson(dict.value()).value_or("");
 }
 

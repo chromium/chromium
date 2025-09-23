@@ -371,8 +371,8 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  std::optional<base::Value::Dict> result =
-      base::JSONReader::ReadDict(*response_body);
+  std::optional<base::Value::Dict> result = base::JSONReader::ReadDict(
+      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result) {
     RecordLookupQueryResult(LookupQueryResult::kInvalidJson);
     MaybeRetryRequest();

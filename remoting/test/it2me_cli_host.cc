@@ -87,7 +87,8 @@ void It2MeCliHost::Start() {
 }
 
 void It2MeCliHost::PostMessageFromNativeHost(const std::string& message) {
-  auto message_dict = base::JSONReader::ReadDict(message);
+  auto message_dict =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_dict) {
     OnProtocolBroken("Message is not a dictionary");
     return;

@@ -419,7 +419,8 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 std::optional<perfetto::TraceConfig>
 TraceStartupConfig::ParseTraceJsonConfigFileContent(
     const std::string& content) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(content);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }

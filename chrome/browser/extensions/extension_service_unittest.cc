@@ -518,8 +518,8 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       const std::string& json_data) {
     // We also parse the file into a dictionary to compare what we get back
     // from the provider.
-    std::optional<base::Value::Dict> json_value =
-        base::JSONReader::ReadDict(json_data);
+    std::optional<base::Value::Dict> json_value = base::JSONReader::ReadDict(
+        json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!json_value) {
       ADD_FAILURE() << "Unable to deserialize json data";
       return std::nullopt;

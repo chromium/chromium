@@ -274,8 +274,8 @@ class BrowserToPageConnector {
     std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
                                 message.size());
     if (agent_host == page_host_.get()) {
-      std::optional<base::Value::Dict> value =
-          base::JSONReader::ReadDict(message_sp);
+      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+          message_sp, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!value) {
         return;
       }
@@ -539,9 +539,10 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DCHECK(!flatten_protocol_);
 
     if (throttle_ || worker_throttle_) {
-      std::optional<base::Value::Dict> value =
-          base::JSONReader::ReadDict(std::string_view(
-              reinterpret_cast<const char*>(message.data()), message.size()));
+      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+          std::string_view(reinterpret_cast<const char*>(message.data()),
+                           message.size()),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       const std::string* method;
       if (value && (method = value->FindString(kMethod)) &&
           *method == kResumeMethod) {

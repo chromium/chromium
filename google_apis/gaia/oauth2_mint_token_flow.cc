@@ -215,8 +215,8 @@ OAuth2ErrorDetails ParseErrorResponse(
             std::nullopt};
   }
 
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(body.value_or(""));
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      body.value_or(""), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const std::string* message = FindMessageInErrorResponse(dict);
   const std::string* reason = FindReasonInErrorResponse(dict);
   OAuth2Response oauth2_response = GetOAuth2ResponseFromErrorReason(reason);
@@ -438,8 +438,8 @@ std::string OAuth2MintTokenFlow::CreateAuthorizationHeaderValue(
 void OAuth2MintTokenFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::optional<std::string> body) {
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(body.value_or(""));
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      body.value_or(""), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     RecordApiCallMetrics(OAuth2MintTokenApiCallResult::kParseJsonFailure,
                          OAuth2Response::kOkUnexpectedFormat);

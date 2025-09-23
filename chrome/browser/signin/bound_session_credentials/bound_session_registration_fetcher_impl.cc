@@ -251,8 +251,8 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
   if (remainder) {
     response_json = *remainder;
   }
-  std::optional<base::Value::Dict> maybe_root =
-      base::JSONReader::ReadDict(response_json);
+  std::optional<base::Value::Dict> maybe_root = base::JSONReader::ReadDict(
+      response_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_root) {
     return base::unexpected(RegistrationError::kParseJsonFailed);
   }

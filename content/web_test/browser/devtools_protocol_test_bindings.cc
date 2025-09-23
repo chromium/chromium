@@ -87,7 +87,8 @@ void DevToolsProtocolTestBindings::ParseLog(std::string_view log) {
   std::vector<std::string> lines = base::SplitStringUsingSubstr(
       log, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& line : lines) {
-    std::optional<base::Value::Dict> item = base::JSONReader::ReadDict(line);
+    std::optional<base::Value::Dict> item =
+        base::JSONReader::ReadDict(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(!item->empty());
     log_.push_back(std::move(item.value()));
   }
@@ -116,8 +117,8 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
 
 void DevToolsProtocolTestBindings::HandleMessagesFromLog(
     std::string_view protocol_message_string) {
-  std::optional<base::Value::Dict> parsed =
-      base::JSONReader::ReadDict(protocol_message_string);
+  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(
+      protocol_message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return;
   }

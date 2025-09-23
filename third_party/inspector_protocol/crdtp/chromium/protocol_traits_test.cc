@@ -171,7 +171,7 @@ TEST(ProtocolTraits, DictValueJSONConversion) {
   std::string json;
   json::ConvertCBORToJSON(SpanFrom(bytes), &json);
 
-  EXPECT_THAT(base::JSONReader::ReadDict(json),
+  EXPECT_THAT(base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
               testing::Optional(base::test::DictionaryHasValues(dict)));
 }
 

@@ -103,10 +103,13 @@ class IbanSaveManagerTest : public testing::Test {
                   includes_invalid_legal_message
                       ? std::make_unique<base::Value::Dict>(
                             base::JSONReader::ReadDict(
-                                kInvalidLegalMessageLines)
+                                kInvalidLegalMessageLines,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                                 .value())
                       : std::make_unique<base::Value::Dict>(
-                            base::JSONReader::ReadDict(kLegalMessageLines)
+                            base::JSONReader::ReadDict(
+                                kLegalMessageLines,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                                 .value()));
             });
   }

@@ -221,8 +221,8 @@ std::string AccountId::Serialize() const {
 
 // static
 std::optional<AccountId> AccountId::Deserialize(std::string_view serialized) {
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(serialized);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }

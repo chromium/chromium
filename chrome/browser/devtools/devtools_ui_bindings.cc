@@ -1481,7 +1481,8 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
     bool network_discovery_enabled,
     const std::string& network_discovery_config) {
   std::optional<base::Value::Dict> parsed_port_forwarding =
-      base::JSONReader::ReadDict(port_forwarding_config);
+      base::JSONReader::ReadDict(port_forwarding_config,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_port_forwarding) {
     return;
   }

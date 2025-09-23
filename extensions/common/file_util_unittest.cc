@@ -71,8 +71,8 @@ scoped_refptr<Extension> LoadExtensionManifest(
     ManifestLocation location,
     int extra_flags,
     std::string* error) {
-  std::optional<base::Value::Dict> result =
-      base::JSONReader::ReadDict(manifest_value);
+  std::optional<base::Value::Dict> result = base::JSONReader::ReadDict(
+      manifest_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result) {
     return nullptr;
   }

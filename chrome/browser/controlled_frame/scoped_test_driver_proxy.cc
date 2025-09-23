@@ -81,8 +81,8 @@ void ScopedTestDriverProxy::HandleMessages() {
   while (message_queue_.HasMessages()) {
     std::string message_json;
     CHECK(message_queue_.PopMessage(&message_json));
-    std::optional<base::Value::Dict> message =
-        base::JSONReader::ReadDict(message_json);
+    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message.has_value()) {
       LOG(ERROR) << "Invalid message from domAutomationController: "
                  << message_json;

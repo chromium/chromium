@@ -189,11 +189,13 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   EXPECT_EQ(chrome::kChromeUIFeedbackURL,
             FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
   std::optional<base::Value::Dict> meta_data = base::JSONReader::ReadDict(
-      FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
+      FeedbackDialog::GetInstanceForTest()->GetDialogArgs(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(meta_data.has_value());
   ASSERT_EQ(*meta_data->FindString("categoryTag"), "compare");
   std::optional<base::Value::Dict> ai_meta_data =
-      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"));
+      base::JSONReader::ReadDict(*meta_data->FindString("aiMetadata"),
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(ai_meta_data.has_value());
   ASSERT_EQ(*ai_meta_data->FindString("log_id"), log_id);
 }

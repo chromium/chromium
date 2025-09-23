@@ -128,8 +128,8 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
@@ -161,8 +161,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
@@ -200,8 +200,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }

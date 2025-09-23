@@ -64,7 +64,8 @@ base::Time TimeFromMs(int64_t ms) {
 }
 
 void ParseDict(base::Value::Dict* dict, std::string&& json_string) {
-  auto parsed_json_data = base::JSONReader::ReadDict(json_string);
+  auto parsed_json_data = base::JSONReader::ReadDict(
+      json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json_data.has_value());
   *dict = std::move(*parsed_json_data);
 }

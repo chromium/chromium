@@ -124,7 +124,8 @@ scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
 
 scoped_refptr<Extension> CreateExtension(std::string_view manifest,
                                          std::string* error) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(manifest);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      manifest, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     ADD_FAILURE() << "Manifest isn't a Dictionary";
     return nullptr;

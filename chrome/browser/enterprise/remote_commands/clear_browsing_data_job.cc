@@ -74,8 +74,8 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
   VLOG_POLICY(2, REMOTE_COMMANDS)
       << "Clear browsing data command payload: " << command_payload;
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root)
     return false;
 
