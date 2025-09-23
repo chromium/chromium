@@ -183,8 +183,7 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
       raster_context_provider_(base::WrapRefCounted(
           ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
       is_accelerated_(is_accelerated),
-      shared_image_usage_flags_(shared_image_usage_flags),
-      use_oop_rasterization_(is_accelerated) {
+      shared_image_usage_flags_(shared_image_usage_flags) {
   if (is_accelerated_) {
     CHECK(ContextProviderWrapper()
               ->ContextProvider()
@@ -224,7 +223,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
               : nullptr),
       is_accelerated_(false),
       shared_image_usage_flags_(gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY),
-      use_oop_rasterization_(false),
       is_software_(true) {
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
@@ -469,9 +467,6 @@ void CanvasResourceProviderSharedImage::EndWriteAccess() {
     // copy-on-write.
     mode_ = SkSurface::kRetain_ContentChangeMode;
   } else {
-    // Currently we never use OOP raster when the resource is not accelerated
-    // so we check that assumption here.
-    DCHECK(!use_oop_rasterization_);
     if (ShouldReplaceTargetBuffer()) {
       resource_ = NewOrRecycledResource();
     }
@@ -571,7 +566,7 @@ bool CanvasResourceProviderSharedImage::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
-  if (!use_oop_rasterization_) {
+  if (!is_accelerated_) {
     return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes, x,
                                                y);
   }
@@ -733,7 +728,7 @@ bool CanvasResourceProviderSharedImage::IsValid() const {
     return !IsSoftwareSharedImageGpuChannelLost() && GetSkSurface();
   }
 
-  if (!use_oop_rasterization_) {
+  if (!is_accelerated_) {
     return GetSkSurface() && !IsGpuContextLost();
   } else {
     return !IsGpuContextLost();
@@ -864,7 +859,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
 
 void CanvasResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
-  if (!use_oop_rasterization_) {
+  if (!is_accelerated_) {
     CanvasResourceProvider::RasterRecord(std::move(last_recording));
     return;
   }

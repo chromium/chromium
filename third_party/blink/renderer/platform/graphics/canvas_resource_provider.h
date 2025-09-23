@@ -548,7 +548,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
-  bool UseOopRasterization() final { return use_oop_rasterization_; }
+  bool UseOopRasterization() final { return IsAccelerated(); }
   bool unused_resources_reclaim_timer_is_running_for_testing() const override {
     return unused_resources_reclaim_timer_.IsRunning();
   }
@@ -671,7 +671,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   const bool is_accelerated_;
   gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
-  const bool use_oop_rasterization_;
   bool is_software_ = false;
   bool is_cleared_ = false;
 
