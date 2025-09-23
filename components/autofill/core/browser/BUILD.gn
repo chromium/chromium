@@ -1156,6 +1156,7 @@ static_library("test_support") {
     "foundations/test_autofill_manager_waiter.h",
     "foundations/test_browser_autofill_manager.cc",
     "foundations/test_browser_autofill_manager.h",
+    "foundations/with_test_autofill_client_driver_manager.h",
     "geo/alternative_state_name_map_test_utils.cc",
     "geo/alternative_state_name_map_test_utils.h",
     "geo/mock_alternative_state_name_map_updater.cc",

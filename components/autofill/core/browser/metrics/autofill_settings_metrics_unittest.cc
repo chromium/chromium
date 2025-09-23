@@ -32,7 +32,7 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
 
   void CreateAddressDataManager() {
     AddressDataManager(/*webdata_service=*/nullptr,
-                       /*pref_service=*/autofill_client_->GetPrefs(),
+                       /*pref_service=*/autofill_client().GetPrefs(),
                        /*local_state=*/nullptr,
                        /*sync_service=*/nullptr,
                        /*identity_manager=*/nullptr,
@@ -46,7 +46,7 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
                         /*account_database=*/nullptr,
                         /*image_fetcher=*/nullptr,
                         /*shared_storage_handler=*/nullptr,
-                        /*pref_service=*/autofill_client_->GetPrefs(),
+                        /*pref_service=*/autofill_client().GetPrefs(),
                         /*sync_service=*/nullptr,
                         /*identity_manager=*/nullptr,
                         /*variations_country_code=*/GeoIpCountryCode("US"),
@@ -62,7 +62,7 @@ INSTANTIATE_TEST_SUITE_P(, AutofillSettingsMetricsTest, ::testing::Bool());
 // Test that we log that Profile Autofill is enabled / disabled when filling a
 // form.
 TEST_P(AutofillSettingsMetricsTest, LogsAutofillProfileIsEnabledAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
+  autofill_client().SetAutofillProfileEnabled(GetParam());
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester_.ExpectUniqueSample("Autofill.Address.IsEnabled.PageLoad",
@@ -72,7 +72,7 @@ TEST_P(AutofillSettingsMetricsTest, LogsAutofillProfileIsEnabledAtPageLoad) {
 // Test that we log that CreditCard Autofill is enabled / disabled when filling
 // a form.
 TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
+  autofill_client().SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester_.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",
@@ -106,7 +106,7 @@ TEST_P(AutofillSettingsMetricsTest,
 
 // Test that we log that Profile Autofill is enabled / disabled at startup.
 TEST_P(AutofillSettingsMetricsTest, AutofillProfileIsEnabledAtStartup) {
-  autofill_client_->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
                                            GetParam());
 
   // The constructor of `AddressDataManager` emits
@@ -119,7 +119,7 @@ TEST_P(AutofillSettingsMetricsTest, AutofillProfileIsEnabledAtStartup) {
 
 // Test that we log that CreditCard is enabled / disabled at startup.
 TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
-  autofill_client_->GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
                                            GetParam());
   // The constructor of `PaymentsDataManager` emits
   // `Autofill.CreditCard.IsEnabled.Startup`. Its instance is created at
@@ -133,7 +133,7 @@ TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtStartup) {
 // Tests that Autofill Profile disabled by user setting is logged at startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByUserAtStartup) {
-  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
                                             base::Value(GetParam()));
 
   // The constructor of `AddressDataManager` emits
@@ -149,7 +149,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by admin policy is logged at startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByAdminPolicyAtStartup) {
-  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
                                                base::Value(GetParam()));
 
   // The constructor of `AddressDataManager` emits
@@ -165,7 +165,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by extension is logged at startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByExtensionAtStartup) {
-  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
                                                  base::Value(GetParam()));
 
   // The constructor of `AddressDataManager` emits
@@ -181,7 +181,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by custodian is logged at startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByCustodianAtStartup) {
-  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+  autofill_client().GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillProfileEnabled, base::Value(GetParam()));
 
   // The constructor of `AddressDataManager` emits
@@ -197,8 +197,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by user setting is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByUserAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+  autofill_client().SetAutofillProfileEnabled(GetParam());
+  autofill_client().GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
                                             base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -212,8 +212,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by admin policy is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByAdminPolicyAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+  autofill_client().SetAutofillProfileEnabled(GetParam());
+  autofill_client().GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
                                                base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -227,8 +227,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by extension is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByExtensionAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+  autofill_client().SetAutofillProfileEnabled(GetParam());
+  autofill_client().GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
                                                  base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -242,8 +242,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by custodian is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByCustodianAtPageLoad) {
-  autofill_client_->SetAutofillProfileEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+  autofill_client().SetAutofillProfileEnabled(GetParam());
+  autofill_client().GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillProfileEnabled, base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -258,7 +258,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByUserAtStartup) {
-  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillCreditCardEnabled,
+  autofill_client().GetPrefs()->SetUserPref(prefs::kAutofillCreditCardEnabled,
                                             base::Value(GetParam()));
 
   // The constructor of `PaymentsDataManager` emits
@@ -275,7 +275,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByAdminPolicyAtStartup) {
-  autofill_client_->GetPrefs()->SetManagedPref(
+  autofill_client().GetPrefs()->SetManagedPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   // The constructor of `PaymentsDataManager` emits
@@ -292,7 +292,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByExtensionAtStartup) {
-  autofill_client_->GetPrefs()->SetExtensionPref(
+  autofill_client().GetPrefs()->SetExtensionPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   // The constructor of `PaymentsDataManager` emits
@@ -309,7 +309,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // startup.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByCustodianAtStartup) {
-  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+  autofill_client().GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   // The constructor of `PaymentsDataManager` emits
@@ -326,8 +326,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByUserAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillCreditCardEnabled,
+  autofill_client().SetAutofillPaymentMethodsEnabled(GetParam());
+  autofill_client().GetPrefs()->SetUserPref(prefs::kAutofillCreditCardEnabled,
                                             base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -342,8 +342,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByAdminPolicyAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetManagedPref(
+  autofill_client().SetAutofillPaymentMethodsEnabled(GetParam());
+  autofill_client().GetPrefs()->SetManagedPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -358,8 +358,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByExtensionAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetExtensionPref(
+  autofill_client().SetAutofillPaymentMethodsEnabled(GetParam());
+  autofill_client().GetPrefs()->SetExtensionPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -374,8 +374,8 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByCustodianAtPageLoad) {
-  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
-  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+  autofill_client().SetAutofillPaymentMethodsEnabled(GetParam());
+  autofill_client().GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
@@ -390,7 +390,7 @@ TEST_P(AutofillSettingsMetricsTest,
        EmitsActionAutofillProfileDisabledOnPrefChangeByUser) {
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
-  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
                                             base::Value(GetParam()));
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
             !GetParam());
@@ -400,7 +400,7 @@ TEST_P(AutofillSettingsMetricsTest,
        EmitsActionAutofillProfileDisabledOnPrefChangeByUserViaSetBoolean) {
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
-  autofill_client_->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
                                            GetParam());
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
             !GetParam());
@@ -410,7 +410,7 @@ TEST_P(AutofillSettingsMetricsTest,
        EmitsActionAutofillProfileDisabledOnPrefChangeByExtension) {
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
-  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
                                                  base::Value(GetParam()));
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
             !GetParam());
@@ -420,7 +420,7 @@ TEST_P(AutofillSettingsMetricsTest,
        DoesNotEmitActionAutofillProfileDisabledOnPrefChangeByAdminPolicy) {
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
-  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+  autofill_client().GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
                                                base::Value(GetParam()));
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
 }
@@ -429,7 +429,7 @@ TEST_P(AutofillSettingsMetricsTest,
        DoesNotEmitActionAutofillProfileDisabledOnPrefChangeByCustodian) {
   base::UserActionTester user_action_tester;
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
-  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+  autofill_client().GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillProfileEnabled, base::Value(GetParam()));
   EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
 }

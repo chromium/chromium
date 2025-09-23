@@ -38,7 +38,7 @@ class TouchToFillForPaymentMethodsTest
         .WillByDefault(testing::Return(true));
     MockFastCheckoutClient* fast_checkout_client =
         static_cast<MockFastCheckoutClient*>(
-            autofill_client_->GetFastCheckoutClient());
+            autofill_client().GetFastCheckoutClient());
     ON_CALL(*fast_checkout_client, IsNotShownYet)
         .WillByDefault(testing::Return(true));
     autofill_manager().set_touch_to_fill_delegate(
@@ -102,7 +102,7 @@ class TouchToFillForPaymentMethodsTest
 
   MockPaymentsAutofillClient& payments_autofill_client() {
     return *static_cast<MockPaymentsAutofillClient*>(
-        autofill_client_->GetPaymentsAutofillClient());
+        autofill_client().GetPaymentsAutofillClient());
   }
 };
 

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -75,35 +76,35 @@ CreditCardAccessManagerTestBase::CreditCardAccessManagerTestBase()
 CreditCardAccessManagerTestBase::~CreditCardAccessManagerTestBase() = default;
 
 void CreditCardAccessManagerTestBase::SetUp() {
-  autofill_client_.SetPrefs(test::PrefServiceForTesting());
-  personal_data().SetPrefService(autofill_client_.GetPrefs());
+  InitAutofillClient();
+  autofill_client().SetPrefs(test::PrefServiceForTesting());
+  personal_data().SetPrefService(autofill_client().GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 #if BUILDFLAG(IS_IOS)
   // On iOS mandatory reauth is by default enabled. Disable it explicitly
   // to not interfere with tests that do not test reauth functionalities.
-  autofill_client_.GetPrefs()->SetBoolean(
+  autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth, false);
 #endif
   accessor_ = std::make_unique<TestAccessor>();
-  autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
 
   payments_autofill_client().set_payments_network_interface(
       std::make_unique<payments::TestPaymentsNetworkInterface>(
-          autofill_client_.GetURLLoaderFactory(),
-          autofill_client_.GetIdentityManager(), &personal_data()));
-  autofill_client_.set_test_strike_database(
+          autofill_client().GetURLLoaderFactory(),
+          autofill_client().GetIdentityManager(), &personal_data()));
+  autofill_client().set_test_strike_database(
       std::make_unique<TestStrikeDatabase>());
-  autofill_driver_->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
+
+  CreateAutofillDriver();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());
+  autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
   test_api(credit_card_access_manager())
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
-          autofill_driver_.get(), &autofill_client_));
+          &autofill_driver(), &autofill_client()));
 #endif
   auto otp_authenticator =
-      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client_);
+      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client());
   otp_authenticator_ = otp_authenticator.get();
   payments_autofill_client().set_otp_authenticator(
       std::move(otp_authenticator));
@@ -334,11 +335,11 @@ void CreditCardAccessManagerTestBase::WaitForCallbacks() {
 
 void CreditCardAccessManagerTestBase::SetCreditCardFIDOAuthEnabled(
     bool enabled) {
-  prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(), enabled);
+  prefs::SetCreditCardFIDOAuthEnabled(autofill_client().GetPrefs(), enabled);
 }
 
 bool CreditCardAccessManagerTestBase::IsCreditCardFIDOAuthEnabled() {
-  return prefs::IsCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs());
+  return prefs::IsCreditCardFIDOAuthEnabled(autofill_client().GetPrefs());
 }
 
 UnmaskAuthFlowType CreditCardAccessManagerTestBase::GetUnmaskAuthFlowType() {
@@ -490,13 +491,6 @@ void CreditCardAccessManagerTestBase::VerifyOnSelectChallengeOptionInvoked() {
   EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
 }
 
-CreditCardAccessManager&
-CreditCardAccessManagerTestBase::credit_card_access_manager() {
-  return static_cast<BrowserAutofillManager&>(
-             autofill_driver_->GetAutofillManager())
-      .GetCreditCardAccessManager();
-}
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 TestCreditCardFidoAuthenticator&
 CreditCardAccessManagerTestBase::fido_authenticator() {
@@ -512,7 +506,7 @@ CreditCardAccessManagerTestBase::payments_network_interface() {
 }
 
 TestPersonalDataManager& CreditCardAccessManagerTestBase::personal_data() {
-  return autofill_client_.GetPersonalDataManager();
+  return autofill_client().GetPersonalDataManager();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

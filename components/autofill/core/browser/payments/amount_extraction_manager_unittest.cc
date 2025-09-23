@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
@@ -62,7 +63,10 @@ class MockAmountExtractionManager : public AmountExtractionManager {
   MOCK_METHOD(void, OnTimeoutReached, (), (override));
 };
 
-class AmountExtractionManagerTest : public Test {
+class AmountExtractionManagerTest
+    : public Test,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
+                                                 MockAutofillDriver> {
  public:
   AmountExtractionManagerTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -75,31 +79,30 @@ class AmountExtractionManagerTest : public Test {
 
  protected:
   void SetUp() override {
-    autofill_client_ = std::make_unique<TestAutofillClient>();
-    autofill_client_->SetAutofillPaymentMethodsEnabled(true);
-    autofill_client_->GetPersonalDataManager()
+    InitAutofillClient();
+    autofill_client().SetAutofillPaymentMethodsEnabled(true);
+    autofill_client()
+        .GetPersonalDataManager()
         .payments_data_manager()
         .SetSyncingForTest(true);
-    autofill_client_->GetPersonalDataManager().SetPrefService(
-        autofill_client_->GetPrefs());
-    mock_autofill_driver_ =
-        std::make_unique<NiceMock<MockAutofillDriver>>(autofill_client_.get());
-    autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        mock_autofill_driver_.get());
+    autofill_client().GetPersonalDataManager().SetPrefService(
+        autofill_client().GetPrefs());
+    CreateAutofillDriver();
     amount_extraction_manager_ =
-        std::make_unique<AmountExtractionManager>(autofill_manager_.get());
+        std::make_unique<AmountExtractionManager>(&autofill_manager());
 
     test_api(payments_data()).AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
 
     ON_CALL(
         *static_cast<MockAutofillOptimizationGuideDecider*>(
-            autofill_manager_->client().GetAutofillOptimizationGuideDecider()),
+            autofill_manager().client().GetAutofillOptimizationGuideDecider()),
         IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
   }
 
   TestPaymentsDataManager& payments_data() {
-    return autofill_client_->GetPersonalDataManager()
+    return autofill_client()
+        .GetPersonalDataManager()
         .test_payments_data_manager();
   }
 
@@ -123,16 +126,13 @@ class AmountExtractionManagerTest : public Test {
           task_environment_.FastForwardBy(base::Milliseconds(latency_ms));
           std::move(callback).Run(extracted_amount);
         };
-    ON_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+    ON_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
         .WillByDefault(std::move(extract_action));
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestAutofillClient> autofill_client_;
-  std::unique_ptr<NiceMock<MockAutofillDriver>> mock_autofill_driver_;
-  std::unique_ptr<TestBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<AmountExtractionManager> amount_extraction_manager_;
   std::unique_ptr<MockAmountExtractionManager> mock_amount_extraction_manager_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
@@ -249,7 +249,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
   ON_CALL(
       *static_cast<MockAutofillOptimizationGuideDecider*>(
-          autofill_manager_->client().GetAutofillOptimizationGuideDecider()),
+          autofill_manager().client().GetAutofillOptimizationGuideDecider()),
       IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
@@ -266,7 +266,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerInIncognitoMode) {
   std::vector<FieldType> field_types = {FieldType::CREDIT_CARD_NUMBER,
                                         FieldType::CREDIT_CARD_NAME_FULL,
                                         FieldType::CREDIT_CARD_EXP_MONTH};
-  autofill_client_->set_is_off_the_record(/*is_off_the_record=*/true);
+  autofill_client().set_is_off_the_record(/*is_off_the_record=*/true);
 
   for (FieldType field_type : field_types) {
     EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
@@ -295,7 +295,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
 // `ExtractLabeledTextNodeValue` from `AutofillDriver` is invoked.
 TEST_F(AmountExtractionManagerTest, TriggerCheckoutAmountExtraction) {
   EXPECT_CALL(
-      *mock_autofill_driver_,
+      autofill_driver(),
       ExtractLabeledTextNodeValue(
           base::UTF8ToUTF16(
               AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
@@ -454,7 +454,7 @@ TEST_F(AmountExtractionManagerTest,
       /*extracted_amount=*/kExtractedAmount,
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
   EXPECT_CALL(
-      *mock_autofill_driver_,
+      autofill_driver(),
       ExtractLabeledTextNodeValue(
           base::UTF8ToUTF16(
               AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
@@ -497,7 +497,7 @@ TEST_F(AmountExtractionManagerTest,
       /*extracted_amount=*/"",
       /*latency_ms=*/kDefaultAmountExtractionLatencyMs);
   EXPECT_CALL(
-      *mock_autofill_driver_,
+      autofill_driver(),
       ExtractLabeledTextNodeValue(
           base::UTF8ToUTF16(
               AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
@@ -540,7 +540,7 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Successful) {
       /*extracted_amount=*/kExtractedAmount,
       /*latency_ms=*/0);
   EXPECT_CALL(
-      *mock_autofill_driver_,
+      autofill_driver(),
       ExtractLabeledTextNodeValue(
           base::UTF8ToUTF16(
               AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
@@ -574,7 +574,7 @@ TEST_F(AmountExtractionManagerTest,
       /*extracted_amount=*/"",
       /*latency_ms=*/0);
   EXPECT_CALL(
-      *mock_autofill_driver_,
+      autofill_driver(),
       ExtractLabeledTextNodeValue(
           base::UTF8ToUTF16(
               AmountExtractionHeuristicRegexes::GetInstance().amount_pattern()),
@@ -602,7 +602,7 @@ TEST_F(AmountExtractionManagerTest,
 
 TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
   base::HistogramTester histogram_tester;
-  ON_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+  ON_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillByDefault(
           [this](const std::u16string&, const std::u16string&, uint32_t,
                  base::OnceCallback<void(const std::string&)>&& callback) {
@@ -631,10 +631,10 @@ TEST_F(AmountExtractionManagerTest, AmountExtractionResult_Metric_Timeout) {
 
 TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
   mock_amount_extraction_manager_ =
-      std::make_unique<MockAmountExtractionManager>(autofill_manager_.get());
+      std::make_unique<MockAmountExtractionManager>(&autofill_manager());
   EXPECT_FALSE(
       mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
-  EXPECT_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+  EXPECT_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillOnce(
           [this](const std::u16string&, const std::u16string&, uint32_t,
                  base::OnceCallback<void(const std::string&)>&& callback) {
@@ -654,10 +654,10 @@ TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
 
 TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
   mock_amount_extraction_manager_ =
-      std::make_unique<MockAmountExtractionManager>(autofill_manager_.get());
+      std::make_unique<MockAmountExtractionManager>(&autofill_manager());
   EXPECT_FALSE(
       mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
-  EXPECT_CALL(*mock_autofill_driver_, ExtractLabeledTextNodeValue)
+  EXPECT_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillOnce(
           [this](const std::u16string&, const std::u16string&, uint32_t,
                  base::OnceCallback<void(const std::string&)>&& callback) {
@@ -677,7 +677,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 // extraction receives a empty result.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturned(std::optional<uint64_t>(), false))
       .Times(1);
 
@@ -688,7 +688,7 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturned(
                   std::optional<uint64_t>(123'450'000ULL), false))
       .Times(1);
@@ -700,7 +700,7 @@ TEST_F(AmountExtractionManagerTest,
 // extraction times out.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountExtractionTimeout_BnplManagerNotified) {
-  EXPECT_CALL(*autofill_manager_->GetPaymentsBnplManager(),
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturned(Eq(std::nullopt), true))
       .Times(1);
 

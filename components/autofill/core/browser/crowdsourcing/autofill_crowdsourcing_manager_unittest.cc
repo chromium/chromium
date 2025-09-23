@@ -38,6 +38,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -202,7 +204,9 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
 // go over the wire, but allow calling back HTTP responses directly.
 // The responses in test are out of order and verify: successful query request,
 // successful upload request, failed upload request.
-class AutofillCrowdsourcingManagerTest : public ::testing::Test {
+class AutofillCrowdsourcingManagerTest
+    : public ::testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   enum class ResponseType {
     kQuerySuccessful,
@@ -218,12 +222,15 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   AutofillCrowdsourcingManagerTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        crowdsourcing_manager_(
-            AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
-                &client_,
-                /*api_key=*/"")) {
-    client().set_shared_url_loader_factory(test_shared_loader_factory_);
+                &test_url_loader_factory_)) {
+    InitAutofillClient();
+    autofill_client().set_crowdsourcing_manager(
+        AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
+            &autofill_client(),
+            /*api_key=*/""));
+    autofill_client().set_shared_url_loader_factory(
+        test_shared_loader_factory_);
+    CreateAutofillDriver();
   }
 
   base::WeakPtr<AutofillCrowdsourcingManagerTest> GetWeakPtr() {
@@ -233,7 +240,8 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   bool StartQueryRequest(
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     return crowdsourcing_manager().StartQueryRequest(
-        ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+        ToRawPointerVector(form_structures),
+        autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
@@ -249,10 +257,8 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
                            .response = std::move(response->response)});
   }
 
-  TestAutofillClient& client() { return client_; }
-  TestAutofillDriver& driver() { return driver_; }
   AutofillCrowdsourcingManager& crowdsourcing_manager() {
-    return *crowdsourcing_manager_;
+    return autofill_client().GetCrowdsourcingManager();
   }
   std::list<ResponseData>& responses() { return responses_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -269,10 +275,7 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  TestAutofillClient client_;
-  TestAutofillDriver driver_{&client_};
 
-  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::list<ResponseData> responses_;
 
   base::WeakPtrFactory<AutofillCrowdsourcingManagerTest> weak_ptr_factory_{
@@ -300,16 +303,16 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   }
 
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   auto crowdsourcing_manager =
-      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
-                                                                  "dummykey");
+      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
+          &autofill_client(), "dummykey");
 
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -325,7 +328,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
             "dummykey");
 
   EncodeUploadRequestOptions options;
-  options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+  options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
   options.observed_submission = true;
 
   // Request with id 1.
@@ -404,7 +407,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -421,7 +424,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -452,13 +455,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
       {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}})));
 
   auto crowdsourcing_manager =
-      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
-                                                                  "dummykey");
+      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
+          &autofill_client(), "dummykey");
 
   // Start the query and check its success. No response has been received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -536,13 +539,13 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
       test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
 
   AutofillCrowdsourcingManagerWithCustomPayloadSize crowdsourcing_manager(
-      &client(), "dummykey", kMaxQueryGetSize + 1);
+      &autofill_client(), "dummykey", kMaxQueryGetSize + 1);
 
   // Start the query request and look if it is successful. No response was
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -627,11 +630,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   auto crowdsourcing_manager =
-      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
-                                                                  "dummykey");
+      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
+          &autofill_client(), "dummykey");
 
   EncodeUploadRequestOptions options;
-  options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+  options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
   options.observed_submission = true;
 
   std::vector<AutofillUploadContents> upload_contents =
@@ -726,7 +729,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   EncodeUploadRequestOptions options;
-  options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+  options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
   options.observed_submission = true;
 
   // Request with id 0.
@@ -829,7 +832,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
   SetCorrectFieldHostFormSignatures(form_structure);
 
   EncodeUploadRequestOptions options;
-  options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+  options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
   options.observed_submission = true;
 
   // Request with id 0.
@@ -1044,7 +1047,8 @@ enum ServerCommunicationMode {
 };
 
 class AutofillServerCommunicationTest
-    : public testing::TestWithParam<ServerCommunicationMode> {
+    : public testing::TestWithParam<ServerCommunicationMode>,
+      public WithTestAutofillClientDriverManager<> {
  protected:
   void SetUp() override {
     testing::TestWithParam<ServerCommunicationMode>::SetUp();
@@ -1064,11 +1068,13 @@ class AutofillServerCommunicationTest
     GURL autofill_server_url(server_.base_url());
     ASSERT_TRUE(autofill_server_url.is_valid());
 
+    InitAutofillClient();
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
             nullptr /* network_service */, true /* is_trusted */);
-    client_.set_shared_url_loader_factory(shared_url_loader_factory_);
-    driver_.SetIsolationInfo(net::IsolationInfo::Create(
+    autofill_client().set_shared_url_loader_factory(shared_url_loader_factory_);
+    CreateAutofillDriver();
+    autofill_driver().SetIsolationInfo(net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther,
         url::Origin::Create(GURL("https://abc.com")),
         url::Origin::Create(GURL("https://xyz.com")), net::SiteForCookies()));
@@ -1175,9 +1181,10 @@ class AutofillServerCommunicationTest
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
     AutofillCrowdsourcingManager crowdsourcing_manager(
-        &client(), version_info::Channel::UNKNOWN);
+        &autofill_client(), version_info::Channel::UNKNOWN);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
-        ToRawPointerVector(form_structures), driver_.GetIsolationInfo(),
+        ToRawPointerVector(form_structures),
+        autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillServerCommunicationTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
@@ -1200,10 +1207,10 @@ class AutofillServerCommunicationTest
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
     AutofillCrowdsourcingManager crowdsourcing_manager(
-        &client(), version_info::Channel::UNKNOWN);
+        &autofill_client(), version_info::Channel::UNKNOWN);
 
     EncodeUploadRequestOptions options;
-    options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+    options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
     options.current_page_language = std::move(current_page_language);
     options.available_field_types = available_field_types;
     options.login_form_signature = login_form_signature;
@@ -1224,7 +1231,6 @@ class AutofillServerCommunicationTest
   void ResetCallCount() { call_count_ = 0; }
 
   int call_count() const { return call_count_; }
-  TestAutofillClient& client() { return client_; }
   std::vector<std::string>& payloads() { return payloads_; }
   void set_cache_expiration_time(base::TimeDelta time) {
     cache_expiration_time_ = time;
@@ -1242,8 +1248,6 @@ class AutofillServerCommunicationTest
   EmbeddedTestServer server_;
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
-  TestAutofillClient client_;
-  TestAutofillDriver driver_{&client_};
   base::TimeDelta cache_expiration_time_ = base::Seconds(100);
   int call_count_ = 0;
   std::vector<std::string> payloads_;
@@ -1254,7 +1258,7 @@ class AutofillServerCommunicationTest
 
 TEST_P(AutofillServerCommunicationTest, IsEnabled) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   EXPECT_EQ(crowdsourcing_manager.IsEnabled(), GetParam() != DISABLED);
 }
 
@@ -1268,9 +1272,9 @@ TEST_P(AutofillServerCommunicationTest, Query) {
 
 TEST_P(AutofillServerCommunicationTest, Upload) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
   EXPECT_EQ(GetParam() != DISABLED,
             SendUploadRequest(FormStructure(test::GetFormData(
                                   {.fields = {{.role = NAME_FIRST},
@@ -1522,7 +1526,7 @@ TEST_P(AutofillQueryTest, Metadata) {
 
   // Setup the form structures to query.
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
@@ -1598,11 +1602,11 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   test_api(form).Append(field);
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   FormStructure form_structure(form);
   SetCorrectFieldHostFormSignatures(form_structure);
 
-  client().GetPrefs()->SetBoolean(
+  autofill_client().GetPrefs()->SetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
@@ -1612,7 +1616,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
                  << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
     std::optional<RandomizedEncoder> randomized_encoder =
-        RandomizedEncoder::Create(client().GetPrefs());
+        RandomizedEncoder::Create(autofill_client().GetPrefs());
 
     payloads().clear();
 
@@ -1678,7 +1682,7 @@ TEST_P(AutofillUploadTest, Throttling) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   FormStructure form_structure(
       test::GetFormData({.fields = {{.role = NAME_FIRST},
                                     {.role = NAME_LAST},
@@ -1690,7 +1694,7 @@ TEST_P(AutofillUploadTest, Throttling) {
                  << "submission source = " << submission_source);
     form_structure.set_submission_source(submission_source);
     std::optional<RandomizedEncoder> randomized_encoder =
-        RandomizedEncoder::Create(client().GetPrefs());
+        RandomizedEncoder::Create(autofill_client().GetPrefs());
 
     // The first attempt should succeed.
     EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
@@ -1726,7 +1730,7 @@ TEST_P(AutofillUploadTest, ThrottlingStructuralFormSignatures) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
 
   const FormSignature kStructuralFormSignature(42);
 
@@ -1748,7 +1752,7 @@ TEST_P(AutofillUploadTest, ThrottlingStructuralFormSignatures) {
   form_structure_2.set_submission_source(SubmissionSource::XHR_SUCCEEDED);
 
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   // The first attempt should succeed and include the structural form signature.
   EXPECT_TRUE(SendUploadRequest(form_structure_1, *randomized_encoder,
@@ -1793,7 +1797,7 @@ TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
   form_structure.set_submission_source(submission_source);
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   base::HistogramTester histogram_tester;
   // The first upload must be successfully sent to the Autofill server.
@@ -1857,7 +1861,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
       {{switches::kAutofillUploadThrottlingPeriodInDays, "16"}});
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(
@@ -1867,7 +1871,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   form_structure.set_submission_source(submission_source);
 
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   base::HistogramTester histogram_tester;
 
@@ -1916,7 +1920,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
   ASSERT_NE(DISABLED, GetParam());
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
-      &client(), version_info::Channel::UNKNOWN);
+      &autofill_client(), version_info::Channel::UNKNOWN);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
   FormStructure form_structure(
@@ -1926,7 +1930,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
   form_structure.set_submission_source(submission_source);
 
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   base::HistogramTester histogram_tester;
 
@@ -1941,7 +1945,8 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
                                 /*is_password_manager_upload=*/false));
 
   // Clear the upload throttling history.
-  AutofillCrowdsourcingManager::ClearUploadHistory(client().GetPrefs());
+  AutofillCrowdsourcingManager::ClearUploadHistory(
+      autofill_client().GetPrefs());
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
                                 LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
@@ -1965,7 +1970,7 @@ TEST_P(AutofillUploadTest, ThrottleMetadataOnPasswordManagerUploads) {
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
   form_structure.set_submission_source(submission_source);
   std::optional<RandomizedEncoder> randomized_encoder =
-      RandomizedEncoder::Create(client().GetPrefs());
+      RandomizedEncoder::Create(autofill_client().GetPrefs());
 
   base::HistogramTester histogram_tester;
   // The first upload must be successfully sent to the Autofill server.
@@ -2030,8 +2035,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
   // Reset counters between test runs
   auto crowdsourcing_manager =
-      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(&client(),
-                                                                  "dummykey");
+      AutofillCrowdsourcingManagerTestApi::CreateManagerForApiKey(
+          &autofill_client(), "dummykey");
   test_api(*crowdsourcing_manager).reset_request_timestamps();
   test_api(*crowdsourcing_manager).set_max_form_cache_size(0);
   base::HistogramTester histogram;
@@ -2057,9 +2062,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
     SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
     form_structure.set_submission_source(submission_source);
     std::optional<RandomizedEncoder> randomized_encoder =
-        RandomizedEncoder::Create(client().GetPrefs());
+        RandomizedEncoder::Create(autofill_client().GetPrefs());
     EncodeUploadRequestOptions options;
-    options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+    options.encoder = RandomizedEncoder::Create(autofill_client().GetPrefs());
     options.observed_submission = true;
     std::vector<AutofillUploadContents> upload_contents =
         EncodeUploadRequest(form_structure, options);
@@ -2077,7 +2082,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
                          base::NumberToString(request_index))}}})));
     base::RunLoop run_loop;
     bool result = crowdsourcing_manager->StartQueryRequest(
-        ToRawPointerVector(form_structures), driver().GetIsolationInfo(),
+        ToRawPointerVector(form_structures),
+        autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
             GetWeakPtr())

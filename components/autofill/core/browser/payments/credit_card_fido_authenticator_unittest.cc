@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -96,23 +97,28 @@ std::string BytesToBase64(const std::vector<uint8_t> bytes) {
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
 
-class CreditCardFidoAuthenticatorTest : public testing::Test {
+class CreditCardFidoAuthenticatorTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   void SetUp() override {
-    personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
+    InitAutofillClient();
+    personal_data_manager().SetPrefService(autofill_client().GetPrefs());
 
-    autofill_driver_.SetAuthenticator(new TestInternalAuthenticator());
+    CreateAutofillDriver();
+    autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
 
-    autofill_client_.GetPaymentsAutofillClient()
+    autofill_client()
+        .GetPaymentsAutofillClient()
         ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
-                autofill_client_.GetURLLoaderFactory(),
-                autofill_client_.GetIdentityManager(),
+                autofill_client().GetURLLoaderFactory(),
+                autofill_client().GetIdentityManager(),
                 &personal_data_manager()));
-    autofill_client_.set_test_strike_database(
+    autofill_client().set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     fido_authenticator_ = std::make_unique<CreditCardFidoAuthenticator>(
-        &autofill_driver_, &autofill_client_);
+        &autofill_driver(), &autofill_client());
   }
 
   CreditCard CreateServerCard(std::string guid, std::string number) {
@@ -201,8 +207,8 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
   }
 
   void SetUserOptInPreference(bool user_is_opted_in) {
-    ::autofill::prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(),
-                                                    user_is_opted_in);
+    ::autofill::prefs::SetCreditCardFIDOAuthEnabled(
+        autofill_client().GetPrefs(), user_is_opted_in);
     fido_authenticator().user_is_opted_in_ =
         fido_authenticator().IsUserOptedIn();
   }
@@ -212,7 +218,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
     return *fido_authenticator_;
   }
   TestPersonalDataManager& personal_data_manager() {
-    return autofill_client_.GetPersonalDataManager();
+    return autofill_client().GetPersonalDataManager();
   }
   TestAuthenticationRequester& requester() { return requester_; }
 
@@ -220,8 +226,6 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  TestAutofillClient autofill_client_;
-  TestAutofillDriver autofill_driver_{&autofill_client_};
   TestAuthenticationRequester requester_;
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
 };

@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -86,7 +87,12 @@ class MockAutofillDriver : public autofill::TestAutofillDriver {
 
 }  // namespace
 
-class ComposeManagerImplTest : public testing::Test {
+class ComposeManagerImplTest
+    : public testing::Test,
+      public autofill::WithTestAutofillClientDriverManager<
+          autofill::TestAutofillClient,
+          testing::NiceMock<MockAutofillDriver>,
+          testing::NiceMock<autofill::MockAutofillManager>> {
  public:
   void SetUp() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -95,12 +101,8 @@ class ComposeManagerImplTest : public testing::Test {
     page_ukm_tracker_ =
         std::make_unique<compose::PageUkmTracker>(valid_test_source_id);
 
-    std::unique_ptr<testing::NiceMock<autofill::MockAutofillManager>>
-        mock_autofill_manager =
-            std::make_unique<testing::NiceMock<autofill::MockAutofillManager>>(
-                &mock_autofill_driver_);
-    mock_autofill_driver_.set_autofill_manager(
-        std::move(mock_autofill_manager));
+    InitAutofillClient();
+    CreateAutofillDriver();
 
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
@@ -123,6 +125,7 @@ class ComposeManagerImplTest : public testing::Test {
   void TearDown() override {
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
+    DestroyAutofillClient();
   }
 
   // Helper method to retrieve compose suggestions, if it exists.
@@ -147,7 +150,6 @@ class ComposeManagerImplTest : public testing::Test {
     return *compose_manager_impl_;
   }
   MockComposeClient& mock_compose_client() { return mock_compose_client_; }
-  MockAutofillDriver& mock_autofill_driver() { return mock_autofill_driver_; }
   const base::HistogramTester& histograms() const { return histogram_tester_; }
   const autofill::FormFieldData& last_form_field_to_client() const {
     return last_form_field_to_client_;
@@ -178,10 +180,7 @@ class ComposeManagerImplTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   testing::NiceMock<MockComposeClient> mock_compose_client_;
-  autofill::TestAutofillClient test_autofill_client_;
   autofill::FormFieldData last_form_field_to_client_;
-  testing::NiceMock<MockAutofillDriver> mock_autofill_driver_{
-      &test_autofill_client_};
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<compose::ComposeManagerImpl> compose_manager_impl_;
@@ -294,10 +293,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
+  EXPECT_CALL(autofill_driver(), ExtractForm)
       .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), form_data);
+            std::move(callback).Run(&autofill_driver(), form_data);
           }));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
@@ -307,9 +306,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
                         /*popup_screen_location=*/_, /*callback=*/_));
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), ui_entry_point);
+  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
+                                     selected_form_field.global_id(),
+                                     ui_entry_point);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -343,10 +342,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   const autofill::FormFieldData selected_form_field = form_data.fields()[1];
 
   // Autofill driver returns no FormData.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
+  EXPECT_CALL(autofill_driver(), ExtractForm(_, _))
       .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), std::nullopt);
+            std::move(callback).Run(&autofill_driver(), std::nullopt);
           }));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
@@ -355,9 +354,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), UiEntryPoint::kContextMenu);
+  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
+                                     selected_form_field.global_id(),
+                                     UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
@@ -389,10 +388,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   test_api(form_data).Remove(-1);
 
   // Emulates the expected Autofill driver response.
-  EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
+  EXPECT_CALL(autofill_driver(), ExtractForm)
       .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), form_data);
+            std::move(callback).Run(&autofill_driver(), form_data);
           }));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
@@ -401,9 +400,9 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
       .Times(0);
 
   base::RunLoop run_loop;
-  compose_manager_impl().OpenCompose(
-      mock_autofill_driver(), form_data.global_id(),
-      selected_form_field.global_id(), UiEntryPoint::kContextMenu);
+  compose_manager_impl().OpenCompose(autofill_driver(), form_data.global_id(),
+                                     selected_form_field.global_id(),
+                                     UiEntryPoint::kContextMenu);
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 

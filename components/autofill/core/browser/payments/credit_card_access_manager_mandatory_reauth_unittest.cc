@@ -45,13 +45,13 @@ class CreditCardAccessManagerMandatoryReauthTestBase
         features::kAutofillEnableFpanRiskBasedAuthentication);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::device_info::is_automotive()) {
-      autofill_client_.GetPrefs()->SetBoolean(
+      autofill_client().GetPrefs()->SetBoolean(
           prefs::kAutofillPaymentMethodsMandatoryReauth,
           /*value=*/true);
       return;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    autofill_client_.GetPrefs()->SetBoolean(
+    autofill_client().GetPrefs()->SetBoolean(
         prefs::kAutofillPaymentMethodsMandatoryReauth,
         /*value=*/PrefIsEnabled());
   }
@@ -89,7 +89,8 @@ class CreditCardAccessManagerMandatoryReauthTestBase
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {
     return *static_cast<payments::MockMandatoryReauthManager*>(
-        autofill_client_.GetPaymentsAutofillClient()
+        autofill_client()
+            .GetPaymentsAutofillClient()
             ->GetOrCreatePaymentsMandatoryReauthManager());
   }
 
@@ -245,7 +246,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
   // unmasking flow.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
 
   const CreditCard* virtual_card_enrolled_regular_card =
@@ -331,7 +333,8 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
 
   // Mock CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse to

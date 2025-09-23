@@ -523,7 +523,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   autofill_manager().DidShowSuggestions(generated_suggestions, form,
                                         form.fields()[0].global_id(), {});
 
-  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
+  ResetAutofillDriver(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.HomeAndWork.SuggestionPresent.Home"),
@@ -564,7 +564,7 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   autofill_manager().DidShowSuggestions(generated_suggestions, form,
                                         form.fields()[0].global_id(), {});
 
-  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
+  ResetAutofillDriver(autofill_driver());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.HomeAndWork.SuggestionPresent.Home"),

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,31 +23,14 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Ref;
 
-class ScopedAutofillManagersObservationTest : public testing::Test {
- protected:
+class ScopedAutofillManagersObservationTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
+ public:
   using Observer = AutofillManager::Observer;
   using enum AutofillManager::LifecycleState;
 
-  TestAutofillClient& client() { return client_; }
-
-  TestAutofillDriverFactory& factory() {
-    return client().GetAutofillDriverFactory();
-  }
-
-  TestAutofillDriver& driver(size_t index = 0) {
-    return *factory().driver(index);
-  }
-
-  AutofillManager& manager(size_t index = 0) {
-    return driver(index).GetAutofillManager();
-  }
-
-  void CreateDriver() {
-    auto driver = std::make_unique<TestAutofillDriver>(&client());
-    driver->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(driver.get()));
-    factory().TakeOwnership(std::move(driver));
-  }
+  ScopedAutofillManagersObservationTest() { InitAutofillClient(); }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -57,71 +41,72 @@ class ScopedAutofillManagersObservationTest : public testing::Test {
 TEST_F(ScopedAutofillManagersObservationTest, SingleFrameObservation) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client());
-  CreateDriver();
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(manager()), kInactive,
-                                                      kActive));
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(manager())));
-  factory().Activate(driver());
-  manager().NotifyObservers(
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(autofill_manager()),
+                                                      kInactive, kActive));
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  ActivateAutofillDriver(autofill_driver());
+  autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
        SingleFrameObservationWithDelayedInitializationFailsWithStrictPolicy) {
-  CreateDriver();
+  CreateAutofillDriver();
   MockAutofillManagerObserver observer;
 
   ScopedAutofillManagersObservation observation(&observer);
   EXPECT_CHECK_DEATH(observation.Observe(
-      &client(), ScopedAutofillManagersObservation::InitializationPolicy::
-                     kExpectNoPreexistingManagers));
+      &autofill_client(),
+      ScopedAutofillManagersObservation::InitializationPolicy::
+          kExpectNoPreexistingManagers));
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
        SingleFrameObservationWithDelayedInitialization) {
-  CreateDriver();
+  CreateAutofillDriver();
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client(),
+  observation.Observe(&autofill_client(),
                       ScopedAutofillManagersObservation::InitializationPolicy::
                           kObservePreexistingManagers);
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(manager())));
-  manager().NotifyObservers(
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest, NoObservationsAfterReset) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client());
-  CreateDriver();
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(manager())));
-  manager().NotifyObservers(
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager())));
+  autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 
   observation.Reset();
   EXPECT_CALL(observer, OnBeforeLanguageDetermined).Times(0);
-  manager().NotifyObservers(
+  autofill_manager().NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 }
 
 TEST_F(ScopedAutofillManagersObservationTest, MultipleFrameObservation) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client());
-  CreateDriver();
-  CreateDriver();
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
+  CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(manager(0))));
-  manager(0).NotifyObservers(
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager(0))));
+  autofill_manager(0).NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 
-  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(manager(1))));
-  manager(1).NotifyObservers(
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined(Ref(autofill_manager(1))));
+  autofill_manager(1).NotifyObservers(
       &AutofillManager::Observer::OnBeforeLanguageDetermined);
 }
 
@@ -129,29 +114,30 @@ TEST_F(ScopedAutofillManagersObservationTest,
        StateChangedToPendingResetNotifiesObserver) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client());
-  CreateDriver();
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(manager()), kInactive,
-                                                      kActive));
-  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(manager()), kActive,
-                                                      kPendingReset));
-  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(manager()),
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(autofill_manager()),
+                                                      kInactive, kActive));
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(autofill_manager()),
+                                                      kActive, kPendingReset));
+  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(autofill_manager()),
                                                       kPendingReset, kActive));
-  factory().Activate(driver());
-  factory().Reset(driver());
+  ActivateAutofillDriver(autofill_driver());
+  ResetAutofillDriver(autofill_driver());
 }
 
 TEST_F(ScopedAutofillManagersObservationTest,
        StateChangedToPendingDeletionNotifiesObserver) {
   MockAutofillManagerObserver observer;
   ScopedAutofillManagersObservation observation(&observer);
-  observation.Observe(&client());
-  CreateDriver();
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
 
-  EXPECT_CALL(observer, OnAutofillManagerStateChanged(Ref(manager()), kInactive,
-                                                      kPendingDeletion));
-  factory().Delete(driver());
+  EXPECT_CALL(observer,
+              OnAutofillManagerStateChanged(Ref(autofill_manager()), kInactive,
+                                            kPendingDeletion));
+  DeleteAutofillDriver(autofill_driver());
 }
 
 }  // namespace autofill

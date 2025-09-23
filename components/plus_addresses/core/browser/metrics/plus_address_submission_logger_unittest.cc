@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -84,7 +85,12 @@ ukm::TestUkmRecorder::HumanReadableUkmMetrics CreateUkmMetrics(
   return metrics;
 }
 
-class PlusAddressSubmissionLoggerTest : public ::testing::Test {
+class PlusAddressSubmissionLoggerTest
+    : public ::testing::Test,
+      public autofill::WithTestAutofillClientDriverManager<
+          autofill::TestAutofillClient,
+          autofill::TestAutofillDriver,
+          autofill::TestBrowserAutofillManager> {
  public:
   PlusAddressSubmissionLoggerTest()
       : submission_logger_(
@@ -95,11 +101,18 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
     SetPlusAddresses({kSamplePlusAddress});
   }
 
+  void SetUp() override {
+    InitAutofillClient();
+    CreateAutofillDriver();
+  }
+
+  void TearDown() override { DestroyAutofillClient(); }
+
  protected:
   FormData GetEmailForm() {
     const auto field_types = std::vector<FieldType>({FieldType::EMAIL_ADDRESS});
     FormData form = autofill::test::GetFormData(field_types);
-    autofill_manager_.AddSeenForm(form, field_types);
+    autofill_manager().AddSeenForm(form, field_types);
     return form;
   }
 
@@ -107,7 +120,7 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
     auto field_types = std::vector<FieldType>(39);
     field_types[0] = FieldType::EMAIL_ADDRESS;
     FormData form = autofill::test::GetFormData(field_types);
-    autofill_manager_.AddSeenForm(form, field_types);
+    autofill_manager().AddSeenForm(form, field_types);
     return form;
   }
 
@@ -116,7 +129,7 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
   }
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> GetUkmMetrics() {
-    return autofill_client_.GetUkmRecorder()->GetMetrics(
+    return autofill_client().GetUkmRecorder()->GetMetrics(
         ukm::builders::PlusAddresses_Submission::kEntryName,
         {"FieldCountBrowserForm", "FieldCountRendererForm", "PlusAddressCount",
          "CheckoutOrCartPage", "ManagedProfile", "NewlyCreatedPlusAddress",
@@ -128,10 +141,6 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
     return base::Contains(plus_addresses_, plus_address);
   }
 
-  autofill::TestBrowserAutofillManager& autofill_manager() {
-    return autofill_manager_;
-  }
-  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
   signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
@@ -145,9 +154,6 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
-  autofill::TestAutofillClient autofill_client_;
-  autofill::TestAutofillDriver autofill_driver_{&autofill_client_};
-  autofill::TestBrowserAutofillManager autofill_manager_{&autofill_driver_};
   PlusAddressSubmissionLogger submission_logger_;
 
   // The known set of plus addresses. Used for verifying whether a field's value

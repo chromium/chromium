@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,23 +133,23 @@ TEST_F(OtpFieldDetectorTest, IsOtpFieldPresent) {
 }
 
 // Tests that the AutofillManager::Observer notifications work as expected.
-class OtpFieldDetectorAutofillManagerObserverTest : public testing::Test {
+class OtpFieldDetectorAutofillManagerObserverTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   OtpFieldDetectorAutofillManagerObserverTest() = default;
   ~OtpFieldDetectorAutofillManagerObserverTest() override = default;
 
   void SetUp() override {
-    driver_ = std::make_unique<TestAutofillDriver>(&client_);
-
-    auto autofill_manager =
-        std::make_unique<TestBrowserAutofillManager>(driver_.get());
-    autofill_manager_ = autofill_manager.get();
-
-    driver_->set_autofill_manager(std::move(autofill_manager));
-    autofill_manager_observation_.Observe(&driver_->GetAutofillManager());
+    InitAutofillClient();
+    CreateAutofillDriver();
+    autofill_manager_observation_.Observe(&autofill_manager());
   }
 
-  void TearDown() override { autofill_manager_ = nullptr; }
+  void TearDown() override {
+    autofill_manager_observation_.Reset();
+    DestroyAutofillClient();
+  }
 
   void SimulateNavigation() {
     otp_field_detector_.OnAutofillManagerStateChanged(
@@ -194,15 +195,10 @@ class OtpFieldDetectorAutofillManagerObserverTest : public testing::Test {
 
   OtpFieldDetector& otp_field_detector() { return otp_field_detector_; }
 
-  TestBrowserAutofillManager& autofill_manager() { return *autofill_manager_; }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
-  TestAutofillClient client_;
-  std::unique_ptr<TestAutofillDriver> driver_;
-  raw_ptr<TestBrowserAutofillManager> autofill_manager_ = nullptr;
   // Passing no autofill client disables subscription to
   // AutofillManager::Observer events.
   OtpFieldDetector otp_field_detector_{nullptr};

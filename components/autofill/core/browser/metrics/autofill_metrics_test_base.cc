@@ -36,6 +36,7 @@ namespace autofill::autofill_metrics {
 
 namespace {
 
+using ::testing::Invoke;
 using ::testing::NiceMock;
 
 void SetProfileTestData(AutofillProfile* profile) {
@@ -113,14 +114,14 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
   task_environment_.FastForwardBy(year2020 - base::Time::Now());
 
-  autofill_client_ = std::make_unique<TestAutofillClient>();
-  autofill_client_->SetPrefs(test::PrefServiceForTesting());
-  autofill_client_->set_payments_autofill_client(
-      std::make_unique<MockPaymentsAutofillClient>(autofill_client_.get()));
+  InitAutofillClient();
+  autofill_client().SetPrefs(test::PrefServiceForTesting());
+  autofill_client().set_payments_autofill_client(
+      std::make_unique<MockPaymentsAutofillClient>(&autofill_client()));
 
   test_api(personal_data().address_data_manager())
       .set_auto_accept_address_imports(true);
-  personal_data().SetPrefService(autofill_client_->GetPrefs());
+  personal_data().SetPrefService(autofill_client().GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 
   auto payments_network_interface =
@@ -129,16 +130,13 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           autofill_client().GetIdentityManager(), &personal_data());
   payments_autofill_client().set_payments_network_interface(
       std::move(payments_network_interface));
-  test_api(*autofill_client_->GetFormDataImporter())
+  test_api(*autofill_client().GetFormDataImporter())
       .set_credit_card_save_manager(
-          std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
+          std::make_unique<TestCreditCardSaveManager>(&autofill_client()));
   payments_autofill_client().set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(&paydm()));
 
-  autofill_client().GetAutofillDriverFactory().TakeOwnership(
-      std::make_unique<MockAutofillDriver>(autofill_client_.get()));
-  autofill_driver().set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(&autofill_driver()));
+  CreateAutofillDriver();
   autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
 
 #if !BUILDFLAG(IS_IOS)
@@ -160,7 +158,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
 void AutofillMetricsBaseTest::TearDownHelper() {
   test_ukm_recorder().Purge();
-  autofill_client_.reset();
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {

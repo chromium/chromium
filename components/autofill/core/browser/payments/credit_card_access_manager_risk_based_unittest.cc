@@ -57,9 +57,11 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
 
     // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
     // invoked.
-    EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+    EXPECT_TRUE(autofill_client()
+                    .GetPaymentsAutofillClient()
                     ->risk_based_authentication_invoked());
-    EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+    EXPECT_TRUE(autofill_client()
+                    .GetPaymentsAutofillClient()
                     ->autofill_progress_dialog_shown());
 
     // Mock that
@@ -93,9 +95,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
 
   CreditCard card = *masked_server_card;
@@ -115,7 +119,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed();
   EXPECT_THAT(type, testing::Optional(
                         NonInteractivePaymentMethodType::kMaskedServerCard));
@@ -140,9 +144,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
@@ -153,7 +159,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                            RiskBasedAuthenticationResponse::Result::kError));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());
 
   // Expect the metrics are logged correctly.
@@ -181,9 +188,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
 
   // Mock the authentication is cancelled.
@@ -218,7 +227,8 @@ TEST_F(
   FetchCreditCard(masked_server_card);
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
-  ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+  ASSERT_FALSE(autofill_client()
+                   .GetPaymentsAutofillClient()
                    ->risk_based_authentication_invoked());
 }
 
@@ -263,7 +273,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
@@ -286,9 +296,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
@@ -317,7 +329,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
@@ -408,7 +420,7 @@ TEST_F(
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
@@ -488,7 +500,8 @@ TEST_F(
 
   FetchCreditCard(&masked_server_card);
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is not invoked.
-  ASSERT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+  ASSERT_FALSE(autofill_client()
+                   .GetPaymentsAutofillClient()
                    ->risk_based_authentication_invoked());
 }
 
@@ -515,9 +528,11 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
-  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+  EXPECT_TRUE(autofill_client()
+                  .GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
@@ -535,7 +550,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed();
   EXPECT_THAT(type, testing::Optional(
                         NonInteractivePaymentMethodType::kMaskedServerCard));
@@ -570,7 +585,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                                kNoAuthenticationRequired)
           .with_card(*enrolled_card));
 
-  test_api(*autofill_client_.GetFormDataImporter())
+  test_api(*autofill_client().GetFormDataImporter())
       .payment_method_type_if_non_interactive_authentication_flow_completed();
 
   // Expect the metrics are logged correctly.
@@ -616,7 +631,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
@@ -659,7 +674,7 @@ TEST_F(
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      test_api(*autofill_client_.GetFormDataImporter())
+      test_api(*autofill_client().GetFormDataImporter())
           .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 

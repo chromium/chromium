@@ -40,21 +40,21 @@ class BnplMetricsTest : public AutofillMetricsBaseTest,
 TEST_F(BnplMetricsTest, LogBnplPrefToggled) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
+  ASSERT_TRUE(autofill_client().GetPrefs()->GetBoolean(
       autofill::prefs::kAutofillBnplEnabled));
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", true,
                                      0);
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", false,
                                      0);
 
-  autofill_client_->GetPrefs()->SetBoolean(
+  autofill_client().GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillBnplEnabled, false);
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", true,
                                      0);
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", false,
                                      1);
 
-  autofill_client_->GetPrefs()->SetBoolean(
+  autofill_client().GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillBnplEnabled, true);
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", true,
                                      1);

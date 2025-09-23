@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -127,45 +128,41 @@ auto HaveSameFormIdsAs(const std::vector<FormData>& forms) {
 }
 
 // Expects the calls triggered by OnFormsSeen().
-void OnFormsSeenWithExpectations(MockAutofillManager& manager,
+void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
                                  const std::vector<FormData>& updated_forms,
                                  const std::vector<FormGlobalId>& removed_forms,
                                  const std::vector<FormData>& expectation) {
-  size_t num =
-      std::min(updated_forms.size(), kAutofillManagerMaxFormCacheSize -
-                                         manager.form_structures().size());
-  EXPECT_CALL(manager, ShouldParseForms).Times(1).WillOnce(Return(true));
-  EXPECT_CALL(manager, OnBeforeProcessParsedForms()).Times(num > 0);
-  EXPECT_CALL(manager, OnFormProcessed).Times(num);
-  TestAutofillManagerWaiter waiter(manager, {AutofillManagerEvent::kFormsSeen});
-  manager.OnFormsSeen(updated_forms, removed_forms);
+  const size_t num = std::min(updated_forms.size(),
+                              kAutofillManagerMaxFormCacheSize -
+                                  autofill_manager.form_structures().size());
+  EXPECT_CALL(autofill_manager, ShouldParseForms)
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(autofill_manager, OnBeforeProcessParsedForms()).Times(num > 0);
+  EXPECT_CALL(autofill_manager, OnFormProcessed).Times(num);
+  TestAutofillManagerWaiter waiter(autofill_manager,
+                                   {AutofillManagerEvent::kFormsSeen});
+  autofill_manager.OnFormsSeen(updated_forms, removed_forms);
   ASSERT_TRUE(waiter.Wait());
-  EXPECT_THAT(manager.form_structures(), HaveSameFormIdsAs(expectation));
+  EXPECT_THAT(autofill_manager.form_structures(),
+              HaveSameFormIdsAs(expectation));
 }
 
-class AutofillManagerTest : public testing::Test {
+class AutofillManagerTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
+                                                 MockAutofillDriver,
+                                                 MockAutofillManager> {
  public:
   void SetUp() override {
-    client_.SetPrefs(test::PrefServiceForTesting());
-    auto driver = std::make_unique<NiceMock<MockAutofillDriver>>(&client_);
-    driver->set_autofill_manager(
-        std::make_unique<MockAutofillManager>(driver.get()));
-    client_.GetAutofillDriverFactory().TakeOwnership(std::move(driver));
-  }
-
-  MockAutofillDriver& driver() {
-    return static_cast<MockAutofillDriver&>(
-        CHECK_DEREF(client_.GetAutofillDriverFactory().driver()));
-  }
-
-  MockAutofillManager& manager() {
-    return static_cast<MockAutofillManager&>(driver().GetAutofillManager());
+    InitAutofillClient();
+    autofill_client().SetPrefs(test::PrefServiceForTesting());
+    CreateAutofillDriver();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillClient client_;
 };
 
 // The test parameter sets the number of forms to be generated.
@@ -187,17 +184,17 @@ class AutofillManagerTest_OnLoadedServerPredictionsObserver
 
   void SetUp() override {
     AutofillManagerTest::SetUp();
-    manager().AddObserver(&observer_);
+    autofill_manager().AddObserver(&observer_);
   }
 
   void TearDown() override {
-    manager().RemoveObserver(&observer_);
+    autofill_manager().RemoveObserver(&observer_);
     AutofillManagerTest::TearDown();
   }
 
   MockAutofillCrowdsourcingManager& crowdsourcing_manager() {
     return static_cast<MockAutofillCrowdsourcingManager&>(
-        client_.GetCrowdsourcingManager());
+        autofill_client().GetCrowdsourcingManager());
   }
 
   MockAutofillManagerObserver observer_;
@@ -209,20 +206,20 @@ TEST_P(AutofillManagerTest_WithIntParam, CacheBoundFormsSeen) {
       std::min(num_forms(), kAutofillManagerMaxFormCacheSize);
   std::vector<FormData> forms = CreateTestForms(num_forms());
   std::vector<FormData> exp_forms(forms.begin(), forms.begin() + num_exp_forms);
-  OnFormsSeenWithExpectations(manager(), forms, {}, exp_forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, exp_forms);
 }
 
 // Tests that removing unseen forms has no effect.
 TEST_F(AutofillManagerTest, RemoveUnseenForms) {
   std::vector<FormData> forms = CreateTestForms(9);
-  OnFormsSeenWithExpectations(manager(), {}, GetFormIds(forms), {});
+  OnFormsSeenWithExpectations(autofill_manager(), {}, GetFormIds(forms), {});
 }
 
 // Tests that all forms can be removed at once.
 TEST_F(AutofillManagerTest, RemoveAllForms) {
   std::vector<FormData> forms = CreateTestForms(9);
-  OnFormsSeenWithExpectations(manager(), forms, {}, forms);
-  OnFormsSeenWithExpectations(manager(), {}, GetFormIds(forms), {});
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
+  OnFormsSeenWithExpectations(autofill_manager(), {}, GetFormIds(forms), {});
 }
 
 // Tests that removing some forms leaves the other forms untouched.
@@ -231,16 +228,18 @@ TEST_F(AutofillManagerTest, RemoveSomeForms) {
   auto range = [&](size_t begin, size_t end) {
     return std::vector<FormData>(forms.begin() + begin, forms.begin() + end);
   };
-  OnFormsSeenWithExpectations(manager(), range(0, 6), {}, range(0, 6));
-  OnFormsSeenWithExpectations(manager(), range(6, 9), GetFormIds(range(0, 3)),
-                              range(3, 9));
+  OnFormsSeenWithExpectations(autofill_manager(), range(0, 6), {}, range(0, 6));
+  OnFormsSeenWithExpectations(autofill_manager(), range(6, 9),
+                              GetFormIds(range(0, 3)), range(3, 9));
 }
 
 // Tests that adding and removing the same forms has no effect.
 TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
   std::vector<FormData> forms = CreateTestForms(9);
-  OnFormsSeenWithExpectations(manager(), forms, GetFormIds(forms), forms);
-  OnFormsSeenWithExpectations(manager(), forms, GetFormIds(forms), forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, GetFormIds(forms),
+                              forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, GetFormIds(forms),
+                              forms);
 }
 
 // Tests that events update the form cache. Since there are so many events and
@@ -249,16 +248,16 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
 // - Events: OnFormsSeen(), OnTextFieldValueChanged(), OnFocusOnFormField()
 // - Properties: AutofillField::value()
 TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
-  EXPECT_CALL(manager(), ShouldParseForms)
+  EXPECT_CALL(autofill_manager(), ShouldParseForms)
       .Times(AtLeast(0))
       .WillRepeatedly(Return(true));
-  TestAutofillManagerWaiter waiter(manager());
+  TestAutofillManagerWaiter waiter(autofill_manager());
 
   FormData form = test::CreateTestAddressFormData();
   FormGlobalId form_id = form.global_id();
   auto current_cached_value = [this,
                                &form_id]() -> std::optional<std::u16string> {
-    FormStructure* cached_form = manager().FindCachedFormById(form_id);
+    FormStructure* cached_form = autofill_manager().FindCachedFormById(form_id);
     if (!cached_form || cached_form->fields().empty()) {
       return std::nullopt;
     }
@@ -269,39 +268,41 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
 
   // Triggers a parse.
   test_api(form).field(0).set_value(u"first seen value");
-  manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first seen value");
 
   // Triggers a reparse.
   test_api(form).field(0).set_value(u"second seen value");
-  manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second seen value");
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"first changed value");
-  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(), {});
+  autofill_manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
+                                             {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first changed value");
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"second changed value");
-  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(), {});
+  autofill_manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
+                                             {});
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second changed value");
 
   // Triggers a reparse.
   test_api(form).Remove(-1);
   test_api(form).field(0).set_value(u"first reparse value");
-  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first reparse value");
 
   // Triggers a second reparse.
   test_api(form).Remove(-1);
   test_api(form).field(0).set_value(u"second reparse value");
-  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second reparse value");
 }
@@ -320,7 +321,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   // Shorthands for matchers to reduce visual noise.
   using enum AutofillManager::LifecycleState;
-  auto m = Ref(manager());
+  auto m = Ref(autofill_manager());
   auto f = Eq(form.global_id());
   auto g = Eq(other_form.global_id());
   auto ff = Eq(field.global_id());
@@ -329,7 +330,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   MockAutofillManagerObserver observer;
   base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
       observation{&observer};
-  observation.Observe(&manager());
+  observation.Observe(&autofill_manager());
 
   // This test should have no unexpected calls of observer events.
   EXPECT_CALL(observer, OnAutofillManagerStateChanged).Times(0);
@@ -360,23 +361,28 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnBeforeFormSubmitted).Times(0);
   EXPECT_CALL(observer, OnAfterFormSubmitted).Times(0);
 
-  EXPECT_CALL(manager(), ShouldParseForms)
+  EXPECT_CALL(autofill_manager(), ShouldParseForms)
       .Times(AtLeast(0))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(manager(), OnFocusOnNonFormFieldImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnDidFillAutofillFormDataImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnDidEndTextFieldEditingImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnSelectFieldOptionsDidChangeImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnJavaScriptChangedAutofilledValueImpl)
+  EXPECT_CALL(autofill_manager(), OnFocusOnNonFormFieldImpl).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnDidFillAutofillFormDataImpl)
       .Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnFormSubmittedImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnTextFieldValueChangedImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnTextFieldDidScrollImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnAskForValuesToFillImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnFocusOnFormFieldImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnSelectControlSelectionChangedImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnFormProcessed).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnDidEndTextFieldEditingImpl)
+      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnSelectFieldOptionsDidChangeImpl)
+      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnJavaScriptChangedAutofilledValueImpl)
+      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnFormSubmittedImpl).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnTextFieldValueChangedImpl)
+      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnTextFieldDidScrollImpl).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnAskForValuesToFillImpl).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnFocusOnFormFieldImpl).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnSelectControlSelectionChangedImpl)
+      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnBeforeProcessParsedForms).Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnFormProcessed).Times(AtLeast(0));
 
   // Reset the manager and transition from kInactive to kActive. The observers
   // should stick around.
@@ -384,12 +390,12 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
               OnAutofillManagerStateChanged(m, kInactive, kPendingReset));
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kPendingReset, kInactive));
-  client_.GetAutofillDriverFactory().Reset(driver());
+  ResetAutofillDriver(autofill_driver());
   EXPECT_CALL(observer, OnAutofillManagerStateChanged(m, kInactive, kActive));
-  client_.GetAutofillDriverFactory().Activate(driver());
+  ActivateAutofillDriver(autofill_driver());
 
   // Test that not changing the LifecycleState does not fire events.
-  client_.GetAutofillDriverFactory().Activate(driver());
+  ActivateAutofillDriver(autofill_driver());
 
   {
     // Test that even if the vector of new forms is too large, events are still
@@ -400,8 +406,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer,
                 OnAfterFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
-                          {id_to_remove});
+    autofill_manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
+                                   {id_to_remove});
     std::move(run_loop).Run();
   }
 
@@ -412,7 +418,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeFormsSeen(m, ElementsAre(f, g),
                                             ElementsAre(id_to_remove)));
     EXPECT_CALL(observer, OnBeforeLoadedServerPredictions(m));
-    manager().OnFormsSeen(forms, {id_to_remove});
+    autofill_manager().OnFormsSeen(forms, {id_to_remove});
     EXPECT_CALL(observer, OnAfterLoadedServerPredictions(m));
     EXPECT_CALL(observer, OnAfterFormsSeen(m, ElementsAre(f, g),
                                            ElementsAre(id_to_remove)))
@@ -425,7 +431,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnBeforeLanguageDetermined(m));
-    manager().OnLanguageDetermined([] {
+    autofill_manager().OnLanguageDetermined([] {
       translate::LanguageDetectionDetails details;
       details.adopted_language = "en";
       return details;
@@ -445,7 +451,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     // asynchronous, so OnAfterTextFieldValueChanged() is asynchronous, too.
     base::RunLoop run_loop;
     EXPECT_CALL(observer, OnBeforeTextFieldValueChanged(m, f, ff));
-    manager().OnTextFieldValueChanged(form, field.global_id(), {});
+    autofill_manager().OnTextFieldValueChanged(form, field.global_id(), {});
     EXPECT_CALL(observer,
                 OnAfterTextFieldValueChanged(m, f, ff, std::u16string()))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -458,7 +464,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeTextFieldDidScroll(m, f, ff));
     EXPECT_CALL(observer, OnAfterTextFieldDidScroll(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnTextFieldDidScroll(form, field.global_id());
+    autofill_manager().OnTextFieldDidScroll(form, field.global_id());
     std::move(run_loop).Run();
   }
 
@@ -467,7 +473,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeSelectControlSelectionChanged(m, f, ff));
     EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnSelectControlSelectionChanged(form, field.global_id());
+    autofill_manager().OnSelectControlSelectionChanged(form, field.global_id());
     std::move(run_loop).Run();
   }
 
@@ -476,7 +482,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeSelectFieldOptionsDidChange(m, f));
     EXPECT_CALL(observer, OnAfterSelectFieldOptionsDidChange(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnSelectFieldOptionsDidChange(form);
+    autofill_manager().OnSelectFieldOptionsDidChange(form);
     std::move(run_loop).Run();
   }
 
@@ -485,7 +491,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData(m, f));
     EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnDidFillAutofillFormData(form, {});
+    autofill_manager().OnDidFillAutofillFormData(form, {});
     std::move(run_loop).Run();
   }
 
@@ -494,7 +500,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
     EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnAskForValuesToFill(
+    autofill_manager().OnAskForValuesToFill(
         form, field.global_id(), gfx::Rect(),
         AutofillSuggestionTriggerSource::kUnspecified, std::nullopt);
     std::move(run_loop).Run();
@@ -505,7 +511,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff));
     EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnFocusOnFormField(form, field.global_id());
+    autofill_manager().OnFocusOnFormField(form, field.global_id());
     std::move(run_loop).Run();
   }
 
@@ -514,7 +520,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
     EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnJavaScriptChangedAutofilledValue(form, field.global_id(), {});
+    autofill_manager().OnJavaScriptChangedAutofilledValue(
+        form, field.global_id(), {});
     std::move(run_loop).Run();
   }
 
@@ -526,7 +533,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeFormSubmitted(m, Ref(form)));
     EXPECT_CALL(observer, OnAfterFormSubmitted(m, Ref(form)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+    autofill_manager().OnFormSubmitted(
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
     std::move(run_loop).Run();
   }
 
@@ -534,17 +542,17 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
       .WillOnce([&] { observation.Reset(); });
-  client_.GetAutofillDriverFactory().Delete(driver());
+  DeleteAutofillDriver(autofill_driver());
 }
 
 TEST_F(AutofillManagerTest, CanShowAutofillUi) {
-  EXPECT_CALL(driver(), CanShowAutofillUi).WillOnce(Return(true));
-  EXPECT_TRUE(manager().CanShowAutofillUi());
+  EXPECT_CALL(autofill_driver(), CanShowAutofillUi).WillOnce(Return(true));
+  EXPECT_TRUE(autofill_manager().CanShowAutofillUi());
 }
 
 TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
-  EXPECT_CALL(driver(), TriggerFormExtractionInAllFrames);
-  manager().TriggerFormExtractionInAllFrames(base::DoNothing());
+  EXPECT_CALL(autofill_driver(), TriggerFormExtractionInAllFrames);
+  autofill_manager().TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -556,7 +564,7 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
  public:
   void SetUp() override {
     AutofillManagerTest::SetUp();
-    observation_.Observe(&manager());
+    observation_.Observe(&autofill_manager());
   }
 
   void TearDown() override {
@@ -565,8 +573,8 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
     // client triggers their destruction. Wait for it to complete. This needs to
     // happen before the `provider` is destroyed.
     observation_.Reset();
-    client_.set_autofill_ml_prediction_model_handler(nullptr);
-    client_.set_password_ml_prediction_model_handler(nullptr);
+    autofill_client().set_autofill_ml_prediction_model_handler(nullptr);
+    autofill_client().set_password_ml_prediction_model_handler(nullptr);
     task_environment_.RunUntilIdle();
     AutofillManagerTest::TearDown();
   }
@@ -602,50 +610,58 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
 
 TEST_F(AutofillManagerTestForModelPredictions,
        GetMlModelPredictionsForForm_AutofillOnly) {
-  client_.set_autofill_ml_prediction_model_handler(CreateMockModelHandler());
+  autofill_client().set_autofill_ml_prediction_model_handler(
+      CreateMockModelHandler());
 
-  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
-                  *client_.GetAutofillFieldClassificationModelHandler()),
-              GetModelPredictionsForForms);
+  EXPECT_CALL(
+      static_cast<MockFieldClassificationModelHandler&>(
+          *autofill_client().GetAutofillFieldClassificationModelHandler()),
+      GetModelPredictionsForForms);
   // Check that AutofillManager's observer is notified after parsing using
   // models is done.
   EXPECT_CALL(observer(), OnFieldTypesDetermined);
   FormData form = test::CreateTestAddressFormData();
-  OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
+  OnFormsSeenWithExpectations(autofill_manager(), /*updated_forms=*/{form},
                               /*removed_forms=*/{}, /*expectation=*/{form});
 }
 
 TEST_F(AutofillManagerTestForModelPredictions,
        GetMlModelPredictionsForForm_PasswordManagerOnly) {
-  client_.set_password_ml_prediction_model_handler(CreateMockModelHandler());
+  autofill_client().set_password_ml_prediction_model_handler(
+      CreateMockModelHandler());
 
   EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
-                  *client_.GetPasswordManagerFieldClassificationModelHandler()),
+                  *autofill_client()
+                       .GetPasswordManagerFieldClassificationModelHandler()),
               GetModelPredictionsForForms);
   // Check that AutofillManager's observer is notified after parsing using
   // models is done.
   EXPECT_CALL(observer(), OnFieldTypesDetermined);
   FormData form = test::CreateTestAddressFormData();
-  OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
+  OnFormsSeenWithExpectations(autofill_manager(), /*updated_forms=*/{form},
                               /*removed_forms=*/{}, /*expectation=*/{form});
 }
 
 TEST_F(AutofillManagerTestForModelPredictions,
        GetMlModelPredictionsForForm_BothAutofillAndPasswordManager) {
-  client_.set_autofill_ml_prediction_model_handler(CreateMockModelHandler());
-  client_.set_password_ml_prediction_model_handler(CreateMockModelHandler());
+  autofill_client().set_autofill_ml_prediction_model_handler(
+      CreateMockModelHandler());
+  autofill_client().set_password_ml_prediction_model_handler(
+      CreateMockModelHandler());
 
+  EXPECT_CALL(
+      static_cast<MockFieldClassificationModelHandler&>(
+          *autofill_client().GetAutofillFieldClassificationModelHandler()),
+      GetModelPredictionsForForms);
   EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
-                  *client_.GetAutofillFieldClassificationModelHandler()),
-              GetModelPredictionsForForms);
-  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
-                  *client_.GetPasswordManagerFieldClassificationModelHandler()),
+                  *autofill_client()
+                       .GetPasswordManagerFieldClassificationModelHandler()),
               GetModelPredictionsForForms);
   // Check that AutofillManager's observer is notified after parsing using
   // models is done.
   EXPECT_CALL(observer(), OnFieldTypesDetermined);
   FormData form = test::CreateTestAddressFormData();
-  OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
+  OnFormsSeenWithExpectations(autofill_manager(), /*updated_forms=*/{form},
                               /*removed_forms=*/{}, /*expectation=*/{form});
 }
 #endif
@@ -655,10 +671,11 @@ TEST_F(
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_,
+              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(manager()), forms[0].global_id(),
+                             Ref(autofill_manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
@@ -667,9 +684,10 @@ TEST_F(
             std::move(callback).Run(QueryResponse("", {}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(manager(), forms, {}, forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
 }
 
@@ -678,10 +696,11 @@ TEST_F(
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_,
+              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(manager()), forms[0].global_id(),
+                             Ref(autofill_manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
@@ -690,9 +709,10 @@ TEST_F(
             std::move(callback).Run(std::nullopt);
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(manager(), forms, {}, forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
 }
 
@@ -701,10 +721,11 @@ TEST_F(
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_,
+              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(manager()), forms[0].global_id(),
+                             Ref(autofill_manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
@@ -713,9 +734,10 @@ TEST_F(
             std::move(callback).Run(QueryResponse("", {}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(manager(), forms, {}, forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
 }
 
@@ -724,39 +746,41 @@ TEST_F(
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
   std::vector<FormData> forms = CreateTestForms(1);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(manager())));
+  EXPECT_CALL(observer_,
+              OnBeforeLoadedServerPredictions(Ref(autofill_manager())));
   EXPECT_CALL(observer_, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer_, OnFieldTypesDetermined(
-                             Ref(manager()), forms[0].global_id(),
+                             Ref(autofill_manager()), forms[0].global_id(),
                              FieldTypeSource::kHeuristicsOrAutocomplete));
-  EXPECT_CALL(observer_,
-              OnFieldTypesDetermined(Ref(manager()), forms[0].global_id(),
-                                     FieldTypeSource::kAutofillServer));
+  EXPECT_CALL(observer_, OnFieldTypesDetermined(
+                             Ref(autofill_manager()), forms[0].global_id(),
+                             FieldTypeSource::kAutofillServer));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
           [&](const auto&, const auto&,
               base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
             std::move(callback).Run(
-                QueryResponse("", {manager()
+                QueryResponse("", {autofill_manager()
                                        .FindCachedFormById(forms[0].global_id())
                                        ->form_signature()}));
             return true;
           });
-  EXPECT_CALL(observer_, OnAfterLoadedServerPredictions(Ref(manager())))
+  EXPECT_CALL(observer_,
+              OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(manager(), forms, {}, forms);
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
   std::move(run_loop).Run();
 }
 
 TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
   FormData seen_form = test::CreateTestAddressFormData();
-  OnFormsSeenWithExpectations(manager(), {seen_form}, {}, {seen_form});
+  OnFormsSeenWithExpectations(autofill_manager(), {seen_form}, {}, {seen_form});
 
   FormData unseen_form = test::CreateTestAddressFormData();
   ASSERT_NE(seen_form.global_id(), unseen_form.global_id());
 
   // Check that predictions are returned for the form that was seen.
-  EXPECT_EQ(manager()
+  EXPECT_EQ(autofill_manager()
                 .GetHeursticPredictionForForm(
                     autofill::HeuristicSource::kPasswordManagerMachineLearning,
                     seen_form.global_id(),
@@ -767,7 +791,7 @@ TEST_F(AutofillManagerTest, GetHeursticPredictionForForm) {
 
   // Check that no predictions are returned for the unseen form.
   EXPECT_TRUE(
-      manager()
+      autofill_manager()
           .GetHeursticPredictionForForm(
               autofill::HeuristicSource::kPasswordManagerMachineLearning,
               unseen_form.global_id(),
