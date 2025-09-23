@@ -62,6 +62,18 @@ def _CheckTargetSdkVersionNotDeleted(input_api, output_api):
   possible for apps to specify a really old targetSdkVersion even if the app is
   installed on new OS versions.
   """
+  footer_key = 'Bypass-Target-Sdk-Version-Check'
+  reasons = input_api.change.GitFootersFromDescription().get(footer_key, [])
+  if reasons:
+    if ''.join(reasons).strip() == '':
+      return [
+          output_api.PresubmitError(
+              f'{footer_key} is specified without a reason. Please provide a '
+              f'reason in "{footer_key}: <reason>"')
+      ]
+    input_api.logging.info('Target SDK version check is being bypassed.')
+    return []
+
   errors = []
   target_sdk_version_pattern = input_api.re.compile(
       r'.*[tT]argetSdkVersion.*')
@@ -96,10 +108,12 @@ This code is not dead code, even when we drop support for old SDK_INT versions.
 It is possible for apps to specify a really old targetSdkVersion even if the app
 is installed on new OS versions, and this is something we want to support.
 
-If you are just moving an existing check (but not deleting it), then you can
-ignore this warning. If you are completely deleting a check, then please undo
-the change or raise this issue with //android_webview/OWNERS to get their
-explicit approval before you ignore the warning.
+If you are completely deleting a check, then please undo the change or raise
+this issue with //android_webview/OWNERS to get their explicit approval before
+landing the change.
+
+To bypass this check, add "Bypass-Target-Sdk-Version-Check: <reason>" to the
+CL description.
 """, errors))
 
   return results
