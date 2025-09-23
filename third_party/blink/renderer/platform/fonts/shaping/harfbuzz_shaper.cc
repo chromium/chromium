@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 
+#include <hb-ot.h>
 #include <hb.h>
 #include <unicode/uchar.h>
 #include <unicode/uscript.h>
@@ -64,7 +65,6 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "third_party/harfbuzz-ng/src/src/hb-ot.h"
 
 namespace blink {
 
