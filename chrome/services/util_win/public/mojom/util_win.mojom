@@ -192,7 +192,8 @@ interface UtilWin {
   //
   // Returns the selected file |paths| and the |file_type_index| of the filter
   // selected by the user. The |file_type_index| return value is meaningless on
-  // folder selection dialogs. On cancelation or failure, |paths| will be empty.
+  // folder selection dialogs. On cancellation or failure, |paths| will be
+  // empty.
   CallExecuteSelectFile(SelectFileDialogType type,
                         uint32 owner,
                         mojo_base.mojom.String16 title,
