@@ -145,7 +145,7 @@ import java.util.function.Supplier;
         // The next item in the focus cycle order is TAB_STRIP, if it is present.
         var stripLayoutHelperManager = mStripLayoutHelperManagerSupplier.get();
         if (stripLayoutHelperManager != null
-                && stripLayoutHelperManager.getStripVisibilityState()
+                && stripLayoutHelperManager.getStripVisibilityStateSupplier().get()
                         == StripVisibilityState.VISIBLE) {
             keyboardFocusRows.add(KeyboardFocusRow.TAB_STRIP);
         }

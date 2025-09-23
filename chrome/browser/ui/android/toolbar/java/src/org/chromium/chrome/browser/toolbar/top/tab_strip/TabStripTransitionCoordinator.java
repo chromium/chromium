@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -74,14 +75,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          */
         default void onFadeTransitionRequested(float newOpacity, int durationMs) {}
 
-        /**
-         * Called to get the current {@link StripVisibilityState} which may or may not be affected
-         * by strip transitions.
-         *
-         * @return The current {@link StripVisibilityState}.
-         */
-        @StripVisibilityState
-        int getStripVisibilityState();
+        /** Returns the observable supplier for the {@link StripVisibilityState}. */
+        ObservableSupplier<Integer> getStripVisibilityStateSupplier();
     }
 
     private final CallbackController mCallbackController = new CallbackController();
@@ -385,7 +380,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     private @StripVisibilityState int getStripVisibilityState() {
         assert mTabStripTransitionDelegateSupplier.get() != null
                 : "Expected a non-null strip transition delegate.";
-        return mTabStripTransitionDelegateSupplier.get().getStripVisibilityState();
+        return mTabStripTransitionDelegateSupplier.get().getStripVisibilityStateSupplier().get();
     }
 
     private int calculateTopPadding() {

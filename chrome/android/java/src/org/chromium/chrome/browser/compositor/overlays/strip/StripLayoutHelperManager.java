@@ -535,7 +535,9 @@ public class StripLayoutHelperManager
                     new TabStripDragHandler(
                             context,
                             this::getActiveStripLayoutHelper,
-                            () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
+                            () ->
+                                    getStripVisibilityStateSupplier().get()
+                                            == StripVisibilityState.VISIBLE,
                             tabContentManagerSupplier,
                             mLayerTitleCacheSupplier,
                             multiInstanceManager,
@@ -563,7 +565,9 @@ public class StripLayoutHelperManager
                         windowAndroid,
                         actionConfirmationManager,
                         dataSharingTabManager,
-                        () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
+                        () ->
+                                getStripVisibilityStateSupplier().get()
+                                        == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
@@ -582,7 +586,9 @@ public class StripLayoutHelperManager
                         windowAndroid,
                         actionConfirmationManager,
                         dataSharingTabManager,
-                        () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
+                        () ->
+                                getStripVisibilityStateSupplier().get()
+                                        == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
@@ -843,7 +849,8 @@ public class StripLayoutHelperManager
                     getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
 
             yOffset = 0;
-        } else if ((getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
+        } else if ((getStripVisibilityStateSupplier().get()
+                        & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
                 != 0) {
             // When the tab strip is hidden by a height transition, the stable offset of this scene
             // layer should be a negative value.
@@ -886,7 +893,7 @@ public class StripLayoutHelperManager
     public boolean isSceneOverlayTreeShowing() {
         // TODO(mdjones): This matches existing behavior but can be improved to return false if
         // the browser controls offset is equal to the browser controls height.
-        return (getStripVisibilityState() & StripVisibilityState.OBSCURED) == 0;
+        return (getStripVisibilityStateSupplier().get() & StripVisibilityState.OBSCURED) == 0;
     }
 
     @Override
@@ -941,7 +948,8 @@ public class StripLayoutHelperManager
                 mWidth - mRightPadding,
                 Math.min(getHeight(), visibleViewportOffsetY));
         // Avoid handling motion events when invisible strip state persists after a size change.
-        if (mEventFilter != null && getStripVisibilityState() == StripVisibilityState.VISIBLE) {
+        if (mEventFilter != null
+                && getStripVisibilityStateSupplier().get() == StripVisibilityState.VISIBLE) {
             mEventFilter.setEventArea(mStripFilterArea);
         }
     }
@@ -1049,7 +1057,9 @@ public class StripLayoutHelperManager
         mStripTransitionScrimOpacity = 0f;
         // Update the strip visibility state in StatusBarColorController only after a show->hide
         // transition, so that the status bar assumes the toolbar color when the strip is hidden.
-        if ((getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION) != 0) {
+        if ((getStripVisibilityStateSupplier().get()
+                        & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
+                != 0) {
             mStatusBarColorController.setTabStripHiddenOnTablet(true);
         }
         mStatusBarColorController.setTabStripColorOverlay(
@@ -1070,7 +1080,9 @@ public class StripLayoutHelperManager
         float ratio = 1 - visibleHeight / mHeight;
         float newOpacity = TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
         boolean isHidden =
-                (getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION) != 0;
+                (getStripVisibilityStateSupplier().get()
+                                & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
+                        != 0;
 
         // There is a known issue where the scrim opacity for a hide->show transition incorrectly
         // gets updated to 1f (when yOffset = 0) in concluding frame updates during the transition,
@@ -1145,7 +1157,7 @@ public class StripLayoutHelperManager
     @Override
     public void getVirtualViews(List<VirtualView> views) {
         if (duringTabStripHeightTransition()
-                || getStripVisibilityState() != StripVisibilityState.VISIBLE) {
+                || getStripVisibilityStateSupplier().get() != StripVisibilityState.VISIBLE) {
             return;
         }
         // Remove the a11y views when top controls is partially invisible.
@@ -1166,7 +1178,7 @@ public class StripLayoutHelperManager
     private void updateTouchableAreas() {
         if (!mIsLayoutOptimizationsEnabled) return;
 
-        if ((getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_FADE) != 0) {
+        if ((getStripVisibilityStateSupplier().get() & StripVisibilityState.HIDDEN_BY_FADE) != 0) {
             // Reset the system gesture exclusion rects to allow system gestures on the tab strip
             // area.
             mToolbarControlContainer.setSystemGestureExclusionRects(List.of(new Rect(0, 0, 0, 0)));
@@ -1658,9 +1670,9 @@ public class StripLayoutHelperManager
     }
 
     @Override
-    public @StripVisibilityState int getStripVisibilityState() {
-        // TODO(crbug.com/417238089): This returns a stale value during height transitions.
-        return assumeNonNull(mStripVisibilityStateSupplier.get());
+    public ObservableSupplier<Integer> getStripVisibilityStateSupplier() {
+        // TODO(crbug.com/417238089): get() returns a stale value during height transitions.
+        return mStripVisibilityStateSupplier;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1760,7 +1772,9 @@ public class StripLayoutHelperManager
         // scrolled offscreen or obscured, except when hidden by height transition.
         // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
         boolean isHiddenByHeightTransition =
-                (getStripVisibilityState() & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION) != 0;
+                (getStripVisibilityStateSupplier().get()
+                                & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
+                        != 0;
         return !isHiddenByHeightTransition
                 ? TopControlVisibility.VISIBLE
                 : TopControlVisibility.HIDDEN;

@@ -1986,7 +1986,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     mLayoutManager.getStripLayoutHelperManager();
             isTabStripVisible =
                     layoutHelperManager != null
-                            && layoutHelperManager.getStripVisibilityState()
+                            && layoutHelperManager.getStripVisibilityStateSupplier().get()
                                     == StripVisibilityState.VISIBLE;
         }
         int dropIndex =
