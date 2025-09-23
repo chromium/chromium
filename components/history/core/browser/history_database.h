@@ -93,17 +93,23 @@ class HistoryDatabase : public DownloadDatabase,
 
   // Gets unique domains (eTLD+1) visited within the time range
   // [`begin_time`, `end_time`) for local and synced visits sorted in
-  // reverse-chronological order.
-  DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,
-                                               base::Time end_time);
+  // reverse-chronological order. Whether visits with an HTTP response code of
+  // 404 count is determined by `policy_for_404_visits`.
+  DomainsVisitedResult GetUniqueDomainsVisited(
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Counts the number of unique domains (eTLD+1) visited within
-  // [`begin_time`, `end_time`).
+  // [`begin_time`, `end_time`). Whether visits with an HTTP response code of
+  // 404 count is determined by `policy_for_404_visits`.
   // The return value is a pair of (local, all), where "local" only counts
   // domains that were visited on this device, whereas "all" also counts
   // foreign/synced visits.
-  std::pair<int, int> CountUniqueDomainsVisited(base::Time begin_time,
-                                                base::Time end_time);
+  std::pair<int, int> CountUniqueDomainsVisited(
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Call to set the mode on the database to exclusive. The default locking mode
   // is "normal" but we want to run in exclusive mode for slightly better

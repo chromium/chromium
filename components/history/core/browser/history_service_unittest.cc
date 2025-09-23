@@ -864,18 +864,29 @@ TEST_F(HistoryServiceTest, HistoryDBTaskCanceled) {
 // Helper to add a page at specified point of time.
 void AddPageAtTime(HistoryService* history,
                    const std::string& url_spec,
-                   base::Time time_in_the_past) {
-  const GURL url(url_spec);
-  history->AddPage(url, time_in_the_past, 0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
-                   VisitResponseCodeCategory::kNot404, false);
+                   base::Time time_in_the_past,
+                   bool is_404 = false) {
+  HistoryAddPageArgs add_page_args;
+  add_page_args.url = GURL(url_spec);
+  add_page_args.time = time_in_the_past;
+  add_page_args.transition = ui::PAGE_TRANSITION_LINK;
+  add_page_args.visit_source = history::SOURCE_BROWSED;
+  add_page_args.hidden = is_404;
+  add_page_args.response_code_category =
+      is_404 ? VisitResponseCodeCategory::k404
+             : VisitResponseCodeCategory::kNot404;
+  add_page_args.context_annotations =
+      std::make_optional<VisitContextAnnotations::OnVisitFields>(
+          {.response_code = is_404 ? 404 : 200});
+  history->AddPage(add_page_args);
 }
 
 void AddPageInThePast(HistoryService* history,
                       const std::string& url_spec,
-                      int days_back) {
+                      int days_back,
+                      bool is_404 = false) {
   base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
-  AddPageAtTime(history, url_spec, time_in_the_past);
+  AddPageAtTime(history, url_spec, time_in_the_past, is_404);
 }
 
 // Helper to add a synced page at a specified day in the past.
@@ -906,6 +917,7 @@ GetDomainDiversityHelper(HistoryService* history,
                          base::Time begin_time,
                          base::Time end_time,
                          DomainMetricBitmaskType metric_type_bitmask,
+                         VisitQuery404sPolicy policy_for_404_visits,
                          base::CancelableTaskTracker* tracker) {
   base::RunLoop run_loop;
   base::TimeDelta dst_rounding_offset = base::Hours(4);
@@ -920,7 +932,7 @@ GetDomainDiversityHelper(HistoryService* history,
 
   std::pair<DomainDiversityResults, DomainDiversityResults> results;
   history->GetDomainDiversity(
-      end_time, number_of_days, metric_type_bitmask,
+      end_time, number_of_days, metric_type_bitmask, policy_for_404_visits,
       base::BindLambdaForTesting([&](std::pair<DomainDiversityResults,
                                                DomainDiversityResults> result) {
         results = result;
@@ -995,7 +1007,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
       history, query_time, query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   EXPECT_EQ(0u, local_res.size());
   EXPECT_EQ(0u, all_res.size());
 
@@ -1004,7 +1016,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
       history, GetTimeInThePast(query_time, 4, 0), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(4u, local_res.size());
   ASSERT_EQ(4u, all_res.size());
@@ -1052,7 +1064,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLongBasetimeRange) {
       history, GetTimeInThePast(query_time, 10, 12), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   // Only up to seven days will be considered.
   ASSERT_EQ(7u, local_res.size());
   ASSERT_EQ(7u, all_res.size());
@@ -1091,7 +1103,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   auto [local_res, all_res] = GetDomainDiversityHelper(
       history, GetTimeInThePast(query_time, 7, 12), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   ASSERT_EQ(7u, local_res.size());
   ASSERT_EQ(7u, all_res.size());
 
@@ -1114,7 +1126,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   std::tie(local_res, all_res) = GetDomainDiversityHelper(
       history, GetTimeInThePast(query_time, 6, 12), query_time,
       history::kEnableLast28DayMetric | history::kEnableLast7DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(6u, local_res.size());
   ASSERT_EQ(6u, all_res.size());
@@ -1134,18 +1146,101 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   TestDomainMetricSet(all_res[5], -1, 1, 2);
 }
 
+TEST_F(HistoryServiceTest, GetDomainDiversity404sTest) {
+  // Allow 404 visits to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  base::Time query_time = base::Time::Now();
+
+  // Add a few visits, including a 404.
+  AddPageAtTime(history, "http://www.google.com/",
+                GetTimeInThePast(query_time, /*days_back=*/28,
+                                 /*hours_since_midnight=*/6));
+  AddPageAtTime(history, "http://www.youtube.com/",
+                GetTimeInThePast(query_time, 7, 6));
+  AddPageAtTime(history, "http://www.chromium.com/",
+                GetTimeInThePast(query_time, 1, 4), /*is_404=*/true);
+  // Add an old non-404 visit for the same URL as the 404 visit, to unhide the
+  // URL without adding a non-404 visit to our metric window.
+  AddPageAtTime(history, "http://www.chromium.com/",
+                GetTimeInThePast(query_time, 60, 1));
+
+  // Query including 404 visits.
+  auto [local_res, all_res] = GetDomainDiversityHelper(
+      history, GetTimeInThePast(query_time, 7, 12), query_time,
+      history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
+          history::kEnableLast28DayMetric,
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
+  ASSERT_EQ(7u, local_res.size());
+  ASSERT_EQ(7u, all_res.size());
+
+  // The 404 visit should be counted.
+  TestDomainMetricSet(local_res[0], 1, 2, 3);
+  TestDomainMetricSet(local_res[1], 0, 1, 2);
+  TestDomainMetricSet(local_res[2], 0, 1, 2);
+  TestDomainMetricSet(local_res[3], 0, 1, 2);
+  TestDomainMetricSet(local_res[4], 0, 1, 2);
+  TestDomainMetricSet(local_res[5], 0, 1, 2);
+  TestDomainMetricSet(local_res[6], 1, 1, 2);
+
+  TestDomainMetricSet(all_res[0], 1, 2, 3);
+  TestDomainMetricSet(all_res[1], 0, 1, 2);
+  TestDomainMetricSet(all_res[2], 0, 1, 2);
+  TestDomainMetricSet(all_res[3], 0, 1, 2);
+  TestDomainMetricSet(all_res[4], 0, 1, 2);
+  TestDomainMetricSet(all_res[5], 0, 1, 2);
+  TestDomainMetricSet(all_res[6], 1, 1, 2);
+
+  // Query excluding 404 visits.
+  std::tie(local_res, all_res) = GetDomainDiversityHelper(
+      history, GetTimeInThePast(query_time, 7, 12), query_time,
+      history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
+          history::kEnableLast28DayMetric,
+      VisitQuery404sPolicy::kExclude404s, &tracker_);
+  ASSERT_EQ(7u, local_res.size());
+  ASSERT_EQ(7u, all_res.size());
+
+  // The 404 visit should not be counted, but the others should be.
+  TestDomainMetricSet(local_res[0], 0, 1, 2);
+  TestDomainMetricSet(local_res[1], 0, 1, 2);
+  TestDomainMetricSet(local_res[2], 0, 1, 2);
+  TestDomainMetricSet(local_res[3], 0, 1, 2);
+  TestDomainMetricSet(local_res[4], 0, 1, 2);
+  TestDomainMetricSet(local_res[5], 0, 1, 2);
+  TestDomainMetricSet(local_res[6], 1, 1, 2);
+
+  TestDomainMetricSet(all_res[0], 0, 1, 2);
+  TestDomainMetricSet(all_res[1], 0, 1, 2);
+  TestDomainMetricSet(all_res[2], 0, 1, 2);
+  TestDomainMetricSet(all_res[3], 0, 1, 2);
+  TestDomainMetricSet(all_res[4], 0, 1, 2);
+  TestDomainMetricSet(all_res[5], 0, 1, 2);
+  TestDomainMetricSet(all_res[6], 1, 1, 2);
+}
+
 // Gets unique local and synced domains visited and the last visited domain
 // within a time range.
 TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
+  // Allow 404 visits to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
   base::Time base_time = base::Time::Now();
   HistoryService* history = history_service_.get();
   ASSERT_TRUE(history);
 
   // Add local visits to history database at specific days back.
-  AddPageInThePast(history, "http://www.test1.com/", 1);
+  AddPageInThePast(history, "http://www.test1.com/", 1, /*is_404=*/true);
   AddPageInThePast(history, "http://www.test2.com/test", 2);
   AddPageInThePast(history, "http://www.test2.com/", 3);
   AddPageInThePast(history, "http://www.test3.com/", 4);
+  // Add an old non-404 visit for the same URL as the 404 visit, to unhide the
+  // URL without adding a non-404 visit to our metric window.
+  AddPageInThePast(history, "http://www.test1.com/", 88);
 
   // Add synced visits to history database at specific days back.
   AddSyncedPageInThePast(history, "http://www.test3.com/", 3);
@@ -1157,8 +1252,24 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(10),
-        /*end_time=*/base_time - base::Days(5), future.GetCallback(),
-        &tracker_);
+        /*end_time=*/base_time - base::Days(5),
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(0u, result.locally_visited_domains.size());
+    EXPECT_EQ(0u, result.all_visited_domains.size());
+  }
+
+  {
+    // DomainsVisitedResult should be empty when no domains in range had non-404
+    // visits and `policy_for_404_visits` is set to exclude 404s.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(1),
+        /*end_time=*/base_time, VisitQuery404sPolicy::kExclude404s,
+        future.GetCallback(), &tracker_);
 
     DomainsVisitedResult result = future.Take();
 
@@ -1168,20 +1279,39 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
   {
     // DomainsVisitedResult should include unique domains in range in
-    // reverse-chronological order.
+    // reverse-chronological order. Should include domains that only had 404
+    // visits when `policy_for_404_visits` is set to include 404s.
     base::test::TestFuture<DomainsVisitedResult> future;
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(2), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult({"test1.com", "test2.com"});
-    std::vector<std::string> expectedSyncedResult({"test1.com", "test2.com"});
+    std::vector<std::string> expected_local_result({"test1.com", "test2.com"});
+    std::vector<std::string> expected_synced_result({"test1.com", "test2.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
+  }
+
+  {
+    // DomainsVisitedResult should exclude domains that only had 404 visits in
+    // the specified range when `policy_for_404_visits` is set to exclude 404s.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(2), /*end_time=*/base_time,
+        VisitQuery404sPolicy::kExclude404s, future.GetCallback(), &tracker_);
+
+    std::vector<std::string> expected_local_result({"test2.com"});
+    std::vector<std::string> expected_synced_result({"test2.com"});
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 
   {
@@ -1190,17 +1320,17 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(4), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult(
+    std::vector<std::string> expected_local_result(
         {"test1.com", "test2.com", "test3.com"});
-    std::vector<std::string> expectedSyncedResult(
+    std::vector<std::string> expected_synced_result(
         {"test1.com", "test2.com", "test3.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 
   {
@@ -1209,17 +1339,17 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(5), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult(
+    std::vector<std::string> expected_local_result(
         {"test1.com", "test2.com", "test3.com"});
-    std::vector<std::string> expectedSyncedResult(
+    std::vector<std::string> expected_synced_result(
         {"test1.com", "test2.com", "test3.com", "test4.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 }
 
@@ -1297,9 +1427,10 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
     run_loop.Run();
   }
 
-  auto [local_res, all_res] = GetDomainDiversityHelper(
-      history, GetTimeInThePast(query_time, 1, 0), query_time,
-      history::kEnableLast1DayMetric, &tracker_);
+  auto [local_res, all_res] =
+      GetDomainDiversityHelper(history, GetTimeInThePast(query_time, 1, 0),
+                               query_time, history::kEnableLast1DayMetric,
+                               VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(1u, local_res.size());
   ASSERT_EQ(1u, all_res.size());

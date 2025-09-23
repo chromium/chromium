@@ -2053,10 +2053,10 @@ HistoryCountResult HistoryBackend::GetHistoryCount(
 }
 
 std::pair<DomainDiversityResults, DomainDiversityResults>
-HistoryBackend::GetDomainDiversity(
-    base::Time report_time,
-    int number_of_days_to_report,
-    DomainMetricBitmaskType metric_type_bitmask) {
+HistoryBackend::GetDomainDiversity(base::Time report_time,
+                                   int number_of_days_to_report,
+                                   DomainMetricBitmaskType metric_type_bitmask,
+                                   VisitQuery404sPolicy policy_for_404_visits) {
   DCHECK_GE(number_of_days_to_report, 0);
   DomainDiversityResults local_result;
   DomainDiversityResults all_result;
@@ -2077,8 +2077,8 @@ HistoryBackend::GetDomainDiversity(
 
     if (metric_type_bitmask & kEnableLast1DayMetric) {
       base::Time last_midnight = MidnightNDaysLater(current_midnight, -1);
-      auto [local_domains, all_domains] =
-          db_->CountUniqueDomainsVisited(last_midnight, current_midnight);
+      auto [local_domains, all_domains] = db_->CountUniqueDomainsVisited(
+          last_midnight, current_midnight, policy_for_404_visits);
       local_metric_set.one_day_metric =
           DomainMetricCountType(local_domains, last_midnight);
       all_metric_set.one_day_metric =
@@ -2087,8 +2087,8 @@ HistoryBackend::GetDomainDiversity(
 
     if (metric_type_bitmask & kEnableLast7DayMetric) {
       base::Time seven_midnights_ago = MidnightNDaysLater(current_midnight, -7);
-      auto [local_domains, all_domains] =
-          db_->CountUniqueDomainsVisited(seven_midnights_ago, current_midnight);
+      auto [local_domains, all_domains] = db_->CountUniqueDomainsVisited(
+          seven_midnights_ago, current_midnight, policy_for_404_visits);
       local_metric_set.seven_day_metric =
           DomainMetricCountType(local_domains, seven_midnights_ago);
       all_metric_set.seven_day_metric =
@@ -2099,7 +2099,7 @@ HistoryBackend::GetDomainDiversity(
       base::Time twenty_eight_midnights_ago =
           MidnightNDaysLater(current_midnight, -28);
       auto [local_domains, all_domains] = db_->CountUniqueDomainsVisited(
-          twenty_eight_midnights_ago, current_midnight);
+          twenty_eight_midnights_ago, current_midnight, policy_for_404_visits);
       local_metric_set.twenty_eight_day_metric =
           DomainMetricCountType(local_domains, twenty_eight_midnights_ago);
       all_metric_set.twenty_eight_day_metric =
@@ -2116,12 +2116,14 @@ HistoryBackend::GetDomainDiversity(
 
 DomainsVisitedResult HistoryBackend::GetUniqueDomainsVisited(
     base::Time begin_time,
-    base::Time end_time) {
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   if (!db_) {
     return {};
   }
 
-  return db_->GetUniqueDomainsVisited(begin_time, end_time);
+  return db_->GetUniqueDomainsVisited(begin_time, end_time,
+                                      policy_for_404_visits);
 }
 
 GetAllAppIdsResult HistoryBackend::GetAllAppIds() {

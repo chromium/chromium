@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,7 +69,7 @@ void QuickDeleteBridge::GetLastVisitedDomainAndUniqueDomainCount(
   base::Time end_time = CalculateEndDeleteTime(period);
 
   history_service_->GetUniqueDomainsVisited(
-      begin_time, end_time,
+      begin_time, end_time, history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(&QuickDeleteBridge::
                          OnGetLastVisitedDomainAndUniqueDomainCountComplete,
                      weak_ptr_factory_.GetWeakPtr(),

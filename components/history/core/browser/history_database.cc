@@ -302,19 +302,39 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 
 DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
     base::Time begin_time,
-    base::Time end_time) {
-  sql::Statement url_sql(db_.GetUniqueStatement(
-      "SELECT urls.url, visits.originator_cache_guid, "
-      "IFNULL(visit_source.source, ?) "  // SOURCE_BROWSED
-      "FROM urls "
-      "INNER JOIN visits ON urls.id = visits.url "
-      "LEFT JOIN visit_source ON visits.id = visit_source.id "
-      "WHERE (transition & ?) != 0 "            // CHAIN_END
-      "AND (transition & ?) NOT IN (?, ?, ?) "  // No *_SUBFRAME or
-                                                // KEYWORD_GENERATED
-      "AND hidden = 0 AND visit_time >= ? AND visit_time < ? "
-      "ORDER BY visit_time DESC, visits.id DESC"));
-
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
+  sql::Statement url_sql;
+  switch (policy_for_404_visits) {
+    case VisitQuery404sPolicy::kInclude404s:
+      url_sql.Assign(db_.GetUniqueStatement(
+          "SELECT urls.url, visits.originator_cache_guid, "
+          "IFNULL(visit_source.source, ?) "  // SOURCE_BROWSED
+          "FROM urls "
+          "INNER JOIN visits ON urls.id=visits.url "
+          "LEFT JOIN visit_source ON visits.id=visit_source.id "
+          "WHERE (transition & ?)!=0 "              // CHAIN_END
+          "AND (transition & ?) NOT IN (?, ?, ?) "  // No *_SUBFRAME or
+                                                    // KEYWORD_GENERATED
+          "AND hidden=0 AND visit_time>=? AND visit_time<? "
+          "ORDER BY visit_time DESC, visits.id DESC"));
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      url_sql.Assign(db_.GetUniqueStatement(
+          "SELECT urls.url, visits.originator_cache_guid, "
+          "IFNULL(visit_source.source, ?) "  // SOURCE_BROWSED
+          "FROM urls "
+          "INNER JOIN visits ON urls.id=visits.url "
+          "LEFT JOIN visit_source ON visits.id=visit_source.id "
+          "LEFT JOIN context_annotations ca ON visits.id = ca.visit_id "
+          "WHERE (transition & ?)!=0 "              // CHAIN_END
+          "AND (transition & ?) NOT IN (?, ?, ?) "  // No *_SUBFRAME or
+                                                    // KEYWORD_GENERATED
+          "AND hidden=0 AND visit_time>=? AND visit_time<? "
+          "AND (ca.response_code IS NULL OR ca.response_code!=404) "
+          "ORDER BY visit_time DESC, visits.id DESC"));
+      break;
+  }
   url_sql.BindInt64(0, VisitSource::SOURCE_BROWSED);
   url_sql.BindInt64(1, ui::PAGE_TRANSITION_CHAIN_END);
   url_sql.BindInt64(2, ui::PAGE_TRANSITION_CORE_MASK);
@@ -360,8 +380,10 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
 
 std::pair<int, int> HistoryDatabase::CountUniqueDomainsVisited(
     base::Time begin_time,
-    base::Time end_time) {
-  DomainsVisitedResult result = GetUniqueDomainsVisited(begin_time, end_time);
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
+  DomainsVisitedResult result =
+      GetUniqueDomainsVisited(begin_time, end_time, policy_for_404_visits);
   return {result.locally_visited_domains.size(),
           result.all_visited_domains.size()};
 }

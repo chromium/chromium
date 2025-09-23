@@ -1148,6 +1148,7 @@ void HistoryService::GetDomainDiversity(
     base::Time report_time,
     int number_of_days_to_report,
     DomainMetricBitmaskType metric_type_bitmask,
+    VisitQuery404sPolicy policy_for_404_visits,
     DomainDiversityCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
@@ -1156,14 +1157,15 @@ void HistoryService::GetDomainDiversity(
   tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetDomainDiversity, history_backend_,
-                     report_time, number_of_days_to_report,
-                     metric_type_bitmask),
+                     report_time, number_of_days_to_report, metric_type_bitmask,
+                     policy_for_404_visits),
       std::move(callback));
 }
 
 void HistoryService::GetUniqueDomainsVisited(
     const base::Time begin_time,
     const base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits,
     GetUniqueDomainsVisitedCallback callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
@@ -1172,7 +1174,7 @@ void HistoryService::GetUniqueDomainsVisited(
   tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetUniqueDomainsVisited, history_backend_,
-                     begin_time, end_time),
+                     begin_time, end_time, policy_for_404_visits),
       std::move(callback));
 }
 

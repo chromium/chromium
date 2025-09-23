@@ -368,20 +368,24 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // {1-day, 7-day, 28-day} metrics whose spanning periods all end on that
   // midnight. This subset of metrics to compute is specified by a bitmask
   // `metric_type_bitmask`, which takes a bitwise combination of
-  // kEnableLast1DayMetric, kEnableLast7DayMetric and kEnableLast28DayMetric.
+  // `kEnableLast1DayMetric`, `kEnableLast7DayMetric` and
+  // `kEnableLast28DayMetric`. Callers specify whether they want calculations to
+  // consider visits that had an HTTP response code of 404 by setting
+  // `policy_for_404_visits`.
   //
-  // All computed metrics are stored in DomainDiversityResults, which represents
-  // a collection of DomainMetricSet's. Each DomainMetricSet contains up to 3
-  // metrics ending at one unique midnight in the time range of
+  // All computed metrics are stored in `DomainDiversityResults`, which
+  // represents a collection of `DomainMetricSet`s. Each `DomainMetricSet`
+  // contains up to 3 metrics ending at one unique midnight in the time range of
   // `number_of_days_to_report` days before `report_time`. The collection of
-  // DomainMetricSet is sorted reverse chronologically by the ending midnight.
+  // `DomainMetricSet`s is sorted reverse chronologically by the ending
+  // midnight.
   //
   // For example, when `report_time` = 2019/11/01 00:01am, `number_of_days` = 3,
-  // `metric_type_bitmask` = kEnableLast28DayMetric | kEnableLast1DayMetric,
-  // DomainDiversityResults will hold 3 DomainMetricSets, each containing 2
+  // `metric_type_bitmask` = `kEnableLast28DayMetric | kEnableLast1DayMetric`,
+  // DomainDiversityResults will hold 3 `DomainMetricSet`s, each containing 2
   // metrics measuring domain visit counts spanning the following date ranges
   // (all dates are inclusive):
-  // {{10/30, 10/3~10/30}, {10/29, 10/2~10/29}, {10/28, 10/1~10/28}}
+  // {{10/30, 10/3–10/30}, {10/29, 10/2–10/29}, {10/28, 10/1–10/28}}
   //
   // The return value is a pair of results, where the first member counts only
   // local visits, and the second counts both local and foreign (synced) visits.
@@ -390,13 +394,17 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::pair<DomainDiversityResults, DomainDiversityResults> GetDomainDiversity(
       base::Time report_time,
       int number_of_days_to_report,
-      DomainMetricBitmaskType metric_type_bitmask);
+      DomainMetricBitmaskType metric_type_bitmask,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Gets unique domains (eTLD+1) visited within the time range
   // [`begin_time`, `end_time`) for local and synced visits sorted in
-  // reverse-chronological order.
-  DomainsVisitedResult GetUniqueDomainsVisited(base::Time begin_time,
-                                               base::Time end_time);
+  // reverse-chronological order. Visits with an HTTP response code of 404 will
+  // be factored in or ignored according to `policy_for_404_visits`.
+  DomainsVisitedResult GetUniqueDomainsVisited(
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Gets all the app IDs used in the database entries.
   GetAllAppIdsResult GetAllAppIds();

@@ -419,22 +419,28 @@ class HistoryService : public KeyedService,
   // immediately preceding `report_time` (inclusive), report (a subset of) the
   // last 1-day, 7-day and 28-day domain visit counts ending at that midnight.
   // The subset of metric types to report is specified by `metric_type_bitmask`.
+  // Visits with an HTTP response code of 404 will be counted or ignored
+  // according to `policy_for_404_visits`.
   void GetDomainDiversity(base::Time report_time,
                           int number_of_days_to_report,
                           DomainMetricBitmaskType metric_type_bitmask,
+                          VisitQuery404sPolicy policy_for_404_visits,
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
 
-  // Returns, via a callback, unique domains (eTLD+1) visited within the time
-  // range [`begin_time`, `end_time`) for local and synced visits sorted in
-  // reverse-chronological order.
   using GetUniqueDomainsVisitedCallback =
       base::OnceCallback<void(DomainsVisitedResult)>;
 
-  virtual void GetUniqueDomainsVisited(const base::Time begin_time,
-                                       const base::Time end_time,
-                                       GetUniqueDomainsVisitedCallback callback,
-                                       base::CancelableTaskTracker* tracker);
+  // Returns, via a callback, unique domains (eTLD+1) visited within the time
+  // range [`begin_time`, `end_time`) for local and synced visits sorted in
+  // reverse-chronological order. Visits with an HTTP response code of 404 will
+  // be counted or ignored according to `policy_for_404_visits`.
+  virtual void GetUniqueDomainsVisited(
+      const base::Time begin_time,
+      const base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits,
+      GetUniqueDomainsVisitedCallback callback,
+      base::CancelableTaskTracker* tracker);
 
   // Gets all the app IDs used in the database entries. The callback will be
   // invoked with a struct containing a vector of the IDs.

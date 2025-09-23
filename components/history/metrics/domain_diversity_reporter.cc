@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
@@ -107,11 +108,14 @@ void DomainDiversityReporter::ComputeDomainMetrics() {
     }
 
     if (number_of_days_to_report >= 1) {
+      // We exclude 404s here for metric continuity, as the domain diversity
+      // metrics were introduced before 404s were eligible for History.
       history_service_->GetDomainDiversity(
           /*report_time=*/time_current_report_triggered,
           /*number_of_days_to_report=*/number_of_days_to_report,
           /*metric_type_bitmask=*/history::kEnableLast1DayMetric |
               history::kEnableLast7DayMetric | history::kEnableLast28DayMetric,
+          history::VisitQuery404sPolicy::kExclude404s,
           base::BindOnce(&DomainDiversityReporter::ReportDomainMetrics,
                          weak_ptr_factory_.GetWeakPtr(),
                          time_current_report_triggered),

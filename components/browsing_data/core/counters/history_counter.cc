@@ -80,6 +80,7 @@ void HistoryCounter::Count() {
 
   history_service_->GetUniqueDomainsVisited(
       GetPeriodStart(), GetPeriodEnd(),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(&HistoryCounter::OnGetUniqueDomains,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/android/quick_delete/quick_delete_bridge.h"
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time_override.h"
@@ -10,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +28,7 @@ class MockHistoryService : public history::HistoryService {
               GetUniqueDomainsVisited,
               (const base::Time begin_time,
                const base::Time end_time,
+               history::VisitQuery404sPolicy policy_for_404_visits,
                GetUniqueDomainsVisitedCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
@@ -88,9 +91,10 @@ TEST_F(QuickDeleteBridgeTest, GetLastVisitedDomainAndUniqueDomainCount) {
   const base::Time expected_begin_time = OverrideTimeNow() - base::Minutes(15);
   const base::Time expected_end_time = base::Time::Max();
 
-  EXPECT_CALL(
-      *history_service(),
-      GetUniqueDomainsVisited(expected_begin_time, expected_end_time, _, _))
+  EXPECT_CALL(*history_service(),
+              GetUniqueDomainsVisited(
+                  expected_begin_time, expected_end_time,
+                  history::VisitQuery404sPolicy::kInclude404s, _, _))
       .Times(1);
 
   bridge()->GetLastVisitedDomainAndUniqueDomainCount(
