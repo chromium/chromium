@@ -17,7 +17,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Prepare fuzzed parameters.
   std::optional<base::Value::Dict> legal_message =
-      base::JSONReader::ReadDict(provider.ConsumeRandomLengthString());
+      base::JSONReader::ReadDict(provider.ConsumeRandomLengthString(),
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!legal_message) {
     return 0;
   }
