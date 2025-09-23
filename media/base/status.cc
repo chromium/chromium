@@ -21,10 +21,10 @@ StatusData::StatusData(const StatusData& copy) {
 
 StatusData::StatusData(StatusGroupType group,
                        StatusCodeType code,
-                       std::string message)
+                       std::string_view message)
     : group(group),
       code(code),
-      message(std::move(message)),
+      message(message),
       data(base::Value(base::Value::Type::DICT)) {}
 
 std::unique_ptr<StatusData> StatusData::copy() const {

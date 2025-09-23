@@ -71,7 +71,9 @@ namespace internal {
 struct MEDIA_EXPORT StatusData {
   StatusData();
   StatusData(const StatusData&);
-  StatusData(StatusGroupType group, StatusCodeType code, std::string message);
+  StatusData(StatusGroupType group,
+             StatusCodeType code,
+             std::string_view message);
   ~StatusData();
   StatusData& operator=(const StatusData&);
 
@@ -116,7 +118,8 @@ struct StatusTraitsHelper {
     }
   }
 
-  static constexpr std::string GetMessage(std::string message, T::Codes code) {
+  static constexpr std::string_view GetMessage(std::string_view message,
+                                               T::Codes code) {
     if (!message.empty()) {
       return message;
     } else if constexpr (requires { &T::ReadableCodeName; }) {

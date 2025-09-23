@@ -95,7 +95,7 @@ struct TraitsWithDataPacking {
 struct TraitsWithDefaultNamedMessage {
   enum class Codes { kFail1, kFail2, kFail3 };
   static constexpr StatusGroupType Group() { return "GroupWithDefaultNames"; }
-  static constexpr std::string ReadableCodeName(Codes code) {
+  static constexpr std::string_view ReadableCodeName(Codes code) {
     switch (code) {
       case Codes::kFail1:
         return "Failure1";
