@@ -61,6 +61,8 @@ class ModelBrokerAndroid final {
       proto::ModelExecutionFeature feature,
       base::WeakPtr<on_device_model::mojom::OnDeviceModel> model);
 
+  const raw_ref<PrefService> local_state_;
+
   raw_ref<OptimizationGuideModelProvider> model_provider_;
 
   // Tracks which assets have been used recently.

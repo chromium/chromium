@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -30,6 +31,15 @@ namespace {
 using BaseModelSpec = on_device_model::ModelDownloaderAndroid::BaseModelSpec;
 using DownloadFailureReason =
     on_device_model::ModelDownloaderAndroid::DownloadFailureReason;
+
+bool IsModelAllowed(PrefService* local_state) {
+  return features::IsOnDeviceExecutionEnabled() &&
+         optimization_guide::
+                 GetGenAILocalFoundationalModelEnterprisePolicySettings(
+                     local_state) ==
+             model_execution::prefs::
+                 GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed;
+}
 
 class SolutionImpl : public ModelBrokerImpl::Solution {
  public:
@@ -125,7 +135,7 @@ class ModelBrokerAndroid::SolutionFactory final
       ModelBasedCapabilityKey feature) override;
 
   // Asks AICore to download the base model.
-  void StartDownload(ModelBasedCapabilityKey feature);
+  void MaybeStartDownload(ModelBasedCapabilityKey feature);
 
   // Called when an AICore model was found (or not supported).
   void OnAICoreModelUpdated(
@@ -169,7 +179,7 @@ ModelBrokerAndroid::SolutionFactory::SolutionFactory(ModelBrokerAndroid& parent)
   for (auto feature : kAllModelBasedCapabilityKeys) {
     if (parent_->usage_tracker_.WasOnDeviceEligibleFeatureRecentlyUsed(
             feature)) {
-      StartDownload(feature);
+      MaybeStartDownload(feature);
     }
   }
 }
@@ -179,11 +189,16 @@ ModelBrokerAndroid::SolutionFactory::~SolutionFactory() {
 
 void ModelBrokerAndroid::SolutionFactory::OnDeviceEligibleFeatureFirstUsed(
     ModelBasedCapabilityKey feature) {
-  StartDownload(feature);
+  MaybeStartDownload(feature);
 }
 
-void ModelBrokerAndroid::SolutionFactory::StartDownload(
+void ModelBrokerAndroid::SolutionFactory::MaybeStartDownload(
     ModelBasedCapabilityKey feature) {
+  if (!IsModelAllowed(&(*parent_->local_state_))) {
+    MaybeUpdateModelAdaptation(
+        feature, base::unexpected(AdaptationUnavailability::kNotSupported));
+    return;
+  }
   // If there is an ongoing download, do nothing.
   if (model_downloaders_.contains(feature)) {
     return;
@@ -270,7 +285,8 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
 ModelBrokerAndroid::ModelBrokerAndroid(
     PrefService& local_state,
     OptimizationGuideModelProvider& model_provider)
-    : model_provider_(model_provider),
+    : local_state_(local_state),
+      model_provider_(model_provider),
       usage_tracker_(&local_state),
       impl_(usage_tracker_,
             base::BindRepeating(&ModelBrokerAndroid::EnsureSolutionFactory,

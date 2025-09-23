@@ -57,6 +57,24 @@ class ModelBrokerAndroidFeatureList {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class ModelBrokerAndroidFeatureDisabledList {
+ public:
+  ModelBrokerAndroidFeatureDisabledList() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::internal::kOnDeviceModelTestFeature, {}},
+        },
+        {
+            {features::kOptimizationGuideModelExecution},
+            {features::kOptimizationGuideOnDeviceModel},
+        });
+  }
+  ~ModelBrokerAndroidFeatureDisabledList() = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class ModelBrokerAndroidTest : public testing::Test {
  public:
   ModelBrokerAndroidTest() { java_helper_.SetMockAiCoreFactory(); }
@@ -209,6 +227,29 @@ TEST_F(ModelBrokerAndroidTest, DownloadFailure) {
   EXPECT_EQ(future.Get(), nullptr);
 }
 
+// Verify that model is disabled when the enterprise policy is set to disallow.
+TEST_F(ModelBrokerAndroidTest, EnterprisePolicyDisallowsModel) {
+  local_state_.local_state().SetInteger(
+      model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      static_cast<int>(model_execution::prefs::
+                           GenAILocalFoundationalModelEnterprisePolicySettings::
+                               kDisallowed));
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(),
+                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
+                       future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kNotSupported;
+  });
+  EXPECT_EQ(future.Get(), nullptr);
+}
+
 // Verify that model download is triggered for a feature that has recently
 // been used.
 TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
@@ -223,6 +264,31 @@ TEST_F(ModelBrokerAndroidTest, DownloadSuccessForAlreadyUsedFeature) {
                            CreateSessionArgs(nullptr, FailOnRemoteFallback()));
   auto session = DownloadModelAndCreateSession(client);
   ASSERT_TRUE(session);
+}
+
+class ModelBrokerAndroidFeatureDisabledTest : public ModelBrokerAndroidTest {
+ public:
+  ModelBrokerAndroidFeatureDisabledTest() = default;
+  ~ModelBrokerAndroidFeatureDisabledTest() override = default;
+
+ private:
+  ModelBrokerAndroidFeatureDisabledList feature_list_;
+};
+
+TEST_F(ModelBrokerAndroidFeatureDisabledTest, FeatureDisabled) {
+  InstallTestFeatureConfig();
+  ModelBrokerClient client(BindAndPassRemote(),
+                           CreateSessionArgs(nullptr, FailOnRemoteFallback()));
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+  client.CreateSession(mojom::ModelBasedCapabilityKey::kTest, std::nullopt,
+                       future.GetCallback());
+  base::test::RunUntil([&]() {
+    return client.GetSubscriber(mojom::ModelBasedCapabilityKey::kTest)
+               .unavailable_reason() ==
+           mojom::ModelUnavailableReason::kNotSupported;
+  });
+  EXPECT_EQ(future.Get(), nullptr);
 }
 
 }  // namespace
