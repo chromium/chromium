@@ -339,7 +339,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                          uint32_t main_thread_repaint_reasons,
                          bool raster_inducing = false);
 
-  bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
+  bool HasQueuedEventsReadyForDispatch(
+      bool frame_aligned,
+      base::TimeTicks sample_time = base::TimeTicks::Max()) const;
 
   // If `scroll_predictor_` can generate a new prediction, this will generate
   // a synthetic GestureScrollUpdate using previous input events. This will then

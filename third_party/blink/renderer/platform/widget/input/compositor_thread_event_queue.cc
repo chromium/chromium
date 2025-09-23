@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -42,49 +43,14 @@ bool IsContinuousGestureEvent(WebInputEvent::Type type) {
   }
 }
 
-}  // namespace
-
-CompositorThreadEventQueue::CompositorThreadEventQueue() {}
-
-CompositorThreadEventQueue::~CompositorThreadEventQueue() {
-  while (!queue_.empty()) {
-    auto event_with_callback = Pop();
-    event_with_callback->RunCallbacks(
-        InputHandlerProxy::DROP_EVENT, event_with_callback->latency_info(),
-        /*did_overscroll_params=*/nullptr,
-        /*attribution=*/WebInputEventAttribution());
-  }
-}
-
-void CompositorThreadEventQueue::Queue(
+// Coalesces a series of GestureScrollUpdate and GesturePinchUpdate events
+// into a single scroll and a single pinch.
+std::pair<std::unique_ptr<EventWithCallback>,
+          std::unique_ptr<EventWithCallback>>
+CoalesceScrollAndPinchEvents(
+    std::unique_ptr<EventWithCallback> second_last_event,
+    std::unique_ptr<EventWithCallback> last_event,
     std::unique_ptr<EventWithCallback> new_event) {
-  if (queue_.empty() ||
-      !IsContinuousGestureEvent(new_event->event().GetType()) ||
-      !(queue_.back()->CanCoalesceWith(*new_event) ||
-        WebGestureEvent::IsCompatibleScrollorPinch(
-            ToWebGestureEvent(new_event->event()),
-            ToWebGestureEvent(queue_.back()->event())))) {
-    if (new_event->first_original_event()) {
-      // Trace could be nested as there might be multiple events in queue.
-      // e.g. |ScrollUpdate|, |ScrollEnd|, and another scroll sequence.
-      TRACE_EVENT_BEGIN(
-          "input", "CompositorThreadEventQueue::Queue",
-          perfetto::Track::FromPointer(new_event->first_original_event()));
-    }
-    queue_.push_back(std::move(new_event));
-    return;
-  }
-
-  if (queue_.back()->CanCoalesceWith(*new_event)) {
-    queue_.back()->CoalesceWith(new_event.get());
-    return;
-  }
-
-  // We have only scrolls or pinches at this point (all other events are
-  // filtered out by the if statements above). We want to coalesce this event
-  // into the previous event(s) and represent it as a scroll and then a pinch.
-  DCHECK(IsContinuousGestureEvent(new_event->event().GetType()));
-
   // If there is only one event in the queue we will still emit two events
   // (scroll and pinch) but the |new_event| will still be coalesced into the
   // |last_event|, but there will be only one LatencyInfo that should be traced
@@ -97,12 +63,6 @@ void CompositorThreadEventQueue::Queue(
   int64_t oldest_pinch_trace_id = -1;
   ui::LatencyInfo oldest_latency;
 
-  // Extract the last event in queue (again either a scroll or a pinch).
-  std::unique_ptr<EventWithCallback> last_event = std::move(queue_.back());
-  queue_.pop_back();
-
-  DCHECK(IsContinuousGestureEvent(last_event->event().GetType()));
-
   SetScrollOrPinchTraceId(last_event.get(), &oldest_scroll_trace_id,
                           &oldest_pinch_trace_id);
   oldest_latency = last_event->latency_info();
@@ -112,14 +72,7 @@ void CompositorThreadEventQueue::Queue(
   combined_original_events.splice(combined_original_events.end(),
                                   new_event->original_events());
 
-  // Extract the second last event in queue IF it's a scroll or a pinch for the
-  // same target.
-  std::unique_ptr<EventWithCallback> second_last_event;
-  if (!queue_.empty() && WebGestureEvent::IsCompatibleScrollorPinch(
-                             ToWebGestureEvent(new_event->event()),
-                             ToWebGestureEvent(queue_.back()->event()))) {
-    second_last_event = std::move(queue_.back());
-    queue_.pop_back();
+  if (second_last_event) {
     SetScrollOrPinchTraceId(second_last_event.get(), &oldest_scroll_trace_id,
                             &oldest_pinch_trace_id);
     oldest_latency = second_last_event->latency_info();
@@ -178,8 +131,33 @@ void CompositorThreadEventQueue::Queue(
       std::move(pinch_original_events));
   pinch_event->set_coalesced_scroll_and_pinch();
 
-  queue_.push_back(std::move(scroll_event));
-  queue_.push_back(std::move(pinch_event));
+  return {std::move(scroll_event), std::move(pinch_event)};
+}
+
+}  // namespace
+
+CompositorThreadEventQueue::CompositorThreadEventQueue() = default;
+
+CompositorThreadEventQueue::~CompositorThreadEventQueue() {
+  while (!queue_.empty()) {
+    auto event_with_callback = Pop();
+    event_with_callback->RunCallbacks(
+        InputHandlerProxy::DROP_EVENT, event_with_callback->latency_info(),
+        /*did_overscroll_params=*/nullptr,
+        /*attribution=*/WebInputEventAttribution());
+  }
+}
+
+void CompositorThreadEventQueue::Queue(
+    std::unique_ptr<EventWithCallback> new_event) {
+  if (new_event->first_original_event()) {
+    // Trace could be nested as there might be multiple events in queue.
+    // e.g. |ScrollUpdate|, |ScrollEnd|, and another scroll sequence.
+    TRACE_EVENT_BEGIN(
+        "input", "CompositorThreadEventQueue::Queue",
+        perfetto::Track::FromPointer(new_event->first_original_event()));
+  }
+  queue_.push_back(std::move(new_event));
 }
 
 std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
@@ -190,15 +168,110 @@ std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
   if (result->first_original_event()) {
     TRACE_EVENT_END(
         "input", perfetto::Track::FromPointer(result->first_original_event()),
-        "type", result->event().GetType(), "coalesced_count",
-        result->coalesced_count());
+        "result", "dispatched", "type", result->event().GetType(),
+        "coalesced_count", result->coalesced_count());
   }
   return result;
+}
+
+void CompositorThreadEventQueue::CoalesceEvents(base::TimeTicks sample_time) {
+  if (queue_.empty() || queue_.front()->event().TimeStamp() > sample_time) {
+    return;
+  }
+
+  // 1. Find the boundary of the batch to process.
+  auto batch_end_it =
+      std::upper_bound(queue_.begin(), queue_.end(), sample_time,
+                       [](base::TimeTicks time,
+                          const std::unique_ptr<EventWithCallback>& event) {
+                         return time < event->event().TimeStamp();
+                       });
+
+  // 2. Move the events to be processed into a temporary queue.
+  EventQueue processing_queue;
+  processing_queue.insert(processing_queue.end(),
+                          std::make_move_iterator(queue_.begin()),
+                          std::make_move_iterator(batch_end_it));
+  queue_.erase(queue_.begin(), batch_end_it);
+
+  // 3. Coalesce the events from the processing queue into a new queue.
+  EventQueue coalesced_queue;
+  while (!processing_queue.empty()) {
+    std::unique_ptr<EventWithCallback> new_event =
+        std::move(processing_queue.front());
+    processing_queue.pop_front();
+
+    if (coalesced_queue.empty()) {
+      coalesced_queue.push_back(std::move(new_event));
+      continue;
+    }
+
+    auto& last_event_ref = coalesced_queue.back();
+    bool can_coalesce_with_last =
+        IsContinuousGestureEvent(new_event->event().GetType()) &&
+        (last_event_ref->CanCoalesceWith(*new_event) ||
+         WebGestureEvent::IsCompatibleScrollorPinch(
+             ToWebGestureEvent(new_event->event()),
+             ToWebGestureEvent(last_event_ref->event())));
+
+    if (!can_coalesce_with_last) {
+      coalesced_queue.push_back(std::move(new_event));
+      continue;
+    }
+
+    // End the trace for an event that is being consumed by coalescing. This
+    // closes the slice that was started in `Queue()` and prevents dangling
+    // traces. The "result":"coalesced" argument explicitly marks that this
+    // event was consumed by the coalescing logic.
+    if (new_event->first_original_event()) {
+      TRACE_EVENT_END(
+          "input",
+          perfetto::Track::FromPointer(new_event->first_original_event()),
+          "result", "coalesced", "type", new_event->event().GetType());
+    }
+
+    if (last_event_ref->CanCoalesceWith(*new_event)) {
+      last_event_ref->CoalesceWith(new_event.get());
+      continue;
+    }
+
+    // Scroll-and-pinch coalescing.
+    std::unique_ptr<EventWithCallback> last_event =
+        std::move(coalesced_queue.back());
+    coalesced_queue.pop_back();
+
+    std::unique_ptr<EventWithCallback> second_last_event;
+    if (!coalesced_queue.empty()) {
+      auto& second_last_ref = coalesced_queue.back();
+      if (WebGestureEvent::IsCompatibleScrollorPinch(
+              ToWebGestureEvent(new_event->event()),
+              ToWebGestureEvent(second_last_ref->event()))) {
+        second_last_event = std::move(coalesced_queue.back());
+        coalesced_queue.pop_back();
+      }
+    }
+
+    auto coalesced_pair = CoalesceScrollAndPinchEvents(
+        std::move(second_last_event), std::move(last_event),
+        std::move(new_event));
+
+    coalesced_queue.push_back(std::move(coalesced_pair.first));
+    coalesced_queue.push_back(std::move(coalesced_pair.second));
+  }
+
+  // 4. Insert the coalesced events back at the front of the main queue.
+  queue_.insert(queue_.begin(),
+                std::make_move_iterator(coalesced_queue.begin()),
+                std::make_move_iterator(coalesced_queue.end()));
 }
 
 WebInputEvent::Type CompositorThreadEventQueue::PeekType() const {
   return empty() ? WebInputEvent::Type::kUndefined
                  : queue_.front()->event().GetType();
+}
+
+base::TimeTicks CompositorThreadEventQueue::PeekTimestamp() const {
+  return empty() ? base::TimeTicks() : queue_.front()->event().TimeStamp();
 }
 
 }  // namespace blink

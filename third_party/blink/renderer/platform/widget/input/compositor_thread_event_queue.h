@@ -28,12 +28,18 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
       delete;
   ~CompositorThreadEventQueue();
 
-  // Adds an event to the queue. The event may be coalesced with the last event.
+  // Adds an event to the queue.
   void Queue(std::unique_ptr<EventWithCallback> event);
 
   std::unique_ptr<EventWithCallback> Pop();
 
+  // Performs coalescing of continuous gesture events in the queue.
+  void CoalesceEvents(base::TimeTicks sample_time);
+
   WebInputEvent::Type PeekType() const;
+
+  // Returns the timestamp of the event at the head of the queue.
+  base::TimeTicks PeekTimestamp() const;
 
   bool empty() const { return queue_.empty(); }
 

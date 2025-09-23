@@ -626,7 +626,8 @@ void InputHandlerProxy::DispatchSingleInputEvent(
 }
 
 bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(
-    bool frame_aligned) const {
+    bool frame_aligned,
+    base::TimeTicks sample_time) const {
   // Block flushing the compositor gesture event queue while there's an async
   // scroll begin hit test outstanding. We'll flush the queue when the hit test
   // responds.
@@ -644,11 +645,21 @@ bool InputHandlerProxy::HasQueuedEventsReadyForDispatch(
       input_handler_->CurrentScrollNeedsFrameAlignment() && !frame_aligned) {
     return false;
   }
+
+  // Don't dispatch events that are for a future frame.
+  if (compositor_event_queue_->PeekTimestamp() > sample_time) {
+    return false;
+  }
+
   return true;
 }
 
 void InputHandlerProxy::DispatchQueuedInputEvents(bool frame_aligned) {
-  while (HasQueuedEventsReadyForDispatch(frame_aligned)) {
+  //  Coalesce all events in the queue before dispatching.
+  auto sample_time = base::TimeTicks::Max();
+
+  compositor_event_queue_->CoalesceEvents(sample_time);
+  while (HasQueuedEventsReadyForDispatch(frame_aligned, sample_time)) {
     DispatchSingleInputEvent(compositor_event_queue_->Pop());
   }
 }
@@ -1666,8 +1677,11 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
     DispatchQueuedInputEvents(true /* frame_aligned */);
   }
 
+  auto sample_time = base::TimeTicks::Max();
+  compositor_event_queue_->CoalesceEvents(sample_time);
+
   // Resampling GSUs and dispatch queued input events.
-  while (HasQueuedEventsReadyForDispatch(true /* frame_aligned */)) {
+  while (HasQueuedEventsReadyForDispatch(true /*frame_aligned*/, sample_time)) {
     std::unique_ptr<EventWithCallback> event_with_callback =
         scroll_predictor_->ResampleScrollEvents(compositor_event_queue_->Pop(),
                                                 args.frame_time, args.interval);
