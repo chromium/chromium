@@ -38,7 +38,6 @@ const char kExpectedResponse[] = "{}";
 const char kExpectedAuthError[] = "There was an authentication error";
 const char kExpectedResponseError[] = "There was a response error";
 const char kExpectedPrimaryAccountError[] = "No primary accounts found";
-const char kHttpPostMethod[] = "POST";
 const char kLocationResponseHeader[] =
     "HTTP/1.1 200 OK\nContent-type: application/json\n\nLOCATION: "
     "http://www.google.com\n\n";
@@ -70,10 +69,18 @@ class EndpointFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
-        kOAuthConsumerName, GURL(kEndpoint), kHttpPostMethod, kContentType,
-        std::vector<std::string>{kScope}, kMockTimeout, kMockPostData,
-        TRAFFIC_ANNOTATION_FOR_TESTS, test_url_loader_factory,
-        identity_test_env_.identity_manager(), signin::ConsentLevel::kSync);
+        test_url_loader_factory, identity_test_env_.identity_manager(),
+        EndpointFetcher::RequestParams::Builder(HttpMethod::kPost,
+                                                TRAFFIC_ANNOTATION_FOR_TESTS)
+            .SetAuthType(OAUTH)
+            .SetOauthConsumerName(kOAuthConsumerName)
+            .SetUrl(GURL(kEndpoint))
+            .SetContentType(kContentType)
+            .SetOauthScopes(std::vector<std::string>{kScope})
+            .SetTimeout(kMockTimeout)
+            .SetPostData(kMockPostData)
+            .SetConsentLevel(signin::ConsentLevel::kSignin)
+            .Build());
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
@@ -124,20 +131,11 @@ class EndpointFetcherTest : public testing::Test {
   }
 
   EndpointFetcher GetNonOAuthEndpointFetcherWithParams(
-      const std::optional<EndpointFetcher::RequestParams> request_params) {
+      const EndpointFetcher::RequestParams& request_params) {
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory());
-    if (request_params.has_value()) {
-      return EndpointFetcher(loader_factory, nullptr, request_params.value());
-    }
-    return EndpointFetcher(loader_factory, GURL("https://example.com"), "",
-                           base::Milliseconds(3000), "", {}, {},
-                           version_info::Channel::CANARY,
-                           EndpointFetcher::RequestParams::Builder(
-                               HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
-                               .SetChannel(version_info::Channel::CANARY)
-                               .Build());
+    return EndpointFetcher(loader_factory, nullptr, request_params);
   }
 
   network::mojom::CredentialsMode GetCredentialsMode(
@@ -316,7 +314,11 @@ TEST_F(EndpointFetcherTest, FetchPutResponse) {
 }
 
 TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
-  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetChannel(version_info::Channel::CANARY)
+          .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
             GetCredentialsMode(fetcher));
 }
@@ -344,7 +346,11 @@ TEST_F(EndpointFetcherTest, TestIncludeCredentialsMode) {
 }
 
 TEST_F(EndpointFetcherTest, TestMaxRetriesUnspecified) {
-  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetChannel(version_info::Channel::CANARY)
+          .Build());
   EXPECT_EQ(3 /*=kNumRetries*/, GetMaxRetries(fetcher));
 }
 
@@ -359,7 +365,11 @@ TEST_F(EndpointFetcherTest, TestMaxRetries) {
 }
 
 TEST_F(EndpointFetcherTest, TestSetSiteForCookiesUnspecified) {
-  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(std::nullopt);
+  EndpointFetcher fetcher = GetNonOAuthEndpointFetcherWithParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetChannel(version_info::Channel::CANARY)
+          .Build());
   EXPECT_FALSE(GetSetSiteForCookies(fetcher));
 }
 

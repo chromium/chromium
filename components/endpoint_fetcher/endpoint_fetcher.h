@@ -304,7 +304,6 @@ class EndpointFetcher {
     net::NetworkTrafficAnnotationTag annotation_tag_;
   };
 
-  // Preferred constructor - forms identity_manager and url_loader_factory.
   // OAUTH authentication is used for this constructor.
   //
   // Note: When using signin::ConsentLevel::kSignin, please also make sure that
@@ -316,78 +315,6 @@ class EndpointFetcher {
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       signin::IdentityManager* identity_manager,
       RequestParams request_params);
-
-  // Less preferred convenience constructor for OAuth authenticated requests.
-  //
-  // This constructor internally configures `RequestParams` for OAuth
-  // authentication using the provided details.
-  //
-  // For new code, prefer constructing `RequestParams` directly and using the
-  // primary `EndpointFetcher(url_loader_factory, identity_manager,
-  // request_params)` constructor.
-  EndpointFetcher(
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      const std::string& oauth_consumer_name,
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& content_type,
-      const std::vector<std::string>& scopes,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      signin::IdentityManager* identity_manager,
-      signin::ConsentLevel consent_level);
-
-  // Less preferred convenience constructor for Chrome API Key authenticated
-  // requests.
-  //
-  // This constructor configures `RequestParams` for Chrome API Key
-  // authentication using the provided `channel` and other network parameters.
-  // It may override some settings from the passed `request_params` argument.
-  //
-  // For new code, prefer constructing `RequestParams` directly (including
-  // setting `AuthType::CHROME_API_KEY` and `channel`) and using the primary
-  // `EndpointFetcher(url_loader_factory, identity_manager, request_params)`
-  // constructor (with `identity_manager` as nullptr for API key auth).
-  EndpointFetcher(
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      const GURL& url,
-      const std::string& content_type,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const std::vector<std::string>& headers,
-      const std::vector<std::string>& cors_exempt_headers,
-      version_info::Channel channel,
-      const RequestParams request_params);
-
-  // Less preferred convenience constructor for requests requiring no
-  // authentication.
-  //
-  // This constructor configures `RequestParams` for `NO_AUTH`.
-  //
-  // For new code, prefer constructing `RequestParams` directly (setting
-  // `AuthType::NO_AUTH`) and using the primary
-  // `EndpointFetcher(url_loader_factory, identity_manager, request_params)`
-  // constructor (with `identity_manager` as nullptr).
-  EndpointFetcher(
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      const GURL& url,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
-
-  // Used internally. Can be used if caller constructs their own
-  // url_loader_factory and identity_manager.
-  EndpointFetcher(
-      const std::string& oauth_consumer_name,
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& content_type,
-      const std::vector<std::string>& scopes,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
-      signin::IdentityManager* identity_manager,
-      signin::ConsentLevel consent_level);
 
   EndpointFetcher(const EndpointFetcher& endpoint_fetcher) = delete;
   EndpointFetcher& operator=(const EndpointFetcher& endpoint_fetcher) = delete;
