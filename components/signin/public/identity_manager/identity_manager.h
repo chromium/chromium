@@ -267,14 +267,6 @@ class IdentityManager : public KeyedService,
       AccessTokenFetcher::TokenCallback callback,
       AccessTokenFetcher::Mode mode);
 
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/425896213): Use OAuthConsumerId instead of ScopeSet.
-  void GetRefreshTokenFromDevice(
-      const CoreAccountId& account_id,
-      const OAuth2AccessTokenManager::ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback);
-#endif
-
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token
   // request for |account_id| and |scopes| will fetch a new token from the

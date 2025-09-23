@@ -219,16 +219,6 @@ IdentityManager::CreateAccessTokenFetcherForAccount(
       mode, require_sync_consent_for_scope_verification_);
 }
 
-#if BUILDFLAG(IS_IOS)
-void IdentityManager::GetRefreshTokenFromDevice(
-    const CoreAccountId& account_id,
-    const OAuth2AccessTokenManager::ScopeSet& scopes,
-    AccessTokenFetcher::TokenCallback callback) {
-  GetTokenService()->GetRefreshTokenFromDevice(account_id, scopes,
-                                               std::move(callback));
-}
-#endif
-
 void IdentityManager::RemoveAccessTokenFromCache(
     const CoreAccountId& account_id,
     const ScopeSet& scopes,
