@@ -348,6 +348,7 @@ static_library("browser") {
     ":buildflags",
     ":location_bar",
     ":mojo_bindings",
+    ":pref_names",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
@@ -492,6 +493,11 @@ static_library("browser") {
     ]
     deps += [ "//content/public/common" ]
   }
+}
+
+source_set("pref_names") {
+  sources = [ "omnibox_pref_names.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("aim_eligibility_service_features") {
