@@ -548,12 +548,22 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 
 mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ComputedStyle& computed_style) {
+  // Per https://www.w3.org/TR/css-overflow-5/#scroll-marker-activation
+  // default to 'start' if scroll-snap-align is 'none'.
+  cc::SnapAlignment alignment_inline =
+      computed_style.GetScrollSnapAlign().alignment_inline;
+  if (alignment_inline == cc::SnapAlignment::kNone) {
+    alignment_inline = cc::SnapAlignment::kStart;
+  }
   V8ScrollLogicalPosition::Enum inline_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(
-          computed_style.GetScrollSnapAlign().alignment_inline);
+      SnapAlignmentToV8ScrollLogicalPosition(alignment_inline);
+  cc::SnapAlignment alignment_block =
+      computed_style.GetScrollSnapAlign().alignment_block;
+  if (alignment_block == cc::SnapAlignment::kNone) {
+    alignment_block = cc::SnapAlignment::kStart;
+  }
   V8ScrollLogicalPosition::Enum block_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(
-          computed_style.GetScrollSnapAlign().alignment_block);
+      SnapAlignmentToV8ScrollLogicalPosition(alignment_block);
   auto align_x = ResolveToPhysicalAlignment(inline_alignment, block_alignment,
                                             kHorizontalScroll, computed_style);
   auto align_y = ResolveToPhysicalAlignment(inline_alignment, block_alignment,
