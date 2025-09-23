@@ -138,6 +138,11 @@ public class TileView extends FrameLayout {
         mTitleView.setText(title);
     }
 
+    /** Sets the max number of lines taken by the title. */
+    public void setTitleMaxLines(int maxLines) {
+        mTitleView.setMaxLines(maxLines);
+    }
+
     /** Specify the handler that will be invoked when this tile is highlighted by the user. */
     void setOnFocusViaSelectionListener(Runnable listener) {
         mOnFocusViaSelectionListener = listener;

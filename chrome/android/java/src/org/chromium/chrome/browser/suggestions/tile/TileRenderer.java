@@ -378,6 +378,9 @@ public class TileRenderer {
                     RecordUserAction.record("Suggestions.Button.AddItem");
                     setupDelegate.getCustomTileModificationDelegate().add();
                 });
+        // Allow "Add new" title translation to wrap to second line. We change max lines instead of
+        // lines to avoid (clickable) blank line appearing at bottom if the title fits in one line.
+        tileView.setTitleMaxLines(2);
         // Prevent Custom Tile swap key from  propagating (i.e., suppress scrolls) to make the
         // button's behavior more similar to Custom Tiles.
         tileView.setOnKeyListener(
