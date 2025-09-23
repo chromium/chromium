@@ -5,6 +5,7 @@
 import("//build/config/cast.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/gclient_args.gni")
+import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/kythe.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
@@ -92,8 +93,8 @@ declare_args() {
       # pipeline http://b/436082487.
       !enable_kythe_annotations && is_clang &&
       clang_modules_platform_supported && using_tested_sysroot &&
-      # reclient doesn't handle headers in modulemap config.
-      !use_reclient && !is_cronet_for_aosp_build
+      # reclient and icecc don't handle headers in modulemap config.
+      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc"
 }
 
 # We don't really need to collect a corpus for the host tools, just for the target.
