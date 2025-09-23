@@ -369,18 +369,13 @@ std::string SignedInStateToString(SignedInState state) {
   }
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
-  if (GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) !=
-      signin_util::SignedInState::kSignedIn) {
-    return false;
-  }
-
+bool IsHistorySyncOptinAllowedByPolicy(Profile& profile) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(&profile);
   if (!sync_service) {
     return false;
   }
+
   if (sync_service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     return false;
@@ -396,14 +391,34 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
     }
   }
 
+  return true;
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
+  if (GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) !=
+      signin_util::SignedInState::kSignedIn) {
+    return false;
+  }
+
+  if (!IsHistorySyncOptinAllowedByPolicy(profile)) {
+    return false;
+  }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+  if (!sync_service) {
+    return false;
+  }
+
+  const syncer::UserSelectableTypeSet selected_types =
+      sync_service->GetUserSettings()->GetSelectedTypes();
+
   // Note: Post migration these preferences will be set by a single
   // settings toggle and are expected to have the same value.
-  if (sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory) &&
-      sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kTabs) &&
-      sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kSavedTabGroups)) {
+  if (selected_types.Has(syncer::UserSelectableType::kHistory) &&
+      selected_types.Has(syncer::UserSelectableType::kTabs) &&
+      selected_types.Has(syncer::UserSelectableType::kSavedTabGroups)) {
     return false;
   }
   return true;

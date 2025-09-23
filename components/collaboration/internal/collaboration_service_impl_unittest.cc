@@ -354,17 +354,28 @@ TEST_F(CollaborationServiceImplTest, SyncTypeDisabledByEnterprise) {
   test_sync_service_->FireStateChanged();
   EXPECT_EQ(service_->GetServiceStatus().sync_status,
             SyncStatus::kSyncDisabledByEnterprise);
+#else
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  // Set up a policy to disable Saved Tab Groups.
+  test_sync_service_->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kSavedTabGroups, true);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncDisabledByEnterprise);
 #endif
 }
 
 TEST_F(CollaborationServiceImplTest, SyncDisabledByEnterprise) {
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
   // Disable sync by enterprise policy.
   test_sync_service_->SetAllowedByEnterprisePolicy(false);
   test_sync_service_->FireStateChanged();
   EXPECT_EQ(service_->GetServiceStatus().sync_status,
             SyncStatus::kSyncDisabledByEnterprise);
-#endif
 }
 
 TEST_F(CollaborationServiceImplTest, SyncStatusChanges_SettingInProgress) {

@@ -372,22 +372,25 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
       {syncer::UserSelectableType::kSavedTabGroups};
 #endif
 
-  // Note: Policy checking is only required for mobile here. On desktop, it's
-  // already handled in `CollaborationController`.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  bool any_type_disabled_by_policy = false;
-  for (const syncer::UserSelectableType type : kRequiredTypes) {
-    if (user_settings->IsTypeManagedByPolicy(type)) {
-      any_type_disabled_by_policy = true;
-      break;
+  // Note: Policy checking is also handled in `CollaborationController`.
+  // However, setting `kSyncDisabledByEnterprise` is necessary for properly
+  // displaying an error message/hiding the "Share group" entry point if sync is
+  // disabled.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    bool any_type_disabled_by_policy = false;
+    for (const syncer::UserSelectableType type : kRequiredTypes) {
+      if (user_settings->IsTypeManagedByPolicy(type)) {
+        any_type_disabled_by_policy = true;
+        break;
+      }
+    }
+    if (any_type_disabled_by_policy ||
+        sync_service_->GetDisableReasons().Has(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+      return SyncStatus::kSyncDisabledByEnterprise;
     }
   }
-  if (any_type_disabled_by_policy ||
-      sync_service_->GetDisableReasons().Has(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return SyncStatus::kSyncDisabledByEnterprise;
-  }
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
   if (user_settings->GetSelectedTypes().HasAll(kRequiredTypes)) {
     return SyncStatus::kSyncEnabled;

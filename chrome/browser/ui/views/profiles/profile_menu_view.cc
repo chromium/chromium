@@ -755,6 +755,14 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     }
     case signin_util::SignedInState::kSignedIn:
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos) &&
+          !signin_util::ShouldShowHistorySyncOptinScreen(profile())) {
+        // No button.
+        params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+        break;
+      }
+
       params.subtitle = GetSyncPromoDescription(primary_account_info.email);
       params.button_text = GetSyncPromoButtonLabel();
       signin_metrics::LogSyncOptInOffered(

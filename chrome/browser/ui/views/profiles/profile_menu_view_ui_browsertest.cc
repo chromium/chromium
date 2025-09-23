@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -31,6 +32,7 @@
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event_utils.h"
@@ -56,6 +58,7 @@ enum class SigninStatusPixelTestParam {
   kSignedInNoSync,
   kSignInPendingNoSync,
   kSignedInWithSync,
+  kSignedInWithHistorySync,
   kSignedInSyncPaused,
   kSignedInSyncNotWorking
 };
@@ -82,6 +85,7 @@ struct ProfileMenuViewPixelTestParam {
   ManagementStatus management_status = ManagementStatus::kNonManaged;
   bool use_multiple_profiles = false;
   bool account_image_available = true;
+  bool sync_disabled = false;
   WithLocalData with_local_data = WithLocalData::kNoLocalData;
 
   // Features and parameters that are enabled in addition to the features
@@ -270,6 +274,16 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .extra_features_and_params =
             {{switches::kAvatarButtonSyncPromoForTesting, {}}},
     },
+    {
+        .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
+    },
+    {
+        .pixel_test_param = {.test_suffix = "SignedIn_SyncDisabledByAccount"},
+        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        .management_status = ManagementStatus::kAccountManaged,
+        .sync_disabled = true,
+    },
 };
 
 }  // namespace
@@ -352,6 +366,16 @@ class ProfileMenuViewPixelTest
         Profile::FromBrowserContext(context));
   }
 
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    ProfilesPixelTestBaseT::OnWillCreateBrowserContextServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+  }
+
   void TearDownOnMainThread() override {
     scoped_browser_management_.reset();
     ProfilesPixelTestBaseT<DialogBrowserTest>::TearDownOnMainThread();
@@ -385,6 +409,11 @@ class ProfileMenuViewPixelTest
 
   bool ShouldUseMultipleProfiles() const {
     return GetParam().use_multiple_profiles;
+  }
+
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
   void SetColorTheme(Profile& profile,
@@ -443,6 +472,13 @@ class ProfileMenuViewPixelTest
       ASSERT_EQ(new_browser, browser());
     }
 
+    // Disable all data types so that the history sync opt in is shown by
+    // default.
+    if (sync_service()) {
+      sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+    }
+
     AccountInfo account_info;
     // Configures browser according to desired signin status.
     switch (GetSigninStatus()) {
@@ -466,11 +502,15 @@ class ProfileMenuViewPixelTest
         account_info = SignInWithAccount(GetAccountManagementStatus(),
                                          signin::ConsentLevel::kSync);
         // Enable sync.
-        syncer::SyncService* sync_service =
-            SyncServiceFactory::GetForProfile(GetProfile());
-        sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+        sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
             syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
+        break;
+      }
+
+      case SigninStatusPixelTestParam::kSignedInWithHistorySync: {
+        account_info = SignInWithAccount();
+        signin_util::EnableHistorySync(sync_service());
         break;
       }
 
@@ -479,12 +519,10 @@ class ProfileMenuViewPixelTest
                                          signin::ConsentLevel::kSync);
 
         // Enable sync.
-        syncer::SyncService* sync_paused_service =
-            SyncServiceFactory::GetForProfile(GetProfile());
-        sync_paused_service->GetUserSettings()
-            ->SetInitialSyncFeatureSetupComplete(
-                syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+        sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
+        sync_service()->SetPersistentAuthError();
         identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
         break;
       }
@@ -551,6 +589,10 @@ class ProfileMenuViewPixelTest
                                   /*image_url_with_size=*/"NO_IMAGE",
                                   gfx::Image());
       }
+    }
+
+    if (GetParam().sync_disabled) {
+      sync_service()->SetAllowedByEnterprisePolicy(false);
     }
 
     size_t local_data_count = 0;
@@ -635,6 +677,7 @@ class ProfileMenuViewPixelTest
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
   BatchUploadServiceTestHelper batch_upload_test_helper_;
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileMenuViewPixelTest, InvokeUi_default) {

@@ -435,6 +435,28 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
       switches::kAvatarButtonSyncPromoForTesting};
 };
 
+TEST_F(SigninUtilHistorySyncOptinTest, HistorySyncOptinDisallowedByPolicy) {
+  SignInAndSetUpSyncService();
+
+  DisableAllSyncedDataTypes();
+  ASSERT_TRUE(signin_util::IsHistorySyncOptinAllowedByPolicy(*profile()));
+
+  test_sync_service()->SetAllowedByEnterprisePolicy(false);
+  EXPECT_FALSE(signin_util::IsHistorySyncOptinAllowedByPolicy(*profile()));
+}
+
+TEST_F(SigninUtilHistorySyncOptinTest,
+       HistorySyncOptinDisallowedByPolicyPerType) {
+  SignInAndSetUpSyncService();
+
+  DisableAllSyncedDataTypes();
+  ASSERT_TRUE(signin_util::IsHistorySyncOptinAllowedByPolicy(*profile()));
+
+  test_sync_service()->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kHistory, /*managed=*/true);
+  EXPECT_FALSE(signin_util::IsHistorySyncOptinAllowedByPolicy(*profile()));
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(SigninUtilHistorySyncOptinTest,
        ShouldNotShowHistorySyncOptinScreenIfNoPrimaryAccount) {
@@ -467,6 +489,7 @@ TEST_F(SigninUtilHistorySyncOptinTest,
   EXPECT_FALSE(signin_util::ShouldShowHistorySyncOptinScreen(*profile()));
   EXPECT_FALSE(signin_util::ShouldShowAvatarSyncPromo(profile()));
 }
+
 TEST_F(SigninUtilHistorySyncOptinTest,
        ShouldNotShowHistorySyncOptinScreenIfUserIsAlreadyOptedIn) {
   SignInAndSetUpSyncService();

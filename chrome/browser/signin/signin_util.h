@@ -175,11 +175,18 @@ SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 // Returns a string representation of `SignedInState`.
 std::string SignedInStateToString(SignedInState state);
 
+// Checks whether history sync is allowed by policy. May need to called again
+// after a sign in to see if policies are set for the account rather than the
+// device.
+// This method does not take into account the feature flag
+// `ReplaceSyncPromosWithSignInPromos`.
+bool IsHistorySyncOptinAllowedByPolicy(Profile& profile);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Returns if the necessary conditions to show the History Sync Optin screen
 // are met.
-// This method does not take into account any feature flags related to the above
-// screen.
+// This method does not take into account the feature flag
+// `ReplaceSyncPromosWithSignInPromos`.
 // TODO(crbug.com/419741847): Consider using also on mobile and moving the
 // method as necessary.
 bool ShouldShowHistorySyncOptinScreen(Profile& profile);

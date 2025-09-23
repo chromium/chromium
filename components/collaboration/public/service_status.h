@@ -28,8 +28,7 @@ enum class SyncStatus {
   kSyncWithoutTabGroup = 1,
   // Syncing of tab groups is enabled.
   kSyncEnabled = 2,
-  // Syncing is disabled due to Enterprise policy. Note: This is only used on
-  // mobile - on desktop, policy is handled elsewhere.
+  // Syncing is disabled due to Enterprise policy.
   kSyncDisabledByEnterprise = 3,
 };
 
