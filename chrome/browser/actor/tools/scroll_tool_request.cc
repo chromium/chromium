@@ -29,7 +29,8 @@ std::string ScrollToolRequest::JournalEvent() const {
   return "Scroll";
 }
 
-mojom::ToolActionPtr ScrollToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr ScrollToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto scroll = mojom::ScrollAction::New();
 
   switch (direction_) {

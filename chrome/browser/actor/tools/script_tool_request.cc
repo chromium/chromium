@@ -34,7 +34,8 @@ void ScriptToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-mojom::ToolActionPtr ScriptToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr ScriptToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto script = mojom::ScriptToolAction::New(name_, input_arguments_);
   return mojom::ToolAction::NewScriptTool(std::move(script));
 }

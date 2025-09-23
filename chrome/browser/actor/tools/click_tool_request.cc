@@ -29,7 +29,8 @@ std::string ClickToolRequest::JournalEvent() const {
   return "Click";
 }
 
-mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr ClickToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto click = mojom::ClickAction::New();
   click->type = click_type_;
   click->count = click_count_;

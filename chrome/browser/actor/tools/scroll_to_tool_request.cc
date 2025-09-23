@@ -25,7 +25,8 @@ std::string ScrollToToolRequest::JournalEvent() const {
   return "ScrollTo";
 }
 
-mojom::ToolActionPtr ScrollToToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr ScrollToToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto action = mojom::ScrollToAction::New();
   return mojom::ToolAction::NewScrollTo(std::move(action));
 }

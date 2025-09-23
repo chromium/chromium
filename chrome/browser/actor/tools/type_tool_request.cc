@@ -31,7 +31,8 @@ std::string TypeToolRequest::JournalEvent() const {
   return "Type";
 }
 
-mojom::ToolActionPtr TypeToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr TypeToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto type = mojom::TypeAction::New();
 
   type->text = text;

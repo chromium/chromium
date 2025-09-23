@@ -26,7 +26,8 @@ std::string SelectToolRequest::JournalEvent() const {
   return "Select";
 }
 
-mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto select = mojom::SelectAction::New();
 
   select->value = value_;

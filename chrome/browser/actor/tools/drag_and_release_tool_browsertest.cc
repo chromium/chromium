@@ -159,5 +159,46 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_CrossOriginSubframe) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "/actor/positioned_iframe_no_scroll.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const GURL cross_origin_iframe_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/drag.html");
+  ASSERT_TRUE(
+      NavigateIframeToURL(web_contents(), "iframe", cross_origin_iframe_url));
+
+  content::RenderFrameHost* subframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  // Addressing flaky test due to layout shift on the iframe
+  ASSERT_TRUE(content::ExecJs(web_contents(), "wait()"));
+  ASSERT_TRUE(subframe->IsCrossProcessSubframe());
+
+  ASSERT_EQ(0, GetRangeValue(*subframe, "#range"));
+
+  gfx::RectF range_rect = GetBoundingClientRect(*subframe, "#range");
+  const int thumb_padding = range_rect.height() / 2;
+  gfx::Point start_in_subframe(range_rect.x() + thumb_padding,
+                               range_rect.y() + thumb_padding);
+  gfx::Point end_in_subframe = gfx::ToFlooredPoint(range_rect.CenterPoint());
+
+  gfx::RectF subframe_rect = GetBoundingClientRect(*main_frame(), "#iframe");
+  gfx::Point start_in_viewport(subframe_rect.x() + start_in_subframe.x(),
+                               subframe_rect.y() + start_in_subframe.y());
+  gfx::Point end_in_viewport(subframe_rect.x() + end_in_subframe.x(),
+                             subframe_rect.y() + end_in_subframe.y());
+
+  std::unique_ptr<ToolRequest> action = MakeDragAndReleaseRequest(
+      *active_tab(), start_in_viewport, end_in_viewport);
+
+  ActResultFuture result_success;
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(50, GetRangeValue(*subframe, "#range"));
+}
+
 }  // namespace
 }  // namespace actor

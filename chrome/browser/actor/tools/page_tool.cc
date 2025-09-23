@@ -359,7 +359,7 @@ void PageTool::Invoke(InvokeCallback callback) {
   invoke_callback_ = std::move(callback);
 
   auto invocation = actor::mojom::ToolInvocation::New();
-  invocation->action = request_->ToMojoToolAction();
+  invocation->action = request_->ToMojoToolAction(frame);
 
   // Transform coordinate target from viewport space to widget space for use
   // within renderer.
