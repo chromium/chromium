@@ -238,6 +238,56 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    public void testSetPaneSwitcherButtonData_UpdatesExistingList() {
+        // Set up initial button data with 2 buttons
+        FullButtonData buttonData1 = makeTestButtonData();
+        FullButtonData buttonData2 = makeTestButtonData();
+        List<FullButtonData> initialButtonData = Arrays.asList(buttonData1, buttonData2);
+
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, initialButtonData);
+        mPropertyModel.set(PANE_SWITCHER_INDEX, 0);
+
+        // Verify initial state
+        assertEquals(2, mPaneSwitcher.getTabCount());
+        assertEquals(View.VISIBLE, mPaneSwitcher.getVisibility());
+
+        // Create new button data with same size but different content
+        DisplayButtonData newDisplayButtonData =
+                new ResourceButtonData(
+                        R.string.button_new_incognito_tab,
+                        R.string.button_new_incognito_tab,
+                        R.drawable.ic_incognito);
+        FullButtonData newButtonData1 = new DelegateButtonData(newDisplayButtonData, mOnButton);
+        FullButtonData newButtonData2 = makeTestButtonData();
+        List<FullButtonData> updatedButtonData = Arrays.asList(newButtonData1, newButtonData2);
+
+        // Update with new button data (should trigger updatePaneSwitcherButtonList)
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, updatedButtonData);
+
+        // Verify the tab count remains the same (update, not rebuild)
+        assertEquals(2, mPaneSwitcher.getTabCount());
+        assertEquals(View.VISIBLE, mPaneSwitcher.getVisibility());
+
+        // Verify the first tab was updated with new content description
+        TabLayout.Tab firstTab = mPaneSwitcher.getTabAt(0);
+        assertEquals(
+                newButtonData1.resolveContentDescription(mActivity),
+                firstTab.getContentDescription());
+
+        // Create new button data with different size (should trigger buildPaneSwitcherButtonList)
+        FullButtonData newButtonData3 = makeTestButtonData();
+        List<FullButtonData> rebuiltButtonData =
+                Arrays.asList(newButtonData1, newButtonData2, newButtonData3);
+
+        // Update with different sized list (should trigger buildPaneSwitcherButtonList)
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, rebuiltButtonData);
+
+        // Verify the tab count changed (rebuild occurred)
+        assertEquals(3, mPaneSwitcher.getTabCount());
+        assertEquals(View.VISIBLE, mPaneSwitcher.getVisibility());
+    }
+
+    @Test
     @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
     public void testMenuButtonContainerVisibility() {
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);

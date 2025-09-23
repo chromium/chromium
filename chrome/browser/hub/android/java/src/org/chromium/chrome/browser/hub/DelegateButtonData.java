@@ -50,4 +50,15 @@ public class DelegateButtonData implements FullButtonData {
     public @Nullable Runnable getOnPressRunnable() {
         return mOnPress;
     }
+
+    @Override
+    public boolean buttonDataEquals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof DelegateButtonData that) {
+            return mDelegateButtonData.equals(that.mDelegateButtonData);
+        }
+        return false;
+    }
 }
