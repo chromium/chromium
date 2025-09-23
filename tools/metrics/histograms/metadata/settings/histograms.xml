@@ -1546,6 +1546,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Settings.TrackedPreferenceResets.Count" units="resets"
+    expires_after="2026-08-25">
+  <owner>zackhan@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of preferences that were reset by the TrackedPreference
+    validation system during startup. This is recorded when the PrefHashFilter
+    is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Settings.TrackedPreferenceResetViaHmacFallback"
     enum="TrackedPreference" expires_after="2025-12-16">
   <owner>zackhan@chromium.org</owner>

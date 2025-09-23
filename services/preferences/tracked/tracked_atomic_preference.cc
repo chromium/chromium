@@ -5,6 +5,7 @@
 #include "services/preferences/tracked/tracked_atomic_preference.h"
 
 #include "base/values.h"
+#include "services/preferences/public/cpp/tracked/pref_names.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 
@@ -77,6 +78,11 @@ bool TrackedAtomicPreference::EnforceAndReport(
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
       reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
+    if (value) {
+      base::Value::Dict* reset_prefs =
+          pref_store_contents.EnsureDict(user_prefs::kTrackedPreferencesReset);
+      reset_prefs->Set(pref_path_, value->Clone());
+    }
     pref_store_contents.RemoveByDottedPath(pref_path_);
     was_reset = true;
   }

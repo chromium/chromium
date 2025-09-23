@@ -8,6 +8,7 @@
 namespace user_prefs {
 
 extern const char kPreferenceResetTime[];
+extern const char kTrackedPreferencesReset[];
 
 extern const char kScheduleToFlushToDisk[];
 }  // namespace user_prefs

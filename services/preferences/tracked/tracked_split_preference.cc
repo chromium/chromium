@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "services/preferences/public/cpp/tracked/pref_names.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 
@@ -106,11 +108,21 @@ bool TrackedSplitPreference::EnforceAndReport(
         value_state == ValueState::CHANGED_ENCRYPTED) {
       DCHECK(!invalid_keys.empty());
 
+      base::Value::Dict* reset_prefs =
+          pref_store_contents.EnsureDict(user_prefs::kTrackedPreferencesReset);
       for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
            it != invalid_keys.end(); ++it) {
+        const base::Value* invalid_value = dict_value->Find(*it);
+        DCHECK(invalid_value);
+        reset_prefs->Set(pref_path_ + "." + *it, invalid_value->Clone());
         dict_value->Remove(*it);
       }
     } else {
+      if (value) {
+        base::Value::Dict* reset_prefs = pref_store_contents.EnsureDict(
+            user_prefs::kTrackedPreferencesReset);
+        reset_prefs->Set(pref_path_, value->Clone());
+      }
       pref_store_contents.RemoveByDottedPath(pref_path_);
     }
     was_reset = true;

@@ -165,6 +165,7 @@ void PrefHashFilter::RegisterProfilePrefs(
   registry->RegisterStringPref(
       user_prefs::kPreferenceResetTime,
       base::NumberToString(base::Time().ToInternalValue()));
+  registry->RegisterDictionaryPref(user_prefs::kTrackedPreferencesReset);
   // Register the preference to trigger a flush to disk.
   // It's a string preference to store a timestamp.
   registry->RegisterStringPref(
@@ -357,6 +358,9 @@ void PrefHashFilter::FinalizeFilterOnLoad(
                        weak_ptr_factory_.GetWeakPtr(),
                        pref_store_contents.Clone()));
   } else {
+    // No deferred task will be posted, so validation is complete.
+    // Log metrics now.
+    MaybeRecordTrackedPreferenceResetCount(pref_store_contents);
     // If the feature is disabled, and we have a test callback, run it now
     // as no deferred task will be posted.
     if (on_deferred_revalidation_complete_for_testing_) {
@@ -420,6 +424,9 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
       pref_to_write = user_prefs::kPreferenceResetTime;
     }
   }
+
+  // This is the final validation pass. Log metrics if we haven't already.
+  MaybeRecordTrackedPreferenceResetCount(pref_store_contents_at_load);
 
   pref_service_->SetString(
       pref_to_write, base::NumberToString(base::Time::Now().ToInternalValue()));
@@ -537,6 +544,18 @@ void PrefHashFilter::SetOnDeferredRevalidationCompleteForTesting(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_deferred_revalidation_complete_for_testing_ = std::move(callback);
+}
+
+void PrefHashFilter::MaybeRecordTrackedPreferenceResetCount(
+    const base::Value::Dict& pref_store_contents) {
+  if (reset_metric_recorded_) {
+    return;
+  }
+  const base::Value::Dict* reset_dict =
+      pref_store_contents.FindDict(user_prefs::kTrackedPreferencesReset);
+  UMA_HISTOGRAM_COUNTS_100("Settings.TrackedPreferenceResets.Count",
+                           reset_dict ? reset_dict->size() : 0);
+  reset_metric_recorded_ = true;
 }
 
 // static
