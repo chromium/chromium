@@ -101,14 +101,25 @@ class GlicInstanceImpl : public GlicInstance,
   void set_conversation_id(const std::string& conversation_id);
 
   // Host::InstanceDelegate:
-  void CreateTab() override;
-  void CreateTask() override;
-  void PerformActions() override;
-  void StopActorTask() override;
-  void PauseActorTask() override;
-  void ResumeActorTask() override;
-  void GetZeroStateSuggestionsAndSubscribe() override;
-  void GetZeroStateSuggestionsForFocusedTab() override;
+  void CreateTab(
+      const ::GURL& url,
+      bool open_in_background,
+      const std::optional<int32_t>& window_id,
+      glic::mojom::WebClientHandler::CreateTabCallback callback) override;
+  void CreateTask(
+      actor::webui::mojom::TaskOptionsPtr options,
+      mojom::WebClientHandler::CreateTaskCallback callback) override;
+  void PerformActions(
+      const std::vector<uint8_t>& actions_proto,
+      mojom::WebClientHandler::PerformActionsCallback callback) override;
+  void StopActorTask(actor::TaskId task_id,
+                     mojom::ActorTaskStopReason stop_reason) override;
+  void PauseActorTask(actor::TaskId task_id,
+                      mojom::ActorTaskPauseReason pause_reason) override;
+  void ResumeActorTask(
+      actor::TaskId task_id,
+      const mojom::GetTabContextOptions& context_options,
+      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,
@@ -117,6 +128,11 @@ class GlicInstanceImpl : public GlicInstance,
   void RegisterConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::RegisterConversationCallback callback) override;
+  void GetZeroStateSuggestionsAndSubscribe(
+      bool has_active_subscription,
+      const mojom::ZeroStateSuggestionsOptions& options,
+      mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+          callback) override;
 
   // GlicUiEmbedder::Delegate:
   void SwitchConversation(
@@ -163,6 +179,7 @@ class GlicInstanceImpl : public GlicInstance,
       std::vector<std::string> returned_suggestions);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<GlicKeyedService> service_;
 
   // The browser window this instance is associated with. This persists even
   // when detached.

@@ -264,31 +264,6 @@ GlicSharingManager& GlicKeyedService::sharing_manager() {
   return *sharing_manager_.get();
 }
 
-void GlicKeyedService::CreateTab() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::CreateTask() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::PerformActions() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::StopActorTask() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::PauseActorTask() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::ResumeActorTask() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::GetZeroStateSuggestionsAndSubscribe() {
-  NOTIMPLEMENTED();
-}
-void GlicKeyedService::GetZeroStateSuggestionsForFocusedTab() {
-  NOTIMPLEMENTED();
-}
-
 void GlicKeyedService::OnZeroStateSuggestionsFetched(
     mojom::ZeroStateSuggestionsPtr suggestions,
     mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
@@ -337,6 +312,16 @@ void GlicKeyedService::RegisterConversation(
     mojom::WebClientHandler::RegisterConversationCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(mojom::RegisterConversationErrorReason::kUnknown);
+}
+
+void GlicKeyedService::GetZeroStateSuggestionsAndSubscribe(
+    bool has_active_subscription,
+    const mojom::ZeroStateSuggestionsOptions& options,
+    mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+        callback) {
+  zero_state_suggestions_manager().ObserveZeroStateSuggestions(
+      has_active_subscription, options.is_first_run, options.supported_tools,
+      std::move(callback));
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {

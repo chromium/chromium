@@ -823,9 +823,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool has_active_subscription,
       mojom::ZeroStateSuggestionsOptionsPtr options,
       GetZeroStateSuggestionsAndSubscribeCallback callback) override {
-    glic_service_->zero_state_suggestions_manager().ObserveZeroStateSuggestions(
-        has_active_subscription, options->is_first_run,
-        options->supported_tools, std::move(callback));
+    host().instance_delegate().GetZeroStateSuggestionsAndSubscribe(
+        has_active_subscription, *options, std::move(callback));
   }
 
   void CreateTab(const ::GURL& url,
@@ -844,8 +843,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         }
       }
     }
-    glic_service_->CreateTab(url, open_in_background, window_id,
-                             std::move(callback));
+    host().instance_delegate().CreateTab(url, open_in_background, window_id,
+                                         std::move(callback));
   }
 
   void OpenGlicSettingsPage(mojom::OpenSettingsOptionsPtr options) override {
@@ -978,12 +977,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
                   CreateTaskCallback callback) override {
-    glic_service_->CreateTask(std::move(options), std::move(callback));
+    host().instance_delegate().CreateTask(std::move(options),
+                                          std::move(callback));
   }
 
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       PerformActionsCallback callback) override {
-    glic_service_->PerformActions(actions_proto, std::move(callback));
+    host().instance_delegate().PerformActions(actions_proto,
+                                              std::move(callback));
   }
 
   void StopActorTask(int32_t task_id,
@@ -993,7 +994,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "StopActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    glic_service_->StopActorTask(actor::TaskId(task_id), stop_reason);
+    host().instance_delegate().StopActorTask(actor::TaskId(task_id),
+                                             stop_reason);
   }
 
   void PauseActorTask(int32_t task_id,
@@ -1003,7 +1005,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "PauseActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    glic_service_->PauseActorTask(actor::TaskId(task_id), pause_reason);
+    host().instance_delegate().PauseActorTask(actor::TaskId(task_id),
+                                              pause_reason);
   }
 
   void ResumeActorTask(int32_t task_id,
@@ -1014,8 +1017,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "ResumeActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    glic_service_->ResumeActorTask(actor::TaskId(task_id), *context_options,
-                                   std::move(callback));
+    host().instance_delegate().ResumeActorTask(
+        actor::TaskId(task_id), *context_options, std::move(callback));
   }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {

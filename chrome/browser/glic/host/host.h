@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -75,22 +76,38 @@ class Host : public GlicSharingManagerProvider {
   class InstanceDelegate {
    public:
     virtual ~InstanceDelegate() = default;
+    virtual void CreateTab(
+        const ::GURL& url,
+        bool open_in_background,
+        const std::optional<int32_t>& window_id,
+        glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
+    virtual void CreateTask(
+        actor::webui::mojom::TaskOptionsPtr options,
+        mojom::WebClientHandler::CreateTaskCallback callback) = 0;
+    virtual void PerformActions(
+        const std::vector<uint8_t>& actions_proto,
+        mojom::WebClientHandler::PerformActionsCallback callback) = 0;
+    virtual void StopActorTask(actor::TaskId task_id,
+                               mojom::ActorTaskStopReason stop_reason) = 0;
+    virtual void PauseActorTask(actor::TaskId task_id,
+                                mojom::ActorTaskPauseReason pause_reason) = 0;
+    virtual void ResumeActorTask(
+        actor::TaskId task_id,
+        const mojom::GetTabContextOptions& context_options,
+        glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) = 0;
 
-    virtual void CreateTab() = 0;
-    virtual void CreateTask() = 0;
-    virtual void PerformActions() = 0;
-    virtual void StopActorTask() = 0;
-    virtual void PauseActorTask() = 0;
-    virtual void ResumeActorTask() = 0;
-
-    virtual void GetZeroStateSuggestionsAndSubscribe() = 0;
-    virtual void GetZeroStateSuggestionsForFocusedTab() = 0;
     virtual void FetchZeroStateSuggestions(
         bool is_first_run,
         std::optional<std::vector<std::string>> supported_tools,
         glic::mojom::WebClientHandler::
             GetZeroStateSuggestionsForFocusedTabCallback callback) = 0;
 
+    virtual void GetZeroStateSuggestionsAndSubscribe(
+        bool has_active_subscription,
+        const mojom::ZeroStateSuggestionsOptions& options,
+        mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+            callback) = 0;
+    
     virtual void RegisterConversation(
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::RegisterConversationCallback callback) = 0;

@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -41,6 +42,7 @@ GlicInstanceImpl::GlicInstanceImpl(
     base::WeakPtr<AttachmentDelegate> attachment_delegate,
     GlicMetrics* metrics)
     : profile_(profile),
+      service_(GlicKeyedService::Get(profile)),
       attachment_delegate_(attachment_delegate),
       id_(instance_id),
       host_(profile_, this, this),
@@ -148,29 +150,51 @@ void GlicInstanceImpl::RegisterConversation(
   std::move(callback).Run(std::nullopt);
 }
 
-void GlicInstanceImpl::CreateTab() {
-  NOTIMPLEMENTED();
+void GlicInstanceImpl::CreateTab(
+    const ::GURL& url,
+    bool open_in_background,
+    const std::optional<int32_t>& window_id,
+    glic::mojom::WebClientHandler::CreateTabCallback callback) {
+  service_->CreateTab(url, open_in_background, window_id, std::move(callback));
 }
-void GlicInstanceImpl::CreateTask() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::CreateTask(
+    actor::webui::mojom::TaskOptionsPtr options,
+    mojom::WebClientHandler::CreateTaskCallback callback) {
+  service_->CreateTask(std::move(options), std::move(callback));
 }
-void GlicInstanceImpl::PerformActions() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::PerformActions(
+    const std::vector<uint8_t>& actions_proto,
+    mojom::WebClientHandler::PerformActionsCallback callback) {
+  service_->PerformActions(actions_proto, std::move(callback));
 }
-void GlicInstanceImpl::StopActorTask() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::StopActorTask(actor::TaskId task_id,
+                                     mojom::ActorTaskStopReason stop_reason) {
+  service_->StopActorTask(task_id, stop_reason);
 }
-void GlicInstanceImpl::PauseActorTask() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::PauseActorTask(
+    actor::TaskId task_id,
+    mojom::ActorTaskPauseReason pause_reason) {
+  service_->PauseActorTask(task_id, pause_reason);
 }
-void GlicInstanceImpl::ResumeActorTask() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::ResumeActorTask(
+    actor::TaskId task_id,
+    const mojom::GetTabContextOptions& context_options,
+    glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
+  service_->ResumeActorTask(task_id, context_options, std::move(callback));
 }
-void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe() {
-  NOTIMPLEMENTED();
-}
-void GlicInstanceImpl::GetZeroStateSuggestionsForFocusedTab() {
-  NOTIMPLEMENTED();
+
+void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
+    bool has_active_subscription,
+    const mojom::ZeroStateSuggestionsOptions& options,
+    mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+        callback) {
+  service_->GetZeroStateSuggestionsAndSubscribe(has_active_subscription,
+                                                options, std::move(callback));
 }
 
 void GlicInstanceImpl::DisassociateFromTab(tabs::TabInterface* tab) {

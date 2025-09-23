@@ -126,26 +126,6 @@ class GlicKeyedService : public KeyedService,
   GlicWindowController& window_controller() const;
   GlicSharingManager& sharing_manager() override;
 
-  // Host::InstanceDelegate:
-  // TODO(crbug.com/445762814): InstanceDelegate methods should replace the
-  // existing methods of the same names.
-  void CreateTab() override;
-  void CreateTask() override;
-  void PerformActions() override;
-  void StopActorTask() override;
-  void PauseActorTask() override;
-  void ResumeActorTask() override;
-  void GetZeroStateSuggestionsAndSubscribe() override;
-  void GetZeroStateSuggestionsForFocusedTab() override;
-  void FetchZeroStateSuggestions(
-      bool is_first_run,
-      std::optional<std::vector<std::string>> supported_tools,
-      glic::mojom::WebClientHandler::
-          GetZeroStateSuggestionsForFocusedTabCallback callback) override;
-  void RegisterConversation(
-      glic::mojom::ConversationInfoPtr info,
-      mojom::WebClientHandler::RegisterConversationCallback callback) override;
-
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
 
@@ -159,12 +139,6 @@ class GlicKeyedService : public KeyedService,
 
   // Private API for the glic WebUI.
 
-  // CreateTab is used by both the FRE page and the glic web client to open a
-  // URL in a new tab.
-  void CreateTab(const ::GURL& url,
-                 bool open_in_background,
-                 const std::optional<int32_t>& window_id,
-                 glic::mojom::WebClientHandler::CreateTabCallback callback);
   virtual void ClosePanel();
   void SetContextAccessIndicator(bool show);
 
@@ -188,21 +162,44 @@ class GlicKeyedService : public KeyedService,
     return is_context_access_indicator_enabled_;
   }
 
-  void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
-                  mojom::WebClientHandler::CreateTaskCallback callback);
-  void PerformActions(const std::vector<uint8_t>& actions_proto,
-                      mojom::WebClientHandler::PerformActionsCallback callback);
+  // Host::InstanceDelegate:
+  // CreateTab is used by both the FRE page and the glic web client to open a
+  // URL in a new tab.
+  void CreateTab(
+      const ::GURL& url,
+      bool open_in_background,
+      const std::optional<int32_t>& window_id,
+      glic::mojom::WebClientHandler::CreateTabCallback callback) override;
+  void CreateTask(
+      actor::webui::mojom::TaskOptionsPtr options,
+      mojom::WebClientHandler::CreateTaskCallback callback) override;
+  void PerformActions(
+      const std::vector<uint8_t>& actions_proto,
+      mojom::WebClientHandler::PerformActionsCallback callback) override;
   void StopActorTask(actor::TaskId task_id,
-                     mojom::ActorTaskStopReason stop_reason);
+                     mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,
-                      mojom::ActorTaskPauseReason pause_reason);
+                      mojom::ActorTaskPauseReason pause_reason) override;
   // TODO(crbug.com/446696379) - The ResumeActorTask Glic API should, like the
   // rest of actor observations, operate in terms of TabObservation rather than
   // TabContext.
   void ResumeActorTask(
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,
-      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
+      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
+  void FetchZeroStateSuggestions(
+      bool is_first_run,
+      std::optional<std::vector<std::string>> supported_tools,
+      glic::mojom::WebClientHandler::
+          GetZeroStateSuggestionsForFocusedTabCallback callback) override;
+  void GetZeroStateSuggestionsAndSubscribe(
+      bool has_active_subscription,
+      const mojom::ZeroStateSuggestionsOptions& options,
+      mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
+          callback) override;
+  void RegisterConversation(
+      glic::mojom::ConversationInfoPtr info,
+      mojom::WebClientHandler::RegisterConversationCallback callback) override;
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 
