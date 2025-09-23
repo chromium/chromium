@@ -1001,6 +1001,22 @@ gfx::NativeViewAccessible DesktopWindowTreeHostWin::GetNativeViewAccessible() {
   return nullptr;
 }
 
+gfx::NativeViewAccessible
+DesktopWindowTreeHostWin::GetParentNativeViewAccessible() {
+  views::Widget* widget = GetWidget();
+  if (!widget) {
+    return nullptr;
+  }
+
+  views::Widget* parent_widget = widget->parent();
+  if (!parent_widget) {
+    return nullptr;
+  }
+
+  views::View* parent_root = parent_widget->GetRootView();
+  return parent_root ? parent_root->GetNativeViewAccessible() : nullptr;
+}
+
 void DesktopWindowTreeHostWin::HandleActivationChanged(bool active) {
   // This can be invoked from HWNDMessageHandler::Init(), at which point we're
   // not in a good state and need to ignore it.

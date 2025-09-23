@@ -154,6 +154,12 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOnScreenMode);
 AX_BASE_EXPORT bool IsAccessibilityOnScreenAXModeEnabled();
 
 #if BUILDFLAG(IS_WIN)
+// This is a killswitch. Controls whether
+// HWNDMessageHandler::GetParentOfAXFragmentRoot returns nullptr (legacy) or
+// delegates to GetParentNativeViewAccessible().
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityWinAXFragmentRootParent);
+AX_BASE_EXPORT bool IsAccessibilityWinAXFragmentRootParentEnabled();
+
 // When enabled, modify the exposed UIA accessibility tree to match Narrator's
 // expectations. This fixes a bug keeping Narrator's cursor contained within
 // the web content.

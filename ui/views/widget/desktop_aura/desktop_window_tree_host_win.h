@@ -226,6 +226,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   gfx::Size DIPToScreenSize(const gfx::Size& dip_size) const override;
   void ResetWindowControls() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
+  gfx::NativeViewAccessible GetParentNativeViewAccessible() override;
   void HandleActivationChanged(bool active) override;
   bool HandleAppCommand(int command) override;
   void HandleCancelMode() override;
