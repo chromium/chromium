@@ -54,12 +54,14 @@ import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider.Observer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.ViewResourceCoordinatorLayout;
@@ -80,7 +82,7 @@ import java.util.function.Supplier;
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, DesktopWindowStateManager.AppHeaderObserver, TopControlLayer {
+        implements ControlContainer, AppHeaderObserver, TopControlLayer, Observer {
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
@@ -104,6 +106,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
     private @Nullable TopControlsStacker mTopControlsStacker;
+    private ToolbarDataProvider mToolbarDataProvider;
 
     /**
      * Constructs a new control container.
@@ -250,7 +253,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             mToolbarView.setVisibility(View.GONE);
             mToolbarView.removeView(mLocationBarView);
             mToolbarContainer.addView(mLocationBarView);
-            setBackgroundColor(mToolbar.getPrimaryColor());
+            setBackgroundColor(mToolbarDataProvider.getPrimaryColor());
         } else {
             assert mLocationBarView != null
                     : "Trying to restore location bar view to toolbar without removing it first";
@@ -290,6 +293,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         if (mXrSpaceModeObservableSupplier != null) {
             mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
+        }
+        if (mToolbarDataProvider != null) {
+            mToolbarDataProvider.removeToolbarDataProviderObserver(this);
         }
     }
 
@@ -381,10 +387,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
-            TopControlsStacker topControlsStacker) {
+            TopControlsStacker topControlsStacker,
+            ToolbarDataProvider toolbarDataProvider) {
         mToolbar = toolbar;
         mIncognito = isIncognito;
         mTopControlsStacker = topControlsStacker;
+        mToolbarDataProvider = toolbarDataProvider;
+        mToolbarDataProvider.addToolbarDataProviderObserver(this);
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
         mToolbarContainer.setPostInitializationDependencies(
@@ -475,6 +484,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public void setToolbarContainerDragListener(OnDragListener toolbarContainerDragListener) {
         mToolbarContainerDragListener = toolbarContainerDragListener;
         mToolbarContainer.setOnDragListener(mToolbarContainerDragListener);
+    }
+
+    @Override
+    public void onPrimaryColorChanged() {
+        if (mShowLocationBarOnly) {
+            setBackgroundColor(mToolbarDataProvider.getPrimaryColor());
+        }
     }
 
     /** The layout that handles generating the toolbar view resource. */

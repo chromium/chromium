@@ -549,7 +549,7 @@ public class ToolbarControlContainerTest {
     @Test
     public void testShowLocationBarOnly() {
         doReturn(mLocationBarView).when(mToolbar).removeLocationBarView();
-        doReturn(Color.RED).when(mToolbar).getPrimaryColor();
+        doReturn(Color.RED).when(mToolbarDataProvider).getPrimaryColor();
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
                         mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
@@ -564,7 +564,8 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mTopControlsStacker);
+                mTopControlsStacker,
+                mToolbarDataProvider);
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
@@ -595,7 +596,12 @@ public class ToolbarControlContainerTest {
         verify(mProgressBar).setVisibility(View.GONE);
         verify(mToolbarView).setVisibility(View.GONE);
         verify(mToolbarView).removeView(mLocationBarView);
+
         assertEquals(Color.RED, ((ColorDrawable) controlContainer.getBackground()).getColor());
+        doReturn(Color.GREEN).when(mToolbarDataProvider).getPrimaryColor();
+        controlContainer.onPrimaryColorChanged();
+        assertEquals(Color.GREEN, ((ColorDrawable) controlContainer.getBackground()).getColor());
+
         ToolbarViewResourceCoordinatorLayout toolbarViewResourceFrameLayout =
                 controlContainer.getToolbarContainerForTesting();
         assertEquals(
@@ -629,7 +635,8 @@ public class ToolbarControlContainerTest {
                 mBrowserStateBrowserControlsVisibilityDelegate,
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
-                mTopControlsStacker);
+                mTopControlsStacker,
+                mToolbarDataProvider);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);

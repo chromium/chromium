@@ -598,6 +598,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onPrimaryColorChanged();
         }
+        for (ToolbarDataProvider.Observer observer : mToolbarDataObservers) {
+            observer.onPrimaryColorChanged();
+        }
     }
 
     @Override
