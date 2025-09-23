@@ -863,8 +863,8 @@ class LensOverlayControllerTranslatePromoTest
 //  (1) User opens the Lens Overlay.
 //  (2) Promo shows. After, user clicks the translate button.
 //  (3) Promo hides.
-// TODO(crbug.com/392907122): Re-enable this test once the translate button is in a
-// launchable state.
+// TODO(crbug.com/392907122): Re-enable this test once the translate button is
+// in a launchable state.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
                        DISABLED_ShowsTranslatePromo) {
   WaitForTemplateURLServiceToLoad();
@@ -945,7 +945,6 @@ IN_PROC_BROWSER_TEST_F(LensPreselectionBubbleInteractiveUiTest,
                   WaitForHide(LensOverlayController::kOverlayId));
 }
 
-
 using LensOverlayControllerReturnToPageCUJTest = LensOverlayControllerCUJTest;
 
 // This tests the following CUJ:
@@ -1005,8 +1004,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReturnToPageCUJTest,
                    NavigateWebContents(kActiveTab, second_url)),
 
       // Ensure overlay is not visible but side panel is.
-      WaitForHide(kOverlayId),
-      EnsureNotPresent(kOverlayId),
+      WaitForHide(kOverlayId), EnsureNotPresent(kOverlayId),
       EnsurePresent(LensOverlayController::kOverlaySidePanelWebViewId));
 }
 
@@ -1294,7 +1292,8 @@ class LensOverlayControllerEduActionChipTest
         {base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
             {{"url-allow-filters", "[\"*\"]"},
-             {"url-path-match-allow-filters", "[\"select\"]"}})},
+             {"url-path-match-allow-filters", "[\"select\"]"},
+             {"max-shown-count", "5"}})},
         {lens::features::kLensOverlayStraightToSrp});
   }
 };

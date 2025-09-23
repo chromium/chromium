@@ -912,6 +912,10 @@ extern std::string GetLensOverlayEduHashedDomainBlockFilters();
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayEduActionChipDisabledByGlic();
 
+// The number of times the EDU action chip can be shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayEduActionChipMaxShownCount();
+
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayKeyboardSelectionEnabled();

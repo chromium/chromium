@@ -299,6 +299,7 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/organization/prefs.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -2189,6 +2190,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   gcm::RegisterProfilePrefs(registry);
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
   HatsServiceDesktop::RegisterProfilePrefs(registry);
+  lens::prefs::RegisterFeatureFlagProfilePrefs(registry);
   lens::prefs::RegisterProfilePrefs(registry);
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
   ManagementUI::RegisterProfilePrefs(registry);
