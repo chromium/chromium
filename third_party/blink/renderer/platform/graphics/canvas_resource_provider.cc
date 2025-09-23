@@ -184,11 +184,13 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
           ContextProviderWrapper()->ContextProvider().RasterContextProvider())),
       is_accelerated_(is_accelerated),
       shared_image_usage_flags_(shared_image_usage_flags),
-      use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
-                                                   ->ContextProvider()
-                                                   .GetCapabilities()
-                                                   .gpu_rasterization) {
-  CHECK(use_oop_rasterization_ || !is_accelerated_);
+      use_oop_rasterization_(is_accelerated) {
+  if (is_accelerated_) {
+    CHECK(ContextProviderWrapper()
+              ->ContextProvider()
+              .GetCapabilities()
+              .gpu_rasterization);
+  }
 
   if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
