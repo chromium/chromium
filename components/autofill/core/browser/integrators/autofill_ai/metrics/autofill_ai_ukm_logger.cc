@@ -366,20 +366,40 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     return;
   }
 
-  // TODO(crbug.com/432645177): Emit more than just one FieldType and
-  // FieldTypeGroup.
-  ukm::builders::AutofillAi_FieldEvent(ukm_source_id)
-      .SetFormSignature(HashFormSignature(form.form_signature()))
-      .SetFormSessionIdentifier(form_session_identifier)
-      .SetFormSessionEventOrder(form_event_order)
-      .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFieldSessionIdentifier(field_session_identifier)
-      .SetFormatStringSource(base::to_underlying(field.format_string_source()))
-      .SetFieldType(field_type)
-      .SetAiFieldType(ai_field_type)
-      .SetEventType(base::to_underlying(event_type))
-      .SetEntityType(base::to_underlying(entity_type.name()))
-      .Record(client_->GetUkmRecorder());
+  auto next_field_type = [&field_types, it = field_types.begin()]() mutable {
+    return it != field_types.end() ? std::optional<int64_t>(*it++)
+                                   : std::nullopt;
+  };
+  auto next_ai_field_type = [&ai_field_types,
+                             it = ai_field_types.begin()]() mutable {
+    return it != ai_field_types.end() ? std::optional<int64_t>(*it++)
+                                      : std::nullopt;
+  };
+  using UkmEvent = ukm::builders::AutofillAi_FieldEvent;
+  auto maybe_set = [](UkmEvent& event, auto setter,
+                      std::optional<int64_t> value) {
+    if (value.has_value()) {
+      std::invoke(setter, event, *value);
+    }
+  };
+  UkmEvent e(ukm_source_id);
+  e.SetFormSignature(HashFormSignature(form.form_signature()));
+  e.SetFormSessionIdentifier(form_session_identifier);
+  e.SetFormSessionEventOrder(form_event_order);
+  e.SetFieldSignature(HashFieldSignature(field.GetFieldSignature()));
+  e.SetFieldSessionIdentifier(field_session_identifier);
+  e.SetFormatStringSource(base::to_underlying(field.format_string_source()));
+  maybe_set(e, &UkmEvent::SetFieldType, next_field_type());
+  maybe_set(e, &UkmEvent::SetFieldType2, next_field_type());
+  maybe_set(e, &UkmEvent::SetFieldType3, next_field_type());
+  maybe_set(e, &UkmEvent::SetFieldType4, next_field_type());
+  maybe_set(e, &UkmEvent::SetAiFieldType, next_ai_field_type());
+  maybe_set(e, &UkmEvent::SetAiFieldType2, next_ai_field_type());
+  maybe_set(e, &UkmEvent::SetAiFieldType3, next_ai_field_type());
+  maybe_set(e, &UkmEvent::SetAiFieldType4, next_ai_field_type());
+  e.SetEventType(base::to_underlying(event_type));
+  e.SetEntityType(base::to_underlying(entity_type.name()));
+  e.Record(client_->GetUkmRecorder());
 }
 
 bool AutofillAiUkmLogger::CanLogUkm(ukm::SourceId ukm_source_id) const {

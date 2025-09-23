@@ -49,8 +49,8 @@ namespace autofill {
 
 namespace {
 
-using base::Bucket;
-using base::BucketsAre;
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;

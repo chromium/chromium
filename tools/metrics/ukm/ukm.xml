@@ -2617,7 +2617,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="OverallType" enum="AutofillFieldType">
     <summary>
-      Field's overall |FieldType|. See: autofill::FieldType
+      Field's first overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType2" enum="AutofillFieldType">
+    <summary>
+      Field's second overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType3" enum="AutofillFieldType">
+    <summary>
+      Field's third overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType4" enum="AutofillFieldType">
+    <summary>
+      Field's fourth overall `FieldType`. See `AutofillType::GetTypes()`.
     </summary>
   </metric>
 </event>
@@ -2760,7 +2775,22 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldOverallType">
     <summary>
-      Field's overall |FieldType|. See |AutofillField.GetStorableType()|.
+      Field's first overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType2">
+    <summary>
+      Field's second overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType3">
+    <summary>
+      Field's third overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType4">
+    <summary>
+      Field's fourth overall `FieldType`. See `AutofillType::GetTypes()`.
     </summary>
   </metric>
   <metric name="FieldSignature">
@@ -2772,7 +2802,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldTypeGroup">
     <summary>
-      Field's |FieldTypeGroup|. See |AutofillType.group()|.
+      Field's first `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup2">
+    <summary>
+      Field's second `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup3">
+    <summary>
+      Field's third `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup4">
+    <summary>
+      Field's fourth `FieldTypeGroup`. See `AutofillType::GetGroups()`.
     </summary>
   </metric>
   <metric name="FormSignature">
@@ -3012,7 +3057,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldTypeGroup">
     <summary>
-      Field's |FieldTypeGroup|. See |AutofillType.group()|.
+      Field's first `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup2">
+    <summary>
+      Field's second `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup3">
+    <summary>
+      Field's third `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup4">
+    <summary>
+      Field's fourth `FieldTypeGroup`. See `AutofillType::GetGroups()`.
     </summary>
   </metric>
   <metric name="FormSignature">
@@ -3616,7 +3676,26 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="AiFieldType">
     <summary>
-      The server AI type of the field as classified by autofill's ML model.
+      The first server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType2">
+    <summary>
+      The second server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType3">
+    <summary>
+      The third server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType4">
+    <summary>
+      The fourth server AI type of the field as classified by Autofill's ML
+      model.
     </summary>
   </metric>
   <metric name="EntityType">
@@ -3649,7 +3728,26 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldType">
     <summary>
-      The type of the field as classified by autofill.
+      The first `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType2">
+    <summary>
+      The second `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType3">
+    <summary>
+      The third `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType4">
+    <summary>
+      The fourth `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
     </summary>
   </metric>
   <metric name="FormatStringSource">
