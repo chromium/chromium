@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 
+@protocol LocationBarBadgeConsumer;
+
 // Mediator for the location bar badge.
 // TODO(crbug.com/445719031): Implement this.
 @interface LocationBarBadgeMediator
@@ -19,6 +21,9 @@
                 ContextualPanelEntrypointVisibilityDelegate,
                 IncognitoBadgeViewVisibilityDelegate,
                 ReaderModeChipVisibilityDelegate>
+
+@property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BADGE_LOCATION_BAR_BADGE_MEDIATOR_H_

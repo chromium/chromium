@@ -296,24 +296,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                                    .viewController.view];
   }
 
-  // TODO(crbug.com/445784670): Connect LocationBarViewController to
-  // BadgeContainerView.
-  if (IsAskGeminiChipEnabled()) {
-    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    LocationBarBadgeMediator* locationBarBadgeMediator =
-        self.locationBarBadgeCoordinator.mediator;
-    // TODO(crbug.com/445786272): Properly create mediator delegate.
-    self.readerModeChipCoordinator.visibilityDelegate =
-        locationBarBadgeMediator;
-    self.contextualPanelEntrypointCoordinator.visibilityDelegate =
-        locationBarBadgeMediator;
-    self.incognitoBadgeViewController.visibilityDelegate =
-        locationBarBadgeMediator;
-    self.badgeViewController.visibilityDelegate = locationBarBadgeMediator;
-  }
-
   // Create button factory that wil be used by the ViewController to get
   // BadgeButtons for a BadgeType.
   BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
@@ -363,6 +345,26 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     self.incognitoBadgeMediator.consumer = self.incognitoBadgeViewController;
     _incognitoBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
         fullscreenController, self.incognitoBadgeViewController);
+  }
+
+  // TODO(crbug.com/445784670): Connect LocationBarViewController to
+  // BadgeContainerView.
+  if (IsAskGeminiChipEnabled()) {
+    // Overrides visibility delegates to use badge view from
+    // LocationBarBadgeContainer.
+    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    LocationBarBadgeMediator* locationBarBadgeMediator =
+        self.locationBarBadgeCoordinator.mediator;
+    // TODO(crbug.com/445786272): Properly create mediator delegate.
+    self.readerModeChipCoordinator.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.contextualPanelEntrypointCoordinator.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.incognitoBadgeViewController.visibilityDelegate =
+        locationBarBadgeMediator;
+    self.badgeViewController.visibilityDelegate = locationBarBadgeMediator;
   }
 
   self.mediator = [[LocationBarMediator alloc] initWithIsIncognito:isIncognito];

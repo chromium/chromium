@@ -7,11 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_consumer.h"
+
 @class LocationBarBadgesContainerView;
 
 // View controller for the location bar badge.
 // TODO(crbug.com/445719031): Implement this.
-@interface LocationBarBadgeViewController : UIViewController
+@interface LocationBarBadgeViewController
+    : UIViewController <LocationBarBadgeConsumer>
 
 @property(nonatomic, readonly)
     LocationBarBadgesContainerView* badgesContainerView;

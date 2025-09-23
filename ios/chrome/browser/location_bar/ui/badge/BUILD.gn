@@ -4,6 +4,8 @@
 
 source_set("badge") {
   sources = [
+    "badge_type.h",
+    "location_bar_badge_consumer.h",
     "location_bar_badge_coordinator.h",
     "location_bar_badge_coordinator.mm",
     "location_bar_badge_mediator.h",

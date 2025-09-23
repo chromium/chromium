@@ -14,6 +14,7 @@
 - (void)start {
   _viewController = [[LocationBarBadgeViewController alloc] init];
   _mediator = [[LocationBarBadgeMediator alloc] init];
+  _mediator.consumer = _viewController;
 }
 
 - (void)stop {
