@@ -75,6 +75,7 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_EMPHASIZED))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
           .Build());
 
   AddChildView(
@@ -84,6 +85,7 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
           .Build());
 
   // Buttons
