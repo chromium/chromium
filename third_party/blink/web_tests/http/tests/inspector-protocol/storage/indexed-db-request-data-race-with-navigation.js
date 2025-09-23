@@ -2,11 +2,12 @@
   const { page, session, dp } = await testRunner.startBlank(
     'Tests that IndexedDB protocol commands work in a frame.');
 
+  const dbName = 'TestDB';
   const securityOrigin = await session.evaluate('location.origin');
 
-  await session.evaluateAsync(`
-    new Promise(resolve => {
-      const request = indexedDB.open('TestDB', 1);
+  await session.evaluateAsync(dbName => {
+    return new Promise(resolve => {
+      const request = indexedDB.open(dbName, 1);
       request.onupgradeneeded = e => {
         const db = e.target.result;
         const store = db.createObjectStore('TestObjectStore', {keyPath: 'id'});
@@ -16,14 +17,16 @@
         resolve('done');
       };
     });
-  `);
+  }, dbName);
 
   await dp.IndexedDB.enable();
   await dp.Runtime.enable();
 
   const dbNamesResult =
     await dp.IndexedDB.requestDatabaseNames({ securityOrigin });
-  const dbName = dbNamesResult.result.databaseNames[0];
+  const dbNameFound = dbNamesResult.result.databaseNames.includes(dbName);
+  testRunner.log(`Database ${dbName} found: ${dbNameFound}`);
+
   dp.IndexedDB.requestData({
     securityOrigin: securityOrigin,
     databaseName: dbName,
@@ -54,5 +57,16 @@
   });
 
   testRunner.log('Wait completed without a crash.');
+
+  await dp.Page.navigate({url: securityOrigin});
+  await session.evaluateAsync(dbNameToDelete => {
+    return new Promise(resolve => {
+      const request = indexedDB.deleteDatabase(dbNameToDelete);
+      request.onsuccess = () => resolve();
+      request.onerror = () => resolve();
+      request.onblocked = () => resolve();
+    });
+  }, dbName);
+
   testRunner.completeTest();
 })
