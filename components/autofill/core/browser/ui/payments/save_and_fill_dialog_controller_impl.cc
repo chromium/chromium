@@ -253,20 +253,24 @@ void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
       user_provided_card_save_and_fill_details.security_code.has_value()
           ? autofill_metrics::SaveAndFillDialogResult::kAcceptedWithCvc
           : autofill_metrics::SaveAndFillDialogResult::kAcceptedWithoutCvc);
-  std::move(card_save_and_fill_dialog_callback_)
-      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
-               kAccepted,
-           user_provided_card_save_and_fill_details);
+  if (!card_save_and_fill_dialog_callback_.is_null()) {
+    std::move(card_save_and_fill_dialog_callback_)
+        .Run(payments::PaymentsAutofillClient::
+                 CardSaveAndFillDialogUserDecision::kAccepted,
+             user_provided_card_save_and_fill_details);
+  }
 }
 
 void SaveAndFillDialogControllerImpl::OnUserCanceledDialog() {
   autofill_metrics::LogSaveAndFillDialogResult(
       autofill_metrics::SaveAndFillDialogResult::kCanceled);
-  std::move(card_save_and_fill_dialog_callback_)
-      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
-               kDeclined,
-           /*user_provided_card_save_and_fill_details=*/{});
   Dismiss();
+  if (!card_save_and_fill_dialog_callback_.is_null()) {
+    std::move(card_save_and_fill_dialog_callback_)
+        .Run(payments::PaymentsAutofillClient::
+                 CardSaveAndFillDialogUserDecision::kDeclined,
+             /*user_provided_card_save_and_fill_details=*/{});
+  }
 }
 
 base::WeakPtr<SaveAndFillDialogController>
