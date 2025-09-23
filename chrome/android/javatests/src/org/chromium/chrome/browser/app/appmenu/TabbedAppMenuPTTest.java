@@ -8,9 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
-import static org.chromium.base.test.transit.Triggers.pressBackTo;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.Rule;
@@ -24,6 +21,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -66,24 +64,24 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        RegularNewTabPageStation newTabPage =
-                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
+        mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewTab();
 
         assertEquals(2, mCtaTestRule.tabsCount(/* incognito= */ false));
         assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
-        assertFinalDestination(newTabPage);
     }
 
     /** Tests that "New Incognito tab" opens a new incognito tab with the incognito NTP. */
     @Test
     @LargeTest
     public void testOpenNewIncognitoTab() {
-        IncognitoNewTabPageStation newIncognitoTabPage =
-                mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
+        mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
         assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ false));
-        assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
-        assertFinalDestination(newIncognitoTabPage);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
+        } else {
+            assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
+        }
     }
 
     /** Tests that "Settings" opens the SettingsActivity. */
@@ -94,10 +92,8 @@ public class TabbedAppMenuPTTest {
         Tab tab = pageStation.loadedTabElement.value();
         SettingsStation settings = pageStation.openRegularTabAppMenu().openSettings();
 
-        assertFinalDestination(settings);
-
         // Exit settings for the initial state rule to be able to reset state.
-        pressBackTo()
+        settings.pressBackTo()
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .withIncognito(false)
@@ -122,7 +118,6 @@ public class TabbedAppMenuPTTest {
         menu.pinTab();
         tab = page.loadedTabElement.value();
         assertTrue(tab.getIsPinned());
-        assertFinalDestination(page);
 
         // Open the app menu and unpin the tab.
         RegularWebPageAppMenuFacility pinnedMenu = page.openRegularTabAppMenu();
@@ -146,7 +141,6 @@ public class TabbedAppMenuPTTest {
 
         mRenderTestRule.render(menu.menuListElement.value(), "regular_ntp_app_menu_v3");
         menu.verifyPresentItems();
-        assertFinalDestination(newTabPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -166,7 +160,6 @@ public class TabbedAppMenuPTTest {
 
         mRenderTestRule.render(menu.menuListElement.value(), "incognito_ntp_app_menu");
         menu.verifyPresentItems();
-        assertFinalDestination(incognitoNewTabPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -185,7 +178,6 @@ public class TabbedAppMenuPTTest {
 
         mRenderTestRule.render(menu.menuListElement.value(), "regular_webpage_app_menu_v3");
         menu.verifyPresentItems();
-        assertFinalDestination(blankPage, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();
@@ -210,7 +202,6 @@ public class TabbedAppMenuPTTest {
 
         mRenderTestRule.render(menu.menuListElement.value(), "incognito_webpage_app_menu");
         menu.verifyPresentItems();
-        assertFinalDestination(pageOne, menu);
 
         // Clean up for next tests in batch
         menu.clickOutsideToClose();

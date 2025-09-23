@@ -94,6 +94,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int PIN_TAB = R.id.pin_tab_menu_id;
     public static final @IdRes int UNPIN_TAB = R.id.unpin_tab_menu_id;
     public static final @IdRes int NEW_WINDOW_ID = R.id.new_window_menu_id;
+    public static final @IdRes int NEW_INCOGNITO_WINDOW_ID = R.id.new_incognito_window_menu_id;
     public static final @IdRes int HISTORY_ID = R.id.open_history_menu_id;
     public static final @IdRes int DELETE_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
     public static final @IdRes int DOWNLOADS_ID = R.id.downloads_menu_id;
@@ -114,13 +115,18 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     }
 
     /** Default behavior for "Open new Incognito tab". */
-    protected IncognitoNewTabPageStation createIncognitoNewTabPageStation() {
+    protected IncognitoNewTabPageStation createNewIncognitoTabPageStation() {
         return IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build();
     }
 
     /** Default behavior for "Open new window". */
     protected RegularNewTabPageStation createNewWindowStation() {
         return RegularNewTabPageStation.newBuilder().withEntryPoint().build();
+    }
+
+    /** Default behavior for "Open new incognito window". */
+    protected IncognitoNewTabPageStation createNewIncognitoWindowStation() {
+        return IncognitoNewTabPageStation.newBuilder().withEntryPoint().build();
     }
 
     /** Default behavior for "Delete browsing data". */

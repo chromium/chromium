@@ -11,6 +11,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TrafficControl;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @NullMarked
 public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implements TestRule {
+    private static final String TAG = "Transit";
     private final BlankCTATabInitialStateRule mInitialStateRule;
     private final BatchedPublicTransitRule<CtaPageStation> mBatchedRule;
     private final RuleChain mChain;
@@ -55,16 +57,21 @@ public class AutoResetCtaTransitTestRule extends BaseCtaTransitTestRule implemen
     /**
      * Start the batched test in a blank page.
      *
-     * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
+     * <p>From the second test onwards, tab state was reset by {@link BlankCTATabInitialStateRule}.
+     * Extra windows are closed here.
      */
     public WebPageStation startOnBlankPage() {
-        // Empty in the first test, should be size 1 from the second test onwards.
+        // Empty in the first test, should be size 1+ from the second test onwards.
+        // When we encounter size 2+, close the extra windows left by the previous test.
         List<Station<?>> activeStations = TrafficControl.getActiveStations();
-        if (activeStations.size() > 1) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Expected at most one active station, found %d",
-                            activeStations.size()));
+        int numWindows = activeStations.size();
+        if (numWindows > 1) {
+            Log.i(TAG, "%d active Stations, close all windows but the first", numWindows);
+            Log.i(TAG, "Keep first window at %s", activeStations.get(0));
+            for (Station<?> station : activeStations.subList(1, numWindows)) {
+                Log.i(TAG, "Close window at %s", station);
+                station.getActivity().finish();
+            }
         }
 
         // Remove the last station of the previous test from |activeStations| to go to an entry

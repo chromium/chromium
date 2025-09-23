@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit.page;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 
 /** The app menu shown when pressing ("...") in a regular Tab showing a web page. */
@@ -14,17 +15,25 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
     @Override
     protected void declareItems(ItemsBuilder items) {
         mNewTab = declareMenuItem(items, NEW_TAB_ID);
-        mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+        }
+
         if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
         }
+
         if (ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled()
                 || ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
             // At most one of these exist.
             mPinTab = declarePossibleMenuItem(items, PIN_TAB);
             mUnpinTab = declarePossibleMenuItem(items, UNPIN_TAB);
         }
+
         mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+        }
 
         declareMenuItem(items, HISTORY_ID);
         mQuickDelete = declareMenuItem(items, DELETE_BROWSING_DATA_ID);

@@ -263,6 +263,7 @@ android_library("chrome_java_transit") {
     "//chrome/browser/hub:factory_java",
     "//chrome/browser/hub:java",
     "//chrome/browser/hub/internal:java",
+    "//chrome/browser/incognito:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",

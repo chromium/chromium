@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
@@ -41,8 +42,9 @@ import java.util.Set;
 public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         extends CtaAppMenuFacility<HostPageStationT> {
 
-    protected Item mNewTab;
-    protected Item mNewIncognitoTab;
+    protected @Nullable Item mNewTab;
+    protected @Nullable Item mNewIncognitoTab;
+    protected @Nullable Item mNewIncognitoWindow;
     protected @Nullable Item mAddToGroup;
     protected Item mNewWindow;
     protected Item mSettings;
@@ -55,7 +57,13 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         // TODO: Declare more common menu items
 
         mNewTab = declareMenuItem(items, NEW_TAB_ID);
-        mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mNewIncognitoWindow = declareMenuItem(items, NEW_INCOGNITO_WINDOW_ID);
+        } else {
+            mNewIncognitoTab = declareMenuItem(items, NEW_INCOGNITO_TAB_ID);
+        }
+
         if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
             mAddToGroup = declareMenuItem(items, ADD_TO_GROUP_ID);
         }
@@ -74,9 +82,20 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         return mNewTab.scrollToAndSelectTo().arriveAt(createNewTabPageStation());
     }
 
-    /** Select "New Incognito tab" from the app menu. */
+    /** Select "New Incognito tab" or "New Incognito window" from the app menu. */
     public IncognitoNewTabPageStation openNewIncognitoTab() {
-        return mNewIncognitoTab.scrollToAndSelectTo().arriveAt(createIncognitoNewTabPageStation());
+        if (mNewIncognitoTab != null) {
+            return mNewIncognitoTab
+                    .scrollToAndSelectTo()
+                    .arriveAt(createNewIncognitoTabPageStation());
+        } else {
+            assert mNewIncognitoWindow != null
+                    : "App menu is expected to show 'New Incognito window' or 'New Incognito tab";
+            return mNewIncognitoWindow
+                    .scrollToAndSelectTo()
+                    .inNewTask()
+                    .arriveAt(createNewIncognitoWindowStation());
+        }
     }
 
     /** Select "New window" from the app menu. */
