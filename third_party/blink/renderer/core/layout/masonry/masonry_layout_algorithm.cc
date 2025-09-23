@@ -303,6 +303,24 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         running_positions.FinalizeItemSpanAndGetMaxPosition(
             start_offset, masonry_item, track_collection);
 
+    // During track sizing, we may force a specific inline size on an item
+    // if the available space in that direction is indefinite, particularly for
+    // orthogonal items. In Grid, that constraint is maintained during layout
+    // due to the two dimensional nature of Grid tracks. In Masonry, recompute
+    // this fixed size to guarantee we maintain the same constraint during track
+    // sizing and layout.
+    std::optional<LayoutUnit> opt_fixed_inline_size;
+    if (is_for_layout) {
+      const ConstraintSpace space_for_measure =
+          CreateConstraintSpaceForMeasure(masonry_item);
+      if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
+        const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
+                                      masonry_item.node, space_for_measure)
+                                      .sizes;
+        opt_fixed_inline_size = sizes.max_size;
+      }
+    }
+
     // TODO(celestepan): Rename `containing_rect` to `item_rect` or something
     // that better represents the fact that it only contains the current masonry
     // item we are working with.
@@ -314,7 +332,8 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 
     const ConstraintSpace space =
         is_for_layout ? CreateConstraintSpaceForLayout(
-                            masonry_item, track_collection, &containing_rect)
+                            masonry_item, track_collection,
+                            opt_fixed_inline_size, &containing_rect)
                       : CreateConstraintSpaceForMeasure(
                             masonry_item, /*needs_auto_track_size=*/false,
                             CalculateItemInlineContribution(masonry_item,
@@ -1001,6 +1020,7 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
     const GridItemData& masonry_item,
     const GridLayoutTrackCollection& track_collection,
+    std::optional<LayoutUnit> opt_fixed_inline_size,
     LogicalRect* containing_rect) const {
   const bool is_for_columns = track_collection.Direction() == kForColumns;
 
@@ -1018,10 +1038,38 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
     containing_rect->size = containing_size;
   }
 
+  // Unlike grid, in masonry, we are only contrained by the final track sizing
+  // in one dimension. However, at track sizing, we may force a block/inline
+  // constraint for orthogonal items. This logic ensures we enforce the same
+  // constraint at layout, as well. Otherwise, we can end up with odd layout and
+  // overflow of items that we don't get in grid.
+  LogicalSize fixed_available_size = kIndefiniteLogicalSize;
+  if (opt_fixed_inline_size) {
+    const auto writing_mode = GetConstraintSpace().GetWritingMode();
+    const auto item_writing_mode = masonry_item.node.Style().GetWritingMode();
+    const bool is_parallel =
+        IsParallelWritingMode(item_writing_mode, writing_mode);
+    const bool used_block_constraint_at_track_sizing =
+        is_for_columns ? !is_parallel : is_parallel;
+    if (used_block_constraint_at_track_sizing) {
+      if (is_parallel) {
+        if (containing_size.inline_size == kIndefiniteSize) {
+          CHECK_NE(containing_size.block_size, kIndefiniteSize);
+          fixed_available_size.inline_size = *opt_fixed_inline_size;
+        }
+      } else {
+        if (containing_size.block_size == kIndefiniteSize) {
+          CHECK_NE(containing_size.inline_size, kIndefiniteSize);
+          fixed_available_size.block_size = *opt_fixed_inline_size;
+        }
+      }
+    }
+  }
+
   // TODO(almaher): Will likely need special fixed available size handling for
   // submasonry.
   return CreateConstraintSpace(masonry_item, containing_size,
-                               /*fixed_available_size=*/kIndefiniteLogicalSize,
+                               fixed_available_size,
                                LayoutResultCacheSlot::kLayout);
 }
 

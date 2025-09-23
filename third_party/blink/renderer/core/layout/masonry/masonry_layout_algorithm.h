@@ -161,6 +161,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   ConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& masonry_item,
       const GridLayoutTrackCollection& track_collection,
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       LogicalRect* containing_rect = nullptr) const;
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
