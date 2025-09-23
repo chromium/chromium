@@ -808,10 +808,13 @@ HostManager& GlicKeyedService::host_manager() {
   return window_controller().host_manager();
 }
 
-GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
-    BrowserWindowInterface* bwi) {
-  return window_controller().GetInstanceForTab(
-      bwi ? bwi->GetActiveTabInterface() : nullptr);
+std::vector<Host*> GlicKeyedService::GetAllHosts() {
+  return host_manager().GetAllHosts();
+}
+
+Host* GlicKeyedService::GetHostForActiveTab(BrowserWindowInterface* bwi) {
+  return window_controller().GetHostForTab(bwi ? bwi->GetActiveTabInterface()
+                                               : nullptr);
 }
 
 }  // namespace glic

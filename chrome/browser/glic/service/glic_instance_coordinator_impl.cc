@@ -61,6 +61,14 @@ HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   return *host_manager_;
 }
 
+std::vector<Host*> GlicInstanceCoordinatorImpl::GetHosts() {
+  std::vector<Host*> hosts;
+  for (const auto& [id, instance] : instances_) {
+    hosts.push_back(&instance->host());
+  }
+  return hosts;
+}
+
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -97,6 +105,13 @@ void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
     return;
   }
   RemoveInstance(instance);
+}
+
+Host* GlicInstanceCoordinatorImpl::GetHostForTab(tabs::TabInterface* tab) {
+  if (GlicInstance* instance = GetInstanceImplForTab(tab)) {
+    return &instance->host();
+  }
+  return nullptr;
 }
 
 std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {

@@ -639,6 +639,14 @@ HostManager& GlicWindowControllerImpl::host_manager() {
   return *host_manager_;
 }
 
+std::vector<Host*> GlicWindowControllerImpl::GetHosts() {
+  return {&host_};
+}
+
+Host* GlicWindowControllerImpl::GetHostForTab(tabs::TabInterface* tab) {
+  return &host_;
+}
+
 std::vector<GlicInstance*> GlicWindowControllerImpl::GetInstances() {
   return {this};
 }

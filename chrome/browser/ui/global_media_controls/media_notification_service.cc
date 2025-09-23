@@ -59,7 +59,6 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #endif
 
 namespace mojom {
@@ -671,14 +670,13 @@ bool MediaNotificationService::IsIdBlocked(
   }
 
   // Block if the request came from any glic instance.
-  for (glic::GlicInstance* instance :
-       glic_keyed_service->window_controller().GetInstances()) {
-    if (!instance->host().webui_contents()) {
+  for (glic::Host* host : glic_keyed_service->GetAllHosts()) {
+    if (!host->webui_contents()) {
       continue;
     }
 
     std::vector<content::WebContents*> inner_contents =
-        instance->host().webui_contents()->GetInnerWebContents();
+        host->webui_contents()->GetInnerWebContents();
     if (inner_contents.size() == 1ul &&
         content::MediaSession::GetRequestIdFromWebContents(inner_contents[0])
                 .ToString() == request_id) {

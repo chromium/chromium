@@ -151,6 +151,8 @@ class GlicWindowControllerImpl
                                uint32_t changed_metrics) override;
 
   HostManager& host_manager() override;
+  std::vector<Host*> GetHosts() override;
+  Host* GetHostForTab(tabs::TabInterface* tab) override;
   std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
 

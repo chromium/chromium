@@ -19,6 +19,8 @@ class MockGlicWindowController
   ~MockGlicWindowController();
 
   MOCK_METHOD(HostManager&, host_manager, (), (override));
+  MOCK_METHOD(std::vector<Host*>, GetHosts, (), (override));
+  MOCK_METHOD(Host*, GetHostForTab, (tabs::TabInterface*), (override));
   MOCK_METHOD(std::vector<GlicInstance*>, GetInstances, (), (override));
   MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,

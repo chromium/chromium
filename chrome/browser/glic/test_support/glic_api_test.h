@@ -189,9 +189,8 @@ class GlicApiTestBase : public T {
 
   Host* GetHost() {
     Profile* profile = T::browser()->profile();
-    return &GlicKeyedServiceFactory::GetGlicKeyedService(profile)
-                ->GetInstanceForActiveTab(T::browser())
-                ->host();
+    return GlicKeyedServiceFactory::GetGlicKeyedService(profile)
+        ->GetHostForActiveTab(T::browser());
   }
 
   // Run the test typescript function. The typescript function must have the

@@ -468,9 +468,7 @@ class InteractiveGlicTestT : public T {
   }
 
   Host* GetHostForActiveTab() {
-    GlicInstance* instance = glic_service()->GetInstanceForActiveTab(browser());
-    CHECK(instance);
-    return &instance->host();
+    return glic_service()->GetHostForActiveTab(browser());
   }
 
   template <typename... M>
