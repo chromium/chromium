@@ -3146,6 +3146,8 @@ static_library("browser") {
       "notifications/scheduler/display_agent_android.h",
       "notifications/scheduler/notification_background_task_scheduler_android.cc",
       "notifications/scheduler/notification_background_task_scheduler_android.h",
+      "notifications/scheduler/tips_agent_android.cc",
+      "notifications/scheduler/tips_agent_android.h",
       "ntp_customization/ntp_theme_bridge.cc",
       "ntp_customization/ntp_theme_bridge.h",
       "optimization_guide/android/optimization_guide_bridge.cc",

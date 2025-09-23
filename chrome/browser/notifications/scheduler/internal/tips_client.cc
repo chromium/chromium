@@ -7,10 +7,14 @@
 #include <utility>
 
 #include "base/notimplemented.h"
+#include "base/strings/string_number_conversions.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
+#include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 
 namespace notifications {
 
-TipsClient::TipsClient() = default;
+TipsClient::TipsClient(std::unique_ptr<TipsAgent> tips_agent)
+    : tips_agent_(std::move(tips_agent)) {}
 
 TipsClient::~TipsClient() = default;
 
@@ -27,7 +31,16 @@ void TipsClient::OnSchedulerInitialized(
 }
 
 void TipsClient::OnUserAction(const UserActionData& action_data) {
-  NOTIMPLEMENTED();
+  // Check that a valid feature type for tips notifications is requested.
+  auto it = action_data.custom_data.find(kTipsNotificationsFeatureType);
+  if (it != action_data.custom_data.end()) {
+    std::string feature_type = it->second;
+    int type_int;
+    base::StringToInt(feature_type, &type_int);
+    TipsNotificationsFeatureType type =
+        static_cast<TipsNotificationsFeatureType>(type_int);
+    tips_agent_->ShowTipsPromo(type);
+  }
 }
 
 void TipsClient::GetThrottleConfig(

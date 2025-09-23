@@ -3202,6 +3202,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/notifications/PushMessagingServiceBridge.java",
       "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
       "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",
+      "java/src/org/chromium/chrome/browser/notifications/scheduler/TipsAgent.java",
       "java/src/org/chromium/chrome/browser/ntp/RecentTabsPagePrefs.java",
       "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedBridge.java",
       "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTab.java",

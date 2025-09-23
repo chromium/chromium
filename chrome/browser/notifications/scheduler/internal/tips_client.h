@@ -9,14 +9,17 @@
 #include <set>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 
 namespace notifications {
 
+class TipsAgent;
+
 // The client used in Clank Tips and chrome://notifications-internals for testing.
 class TipsClient : public NotificationSchedulerClient {
  public:
-  TipsClient();
+  explicit TipsClient(std::unique_ptr<TipsAgent> tips_agent);
   TipsClient(const TipsClient&) = delete;
   TipsClient& operator=(const TipsClient&) = delete;
   ~TipsClient() override;
@@ -30,6 +33,8 @@ class TipsClient : public NotificationSchedulerClient {
                               std::set<std::string> guids) override;
   void OnUserAction(const UserActionData& action_data) override;
   void GetThrottleConfig(ThrottleConfigCallback callback) override;
+
+  std::unique_ptr<TipsAgent> tips_agent_;
 };
 
 }  // namespace notifications

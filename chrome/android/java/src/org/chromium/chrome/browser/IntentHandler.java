@@ -294,6 +294,12 @@ public class IntentHandler {
 
     public static final String EXTRA_CCT_EARLY_NAV = "org.chromium.chrome.browser.cct_early_nav";
 
+    /**
+     * Used to determine the {@link TipsNotificationFeatureType} that the tip is attempting to show.
+     */
+    public static final String EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE =
+            "org.chromium.chrome.browser.tips_notification_feature_type";
+
     /** The package name for the Google Search App. */
     public static final String PACKAGE_GSA = GSAUtils.GSA_PACKAGE_NAME;
 
