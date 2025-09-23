@@ -211,9 +211,6 @@ gpu.ci.linux_builder(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
