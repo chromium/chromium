@@ -451,8 +451,6 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 
   if (context.filling_product == FillingProduct::kCreditCard) {
-    AutofillMetrics::LogIsQueriedCreditCardFormSecure(
-        context.is_context_secure);
     // TODO(crbug.com/41484171): Move to payments_suggestion_generator.cc.
     autofill_metrics::LogSuggestionsCount(
         std::ranges::count_if(suggestions,
@@ -1156,10 +1154,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     } else {
       context.should_show_mixed_content_warning = true;
     }
-    return context;
   }
-  context.is_context_secure =
-      form_structure && !IsFormNonSecure(*form_structure);
   return context;
 }
 
@@ -1715,6 +1710,11 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   AutofillField* autofill_field = nullptr;
   bool form_and_field_cached = GetCachedFormAndField(
       form_id, field_id, &form_structure, &autofill_field);
+  if (form_structure &&
+      context.filling_product == FillingProduct::kCreditCard) {
+    AutofillMetrics::LogIsQueriedCreditCardFormSecure(
+        !IsFormNonSecure(*form_structure));
+  }
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
       form_and_field_cached) {
@@ -3335,7 +3335,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   // IsContextSecure).
   if (suggestions.empty() ||
       context.filling_product != FillingProduct::kCreditCard ||
-      context.is_context_secure) {
+      !IsFormNonSecure(*form_structure)) {
     return suggestions;
   }
 

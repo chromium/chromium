@@ -39,7 +39,6 @@ struct SuggestionsContext {
   // `trigger_source`.
   DenseSet<FillingProduct> GetFillingProductsToSuggest() const;
 
-  bool is_context_secure = false;
   bool should_show_mixed_content_warning = false;
   FillingProduct filling_product = FillingProduct::kNone;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
