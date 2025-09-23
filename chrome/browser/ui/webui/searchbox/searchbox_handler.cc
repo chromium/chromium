@@ -568,6 +568,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                          ntp_composebox::FeatureConfig::Get()
                              .config.entry_point()
                              .num_page_load_animations());
+  source->AddBoolean("searchboxCyclingPlaceholders",
+                     ntp_composebox::kCyclingPlaceholders.Get());
 }
 
 // static

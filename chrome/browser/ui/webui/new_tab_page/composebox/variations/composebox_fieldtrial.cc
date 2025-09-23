@@ -192,6 +192,10 @@ const base::FeatureParam<bool> kShowContextMenuDescription(
     "ShowContextMenuDescription",
     false);
 
+const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpComposebox,
+                                                    "CyclingPlaceholders",
+                                                    false);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
