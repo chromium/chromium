@@ -247,21 +247,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3GoogleTts": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3GoogleTts"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [
