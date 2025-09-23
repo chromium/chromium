@@ -18,6 +18,7 @@ public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";
     public static final String BLOB_SCHEME = "blob";
     public static final String CHROME_SCHEME = "chrome";
+    public static final String CHROME_EXTENSION_SCHEME = "chrome-extension";
     public static final String CHROME_NATIVE_SCHEME = "chrome-native";
     public static final String CONTENT_SCHEME = "content";
     public static final String CUSTOM_TAB_SCHEME = "customtab";

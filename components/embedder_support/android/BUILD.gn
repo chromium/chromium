@@ -54,6 +54,7 @@ android_library("application_java") {
 android_library("util_java") {
   srcjar_deps = [ ":util_jni_headers" ]
   sources = [
+    "java/src/org/chromium/components/embedder_support/util/ExtensionUrlUtil.java",
     "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
     "java/src/org/chromium/components/embedder_support/util/Origin.java",
     "java/src/org/chromium/components/embedder_support/util/UrlConstants.java",
@@ -398,6 +399,7 @@ android_library("unit_device_javatests") {
 
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
+    "javatests/src/org/chromium/components/embedder_support/util/ExtensionUrlUtilTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlConstantsTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
   ]
