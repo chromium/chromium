@@ -81,6 +81,7 @@ source_set("model") {
     "//components/enterprise/browser/data_region",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser",
     "//components/enterprise/idle",
     "//components/history/core/common",
     "//components/lens:enterprise_policy",

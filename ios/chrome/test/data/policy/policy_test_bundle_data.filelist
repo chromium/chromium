@@ -23,6 +23,7 @@
 //ios/chrome/test/data/policy/pref_mapping/ComponentUpdatesEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ContextMenuPhotoSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/CredentialProviderPromoEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/DataControlsRules.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultPopupsSetting.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultSearchProviderAlternateURLs.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultSearchProviderEnabled.json
@@ -58,6 +59,7 @@
 //ios/chrome/test/data/policy/pref_mapping/ManagedBookmarks.json
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/NTPCustomBackgroundEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
 //ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
@@ -91,4 +93,3 @@
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedAnonymizedDataCollectionEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedMetricsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json
-//ios/chrome/test/data/policy/pref_mapping/NTPCustomBackgroundEnabled.json
