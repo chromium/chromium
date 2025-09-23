@@ -854,12 +854,13 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingErrorsApiTest);
 
-// TODO(crbug.com/439644930): convert this to use
-// base::test::WithFeatureOverride and confirm feature disabled behavior.
 class UnserializableOneTimeMessageResponseMessagingApiTest
     : public MessagingApiTest {
  public:
   UnserializableOneTimeMessageResponseMessagingApiTest() {
+    // The tests for when the feature is disabled are in
+    // PolyfillSupportMessagingApiTest.SendMessageListenerBehavior_Asynchronous
+    // since they require extra logic to test.
     scoped_feature_list_.InitAndEnableFeature(
         extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
   }
@@ -872,8 +873,8 @@ class UnserializableOneTimeMessageResponseMessagingApiTest
 // when the message listener attempts to send unserializable data back to the
 // sender. In this case we close the channel and return an error. It is closer
 // to the behavior of mozilla/webextension-polyfill
-// (https://github.com/mozilla/webextension-polyfill), but in that an error is
-// returned.
+// (https://github.com/mozilla/webextension-polyfill), but different in that an
+// error is returned.
 IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
                        UnserializableResponseClosesChannel) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
