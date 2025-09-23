@@ -31,7 +31,7 @@
 #include "third_party/tflite/buildflags.h"
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-#include "third_party/xnnpack/src/include/xnnpack.h"
+#include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
 #endif  // BUILD_TFLITE_WITH_XNNPACK
 
 namespace webnn {
