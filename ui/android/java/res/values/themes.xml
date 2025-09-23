@@ -16,6 +16,7 @@ found in the LICENSE file.
         <item name="listItemHeight">?attr/minInteractTargetSize</item>
         <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
         <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
+        <item name="listItemControlPadding">@dimen/list_menu_item_control_padding</item>
         <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
         <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
 
