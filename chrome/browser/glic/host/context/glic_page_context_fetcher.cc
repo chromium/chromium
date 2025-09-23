@@ -76,8 +76,8 @@ void HandleFetchPageResult(
             page_context.inner_text_result->truncated));
   }
 
-  // TODO(crbug.com/411462297): Remove actor specific bits in this class once
-  // all actor entry points are removed.
+  // TODO(crbug.com/446700005): This path is used for both actor and non-actor
+  // context but includes bits specific to actor.
   actor::AggregatedJournal* journal = nullptr;
   actor::TaskId task_id;
   if (journal_entry) {

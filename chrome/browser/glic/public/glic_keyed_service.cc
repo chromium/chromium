@@ -609,41 +609,52 @@ void GlicKeyedService::ResumeActorTask(
     return;
   }
 
-  auto fetcher_callback = base::BindOnce(
-      [](base::WeakPtr<actor::ActorKeyedService> actor_keyed_service,
-         actor::TaskId task_id,
-         glic::mojom::WebClientHandler::ResumeActorTaskCallback final_callback,
-         base::expected<glic::mojom::GetContextResultPtr,
-                        page_content_annotations::FetchPageContextErrorDetails>
-             result) {
+  auto observation_callback = base::BindOnce(
+      [](glic::mojom::WebClientHandler::ResumeActorTaskCallback reply_callback,
+         glic::mojom::TabDataPtr tab_data,
+         actor::ActorKeyedService::TabObservationResult result) {
         if (!result.has_value()) {
-          if (actor_keyed_service) {
-            actor_keyed_service->GetJournal().Log(
-                GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
-                "Failed to resume task - fetch context",
-                actor::JournalDetailsBuilder()
-                    .AddError(result.error().message)
-                    .Build());
-          }
-          std::move(final_callback)
+          std::move(reply_callback)
               .Run(glic::mojom::GetContextResult::NewErrorReason(
-                  result.error().message));
+                  result.error()));
           return;
         }
 
-        std::move(final_callback).Run(std::move(result.value()));
+        page_content_annotations::FetchPageContextResult& page_context =
+            *result.value();
+
+        // RequestTabObservation guarantees a successful request has both
+        // screenshot and APC.
+        CHECK(page_context.screenshot_result.has_value());
+        CHECK(page_context.annotated_page_content_result.has_value());
+
+        auto glic_tab_context = mojom::TabContext::New();
+
+        glic_tab_context->tab_data = std::move(tab_data);
+
+        glic_tab_context->viewport_screenshot = glic::mojom::Screenshot::New(
+            page_context.screenshot_result->dimensions.width(),
+            page_context.screenshot_result->dimensions.height(),
+            std::move(page_context.screenshot_result->jpeg_data), "image/jpeg",
+            // TODO(b/380495633): Finalize and implement image annotations.
+            glic::mojom::ImageOriginAnnotations::New());
+
+        glic_tab_context->annotated_page_data = mojom::AnnotatedPageData::New();
+        glic_tab_context->annotated_page_data->annotated_page_content =
+            mojo_base::ProtoWrapper(
+                page_context.annotated_page_content_result->proto);
+        glic_tab_context->annotated_page_data->metadata =
+            std::move(page_context.annotated_page_content_result->metadata);
+
+        glic::mojom::GetContextResultPtr glic_result =
+            glic::mojom::GetContextResult::NewTabContext(
+                std::move(glic_tab_context));
+        std::move(reply_callback).Run(std::move(glic_result));
       },
-      actor_keyed_service_->GetWeakPtr(), task_id, std::move(callback));
+      std::move(callback), CreateTabData(tab_of_resumed_task->GetContents()));
 
-  // TODO(khushalsagar): Ideally this should be set by the web UI instead of
-  // overriding here for actor mode.
-  // TODO(crbug.com/411462297): This should probably use RequestTabObservation
-  auto actionable_context_options = context_options.Clone();
-  actionable_context_options->annotated_page_content_mode = optimization_guide::
-      proto::ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
-
-  glic::FetchPageContext(tab_of_resumed_task, *actionable_context_options,
-                         std::move(fetcher_callback));
+  actor_keyed_service_->RequestTabObservation(*tab_of_resumed_task, task_id,
+                                              std::move(observation_callback));
 }
 
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
