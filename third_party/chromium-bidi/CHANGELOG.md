@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.0.0...chromium-bidi-v9.1.0) (2025-09-23)
+
+
+### Features
+
+* `emulation.setUserAgentOverride` ([#3661](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3661)) ([3df5567](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3df5567018e94fbec855719539468e81a57d4b58))
+* implement `browser.setDownloadBehavior` ([#3604](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3604)) ([aa270ee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/aa270ee6b6e2cc5ce77d8ec6c99a60b5cbabc26c))
+
+
+### Bug Fixes
+
+* allow for setting global default download behavior ([#3761](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3761)) ([7d72d13](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7d72d130e9f9c877857cff9e05404857eb6741a1))
+* remove config settings on null values ([#3767](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3767)) ([38ff2f9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/38ff2f9f563ed41c68376f75cd8bedfb3f392fd4))
+* remove unsubscribe by context ([#3733](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3733)) ([a3dc164](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a3dc164028270ab9d7e081b4097ccb606ab63927))
+* **wdio-xvfb:** &lt;code&gt;autoXvfb&lt;/code&gt; should disable xvfb completely (&lt;a ([88cd6c4](https://github.com/GoogleChromeLabs/chromium-bidi/commit/88cd6c46b727749da9f6fc503b367ada43055175))
+
 ## [9.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v8.1.0...chromium-bidi-v9.0.0) (2025-09-09)
 
 
