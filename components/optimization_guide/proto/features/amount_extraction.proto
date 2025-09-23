@@ -6,6 +6,10 @@ edition = "2023";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -21,17 +25,26 @@ message AmountExtractionLoggingData {
   AmountExtractionRequest request = 1 [features = { field_presence: EXPLICIT }];
 
   AmountExtractionResponse response = 2 [features = { field_presence: EXPLICIT }];
+
+  ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
 message AmountExtractionRequest {
-  // The image to extract amounts from.
-  repeated bytes screenshots = 1;
+  // The annotated page content of the checkout page.
+  AnnotatedPageContent annotated_page_content = 3 [features = { field_presence: EXPLICIT }];
 
-  // The HTML content of the page, used to extract the amount.
-  string html = 2 [features = { field_presence: EXPLICIT }];
+  reserved 1, 2;
 }
 
 message AmountExtractionResponse {
-  // The extracted amount.
-  double amount = 1 [features = { field_presence: EXPLICIT }];
+  // The final checkout amount extracted from the checkout page.
+  double final_checkout_amount = 2 [features = { field_presence: EXPLICIT }];
+
+  // The ISO 4217 currency code of the amount extracted from the checkout page.
+  string currency = 3 [features = { field_presence: EXPLICIT }];
+
+  // Whether the amount extraction was successful or not.
+  bool is_successful = 4 [features = { field_presence: EXPLICIT }];
+
+  reserved 1;
 }

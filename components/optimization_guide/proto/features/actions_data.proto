@@ -420,6 +420,9 @@ message TabObservation {
 
     // The screenshot of the tab timed out.
     TAB_OBSERVATION_SCREENSHOT_TIMEOUT = 2;
+
+    // The page crashed.
+    TAB_OBSERVATION_PAGE_CRASHED = 3;
   }
 }
 
