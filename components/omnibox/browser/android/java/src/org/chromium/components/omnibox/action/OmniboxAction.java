@@ -10,7 +10,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -105,20 +104,6 @@ public abstract class OmniboxAction {
         mNativeInstance = 0;
     }
 
-    /**
-     * Report information about pedal being shown.
-     *
-     * @return true if information was recorded.
-     */
-    public boolean recordActionShown(int position, boolean executed) {
-        if (mNativeInstance != 0L) {
-            OmniboxActionJni.get().recordActionShown(mNativeInstance, position, executed);
-            return true;
-        }
-
-        return false;
-    }
-
     public long getNativeInstance() {
         return mNativeInstance;
     }
@@ -129,10 +114,4 @@ public abstract class OmniboxAction {
      * @param delegate delegate capable of routing and executing variety of action-specific tasks
      */
     public abstract void execute(OmniboxActionDelegate delegate);
-
-    @NativeMethods
-    public interface Natives {
-        /** Emit histograms related to the action. */
-        void recordActionShown(long nativeOmniboxAction, int position, boolean executed);
-    }
 }

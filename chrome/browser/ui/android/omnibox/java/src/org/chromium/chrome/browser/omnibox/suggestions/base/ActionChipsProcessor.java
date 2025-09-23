@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import android.util.ArrayMap;
-
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -21,37 +17,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 public class ActionChipsProcessor {
     private final SuggestionHost mSuggestionHost;
-    private final ArrayMap<OmniboxAction, Integer> mVisibleActions;
-
-    /** The action that was executed, or null if no action was executed by the user. */
-    private @Nullable OmniboxAction mExecutedAction;
 
     /**
      * @param suggestionHost Component receiving suggestion events.
      */
     public ActionChipsProcessor(SuggestionHost suggestionHost) {
         mSuggestionHost = suggestionHost;
-        mVisibleActions = new ArrayMap<>();
-    }
-
-    public void onOmniboxSessionStateChange(boolean activated) {
-        // Note: do not record any histograms if we did not show Actions.
-        if (activated || mVisibleActions.isEmpty()) {
-            return;
-        }
-
-        mVisibleActions.forEach(
-                (OmniboxAction action, Integer position) -> {
-                    var wasValid = action.recordActionShown(position, action == mExecutedAction);
-                    OmniboxMetrics.recordOmniboxActionIsValid(wasValid);
-                });
-
-        OmniboxMetrics.recordOmniboxActionIsUsed(mExecutedAction != null);
-        mVisibleActions.clear();
-    }
-
-    public void onSuggestionsReceived() {
-        mVisibleActions.clear();
     }
 
     /**
@@ -92,7 +63,6 @@ public class ActionChipsProcessor {
                             .build();
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
-            mVisibleActions.put(action, position);
         }
         if (modelList.size() == 0) {
             return;
@@ -103,7 +73,6 @@ public class ActionChipsProcessor {
 
     /** Invoke action associated with the ActionChip. */
     private void executeAction(OmniboxAction action, int position) {
-        mExecutedAction = action;
         mSuggestionHost.onOmniboxActionClicked(action, position);
     }
 }

@@ -542,7 +542,8 @@ class AutocompleteMediator
                 if (maybeSwitchToTab(suggestion)) {
                     // This bypasses the execution flow that captures histograms for all other
                     // cases.
-                    recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
+                    recordMetrics(
+                            suggestion, null, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
                     return;
                 }
             }
@@ -592,6 +593,10 @@ class AutocompleteMediator
 
     @Override
     public void onOmniboxActionClicked(OmniboxAction action, int position) {
+        var match = getSuggestionAt(position);
+        if (match != null) {
+            recordMetrics(match, action, position, WindowOpenDisposition.CURRENT_TAB);
+        }
         action.execute(mOmniboxActionDelegate);
         finishInteraction();
     }
@@ -629,7 +634,7 @@ class AutocompleteMediator
     @Override
     public void onSwitchToTab(AutocompleteMatch match, int matchIndex) {
         if (maybeSwitchToTab(match)) {
-            recordMetrics(match, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
+            recordMetrics(match, null, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
         } else {
             onSuggestionClicked(match, matchIndex, match.getUrl());
         }
@@ -1043,7 +1048,7 @@ class AutocompleteMediator
             int transition = suggestion.getTransition();
             int type = suggestion.getType();
 
-            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.CURRENT_TAB);
+            recordMetrics(suggestion, null, matchIndex, WindowOpenDisposition.CURRENT_TAB);
             if (type == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
                     && mUrlBarEditingTextProvider.wasLastEditPaste()) {
                 // It's important to use the page transition from the suggestion or we might end
@@ -1232,8 +1237,13 @@ class AutocompleteMediator
      * @param match the selected AutocompleteMatch
      * @param suggestionLine the index of the suggestion line that holds selected match
      * @param disposition the window open disposition
+     * @param action the OmniboxAction associated with the suggestion
      */
-    private void recordMetrics(AutocompleteMatch match, int suggestionLine, int disposition) {
+    private void recordMetrics(
+            AutocompleteMatch match,
+            @Nullable OmniboxAction action,
+            int suggestionLine,
+            int disposition) {
         if (mAutocompleteResult.isEmpty()) return;
 
         boolean autocompleteResultIsFromCache =
@@ -1265,7 +1275,8 @@ class AutocompleteMediator
                                 mAutocompleteInput.getPageClassification(),
                                 elapsedTimeSinceModified,
                                 autocompleteLength,
-                                webContents));
+                                webContents,
+                                action));
     }
 
     @Override

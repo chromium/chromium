@@ -295,15 +295,11 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
 
     @Override
     @CallSuper
-    public void onOmniboxSessionStateChange(boolean activated) {
-        mActionChipsProcessor.onOmniboxSessionStateChange(activated);
-    }
+    public void onOmniboxSessionStateChange(boolean activated) {}
 
     @Override
     @CallSuper
-    public void onSuggestionsReceived() {
-        mActionChipsProcessor.onSuggestionsReceived();
-    }
+    public void onSuggestionsReceived() {}
 
     /**
      * Apply In-Place highlight to matching sections of Suggestion text.

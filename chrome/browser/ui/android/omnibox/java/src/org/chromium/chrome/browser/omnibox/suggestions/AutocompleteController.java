@@ -22,6 +22,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -278,7 +279,8 @@ public class AutocompleteController {
             int pageClassification,
             long elapsedTimeSinceModified,
             int completedLength,
-            @Nullable WebContents webContents) {
+            @Nullable WebContents webContents,
+            @Nullable OmniboxAction action) {
         if (mNativeController == 0) return;
         if (!hasValidNativeObjectRef(match, VerificationPoint.SELECT_MATCH)) return;
 
@@ -292,7 +294,8 @@ public class AutocompleteController {
                         pageClassification,
                         elapsedTimeSinceModified,
                         completedLength,
-                        webContents);
+                        webContents,
+                        action != null ? action.getNativeInstance() : 0);
     }
 
     /**
@@ -438,7 +441,8 @@ public class AutocompleteController {
                 int pageClassification,
                 long elapsedTimeSinceModified,
                 int completedLength,
-                @Nullable WebContents webContents);
+                @Nullable WebContents webContents,
+                long nativeOmniboxAction);
 
         boolean onSuggestionTouchDown(
                 long nativeAutocompleteControllerAndroid,

@@ -332,6 +332,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Action in Suggest are the Omnibox Action chips attached to a search
     suggestion.
+
+    Starting with Chrome/Android M142 this histogram is recorded whenever the
+    Omnibox is used to navigate somewhere, closely matching how other Omnibox
+    histograms are recorded. Before M142 this histogram would be recorded any
+    time the Omnibox interaction has completed, whether the user initiated
+    navigation or not.
   </summary>
   <token key="Type">
     <variant name="AIM"/>
@@ -357,6 +363,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
     Action in Suggest are the Omnibox Action chips attached to a search
     suggestion.
+
+    Starting with Chrome/Android M142 this histogram is recorded whenever the
+    Omnibox is used to navigate somewhere, closely matching how other Omnibox
+    histograms are recorded. Before M142 this histogram would be recorded any
+    time the Omnibox interaction has completed, whether the user initiated
+    navigation or not.
   </summary>
   <token key="ShownOrUsed">
     <variant name="Shown" summary="shown"/>
@@ -2464,6 +2476,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     or pedals were present.
 
     This histogram is related to Omnibox.SuggestionUsed.Pedal.
+
+    Starting with Chrome/Android M142 this histogram is recorded whenever the
+    Omnibox is used to navigate somewhere, closely matching how other Omnibox
+    histograms are recorded. Before M142 this histogram would be recorded any
+    time the Omnibox interaction has completed, whether the user initiated
+    navigation or not.
   </summary>
 </histogram>
 
@@ -3022,6 +3040,12 @@ Keep consistent with active providers. Doesn't need to include every provider in
     translation dialog or opening a new window in Incognito mode).
 
     This histogram is related to Omnibox.PedalShown.
+
+    Starting with Chrome/Android M142 this histogram is recorded whenever the
+    Omnibox is used to navigate somewhere, closely matching how other Omnibox
+    histograms are recorded. Before M142 this histogram would be recorded any
+    time the Omnibox interaction has completed, whether the user initiated
+    navigation or not.
   </summary>
 </histogram>
 

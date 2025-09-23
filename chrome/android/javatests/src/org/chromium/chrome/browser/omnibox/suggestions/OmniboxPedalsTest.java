@@ -10,10 +10,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.KeyEvent;
@@ -29,7 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -64,7 +59,6 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
@@ -81,7 +75,6 @@ public class OmniboxPedalsTest {
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock OmniboxActionJni mOmniboxActionJni;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
@@ -92,7 +85,6 @@ public class OmniboxPedalsTest {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
-        OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
     }
 
     @After
@@ -111,7 +103,6 @@ public class OmniboxPedalsTest {
                                 .getModalDialogManager()
                                 .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
         AutocompleteControllerJni.setInstanceForTesting(null);
-        OmniboxActionJni.setInstanceForTesting(null);
     }
 
     /**
@@ -170,12 +161,6 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.clickOnAction(0, 0);
 
         onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        verify(mOmniboxActionJni)
-                .recordActionShown(
-                        OmniboxPedalId.CLEAR_BROWSING_DATA,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -184,10 +169,6 @@ public class OmniboxPedalsTest {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AutofillPaymentMethodsFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.UPDATE_CREDIT_CARD, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -202,11 +183,6 @@ public class OmniboxPedalsTest {
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
                 });
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.LAUNCH_INCOGNITO, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -215,12 +191,6 @@ public class OmniboxPedalsTest {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SafetyHubFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -228,12 +198,6 @@ public class OmniboxPedalsTest {
     public void testManageSiteSettings() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_SITE_SETTINGS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SiteSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_SITE_SETTINGS,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -242,12 +206,6 @@ public class OmniboxPedalsTest {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_SETTINGS));
 
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), MainSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_SETTINGS,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -263,13 +221,6 @@ public class OmniboxPedalsTest {
                     Criteria.checkThat(
                             tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
                 });
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.VIEW_CHROME_HISTORY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -278,12 +229,6 @@ public class OmniboxPedalsTest {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AccessibilitySettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -298,13 +243,6 @@ public class OmniboxPedalsTest {
                     onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
                 },
                 AccessibilitySettings.class);
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -320,11 +258,5 @@ public class OmniboxPedalsTest {
                     Criteria.checkThat(
                             tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
                 });
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.PLAY_CHROME_DINO_GAME,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 }

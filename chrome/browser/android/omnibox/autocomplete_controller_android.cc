@@ -318,14 +318,28 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     jint j_page_classification,
     jlong elapsed_time_since_first_modified,
     jint completed_length,
-    const JavaParamRef<jobject>& j_web_contents) {
+    const JavaParamRef<jobject>& j_web_contents,
+    jlong omnibox_action_ptr) {
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   const GURL current_url = GURL(url);
   const base::TimeTicks& now(base::TimeTicks::Now());
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+
+  // Report all OmniboxActions shown to the user when the user completed the
+  // interaction.
+  const auto* executed_action =
+      reinterpret_cast<OmniboxAction*>(omnibox_action_ptr);
+  const auto& result = autocomplete_controller_->result();
+  size_t index = 0;
+  for (const auto& match : result) {
+    for (const auto& action : match.actions) {
+      action->RecordActionShown(index, action.get() == executed_action);
+    }
+    index++;
+  }
 
   const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
   omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
