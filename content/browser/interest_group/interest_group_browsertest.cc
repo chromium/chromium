@@ -26358,8 +26358,16 @@ class InterestGroupOOPIFBrowserTest : public InterestGroupBrowserTest {
 
 // Test to make sure we don't crash when Page changes with DFSS ad slot pending.
 // https://crbug.com/326085515
+// TODO(crbug.com/446756531): Re-enable this test.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_PageImplChangeDirectFromSellerSignals \
+  DISABLED_PageImplChangeDirectFromSellerSignals
+#else
+#define MAYBE_PageImplChangeDirectFromSellerSignals \
+  PageImplChangeDirectFromSellerSignals
+#endif
 IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
-                       PageImplChangeDirectFromSellerSignals) {
+                       MAYBE_PageImplChangeDirectFromSellerSignals) {
   GURL initial_url(embedded_https_test_server().GetURL(
       "a.test",
       "/cross_site_iframe_factory.html?a.test(b.test{allow-join-ad-interest-"
