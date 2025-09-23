@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -68,7 +69,7 @@ public final class FullscreenSigninPromoLauncher {
 
         context.startActivity(intent);
         prefManager.setSigninPromoNextShowTime(
-                System.currentTimeMillis()
+                TimeUtils.currentTimeMillis()
                         + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
         prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
         var accounts =
@@ -94,7 +95,7 @@ public final class FullscreenSigninPromoLauncher {
         // See crbug.com/408962000.
         if (nextShowTime == 0) {
             prefManager.setSigninPromoNextShowTime(
-                    System.currentTimeMillis()
+                    TimeUtils.currentTimeMillis()
                             + TimeUnit.DAYS.toMillis(getDurationBetweenPromoTriggers()));
         }
 
