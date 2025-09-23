@@ -287,12 +287,11 @@ FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
     sum_hypothetical_main_size -= gap_between_items;
     sum_flex_base_size -= gap_between_items;
 
-    auto [line_items, remaining_items] = items.split_at(count);
-    flex_lines.emplace_back(line_items, sum_flex_base_size,
+    flex_lines.emplace_back(count, sum_flex_base_size,
                             sum_hypothetical_main_size);
     max_sum_hypothetical_main_size =
         std::max(max_sum_hypothetical_main_size, sum_hypothetical_main_size);
-    items = remaining_items;
+    items = items.subspan(count);
   }
 
   return {flex_lines, max_sum_hypothetical_main_size};

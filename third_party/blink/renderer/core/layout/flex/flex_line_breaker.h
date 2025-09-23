@@ -17,14 +17,14 @@ struct InitialFlexLine {
   DISALLOW_NEW();
 
  public:
-  InitialFlexLine(base::span<FlexItem> line_items,
+  InitialFlexLine(wtf_size_t count,
                   LayoutUnit sum_flex_base_size,
                   LayoutUnit sum_hypothetical_main_size)
-      : line_items(std::move(line_items)),
+      : count(count),
         sum_flex_base_size(sum_flex_base_size),
         sum_hypothetical_main_size(sum_hypothetical_main_size) {}
 
-  GC_PLUGIN_IGNORE("crbug.com/446536463") base::span<FlexItem> line_items;
+  const wtf_size_t count;
   const LayoutUnit sum_flex_base_size;
   const LayoutUnit sum_hypothetical_main_size;
 };

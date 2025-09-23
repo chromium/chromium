@@ -2136,21 +2136,23 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
         return cross_available_size;
       })();
 
+  base::span<FlexItem> items = base::span(flex_items_);
   LayoutUnit sum_line_cross_size;
 
   flex_lines->reserve(result.flex_lines.size());
   for (auto& line : result.flex_lines) {
     // Flex the items.
-    LineFlexer(base::span(line.line_items), line.sum_hypothetical_main_size,
+    auto [line_items, remaining_items] = items.split_at(line.count);
+    items = remaining_items;
+    LineFlexer(line_items, line.sum_hypothetical_main_size,
                line.sum_flex_base_size, main_axis_inner_size)
         .Run();
 
     Vector<wtf_size_t> item_indices;
-    item_indices.ReserveInitialCapacity(line.line_items.size());
+    item_indices.ReserveInitialCapacity(line.count);
 
     LayoutUnit main_axis_free_space =
-        main_axis_inner_size -
-        (line.line_items.size() - 1) * gap_between_items_;
+        main_axis_inner_size - (line.count - 1u) * gap_between_items_;
     LayoutUnit line_cross_size;
     LayoutUnit max_major_ascent = LayoutUnit::Min();
     LayoutUnit max_minor_ascent = LayoutUnit::Min();
@@ -2158,9 +2160,7 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
     LayoutUnit max_minor_descent = LayoutUnit::Min();
     unsigned main_axis_auto_margin_count = 0;
 
-    for (wtf_size_t i = 0; i < line.line_items.size(); ++i) {
-      FlexItem& flex_item = line.line_items[i];
-
+    for (const FlexItem& flex_item : line_items) {
       item_indices.push_back(flex_item.item_index);
       main_axis_free_space -= flex_item.FlexedMarginBoxSize();
       main_axis_auto_margin_count += flex_item.main_axis_auto_margin_count;
