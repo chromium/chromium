@@ -2678,6 +2678,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
               ElementsAre(IsUrlBookmark(kTitle2, kUrl2)));
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Regression test for crbug.com/329278277: turning sync-the-feature on, then
 // off, and later signing in with account bookmarks enabled should lead to all
 // bookmarks being duplicated (local bookmarks and account bookmarks). The user
@@ -2759,6 +2760,7 @@ IN_PROC_BROWSER_TEST_F(
               /*new_parent=*/model->bookmark_bar_node(),
               /*index=*/model->bookmark_bar_node()->children().size());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
@@ -2987,6 +2989,226 @@ class SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn
  private:
   base::test::ScopedFeatureList features_override_;
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn,
+    ShouldDeduplicateBookmarksAfterTurningSyncOffAndSignIn) {
+  const std::u16string kSocialTitle = u"Social";
+  const std::u16string kTwitterTitle = u"Twitter";
+  const GURL kTwitterUrl("http://twitter.com");
+  const std::u16string kLinkedInTitle = u"LinkedIn";
+  const GURL kLinkedInUrl("http://linkedin.com");
+
+  const std::u16string kShoppingTitle = u"Shopping";
+  const std::u16string kAmazonTitle = u"Amazon";
+  const GURL kAmazonUrl("http://amazon.com");
+  const std::u16string kEbayTitle = u"eBay";
+  const GURL kEbayUrl("http://ebay.com");
+  const std::u16string kEtsyTitle = u"Etsy";
+  const GURL kEtsyUrl("http://etsy.com");
+
+  const std::u16string kFinanceTitle = u"Finance";
+  const std::u16string kBankTitle = u"Bank";
+  const GURL kBankUrl("http://bank.com");
+
+  const std::u16string kMapsTitle = u"Maps";
+  const GURL kMapsUrl("http://maps.com");
+
+  const std::u16string kNewsTitle = u"News";
+  const std::u16string kNytTitle = u"NYT";
+  const GURL kNytUrl("http://nyt.com");
+  const std::u16string kBbcTitle = u"BBC";
+  const GURL kBbcUrl("http://bbc.com");
+
+  const std::u16string kEmailTitle = u"Email";
+  const GURL kEmailUrl("http://email.com");
+
+  ASSERT_TRUE(SetupClients());
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+  const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
+
+  const BookmarkNode* social_folder =
+      AddFolder(kSingleProfileIndex, bookmark_bar, 0, kSocialTitle);
+  AddURL(kSingleProfileIndex, social_folder, 0, kTwitterTitle, kTwitterUrl);
+  AddURL(kSingleProfileIndex, social_folder, 1, kLinkedInTitle, kLinkedInUrl);
+
+  const BookmarkNode* shopping_folder =
+      AddFolder(kSingleProfileIndex, bookmark_bar, 1, kShoppingTitle);
+  AddURL(kSingleProfileIndex, shopping_folder, 0, kAmazonTitle, kAmazonUrl);
+  AddURL(kSingleProfileIndex, shopping_folder, 1, kEbayTitle, kEbayUrl);
+
+  const BookmarkNode* news_folder =
+      AddFolder(kSingleProfileIndex, bookmark_bar, 2, kNewsTitle);
+  AddURL(kSingleProfileIndex, news_folder, 0, kNytTitle, kNytUrl);
+  AddURL(kSingleProfileIndex, news_folder, 1, kBbcTitle, kBbcUrl);
+
+  AddURL(kSingleProfileIndex, bookmark_bar, 3, kEmailTitle, kEmailUrl);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{kSocialTitle, GURL()},
+                   {kTwitterTitle, kTwitterUrl},
+                   {kLinkedInTitle, kLinkedInUrl},
+                   {kShoppingTitle, GURL()},
+                   {kAmazonTitle, kAmazonUrl},
+                   {kEbayTitle, kEbayUrl},
+                   {kNewsTitle, GURL()},
+                   {kNytTitle, kNytUrl},
+                   {kBbcTitle, kBbcUrl},
+                   {kEmailTitle, kEmailUrl}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+  ASSERT_THAT(model->account_bookmark_bar_node(), IsNull());
+
+  // Turn Sync off by removing the primary account.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // Verify the state of local bookmarks is equivalent to the account bookmarks
+  // immediately after signing out.
+  // 1. Account Bookmarks
+  // 🗂️ Bookmarks Bar (Account)
+  // ├── 📁 Social
+  // │   ├── 🔖 Twitter
+  // │   └── 🔖 LinkedIn
+  // ├── 📁 Shopping
+  // │   ├── 🔖 Amazon
+  // │   └── 🔖 eBay
+  // ├── 📁 News
+  // │   ├── 🔖 NYT
+  // │   └── 🔖 BBC
+  // └── 🔖 Email
+  auto expected_account_bookmarks_matcher = ElementsAre(
+      IsFolder(kSocialTitle,
+               ElementsAre(IsUrlBookmark(kTwitterTitle, kTwitterUrl),
+                           IsUrlBookmark(kLinkedInTitle, kLinkedInUrl))),
+      IsFolder(kShoppingTitle,
+               ElementsAre(IsUrlBookmark(kAmazonTitle, kAmazonUrl),
+                           IsUrlBookmark(kEbayTitle, kEbayUrl))),
+      IsFolder(kNewsTitle, ElementsAre(IsUrlBookmark(kNytTitle, kNytUrl),
+                                       IsUrlBookmark(kBbcTitle, kBbcUrl))),
+      IsUrlBookmark(kEmailTitle, kEmailUrl));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              expected_account_bookmarks_matcher);
+
+  const BookmarkNode* local_bookmark_bar = model->bookmark_bar_node();
+  ASSERT_THAT(local_bookmark_bar->children(), SizeIs(4));
+  const BookmarkNode* local_social_folder =
+      local_bookmark_bar->children()[0].get();
+  const BookmarkNode* local_shopping_folder =
+      local_bookmark_bar->children()[1].get();
+  const BookmarkNode* local_news_folder =
+      local_bookmark_bar->children()[2].get();
+
+  ASSERT_THAT(local_social_folder->children(), SizeIs(2));
+  const BookmarkNode* local_linkedin_node =
+      local_social_folder->children()[1].get();
+
+  ASSERT_THAT(local_news_folder->children(), SizeIs(2));
+  const BookmarkNode* local_bbc_node = local_news_folder->children()[1].get();
+
+  // Reorder children of "Social" folder.
+  model->Move(local_linkedin_node, local_social_folder, 0);
+
+  // Add "Etsy" to "Shopping" folder.
+  AddURL(kSingleProfileIndex, local_shopping_folder, 2, kEtsyTitle, kEtsyUrl);
+
+  // Remove "BBC" from "News" folder.
+  model->Remove(local_bbc_node, bookmarks::metrics::BookmarkEditSource::kOther,
+                FROM_HERE);
+
+  // Add "Finance" folder with "Bank" inside.
+  const BookmarkNode* local_finance_folder =
+      AddFolder(kSingleProfileIndex, local_bookmark_bar, 3, kFinanceTitle);
+  AddURL(kSingleProfileIndex, local_finance_folder, 0, kBankTitle, kBankUrl);
+
+  // Add "Maps" bookmark.
+  AddURL(kSingleProfileIndex, local_bookmark_bar, 5, kMapsTitle, kMapsUrl);
+
+  // Verify the state of local bookmarks after modifications and before signing
+  // back in.
+  // 2. Local Bookmarks (BEFORE Deduplication)
+  // 🗂️ Bookmarks Bar (Local)
+  // ├── 📁 Social
+  // │   ├── 🔖 LinkedIn
+  // │   └── 🔖 Twitter
+  // ├── 📁 Shopping
+  // │   ├── 🔖 Amazon
+  // │   ├── 🔖 eBay
+  // │   └── 🔖 Etsy
+  // ├── 📁 News
+  // │   └── 🔖 NYT
+  // ├── 📁 Finance
+  // │   └── 🔖 Bank
+  // ├── 🔖 Email
+  // └── 🔖 Maps
+  ASSERT_THAT(
+      model->bookmark_bar_node()->children(),
+      ElementsAre(
+          IsFolder(kSocialTitle,
+                   ElementsAre(IsUrlBookmark(kLinkedInTitle, kLinkedInUrl),
+                               IsUrlBookmark(kTwitterTitle, kTwitterUrl))),
+          IsFolder(kShoppingTitle,
+                   ElementsAre(IsUrlBookmark(kAmazonTitle, kAmazonUrl),
+                               IsUrlBookmark(kEbayTitle, kEbayUrl),
+                               IsUrlBookmark(kEtsyTitle, kEtsyUrl))),
+          IsFolder(kNewsTitle, ElementsAre(IsUrlBookmark(kNytTitle, kNytUrl))),
+          IsFolder(kFinanceTitle,
+                   ElementsAre(IsUrlBookmark(kBankTitle, kBankUrl))),
+          IsUrlBookmark(kEmailTitle, kEmailUrl),
+          IsUrlBookmark(kMapsTitle, kMapsUrl)));
+
+  // Sign in again, and enable sync in transport mode only.
+  ASSERT_TRUE(SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE, kSyncTransportOnly));
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetActiveDataTypes()
+                  .Has(syncer::BOOKMARKS));
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
+
+  // After sign-in, the account bookmarks should reflect the state on the
+  // server.
+  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
+              expected_account_bookmarks_matcher);
+
+  // The local bookmarks should be deduplicated (desktop).
+  // Social folder (local) is identical to account -> removed.
+  // News folder (local) is a subset of account -> removed.
+  // Email bookmark (local) is identical to account -> removed.
+  // Shopping folder (local) is a superset of account -> kept.
+  // Finance folder (local) is unique -> kept.
+  // Maps bookmark (local) is unique -> kept.
+  //
+  // 3. Local Bookmarks (AFTER Deduplication)
+  // 🗂️ Bookmarks Bar (Local)
+  // ├── 📁 Shopping
+  // │   ├── 🔖 Amazon
+  // │   ├── 🔖 eBay
+  // │   └── 🔖 Etsy
+  // ├── 📁 Finance
+  // │   └── 🔖 Bank
+  // └── 🔖 Maps
+  EXPECT_THAT(
+      model->bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kShoppingTitle,
+                           ElementsAre(IsUrlBookmark(kAmazonTitle, kAmazonUrl),
+                                       IsUrlBookmark(kEbayTitle, kEbayUrl),
+                                       IsUrlBookmark(kEtsyTitle, kEtsyUrl))),
+                  IsFolder(kFinanceTitle,
+                           ElementsAre(IsUrlBookmark(kBankTitle, kBankUrl))),
+                  IsUrlBookmark(kMapsTitle, kMapsUrl)));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledMigrateSyncingUserToSignedIn,

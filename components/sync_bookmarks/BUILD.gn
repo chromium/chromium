@@ -38,6 +38,13 @@ static_library("sync_bookmarks") {
     "synced_bookmark_tracker_entity.h",
   ]
 
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "initial_account_bookmark_deduplicator.cc",
+      "initial_account_bookmark_deduplicator.h",
+    ]
+  }
+
   deps = [
     "//base",
     "//components/bookmarks/browser",
@@ -68,7 +75,13 @@ source_set("unit_tests") {
     "synced_bookmark_tracker_unittest.cc",
     "test_bookmark_model_view.cc",
     "test_bookmark_model_view.h",
+    "test_node_builders.cc",
+    "test_node_builders.h",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "initial_account_bookmark_deduplicator_unittest.cc" ]
+  }
 
   deps = [
     ":sync_bookmarks",

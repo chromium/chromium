@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -615,6 +617,11 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
   }
 
   bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    bookmark_model_->MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
+  }
 
   LogDataTypeConfigurationTime(syncer::BOOKMARKS, activation_request_.sync_mode,
                                activation_request_.configuration_start_time);
