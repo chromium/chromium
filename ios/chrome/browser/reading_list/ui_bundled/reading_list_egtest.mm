@@ -1252,8 +1252,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       verifyOpenInIncognitoActionWithURL:distillablePageURL.GetContent()];
 }
 
+// TODO(crbug.com/446871565): This test is flaky.
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)testContextMenuMarkAsReadAndBack {
+- (void)FLAKY_testContextMenuMarkAsReadAndBack {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
