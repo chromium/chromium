@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -42,16 +44,19 @@ const int kMinVisibleWidth = 30;
 constexpr float kMinVisibleRatio = 0.3f;
 #endif
 
-BrowserWindow* FindMostRecentBrowserWindow(
-    base::FunctionRef<bool(Browser*)> matcher) {
-  for (Browser* last_active :
-       BrowserList::GetInstance()->OrderedByActivation()) {
-    if (last_active && matcher(last_active)) {
-      DCHECK(last_active->window());
-      return last_active->window();
-    }
-  }
-  return nullptr;
+ui::BaseWindow* FindMostRecentWindow(
+    base::FunctionRef<bool(BrowserWindowInterface*)> matcher) {
+  ui::BaseWindow* window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* last_active) {
+        if (last_active && matcher(last_active)) {
+          window = last_active->GetWindow();
+          DCHECK(window);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return window;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,17 +122,17 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     // If a reference browser is set, use its window. Otherwise find last
     // active. Depending on the type of browser being created, different logic
     // determines if a particular browser can be a reference browser.
-    BrowserWindow* window = nullptr;
+    ui::BaseWindow* window = nullptr;
     // Window may be null if browser is just starting up.
     if (browser_ && browser_->window()) {
       window = browser_->window();
     } else if (web_app::AppBrowserController::IsWebApp(browser_)) {
-      window = FindMostRecentBrowserWindow(
+      window = FindMostRecentWindow(
           [profile = browser_->profile(),
            app_id = browser_->app_controller()->app_id(),
            display = display::Screen::Get()->GetDisplayForNewWindows()](
-              Browser* browser) {
-            if (browser->profile() != profile) {
+              BrowserWindowInterface* browser) {
+            if (browser->GetProfile() != profile) {
               return false;
             }
             if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
@@ -135,17 +140,20 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
             }
 #if BUILDFLAG(IS_CHROMEOS)
             if (display::Screen::Get()->GetDisplayNearestWindow(
-                    browser->window()->GetNativeWindow()) != display) {
+                    browser->GetWindow()->GetNativeWindow()) != display) {
               return false;
             }
 #endif
-            if (!browser->window()->IsOnCurrentWorkspace())
+            if (!browser->GetBrowserForMigrationOnly()
+                     ->window()
+                     ->IsOnCurrentWorkspace())
               return false;
             return true;
           });
     } else {
-      window = FindMostRecentBrowserWindow(
-          [](Browser* browser) { return browser->is_type_normal(); });
+      window = FindMostRecentWindow([](BrowserWindowInterface* browser) {
+        return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+      });
     }
 
     if (window) {
