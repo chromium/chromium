@@ -355,7 +355,7 @@ set LUCI_AUTH_DEBUG=1
 Then, retry the failed command (e.g. `git credential-luci reauth`).
 
 If you run into issues, please report to
-[https://issues.chromium.org/issues/new?component=1456702\&template=2076315](https://issues.chromium.org/issues/new?component=1456702&template=2076315)
+[https://issues.chromium.org/issues/new?component=1456702&template=2176581](https://issues.chromium.org/issues/new?component=1456702&template=2176581)
 
 **Please be sure to include**:
 
