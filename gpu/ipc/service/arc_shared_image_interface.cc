@@ -5,6 +5,7 @@
 #include "gpu/ipc/service/arc_shared_image_interface.h"
 
 #include "base/notimplemented.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -16,6 +17,10 @@ namespace gpu {
 // static
 scoped_refptr<ArcSharedImageInterface> ArcSharedImageInterface::Create(
     GpuChannelManager* gpu_channel_manager) {
+  if (!base::FeatureList::IsEnabled(arc::kVideoEncodeUseMappableSI)) {
+    return nullptr;
+  }
+
   gpu::ContextResult result;
   auto context_state = gpu_channel_manager->GetSharedContextState(&result);
 
