@@ -2793,7 +2793,15 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
 // Verify restoring a tab part of a closed group, opens the entire group and
 // adds the tab to it with its navigation stack.
-IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabWhenGroupIsClosed) {
+// TODO(crbug.com/446752962): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RestoreTabWhenGroupIsClosed \
+  DISABLED_RestoreTabWhenGroupIsClosed
+#else
+#define MAYBE_RestoreTabWhenGroupIsClosed RestoreTabWhenGroupIsClosed
+#endif
+IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
+                       MAYBE_RestoreTabWhenGroupIsClosed) {
   tab_groups::TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->profile());
