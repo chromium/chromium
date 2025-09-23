@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -108,9 +109,6 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     // of a Boca session.
     void OnBocaSWALaunched(bool success);
 
-    void SetPinStateForActiveSWAWindowInternal(bool pinned,
-                                               base::RepeatingClosure callback);
-
     // Owned by the parent class `OnTaskSessionManager` that owns an instance of
     // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
     raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
@@ -120,8 +118,15 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
 
     bool launch_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-    // The latest pin state of the bundle sent by provider.
-    bool latest_pin_state_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+    // Task queue that tracks pending tab management operations. Only needed
+    // when the app launch is in progress.
+    std::vector<base::OnceClosure> pending_tab_management_tasks_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+
+    // Tracks the pending pin or unpin operation. Only needed when the app
+    // launch is in progress.
+    base::OnceClosure pending_pin_or_unpin_task_
+        GUARDED_BY_CONTEXT(sequence_checker_) = base::NullCallback();
 
     base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
   };
