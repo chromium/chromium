@@ -973,12 +973,12 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                alpha_type,
                                color_space,
                                std::move(context_provider_wrapper),
-                               delegate),
-        use_oop_rasterization_(ContextProviderWrapper()
-                                   ->ContextProvider()
-                                   .GetCapabilities()
-                                   .gpu_rasterization) {
+                               delegate) {
     CHECK(ContextProviderWrapper());
+    CHECK(ContextProviderWrapper()
+              ->ContextProvider()
+              .GetCapabilities()
+              .gpu_rasterization);
     resource_ = CanvasResourceSwapChain::Create(
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
@@ -986,12 +986,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
-  bool IsValid() const final {
-    if (!use_oop_rasterization_)
-      return GetSkSurface() && !IsGpuContextLost();
-    else
-      return !IsGpuContextLost();
-  }
+  bool IsValid() const final { return !IsGpuContextLost(); }
 
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
@@ -1059,28 +1054,19 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   void RasterRecord(cc::PaintRecord last_recording) override {
     TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::RasterRecord");
-    if (!use_oop_rasterization_) {
-      CanvasResourceProvider::RasterRecord(std::move(last_recording));
-      return;
-    }
     WillDraw();
     RasterRecordOOP(last_recording, initial_needs_clear_,
                     resource_->GetBackBufferClientSharedImage()->mailbox());
     initial_needs_clear_ = false;
   }
 
-  bool UseOopRasterization() final { return use_oop_rasterization_; }
+  bool UseOopRasterization() final { return true; }
 
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
                    int x,
                    int y) override {
-    if (!use_oop_rasterization_) {
-      return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes,
-                                                 x, y);
-    }
-
     TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::WritePixels");
     if (IsGpuContextLost())
       return false;
@@ -1107,7 +1093,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   bool needs_present_ = false;
   bool needs_flush_ = false;
-  const bool use_oop_rasterization_;
   // This only matters for the initial backbuffer mailbox, since the frontbuffer
   // will always have the back texture copied to it prior to any new commands.
   bool initial_needs_clear_ = true;
