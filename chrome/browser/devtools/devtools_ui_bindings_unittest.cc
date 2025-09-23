@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -153,7 +155,9 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
   base::Value::Dict info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
-  EXPECT_FALSE(info.FindBool("isSyncActive").value());
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage),
+      info.FindBool("isSyncActive").value());
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {

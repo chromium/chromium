@@ -205,6 +205,7 @@ static_library("devtools") {
       "//components/language/core/browser",
       "//components/metrics/structured:structured_events",
       "//components/privacy_sandbox:tracking_protection_settings",
+      "//components/signin/public/base:signin_switches",
       "//components/viz/host",
       "//ui/shell_dialogs",
     ]
