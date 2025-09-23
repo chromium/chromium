@@ -47,9 +47,19 @@ public class NtpChromeColorsCoordinator {
     private final int mItemWidth;
     private final int mSpacing;
     private @Nullable final @ColorInt Integer mPrimaryColor;
+    private final Runnable mOnChromeColorSelectedCallback;
 
-    public NtpChromeColorsCoordinator(Context context, BottomSheetDelegate delegate) {
+    /**
+     * Constructor for the chrome colors coordinator.
+     *
+     * @param context The context for inflating views and accessing resources.
+     * @param delegate The delegate to handle bottom sheet interactions.
+     * @param onChromeColorSelectedCallback The callback to run when a color is selected.
+     */
+    public NtpChromeColorsCoordinator(
+            Context context, BottomSheetDelegate delegate, Runnable onChromeColorSelectedCallback) {
         mContext = context;
+        mOnChromeColorSelectedCallback = onChromeColorSelectedCallback;
         View ntpChromeColorsBottomSheetView =
                 LayoutInflater.from(mContext)
                         .inflate(
@@ -121,6 +131,7 @@ public class NtpChromeColorsCoordinator {
                         mContext,
                         ntpThemeColorInfo,
                         NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
+        mOnChromeColorSelectedCallback.run();
     }
 
     /** Cleans up the resources used by this coordinator. */

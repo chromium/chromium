@@ -70,6 +70,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private NtpThemeBridge mNtpThemeBridge;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Runnable mOnThemeImageSelectedCallback;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
 
     @Captor private ArgumentCaptor<ThemeCollectionSelectionListener> mListenerCaptor;
@@ -95,7 +96,8 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         mImageFetcher,
                         TEST_COLLECTION_ID,
                         TEST_COLLECTION_TITLE,
-                        SheetState.FULL);
+                        SheetState.FULL,
+                        mOnThemeImageSelectedCallback);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -272,6 +274,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         themeCollectionView.performClick();
         verify(mNtpThemeBridge)
                 .setSelectedTheme(eq(imageToClick.collectionId), eq(imageToClick.imageUrl));
+        verify(mOnThemeImageSelectedCallback).run();
     }
 
     @Test

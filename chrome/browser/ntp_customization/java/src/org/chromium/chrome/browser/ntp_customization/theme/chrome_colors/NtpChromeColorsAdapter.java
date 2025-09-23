@@ -89,6 +89,14 @@ public class NtpChromeColorsAdapter
         return mColorInfoList.size();
     }
 
+    Callback<NtpThemeColorInfo> getOnItemClickedCallbackForTesting() {
+        return mOnClickCallback;
+    }
+
+    List<NtpThemeColorInfo> getColorsForTesting() {
+        return mColorInfoList;
+    }
+
     /** ColorViewHolder that holds references to the views for a single color item. */
     public static class ColorViewHolder extends RecyclerView.ViewHolder {
         private boolean mIsInitialized;

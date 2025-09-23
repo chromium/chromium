@@ -46,6 +46,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
+    @Mock private Runnable mOnChromeColorSelectedCallback;
 
     private NtpChromeColorsCoordinator mCoordinator;
     private Context mContext;
@@ -57,7 +58,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mCoordinator = new NtpChromeColorsCoordinator(mContext, mBottomSheetDelegate);
+        mCoordinator =
+                new NtpChromeColorsCoordinator(
+                        mContext, mBottomSheetDelegate, mOnChromeColorSelectedCallback);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -126,5 +129,18 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 MeasureSpec.makeMeasureSpec(width3, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
         verify(layoutManager).setSpanCount(eq(1));
+    }
+
+    @Test
+    public void testOnItemClicked_callsCallback() {
+        ColorGridView gridView = mBottomSheetView.findViewById(R.id.chrome_colors_recycler_view);
+        NtpChromeColorsAdapter adapter = (NtpChromeColorsAdapter) gridView.getAdapter();
+        assertNotNull(adapter);
+
+        // Click the first item.
+        adapter.getOnItemClickedCallbackForTesting().onResult(adapter.getColorsForTesting().get(0));
+
+        // Verify the callback is called.
+        verify(mOnChromeColorSelectedCallback).run();
     }
 }

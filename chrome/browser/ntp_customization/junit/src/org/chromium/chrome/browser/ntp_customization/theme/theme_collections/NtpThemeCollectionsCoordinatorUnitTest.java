@@ -66,6 +66,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
     @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
+    @Mock private Runnable mOnThemeImageSelectedCallback;
     @Captor private ArgumentCaptor<Callback<Object[]>> mCallbackCaptor;
 
     private NtpThemeCollectionsCoordinator mCoordinator;
@@ -83,7 +84,9 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         when(mNtpThemeBridgeJniMock.init(mProfile)).thenReturn(1L);
         when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
-        mCoordinator = new NtpThemeCollectionsCoordinator(mContext, mBottomSheetDelegate, mProfile);
+        mCoordinator =
+                new NtpThemeCollectionsCoordinator(
+                        mContext, mBottomSheetDelegate, mProfile, mOnThemeImageSelectedCallback);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -225,5 +228,19 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         ntpThemeBridge.setSelectedTheme(collectionId, imageUrl);
 
         verify(adapterSpy).setSelection(eq(collectionId), eq(imageUrl));
+    }
+
+    @Test
+    public void testClearThemeSelection() {
+        RecyclerView recyclerView =
+                mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
+        NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
+        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
+        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+
+        mCoordinator.clearThemeCollectionSelection();
+
+        // Verify that the adapter's selection is cleared via the listener callback.
+        verify(adapterSpy).setSelection(eq(null), eq(null));
     }
 }

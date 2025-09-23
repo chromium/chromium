@@ -26,6 +26,7 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -55,6 +56,7 @@ public class NtpThemeMediator {
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Callback<@Nullable Bitmap> mOnImageSelectedCallback;
+    private final CallbackController mCallbackController = new CallbackController();
     private @Nullable ActivityResultRegistry mActivityResultRegistry;
     private @Nullable ActivityResultLauncher<String> mActivityResultLauncher;
     private @Nullable NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
@@ -87,10 +89,12 @@ public class NtpThemeMediator {
 
         setOnClickListenerForAllSection();
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, this::handleLearnMoreClick);
+        initTrailingIcon();
         setLeadingIconForThemeCollectionsSection();
     }
 
     void destroy() {
+        mCallbackController.destroy();
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, null);
         mActivityResultLauncher = null;
@@ -117,6 +121,7 @@ public class NtpThemeMediator {
                                 // image.
                                 ShareImageFileUtils.getBitmapFromUriAsync(
                                         mContext, uri, mOnImageSelectedCallback);
+                                updateTrailingIconVisibilityForSectionType(UPLOAD_AN_IMAGE);
                             });
         }
 
@@ -144,6 +149,9 @@ public class NtpThemeMediator {
             @NTPThemeBottomSheetSection int sectionType) {
         for (int i = 0; i < NTPThemeBottomSheetSection.NUM_ENTRIES; i++) {
             if (i == THEME_COLLECTIONS) {
+                if (sectionType != THEME_COLLECTIONS && mNtpThemeCollectionsCoordinator != null) {
+                    mNtpThemeCollectionsCoordinator.clearThemeCollectionSelection();
+                }
                 continue;
             }
 
@@ -180,8 +188,6 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleUploadAnImageSectionClick(View view) {
-        updateTrailingIconVisibilityForSectionType(UPLOAD_AN_IMAGE);
-
         if (mActivityResultLauncher != null) {
             mActivityResultLauncher.launch("image/*");
         }
@@ -189,22 +195,32 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleChromeColorsSectionClick(View view) {
-        updateTrailingIconVisibilityForSectionType(CHROME_COLORS);
-
         if (mNtpChromeColorsCoordinator == null) {
             mNtpChromeColorsCoordinator =
-                    new NtpChromeColorsCoordinator(mContext, mBottomSheetDelegate);
+                    new NtpChromeColorsCoordinator(
+                            mContext,
+                            mBottomSheetDelegate,
+                            mCallbackController.makeCancelable(
+                                    () -> {
+                                        updateTrailingIconVisibilityForSectionType(CHROME_COLORS);
+                                    }));
         }
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.CHROME_COLORS);
     }
 
     @VisibleForTesting
     void handleThemeCollectionsSectionClick(View view) {
-        updateTrailingIconVisibilityForSectionType(THEME_COLLECTIONS);
-
         if (mNtpThemeCollectionsCoordinator == null) {
             mNtpThemeCollectionsCoordinator =
-                    new NtpThemeCollectionsCoordinator(mContext, mBottomSheetDelegate, mProfile);
+                    new NtpThemeCollectionsCoordinator(
+                            mContext,
+                            mBottomSheetDelegate,
+                            mProfile,
+                            mCallbackController.makeCancelable(
+                                    () -> {
+                                        updateTrailingIconVisibilityForSectionType(
+                                                THEME_COLLECTIONS);
+                                    }));
         }
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.THEME_COLLECTIONS);
     }
@@ -212,6 +228,15 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+    }
+
+    /** Sets the initial visibility of the trailing icon based on the current theme settings. */
+    private void initTrailingIcon() {
+        @NtpCustomizationUtils.NtpBackgroundImageType
+        int imageType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        @NTPThemeBottomSheetSection
+        int section = NtpCustomizationUtils.getSectionForBackgroundImageType(imageType);
+        updateTrailingIconVisibilityForSectionType(section);
     }
 
     void setNtpThemeCollectionsCoordinatorForTesting(

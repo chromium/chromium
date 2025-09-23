@@ -53,13 +53,18 @@ public class NtpThemeCollectionsCoordinator {
     private final NtpThemeBridge mNtpThemeBridge;
     private final ImageFetcher mImageFetcher;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
+    private final Runnable mOnThemeImageSelectedCallback;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
     private @Nullable NtpSingleThemeCollectionCoordinator mNtpSingleThemeCollectionCoordinator;
 
     public NtpThemeCollectionsCoordinator(
-            Context context, BottomSheetDelegate delegate, Profile profile) {
+            Context context,
+            BottomSheetDelegate delegate,
+            Profile profile,
+            Runnable onThemeImageSelectedCallback) {
         mContext = context;
         mBottomSheetDelegate = delegate;
+        mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
 
         mNtpThemeBridge = new NtpThemeBridge(profile);
         mImageFetcher =
@@ -174,7 +179,8 @@ public class NtpThemeCollectionsCoordinator {
                             mImageFetcher,
                             collectionId,
                             themeCollectionTitle,
-                            currentBottomSheetState);
+                            currentBottomSheetState,
+                            mOnThemeImageSelectedCallback);
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);
@@ -182,6 +188,12 @@ public class NtpThemeCollectionsCoordinator {
 
     private void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+    }
+
+    /** Clears the theme collection selection. */
+    public void clearThemeCollectionSelection() {
+        mNtpThemeBridge.setSelectedTheme(
+                /* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
     }
 
     void setNtpThemeCollectionsAdapterForTesting(NtpThemeCollectionsAdapter adapter) {

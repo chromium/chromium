@@ -54,6 +54,7 @@ public class NtpSingleThemeCollectionCoordinator {
     private final ImageFetcher mImageFetcher;
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
+    private final Runnable mOnThemeImageSelectedCallback;
     private boolean mHasDisplayedBefore;
 
     /**
@@ -67,6 +68,7 @@ public class NtpSingleThemeCollectionCoordinator {
      * @param themeCollectionTitle The title of the current theme collection.
      * @param previousBottomSheetState The bottom sheet state in the previous theme collections
      *     bottom sheet.
+     * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
      */
     NtpSingleThemeCollectionCoordinator(
             Context context,
@@ -75,12 +77,14 @@ public class NtpSingleThemeCollectionCoordinator {
             ImageFetcher imageFetcher,
             String collectionId,
             String themeCollectionTitle,
-            @SheetState int previousBottomSheetState) {
+            @SheetState int previousBottomSheetState,
+            Runnable onThemeImageSelectedCallback) {
         mBottomSheetDelegate = delegate;
         mNtpThemeBridge = ntpThemeBridge;
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
+        mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
 
         mNtpSingleThemeCollectionBottomSheetView =
                 LayoutInflater.from(context)
@@ -178,6 +182,7 @@ public class NtpSingleThemeCollectionCoordinator {
         // TODO(crbug.com/423579377): This will trigger the notification to all listeners, updating
         // both adapters. Should be updated to the service.
         mNtpThemeBridge.setSelectedTheme(image.collectionId, image.imageUrl);
+        mOnThemeImageSelectedCallback.run();
     }
 
     private void handleLearnMoreClick(View view) {
