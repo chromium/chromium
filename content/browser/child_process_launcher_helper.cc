@@ -275,7 +275,6 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
     bool terminate_on_shutdown,
 #if BUILDFLAG(IS_ANDROID)
     bool can_use_warm_up_connection,
-    bool is_spare_renderer,
 #endif
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
@@ -297,7 +296,6 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       file_data_(std::move(file_data)),
 #if BUILDFLAG(IS_ANDROID)
       can_use_warm_up_connection_(can_use_warm_up_connection),
-      is_spare_renderer_(is_spare_renderer),
 #endif
       histogram_memory_region_(std::move(histogram_memory_region)),
       tracing_config_memory_region_(std::move(tracing_config_memory_region)),
@@ -401,12 +399,12 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
   // Launch the child process.
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
-    process = LaunchProcessOnLauncherThread(
-        options_ptr, std::move(files_to_register),
+    process =
+        LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)
-        can_use_warm_up_connection_, is_spare_renderer_,
+                                      can_use_warm_up_connection_,
 #endif
-        &is_synchronous_launch, &launch_result);
+                                      &is_synchronous_launch, &launch_result);
     AfterLaunchOnLauncherThread(process, options_ptr);
   }
 

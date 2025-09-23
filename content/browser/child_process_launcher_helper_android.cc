@@ -134,7 +134,6 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     const base::LaunchOptions* options,
     std::unique_ptr<PosixFileDescriptorInfo> files_to_register,
     bool can_use_warm_up_connection,
-    bool is_spare_renderer,
     bool* is_synchronous_launch,
     int* launch_result) {
   DCHECK(!options);
@@ -178,7 +177,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
       env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
-      can_use_warm_up_connection, is_spare_renderer));
+      can_use_warm_up_connection));
 
   client_task_runner_->PostTask(
       FROM_HERE,

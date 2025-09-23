@@ -1501,8 +1501,7 @@ int RenderProcessHost::GetCurrentRenderProcessCountForTesting() {
 // static
 RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     BrowserContext* browser_context,
-    SiteInstanceImpl* site_instance,
-    bool is_spare_renderer) {
+    SiteInstanceImpl* site_instance) {
   if (g_render_process_host_factory_) {
     return g_render_process_host_factory_->CreateRenderProcessHost(
         browser_context, site_instance);
@@ -1546,23 +1545,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
   }
 
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
-                                   flags, is_spare_renderer);
-}
-
-// static
-RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
-    BrowserContext* browser_context,
-    SiteInstanceImpl* site_instance) {
-  return CreateRenderProcessHost(browser_context, site_instance,
-                                 /* is_spare_renderer=*/false);
-}
-
-// static
-RenderProcessHost* RenderProcessHostImpl::CreateSpareRenderProcessHost(
-    BrowserContext* browser_context,
-    SiteInstanceImpl* site_instance) {
-  return CreateRenderProcessHost(browser_context, site_instance,
-                                 /* is_spare_renderer=*/true);
+                                   flags);
 }
 
 // static
@@ -1572,8 +1555,7 @@ const unsigned int RenderProcessHostImpl::kMaxFrameDepthForPriority =
 RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,
-    int flags,
-    bool is_spare_renderer)
+    int flags)
     : priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
                 false /* has_immersive_xr_session */,
@@ -1583,7 +1565,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 true /* boost_for_pending_views */,
                 false /*boost_for_loading*/,
                 false /* boost_for_discard */,
-                is_spare_renderer
+                false /*is_spare_renderer*/
 #if BUILDFLAG(IS_ANDROID)
                 ,
                 ChildProcessImportance::NORMAL
@@ -1597,7 +1579,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       browser_context_(browser_context),
       storage_partition_impl_(storage_partition_impl->GetWeakPtr()),
       flags_(flags),
-      has_spare_renderer_priority_(is_spare_renderer),
       tracing_track_(
           perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
                                             this,
@@ -5801,12 +5782,6 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
   ProcessDied(info);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool RenderProcessHostImpl::HasSpareRendererPriority() {
-  return has_spare_renderer_priority_;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void RenderProcessHostImpl::BindChildHistogramFetcherFactory(
     mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
         factory) {
@@ -6037,9 +6012,10 @@ void RenderProcessHostImpl::GetBoundInterfacesForTesting(
   io_thread_host_impl_->FlushPostedTasksForTesting();  // IN-TEST
 }
 
-void RenderProcessHostImpl::GraduateSpareToNormalRendererPriority() {
-  if (has_spare_renderer_priority_) {
-    has_spare_renderer_priority_ = false;
+void RenderProcessHostImpl::SetHasSpareRendererPriority(
+    bool has_spare_renderer_priority) {
+  if (has_spare_renderer_priority_ != has_spare_renderer_priority) {
+    has_spare_renderer_priority_ = has_spare_renderer_priority;
     UpdateProcessPriority();
   }
 }

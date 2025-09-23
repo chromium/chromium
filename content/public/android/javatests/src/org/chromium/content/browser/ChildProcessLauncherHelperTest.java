@@ -449,22 +449,16 @@ public class ChildProcessLauncherHelperTest {
                 startChildProcess(
                         BLOCK_UNTIL_SETUP,
                         /* doSetupConnection= */ true,
-                        /* sandboxed= */ true,
+                        /* sandboxed= */ false,
                         /* reducePriorityOnBackground= */ true,
                         /* canUseWarmUpConnection= */ true);
         final ChildProcessConnection connection =
                 ChildProcessLauncherTestUtils.getConnection(launcher);
 
-        Assert.assertEquals(
-                0,
-                (int)
-                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                                () -> connection.getStrongBindingCount()));
-        Assert.assertEquals(
-                1,
-                (int)
-                        ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                                () -> connection.getVisibleBindingCount()));
+        // addVisibleBinding() is required to correctly setup the initial state
+        // of a created renderer in the unittests.
+        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
+                () -> connection.addVisibleBinding());
         Assert.assertEquals(
                 0,
                 (int)

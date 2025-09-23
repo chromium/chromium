@@ -398,7 +398,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // correctly sets the priority.
   // The function is exported only for supporting MockRenderProcessHost
   // and should not be called outside of content/.
-  virtual void GraduateSpareToNormalRendererPriority() = 0;
+  virtual void SetHasSpareRendererPriority(
+      bool has_spare_renderer_priority) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.

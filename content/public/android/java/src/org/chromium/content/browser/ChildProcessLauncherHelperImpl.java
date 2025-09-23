@@ -345,9 +345,8 @@ public final class ChildProcessLauncherHelperImpl {
     private long mStartTimeMs;
 
     // This is the current computed importance from all the inputs from setPriority.
-    // The initial value is calculated from whether the process is sandboxed and is a spare
-    // renderer.
-    private @ChildProcessImportance int mEffectiveImportance;
+    // The initial value is MODERATE since a newly created connection has visible bindings.
+    private @ChildProcessImportance int mEffectiveImportance = ChildProcessImportance.MODERATE;
     private boolean mVisible;
 
     private boolean mDroppedStrongBingingDueToBackgrounding;
@@ -398,8 +397,7 @@ public final class ChildProcessLauncherHelperImpl {
             long nativePointer,
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
-            boolean canUseWarmUpConnection,
-            boolean isSpareRenderer) {
+            boolean canUseWarmUpConnection) {
         assert LauncherThread.runningOnLauncherThread();
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
@@ -441,8 +439,7 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback,
-                        isSpareRenderer);
+                        binderCallback);
         helper.start();
 
         if (sandboxed && !sCheckedServiceGroupImportance) {
@@ -713,8 +710,7 @@ public final class ChildProcessLauncherHelperImpl {
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
-            @Nullable IBinder binderCallback,
-            boolean isSpareRenderer) {
+            @Nullable IBinder binderCallback) {
         assert LauncherThread.runningOnLauncherThread();
 
         mNativeChildProcessLauncherHelper = nativePointer;
@@ -734,7 +730,6 @@ public final class ChildProcessLauncherHelperImpl {
                         binderCallback == null ? null : Arrays.asList(binderCallback));
         mProcessType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
-        mIsSpareRenderer = isSpareRenderer;
 
         if (sandboxed) {
             mRanking = sSandboxedChildConnectionRanking;
@@ -742,23 +737,6 @@ public final class ChildProcessLauncherHelperImpl {
         } else {
             mRanking = null;
             mBindingManager = null;
-        }
-
-        boolean useWaivedBinding =
-                isSpareRenderer && ContentFeatureList.sSpareRendererLowestRanking.getValue();
-        boolean useNotPerceptibleBinding =
-                isSpareRenderer
-                        && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue();
-        if (sandboxed) {
-            if (useWaivedBinding) {
-                mEffectiveImportance = ChildProcessImportance.NORMAL;
-            } else if (useNotPerceptibleBinding) {
-                mEffectiveImportance = ChildProcessImportance.PERCEPTIBLE;
-            } else {
-                mEffectiveImportance = ChildProcessImportance.MODERATE;
-            }
-        } else {
-            mEffectiveImportance = ChildProcessImportance.IMPORTANT;
         }
 
         if (!ApplicationStatus.isInitialized()) return;
@@ -794,28 +772,13 @@ public final class ChildProcessLauncherHelperImpl {
         mLauncher.start(
                 /* setupConnection= */ true,
                 /* queueIfNoFreeConnection= */ true,
-                getBindingStateFromImportance());
+                mSandboxed ? ChildBindingState.VISIBLE : ChildBindingState.STRONG);
         mStartTimeMs = System.currentTimeMillis();
     }
 
-    private @ChildBindingState int getBindingStateFromImportance() {
-        switch (mEffectiveImportance) {
-            case ChildProcessImportance.NORMAL:
-                return ChildBindingState.WAIVED;
-            case ChildProcessImportance.PERCEPTIBLE:
-                return ChildBindingState.NOT_PERCEPTIBLE;
-            case ChildProcessImportance.MODERATE:
-                return ChildBindingState.VISIBLE;
-            case ChildProcessImportance.IMPORTANT:
-                return ChildBindingState.STRONG;
-        }
-        assert false;
-        return ChildBindingState.UNBOUND;
-    }
-
     /**
-     * @return The type of process as specified in the command line at {@link
-     *     ContentSwitches#SWITCH_PROCESS_TYPE}.
+     * @return The type of process as specified in the command line at
+     * {@link ContentSwitches#SWITCH_PROCESS_TYPE}.
      */
     private String getProcessType() {
         return TextUtils.isEmpty(mProcessType) ? "" : mProcessType;
@@ -898,9 +861,7 @@ public final class ChildProcessLauncherHelperImpl {
                 || hasForegroundServiceWorker
                 || boostForLoading) {
             newEffectiveImportance = ChildProcessImportance.MODERATE;
-        } else if (importance == ChildProcessImportance.PERCEPTIBLE
-                || (isSpareRenderer
-                        && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue())) {
+        } else if (importance == ChildProcessImportance.PERCEPTIBLE) {
             newEffectiveImportance = ChildProcessImportance.PERCEPTIBLE;
         } else {
             newEffectiveImportance = ChildProcessImportance.NORMAL;
@@ -939,6 +900,14 @@ public final class ChildProcessLauncherHelperImpl {
             }
         }
 
+        if (mIsSpareRenderer != isSpareRenderer
+                && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue()) {
+            if (isSpareRenderer) {
+                connection.addNotPerceptibleBinding();
+            } else {
+                connection.removeNotPerceptibleBinding();
+            }
+        }
         mIsSpareRenderer = isSpareRenderer;
 
         if (mRanking != null) {
@@ -1092,12 +1061,11 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback,
-                        /* isSpareRenderer= */ false);
+                        binderCallback);
         launcherHelper.mLauncher.start(
                 doSetupConnection,
                 /* queueIfNoFreeConnection= */ true,
-                launcherHelper.getBindingStateFromImportance());
+                sandboxed ? ChildBindingState.VISIBLE : ChildBindingState.STRONG);
         return launcherHelper;
     }
 
