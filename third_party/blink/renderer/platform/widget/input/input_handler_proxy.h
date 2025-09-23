@@ -346,8 +346,20 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // If `scroll_predictor_` can generate a new prediction, this will generate
   // a synthetic GestureScrollUpdate using previous input events. This will then
   // be dispatched. We only do this while scrolling and after main-thread hit
-  // testing has completed.
-  void GenerateAndDispatchSytheticScrollPrediction(
+  // testing has completed. Returns true if a synthetic event was successfully
+  // generated and dispatched.
+  bool GenerateAndDispatchSyntheticScrollPrediction(
+      const viz::BeginFrameArgs& args);
+
+  // This method processes all events in the queue with a timestamp up to and
+  // including the `sample_time`. It also passes the next event in the queue (if
+  // any) to the predictor to improve prediction accuracy.
+  void ProcessQueuedEventsUpToSampleTime(const viz::BeginFrameArgs& args,
+                                         base::TimeTicks sample_time);
+  // This method is called when the first event in the queue is after the
+  // `sample_time`. It uses this "future" event to generate a synthetic scroll
+  // update for the current frame.
+  void GenerateSyntheticScrollPredictionFromFutureEvent(
       const viz::BeginFrameArgs& args);
 
   raw_ptr<InputHandlerProxyClient> client_;
@@ -394,7 +406,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   std::optional<blink::WebGestureDevice> currently_active_gesture_device_;
   // Set only when the compositor input handler is handling a gesture. Denotes
   // which modifiers were present on the `WebInputEvent` so they can be applied
-  // in GenerateAndDispatchSytheticScrollPrediction.
+  // in GenerateAndDispatchSyntheticScrollPrediction.
   std::optional<int> currently_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
@@ -456,6 +468,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // scrolling, with an empty `compositor_event_queue_`, until frame production
   // has started, or completed.
   bool enqueue_scroll_events_ = true;
+
+  // Cached value of the kUpdateScrollPredictorInputMapping feature flag.
+  const bool update_scroll_predictor_;
 
   // `cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents`:
   // Scroll events arriving in `HandleInputEventWithLatencyInfo` will be

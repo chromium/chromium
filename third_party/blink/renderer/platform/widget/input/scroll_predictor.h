@@ -37,11 +37,13 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   // Resampling GestureScrollUpdate events. Updates the prediction with events
   // in original events list, and apply the prediction to the aggregated GSU
-  // event if enable_resampling is true.
+  // event if enable_resampling is true. |next_event| is the first event after
+  // sample_time.
   std::unique_ptr<EventWithCallback> ResampleScrollEvents(
       std::unique_ptr<EventWithCallback> event_with_callback,
       base::TimeTicks frame_time,
-      base::TimeDelta frame_interval);
+      base::TimeDelta frame_interval,
+      const WebInputEvent* next_event);
 
   // Resamples the current GestureScrollUpdate events at the given `frame_time`.
   std::unique_ptr<EventWithCallback> GenerateSyntheticScrollUpdate(
@@ -51,6 +53,8 @@ class PLATFORM_EXPORT ScrollPredictor {
       int modifiers);
 
   bool HasPrediction(base::TimeTicks frame_time) const;
+
+  void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event);
 
  private:
   friend class test::InputHandlerProxyEventQueueTest;

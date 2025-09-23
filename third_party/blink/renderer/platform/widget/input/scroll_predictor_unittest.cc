@@ -92,7 +92,7 @@ class ScrollPredictorTest : public testing::Test {
         std::move(event_with_callback),
         WebInputEvent::GetStaticTimeStampForTests() +
             base::Milliseconds(time_delta_in_milliseconds),
-        frame_interval);
+        frame_interval, nullptr /* next_event */);
 
     event = event_with_callback->event().Clone();
   }
@@ -270,9 +270,11 @@ TEST_F(ScrollPredictorTest, ResampleGestureScrollEvents) {
   EXPECT_EQ(-20, static_cast<const WebGestureEvent*>(gesture_update.get())
                      ->data.scroll_update.delta_y);
 
-  // Aggregated event delta doesn't change with empty predictor applied.
-  gesture_update = CreateGestureScrollUpdate(0, -20);
-  CoalesceWith(CreateGestureScrollUpdate(0, -40), gesture_update);
+  // Aggregated event delta doesn't change with empty predictor applied. Provide
+  // unique, increasing timestamps for each event to ensure they are all
+  // processed by the new timestamp-aware logic.
+  gesture_update = CreateGestureScrollUpdate(0, -20, 20);
+  CoalesceWith(CreateGestureScrollUpdate(0, -40, 30), gesture_update);
   EXPECT_EQ(-60, static_cast<const WebGestureEvent*>(gesture_update.get())
                      ->data.scroll_update.delta_y);
   HandleResampleScrollEvents(gesture_update);
@@ -306,7 +308,7 @@ TEST_F(ScrollPredictorTest, ScrollInDifferentDirection) {
 
   // Scroll down.
   std::unique_ptr<WebInputEvent> gesture_update =
-      CreateGestureScrollUpdate(0, -20);
+      CreateGestureScrollUpdate(0, -20, 10);
   HandleResampleScrollEvents(gesture_update);
   EXPECT_EQ(-20, static_cast<const WebGestureEvent*>(gesture_update.get())
                      ->data.scroll_update.delta_y);
@@ -315,7 +317,7 @@ TEST_F(ScrollPredictorTest, ScrollInDifferentDirection) {
   EXPECT_EQ(-20, result->pos.y());
 
   // Scroll up.
-  gesture_update = CreateGestureScrollUpdate(0, 25);
+  gesture_update = CreateGestureScrollUpdate(0, 25, 20);
   HandleResampleScrollEvents(gesture_update);
   EXPECT_EQ(0, static_cast<const WebGestureEvent*>(gesture_update.get())
                    ->data.scroll_update.delta_x);
@@ -327,8 +329,8 @@ TEST_F(ScrollPredictorTest, ScrollInDifferentDirection) {
   EXPECT_EQ(5, result->pos.y());
 
   // Scroll left + right.
-  gesture_update = CreateGestureScrollUpdate(-35, 0);
-  CoalesceWith(CreateGestureScrollUpdate(60, 0), gesture_update);
+  gesture_update = CreateGestureScrollUpdate(-35, 0, 30);
+  CoalesceWith(CreateGestureScrollUpdate(60, 0, 40), gesture_update);
   HandleResampleScrollEvents(gesture_update);
   EXPECT_EQ(25, static_cast<const WebGestureEvent*>(gesture_update.get())
                     ->data.scroll_update.delta_x);
