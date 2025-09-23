@@ -2039,10 +2039,10 @@ TEST_F(
   // This check already happens in
   // MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(), but double
   // checking here helps show this test works correctly.
-  EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_TRUE(otp_authenticator().on_challenge_option_selected_invoked());
 
   test_api(credit_card_access_manager()).OnVirtualCardUnmaskCancelled();
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
 }
 
 // Test that a success response for a VCN 3DS authentication is handled
@@ -2364,7 +2364,7 @@ TEST_F(
           .with_context_token("fake_context_token"));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 
   // Expect the metrics are logged correctly.
@@ -2412,7 +2412,7 @@ TEST_F(CreditCardAccessManagerTest,
           .with_context_token("fake_context_token"));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 #endif
@@ -2458,7 +2458,7 @@ TEST_F(CreditCardAccessManagerTest,
                                kVirtualCardRetrievalError));
 
   // Expect the CreditCardAccessManager to end the session.
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
   EXPECT_TRUE(autofill_client()
                   .GetPaymentsAutofillClient()
                   ->autofill_error_dialog_shown());
@@ -2539,7 +2539,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Mock that the flow was cancelled by the user.
   test_api(credit_card_access_manager()).OnVirtualCardUnmaskCancelled();
 
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+  EXPECT_FALSE(otp_authenticator().on_challenge_option_selected_invoked());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 #endif

@@ -249,7 +249,11 @@ class PaymentsSuggestionGeneratorTest
         .WillByDefault(testing::ReturnRef(*credit_card_form_event_logger_));
   }
 
-  void TearDown() override { credit_card_form_event_logger_->OnDestroyed(); }
+  void TearDown() override {
+    credit_card_form_event_logger_->OnDestroyed();
+    credit_card_form_event_logger_.reset();
+    DestroyAutofillClient();
+  }
 
   MockCreditCardFormEventLogger& credit_card_form_event_logger() {
     return *credit_card_form_event_logger_;

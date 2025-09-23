@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -24,7 +25,6 @@ class TestPaymentsNetworkInterface;
 
 class CreditCard;
 class CreditCardCvcAuthenticator;
-class TestCreditCardOtpAuthenticator;
 class TestPersonalDataManager;
 
 struct CardUnmaskChallengeOption;
@@ -99,6 +99,7 @@ class CreditCardAccessManagerTestBase
   ~CreditCardAccessManagerTestBase() override;
 
   void SetUp() override;
+  void TearDown() override;
 
   bool IsAuthenticationInProgress();
 
@@ -193,6 +194,11 @@ class CreditCardAccessManagerTestBase
     return *autofill_client().GetPaymentsAutofillClient();
   }
 
+  TestCreditCardOtpAuthenticator& otp_authenticator() {
+    return static_cast<TestCreditCardOtpAuthenticator&>(
+        *payments_autofill_client().GetOtpAuthenticator());
+  }
+
   payments::TestPaymentsNetworkInterface& payments_network_interface();
 
   TestPersonalDataManager& personal_data();
@@ -210,7 +216,6 @@ class CreditCardAccessManagerTestBase
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;
-  raw_ptr<TestCreditCardOtpAuthenticator> otp_authenticator_;
 };
 
 }  // namespace autofill

@@ -103,14 +103,15 @@ void CreditCardAccessManagerTestBase::SetUp() {
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
           &autofill_driver(), &autofill_client()));
 #endif
-  auto otp_authenticator =
-      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client());
-  otp_authenticator_ = otp_authenticator.get();
   payments_autofill_client().set_otp_authenticator(
-      std::move(otp_authenticator));
+      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client()));
 
   // Force creation of the CreditCardAccessManager.
   std::ignore = credit_card_access_manager();
+}
+
+void CreditCardAccessManagerTestBase::TearDown() {
+  DestroyAutofillClient();
 }
 
 bool CreditCardAccessManagerTestBase::IsAuthenticationInProgress() {
@@ -455,20 +456,20 @@ void CreditCardAccessManagerTestBase::
     }
     case CardUnmaskChallengeOptionType::kSmsOtp:
       VerifyOnSelectChallengeOptionInvoked();
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().id.value(),
                 "123");
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().type,
                 CardUnmaskChallengeOptionType::kSmsOtp);
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().challenge_info,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().challenge_info,
                 u"xxx-xxx-3547");
       break;
     case CardUnmaskChallengeOptionType::kEmailOtp:
       VerifyOnSelectChallengeOptionInvoked();
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().id.value(),
                 "345");
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().type,
                 CardUnmaskChallengeOptionType::kEmailOtp);
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().challenge_info,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().challenge_info,
                 u"a******b@google.com");
       break;
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
@@ -484,11 +485,10 @@ void CreditCardAccessManagerTestBase::
 }
 
 void CreditCardAccessManagerTestBase::VerifyOnSelectChallengeOptionInvoked() {
-  DCHECK(otp_authenticator_);
-  EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
-  EXPECT_EQ(otp_authenticator_->card().number(),
+  EXPECT_TRUE(otp_authenticator().on_challenge_option_selected_invoked());
+  EXPECT_EQ(otp_authenticator().card().number(),
             base::UTF8ToUTF16(std::string(kTestNumber)));
-  EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
+  EXPECT_EQ(otp_authenticator().context_token(), "fake_context_token");
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

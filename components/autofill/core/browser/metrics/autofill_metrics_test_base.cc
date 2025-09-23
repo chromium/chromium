@@ -158,6 +158,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
 void AutofillMetricsBaseTest::TearDownHelper() {
   test_ukm_recorder().Purge();
+  DestroyAutofillClient();
 }
 
 void AutofillMetricsBaseTest::PurgeUKM() {

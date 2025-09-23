@@ -115,6 +115,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // signin::IdentityManager::Observer:
   void OnAccountsCookieDeletedByUserAction() override;

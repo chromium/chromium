@@ -523,6 +523,10 @@ void PaymentsDataManager::OnStateChanged(syncer::SyncService* sync_service) {
       sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
+void PaymentsDataManager::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observer_.Reset();
+}
+
 void PaymentsDataManager::OnAccountsCookieDeletedByUserAction() {
   // Clear all the Sync Transport feature opt-ins.
   prefs::ClearSyncTransportOptIns(pref_service_);
