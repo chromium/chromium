@@ -10,6 +10,7 @@ class Value;
 }
 
 namespace sync_pb {
+class AccountSettingSpecifics;
 class AppListSpecifics;
 class AppSettingSpecifics;
 class AppSpecifics;
@@ -103,6 +104,9 @@ class WorkspaceDeskSpecifics;
 // sub-dictionary values.
 
 namespace syncer {
+
+base::Value AccountSettingSpecificsToValue(
+    const sync_pb::AccountSettingSpecifics& proto);
 
 base::Value AppListSpecificsToValue(const sync_pb::AppListSpecifics& proto);
 

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -335,6 +336,7 @@ class ToValueVisitor {
     return ToValueVisitor(options).ToValue(proto);                         \
   }
 
+IMPLEMENT_PROTO_TO_VALUE(AccountSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppListSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppSpecifics)
