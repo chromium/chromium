@@ -269,6 +269,10 @@ export class ComposeboxElement extends I18nMixinLit
                   this.searchboxHandler_.queryAutocomplete(
                       stringToMojoString16(this.$.input.value), false);
                 }
+                if (file.type.includes('image') &&
+                    !this.enableImageContextualSuggestions_) {
+                  this.showDropdown_ = false;
+                }
                 if (status === FileUploadStatus.kUploadSuccessful) {
                   const announcer = getAnnouncerInstance();
                   announcer.announce(
@@ -564,6 +568,13 @@ export class ComposeboxElement extends I18nMixinLit
     // done.
     if (this.lastQueriedInput_ === '') {
       this.clearAutocompleteMatches_();
+    }
+    if (this.files_ && !this.enableImageContextualSuggestions_) {
+      for (const file of this.files_.values()) {
+        if (file.type.includes('image')) {
+          return;
+        }
+      }
     }
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
