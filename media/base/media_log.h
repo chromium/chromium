@@ -103,7 +103,7 @@ class MEDIA_EXPORT MediaLog {
     base::Value serialized = MediaSerialize(status.data_);
     DCHECK(serialized.is_dict());
     if (ShouldLogToDebugConsole()) {
-      EmitConsoleErrorLog(serialized.GetDict().Clone());
+      status.data_->RenderToLogWriter(true);
     }
     record->params.Merge(std::move(serialized.GetDict()));
     AddLogRecord(std::move(record));
@@ -208,9 +208,6 @@ class MEDIA_EXPORT MediaLog {
 
   // Helper methods to create events and their parameters.
   std::unique_ptr<MediaLogRecord> CreateRecord(MediaLogRecord::Type type);
-
-  // Helper method for emitting error logs to console.
-  void EmitConsoleErrorLog(base::Value::Dict status_dict);
 
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/json/json_writer.h"
 #include "media/base/media_serializers.h"
 
 namespace media {
@@ -50,6 +51,35 @@ StatusData& StatusData::operator=(const StatusData& copy) {
 
 void StatusData::AddLocation(const base::Location& location) {
   frames.Append(MediaSerialize(location));
+}
+
+void StatusData::RenderToLogWriter(logging::LogSeverity severity) const {
+  auto* file = frames.front().GetDict().FindString(StatusConstants::kFileKey);
+  auto line = frames.front().GetDict().FindInt(StatusConstants::kLineKey);
+  DCHECK(file);
+  DCHECK(line);
+
+  auto log_writer = logging::LogMessage(file->c_str(), *line, severity);
+
+  if (message.size()) {
+    log_writer.stream() << message << ": ";
+  }
+
+  log_writer.stream() << group << "::" << static_cast<uint16_t>(code);
+
+  if (data.GetDict().size()) {
+    log_writer.stream()
+        << " Data: " << base::WriteJson(data.GetDict()).value_or(std::string());
+  }
+
+  if (frames.size() > 1) {
+    log_writer.stream() << " Trace: "
+                        << base::WriteJson(frames).value_or(std::string());
+  }
+
+  if (cause) {
+    cause->RenderToLogWriter(severity);
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream,

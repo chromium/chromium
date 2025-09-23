@@ -14,6 +14,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
@@ -76,6 +77,8 @@ struct MEDIA_EXPORT StatusData {
 
   std::unique_ptr<StatusData> copy() const;
   void AddLocation(const base::Location&);
+
+  void RenderToLogWriter(logging::LogSeverity s = logging::LOGGING_ERROR) const;
 
   // Enum group ID.
   std::string group;
@@ -314,6 +317,15 @@ class MEDIA_EXPORT TypedStatus {
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
     data_->cause = std::move(cause.data_);
+  }
+
+  // Destroy this status and log it
+  void Log() && { data_->RenderToLogWriter(); }
+
+  void DebugLog(int verbosity) const {
+    if (VLOG_IS_ON(verbosity)) {
+      data_->RenderToLogWriter();
+    }
   }
 
   inline bool operator==(Codes code) const { return code == this->code(); }

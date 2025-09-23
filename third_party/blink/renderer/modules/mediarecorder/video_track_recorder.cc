@@ -1054,8 +1054,7 @@ void VideoTrackRecorderImpl::InitializeEncoder(
 
 void VideoTrackRecorderImpl::OnHardwareEncoderError(
     media::EncoderStatus error_status) {
-  DVLOG(3) << __func__ << ", error_status: "
-           << media::EncoderStatusCodeToString(error_status);
+  std::move(error_status).DebugLog(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // Try without VEA.
   DisconnectFromTrack();
