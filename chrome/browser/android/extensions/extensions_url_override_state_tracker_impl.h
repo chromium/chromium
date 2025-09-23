@@ -40,9 +40,12 @@ class ExtensionUrlOverrideStateTrackerImpl
       const ExtensionUrlOverrideStateTrackerImpl& client) = delete;
 
  private:
-  class Observer : public ExtensionWebUIOverrideRegistrar::Observer {
+  // Synchronizes the state tracker to the Extensions Override Registrar.
+  class RegistrarSynchronizer
+      : public ExtensionWebUIOverrideRegistrar::Observer {
    public:
-    explicit Observer(ExtensionUrlOverrideStateTrackerImpl* state_tracker);
+    RegistrarSynchronizer(Profile* profile,
+                          ExtensionUrlOverrideStateTrackerImpl* state_tracker);
 
     // Called when an extension with a URL override is added and enabled.
     void OnExtensionOverrideAdded(const Extension& extension) override;
@@ -78,7 +81,7 @@ class ExtensionUrlOverrideStateTrackerImpl
   base::flat_map<std::string, bool> extension_id_to_incognito_status_;
   base::flat_map<std::string, IncognitoStatusToOverrideCount> override_map_;
 
-  Observer observer_;
+  std::unique_ptr<RegistrarSynchronizer> synchronizer_;
 
   raw_ptr<ExtensionWebUIOverrideRegistrar> registrar_;
   raw_ptr<StateListener> listener_;

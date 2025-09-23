@@ -217,4 +217,21 @@ TEST_F(ExtensionUrlOverrideStateTrackerImplTest,
   base::RunLoop().QuitWhenIdle();
 }
 
+TEST_F(ExtensionUrlOverrideStateTrackerImplTest, CatchesPreexistingOverrides) {
+  // Reset the tracker created in SetUp() to test construction with a
+  // pre-existing override.
+  tracker_.reset();
+
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(profile_.get());
+  scoped_refptr<const Extension> extension =
+      CreateExtension("ext", kNewTabUrlPath, false);
+  registrar->AddExtension(extension.get());
+  base::RunLoop().QuitWhenIdle();
+
+  EXPECT_CALL(listener_, OnUrlOverrideEnabled(kNewTabUrlPath, false)).Times(1);
+  tracker_ = std::make_unique<ExtensionUrlOverrideStateTrackerImpl>(
+      profile_.get(), &listener_);
+  base::RunLoop().QuitWhenIdle();
+}
+
 }  // namespace extensions

@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/android/extensions/extensions_url_override_state_tracker.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -19,20 +20,26 @@ namespace extensions {
 using IncognitoStatusToOverrideCount =
     ExtensionUrlOverrideStateTrackerImpl::IncognitoStatusToOverrideCount;
 
-// Observer Implementation.
-ExtensionUrlOverrideStateTrackerImpl::Observer::Observer(
-    ExtensionUrlOverrideStateTrackerImpl* state_tracker)
-    : state_tracker_(state_tracker) {}
+// RegistrarSynchronizer Implementation.
+ExtensionUrlOverrideStateTrackerImpl::RegistrarSynchronizer::
+    RegistrarSynchronizer(Profile* profile,
+                          ExtensionUrlOverrideStateTrackerImpl* state_tracker)
+    : state_tracker_(state_tracker) {
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
+  for (auto extension : registry->enabled_extensions()) {
+    OnExtensionOverrideAdded(*extension);
+  }
+}
 
-void ExtensionUrlOverrideStateTrackerImpl::Observer::OnExtensionOverrideAdded(
-    const Extension& extension) {
+void ExtensionUrlOverrideStateTrackerImpl::RegistrarSynchronizer::
+    OnExtensionOverrideAdded(const Extension& extension) {
   const URLOverrides::URLOverrideMap& overrides =
       URLOverrides::GetChromeURLOverrides(&extension);
   state_tracker_->OnUrlOverrideRegistered(extension, overrides);
 }
 
-void ExtensionUrlOverrideStateTrackerImpl::Observer::OnExtensionOverrideRemoved(
-    const Extension& extension) {
+void ExtensionUrlOverrideStateTrackerImpl::RegistrarSynchronizer::
+    OnExtensionOverrideRemoved(const Extension& extension) {
   const URLOverrides::URLOverrideMap& overrides =
       URLOverrides::GetChromeURLOverrides(&extension);
   state_tracker_->OnUrlOverrideDeactivated(extension, overrides);
@@ -42,14 +49,15 @@ void ExtensionUrlOverrideStateTrackerImpl::Observer::OnExtensionOverrideRemoved(
 ExtensionUrlOverrideStateTrackerImpl::ExtensionUrlOverrideStateTrackerImpl(
     Profile* profile,
     StateListener* listener)
-    : observer_(this), listener_(listener), profile_(profile) {
+    : listener_(listener), profile_(profile) {
   registrar_ =
       ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_);
-  registrar_->AddObserver(&observer_);
+  synchronizer_ = std::make_unique<RegistrarSynchronizer>(profile, this);
+  registrar_->AddObserver(synchronizer_.get());
 }
 
 ExtensionUrlOverrideStateTrackerImpl::~ExtensionUrlOverrideStateTrackerImpl() {
-  registrar_->RemoveObserver(&observer_);
+  registrar_->RemoveObserver(synchronizer_.get());
 }
 
 void ExtensionUrlOverrideStateTrackerImpl::OnUrlOverrideRegistered(

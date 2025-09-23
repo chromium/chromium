@@ -12,60 +12,75 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 /** Used to store information on whether extensions have overridden URLs. */
 @NullMarked
 public class ExtensionsUrlOverrideRegistry {
+    private static final String EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED = "BOOKMARKS";
+    private static final String EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED = "HISTORY";
+    private static final String EXTENSIONS_INCOGNITO_BOOKMARKS_URL_OVERRIDE_ENABLED =
+            "BOOKMARKS_INCOGNITO";
+    private static final String EXTENSIONS_INCOGNITO_NTP_URL_OVERRIDE_ENABLED = "NTP_INCOGNITO";
+    private static final String EXTENSIONS_NTP_URL_OVERRIDE_ENABLED = "NTP";
+
     // Prevent instantiation.
     private ExtensionsUrlOverrideRegistry() {}
 
-    /** Returns true if extensions can override pages in incognito mode. */
-    public boolean getIncognitoOverridesEnabledStatus() {
-        return getPrefs()
-                .readBoolean(
-                        ChromePreferenceKeys.EXTENSIONS_INCOGNITO_URL_OVERRIDES_ENABLED, false);
+    /** Returns true if an extension has overridden the NTP page. */
+    public static boolean getNtpOverrideEnabled() {
+        return getPrefs().readBoolean(buildKey(EXTENSIONS_NTP_URL_OVERRIDE_ENABLED), false);
     }
 
-    /** Returns true if an extension has overridden the NTP page. */
-    public boolean getNtpOverrideEnabled() {
+    /** Returns true if extensions can override pages in incognito mode for incognito mode. */
+    public static boolean getIncognitoNtpOverrideEnabled() {
         return getPrefs()
-                .readBoolean(ChromePreferenceKeys.EXTENSIONS_NTP_URL_OVERRIDE_ENABLED, false);
+                .readBoolean(buildKey(EXTENSIONS_INCOGNITO_NTP_URL_OVERRIDE_ENABLED), false);
     }
 
     /** Returns true if an extension has overridden the history page. */
-    public boolean getHistoryPageOverrideEnabled() {
-        return getPrefs()
-                .readBoolean(ChromePreferenceKeys.EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED, false);
+    public static boolean getHistoryPageOverrideEnabled() {
+        return getPrefs().readBoolean(buildKey(EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED), false);
     }
 
     /** Returns true if an extension has overridden the bookmarks page. */
-    public boolean getBookmarksPageOverrideEnabled() {
-        return getPrefs()
-                .readBoolean(ChromePreferenceKeys.EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED, false);
+    public static boolean getBookmarksPageOverrideEnabled() {
+        return getPrefs().readBoolean(buildKey(EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED), false);
     }
 
-    /** Sets if extensions can override pages in incognito mode. */
-    public void setIncognitoOverridesEnabledStatus(boolean status) {
-        getPrefs()
-                .writeBoolean(
-                        ChromePreferenceKeys.EXTENSIONS_INCOGNITO_URL_OVERRIDES_ENABLED, status);
+    /** Returns true if an extension has overridden the bookmarks page for incognito mode. */
+    public static boolean getIncognitoBookmarksPageOverrideEnabled() {
+        return getPrefs()
+                .readBoolean(buildKey(EXTENSIONS_INCOGNITO_BOOKMARKS_URL_OVERRIDE_ENABLED), false);
     }
 
     /** Sets if an extension has overridden the NTP page. */
-    public void setNtpOverrideEnabled(boolean status) {
-        getPrefs().writeBoolean(ChromePreferenceKeys.EXTENSIONS_NTP_URL_OVERRIDE_ENABLED, status);
+    public static void setNtpOverrideEnabled(boolean status) {
+        getPrefs().writeBoolean(buildKey(EXTENSIONS_NTP_URL_OVERRIDE_ENABLED), status);
+    }
+
+    /** Sets if extensions can override pages in incognito mode. */
+    public static void setIncognitoNtpOverrideEnabled(boolean status) {
+        getPrefs().writeBoolean(buildKey(EXTENSIONS_INCOGNITO_NTP_URL_OVERRIDE_ENABLED), status);
     }
 
     /** Sets if an extension has overridden the history page. */
-    public void setHistoryPageOverrideEnabled(boolean status) {
-        getPrefs()
-                .writeBoolean(ChromePreferenceKeys.EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED, status);
+    public static void setHistoryPageOverrideEnabled(boolean status) {
+        getPrefs().writeBoolean(buildKey(EXTENSIONS_HISTORY_URL_OVERRIDE_ENABLED), status);
     }
 
     /** Sets if an extension has overridden the bookmarks page. */
-    public void setBookmarksPageOverrideEnabled(boolean status) {
-        getPrefs()
-                .writeBoolean(
-                        ChromePreferenceKeys.EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED, status);
+    public static void setBookmarksPageOverrideEnabled(boolean status) {
+        getPrefs().writeBoolean(buildKey(EXTENSIONS_BOOKMARKS_URL_OVERRIDE_ENABLED), status);
     }
 
-    private SharedPreferencesManager getPrefs() {
+    /** Sets if an extension has overridden the bookmarks page for incognito mode. */
+    public static void setIncognitoBookmarksPageOverrideEnabled(boolean status) {
+        getPrefs()
+                .writeBoolean(
+                        buildKey(EXTENSIONS_INCOGNITO_BOOKMARKS_URL_OVERRIDE_ENABLED), status);
+    }
+
+    private static SharedPreferencesManager getPrefs() {
         return ChromeSharedPreferences.getInstance();
+    }
+
+    private static String buildKey(String string) {
+        return ChromePreferenceKeys.EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.createKey(string);
     }
 }

@@ -43,12 +43,17 @@ generate_jni("jni_headers") {
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   resources_package = "org.chromium.chrome.browser.extensions"
-  sources = [ "java/src/org/chromium/chrome/browser/extensions/ExtensionsUrlOverrideRegistryManager.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/extensions/ExtensionsUrlOverrideRegistryManager.java",
+    "java/src/org/chromium/chrome/browser/extensions/ExtensionsUrlOverrideRegistryManagerFactory.java",
+  ]
 
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/url_constants/android:java",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
