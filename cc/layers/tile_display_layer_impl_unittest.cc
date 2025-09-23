@@ -829,4 +829,63 @@ TEST_F(TileDisplayLayerImplTest,
   EXPECT_TRUE(raw_layer->GetDamageRect().IsEmpty());
 }
 
+// Verifies that when Tiling::SetTileContents is called with NoContents and the
+// reason is MissingTileReason::kTileDeleted, the corresponding tile is removed
+// from the tiling.
+TEST_F(TileDisplayLayerImplTest,
+       SetTileContentsWithNoContentsAndTileDeletedReasonRemovesTile) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  const TileIndex kTileIndex{0, 0};
+
+  // Add a tile.
+  tiling.SetTileContents(kTileIndex, SkColors::kRed,
+                         /*update_damage=*/false);
+  ASSERT_NE(tiling.TileAt(kTileIndex), nullptr);
+
+  // Set the tile's contents to NoContents with kTileDeleted as the reason and
+  // verify that the tile is deleted.
+  tiling.SetTileContents(
+      kTileIndex,
+      TileDisplayLayerImpl::NoContents{mojom::MissingTileReason::kTileDeleted},
+      /*update_damage=*/false);
+  EXPECT_EQ(tiling.TileAt(kTileIndex), nullptr);
+}
+
+// Verifies that when Tiling::SetTileContents is called with NoContents and a
+// reason other than MissingTileReason::kTileDeleted, the tile's contents are
+// updated to NoContents.
+TEST_F(TileDisplayLayerImplTest,
+       SetTileContentsWithNoContentsAndOtherReasonUpdatesTile) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  const TileIndex kTileIndex{0, 0};
+
+  // Add a tile.
+  tiling.SetTileContents(kTileIndex, SkColors::kRed,
+                         /*update_damage=*/false);
+  ASSERT_NE(tiling.TileAt(kTileIndex), nullptr);
+
+  // Set the tile's contents to NoContents with a reason other than
+  // kTileDeleted.
+  tiling.SetTileContents(kTileIndex,
+                         TileDisplayLayerImpl::NoContents{
+                             mojom::MissingTileReason::kResourceNotReady},
+                         /*update_damage=*/false);
+
+  // Verify that the tile still exists and its contents are NoContents.
+  auto* tile = tiling.TileAt(kTileIndex);
+  EXPECT_NE(tile, nullptr);
+  EXPECT_TRUE(std::holds_alternative<TileDisplayLayerImpl::NoContents>(
+      tile->contents()));
+}
+
 }  // namespace cc
