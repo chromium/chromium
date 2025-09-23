@@ -13328,21 +13328,6 @@
             ]
         }
     ],
-    "IOSLogInstallAttribution": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSLogInstallAttribution"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSManageAccountStorage": [
         {
             "platforms": [

@@ -1119,7 +1119,7 @@ bool IsDefaultBrowserOffCyclePromoEnabled() {
   return false;
 }
 
-BASE_FEATURE(kIOSLogInstallAttribution, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSLogInstallAttribution, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsInstallAttributionLoggingEnabled() {
   return base::FeatureList::IsEnabled(kIOSLogInstallAttribution);
