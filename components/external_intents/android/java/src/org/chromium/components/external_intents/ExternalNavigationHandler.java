@@ -1590,9 +1590,7 @@ public class ExternalNavigationHandler {
         // `isInitialNavigationInFrame()` in
         // the return statement below, otherwise remove it.
         WebContents webContents = mDelegate.getWebContents();
-        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
-                        params.isInDesktopWindowingMode())
-                && params.isTabInBrowser()
+        if (params.isTabInBrowser()
                 && webContents != null
                 && webContents.hasOpener()
                 && webContents.getOriginalWindowOpenDisposition()
@@ -1696,7 +1694,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }
 
-        if (isBrowserAuxiliaryNavigation(params)) {
+        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
+                params.isInDesktopWindowingMode()) &&
+                isBrowserAuxiliaryNavigation(params)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
