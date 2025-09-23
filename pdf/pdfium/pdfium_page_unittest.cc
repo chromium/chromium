@@ -533,7 +533,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumPageLinkTest, testing::Bool());
 
 using PDFiumPageImageTest = PDFiumTestBase;
 
-TEST_P(PDFiumPageImageTest, PopulateImageAltText) {
+TEST_P(PDFiumPageImageTest, ImagesWithAltText) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("image_alt_text.pdf"));
@@ -552,7 +552,7 @@ TEST_P(PDFiumPageImageTest, PopulateImageAltText) {
   EXPECT_EQ("Image 3", page.images_[2].alt_text);
 }
 
-TEST_P(PDFiumPageImageTest, ImageAltText) {
+TEST_P(PDFiumPageImageTest, TextAndImagesWithAltText) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));

@@ -1460,7 +1460,7 @@ void PDFiumPage::CalculateImages() {
         if (marked_content_id >= 0) {
           // If `marked_content_id` is already present, ignore the one being
           // inserted.
-          marked_content_id_image_map_.insert(
+          marked_content_id_to_images_map_.insert(
               {marked_content_id, images_.size()});
         }
       }
@@ -1480,7 +1480,7 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltText(
   }
 
   if (marked_content_id_to_text_runs_map_.empty() &&
-      marked_content_id_image_map_.empty()) {
+      marked_content_id_to_images_map_.empty()) {
     return;
   }
 
@@ -1535,8 +1535,8 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
       }
     }
 
-    auto image_iter = marked_content_id_image_map_.find(marked_content_id);
-    if (image_iter != marked_content_id_image_map_.end() &&
+    auto image_iter = marked_content_id_to_images_map_.find(marked_content_id);
+    if (image_iter != marked_content_id_to_images_map_.end() &&
         images_[image_iter->second].alt_text.empty()) {
       images_[image_iter->second].alt_text =
           base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
