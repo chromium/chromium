@@ -77,8 +77,9 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
       return std::nullopt;
     }
 
-    // We only construct Tile objects that are ready to draw.
-    bool IsReadyToDraw() const { return true; }
+    bool IsReadyToDraw() const {
+      return !std::holds_alternative<NoContents>(contents_);
+    }
 
    private:
     const raw_ref<TileDisplayLayerImpl> layer_;
