@@ -607,7 +607,7 @@ void CanvasResourceSharedImage::OnMemoryDump(
       static_cast<int>(gpu::TracingImportance::kClientOwner));
 }
 
-CanvasResourceProvider* CanvasResourceSharedImage::Provider() {
+CanvasResourceProviderSharedImage* CanvasResourceSharedImage::Provider() {
   return provider_.get();
 }
 

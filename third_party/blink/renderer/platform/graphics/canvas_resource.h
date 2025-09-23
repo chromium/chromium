@@ -161,8 +161,6 @@ class PLATFORM_EXPORT CanvasResource
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const = 0;
 
-  virtual CanvasResourceProvider* Provider() { return nullptr; }
-
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
@@ -258,7 +256,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void VerifySyncToken() override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
-  CanvasResourceProvider* Provider() override;
+  CanvasResourceProviderSharedImage* Provider();
 
   CanvasResourceSharedImage(
       gfx::Size size,
@@ -415,7 +413,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   const SkAlphaType alpha_type_;
   base::WeakPtr<CanvasResourceProvider> provider_;
 
-  CanvasResourceProvider* Provider() override;
+  CanvasResourceProvider* Provider();
 };
 
 }  // namespace blink

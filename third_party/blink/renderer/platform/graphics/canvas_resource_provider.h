@@ -574,6 +574,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                    int y) override;
   void ClearUnusedResources() override { unused_resources_.clear(); }
   bool IsSingleBuffered() const override;
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -624,10 +627,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
-  void OnDestroyResource() override { --num_inflight_resources_; }
   void SetResourceRecyclingEnabled(bool value) override;
-  void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
