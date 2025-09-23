@@ -474,6 +474,10 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   // http://g/chrome-webui/haW6I9yt-uA/38ckX-aGAgAJ for details.
   source->AddBoolean("reportMetrics", true);
 
+  // The WebUI Omnibox code will override this to `true` to adjust various
+  // color and layout options.
+  source->AddBoolean("isTopChromeSearchbox", false);
+
   // The lens searchboxes overrides this to true to adjust various color and
   // layout options.
   source->AddBoolean("isLensSearchbox", false);

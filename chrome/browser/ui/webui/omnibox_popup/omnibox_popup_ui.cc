@@ -40,6 +40,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
 
   WebuiOmniboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
+  source->AddBoolean("isTopChromeSearchbox", true);
+
   webui::SetupWebUIDataSource(source, kOmniboxPopupResources,
                               IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
   webui::EnableTrustedTypesCSP(source);
