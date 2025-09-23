@@ -617,6 +617,7 @@ _CROSSBENCH_WEBVIEW = frozenset([
             '--cool-down-threshold=moderate',
             '--http-request-timeout=15s',
             '--action-runner=android',
+            '--ignore-partial-failures',
         ]),
 ])
 # pylint: enable=line-too-long
