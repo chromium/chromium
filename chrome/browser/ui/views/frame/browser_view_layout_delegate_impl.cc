@@ -276,6 +276,9 @@ BrowserViewLayoutDelegateImplNew::GetBoundsForToolbarInVerticalTabBrowserView()
 gfx::Rect
 BrowserViewLayoutDelegateImplNew::GetBoundsForWebAppFrameToolbarInBrowserView()
     const {
+  if (browser_view().ShouldHideUIForFullscreen()) {
+    return gfx::Rect();
+  }
   const gfx::Size web_app_frame_toolbar_preferred_size =
       browser_view().web_app_frame_toolbar()->GetPreferredSize();
 

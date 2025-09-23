@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -67,11 +67,11 @@ MATCHER_P3(ApproximatelyEquals,
   return false;
 }
 
-enum class WindowState { kNormal, kMaximized };
+enum class WindowState { kNormal, kMaximized, kImmersiveMode };
 
 std::string WindowStateToString(WindowState state) {
   constexpr std::array kWindowStateNames = {"Normal", "Maximized",
-                                            "Fullscreen"};
+                                            "ImmersiveMode"};
   return kWindowStateNames[static_cast<int>(state)];
 }
 
@@ -132,7 +132,24 @@ class BrowserViewLayoutDelegateImplBrowsertest
         ASSERT_TRUE(widget->IsMaximized());
         break;
       }
+      case WindowState::kImmersiveMode: {
+        auto* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser);
+        auto* const controller = browser_view->immersive_mode_controller();
+        // Note: this will enter immersive mode without going fullscreen.
+        controller->SetEnabled(true);
+        ASSERT_TRUE(controller->IsEnabled());
+        immersive_mode_lock_ = controller->GetRevealedLock(
+            ImmersiveModeController::AnimateReveal::ANIMATE_REVEAL_NO);
+        ASSERT_TRUE(controller->IsRevealed());
+        break;
+      }
     }
+  }
+
+  void TearDownOnMainThread() override {
+    immersive_mode_lock_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   void SetUseLayoutDelegate(Browser* browser, bool use_new_delegate) {
@@ -157,13 +174,21 @@ class BrowserViewLayoutDelegateImplBrowsertest
 
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+  std::unique_ptr<ImmersiveRevealedLock> immersive_mode_lock_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          BrowserViewLayoutDelegateImplBrowsertest,
+// Immersive mode is only available on Mac and ChromeOS, but Mac does not
+// support maximization in the same sense as other platforms.
 #if BUILDFLAG(IS_MAC)
-                         testing::Values(WindowState::kNormal),
-#else
+                         testing::Values(WindowState::kNormal,
+                                         WindowState::kImmersiveMode),
+#elif BUILDFLAG(IS_CHROMEOS)
+                         testing::Values(WindowState::kNormal,
+                                         WindowState::kMaximized,
+                                         WindowState::kImmersiveMode),
+#else  // Linux or Windows
                          testing::Values(WindowState::kNormal,
                                          WindowState::kMaximized),
 #endif
