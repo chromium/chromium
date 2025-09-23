@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/omnibox/browser/omnibox_popup_view.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -20,8 +20,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class LocationBarView;
 class OmniboxController;

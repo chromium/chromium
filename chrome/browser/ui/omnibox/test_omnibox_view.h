@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_VIEW_H_
-#define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_VIEW_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_VIEW_H_
+#define CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_VIEW_H_
 
 #include <stddef.h>
 
 #include <string>
 
-#include "components/omnibox/browser/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "ui/gfx/range/range.h"
 
 struct AutocompleteMatch;
@@ -75,4 +75,4 @@ class TestOmniboxView : public OmniboxView {
   gfx::Range saved_temporary_selection_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_VIEW_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_VIEW_H_

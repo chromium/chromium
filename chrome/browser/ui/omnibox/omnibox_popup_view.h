@@ -8,8 +8,8 @@
 // communication with the view.  Since the model is shared between platforms,
 // we need to define an interface that all view implementations will share.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_VIEW_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_VIEW_H_
+#define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_VIEW_H_
 
 #include <stddef.h>
 
@@ -20,8 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class OmniboxController;
 class OmniboxEditModel;
@@ -95,4 +93,4 @@ class OmniboxPopupView {
   const raw_ptr<OmniboxController> controller_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_VIEW_H_

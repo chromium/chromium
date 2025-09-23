@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -10,13 +12,9 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
-
 class OmniboxControllerTest : public testing::Test {
  protected:
   OmniboxControllerTest() {

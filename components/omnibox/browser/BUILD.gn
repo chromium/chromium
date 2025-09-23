@@ -428,16 +428,6 @@ static_library("browser") {
   }
 
   if (!is_ios) {
-    sources += [
-      "omnibox_controller.cc",
-      "omnibox_controller.h",
-      "omnibox_edit_model.cc",
-      "omnibox_edit_model.h",
-      "omnibox_popup_view.cc",
-      "omnibox_popup_view.h",
-      "omnibox_view.cc",
-      "omnibox_view.h",
-    ]
     deps += [ "//ui/base/clipboard" ]
   }
 
@@ -745,6 +735,8 @@ static_library("test_support") {
   sources = [
     "autocomplete_match_test_util.cc",
     "autocomplete_match_test_util.h",
+    "fake_autocomplete_controller.cc",
+    "fake_autocomplete_controller.h",
     "fake_autocomplete_provider.cc",
     "fake_autocomplete_provider.h",
     "fake_autocomplete_provider_client.cc",
@@ -809,16 +801,6 @@ static_library("test_support") {
     ]
   }
 
-  if (!is_ios) {
-    sources += [
-      "test_omnibox_edit_model.cc",
-      "test_omnibox_edit_model.h",
-      "test_omnibox_popup_view.cc",
-      "test_omnibox_popup_view.h",
-      "test_omnibox_view.cc",
-      "test_omnibox_view.h",
-    ]
-  }
   if (toolkit_views) {
     # Needed to get the TOOLKIT_VIEWS define.
     deps += [ "//ui/views" ]
@@ -876,8 +858,6 @@ source_set("unit_tests") {
     "document_suggestions_service_unittest.cc",
     "enterprise_search_aggregator_provider_unittest.cc",
     "enterprise_search_aggregator_suggestions_service_unittest.cc",
-    "fake_autocomplete_controller.cc",
-    "fake_autocomplete_controller.h",
     "favicon_cache_unittest.cc",
     "featured_search_provider_unittest.cc",
     "history_embeddings_provider_unittest.cc",
@@ -989,9 +969,6 @@ source_set("unit_tests") {
     sources += [
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
-      "omnibox_controller_unittest.cc",
-      "omnibox_edit_model_unittest.cc",
-      "omnibox_view_unittest.cc",
     ]
     deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }

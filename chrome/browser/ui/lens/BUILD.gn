@@ -142,6 +142,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/search",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/bubble",

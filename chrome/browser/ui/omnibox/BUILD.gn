@@ -8,20 +8,25 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 # The public interface has no circular dependencies.
 source_set("omnibox") {
-  sources = [ "omnibox_pedal_implementations.h" ]
+  public = [ "omnibox_pedal_implementations.h" ]
+  sources = []
   deps = []
   public_deps = [
     "//base",
     "//components/omnibox/browser",
   ]
   if (!is_android) {
-    sources += [
+    public += [
       "alternate_nav_infobar_delegate.h",
       "chrome_omnibox_client.h",
       "chrome_omnibox_navigation_observer.h",
       "clipboard_utils.h",
+      "omnibox_controller.h",
+      "omnibox_edit_model.h",
+      "omnibox_popup_view.h",
       "omnibox_tab_helper.h",
       "omnibox_theme.h",
+      "omnibox_view.h",
     ]
     public_deps += [
       "//base",
@@ -30,11 +35,17 @@ source_set("omnibox") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/common",
       "//components/infobars/core",
+      "//components/omnibox/browser",
       "//components/omnibox/browser:mojo_bindings_shared",
       "//components/omnibox/browser:mojo_bindings_shared_cpp_sources",
       "//components/omnibox/common",
+      "//components/search_engines",
       "//content/public/browser",
       "//services/network/public/mojom:url_loader_base",
+      "//skia",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
     ]
   }
 }
@@ -72,7 +83,11 @@ source_set("impl") {
       "chrome_omnibox_client.cc",
       "chrome_omnibox_navigation_observer.cc",
       "clipboard_utils.cc",
+      "omnibox_controller.cc",
+      "omnibox_edit_model.cc",
+      "omnibox_popup_view.cc",
       "omnibox_tab_helper.cc",
+      "omnibox_view.cc",
     ]
     deps += [
       "//chrome/app:command_ids",
@@ -95,15 +110,20 @@ source_set("impl") {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/common",
       "//components/bookmarks/browser",
+      "//components/dom_distiller/core",
       "//components/favicon/content",
       "//components/favicon/core",
       "//components/history/core/browser",
+      "//components/history_embeddings",
       "//components/infobars/content",
       "//components/infobars/core",
+      "//components/navigation_metrics",
       "//components/profile_metrics",
+      "//components/resources:components_scaled_resources_grit",
       "//components/search_engines",
       "//components/sessions",
       "//content/public/browser",
@@ -125,36 +145,79 @@ source_set("impl") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  public = [
+    "test_omnibox_edit_model.h",
+    "test_omnibox_popup_view.h",
+    "test_omnibox_view.h",
+  ]
+
+  sources = [
+    "test_omnibox_edit_model.cc",
+    "test_omnibox_popup_view.cc",
+    "test_omnibox_view.cc",
+  ]
+
+  public_deps = [
+    "//components/prefs:test_support",
+    "//ui/gfx:native_widget_types",
+    "//ui/gfx/range",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/omnibox",
+    "//components/omnibox/browser:test_support",
+    "//testing/gmock",
+  ]
+}
+
 if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
       "chrome_omnibox_navigation_observer_unittest.cc",
       "clipboard_utils_unittest.cc",
+      "omnibox_controller_unittest.cc",
+      "omnibox_edit_model_unittest.cc",
       "omnibox_pedal_implementations_unittest.cc",
       "omnibox_pedals_unittest.cc",
+      "omnibox_view_unittest.cc",
     ]
     deps = [
       ":omnibox",
+      ":test_support",
       "//base/test:test_support",
       "//chrome/browser/search_engines",
       "//chrome/test:test_support",
+      "//components/bookmarks/test",
       "//components/infobars/content",
       "//components/omnibox/browser",
       "//components/omnibox/browser:location_bar",
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common",
+      "//components/open_from_clipboard:test_support",
       "//components/search_engines",
+      "//components/sync_preferences:test_support",
+      "//components/url_formatter",
       "//content/public/browser",
       "//content/test:test_support",
+      "//extensions/buildflags",
       "//net",
       "//services/network:test_support",
       "//services/network/public/cpp",
       "//services/network/public/mojom:url_loader_base",
+      "//skia:skia_core_public_headers",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/metrics_proto",
+      "//third_party/omnibox_proto",
       "//ui/base",
       "//ui/base:types",
       "//ui/base/clipboard",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/gfx:test_support",
+      "//ui/gfx/geometry",
     ]
   }
 

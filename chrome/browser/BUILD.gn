@@ -4372,6 +4372,7 @@ static_library("browser") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
       "//chrome/browser/ui/performance_controls",

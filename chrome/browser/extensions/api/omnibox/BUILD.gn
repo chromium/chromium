@@ -30,6 +30,7 @@ source_set("omnibox") {
     "//chrome/browser/omnibox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui/omnibox",
     "//chrome/common/extensions",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:safe_xml_parser",

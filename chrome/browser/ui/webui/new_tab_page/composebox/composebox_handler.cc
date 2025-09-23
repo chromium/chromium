@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/tab_contextualization_controller.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "content/public/browser/page_navigator.h"
 
 using composebox::SessionState;

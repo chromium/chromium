@@ -1175,12 +1175,14 @@ static_library("test_support") {
     ]
     public_deps += [
       "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/ui/omnibox",
       "//ui/native_theme:test_support",
       "//ui/views:test_support",
     ]
     deps += [
       "//chrome/browser/ui/color:mixers",
       "//components/color",
+      "//components/omnibox/browser:test_support",
       "//components/user_education/views",
     ]
     if (!is_chromeos) {
@@ -1417,6 +1419,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/omnibox",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -2142,6 +2145,7 @@ if (is_android) {
       deps += [
         "//chrome/browser/extensions",
         "//chrome/browser/omnibox",
+        "//chrome/browser/ui/omnibox",
       ]
 
       data += [
@@ -3914,6 +3918,7 @@ if (!is_android) {
         "//chrome/browser/glic:impl",
         "//chrome/browser/glic/fre",
         "//chrome/browser/glic/test_support",
+        "//chrome/browser/ui/omnibox",
         "//chrome/renderer/actor:browser_tests",
         "//chrome/renderer/webui_browser:browser_tests",
       ]
@@ -4000,6 +4005,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/cookie_controls:browser_tests",
       "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/profiles",
@@ -8583,6 +8589,7 @@ test("unit_tests") {
       "//chrome/browser/ui/lens:unit_tests",
       "//chrome/browser/ui/media_router:unit_tests",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/omnibox:test_support",
       "//chrome/browser/ui/omnibox:unit_tests",
       "//chrome/browser/ui/qrcode_generator:unit_tests",
       "//chrome/browser/ui/safety_hub:unit_tests",
@@ -10876,6 +10883,7 @@ if (!is_android) {
       "//chrome/browser/ui/autofill/payments:test_support_ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/user_education",
@@ -11561,6 +11569,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/omnibox",
         "//chrome/browser/ui/exclusive_access:test_support",
+        "//chrome/browser/ui/omnibox",
         "//chrome/browser/ui/tabs:tab_list_interface",
         "//extensions/browser/api:extensions_api_client",
       ]
@@ -11769,6 +11778,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",
         "//chrome/browser/ui/media_router",
+        "//chrome/browser/ui/omnibox",
         "//chrome/browser/ui/passwords:test_support",
         "//chrome/browser/ui/performance_controls/test_support",
         "//chrome/browser/ui/tabs",

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/test_omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 
 #include <memory>
 
 #include "components/omnibox/browser/test_omnibox_client.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 TestOmniboxEditModel::TestOmniboxEditModel(
     OmniboxController* omnibox_controller,
@@ -26,8 +24,9 @@ bool TestOmniboxEditModel::PopupIsOpen() const {
 
 AutocompleteMatch TestOmniboxEditModel::CurrentMatch(
     GURL* alternate_nav_url) const {
-  if (override_current_match_)
+  if (override_current_match_) {
     return *override_current_match_;
+  }
 
   return OmniboxEditModel::CurrentMatch(alternate_nav_url);
 }

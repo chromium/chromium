@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EDIT_MODEL_H_
+#define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EDIT_MODEL_H_
 
 #include <stddef.h>
 
@@ -18,20 +18,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class OmniboxController;
 class OmniboxPopupView;
@@ -860,4 +858,4 @@ class OmniboxEditModel {
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_MODEL_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_EDIT_MODEL_H_

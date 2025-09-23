@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 
 #include <stddef.h>
 
@@ -16,6 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
@@ -23,17 +29,11 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_model.h"
-#include "components/omnibox/browser/test_omnibox_popup_view.h"
-#include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -55,8 +55,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_features.h"  // nogncheck
 #endif
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 using metrics::OmniboxEventProto;
 using Selection = OmniboxPopupSelection;

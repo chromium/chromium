@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/test_omnibox_view.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 
 #include <algorithm>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/omnibox/browser/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "ui/gfx/native_ui_types.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 // static
 OmniboxView::State TestOmniboxView::CreateState(std::string text,
@@ -80,8 +78,9 @@ void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
 
   // Just like the Views control, only change the selection if the text has
   // actually changed.
-  if (text_changed)
+  if (text_changed) {
     selection_ = gfx::Range(text_.size(), inline_autocompletion.size());
+  }
 }
 
 void TestOmniboxView::OnInlineAutocompleteTextCleared() {

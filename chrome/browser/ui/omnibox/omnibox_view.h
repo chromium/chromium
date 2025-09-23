@@ -8,8 +8,8 @@
 // the view.  Since the model is shared between platforms, we need to define an
 // interface that all view implementations will share.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_H_
+#define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_H_
 
 #include <stddef.h>
 
@@ -26,8 +26,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class OmniboxController;
 class OmniboxEditModel;
@@ -73,7 +71,7 @@ class OmniboxView {
   // the field is empty.
   bool IsEditingOrEmpty() const;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the icon to display as the location icon. If a favicon is
   // available, `on_icon_fetched` may be called later asynchronously.
   // `color_current_page_icon` is used for the page icon (i.e. when the popup is
@@ -296,4 +294,4 @@ class OmniboxView {
   const std::unique_ptr<OmniboxController> controller_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_H_

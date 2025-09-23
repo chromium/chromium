@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 
 #include <stddef.h>
 
@@ -17,15 +17,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "components/omnibox/browser/test_omnibox_edit_model.h"
-#include "components/omnibox/browser/test_omnibox_popup_view.h"
-#include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,8 +41,6 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 using base::ASCIIToUTF16;
 using testing::_;

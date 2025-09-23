@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 

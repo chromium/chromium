@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_POPUP_VIEW_H_
-#define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_POPUP_VIEW_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_POPUP_VIEW_H_
+#define CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_POPUP_VIEW_H_
 
-#include "components/omnibox/browser/omnibox_popup_view.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 
 // Fake implementation of OmniboxPopupView for use in tests.
 class TestOmniboxPopupView : public OmniboxPopupView {
@@ -23,4 +21,4 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_POPUP_VIEW_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_POPUP_VIEW_H_

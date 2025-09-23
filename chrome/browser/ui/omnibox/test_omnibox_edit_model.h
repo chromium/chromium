@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_
-#define COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_EDIT_MODEL_H_
+#define CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_EDIT_MODEL_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/prefs/testing_pref_service.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class TestOmniboxEditModel : public OmniboxEditModel {
  public:
@@ -58,4 +56,4 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   raw_ptr<PrefService> pref_service_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_OMNIBOX_EDIT_MODEL_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_EDIT_MODEL_H_

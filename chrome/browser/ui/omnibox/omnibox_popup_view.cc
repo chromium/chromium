@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 
 #include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 
 OmniboxPopupView::OmniboxPopupView(OmniboxController* controller)
     : controller_(controller) {}

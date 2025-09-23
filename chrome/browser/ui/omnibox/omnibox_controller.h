@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTROLLER_H_
+#define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTROLLER_H_
 
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
-
-static_assert(!BUILDFLAG(IS_IOS));
 
 class OmniboxClient;
 class OmniboxView;
@@ -103,4 +101,4 @@ class OmniboxController : public AutocompleteController::Observer {
   base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTROLLER_H_

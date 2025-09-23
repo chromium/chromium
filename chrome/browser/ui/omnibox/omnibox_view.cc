@@ -5,7 +5,7 @@
 // This file defines helper functions shared by the various implementations
 // of OmniboxView.
 
-#include "components/omnibox/browser/omnibox_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,14 +14,14 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search/search.h"
@@ -38,9 +38,6 @@
 // GN doesn't understand conditional includes, so we need nogncheck here.
 #include "extensions/common/constants.h"  // nogncheck
 #endif
-
-static_assert(!BUILDFLAG(IS_IOS));
-
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -62,7 +59,7 @@ bool OmniboxView::IsEditingOrEmpty() const {
           model()->PopupIsOpen());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(manukh): OmniboxView::GetIcon is very similar to
 // OmniboxPopupModel::GetMatchIcon. They contain certain inconsistencies
 // concerning what flags are required to display url favicons and bookmark star

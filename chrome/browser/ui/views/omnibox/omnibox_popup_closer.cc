@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "ui/views/view.h"
 
 namespace ui {

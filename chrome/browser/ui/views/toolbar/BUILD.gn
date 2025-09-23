@@ -150,6 +150,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/tabs:tab_enums",
