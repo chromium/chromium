@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 
 @implementation SnackbarViewTestAppInterface
 
@@ -41,9 +41,9 @@
     message.trailingAccessoryImage = [[UIImage alloc] init];
   }
 
-  id<SnackbarCommands> handler = HandlerForProtocol(
-      chrome_test_util::GetCurrentBrowser()->GetCommandDispatcher(),
-      SnackbarCommands);
+  CommandDispatcher* dispatcher = ChromeCoordinatorAppInterface.dispatcher;
+  id<SnackbarCommands> handler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
   [handler showSnackbarMessage:message];
 }
 

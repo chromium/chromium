@@ -37,6 +37,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
   ]
 }
 
@@ -63,4 +64,12 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("test_support") {
+  sources = [
+    "stub_snackbar_coordinator_delegate.h",
+    "stub_snackbar_coordinator_delegate.mm",
+  ]
+  deps = [ ":ui_bundled" ]
 }

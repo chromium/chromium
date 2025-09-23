@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/snackbar/ui_bundled/snackbar_view_test_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -53,6 +55,7 @@ void VerifySnackbarUI(NSString* title,
                                            buttonText:buttonText
                                   hasLeadingAccessory:hasLeadingAccessory
                                  hasTrailingAccessory:hasTrailingAccessory];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SnackbarViewMatcher()];
@@ -99,9 +102,15 @@ void VerifySnackbarUI(NSString* title,
 
 @implementation SnackbarViewTestCase
 
+- (void)setUp {
+  [super setUp];
+  [ChromeCoordinatorAppInterface startSnackbarCoordinator];
+}
+
 - (void)tearDownHelper {
   DismissSnackbar();
   [super tearDownHelper];
+  [ChromeCoordinatorAppInterface reset];
 }
 
 // Tests a snackbar with only a title.
@@ -136,8 +145,7 @@ void VerifySnackbarUI(NSString* title,
 }
 
 // Tests that tapping the snackbar view dismisses it.
-// TODO(crbug.com/445155205): Re-enable once the test is fixed.
-- (void)DISABLED_testSnackbarDismissesOnTap {
+- (void)testSnackbarDismissesOnTap {
   VerifySnackbarUI(kTestTitle, nil, nil, nil, NO, NO);
   [[EarlGrey selectElementWithMatcher:SnackbarViewMatcher()]
       performAction:grey_tap()];
@@ -149,14 +157,6 @@ void VerifySnackbarUI(NSString* title,
 
 // Tests that showing a new snackbar dismisses an existing one.
 - (void)testNewSnackbarDismissesOldSnackbar {
-// TODO(crbug.com/446695415): Test is flaky on iPhone device, re-enable when
-// fixed.
-#if !TARGET_OS_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Flaky on iPhone device.");
-  }
-#endif
-
   // Show the first message.
   VerifySnackbarUI(kTestTitle, nil, nil, nil, NO, NO);
 

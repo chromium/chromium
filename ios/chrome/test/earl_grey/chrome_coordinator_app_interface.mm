@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/stub_snackbar_coordinator_delegate.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
@@ -278,6 +280,15 @@
   self.helper.coordinator = [[SearchWhatYouSeePromoCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
+  [self.helper.coordinator start];
+}
+
++ (void)startSnackbarCoordinator {
+  self.helper.mockObject = [[StubSnackbarCoordinatorDelegate alloc] init];
+  self.helper.coordinator = [[SnackbarCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser
+                        delegate:self.helper.mockObject];
   [self.helper.coordinator start];
 }
 
