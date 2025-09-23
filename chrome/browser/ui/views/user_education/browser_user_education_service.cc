@@ -293,6 +293,22 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after a home/work suggestion is available to "
                        "user for filling")));
 
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature,
+          autofill::PopupViewViews::
+              kAutofillAccountNameEmailSuggestionElementId,
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION,
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetBubbleTitleText(
+              IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_TITLE)
+          .SetMetadata(
+              143, "sygiet@google.com",
+              "Triggered after a name and email suggestion is available to "
+              "user for filling")));
+
   // kIPHAutofillAiOptInFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

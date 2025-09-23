@@ -1106,6 +1106,11 @@ void PopupViewViews::CreateSuggestionViews() {
                                     kIPHAutofillEnableLoyaltyCardsFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillEnableLoyaltyCardsElementId);
+          } else if (feature ==
+                     &feature_engagement::
+                         kIPHAutofillAccountNameEmailSuggestionFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAccountNameEmailSuggestionElementId);
           }
       }
     }
@@ -1485,6 +1490,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillHomeWorkSuggestionElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillEnableLoyaltyCardsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PopupViewViews,
+    kAutofillAccountNameEmailSuggestionElementId);
 
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(

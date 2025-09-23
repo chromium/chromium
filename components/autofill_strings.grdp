@@ -315,6 +315,16 @@
     Fill forms faster
   </message>
 
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION" desc="IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Autofill your name and email address from your Google Account
+  </message>
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Autofill your name and email address from your Google Account
+  </message>
+  <message name="IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_TITLE" desc="Title text for IPH bubble for a suggestion item suggesting that name and email account profile is available to use.">
+    Fill forms faster
+  </message>
+
 
   <!-- Autofill suggestion label separator -->
   <message name="IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR" desc="A separator to place between different elements of a suggestion's label. Labels sometimes have more than one type of information, such as a phone number and an email address or a street address, a phone number, and an email address. A symbol, in this case a bullet •, with a white space before it and a white space after it, is used to separate the parts of the label that appear on the same line, e.g. (877) 733-7699 • fanfeedback@redsox.com or 465 Huntington Ave • (617) 267-9300 • matthewt@mfa.org. A bullet • is preferred for separating the label parts; however, if the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">

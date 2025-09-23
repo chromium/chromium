@@ -81,6 +81,8 @@ class PopupViewViews : public PopupBaseView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillHomeWorkSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillEnableLoyaltyCardsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillAccountNameEmailSuggestionElementId);
 
   using RowPointer = std::variant<PopupRowView*,
                                   PopupSeparatorView*,
