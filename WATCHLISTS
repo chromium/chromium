@@ -71,7 +71,8 @@
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
     },
     'agents': {
-      'filepath': '^agents/',
+      'filepath': '^\.gemini/|' \
+                  '^agents/',
     },
     'ai_page_content' : {
       'filepath': 'chrome/browser/ai/ai_data_keyed_service|' \
