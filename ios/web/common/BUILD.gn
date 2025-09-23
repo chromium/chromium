@@ -26,6 +26,7 @@ source_set("common") {
   ]
 
   deps = [
+    ":crw_web_view_resizing_type",
     "//base",
     "//ios/web/public/navigation",
     "//net",
@@ -55,9 +56,13 @@ if (!ios_is_app_extension) {
       "uikit_ui_util.h",
       "uikit_ui_util.mm",
     ]
-
     deps = [ "//base" ]
   }
+}
+
+source_set("crw_web_view_resizing_type") {
+  sources = [ "crw_web_view_resizing_type.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("web_view_creation_util") {
