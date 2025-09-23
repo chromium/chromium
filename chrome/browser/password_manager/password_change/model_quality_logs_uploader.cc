@@ -111,7 +111,17 @@ GetNextStepQuality(optimization_guide::proto::LogAiDataRequest& log) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
     return quality->mutable_submit_form();
   }
-  return quality->mutable_open_form();
+
+  // TODO(crbug.com/446883346): Remove flag after feature is launched.
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kCheckLoginStateBeforePasswordChange) ||
+      (quality->logged_in_check().status() !=
+       ModelQualityLogsUploader::QualityStatus::
+           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS)) {
+    return quality->mutable_open_form();
+  }
+
+  return quality->mutable_logged_in_check();
 }
 
 optimization_guide::proto::PasswordChangeQuality_StepQuality* GetStepQuality(
@@ -120,6 +130,9 @@ optimization_guide::proto::PasswordChangeQuality_StepQuality* GetStepQuality(
   optimization_guide::proto::PasswordChangeQuality* quality =
       log.mutable_password_change_submission()->mutable_quality();
   switch (step) {
+    case ModelQualityLogsUploader::FlowStep::
+        PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP:
+      return quality->mutable_logged_in_check();
     case ModelQualityLogsUploader::FlowStep::
         PasswordChangeRequest_FlowStep_OPEN_FORM_STEP:
       return quality->mutable_open_form();

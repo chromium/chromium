@@ -438,14 +438,50 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckReachedMaxAttempts) {
 TEST_F(ModelQualityLogsUploaderTest, LastLoginCheckHadUnexpectedState) {
   const int login_state_checks = 5;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
-  QualityStatus quality_status = QualityStatus::
+  QualityStatus unexpected_status = QualityStatus::
       PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
-  logs_uploader.SetLoggedInCheckQuality(login_state_checks, quality_status);
+  logs_uploader.SetLoggedInCheckQuality(login_state_checks, unexpected_status);
   const optimization_guide::proto::LogAiDataRequest final_log =
       logs_uploader.GetFinalLog();
-  VerifyLoginCheckStep(logs_uploader.GetFinalLog(), quality_status,
+  VerifyLoginCheckStep(logs_uploader.GetFinalLog(), unexpected_status,
                        /*expected_retry_count=*/login_state_checks - 1,
                        /*was_skipped=*/false);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, FlowInterruptedAfterLoginCheck) {
+  const int login_state_checks = 3;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  const QualityStatus success_status = QualityStatus::
+      PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+  logs_uploader.SetLoggedInCheckQuality(login_state_checks, success_status);
+  logs_uploader.SetFlowInterrupted();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  VerifyLoginCheckStep(final_log, success_status,
+                       /*expected_retry_count=*/login_state_checks - 1,
+                       /*was_skipped=*/false);
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, LoginCheckStepOtpDetected) {
+  const int login_state_checks = 3;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  QualityStatus quality_status = QualityStatus::
+      PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+  logs_uploader.SetLoggedInCheckQuality(login_state_checks, quality_status);
+  logs_uploader.SetOtpDetected();
+  const optimization_guide::proto::LogAiDataRequest final_log =
+      logs_uploader.GetFinalLog();
+  VerifyLoginCheckStep(final_log, quality_status,
+                       /*expected_retry_count=*/login_state_checks - 1,
+                       /*was_skipped=*/false);
+  CheckOpenFormStatus(
+      final_log,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
