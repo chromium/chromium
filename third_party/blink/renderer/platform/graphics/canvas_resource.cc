@@ -759,10 +759,6 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
     return;
   }
 
-  if (Provider()) {
-    Provider()->OnDestroyResource();
-  }
-
   // The context deletes all shared images on destruction which means no
   // cleanup is needed if the context was lost.
   if (!context_provider_wrapper_) {

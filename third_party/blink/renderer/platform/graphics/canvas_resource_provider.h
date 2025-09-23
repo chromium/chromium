@@ -302,8 +302,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   ResourceProviderType GetType() const { return type_; }
 
-  virtual void OnDestroyResource() {}
-
   void FlushIfRecordingLimitExceeded();
 
   const MemoryManagedPaintRecorder& Recorder() const { return *recorder_; }
@@ -573,7 +571,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsSingleBuffered() const override;
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
-  void OnDestroyResource() override { --num_inflight_resources_; }
+  void OnDestroyResource() { --num_inflight_resources_; }
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
