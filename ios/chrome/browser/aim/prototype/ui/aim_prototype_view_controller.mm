@@ -32,6 +32,7 @@ const float kInputPlateShadowOpacity = 0.2f;
 const CGFloat kInputPlateShadowRadius = 20.0f;
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 6.0f;
+const CGSize kEstimatedCarouselItemSize = {76.0f, 36.0f};
 /// The height of the carousel view.
 const CGFloat kCarouselHeight = 36.0f;
 /// The height of the AIM mode button.
@@ -231,7 +232,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UICollectionViewFlowLayout* layout =
       [[UICollectionViewFlowLayout alloc] init];
   layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-  layout.estimatedItemSize = UICollectionViewFlowLayoutAutomaticSize;
+  layout.estimatedItemSize = kEstimatedCarouselItemSize;
   layout.minimumLineSpacing = kCarouselItemSpacing;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
