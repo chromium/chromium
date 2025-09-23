@@ -25,7 +25,7 @@ AutomationDelegateSupplement& AutomationDelegateSupplement::From(
 }
 
 // static
-AutomationDelegate* AutomationDelegateSupplement::GetDelegateIfExists(
+AutomationDelegate* AutomationDelegateSupplement::GetIfExists(
     LocalDOMWindow& window) {
   AutomationDelegateSupplement* supplement =
       Supplement<LocalDOMWindow>::From<AutomationDelegateSupplement>(window);

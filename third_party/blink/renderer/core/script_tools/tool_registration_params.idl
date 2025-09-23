@@ -17,3 +17,7 @@ dictionary ToolRegistrationParams {
   object inputSchema;
   AnnotationsDict annotations;
 };
+
+dictionary ProvideContextParams {
+  required sequence<ToolRegistrationParams> tools;
+};

@@ -92,51 +92,9 @@ void AutomationDelegate::ForEachScriptTool(
 void AutomationDelegate::registerTool(ScriptState* script_state,
                                       ToolRegistrationParams* params,
                                       ExceptionState& exception_state) {
-  if (tool_map_.find(params->name()) != tool_map_.end()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Duplicate tool name");
+  if (!RegisterTool(script_state, params, exception_state)) {
     return;
   }
-
-  if (!params->name() || params->name().empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Tool name is required");
-    return;
-  }
-
-  if (!params->description() || params->description().empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Description is required");
-    return;
-  }
-
-  String input_schema;
-  if (params->hasInputSchema()) {
-    input_schema =
-        ValidateAndStringifyObject(script_state, params->inputSchema());
-    if (!input_schema) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid input schema");
-      return;
-    }
-  }
-
-  auto* tool_data = MakeGarbageCollected<ToolData>();
-
-  auto script_tool = mojom::blink::ScriptTool::New();
-  script_tool->name = params->name();
-  script_tool->description = params->description();
-  script_tool->input_schema = input_schema;
-
-  if (params->hasAnnotations()) {
-    script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
-    script_tool->annotations->read_only = params->annotations()->readOnlyHint();
-  }
-
-  tool_data->script_tool = std::move(script_tool);
-  tool_data->tool_function = params->execute();
-
-  tool_map_.insert(params->name(), std::move(tool_data));
 }
 
 void AutomationDelegate::unregisterTool(ScriptState* script_state,
@@ -150,6 +108,24 @@ void AutomationDelegate::unregisterTool(ScriptState* script_state,
   }
 
   tool_map_.erase(it);
+}
+
+void AutomationDelegate::provideContext(ScriptState* script_state,
+                                        ProvideContextParams* params,
+                                        ExceptionState& exception_state) {
+  auto prev_tool_map = std::move(tool_map_);
+
+  for (auto tool : params->tools()) {
+    if (!RegisterTool(script_state, tool, exception_state)) {
+      tool_map_ = std::move(prev_tool_map);
+      return;
+    }
+  }
+}
+
+void AutomationDelegate::clearContext(ScriptState* script_state,
+                                      ExceptionState& exception_state) {
+  tool_map_.clear();
 }
 
 void AutomationDelegate::ExecuteTool(
@@ -205,6 +181,57 @@ void AutomationDelegate::ExecuteTool(
                   this, execution_id, true),
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
                   this, execution_id, false));
+}
+
+bool AutomationDelegate::RegisterTool(ScriptState* script_state,
+                                      ToolRegistrationParams* params,
+                                      ExceptionState& exception_state) {
+  if (tool_map_.find(params->name()) != tool_map_.end()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Duplicate tool name");
+    return false;
+  }
+
+  if (!params->name() || params->name().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Tool name is required");
+    return false;
+  }
+
+  if (!params->description() || params->description().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Description is required");
+    return false;
+  }
+
+  String input_schema;
+  if (params->hasInputSchema()) {
+    input_schema =
+        ValidateAndStringifyObject(script_state, params->inputSchema());
+    if (!input_schema) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid input schema");
+      return false;
+    }
+  }
+
+  auto* tool_data = MakeGarbageCollected<ToolData>();
+
+  auto script_tool = mojom::blink::ScriptTool::New();
+  script_tool->name = params->name();
+  script_tool->description = params->description();
+  script_tool->input_schema = input_schema;
+
+  if (params->hasAnnotations()) {
+    script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
+    script_tool->annotations->read_only = params->annotations()->readOnlyHint();
+  }
+
+  tool_data->script_tool = std::move(script_tool);
+  tool_data->tool_function = params->execute();
+
+  tool_map_.insert(params->name(), std::move(tool_data));
+  return true;
 }
 
 void AutomationDelegate::OnToolExecuted(uint32_t execution_id,

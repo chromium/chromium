@@ -1679,8 +1679,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
   ComputeHitTestableNodesInViewport(frame, frame_data);
 
   if (auto* automation_delegate =
-          AutomationDelegateSupplement::GetDelegateIfExists(
-              *frame.DomWindow())) {
+          AutomationDelegateSupplement::GetIfExists(*frame.DomWindow())) {
     automation_delegate->ForEachScriptTool(
         [&](const mojom::blink::ScriptTool& tool) {
           frame_data.script_tools.push_back(tool.Clone());

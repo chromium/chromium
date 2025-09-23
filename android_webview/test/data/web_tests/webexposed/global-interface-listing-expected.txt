@@ -352,7 +352,9 @@ interface AudioWorkletNode : AudioNode
     setter onprocessorerror
 interface AutomationDelegate
     attribute @@toStringTag
+    method clearContext
     method constructor
+    method provideContext
     method registerTool
     method unregisterTool
 interface BackForwardCacheRestoration : PerformanceEntry

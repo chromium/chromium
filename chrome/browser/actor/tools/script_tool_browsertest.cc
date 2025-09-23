@@ -71,5 +71,67 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string echo_input =
+      R"JSON(
+        { "text": "Hello World" }
+      )JSON";
+  auto echo_action = MakeScriptToolRequest(*main_frame(), "echo", echo_input);
+  ActResultFuture echo_result;
+  actor_task().Act(ToRequestList(echo_action), echo_result.GetCallback());
+  ExpectOkResult(echo_result);
+
+  const auto& echo_action_results = echo_result.Get<2>();
+  ASSERT_EQ(echo_action_results.size(), 1u);
+  ASSERT_TRUE(echo_action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(*echo_action_results.at(0).result->script_tool_response,
+            "Hello World");
+
+  const std::string reverse_input =
+      R"JSON(
+        { "text": "abc123" }
+      )JSON";
+  auto reverse_action =
+      MakeScriptToolRequest(*main_frame(), "reverse", reverse_input);
+  ActResultFuture reverse_result;
+  actor_task().Act(ToRequestList(reverse_action), reverse_result.GetCallback());
+  ExpectOkResult(reverse_result);
+
+  const auto& reverse_action_results = reverse_result.Get<2>();
+  ASSERT_EQ(reverse_action_results.size(), 1u);
+  ASSERT_TRUE(reverse_action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(*reverse_action_results.at(0).result->script_tool_response,
+            "321cba");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string echo_input =
+      R"JSON(
+        { "text": "test" }
+      )JSON";
+  auto echo_action = MakeScriptToolRequest(*main_frame(), "echo", echo_input);
+  ActResultFuture echo_result;
+  actor_task().Act(ToRequestList(echo_action), echo_result.GetCallback());
+  ExpectOkResult(echo_result);
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "window.automationDelegate.clearContext();"));
+
+  auto echo_action_after_clear =
+      MakeScriptToolRequest(*main_frame(), "echo", echo_input);
+  ActResultFuture echo_result_after_clear;
+  actor_task().Act(ToRequestList(echo_action_after_clear),
+                   echo_result_after_clear.GetCallback());
+  ExpectErrorResult(echo_result_after_clear, mojom::ActionResultCode::kError);
+}
+
 }  // namespace
 }  // namespace actor

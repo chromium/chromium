@@ -21,7 +21,7 @@ class CORE_EXPORT AutomationDelegateSupplement final
   static const char kSupplementName[];
 
   static AutomationDelegateSupplement& From(LocalDOMWindow&);
-  static AutomationDelegate* GetDelegateIfExists(LocalDOMWindow&);
+  static AutomationDelegate* GetIfExists(LocalDOMWindow&);
   static AutomationDelegate* automationDelegate(LocalDOMWindow&);
 
   explicit AutomationDelegateSupplement(LocalDOMWindow&);

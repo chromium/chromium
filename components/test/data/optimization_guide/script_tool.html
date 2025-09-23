@@ -9,9 +9,7 @@
       return obj.text;
     }
 
-    const automationDelegate = window.automationDelegate;
-
-    automationDelegate.registerTool({
+    window.automationDelegate.registerTool({
       execute: echo,
       name: "echo",
       description: "echo input",

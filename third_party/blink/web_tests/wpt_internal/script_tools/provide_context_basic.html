@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: provideContext basic functionality</title>
+<link rel="author" href="mailto:brwalder@microsoft.com">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo(obj) {
+    return obj.text;
+  }
+
+  async function reverse(obj) {
+    return obj.text.split('').reverse().join('');
+  }
+
+  const automationDelegate = window.automationDelegate;
+
+  // Register multiple tools via provideContext
+  automationDelegate.provideContext({
+    tools: [
+      {
+        execute: echo,
+        name: "echo",
+        description: "Echo input text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: { type: "string" }
+          },
+          required: ["text"]
+        }
+      },
+      {
+        execute: reverse,
+        name: "reverse",
+        description: "Reverse input text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: { type: "string" }
+          },
+          required: ["text"]
+        }
+      }
+    ]
+  });
+
+  // Clean up
+  automationDelegate.clearContext();
+}, "provideContext registers multiple tools successfully");
+
+promise_test(async () => {
+  async function simple() {
+    return "simple";
+  }
+
+  const automationDelegate = window.automationDelegate;
+
+  // Register single tool via provideContext
+  automationDelegate.provideContext({
+    tools: [
+      {
+        execute: simple,
+        name: "simple",
+        description: "Simple tool"
+      }
+    ]
+  });
+
+  // Clean up
+  automationDelegate.clearContext();
+}, "provideContext with single tool works");
+
+promise_test(async () => {
+  const automationDelegate = window.automationDelegate;
+
+  // Empty tools array should work
+  automationDelegate.provideContext({
+    tools: []
+  });
+
+  // Clean up
+  automationDelegate.clearContext();
+}, "provideContext with empty tools array works");
+
+promise_test(async () => {
+  async function tool() {
+    return "test";
+  }
+
+  const automationDelegate = window.automationDelegate;
+
+  // Register tools with complex input schemas
+  automationDelegate.provideContext({
+    tools: [
+      {
+        execute: tool,
+        name: "complex_schema_tool",
+        description: "Tool with complex schema",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: { type: "string" },
+            number: { type: "number" },
+            nested: {
+              type: "object",
+              properties: {
+                inner: { type: "string" }
+              }
+            }
+          },
+          required: ["text", "number"]
+        },
+        annotations: {
+          readOnlyHint: true
+        }
+      }
+    ]
+  });
+
+  // Clean up
+  automationDelegate.unregisterTool("complex_schema_tool");
+}, "provideContext works with complex input schemas and annotations");
+
+promise_test(async () => {
+  async function tool() {
+    return "test";
+  }
+
+  const automationDelegate = window.automationDelegate;
+
+  // Sequential provideContext calls
+  automationDelegate.provideContext({
+    tools: [
+      {
+        execute: tool,
+        name: "tool1",
+        description: "First tool"
+      }
+    ]
+  });
+
+  automationDelegate.provideContext({
+    tools: [
+      {
+        execute: tool,
+        name: "tool2",
+        description: "Second tool"
+      }
+    ]
+  });
+
+  // Only the second tool should exist
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      automationDelegate.unregisterTool("tool1");
+    },
+    "first tool should be replaced"
+  );
+
+  // Clean up
+  automationDelegate.unregisterTool("tool2");
+}, "sequential provideContext calls replace previous tools");
+</script>

@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_automation_delegate.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_provide_context_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_registration_params.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -33,6 +34,11 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
                       const String& name,
                       ExceptionState& exception_state);
 
+  void provideContext(ScriptState* state,
+                      ProvideContextParams* params,
+                      ExceptionState& exception_state);
+  void clearContext(ScriptState* state, ExceptionState& exception_state);
+
   void ExecuteTool(const String& name,
                    const String& input_arguments,
                    WebDocument::ScriptToolExecutedCallback tool_executed_cb);
@@ -49,6 +55,10 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
     mojo::StructPtr<mojom::blink::ScriptTool> script_tool;
     Member<V8ToolFunction> tool_function;
   };
+
+  bool RegisterTool(ScriptState* script_state,
+                    ToolRegistrationParams* params,
+                    ExceptionState& exception_state);
 
   void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
 
