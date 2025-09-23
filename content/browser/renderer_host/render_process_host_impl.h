@@ -221,6 +221,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
       BrowserContext* browser_context,
       SiteInstanceImpl* site_instance);
 
+  static RenderProcessHost* CreateSpareRenderProcessHost(
+      BrowserContext* browser_context,
+      SiteInstanceImpl* site_instance);
+
   ~RenderProcessHostImpl() override;
 
   RenderProcessHostImpl(const RenderProcessHostImpl& other) = delete;
@@ -278,7 +282,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
 #endif
-  void SetHasSpareRendererPriority(bool has_spare_renderer_priority) override;
+  void GraduateSpareToNormalRendererPriority() override;
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
@@ -382,6 +386,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // ChildProcessLauncher::Client implementation.
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
+#if BUILDFLAG(IS_ANDROID)
+  bool HasSpareRendererPriority() override;
+#endif
 
   const std::string& GetUnresponsiveDocumentJavascriptCallStack() const;
   const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const;
@@ -1011,11 +1018,17 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
   };
 
-  // Use CreateRenderProcessHost() instead of calling this constructor
-  // directly.
+  static RenderProcessHost* CreateRenderProcessHost(
+      BrowserContext* browser_context,
+      SiteInstanceImpl* site_instance,
+      bool is_spare_renderer);
+
+  // Use CreateRenderProcessHost() or CreateSpareRenderProcessHost() instead of
+  // calling this constructor directly.
   RenderProcessHostImpl(BrowserContext* browser_context,
                         StoragePartitionImpl* storage_partition_impl,
-                        int flags);
+                        int flags,
+                        bool is_spare_renderer);
 
   void MaybeNotifyVizOfRendererBlockStateChanged(bool blocked);
 
@@ -1618,7 +1631,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // RenderWidgetHostImpl. For other renderer process allocations, the value
   // will be set to false when the process is taken from the
   // SpareRenderProcessHostManager.
-  bool has_spare_renderer_priority_ = false;
+  bool has_spare_renderer_priority_;
 
   // Tracing track used to emit async event related to lifecycle.
   perfetto::NamedTrack tracing_track_;

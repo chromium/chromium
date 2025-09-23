@@ -237,6 +237,8 @@ class CONTENT_EXPORT ChildProcessLauncher
 #if BUILDFLAG(IS_ANDROID)
     // Whether the process can use pre-warmed up connection.
     virtual bool CanUseWarmUpConnection();
+    // Whether the process should be set to the priority of a spare renderer.
+    virtual bool HasSpareRendererPriority();
 #endif
 
    protected:
