@@ -536,7 +536,11 @@ std::vector<Host*> HostManager::GetPrimaryHosts() {
   if (!window_controller_) {
     return {};
   }
-  return window_controller_->GetHosts();
+  std::vector<Host*> hosts;
+  for (GlicInstance* instance : window_controller_->GetInstances()) {
+    hosts.push_back(&instance->host());
+  }
+  return hosts;
 }
 
 }  // namespace glic

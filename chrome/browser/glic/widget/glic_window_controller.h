@@ -49,7 +49,6 @@ class GlicWidget;
 class GlicKeyedService;
 class GlicView;
 class GlicWindowAnimator;
-class Host;
 enum class AttachChangeReason;
 
 // This class owns and manages the glic window. This class has the same lifetime
@@ -77,10 +76,6 @@ class GlicWindowController : public GlicInstance::UIDelegate {
   GlicWindowController() = default;
 
   virtual HostManager& host_manager() = 0;
-
-  virtual std::vector<Host*> GetHosts() = 0;
-  virtual Host* GetHostForTab(tabs::TabInterface* tab) = 0;
-  // TODO(refactor): remove GetHosts and GetHostForTab and use these instead.
   virtual std::vector<GlicInstance*> GetInstances() = 0;
   virtual GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) = 0;
 

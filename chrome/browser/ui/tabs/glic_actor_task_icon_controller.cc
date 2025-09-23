@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_features.h"
 
 namespace tabs {
+using glic::GlicInstance;
 using glic::GlicKeyedService;
 using glic::GlicWindowController;
 using glic::Host;
@@ -57,8 +58,11 @@ void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
     auto* glic_service = GlicKeyedService::Get(profile_);
 
     CurrentView current_view = CurrentView::kConversation;
-    if (Host* host = glic_service->GetHostForActiveTab(browser_)) {
-      current_view = host->GetPrimaryCurrentView();
+    // TODO(crbug.com/446734119): Instead ActorTask should hold a glic
+    // InstanceId and use that to retrieve the instance.
+    if (GlicInstance* instance =
+            glic_service->GetInstanceForActiveTab(browser_)) {
+      current_view = instance->host().GetPrimaryCurrentView();
     }
 
     OnStateUpdate(glic_service->window_controller().state(), current_view,

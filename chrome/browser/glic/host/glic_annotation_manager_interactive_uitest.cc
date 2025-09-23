@@ -1108,8 +1108,9 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       CheckResult(
           [&]() {
             return content::EvalJs(glic_service()
-                                       ->GetHostForActiveTab(browser())
-                                       ->webui_contents()
+                                       ->GetInstanceForActiveTab(browser())
+                                       ->host()
+                                       .webui_contents()
                                        ->GetInnerWebContents()[0],
                                    R"js(
               new Promise(resolve => {

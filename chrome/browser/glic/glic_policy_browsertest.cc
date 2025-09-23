@@ -284,8 +284,9 @@ class GlicPolicyTest : public PolicyTest {
   // Get the active tab's glic host. Must be called only after instantiating
   // glic.
   Host* GetHost() {
-    return GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-        ->GetHostForActiveTab(browser());
+    return &GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+                ->GetInstanceForActiveTab(browser())
+                ->host();
   }
 
   // The first profile.

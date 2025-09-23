@@ -570,12 +570,12 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
 
   // TODO(crbug.com/445934142): Create the instance here so that suggestions can
   // be fetched, but don't show it yet.
-  if (auto* host = glic_service->GetHostForActiveTab(
+  if (auto* instance = glic_service->GetInstanceForActiveTab(
           tab_strip_controller_->GetBrowserWindowInterface())) {
     // This prefetches the results and allows the underlying implementation to
     // cache the results for future calls. Which is why the callback does
     // nothing.
-    host->instance_delegate().FetchZeroStateSuggestions(
+    instance->host().instance_delegate().FetchZeroStateSuggestions(
         /*is_first_run=*/false, /*supported_tools=*/std::nullopt,
         base::DoNothing());
   }
