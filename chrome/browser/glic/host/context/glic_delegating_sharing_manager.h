@@ -79,6 +79,24 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
  private:
   base::WeakPtr<GlicSharingManager> sharing_manager_delegate_;
 
+  // Callbacks for subscribing to delegate (will be forwarded).
+  void OnFocusedTabChangedCallback(const FocusedTabData& focused_tab_data);
+  void OnFocusedTabDataChangedCallback(const mojom::TabData* focused_tab_data);
+  void OnFocusedBrowserChangedCallback(BrowserWindowInterface* browser_window);
+  void OnTabPinningStatusChangedCallback(tabs::TabInterface* tab, bool pinned);
+  void OnPinnedTabsChangedCallback(
+      const std::vector<content::WebContents*>& pinnned_tabs);
+  void OnPinnedTabDataChangedCallback(const TabDataChange& tab_data_change);
+
+  // Refreshes all internal subscriptions to point at current delegate.
+  void RefreshDelegateSubscriptions();
+
+  // Resets all internal subscriptions to empty.
+  void ResetDelegateSubscriptions();
+
+  // Forces notifications for all callbacks with associated getters.
+  void ForceNotify();
+
   // Callback lists. Maintains its own callback lists to seamlessly support
   // hot-swapping delegate.
   base::RepeatingCallbackList<void(const FocusedTabData&)>
@@ -93,6 +111,14 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
       pinned_tabs_changed_callback_list_;
   base::RepeatingCallbackList<void(const TabDataChange&)>
       pinned_tab_data_changed_callback_list_;
+
+  // Callbacks. These are used to forward callback events from the delegate.
+  base::CallbackListSubscription focused_tab_changed_callback_;
+  base::CallbackListSubscription focused_tab_data_changed_callback_;
+  base::CallbackListSubscription focused_browser_changed_callback_;
+  base::CallbackListSubscription tab_pinning_status_changed_callback_;
+  base::CallbackListSubscription pinned_tabs_changed_callback_;
+  base::CallbackListSubscription pinned_tab_data_changed_callback_;
 };
 
 }  // namespace glic
