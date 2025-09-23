@@ -13,7 +13,6 @@ import android.os.Looper;
 
 import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApkInfo;
-import org.chromium.base.ChildBindingState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
@@ -48,8 +47,7 @@ public class ChildProcessLauncher {
          */
         public @Nullable ChildProcessConnection getBoundConnection(
                 ChildConnectionAllocator connectionAllocator,
-                ChildProcessConnection.ServiceCallback serviceCallback,
-                @ChildBindingState int initialBindingState) {
+                ChildProcessConnection.ServiceCallback serviceCallback) {
             return null;
         }
 
@@ -157,17 +155,13 @@ public class ChildProcessLauncher {
      * Starts the child process and calls setup on it if {@param setupConnection} is true.
      *
      * @param setupConnection whether the setup should be performed on the connection once
-     *     established.
+     *     established
      * @param queueIfNoFreeConnection whether to queue that request if no service connection is
      *     available. If the launcher was created with a connection provider, this parameter has no
      *     effect.
-     * @param initialBindingState The initial binding state for the connection.
      * @return true if the connection was started or was queued.
      */
-    public boolean start(
-            final boolean setupConnection,
-            final boolean queueIfNoFreeConnection,
-            @ChildBindingState int initialBindingState) {
+    public boolean start(final boolean setupConnection, final boolean queueIfNoFreeConnection) {
         assert isRunningOnLauncherThread();
         try {
             TraceEvent.begin("ChildProcessLauncher.start");
@@ -182,18 +176,18 @@ public class ChildProcessLauncher {
                             assert mConnection == connection;
                             Log.e(TAG, "ChildProcessConnection.start failed, trying again");
                             mLauncherHandler.post(
-                                    () -> {
-                                        // The child process may already be bound to another
-                                        // client (this can happen if multi-process WebView is
-                                        // used in more than one process), so try starting the
-                                        // process again.
-                                        // This connection that failed to start has not been
-                                        // freed, so a new bound connection will be allocated.
-                                        mConnection = null;
-                                        start(
-                                                setupConnection,
-                                                queueIfNoFreeConnection,
-                                                initialBindingState);
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // The child process may already be bound to another
+                                            // client (this can happen if multi-process WebView is
+                                            // used in more than one process), so try starting the
+                                            // process again.
+                                            // This connection that failed to start has not been
+                                            // freed, so a new bound connection will be allocated.
+                                            mConnection = null;
+                                            start(setupConnection, queueIfNoFreeConnection);
+                                        }
                                     });
                         }
 
@@ -204,18 +198,13 @@ public class ChildProcessLauncher {
                             ChildProcessLauncher.this.onChildProcessDied();
                         }
                     };
-            mConnection =
-                    mDelegate.getBoundConnection(
-                            mConnectionAllocator, serviceCallback, initialBindingState);
+            mConnection = mDelegate.getBoundConnection(mConnectionAllocator, serviceCallback);
             if (mConnection != null) {
                 setupConnection();
                 return true;
             }
             if (!allocateAndSetupConnection(
-                            serviceCallback,
-                            setupConnection,
-                            queueIfNoFreeConnection,
-                            initialBindingState)
+                            serviceCallback, setupConnection, queueIfNoFreeConnection)
                     && !queueIfNoFreeConnection) {
                 return false;
             }
@@ -236,19 +225,14 @@ public class ChildProcessLauncher {
     private boolean allocateAndSetupConnection(
             final ChildProcessConnection.ServiceCallback serviceCallback,
             final boolean setupConnection,
-            final boolean queueIfNoFreeConnection,
-            @ChildBindingState int initialBindingState) {
+            final boolean queueIfNoFreeConnection) {
         assert mConnection == null;
         Bundle serviceBundle = new Bundle();
         mDelegate.onBeforeConnectionAllocated(serviceBundle);
 
         mConnection =
                 mConnectionAllocator.allocate(
-                        ContextUtils.getApplicationContext(),
-                        serviceBundle,
-                        serviceCallback,
-                        initialBindingState);
-
+                        ContextUtils.getApplicationContext(), serviceBundle, serviceCallback);
         if (mConnection == null) {
             if (!queueIfNoFreeConnection) {
                 Log.d(TAG, "Failed to allocate a child connection (no queuing).");
@@ -257,10 +241,7 @@ public class ChildProcessLauncher {
             mConnectionAllocator.queueAllocation(
                     () ->
                             allocateAndSetupConnection(
-                                    serviceCallback,
-                                    setupConnection,
-                                    queueIfNoFreeConnection,
-                                    initialBindingState));
+                                    serviceCallback, setupConnection, queueIfNoFreeConnection));
             return false;
         }
 

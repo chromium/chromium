@@ -59,7 +59,7 @@ public class BindingManagerTest {
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
         connection.setPid(pid);
-        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
+        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
         if (manager != null) {
             manager.addConnection(connection);
         }

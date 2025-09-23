@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.chromium.base.ChildBindingState;
 import org.chromium.build.annotations.Nullable;
 
 /** An implementation of ChildProcessConnection that does not connect to a real service. */
@@ -94,8 +93,8 @@ public class TestChildProcessConnection extends ChildProcessConnection {
 
     // We don't have a real service so we have to mock the connection status.
     @Override
-    public void start(@ChildBindingState int initialBindingState, ServiceCallback serviceCallback) {
-        super.start(initialBindingState, serviceCallback);
+    public void start(boolean useStrongBinding, ServiceCallback serviceCallback) {
+        super.start(useStrongBinding, serviceCallback);
         mConnected = true;
         mServiceCallback = serviceCallback;
     }

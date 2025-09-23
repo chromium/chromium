@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
@@ -80,19 +79,16 @@ public class SpareChildConnection {
                     }
                 };
 
-        mConnection =
-                mConnectionAllocator.allocate(
-                        context, serviceBundle, serviceCallback, ChildBindingState.VISIBLE);
+        mConnection = mConnectionAllocator.allocate(context, serviceBundle, serviceCallback);
     }
 
     /**
      * @return a connection that has been bound or is being bound if one was created with the same
-     *     allocator as the one provided, null otherwise.
+     * allocator as the one provided, null otherwise.
      */
     public @Nullable ChildProcessConnection getConnection(
             ChildConnectionAllocator allocator,
-            final ChildProcessConnection.ServiceCallback serviceCallback,
-            @ChildBindingState int requestedBindingState) {
+            final ChildProcessConnection.ServiceCallback serviceCallback) {
         assert LauncherThread.runningOnLauncherThread();
         if (isEmpty() || mConnectionAllocator != allocator || mConnectionServiceCallback != null) {
             return null;
@@ -101,18 +97,6 @@ public class SpareChildConnection {
         mConnectionServiceCallback = serviceCallback;
 
         ChildProcessConnection connection = mConnection;
-        assert connection != null;
-        // The spare connection is created with a visible binding. Adjust if needed.
-        if (requestedBindingState != ChildBindingState.VISIBLE) {
-            if (requestedBindingState == ChildBindingState.STRONG) {
-                connection.addStrongBinding();
-            } else if (requestedBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
-                connection.addNotPerceptibleBinding();
-            }
-            // For STRONG, NOT_PERCEPTIBLE, and WAIVED, we remove the original visible binding.
-            connection.removeVisibleBinding();
-        }
-
         if (mConnectionReady) {
             // onChildStarted was already run. Call it explicitly on the passed serviceCallback.
             if (serviceCallback != null) {

@@ -495,10 +495,7 @@ public class ChildProcessConnection {
      * @param serviceCallback (optional) callbacks invoked when the child process starts or fails to
      *     start and when the service stops.
      */
-    public void start(@ChildBindingState int initialBindingState, ServiceCallback serviceCallback) {
-        // TODO(https://crbug.com/446030170): Consider taking ChildProcessImportance as a parameter
-        // instead. This is not trivial because ChildProcessImportance is in the content layer.
-        assert initialBindingState != ChildBindingState.UNBOUND;
+    public void start(boolean useStrongBinding, ServiceCallback serviceCallback) {
         try {
             TraceEvent.begin("ChildProcessConnection.start");
             assert isRunningOnLauncherThread();
@@ -507,7 +504,7 @@ public class ChildProcessConnection {
 
             mServiceCallback = serviceCallback;
 
-            if (!bind(initialBindingState)) {
+            if (!bind(useStrongBinding)) {
                 Log.e(TAG, "Failed to establish the service connection.");
                 // We have to notify the caller so that they can free-up associated resources.
                 // TODO(ppi): Can we hard-fail here?
@@ -522,14 +519,14 @@ public class ChildProcessConnection {
     // no method is called on |serviceCallback| so the allocation can be tried again. This is
     // package private and is meant to be used by Android10WorkaroundAllocatorImpl. See comment
     // there for details.
-    boolean tryStart(@ChildBindingState int initialBindingState, ServiceCallback serviceCallback) {
+    boolean tryStart(boolean useStrongBinding, ServiceCallback serviceCallback) {
         try {
             TraceEvent.begin("ChildProcessConnection.tryStart");
             assert isRunningOnLauncherThread();
             assert mConnectionParams == null
                     : "setupConnection() called before start() in ChildProcessConnection.";
 
-            if (!bind(initialBindingState)) {
+            if (!bind(useStrongBinding)) {
                 return false;
             }
             mServiceCallback = serviceCallback;
@@ -860,8 +857,12 @@ public class ChildProcessConnection {
         }
     }
 
-    private boolean bind(@ChildBindingState int initialBindingState) {
+    private boolean bind(boolean useStrongBinding) {
         assert isRunningOnLauncherThread();
+
+        @ChildBindingState
+        int initialBindingState =
+                useStrongBinding ? ChildBindingState.STRONG : ChildBindingState.VISIBLE;
 
         boolean success = mConnectionController.bind(initialBindingState);
 
@@ -877,11 +878,9 @@ public class ChildProcessConnection {
         }
 
         if (success) {
-            if (initialBindingState == ChildBindingState.NOT_PERCEPTIBLE) {
-                mNotPerceptibleBindingCount++;
-            } else if (initialBindingState == ChildBindingState.STRONG) {
+            if (useStrongBinding) {
                 mStrongBindingCount++;
-            } else if (initialBindingState == ChildBindingState.VISIBLE) {
+            } else {
                 mVisibleBindingCount++;
             }
         }

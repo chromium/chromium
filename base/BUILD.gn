@@ -5583,8 +5583,6 @@ if (is_android) {
   android_library("base_java_process_launcher_test_support") {
     testonly = true
 
-    srcjar_deps = [ ":base_android_java_enums_srcjar" ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
     public_deps = [ ":process_launcher_java" ]
 
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]

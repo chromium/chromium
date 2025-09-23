@@ -152,6 +152,7 @@ public final class MultiprocessTestClientLauncher {
                             "org.chromium.native_test.NUM_TEST_CLIENT_SERVICES",
                             /* bindToCaller= */ false,
                             /* bindAsExternalService= */ false,
+                            /* useStrongBinding= */ false,
                             /* fallbackToNextSlot= */ false,
                             /* isSandboxedForHistograms= */ false);
         }
@@ -250,9 +251,7 @@ public final class MultiprocessTestClientLauncher {
         MultiprocessTestClientLauncher launcher =
                 new MultiprocessTestClientLauncher(commandLine, filesToMap);
         if (!launcher.mLauncher.start(
-                /* setupConnection= */ true,
-                /* queueIfNoFreeConnection= */ true,
-                ChildBindingState.VISIBLE)) {
+                /* setupConnection= */ true, /* queueIfNoFreeConnection= */ true)) {
             return null;
         }
 

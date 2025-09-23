@@ -160,14 +160,12 @@ public final class ChildProcessLauncherHelperImpl {
                 @Override
                 public @Nullable ChildProcessConnection getBoundConnection(
                         ChildConnectionAllocator connectionAllocator,
-                        ChildProcessConnection.ServiceCallback serviceCallback,
-                        @ChildBindingState int initialBindingState) {
+                        ChildProcessConnection.ServiceCallback serviceCallback) {
                     if (!mCanUseWarmUpConnection) return null;
                     SpareChildConnection spareConnection =
                             mSandboxed ? sSpareSandboxedConnection : null;
                     if (spareConnection == null) return null;
-                    return spareConnection.getConnection(
-                            connectionAllocator, serviceCallback, initialBindingState);
+                    return spareConnection.getConnection(connectionAllocator, serviceCallback);
                 }
 
                 @Override
@@ -621,6 +619,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 NUM_PRIVILEGED_SERVICES_KEY,
                                 bindToCaller,
                                 bindAsExternalService,
+                                /* useStrongBinding= */ true,
                                 fallbackToNextSlot,
                                 sandboxed);
             }
@@ -660,6 +659,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 sSandboxedServicesCountForTesting,
                                 bindToCaller,
                                 bindAsExternalService,
+                                /* useStrongBinding= */ false,
                                 /* fallbackToNextSlot= */ false,
                                 sandboxed);
             } else if (ChildProcessConnection.supportVariableConnections()) {
@@ -672,6 +672,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 ChildProcessCreationParamsImpl.getSandboxedServicesName(),
                                 bindToCaller,
                                 bindAsExternalService,
+                                /* useStrongBinding= */ false,
                                 sandboxed);
             } else {
                 connectionAllocator =
@@ -684,6 +685,7 @@ public final class ChildProcessLauncherHelperImpl {
                                 NUM_SANDBOXED_SERVICES_KEY,
                                 bindToCaller,
                                 bindAsExternalService,
+                                /* useStrongBinding= */ false,
                                 /* fallbackToNextSlot= */ false,
                                 sandboxed);
             }
@@ -769,10 +771,7 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     private void start() {
-        mLauncher.start(
-                /* setupConnection= */ true,
-                /* queueIfNoFreeConnection= */ true,
-                mSandboxed ? ChildBindingState.VISIBLE : ChildBindingState.STRONG);
+        mLauncher.start(/* setupConnection= */ true, /* queueIfNoFreeConnection= */ true);
         mStartTimeMs = System.currentTimeMillis();
     }
 
@@ -1062,10 +1061,7 @@ public final class ChildProcessLauncherHelperImpl {
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
                         binderCallback);
-        launcherHelper.mLauncher.start(
-                doSetupConnection,
-                /* queueIfNoFreeConnection= */ true,
-                sandboxed ? ChildBindingState.VISIBLE : ChildBindingState.STRONG);
+        launcherHelper.mLauncher.start(doSetupConnection, /* queueIfNoFreeConnection= */ true);
         return launcherHelper;
     }
 
