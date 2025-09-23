@@ -517,6 +517,30 @@ bool LocalDOMWindow::CanExecuteScripts(
   return script_enabled;
 }
 
+bool LocalDOMWindow::AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
+                                              const KURL& url,
+                                              Element* element) {
+  // This is basically a version of CheckAndGetJavascriptUrl, but where the
+  // caller does not care about the actual string value, but only about the
+  // error conditions. In this case, multiple checks just drop out.
+
+  // We don't run a Trusted Types check here, as this is always checked in
+  // ScriptController::ExecuteJavaScriptURL.
+
+  // AllowInline below will check the source's hash against CSP, which is why
+  // it needs an exact script_source.
+  const int kJavascriptSchemeLength = sizeof("javascript:") - 1;
+  String decoded_url = DecodeURLEscapeSequences(
+      url.GetString(), DecodeURLMode::kUTF8OrIsomorphic);
+  String script_source = decoded_url.Substring(kJavascriptSchemeLength);
+
+  // Check the CSP of the caller (the "source browsing context") if required,
+  // as per https://html.spec.whatwg.org/C/#javascript-protocol.
+  return GetContentSecurityPolicyForWorld(world)->AllowInline(
+      ContentSecurityPolicy::InlineType::kNavigation, element, decoded_url,
+      String() /* nonce */, Url(), OrdinalNumber::First());
+}
+
 String LocalDOMWindow::CheckAndGetJavascriptUrl(
     const DOMWrapperWorld* world,
     const KURL& url,
@@ -541,6 +565,10 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
   // implemented for isolated worlds.
   if (ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(world))
     return script_source;
+
+  // Sanity check: If we're here, AllowInlineJavascriptUrl would have also
+  // allowed this URL to proceed.
+  DCHECK(AllowInlineJavascriptUrl(world, url, element));
 
   // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
   // 4.9.1.1. require-trusted-types-for Pre-Navigation check

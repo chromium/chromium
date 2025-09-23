@@ -243,6 +243,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Checks if navigation to Javascript URL is allowed. This check should run
   // before any action is taken (e.g. creating new window) for all
   // same-origin navigations.
+  bool AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
+                                const KURL& url,
+                                Element* element);
   String CheckAndGetJavascriptUrl(
       const DOMWrapperWorld* world,
       const KURL& url,

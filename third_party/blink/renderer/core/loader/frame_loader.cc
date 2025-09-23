@@ -542,19 +542,10 @@ bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
 
   const KURL& url = request.GetResourceRequest().Url();
   if (url.ProtocolIsJavaScript()) {
-    if (request.GetOriginWindow()
-            ->CheckAndGetJavascriptUrl(request.JavascriptWorld(), url,
-                                       frame_->DeprecatedLocalOwner())
-            .empty()) {
+    if (!request.GetOriginWindow()->AllowInlineJavascriptUrl(
+            request.JavascriptWorld(), url, frame_->DeprecatedLocalOwner())) {
       return false;
     }
-    // `CheckAndGetJavascriptUrl` function above contains Trusted Types check,
-    // which might trigger JS callback that can remove the frame altogether.
-    // Therefore, check if the frame is still attached here.
-    if (!frame_->IsAttached()) {
-      return false;
-    }
-
     if (frame_->Owner() && ((frame_->Owner()->GetFramePolicy().sandbox_flags &
                              network::mojom::blink::WebSandboxFlags::kOrigin) !=
                             network::mojom::blink::WebSandboxFlags::kNone)) {
