@@ -26,9 +26,6 @@ BASE_FEATURE(kWebRtcAllowWgcScreenCapturer,
 BASE_FEATURE(kWebRtcAllowWgcScreenZeroHz,
              "AllowWgcScreenZeroHz",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kWebRtcAllowWgcWindowZeroHz,
-             "AllowWgcWindowZeroHz",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // When enabled, instruct WGC to draw a border around the captured

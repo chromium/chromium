@@ -916,21 +916,21 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   if (IsWgcEnabledForScreenCapture()) {
     options.set_allow_wgc_screen_capturer(true);
 
-    // 0Hz support is by default disabled for WGC but it can be enabled using
-    // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
-    // will compare the pixel values of the new frame and the previous frame and
-    // update the DesktopRegion part of the frame to reflect if the content has
-    // changed or not. DesktopFrame::updated_region() will be empty if nothing
-    // has changed and contain one (damage) region corresponding to the complete
-    // screen or window being captured if any change is detected.
+    // 0Hz support is enabled for WGC window capture but disabled by default for
+    // screen capture through the `kWebRtcAllowWgcScreenZeroHz` feature flag.
+    // When 0Hz is enabled, the WGC capturer will compare the pixel values of
+    // the new frame and the previous frame and update the DesktopRegion part of
+    // the frame to reflect if the content has changed or not.
+    // DesktopFrame::updated_region() will be empty if nothing has changed and
+    // contain one (damage) region corresponding to the complete screen or
+    // window being captured if any change is detected.
     if (source.type == DesktopMediaID::TYPE_SCREEN) {
       options.set_allow_wgc_zero_hertz(IsWgcZeroHzEnabledForScreenCapture());
     }
   }
   options.set_allow_wgc_window_capturer(true);
   if (source.type == DesktopMediaID::TYPE_WINDOW) {
-    options.set_allow_wgc_zero_hertz(
-        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz));
+    options.set_allow_wgc_zero_hertz(true);
   }
 
   options.set_wgc_require_border(
@@ -1041,22 +1041,14 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     DesktopMediaID::Type type)
     : thread_("desktopCaptureThread") {
   DVLOG(1) << __func__ << "(type=" << DesktopMediaTypeToString(type) << ")";
+
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  const bool wgc_screen_zero_hertz = IsWgcZeroHzEnabledForScreenCapture();
-  const bool wgc_window_zero_hertz =
-      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowZeroHz);
-  if (!IsWgcEnabledForScreenCapture()) {
-    zero_hertz_is_supported =
-        (type == DesktopMediaID::TYPE_WINDOW) ? wgc_window_zero_hertz : true;
-  } else {
-    if (type == DesktopMediaID::TYPE_SCREEN) {
-      zero_hertz_is_supported = wgc_screen_zero_hertz;
-    } else if (type == DesktopMediaID::TYPE_WINDOW) {
-      zero_hertz_is_supported = wgc_window_zero_hertz;
-    } else {
-      zero_hertz_is_supported = false;
-    }
+  // On Windows, 0Hz might be disabled for screen capture when using the
+  // Windows.Graphics.Capture (WGC) API.  See comment in
+  // `DesktopCaptureDevice::Create()` above for details.
+  if (IsWgcEnabledForScreenCapture()) {
+    zero_hertz_is_supported = IsWgcZeroHzEnabledForScreenCapture();
   }
   VLOG(1) << __func__ << " [zero_hertz_is_supported=" << zero_hertz_is_supported
           << "]";
