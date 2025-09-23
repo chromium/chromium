@@ -94,7 +94,7 @@ AppIdentifier PushMessagingAppIdentifier::FindByAppId(
     const std::string& app_id) {
   if (!base::StartsWith(app_id, push_messaging::kAppIdentifierPrefix,
                         base::CompareCase::INSENSITIVE_ASCII)) {
-    return AppIdentifier();
+    return AppIdentifier::GenerateInvalid();
   }
 
   // Since we now know this is a Push Messaging app_id, check the case hasn't
@@ -113,7 +113,7 @@ AppIdentifier PushMessagingAppIdentifier::FindByAppId(
   const std::string* map_value = map.FindString(app_id);
 
   if (!map_value || map_value->empty())
-    return AppIdentifier();
+    return AppIdentifier::GenerateInvalid();
 
   GURL origin;
   int64_t service_worker_registration_id;
@@ -126,10 +126,8 @@ AppIdentifier PushMessagingAppIdentifier::FindByAppId(
     NOTREACHED();
   }
 
-  AppIdentifier app_identifier(app_id, origin, service_worker_registration_id,
-                               expiration_time);
-  app_identifier.DCheckValid();
-  return app_identifier;
+  return AppIdentifier::GenerateDirect(
+      app_id, origin, service_worker_registration_id, expiration_time);
 }
 
 // static
@@ -149,7 +147,7 @@ AppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
       return FindByAppId(profile, entry.first);
     }
   }
-  return AppIdentifier();
+  return AppIdentifier::GenerateInvalid();
 }
 
 // static
