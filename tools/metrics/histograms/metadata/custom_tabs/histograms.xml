@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>cct-team@google.com</owner>

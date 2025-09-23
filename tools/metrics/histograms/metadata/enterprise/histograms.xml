@@ -1689,7 +1689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedBlockLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-01-18">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-03-22">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1699,7 +1699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedEventStatus" enum="GoogleRpcCode"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1708,7 +1708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedReportLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-01-18">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-03-22">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ReportedWarnLevelRestriction"
-    enum="EnterpriseDlpPolicyRestriction" expires_after="2025-11-09">
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2026-03-22">
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Enrollment" enum="EnterpriseEnrollmentType"
-    expires_after="2025-12-07">
+    expires_after="2026-03-22">
   <owner>asumaneev@google.com</owner>
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -2355,7 +2355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FileAnalysisRequest.FileSize" units="KB"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>eliashomsi@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2559,7 +2559,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
     enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
-    expires_after="2025-12-01">
+    expires_after="2026-03-22">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2920,7 +2920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="2025-12-01">
+    expires_after="2026-03-22">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2947,7 +2947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileAffiliation.IsAffiliated" enum="Boolean"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>igorruvinov@chromium.org</owner>
   <owner>cbe-magic@google.com</owner>
   <summary>
@@ -2957,7 +2957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ProfileAffiliation.UnaffiliatedReason"
-    enum="EnterpriseProfileUnaffiliatedReason" expires_after="2026-01-18">
+    enum="EnterpriseProfileUnaffiliatedReason" expires_after="2026-03-22">
   <owner>igorruvinov@chromium.org</owner>
   <owner>cbe-magic@google.com</owner>
   <summary>
@@ -3011,7 +3011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -3164,7 +3164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status"
     enum="SecondaryGoogleAccountUsagePolicyFetchStatus"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
@@ -3240,7 +3240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.WriteAccessError" enum="Boolean"
-    expires_after="2025-12-14">
+    expires_after="2026-03-22">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -3827,7 +3827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2026-01-04">
+    enum="RemoteCommandReceivedStatus" expires_after="2026-03-22">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -3900,7 +3900,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Result"
-    enum="SafeBrowsingBinaryUploadResult" expires_after="2026-01-18">
+    enum="SafeBrowsingBinaryUploadResult" expires_after="2026-03-22">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>

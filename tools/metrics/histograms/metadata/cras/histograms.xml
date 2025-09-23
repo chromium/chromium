@@ -1226,7 +1226,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.UnderrunsPerDevice{Device}" units="count"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2026-01-18">
+    enum="AndroidProcessedMinidumps" expires_after="2026-03-22">
   <owner>wnwen@chromium.org</owner>
   <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Crash.ExitCode"
-    enum="WindowsExitCode" expires_after="2026-01-15">
+    enum="WindowsExitCode" expires_after="2026-03-22">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
-    enum="LaunchErrorCodes" expires_after="2026-01-15">
+    enum="LaunchErrorCodes" expires_after="2026-03-22">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Media.{ProcessType}.Launch.WinLastError"
-    enum="WinGetLastError" expires_after="2026-01-15">
+    enum="WinGetLastError" expires_after="2026-03-22">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -702,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.HostedContentType"
-    enum="RendererHostedContentType" expires_after="2026-01-18">
+    enum="RendererHostedContentType" expires_after="2026-03-22">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -712,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.{HostedContentType}"
-    enum="TerminationStatus" expires_after="2026-01-18">
+    enum="TerminationStatus" expires_after="2026-03-22">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

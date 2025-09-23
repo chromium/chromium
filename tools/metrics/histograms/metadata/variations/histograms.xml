@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRunResult" enum="VariationsFirstRunResult"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -393,7 +393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SafeMode.LoadSafeSeed.Result"
-    enum="VariationsSeedLoadResult" expires_after="2026-01-18">
+    enum="VariationsSeedLoadResult" expires_after="2026-03-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedDateChange" enum="VariationsSeedDateChange"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>jwd@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFetchResponseOrErrorCode{ConnectionType}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-01-18">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-03-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedFileWriteEmptySeed.{SeedFile}"
-    enum="BooleanEmpty" expires_after="2026-01-18">
+    enum="BooleanEmpty" expires_after="2026-03-22">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -679,7 +679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedStoreResult" enum="VariationsSeedStoreResult"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.UserChannel" enum="UserChannels"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>

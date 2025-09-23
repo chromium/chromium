@@ -431,7 +431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-03-22">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentActiveWeeks" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-03-22">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

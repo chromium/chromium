@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1215,7 +1215,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.AvailableMemoryBeforeCreation.SpareRenderer"
-    units="MB" expires_after="2026-01-15">
+    units="MB" expires_after="2026-03-22">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1512,7 +1512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessEvictedOtherSpare"
-    enum="Boolean" expires_after="2026-01-18">
+    enum="Boolean" expires_after="2026-03-22">
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
@@ -1705,7 +1705,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames"
-    units="frames" expires_after="2026-01-18">
+    units="frames" expires_after="2026-03-22">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -2081,7 +2081,7 @@ chromium-metrics-reviews@google.com.
   <summary>Records true when the side panel combobox is opened.</summary>
 </histogram>
 
-<histogram name="SidePanel.OpenDuration" units="ms" expires_after="2026-01-18">
+<histogram name="SidePanel.OpenDuration" units="ms" expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2104,7 +2104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2178,7 +2178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.{SidePanelEntry}.ShowTriggered"
-    enum="SidePanelOpenTrigger" expires_after="2026-01-18">
+    enum="SidePanelOpenTrigger" expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SelectionState.CloseButtonEvent"
-    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-01-21">
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-03-22">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome-eng@google.com</owner>
   <summary>
@@ -571,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.GeneratedTab" enum="LensOverlayNewTabSource"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -629,7 +629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>mercerd@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SelectionState.CloseButtonEvent"
-    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-01-21">
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-03-22">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome-eng@google.com</owner>
   <summary>
@@ -770,7 +770,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Shown" enum="BooleanEnabled"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>erikchen@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>

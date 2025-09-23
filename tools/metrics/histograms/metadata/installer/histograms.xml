@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Installer.Postinstall.BiosType" enum="ChromeOSBiosType"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryCount" units="entries"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryFailedLoad" units="entries"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ESPMountRetries" units="retries"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ManagedEfiBootEntryCount"
-    units="entries" expires_after="2026-01-18">
+    units="entries" expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
-    enum="BooleanSuccess" expires_after="2026-01-18">
+    enum="BooleanSuccess" expires_after="2026-03-22">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.PowerwashCount" units="powerwashes"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@chromium.org</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

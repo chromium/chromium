@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="WebAuthentication.Android.CredManAvailability" enum="Boolean"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManModalRequests"
-    enum="CredManGetRequestEnum" expires_after="2026-01-18">
+    enum="CredManGetRequestEnum" expires_after="2026-03-22">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GPM.GetAssertion"
-    enum="GPMGetAssertionEvents" expires_after="2026-01-18">
+    enum="GPMGetAssertionEvents" expires_after="2026-03-22">
   <owner>natiahlyi@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GPM.MakeCredential"
-    enum="GPMMakeCredentialEvents" expires_after="2026-01-18">
+    enum="GPMMakeCredentialEvents" expires_after="2026-03-22">
   <owner>natiahlyi@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.OnboardingEvents" enum="OnboardingEvents"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>natiahlyi@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.PinRenewalEvent"
-    enum="WebAuthenticationPinRenewalEvent" expires_after="2026-01-18">
+    enum="WebAuthenticationPinRenewalEvent" expires_after="2026-03-22">
   <owner>agl@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>Records events related to GPM PIN renewals</summary>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey"
-    enum="SignalAllAcceptedCredentialsResult" expires_after="2026-01-18">
+    enum="SignalAllAcceptedCredentialsResult" expires_after="2026-03-22">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -527,7 +527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey"
-    enum="SignalCurrentUserDetailsResult" expires_after="2026-01-18">
+    enum="SignalCurrentUserDetailsResult" expires_after="2026-03-22">
   <owner>nsatragno@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>

@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DirectXCapturerResult"
-    enum="WebRtcDirectXCapturerResult" expires_after="2026-01-18">
+    enum="WebRtcDirectXCapturerResult" expires_after="2026-03-22">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1134,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionStartResult"
-    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2026-01-18">
+    enum="WebRtcWgcCaptureSessionStartResult" expires_after="2026-03-22">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcDirtyRegionSupport"
-    enum="BooleanActive" expires_after="2026-01-18">
+    enum="BooleanActive" expires_after="2026-03-22">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -3210,7 +3210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.HarmonicFrameRate" units="fps"
-    expires_after="2026-01-10">
+    expires_after="2026-03-22">
   <owner>ssilkin@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>

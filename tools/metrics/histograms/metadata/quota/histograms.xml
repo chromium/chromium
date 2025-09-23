@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2026-01-18">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2026-03-22">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

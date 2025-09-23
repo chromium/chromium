@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -744,7 +744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1313,7 +1313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1359,7 +1359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

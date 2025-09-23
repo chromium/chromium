@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Statement.ExecutionTime.{DatabaseTag}"
-    units="microseconds" expires_after="2026-01-18">
+    units="microseconds" expires_after="2026-03-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Statement.StepTime.{DatabaseTag}" units="microseconds"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>

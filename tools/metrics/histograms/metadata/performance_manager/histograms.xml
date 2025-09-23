@@ -90,7 +90,7 @@ each histogram.
 </histogram>
 
 <histogram name="CPU.Experimental.CpuEstimationThreadTimePercent.{CoreType}"
-    units="%" expires_after="2026-01-18">
+    units="%" expires_after="2026-03-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -230,7 +230,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
-    enum="AccessibilityModeFlagEnum" expires_after="2026-01-18">
+    enum="AccessibilityModeFlagEnum" expires_after="2026-03-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -240,7 +240,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
-    enum="Boolean" expires_after="2026-01-18">
+    enum="Boolean" expires_after="2026-03-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

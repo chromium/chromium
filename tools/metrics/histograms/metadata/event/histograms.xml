@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Event.DownEventCount.PerInputFormFactorDestinationCombination2"
     enum="DownEventInputFormFactorDestinationCombination2"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The number of down events received per destination, input and form factor

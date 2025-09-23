@@ -670,7 +670,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV2"
-    enum="ContentVerifyJobResult" expires_after="2026-01-18">
+    enum="ContentVerifyJobResult" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -681,7 +681,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV3"
-    enum="ContentVerifyJobResult" expires_after="2026-01-18">
+    enum="ContentVerifyJobResult" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1366,7 +1366,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DidCreateScriptContext_ContentScript" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2554,7 +2554,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.ExtensionMV3Calls"
-    enum="ExtensionFunctions" expires_after="2026-01-18">
+    enum="ExtensionFunctions" expires_after="2026-03-22">
   <owner>tjudkins@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3346,7 +3346,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadType2" enum="ExtensionType"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4137,7 +4137,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.StartWorkerStatus"
-    enum="Boolean" expires_after="2026-01-18">
+    enum="Boolean" expires_after="2026-03-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4331,7 +4331,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2026-01-18">
+    enum="SettingsOverriddenDialogResult" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4345,7 +4345,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.SettingsOverridden.BackToOtherSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2026-01-18">
+    enum="SettingsOverriddenDialogResult" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4372,7 +4372,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2026-01-18">
+    enum="SettingsOverriddenDialogResult" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4384,7 +4384,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.StartupPagesOverrides2" units="units"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -4431,7 +4431,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Toolbar.InvocationSource"
-    enum="ExtensionActionInvocationSource" expires_after="2026-01-18">
+    enum="ExtensionActionInvocationSource" expires_after="2026-03-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

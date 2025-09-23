@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>avi@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>

@@ -227,7 +227,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.SourceTypeOnShow"
-    enum="DiscountType" expires_after="2026-01-18">
+    enum="DiscountType" expires_after="2026-03-22">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -247,7 +247,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy"
-    enum="DiscountType" expires_after="2026-01-18">
+    enum="DiscountType" expires_after="2026-03-22">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -312,7 +312,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.PageActionIcon.SourceTypeOnShown"
-    enum="DiscountType" expires_after="2026-01-18">
+    enum="DiscountType" expires_after="2026-03-22">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -469,7 +469,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
-    enum="ShoppingFeatureIneligibilityReason" expires_after="2026-01-18">
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2026-03-22">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -727,7 +727,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
-    enum="PriceNotificationEmailState" expires_after="2026-01-18">
+    enum="PriceNotificationEmailState" expires_after="2026-03-22">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -742,7 +742,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.IOS.{Source}.ProductStatus"
-    enum="PriceNotificationProductStatus" expires_after="2025-12-28">
+    enum="PriceNotificationProductStatus" expires_after="2026-03-22">
   <owner>danieltwhite@google.com</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

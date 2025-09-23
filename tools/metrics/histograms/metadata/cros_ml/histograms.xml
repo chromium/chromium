@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.WebPlatformHandwritingModel.LoadModelResult.Event"
     enum="MachineLearningServiceLoadHandwritingModelResultEvent"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>

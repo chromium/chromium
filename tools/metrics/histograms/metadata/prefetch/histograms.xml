@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.WasFullRedirectChainServed"
-    enum="Boolean" expires_after="2026-01-18">
+    enum="Boolean" expires_after="2026-03-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -741,7 +741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -751,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
-    enum="PrefetchStreamingURLLoaderStatus" expires_after="2026-01-18">
+    enum="PrefetchStreamingURLLoaderStatus" expires_after="2026-03-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

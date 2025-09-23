@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.ChromeTask.{Task}"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2026-03-22">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>1456716</component>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.Duration.Task.{Task}" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>dullweber@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <component>1456716</component>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.InitialState"
-    enum="HistoryClustersInitialState" expires_after="2026-01-18">
+    enum="HistoryClustersInitialState" expires_after="2026-03-22">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>1457319</component>
@@ -1549,7 +1549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount28Day_V3" units="domains"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1629,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V3" units="domains"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2597,7 +2597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ForeignVisitsTotal" units="visits"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>treib@chromium.org</owner>
   <component>1456716</component>
   <summary>
@@ -2608,7 +2608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>calamity@chromium.org</owner>
   <owner>src/chrome/browser/resources/history/OWNERS</owner>
   <component>1456716</component>
@@ -2972,7 +2972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinkTableCount" units="VisitedLinks"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <component>1456589</component>
@@ -2983,7 +2983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitTableCount" units="visits"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>1456716</component>
