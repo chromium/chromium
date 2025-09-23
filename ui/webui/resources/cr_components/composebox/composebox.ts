@@ -776,7 +776,6 @@ export class ComposeboxElement extends I18nMixinLit
             mojoString16ToString(result.input)) {
       return;
     }
-    // TODO(crbug.com/434748455): Display suggestions below composebox.
     this.result_ = result;
     const hasMatches = this.result_?.matches?.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
@@ -784,6 +783,21 @@ export class ComposeboxElement extends I18nMixinLit
     // makes sure zero suggest results aren't focused when they are returned.
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       this.$.matches.selectFirst();
+    } else if (
+        this.$.input.value.trim() && hasMatches &&
+        this.selectedMatchIndex_ >= 0 &&
+        this.selectedMatchIndex_ < this.result_.matches.length) {
+      // Restore the selection and update the input. Don't restore when the
+      // user deletes all their input and autocomplete is queried or else the
+      // empty input will change to the value of the first result.
+      this.$.matches.selectIndex(this.selectedMatchIndex_);
+
+      // Set the selected match since the `selectedMatchIndex_` does not change
+      // (and therefore `selectedMatch_` does not get updated since
+      // `onSelectedMatchIndexChanged_` is not called).
+      this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_];
+      this.input_ = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
+      this.$.input.value = this.input_;
     } else {
       this.$.matches.unselect();
     }
