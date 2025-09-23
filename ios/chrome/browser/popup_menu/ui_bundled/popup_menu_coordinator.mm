@@ -215,11 +215,6 @@ using base::UserMetricsAction;
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
   [callableDispatcher dismissSoftKeyboard];
 
-  id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), FindInPageCommands);
-  // Dismiss Find in Page focus.
-  [findInPageCommandsHandler defocusFindInPage];
-
   // Dismiss all snackbars.
   id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

@@ -307,7 +307,6 @@
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -350,12 +349,6 @@ namespace {
 // URL to share when user selects "Share Chrome"
 const char kChromeAppStoreUrl[] =
     "https://apps.apple.com/app/id535886823?pt=9008&ct=iosChromeShare&mt=8";
-
-// Enum for toolbar to present.
-enum class ToolbarKind {
-  kTextZoom,
-  kFindInPage,
-};
 
 }  // anonymous namespace
 
@@ -419,7 +412,6 @@ enum class ToolbarKind {
     SigninPresenter,
     SnapshotGeneratorDelegate,
     StoreKitCoordinatorDelegate,
-    ToolbarAccessoryCoordinatorDelegate,
     TrustedVaultReauthenticationCoordinatorDelegate,
     UnitConversionCommands,
     URLLoadingDelegate,
@@ -673,7 +665,6 @@ enum class ToolbarKind {
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
-  std::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
   DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
@@ -1954,10 +1945,6 @@ enum class ToolbarKind {
 }
 
 - (void)showShareSheet {
-  // Defocus Find-In-Page before opening the share sheet. This will result in
-  // closing the Find-In-Page for some OS versions.
-  [self defocusFindInPage];
-
   if (!self.sharingCoordinator) {
     [self stopAndStartSharingCoordinator];
   } else {
@@ -2898,12 +2885,6 @@ enum class ToolbarKind {
 #pragma mark - FindInPageCommands
 
 - (void)openFindInPage {
-  if (_toolbarAccessoryPresenter.isPresenting) {
-    _nextToolbarToPresent = ToolbarKind::kFindInPage;
-    [self closeTextZoom];
-    return;
-  }
-
   __weak __typeof(self) weakSelf = self;
 
   auto startFindInPage = ^{
@@ -2962,12 +2943,6 @@ enum class ToolbarKind {
   }
   auto* helper = FindTabHelper::FromWebState(activeWebState);
   helper->DismissFindNavigator();
-}
-
-- (void)defocusFindInPage {
-    // The System Find Panel UI cannot be "defocused" so closing Find in Page
-    // altogether instead.
-    [self closeFindInPage];
 }
 
 - (void)findNextStringInPage {
@@ -3264,49 +3239,9 @@ enum class ToolbarKind {
   [self stopRepostFormCoordinator];
 }
 
-#pragma mark - ToolbarAccessoryCoordinatorDelegate
-
-- (void)toolbarAccessoryCoordinatorDidDismissUI:
-    (ChromeCoordinator*)coordinator {
-  [self hideTextZoomUI];
-
-  if (!_nextToolbarToPresent.has_value()) {
-    return;
-  }
-
-  const ToolbarKind nextToolbarToPresent = *_nextToolbarToPresent;
-  _nextToolbarToPresent = std::nullopt;
-
-  switch (nextToolbarToPresent) {
-    case ToolbarKind::kTextZoom:
-      [self openTextZoom];
-      break;
-
-    case ToolbarKind::kFindInPage:
-      [self openFindInPage];
-      break;
-  }
-}
-
 #pragma mark - TextZoomCommands
 
 - (void)openTextZoom {
-  web::WebState* activeWebState = self.activeWebState;
-  DCHECK(activeWebState);
-  FindTabHelper* findTabHelper = FindTabHelper::FromWebState(activeWebState);
-  DCHECK(findTabHelper);
-  if (findTabHelper->IsFindUIActive()) {
-    // If Find UI is active, close Find in Page.
-    [self closeFindInPage];
-    if (_toolbarAccessoryPresenter.isPresenting) {
-      // If the Chrome Find Bar is presented (as opposed to the System Find
-      // Panel UI) then open Text Zoom asynchronously once the Find Bar is
-      // dismissed.
-      _nextToolbarToPresent = ToolbarKind::kTextZoom;
-      return;
-    }
-  }
-
   [self.textZoomCoordinator stop];
   self.textZoomCoordinator = [self newTextZoomCoordinator];
   [self.textZoomCoordinator start];
@@ -3350,7 +3285,6 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   textZoomCoordinator.presenter = _toolbarAccessoryPresenter;
-  textZoomCoordinator.delegate = self;
 
   return textZoomCoordinator;
 }

@@ -4,7 +4,6 @@
 
 source_set("accessory") {
   sources = [
-    "toolbar_accessory_coordinator_delegate.h",
     "toolbar_accessory_presenter.h",
     "toolbar_accessory_presenter.mm",
   ]
