@@ -4238,9 +4238,6 @@ extern const char kIppFirstSetupForUsbPrintersDescription[];
 extern const char kHindiInscriptLayoutName[];
 extern const char kHindiInscriptLayoutDescription[];
 
-extern const char kImeManifestV3Name[];
-extern const char kImeManifestV3Description[];
-
 extern const char kImeSystemEmojiPickerGIFSupportName[];
 extern const char kImeSystemEmojiPickerGIFSupportDescription[];
 

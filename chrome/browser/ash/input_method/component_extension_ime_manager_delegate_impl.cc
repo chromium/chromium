@@ -409,8 +409,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (extension.manifest_resource_id == IDR_GOOGLE_XKB_MANIFEST &&
-        base::FeatureList::IsEnabled(features::kImeManifestV3)) {
+    if (extension.manifest_resource_id == IDR_GOOGLE_XKB_MANIFEST) {
       extension.manifest_resource_id = IDR_GOOGLE_XKB_MANIFEST_V3;
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
