@@ -779,6 +779,15 @@ void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     bool should_show_warning,
     std::optional<std::string> serialized_content_detection_metadata) {
   if (base::FeatureList::IsEnabled(
+          safe_browsing::kAutoRevokeSuspiciousNotification) &&
+      should_show_warning) {
+    // This service might be missing for incognito profiles and in tests.
+    if (auto* service =
+            NotificationsEngagementServiceFactory::GetForProfile(profile_)) {
+      service->RecordNotificationSuspicious(notification.origin_url());
+    }
+  }
+  if (base::FeatureList::IsEnabled(
           safe_browsing::kReportNotificationContentDetectionData)) {
     content::PlatformNotificationContext::WriteResourcesResultCallback
         callback = base::BindOnce(

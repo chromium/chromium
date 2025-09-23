@@ -30,6 +30,11 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 
+// Enables automatic revocation of notification permissions after the user has
+// received a number of notifications with a suspicious verdict from the
+// on-device model.
+BASE_DECLARE_FEATURE(kAutoRevokeSuspiciousNotification);
+
 // Enables Bundled Security Settings UI on chrome://settings/security
 BASE_DECLARE_FEATURE(kBundledSecuritySettings);
 

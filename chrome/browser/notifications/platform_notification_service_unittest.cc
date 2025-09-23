@@ -38,6 +38,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/permissions/notifications_engagement_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -119,7 +120,8 @@ class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {}, {safe_browsing::kReportNotificationContentDetectionData});
+        {}, {safe_browsing::kReportNotificationContentDetectionData,
+             safe_browsing::kAutoRevokeSuspiciousNotification});
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -906,4 +908,81 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
 #else
   ASSERT_TRUE(cur_value.is_none());
 #endif
+}
+
+class PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification
+    : public PlatformNotificationServiceTest {
+ public:
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kAutoRevokeSuspiciousNotification}, {});
+  }
+};
+
+TEST_F(PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+       RecordSuspiciousNotification) {
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  int notification_id = 1;
+  GURL origin("https://example.com");
+  std::string full_notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+  Notification notification = message_center::Notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, full_notification_id_str,
+      /*title=*/std::u16string(),
+      /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(), origin, message_center::NotifierId(),
+      message_center::RichNotificationData(), /*delegate=*/nullptr);
+  auto metadata = std::make_unique<PersistentNotificationMetadata>();
+
+  std::string bucket_label =
+      permissions::NotificationsEngagementService::GetBucketLabel(
+          base::Time::Now());
+  service()->UpdatePersistentMetadataThenDisplay(
+      notification, std::move(metadata), /*should_show_warning=*/true,
+      /* serialized_content_detection_metadata*/ std::nullopt);
+
+  base::Value::Dict notification_engagement_dict =
+      hcsm->GetWebsiteSetting(origin, GURL(),
+                              ContentSettingsType::NOTIFICATION_INTERACTIONS)
+          .GetDict()
+          .Clone();
+  ASSERT_EQ(1U, notification_engagement_dict.size());
+  base::Value* daily_entry = notification_engagement_dict.Find(bucket_label);
+  ASSERT_TRUE(daily_entry->is_dict());
+  ASSERT_EQ(1, daily_entry->GetDict().FindInt("suspicious_count").value_or(0));
+}
+
+TEST_F(PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+       NotSuspiciousNoEngagementRecorded) {
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  int notification_id = 1;
+  GURL origin("https://example.com");
+  std::string full_notification_id_str =
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id);
+  Notification notification = message_center::Notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, full_notification_id_str,
+      /*title=*/std::u16string(),
+      /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(), origin, message_center::NotifierId(),
+      message_center::RichNotificationData(), /*delegate=*/nullptr);
+  auto metadata = std::make_unique<PersistentNotificationMetadata>();
+
+  std::string bucket_label =
+      permissions::NotificationsEngagementService::GetBucketLabel(
+          base::Time::Now());
+  service()->UpdatePersistentMetadataThenDisplay(
+      notification, std::move(metadata), /*should_show_warning=*/false,
+      /* serialized_content_detection_metadata*/ std::nullopt);
+
+  ContentSettingsForOneType notifications_engagement_setting =
+      hcsm->GetSettingsForOneType(
+          ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_EQ(0U, notifications_engagement_setting.size());
 }

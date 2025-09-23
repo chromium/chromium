@@ -635,16 +635,18 @@ chromium-metrics-reviews@google.com.
   <owner>feuunk@chromium.org</owner>
   <summary>
     Records site engagement of sites when notifications are shown or clicked. A
-    metric is recorded for every displayed or clicked notification, reporting
-    the site engagement of the corresponding site multiplied by 2 (we multiply
-    by 2 in order to distinguish engagement values &gt;=0.5 from 0 - note that
-    the smallest possible nonnull engagement value is 0.5). The average daily
-    volume of displayed notifications for that particular site over the past
-    week is encoded in the histogram name.
+    metric is recorded for every displayed notification, clicked notification,
+    and suspicious warning shown reporting the site engagement of the
+    corresponding site multiplied by 2 (we multiply by 2 in order to distinguish
+    engagement values &gt;=0.5 from 0 - note that the smallest possible nonnull
+    engagement value is 0.5). The average daily volume of displayed
+    notifications for that particular site over the past week is encoded in the
+    histogram name.
   </summary>
   <token key="Type">
     <variant name="Clicked"/>
     <variant name="Displayed"/>
+    <variant name="Suspicious"/>
   </token>
   <token key="Volume">
     <variant name="0"/>

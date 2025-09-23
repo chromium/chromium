@@ -112,6 +112,12 @@ class PlatformNotificationServiceImpl
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
       UpdateNotificationDatabaseMetadata);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RecordSuspiciousNotification);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      NotSuspiciousNoEngagementRecorded);
 
   struct WebAppIconAndTitle {
     gfx::ImageSkia icon;

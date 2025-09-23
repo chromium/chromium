@@ -17,6 +17,7 @@
 namespace permissions {
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
+constexpr char kSuspiciousKey[] = "suspicious_count";
 
 class NotificationsEngagementServiceTest : public testing::Test {
  public:
@@ -195,6 +196,64 @@ TEST_F(NotificationsEngagementServiceTest,
   ASSERT_EQ(3, entryForDate->GetDict().FindInt(kEngagementKey).value());
 }
 
+TEST_F(NotificationsEngagementServiceTest, RecordNotificationSuspicious) {
+  GURL url1("https://www.suspicious1.site.com/");
+  GURL url2("https://www.suspicious2.site.com/");
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Notification interaction with display only.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationDisplayed(url1);
+  std::string date0 = service()->GetBucketLabel(base::Time::Now());
+
+  // Simulate initial notification interaction with suspicious warning.
+  task_environment_.FastForwardBy(base::Days(2));
+  service()->RecordNotificationSuspicious(url1);
+  service()->RecordNotificationSuspicious(url1);
+  std::string date1 = service()->GetBucketLabel(base::Time::Now());
+
+  // Simulate later notification interaction.
+  task_environment_.FastForwardBy(base::Days(5));
+  service()->RecordNotificationSuspicious(url1);
+  // Add to content setting for different url.
+  service()->RecordNotificationSuspicious(url2);
+  service()->RecordNotificationSuspicious(url2);
+  service()->RecordNotificationSuspicious(url2);
+  std::string date2 = service()->GetBucketLabel(base::Time::Now());
+
+  // Verify notification interaction content setting for url 1.
+  base::Value url1_notification_interaction =
+      host_content_settings_map->GetWebsiteSetting(
+          url1, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(url1_notification_interaction.is_dict());
+  base::Value::Dict& url1_notification_interaction_dict =
+      url1_notification_interaction.GetDict();
+  ASSERT_EQ(3U, url1_notification_interaction_dict.size());
+  base::Value* url1_date0_entry =
+      url1_notification_interaction_dict.Find(date0);
+  ASSERT_EQ(0, url1_date0_entry->GetDict().FindInt(kSuspiciousKey).value_or(0));
+  base::Value* url1_date1_entry =
+      url1_notification_interaction_dict.Find(date1);
+  ASSERT_EQ(2, url1_date1_entry->GetDict().FindInt(kSuspiciousKey).value());
+  base::Value* url1_date2_entry =
+      url1_notification_interaction_dict.Find(date2);
+  ASSERT_EQ(1, url1_date2_entry->GetDict().FindInt(kSuspiciousKey).value_or(0));
+
+  // Verify notification interaction content setting for url 2.
+  base::Value url2_notification_interaction =
+      host_content_settings_map->GetWebsiteSetting(
+          url2, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
+  ASSERT_TRUE(url2_notification_interaction.is_dict());
+  base::Value::Dict& url2_notification_interaction_dict =
+      url2_notification_interaction.GetDict();
+  ASSERT_EQ(1U, url2_notification_interaction_dict.size());
+  base::Value* url2_date2_entry =
+      url2_notification_interaction_dict.Find(date2);
+  ASSERT_EQ(3, url2_date2_entry->GetDict().FindInt(kSuspiciousKey).value());
+}
+
 TEST_F(NotificationsEngagementServiceTest,
        RecordNotificationDisplayedAndInteractionReportsUMA) {
   GURL url1("https://url1.test/");
@@ -266,6 +325,16 @@ TEST_F(NotificationsEngagementServiceTest,
     histogram_tester.ExpectUniqueSample(
         "Notifications.Engagement.Clicked.Volume0", 0, 1);
   }
+}
+
+TEST_F(NotificationsEngagementServiceTest,
+       RecordNotificationSuspiciousReportsUMA) {
+  GURL url("https://url.test/");
+
+  base::HistogramTester histogram_tester;
+  service()->RecordNotificationSuspicious(url);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Engagement.Suspicious.Volume0", 0, 1);
 }
 
 TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
