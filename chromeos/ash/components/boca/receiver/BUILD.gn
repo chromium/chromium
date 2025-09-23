@@ -17,6 +17,8 @@ static_library("receiver") {
     "register_receiver_request.h",
     "start_kiosk_receiver_request.cc",
     "start_kiosk_receiver_request.h",
+    "student_screen_presenter.cc",
+    "student_screen_presenter.h",
     "update_kiosk_receiver_state_request.cc",
     "update_kiosk_receiver_state_request.h",
   ]
@@ -27,6 +29,7 @@ static_library("receiver") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//components/signin/public/identity_manager",
     "//google_apis",
     "//google_apis/common",
   ]
@@ -58,6 +61,7 @@ source_set("unit_tests") {
     "kiosk_receiver_parser_unittest.cc",
     "register_receiver_request_unittest.cc",
     "start_kiosk_receiver_request_unittest.cc",
+    "student_screen_presenter_unittest.cc",
     "update_kiosk_receiver_state_request_unittest.cc",
   ]
 
@@ -66,10 +70,14 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//google_apis/common",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
