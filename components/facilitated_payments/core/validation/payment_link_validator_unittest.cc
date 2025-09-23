@@ -17,7 +17,8 @@ TEST(PaymentLinkValidatorTest, validUrls) {
       GURL("tngd://tngdigital.com.my?path=fake_path"),
       GURL("https://www.itmx.co.th/facilitated-payment/"
            "prompt-pay?path=fake_path"),
-      GURL("momo://app?path=fake_path")};
+      GURL("momo://app?path=fake_path"),
+      GURL("https://api.doku.com/facilitated-payment/dana?path=fake_path")};
 
   for (const auto& link : kValidUrls) {
     EXPECT_NE(validator.GetScheme(link), PaymentLinkValidator::Scheme::kInvalid)

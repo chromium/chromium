@@ -48,6 +48,7 @@ reviewer.
 </variants>
 
 <variants name="PaymentLinkScheme">
+  <variant name="Dana" summary="Scheme Dana that supports eWallet payflow."/>
   <variant name="DuitNow"
       summary="Scheme DuitNow that supports eWallet payflow."/>
   <variant name="Momo" summary="Scheme Momo that supports eWallet payflow."/>

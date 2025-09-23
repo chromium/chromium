@@ -19,6 +19,7 @@ class PaymentLinkValidator {
     kTngd = 3,
     kPromptPay = 4,
     kMomo = 5,
+    kDana = 6,
   };
 
   PaymentLinkValidator();
