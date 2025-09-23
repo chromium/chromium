@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, ContentController, NodeStore, ReadAloudHighlighter, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, NodeStore, ReadAloudHighlighter, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, setSimpleAxTreeWithText, setSimpleNodeStoreWithTextAndModel, stubAnimationFrame} from './common.js';
@@ -216,6 +216,33 @@ suite('SpeechController', () => {
 
     assertTrue(propagatedSpeechActive);
     assertTrue(propagatedAudioPlaying);
+  });
+
+  test('onPlayPauseToggle ignores hidden nodes', () => {
+    const text = 'I\'m just tryna have some fun';
+    const id = 2;
+    readAloudModel.setInitialized(true);
+    const parent = document.createElement('p');
+    const node = document.createTextNode(text);
+    parent.appendChild(node);
+    nodeStore.setDomNode(parent, id);
+    const segments: Segment[] =
+        [{node: ReadAloudNode.create(parent)!, start: 0, length: text.length}];
+    readAloudModel.setCurrentTextContent(text);
+    nodeStore.hideImageNode(2);
+    let calls = 0;
+    readAloudModel.getCurrentTextSegments = () => {
+      calls++;
+      if (calls === 1) {
+        return segments;
+      } else {
+        return [];
+      }
+    };
+
+    speechController.onPlayPauseToggle(parent);
+
+    assertEquals(0, speech.getCallCount('speak'));
   });
 
   test(

@@ -56,17 +56,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Images) {
-  RunSidePanelTest("side_panel/read_anything/image_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
   RunSidePanelTest("side_panel/read_anything/read_anything_logger_test.js",
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LoadingScreen) {
-  RunSidePanelTest("side_panel/read_anything/loading_screen_test.js",
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppContent) {
+  RunSidePanelTest("side_panel/read_anything/app_content_test.js",
                    "mocha.run()");
 }
 
@@ -131,11 +127,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Movement) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Toolbar) {
   RunSidePanelTest("side_panel/read_anything/toolbar_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContent) {
-  RunSidePanelTest("side_panel/read_anything/update_content_test.js",
-                   "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppReceivesToolbarChanges) {
@@ -306,11 +297,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
   RunSidePanelTest("side_panel/read_anything/speech_model_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ConnectedCallback) {
-  RunSidePanelTest("side_panel/read_anything/connected_callback_test.js",
                    "mocha.run()");
 }
 

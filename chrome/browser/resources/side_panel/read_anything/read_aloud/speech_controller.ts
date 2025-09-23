@@ -220,6 +220,14 @@ export class SpeechController {
     this.logger_.logHighlightGranularity(newGranularity);
   }
 
+  onPlayPauseKeyPress(context: HTMLElement|null) {
+    if (this.isSpeechActive()) {
+      this.logger_.logSpeechStopSource(
+          chrome.readingMode.keyboardShortcutStopSource);
+    }
+    this.onPlayPauseToggle(context);
+  }
+
   onPlayPauseToggle(context: HTMLElement|null) {
     if (this.isSpeechActive()) {
       this.stopSpeech_(PauseActionSource.BUTTON_CLICK);

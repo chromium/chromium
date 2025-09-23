@@ -77,8 +77,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
     };
   }
 
-  private startTime = Date.now();
-  private constructorTime: number;
+  private startTime_ = Date.now();
 
   protected accessor contentState_: ContentState;
 
@@ -137,9 +136,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   constructor() {
     super();
-    this.constructorTime = Date.now();
-    this.logger_.logTimeFrom(
-        TimeFrom.APP, this.startTime, this.constructorTime);
+    this.logger_.logTimeFrom(TimeFrom.APP, this.startTime_, Date.now());
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.styleUpdater_ = new AppStyleUpdater(this);
     this.nodeStore_.clear();
@@ -170,7 +167,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     // to take place.
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     this.styleUpdater_.setMaxLineWidth();
-    this.showLoading();
 
     this.contentController_.addListener(this);
     if (this.isReadAloudEnabled_) {
@@ -182,6 +178,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
       // not always reliabled called.
       this.nodeStore_.clearDomNodes();
     }
+    this.showLoading();
 
     this.settingsPrefs_ = {
       letterSpacing: chrome.readingMode.letterSpacing,
@@ -511,12 +508,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected onKeyDown_(e: KeyboardEvent) {
     if (e.key === 'k') {
       e.stopPropagation();
-      if (this.speechController_.isSpeechActive()) {
-        this.logger_.logSpeechStopSource(
-            chrome.readingMode.keyboardShortcutStopSource);
-      }
-      this.onPlayPauseClick_();
     }
+    this.speechController_.onPlayPauseKeyPress(this.$.container);
   }
 }
 

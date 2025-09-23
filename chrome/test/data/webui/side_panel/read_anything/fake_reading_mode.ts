@@ -87,6 +87,8 @@ export class FakeReadingMode {
   // If the speech tree has been initialized.
   isSpeechTreeInitialized: boolean = false;
 
+  requiresDistillation: boolean = false;
+
   private maxNodeId: number = 5;
 
   fetchedImages: number[] = [];
