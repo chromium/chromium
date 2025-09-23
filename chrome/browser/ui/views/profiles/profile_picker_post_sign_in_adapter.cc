@@ -156,7 +156,7 @@ void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(
 void ProfilePickerPostSignInAdapter::ShowAccountManagementScreen(
     signin::SigninChoiceCallback on_account_management_screen_closed) {
   SwitchToManagedUserProfileNotice(
-      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
       std::move(on_account_management_screen_closed));
 }
 

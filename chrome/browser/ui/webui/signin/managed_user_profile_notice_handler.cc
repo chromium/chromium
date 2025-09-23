@@ -133,9 +133,11 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
         std::move(std::get<signin::SigninChoiceCallback>(
             create_param->process_user_choice_callback)));
   }
-  CHECK(browser_ ||
-        type_ !=
-            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
+  CHECK(
+      browser_ ||
+      (type_ !=
+           ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation ||
+       type_ == ManagedUserProfileNoticeUI::ScreenType::kProfilePicker));
   BrowserList::AddObserver(this);
 }
 
@@ -417,6 +419,8 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
 
   switch (type_) {
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
+      // TODO(crbug.com/445712889): Specify the exact UI for the picker case.
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(

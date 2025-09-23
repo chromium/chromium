@@ -288,6 +288,9 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       NOTREACHED() << "The profile picker should not show a managed user "
                       "notice that prompts for profile creation";
+    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
+      NOTREACHED() << "Screen type is used only on the revamped history sync "
+                      "helper flow";
   }
 }
 
