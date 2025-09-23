@@ -22,6 +22,7 @@ include_rules = [
   "+ios/chrome/browser/discover_feed/model",
   "+ios/chrome/browser/push_notification",
   "+ios/chrome/browser/net/model",
+  "+ios/chrome/browser/authentication/test",
 ]
 
 specific_include_rules = {
