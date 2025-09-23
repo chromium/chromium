@@ -12734,6 +12734,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillAcrossIframesIosThrottling",
                         "AutofillAcrossIframesIosTriggerFormExtraction",
                         "AutofillThrottleDocumentFormScanForceFirstScanIos",
                         "AutofillThrottleDocumentFormScanIos"
