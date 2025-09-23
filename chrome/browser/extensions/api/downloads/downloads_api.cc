@@ -1026,7 +1026,8 @@ bool OnDeterminingFilenameWillDispatchCallback(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   *any_determiners = true;
   base::Time installed =
       GetLastUpdateTime(ExtensionPrefs::Get(browser_context), extension->id());

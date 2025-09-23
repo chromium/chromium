@@ -28,6 +28,18 @@ class Extension;
 class ExtensionRegistry;
 struct Event;
 
+// A unique identifier for an active listener context. This is used to
+// de-duplicate event dispatches to the same active listener context.
+struct ActiveContextId {
+  raw_ptr<content::RenderProcessHost> render_process;
+  int worker_thread_id;
+  ExtensionId extension_id;
+  raw_ptr<content::BrowserContext> browser_context;
+  GURL listener_url;
+
+  auto operator<=>(const ActiveContextId&) const = default;
+};
+
 // Helper class for EventRouter to dispatch events.
 //
 // Handles both lazy and non-lazy contexts.
@@ -138,7 +150,8 @@ class EventDispatchHelper {
       const base::Value::Dict* listener_filter,
       const Extension* extension,
       content::BrowserContext& listener_context,
-      mojom::ContextType target_context_type);
+      mojom::ContextType target_context_type,
+      bool* dispatch_separate_event_out);
 
   // Records that an event has been queued for dispatch to a lazy listener to
   // avoid dispatching it again to a non-lazy listener.
@@ -182,6 +195,7 @@ class EventDispatchHelper {
   DispatchToProcessFunction dispatch_to_process_function_;
 
   std::set<LazyContextId> dispatched_ids_;
+  std::set<ActiveContextId> dispatched_active_ids_;
 };
 
 }  // namespace extensions

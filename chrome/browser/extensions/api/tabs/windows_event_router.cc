@@ -72,7 +72,8 @@ bool WillDispatchWindowEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   bool has_filter =
       listener_filter && listener_filter->contains(kWindowTypesKey);
   // TODO(crbug.com/41367902): Remove this.
@@ -82,6 +83,9 @@ bool WillDispatchWindowEvent(
     return false;
   }
 
+  if (dispatch_separate_event_out) {
+    *dispatch_separate_event_out = false;
+  }
   event_filtering_info_out = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter.
   // Otherwise we set the window visibility relative to the extension.
@@ -102,7 +106,8 @@ bool WillDispatchWindowFocusedEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   int window_id = extension_misc::kUnknownWindowId;
   Profile* new_active_context = nullptr;
   bool has_filter =
@@ -115,6 +120,9 @@ bool WillDispatchWindowFocusedEvent(
     new_active_context = window_controller->profile();
   }
 
+  if (dispatch_separate_event_out) {
+    *dispatch_separate_event_out = false;
+  }
   event_filtering_info_out = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter,
   // otherwise set the visibility to true (if the window is not

@@ -258,14 +258,28 @@ void EventDispatchHelper::DispatchEventToActiveListener(
     return;
   }
 
-  // Prepare the event for dispatch, running the `will_dispatch_callback` if
-  // any. TODO(andreaorru): This is so that we can take modified `event_args`
-  // into consideration when de-duplicating events.
+  // Prepare event for dispatch, running the `will_dispatch_callback` if any.
+  bool dispatch_separate_event = true;
   std::unique_ptr<Event> dispatched_event = CreateEventForDispatch(
-      event, listener->filter(), extension, *listener_context, context_type);
-
+      event, listener->filter(), extension, *listener_context, context_type,
+      &dispatch_separate_event);
   if (!dispatched_event) {
     // The event has been canceled.
+    return;
+  }
+
+  // Check if we've already dispatched this event to this active context.
+  // If multiple listeners match the same event within the same active context,
+  // we only dispatch the event once, provided de-duplication is enabled
+  // (i.e., `dispatch_separate_event` is true, indicating arguments are expected
+  // to be consistent across listeners).
+  auto [_, inserted] = dispatched_active_ids_.emplace(
+      ActiveContextId{.render_process = process,
+                      .worker_thread_id = listener->worker_thread_id(),
+                      .extension_id = listener->extension_id(),
+                      .browser_context = listener_context,
+                      .listener_url = listener->listener_url()});
+  if (dispatch_separate_event && !inserted) {
     return;
   }
 
@@ -322,7 +336,8 @@ bool EventDispatchHelper::TryQueueEventDispatch(
   // Prepare the event for dispatch, running the `will_dispatch_callback` if
   // any. We do this now (rather than dispatch time) to avoid lifetime issues.
   std::unique_ptr<Event> dispatched_event = CreateEventForDispatch(
-      event, listener_filter, extension, *browser_context, context_type);
+      event, listener_filter, extension, *browser_context, context_type,
+      /*dispatch_separate_event_out=*/nullptr);
 
   if (!dispatched_event) {
     // The event has been canceled.
@@ -341,19 +356,20 @@ std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
     const base::Value::Dict* listener_filter,
     const Extension* extension,
     BrowserContext& listener_context,
-    mojom::ContextType target_context_type) {
+    mojom::ContextType target_context_type,
+    bool* dispatch_separate_event_out) {
   if (event.will_dispatch_callback.is_null()) {
     return event.DeepCopy();
   }
 
-  // Run the callback before copying the event.
-  // TODO(andreaorru): This is so that we can take modified `event_args` into
-  // consideration when de-duplicating events.
+  // Run the callback before copying the event to determine if events need
+  // de-duplicating based on the `dispatch_separate_event_out` argument.
   std::optional<base::Value::List> modified_event_args;
   mojom::EventFilteringInfoPtr modified_event_filter_info;
   if (!event.will_dispatch_callback.Run(
           &listener_context, target_context_type, extension, listener_filter,
-          modified_event_args, modified_event_filter_info)) {
+          modified_event_args, modified_event_filter_info,
+          dispatch_separate_event_out)) {
     // The event has been canceled.
     return nullptr;
   }

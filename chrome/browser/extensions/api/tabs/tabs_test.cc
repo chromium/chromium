@@ -1927,7 +1927,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
     mojom::EventFilteringInfoPtr event_filtering_info_out;
     EXPECT_TRUE(event_it->second->will_dispatch_callback.Run(
         profile(), mojom::ContextType::kUnprivilegedExtension, extension.get(),
-        /* listener_filter=*/nullptr, args_out, event_filtering_info_out));
+        /*listener_filter=*/nullptr, args_out, event_filtering_info_out,
+        /*dispatch_separate_event_out=*/nullptr));
     ASSERT_TRUE(args_out.has_value());
     ASSERT_EQ(args_out->size(), 3U);
     EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contents),

@@ -530,15 +530,7 @@ IN_PROC_BROWSER_TEST_F(
       embedded_test_server()->GetURL("example.com", "/simple.html");
   NavigateToURLInNewTab(url);
 
-  // TODO(crbug.com/40365717): This should be:
-  // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
-  // because each listener should fire exactly once (we only visited one new
-  // page).
-  // However, currently we'll dispatch the event to the same process twice
-  // (once for each listener), and each dispatch will match both listeners,
-  // resulting in each listener being triggered twice (for a total of four
-  // received events).
-  EXPECT_EQ(4, content::EvalJs(extension_contents, "self.receivedEvents;"));
+  EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
 }
 
 class ChromeUpdatesEventsApiTest : public EventsApiTest,

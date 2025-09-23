@@ -575,7 +575,8 @@ struct Event {
       const Extension*,
       const base::Value::Dict*,
       std::optional<base::Value::List>& event_args_out,
-      mojom::EventFilteringInfoPtr& event_filtering_info_out)>;
+      mojom::EventFilteringInfoPtr& event_filtering_info_out,
+      bool* dispatch_separate_event_out)>;
 
   using DidDispatchCallback = base::RepeatingCallback<void(const EventTarget&)>;
 
@@ -626,6 +627,14 @@ struct Event {
   // The args `event_args_out`, `event_filtering_info_out` allows caller to
   // provide modified `Event::event_args`, `Event::filter_info` depending on the
   // extension and profile.
+  //
+  // If supplied, the `dispatch_separate_event_out` arg controls de-duplication
+  // for this event. If set to true (the default unless explicitly changed), the
+  // event is dispatched at most once per unique active listener context. If
+  // false, the event is dispatched to all matching listeners, even within the
+  // same context. NOTE: If `will_dispatch_callback` modifies event args or
+  // filter info based on the specific listener filter, this should be set to
+  // false.
   //
   // NOTE: the Extension argument to this may be NULL because it's possible for
   // this event to be dispatched to non-extension processes, like WebUI.
