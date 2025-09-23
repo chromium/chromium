@@ -239,7 +239,7 @@ public class ChildProcessConnectionMetricsUnitTest {
                         /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         if (contentBindingState == ChildBindingState.STRONG) {
             connection.addStrongBinding();
             connection.removeVisibleBinding();
