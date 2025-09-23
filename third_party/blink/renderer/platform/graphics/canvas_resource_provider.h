@@ -428,8 +428,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   size_t ComputeSurfaceSize() const;
   size_t GetSize() const override;
 
-  cc::ImageDecodeCache* ImageDecodeCacheRGBA8();
-  cc::ImageDecodeCache* ImageDecodeCacheF16();
   void EnsureSkiaCanvas();
 
   void Clear();
