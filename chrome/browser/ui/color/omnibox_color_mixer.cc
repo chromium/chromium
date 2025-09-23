@@ -116,6 +116,9 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   // Update suggestion vector icon color.
   mixer[kColorOmniboxResultsIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorOmniboxResultsIconSelected] = {kColorOmniboxResultsIcon};
+  // Aligns with default InkDropHighlight::visible_opacity_.
+  mixer[kColorOmniboxResultsIconHovered] =
+      ui::SetAlpha({kColorOmniboxResultsIcon}, std::ceil(0.128f * 255.0f));
 
   // Update chip colors.
   mixer[kColorOmniboxResultsButtonBorder] = {kColorOmniboxKeywordSeparator};
@@ -270,6 +273,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     mixer[kColorOmniboxResultsIconSelected] =
         results_icon(kColorOmniboxResultsTextSelected,
                      kColorOmniboxResultsBackgroundSelected);
+    // Aligns with default InkDropHighlight::visible_opacity_.
+    mixer[kColorOmniboxResultsIconHovered] =
+        ui::SetAlpha({kColorOmniboxResultsIcon}, std::ceil(0.128f * 255.0f));
     mixer[kColorOmniboxResultsStarterPackIcon] = ui::BlendForMinContrast(
         gfx::kGoogleBlue600, kColorOmniboxResultsBackground, std::nullopt,
         color_utils::kMinimumVisibleContrastRatio);
