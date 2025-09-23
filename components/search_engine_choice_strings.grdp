@@ -39,12 +39,12 @@
   </message>
 
   <if expr="use_titlecase">
-    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. It is on a screen that appears when the user opens Chrome after updating or installing it. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for search queries“.">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. This button is at the bottom of a screen that appears when the user opens Chrome after updating or installing the app. On devices with larger screens, this button is immediately visible. On smaller mobile screens, this button is only visible after the user has seen all of the options on the list. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for queries.”.">
       Set as Default
     </message>
   </if>
   <if expr="not use_titlecase">
-    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. It is on a screen that appears when the user opens Chrome after updating or installing it. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for search queries“.">
+    <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. This button is at the bottom of a screen that appears when the user opens Chrome after updating or installing the app. On devices with larger screens, this button is immediately visible. On smaller mobile screens, this button is only visible after the user has seen all of the options on the list. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for queries.”.">
       Set as default
     </message>
   </if>
