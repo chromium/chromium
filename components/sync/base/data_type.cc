@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(57 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(57 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -112,6 +112,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
          SHARED_TAB_GROUP_ACCOUNT_DATA},
         {sync_pb::EntitySpecifics::kAccountSettingFieldNumber, ACCOUNT_SETTING},
         {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
+        {sync_pb::EntitySpecifics::kAiThreadFieldNumber, AI_THREAD},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -288,6 +289,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case SHARED_COMMENT:
       specifics->mutable_shared_comment();
       break;
+    case AI_THREAD:
+      specifics->mutable_ai_thread();
+      break;
   }
 }
 
@@ -414,6 +418,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
     case SHARED_COMMENT:
       return sync_pb::EntitySpecifics::kSharedCommentFieldNumber;
+    case AI_THREAD:
+      return sync_pb::EntitySpecifics::kAiThreadFieldNumber;
     case NIGORI:
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
   }
@@ -432,7 +438,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(57 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -600,6 +606,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_shared_comment()) {
     return SHARED_COMMENT;
   }
+  if (specifics.has_ai_thread()) {
+    return AI_THREAD;
+  }
 
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -622,7 +631,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(56 == syncer::GetNumDataTypes(),
+  static_assert(57 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -773,6 +782,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Shared Tab Group Account Data";
     case SHARED_COMMENT:
       return "SharedComment";
+    case AI_THREAD:
+      return "AI Thread";
     case NIGORI:
       return "Encryption Keys";
   }
@@ -890,6 +901,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "SHARED_TAB_GROUP_ACCOUNT_DATA";
     case SHARED_COMMENT:
       return "SHARED_COMMENT";
+    case AI_THREAD:
+      return "AI_THREAD";
     case NIGORI:
       return "NIGORI";
     case ACCOUNT_SETTING:
@@ -1011,6 +1024,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kSharedTabGroupAccountData;
     case SHARED_COMMENT:
       return DataTypeForHistograms::kSharedComment;
+    case AI_THREAD:
+      return DataTypeForHistograms::kAIThread;
     case NIGORI:
       return DataTypeForHistograms::kNigori;
   }
@@ -1147,6 +1162,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "shared_tab_group_account_data";
     case SHARED_COMMENT:
       return "shared_comment";
+    case AI_THREAD:
+      return "ai_thread";
     case NIGORI:
       return "nigori";
   }

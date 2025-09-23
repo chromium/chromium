@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="SyncDataType">
   <variant name=".ACCOUNT_SETTING" summary="ACCOUNT_SETTING"/>
+  <variant name=".AI_THREAD" summary="AI_THREAD"/>
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
   <variant name=".APP_SETTING" summary="APP_SETTING"/>

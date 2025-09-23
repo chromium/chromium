@@ -4,6 +4,7 @@
 
 sync_protocol_sources = [
   "account_setting_specifics.proto",
+  "ai_thread_specifics.proto",
   "app_list_specifics.proto",
   "app_setting_specifics.proto",
   "app_specifics.proto",
