@@ -132,7 +132,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
-#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/web_state.h"
 
 namespace {

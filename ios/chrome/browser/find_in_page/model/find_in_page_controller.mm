@@ -126,7 +126,7 @@ NSString* gSearchTerm;
 
 #pragma mark - CRWFindInPageManagerDelegate
 
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didHighlightMatchesOfQuery:(NSString*)query
                 withMatchCount:(NSInteger)matchCount
                    forWebState:(web::WebState*)webState {
@@ -140,7 +140,7 @@ NSString* gSearchTerm;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)findInPageManager:(web::AbstractFindInPageManager*)manager
+- (void)findInPageManager:(web::FindInPageManager*)manager
     didSelectMatchAtIndex:(NSInteger)index
         withContextString:(NSString*)contextString
               forWebState:(web::WebState*)webState {
@@ -149,8 +149,7 @@ NSString* gSearchTerm;
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 
-- (void)userDismissedFindNavigatorForManager:
-    (web::AbstractFindInPageManager*)manager {
+- (void)userDismissedFindNavigatorForManager:(web::FindInPageManager*)manager {
   CHECK(self.fullscreenController);
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
