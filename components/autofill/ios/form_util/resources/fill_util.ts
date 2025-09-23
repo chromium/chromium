@@ -698,6 +698,28 @@ gCrWebLegacy.fill.getUniqueID = function(element: any): string {
   }
 };
 
+/**
+ * Check if the node is visible.
+ *
+ * @param node The node to be processed.
+ * @return Whether the node is visible or not.
+ */
+function isVisibleNode(node: Node): boolean {
+  if (!node) {
+    return false;
+  }
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const style = window.getComputedStyle(node as Element);
+    if (style.visibility === 'hidden' || style.display === 'none') {
+      return false;
+    }
+  }
+
+  // Verify all ancestors are focusable.
+  return !node.parentNode || isVisibleNode(node.parentNode);
+}
+
 function setRemoteFrameToken(token: string) {
   document.documentElement.setAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE, token);
 }
@@ -714,4 +736,5 @@ export {
   getRemoteFrameToken,
   valueForElement,
   isElementInsideFormOrFieldSet,
+  isVisibleNode,
 };

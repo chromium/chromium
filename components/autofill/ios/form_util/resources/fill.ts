@@ -100,28 +100,6 @@ function extractFieldsFromControlElements(
 }
 
 /**
- * Check if the node is visible.
- *
- * @param node The node to be processed.
- * @return Whether the node is visible or not.
- */
-gCrWebLegacy.fill.isVisibleNode = function(node: Node): boolean {
-  if (!node) {
-    return false;
-  }
-
-  if (node.nodeType === Node.ELEMENT_NODE) {
-    const style = window.getComputedStyle(node as Element);
-    if (style.visibility === 'hidden' || style.display === 'none') {
-      return false;
-    }
-  }
-
-  // Verify all ancestors are focusable.
-  return !node.parentNode || gCrWebLegacy.fill.isVisibleNode(node.parentNode);
-};
-
-/**
  * For each label element, get the corresponding form control element, use the
  * form control element along with |controlElements| and |elementArray| to find
  * the previously created AutofillFormFieldData and set the
@@ -551,7 +529,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
     field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
     field.should_autocomplete = gCrWebLegacy.fill.shouldAutocomplete(element);
     field.is_focusable = !element.disabled && !(element as any).readOnly &&
-        element.tabIndex >= 0 && gCrWebLegacy.fill.isVisibleNode(element);
+        element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
   }
 
   if (gCrWebLegacy.fill.isAutofillableInputElement(element)) {
