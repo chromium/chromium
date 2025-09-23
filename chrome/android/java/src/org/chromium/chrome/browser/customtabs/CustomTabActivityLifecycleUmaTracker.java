@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,6 +21,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
@@ -34,6 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.Supplier;
 
 /** Handles recording User Metrics for Custom Tab Activity. */
+@NullMarked
 public class CustomTabActivityLifecycleUmaTracker
         implements PauseResumeWithNativeObserver, StartStopWithNativeObserver, NativeInitObserver {
     /**
@@ -58,7 +64,7 @@ public class CustomTabActivityLifecycleUmaTracker
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final Activity mActivity;
 
-    private WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
+    private @Nullable WebappCustomTabTimeSpentLogger mWebappTimeSpentLogger;
     private boolean mIsInitialResume = true;
 
     private void recordIncognitoLaunchReason() {
@@ -85,9 +91,8 @@ public class CustomTabActivityLifecycleUmaTracker
             } else {
                 // Using package name didn't give any meaningful insight on who launched the
                 // Incognito CCT, falling back to check if they provided EXTRA_APPLICATION_ID.
-                externalId =
-                        IntentHandler.determineExternalIntentSource(
-                                mIntentDataProvider.getIntent(), mActivity);
+                var intent = assertNonNull(mIntentDataProvider.getIntent());
+                externalId = IntentHandler.determineExternalIntentSource(intent, mActivity);
                 RecordHistogram.recordEnumeratedHistogram(
                         "CustomTabs.ClientAppId.Incognito",
                         externalId,
@@ -108,10 +113,9 @@ public class CustomTabActivityLifecycleUmaTracker
         if (mIntentDataProvider.isOffTheRecord()) {
             recordIncognitoLaunchReason();
         } else {
+            var intent = assertNonNull(mIntentDataProvider.getIntent());
             @IntentHandler.ExternalAppId
-            int externalId =
-                    IntentHandler.determineExternalIntentSource(
-                            mIntentDataProvider.getIntent(), mActivity);
+            int externalId = IntentHandler.determineExternalIntentSource(intent, mActivity);
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.ClientAppId", externalId, IntentHandler.ExternalAppId.NUM_ENTRIES);
         }
@@ -165,8 +169,7 @@ public class CustomTabActivityLifecycleUmaTracker
 
         mWebappTimeSpentLogger =
                 WebappCustomTabTimeSpentLogger.createInstanceAndStartTimer(
-                        mIntentDataProvider
-                                .getIntent()
+                        assumeNonNull(mIntentDataProvider.getIntent())
                                 .getIntExtra(
                                         CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
                                         CustomTabIntentDataProvider.LaunchSourceType.OTHER));
@@ -209,8 +212,8 @@ public class CustomTabActivityLifecycleUmaTracker
      */
     @VisibleForTesting
     static void recordForRetainableSessions(
-            String clientPackage,
-            String referrer,
+            @Nullable String clientPackage,
+            @Nullable String referrer,
             int taskId,
             SharedPreferencesManager preferences,
             boolean launchWithSameUrl) {
@@ -253,7 +256,7 @@ public class CustomTabActivityLifecycleUmaTracker
      * IntentHandler#getReferrerUrlIncludingExtraHeaders(Intent)}. TODO(crbug.com/40234088): Move
      * this to IntentHandler.
      */
-    static String getReferrerUriString(Activity activity) {
+    static @Nullable String getReferrerUriString(Activity activity) {
         if (activity == null || activity.getIntent() == null) {
             return "";
         }
@@ -284,8 +287,8 @@ public class CustomTabActivityLifecycleUmaTracker
      */
     static void updateSessionPreferences(
             SharedPreferencesManager preferences,
-            String clientPackage,
-            String referrer,
+            @Nullable String clientPackage,
+            @Nullable String referrer,
             int taskId) {
         preferences.writeInt(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID, taskId);
         if (TextUtils.isEmpty(clientPackage) && TextUtils.isEmpty(referrer)) {
@@ -316,10 +319,10 @@ public class CustomTabActivityLifecycleUmaTracker
      * @return ClientIdentifier for the CCT client app.
      */
     static String getClientIdentifierType(
-            String clientPackage,
-            String prevClientPackage,
-            String referrer,
-            String prevReferrer,
+            @Nullable String clientPackage,
+            @Nullable String prevClientPackage,
+            @Nullable String referrer,
+            @Nullable String prevReferrer,
             int taskId,
             int prevTaskId) {
         boolean hasClientPackage = !TextUtils.isEmpty(clientPackage);

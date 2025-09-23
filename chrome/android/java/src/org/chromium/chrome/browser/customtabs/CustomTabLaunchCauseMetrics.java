@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ActivityType;
 
 /** LaunchCauseMetrics for CustomTabActivity. */
+@NullMarked
 public class CustomTabLaunchCauseMetrics extends LaunchCauseMetrics {
     private final CustomTabActivity mActivity;
 

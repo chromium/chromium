@@ -1380,7 +1380,7 @@ public class CustomTabsConnection {
     /**
      * @return Whether the given package name is that of a first-party application.
      */
-    public boolean isFirstParty(String packageName) {
+    public boolean isFirstParty(@Nullable String packageName) {
         if (packageName == null) return false;
         return ExternalAuthUtils.getInstance().isGoogleSigned(packageName);
     }

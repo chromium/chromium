@@ -540,30 +540,30 @@ public class IntentHandler {
      * @param packageName String The application package name to map.
      * @return ExternalAppId representing the app.
      */
-    public static @ExternalAppId int mapPackageToExternalAppId(String packageName) {
-        if (packageName.equals(PACKAGE_PLUS)) {
+    public static @ExternalAppId int mapPackageToExternalAppId(@Nullable String packageName) {
+        if (PACKAGE_PLUS.equals(packageName)) {
             return ExternalAppId.PLUS;
-        } else if (packageName.equals(PACKAGE_GMAIL)) {
+        } else if (PACKAGE_GMAIL.equals(packageName)) {
             return ExternalAppId.GMAIL;
-        } else if (packageName.equals(PACKAGE_HANGOUTS)) {
+        } else if (PACKAGE_HANGOUTS.equals(packageName)) {
             return ExternalAppId.HANGOUTS;
-        } else if (packageName.equals(PACKAGE_MESSENGER)) {
+        } else if (PACKAGE_MESSENGER.equals(packageName)) {
             return ExternalAppId.MESSENGER;
-        } else if (packageName.equals(PACKAGE_YOUTUBE)) {
+        } else if (PACKAGE_YOUTUBE.equals(packageName)) {
             return ExternalAppId.YOUTUBE;
-        } else if (packageName.equals(PACKAGE_LINE)) {
+        } else if (PACKAGE_LINE.equals(packageName)) {
             return ExternalAppId.LINE;
-        } else if (packageName.equals(PACKAGE_WHATSAPP)) {
+        } else if (PACKAGE_WHATSAPP.equals(packageName)) {
             return ExternalAppId.WHATSAPP;
-        } else if (packageName.equals(PACKAGE_GSA)) {
+        } else if (PACKAGE_GSA.equals(packageName)) {
             return ExternalAppId.GSA;
-        } else if (packageName.equals(ContextUtils.getApplicationContext().getPackageName())) {
+        } else if (ContextUtils.getApplicationContext().getPackageName().equals(packageName)) {
             return ExternalAppId.CHROME;
-        } else if (packageName.startsWith(WEBAPK_PACKAGE_PREFIX)) {
+        } else if (assumeNonNull(packageName).startsWith(WEBAPK_PACKAGE_PREFIX)) {
             return ExternalAppId.WEBAPK;
-        } else if (packageName.equals(PACKAGE_YAHOO_MAIL)) {
+        } else if (PACKAGE_YAHOO_MAIL.equals(packageName)) {
             return ExternalAppId.YAHOO_MAIL;
-        } else if (packageName.equals(PACKAGE_VIBER)) {
+        } else if (PACKAGE_VIBER.equals(packageName)) {
             return ExternalAppId.VIBER;
         }
         return ExternalAppId.OTHER;
