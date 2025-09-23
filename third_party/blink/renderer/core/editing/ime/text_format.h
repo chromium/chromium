@@ -13,6 +13,7 @@ namespace blink {
 
 class TextFormatInit;
 class TextFormat;
+class ExceptionState;
 
 // The TextFormat describes how the texts in an active composition should be
 // styled.
@@ -22,16 +23,20 @@ class CORE_EXPORT TextFormat final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static TextFormat* Create(const TextFormatInit* dict);
+  static TextFormat* Create(const TextFormatInit* dict,
+                            ExceptionState& exception_state);
   static TextFormat* Create(wtf_size_t range_start,
                             wtf_size_t range_end,
                             const String& underline_style,
-                            const String& underline_thickness);
-  explicit TextFormat(const TextFormatInit* dict);
+                            const String& underline_thickness,
+                            ExceptionState& exception_state);
+  explicit TextFormat(const TextFormatInit* dict,
+                      ExceptionState& exception_state);
   TextFormat(wtf_size_t range_start,
              wtf_size_t range_end,
              const String& underline_style,
-             const String& underline_thickness);
+             const String& underline_thickness,
+             ExceptionState& exception_state);
 
   wtf_size_t rangeStart() const;
   wtf_size_t rangeEnd() const;

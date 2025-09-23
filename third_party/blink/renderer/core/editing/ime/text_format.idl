@@ -13,7 +13,10 @@ enum UnderlineThickness { "none", "thin", "thick" };
 [
   Exposed=Window
 ] interface TextFormat {
-    constructor(optional TextFormatInit options = {});
+    // TODO(crbug.com/354497121): Remove "RaisesException" when the `underlineStyle`
+    // and `underlineThickness` attributes are converted to enums as per the spec [1].
+    // [1]: https://w3c.github.io/edit-context/#textformatupdateevent
+    [RaisesException] constructor(optional TextFormatInit options = {});
 
     readonly attribute unsigned long rangeStart;
     readonly attribute unsigned long rangeEnd;

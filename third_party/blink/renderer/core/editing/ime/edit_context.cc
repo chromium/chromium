@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
@@ -196,9 +197,9 @@ void EditContext::DispatchTextFormatEvent(
         break;
     }
 
-    text_formats.push_back(TextFormat::Create(
-        range_start, range_end,
-        underline_style, underline_thickness));
+    text_formats.push_back(
+        TextFormat::Create(range_start, range_end, underline_style,
+                           underline_thickness, ASSERT_NO_EXCEPTION));
 
     String none_value = use_spec_values ? "none" : "None";
     if (underline_style != none_value || underline_thickness != none_value) {
