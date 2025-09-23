@@ -10,11 +10,12 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
-  // Triggers form re-extraction the new forms. This is done when a form is seen
-  // in a subframe and it is not known which form is its parent.
+  // Triggers extraction of new or updated forms. This is called when a form is
+  // seen in a subframe and it is not known yet which form in the parent frame
+  // contains the form in the subframe.
   TriggerFormExtraction();
 
-  // Triggers form re-extraction the new forms and notifies the caller when
+  // Triggers extraction of new or updated forms and notifies the caller when
   // it's done.
   // If `success == false`, TriggerFormExtractionWithResponse() was triggered
   // while another TriggerFormExtractionWithResponse() was ongoing.
