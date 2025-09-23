@@ -1219,6 +1219,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.ChannelCountMismatch"
+    units="count" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the number of callbacks where the channel count in the sample
+    callback did not match the channel count of the stream. The histogram is
+    recorded when the capture is stopped.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Mac.CatapAudioInputStream.FramesMismatch"
+    units="count" expires_after="2026-02-15">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the number of callbacks where the number of frames in the sample
+    callback did not match the frames per buffer of the stream. The histogram is
+    recorded when the capture is stopped.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Mac.CatapAudioInputStream.HostTimeStatus"
     enum="CatapAudioInputStreamHostTimeStatus" expires_after="2026-02-15">
   <owner>kron@chromium.org</owner>

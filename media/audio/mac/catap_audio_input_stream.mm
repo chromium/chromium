@@ -59,6 +59,8 @@ const char kHistogramSuccessSuffix[] = "Success";
 const char kHistogramFailureSuffix[] = "Failure";
 const char kHostTimeStatusName[] = "HostTimeStatus";
 const char kHistogramDeviceIsAliveName[] = "IsAlive";
+const char kHistogramChannelCountMismatchName[] = "ChannelCountMismatch";
+const char kHistogramFramesMismatchName[] = "FramesMismatch";
 
 // If this feature is enabled, the CoreAudio tap is probed after creation to
 // verify that we have the proper permissions. If this fails the creation is
@@ -207,6 +209,20 @@ void ReportHostTimeStatus(int total_callbacks,
                        kHistogramPartsSeparator),
       GetHostTimeStatus(total_callbacks, callbacks_with_missing_host_time,
                         has_recovered));
+}
+
+void ReportMismatchStatus(int total_callbacks_with_channel_count_mismatch,
+                          int total_callbacks_with_frames_mismatch) {
+  base::UmaHistogramCounts1000(
+      base::JoinString({kCatapAudioInputStreamUmaBaseName,
+                        kHistogramChannelCountMismatchName},
+                       kHistogramPartsSeparator),
+      total_callbacks_with_channel_count_mismatch);
+  base::UmaHistogramCounts1000(
+      base::JoinString(
+          {kCatapAudioInputStreamUmaBaseName, kHistogramFramesMismatchName},
+          kHistogramPartsSeparator),
+      total_callbacks_with_frames_mismatch);
 }
 
 bool operator==(const AudioObjectPropertyAddress& x,
@@ -566,6 +582,16 @@ void CatapAudioInputStream::Stop() {
 
   ReportHostTimeStatus(total_callbacks_, callbacks_with_missing_host_time_,
                        recovered_from_missing_host_time_);
+  ReportMismatchStatus(total_callbacks_with_channel_count_mismatch_,
+                       total_callbacks_with_frames_mismatch_);
+  if (total_callbacks_with_channel_count_mismatch_ > 0) {
+    SendLogMessage("%s => total_callbacks_with_channel_count_mismatch_: %d",
+                   __func__, total_callbacks_with_channel_count_mismatch_);
+  }
+  if (total_callbacks_with_frames_mismatch_ > 0) {
+    SendLogMessage("%s => total_callbacks_with_frames_mismatch_: %d", __func__,
+                   total_callbacks_with_frames_mismatch_);
+  }
 
   sink_ = nullptr;
   ReportStopStatus(true, timer.Elapsed());
@@ -655,7 +681,6 @@ void CatapAudioInputStream::OnCatapSample(const AudioBuffer* input_buffer,
   CHECK(input_buffer);
   CHECK(input_time);
   base::TimeTicks capture_time;
-  glitch_helper_.OnFramesReceived(*input_time, params_.frames_per_buffer());
   if (!(input_time->mFlags & kAudioTimeStampHostTimeValid)) {
     // Fallback if there's no host time stamp. There's no evidence that this
     // ever happens, so this is just in case.
@@ -673,11 +698,40 @@ void CatapAudioInputStream::OnCatapSample(const AudioBuffer* input_buffer,
   float* data = (float*)input_buffer->mData;
   int frames = input_buffer->mDataByteSize /
                (input_buffer->mNumberChannels * sizeof(Float32));
-  CHECK_EQ(static_cast<unsigned int>(params_.channels()),
-           input_buffer->mNumberChannels);
-  CHECK_EQ(params_.frames_per_buffer(), frames);
-  audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
 
+  // The number of channels may change when a bluetooth device is captured and
+  // the bluetooth profile is switched between A2DP and HFP. The sample rate
+  // changes at the same time, this means that the property listener will detect
+  // the change and call OnError(). We have not seen such case, but it could
+  // happen that one buffer is received with the wrong number of channels.
+  constexpr int kMaxNumberOfWarningReports = 10;
+  if (static_cast<unsigned int>(params_.channels()) !=
+      input_buffer->mNumberChannels) {
+    ++total_callbacks_with_channel_count_mismatch_;
+    if (total_callbacks_with_channel_count_mismatch_ <
+        kMaxNumberOfWarningReports) {
+      DLOG(WARNING) << "CatapAudioInputStream::OnCatapSample: "
+                       "input_buffer->mNumberChannels: "
+                    << input_buffer->mNumberChannels
+                    << " does not match params_.channels(): "
+                    << params_.channels();
+    }
+    return;
+  }
+  if (frames != params_.frames_per_buffer()) {
+    ++total_callbacks_with_frames_mismatch_;
+    if (total_callbacks_with_frames_mismatch_ < kMaxNumberOfWarningReports) {
+      DLOG(WARNING) << "CatapAudioInputStream::OnCatapSample: "
+                       "frames: "
+                    << frames << " does not match params_.frames_per_buffer(): "
+                    << params_.frames_per_buffer();
+    }
+    return;
+  }
+
+  glitch_helper_.OnFramesReceived(*input_time, params_.frames_per_buffer());
+
+  audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
   sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
                 glitch_helper_.ConsumeGlitchInfo());
 

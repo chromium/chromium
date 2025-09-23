@@ -637,4 +637,98 @@ TEST_F(CatapAudioInputStreamTest, PropertyListenerRemovedOnClose) {
   }
 }
 
+TEST_F(CatapAudioInputStreamTest, ChannelCountChangeIsIgnored) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
+
+    // Simulate a call to `audio_proc` with correct data.
+    const AudioTimeStamp* in_now = nullptr;
+    const uint32_t data_byte_size =
+        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    AudioBuffer& input_buffer = input_data.mBuffers[0];
+    input_buffer.mNumberChannels = 2;
+    input_buffer.mDataByteSize = data_byte_size;
+    input_buffer.mData = data_buffer.data();
+
+    AudioTimeStamp input_time;
+    input_time.mFlags = kAudioTimeStampHostTimeValid;
+    input_time.mHostTime = mach_absolute_time();
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, stream_);
+    EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+
+    // Now simulate a call with a different number of channels.
+    input_buffer.mNumberChannels = 1;
+    input_time.mHostTime = mach_absolute_time();
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, stream_);
+
+    // OnData should not be called again, and no error should be reported.
+    EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+
+    stream_->Stop();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, FramesPerBufferChangeIsIgnored) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    ASSERT_NE(fake_catap_api()->audio_proc, nullptr);
+
+    // Simulate a call to `audio_proc` with correct data.
+    const AudioTimeStamp* in_now = nullptr;
+    const uint32_t data_byte_size =
+        kCatapLoopbackDefaultFramesPerBuffer * sizeof(Float32) * 2;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    AudioBuffer& input_buffer = input_data.mBuffers[0];
+    input_buffer.mNumberChannels = 2;
+    input_buffer.mDataByteSize = data_byte_size;
+    input_buffer.mData = data_buffer.data();
+
+    AudioTimeStamp input_time;
+    input_time.mFlags = kAudioTimeStampHostTimeValid;
+    input_time.mHostTime = mach_absolute_time();
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, stream_);
+    EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+
+    // Now simulate a call with a different number of frames per buffer.
+    input_buffer.mDataByteSize = data_byte_size / 2;
+    input_time.mHostTime = mach_absolute_time();
+
+    fake_catap_api()->audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, stream_);
+
+    // OnData should not be called again, and no error should be reported.
+    EXPECT_EQ(fake_callback_.on_data_call_count(), 1);
+    EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
+
+    stream_->Stop();
+  }
+}
+
 }  // namespace media
