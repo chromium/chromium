@@ -283,10 +283,16 @@ void MandatoryReauthBubbleControllerImpl::UpdatePageActionIcon() {
     return;
   }
 
+  tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
+  if (!tab_features) {
+    // This controller outlives the tab features.
+    return;
+  }
+
   // NOTE: Consider creating a separate page action view controller file when
   // the logic to show the page action become complex.
   page_actions::PageActionController* page_action_controller =
-      tab_interface->GetTabFeatures()->page_action_controller();
+      tab_features->page_action_controller();
   if (!page_action_controller) {
     return;
   }
