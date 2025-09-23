@@ -40,7 +40,7 @@ namespace {
 void PopulateUIWindow(UIWindow* window) {
   window.backgroundColor = UIColor.whiteColor;
   [window makeKeyAndVisible];
-  CGRect bounds = UIScreen.mainScreen.bounds;
+  CGRect bounds = window.windowScene.screen.bounds;
   // Add a label with the app name.
   UILabel* label = [[UILabel alloc] initWithFrame:bounds];
   label.text = NSProcessInfo.processInfo.processName;
