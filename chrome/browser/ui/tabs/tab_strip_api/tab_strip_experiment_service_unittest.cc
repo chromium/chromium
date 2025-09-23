@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
@@ -31,21 +30,16 @@ class TabStripExperimentServiceImplTest : public ::testing::Test {
 
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
-    auto tab_strip_service = std::make_unique<TabStripServiceImpl>(
+    service_ = std::make_unique<TabStripServiceImpl>(
         std::make_unique<testing::ToyTabStripBrowserAdapter>(tab_strip_.get()),
         std::make_unique<testing::ToyTabStripModelAdapter>(tab_strip_.get()));
-    impl_ = std::make_unique<TabStripServiceMojoHandler>(
-        std::move(tab_strip_service),
-        std::make_unique<testing::ToyTabStripModelAdapter>(tab_strip_.get()));
-    impl_->AcceptExperimental(client_.BindNewPipeAndPassReceiver());
   }
 
-  mojo::Remote<tabs_api::mojom::TabStripExperimentService> client_;
   std::unique_ptr<testing::ToyTabStrip> tab_strip_;
+  std::unique_ptr<TabStripServiceImpl> service_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TabStripServiceMojoHandler> impl_;
 };
 
 TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual) {
@@ -66,11 +60,8 @@ TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual) {
   tab_groups::TabGroupVisualData new_visuals(
       expected, tab_groups::TabGroupColorId::kBlue);
 
-  mojom::TabStripExperimentService::UpdateTabGroupVisualResult result;
-  bool success =
-      client_->UpdateTabGroupVisual(group_node_id, new_visuals, &result);
+  auto result = service_->UpdateTabGroupVisual(group_node_id, new_visuals);
 
-  ASSERT_TRUE(success);
   ASSERT_TRUE(result.has_value());
 
   const tab_groups::TabGroupVisualData* updated_visuals =
@@ -85,11 +76,8 @@ TEST_F(TabStripExperimentServiceImplTest,
   tab_groups::TabGroupVisualData new_visuals(
       u"title", tab_groups::TabGroupColorId::kBlue);
 
-  mojom::TabStripExperimentService::UpdateTabGroupVisualResult result;
-  bool success =
-      client_->UpdateTabGroupVisual(tab_node_id, new_visuals, &result);
+  auto result = service_->UpdateTabGroupVisual(tab_node_id, new_visuals);
 
-  ASSERT_TRUE(success);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
 }
@@ -99,11 +87,8 @@ TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual_NotFound) {
   tab_groups::TabGroupVisualData new_visuals(
       u"title", tab_groups::TabGroupColorId::kBlue);
 
-  mojom::TabStripExperimentService::UpdateTabGroupVisualResult result;
-  bool success =
-      client_->UpdateTabGroupVisual(group_node_id, new_visuals, &result);
+  auto result = service_->UpdateTabGroupVisual(group_node_id, new_visuals);
 
-  ASSERT_TRUE(success);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }

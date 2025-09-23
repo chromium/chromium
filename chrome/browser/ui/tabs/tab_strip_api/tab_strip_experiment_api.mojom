@@ -16,7 +16,6 @@ import "mojo/public/mojom/base/error.mojom";
 interface TabStripExperimentService {
   // Update the TabGroup visual data. This is a last-one-wins update mutation
   // and may be subject to race conditions.
-  [Sync]
   UpdateTabGroupVisual(NodeId id, TabGroupVisualData visual_data)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };

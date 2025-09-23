@@ -31,11 +31,9 @@ interface TabStripService {
   // and receive all future updates from the snapshot. Note that all messages
   // since the snapshot will be present in the stream, even if the client
   // does not immediately register to the update stream.
-  [Sync]
   GetTabs() => result<TabsSnapshot, mojo_base.mojom.Error>;
 
   // Get a single tab.
-  [Sync]
   GetTab(NodeId id) => result<Tab, mojo_base.mojom.Error>;
 
   // Creates a new tab.
@@ -44,7 +42,6 @@ interface TabStripService {
   // Url specifies what is loaded in the Tab. If url is empty, then the new
   // tab-page is loaded instead.
   // The newly created tab is immediately activated.
-  [Sync]
   CreateTabAt(Position? pos, url.mojom.Url? url)
       => result<Tab, mojo_base.mojom.Error>;
 
@@ -52,27 +49,23 @@ interface TabStripService {
   // types. All the provided IDs must exist. If an ID could not be found, the
   // invocation will be rejected with a |Code.kNotFound| error.
   // If the method call succeeds, all of the tabs will have been closed.
-  [Sync]
   CloseTabs(array<NodeId> id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Activates a tab. The only accepted id type for this method are |kContent|
   // ids.
-  [Sync]
   ActivateTab(NodeId id)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Selects a list of tabs. The only accepted id type for this method are
   // |kContent| ids. The selection must also pass in a tab to activate. This
   // tab must be part of the tab selection.
-  [Sync]
   SetSelectedTabs(array<NodeId> selection, NodeId tab_to_activate)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Moves a node identified by id to a specified position.
   // "Node" is the generic term for any item which can be a tab or a tab
   // collection.
-  [Sync]
   MoveNode(NodeId id, Position position)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
