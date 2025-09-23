@@ -263,11 +263,10 @@ export class BrowserProcessor {
     ) {
       // Download behavior is specified for non-default user contexts.
       if (
-        params.downloadBehavior === null ||
-        (params.downloadBehavior?.type === 'allowed' &&
-          params.downloadBehavior.destinationFolder === undefined)
+        params.downloadBehavior?.type === 'allowed' &&
+        params.downloadBehavior.destinationFolder === undefined
       ) {
-        // Download in custom user context requires specific `destinationFolder`.
+        // Allowing download in custom user context requires specific `destinationFolder`.
         throw new UnsupportedOperationException(
           'Download in non-default user contexts requires `destinationFolder`',
         );

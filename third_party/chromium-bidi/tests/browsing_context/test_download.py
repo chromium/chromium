@@ -423,7 +423,7 @@ async def test_browsing_context_download_behavior_allowed_no_destination_folder(
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_behavior_global(
+async def test_browsing_context_download_behavior_allow_global(
         websocket, context_id, create_user_context, create_context, tmp_path,
         assert_success_download_events):
     some_user_context = await create_user_context()
@@ -459,6 +459,18 @@ async def test_browsing_context_download_behavior_global(
     download_path = await assert_success_download_events(await create_context(
         await create_user_context()))
     assert download_path.startswith(str(tmp_path))
+
+
+@pytest.mark.asyncio
+async def test_browsing_context_download_behavior_default_global(websocket):
+    # Assert the behavior can be set to default globally.
+    await execute_command(
+        websocket, {
+            'method': 'browser.setDownloadBehavior',
+            'params': {
+                'downloadBehavior': None,
+            }
+        })
 
 
 @pytest.mark.asyncio
