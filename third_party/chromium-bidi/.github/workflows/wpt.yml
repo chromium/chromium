@@ -102,13 +102,6 @@ jobs:
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./.github/actions/setup-chrome-binaries
-      - name: Set RETRY_UNEXPECTED for Node runner
-        if: matrix.kind == 'node'
-        # Node runner is known to be flaky, so retry them.
-        run: echo "RETRY_UNEXPECTED=2" >> $GITHUB_ENV
-      - name: Set RETRY_UNEXPECTED for ChromeDriver
-        if: matrix.kind == 'cd'
-        run: echo "RETRY_UNEXPECTED=0" >> $GITHUB_ENV
       - name: Run WPT tests
         timeout-minutes: 60
         run: >
@@ -117,7 +110,9 @@ jobs:
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
-          RETRY_UNEXPECTED: ${{ env.RETRY_UNEXPECTED }}
+          # TODO: Fix tests and don't rerun them.
+          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
+          RETRY_UNEXPECTED: 2
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
@@ -131,8 +126,9 @@ jobs:
         env:
           CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
-          # Node runner is known to be flaky, so retry them.
-          RETRY_UNEXPECTED: ${{ env.RETRY_UNEXPECTED }}
+          # TODO: Fix tests and don't rerun them.
+          # https://github.com/GoogleChromeLabs/chromium-bidi/issues/3412
+          RETRY_UNEXPECTED: 2
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
           UPDATE_EXPECTATIONS: false
