@@ -368,13 +368,13 @@ class RuleMap {
   bool compacted = false;
 };
 
-// Holds RuleData objects. It partitions them into various indexed groups,
-// e.g. it stores separately rules that match against id, class, tag, shadow
-// host, etc. It indexes these by some key where possible, e.g. rules that match
-// against tag name are indexed by that tag. Rules that don't fall into a
-// specific group are appended to the "universal" rules. The grouping is done to
-// optimize finding what rules apply to an element under consideration by
-// ElementRuleCollector::CollectMatchingRules.
+// Holds RuleData objects. It partitions them into various indexed groups
+// ("buckets"), e.g. it stores separately rules that match against id, class,
+// tag, shadow host, etc. It indexes these by some key where possible,
+// e.g. rules that match against tag name are indexed by that tag. Rules that
+// don't fall into a specific group are appended to the "universal" rules.
+// The grouping is done to optimize finding what rules apply to an element
+// under consideration by ElementRuleCollector::CollectMatchingRules.
 class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
  public:
   RuleSet() = default;
@@ -669,8 +669,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   using SubstringMatcherMap =
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
 
-  void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData&);
-  void AddToRuleSet(HeapVector<RuleData>&, const RuleData&);
+  void AddToBucket(const AtomicString& key, RuleMap&, const RuleData&);
+  void AddToBucket(HeapVector<RuleData>&, const RuleData&);
   void AddPageRule(StyleRulePage*);
   void AddRouteRule(StyleRuleRoute*);
   void AddFontFaceRule(StyleRuleFontFace*);
@@ -696,14 +696,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      ApplyMixinsStack& apply_mixins_stack);
 
   // Determines whether or not CSSSelector::is_covered_by_bucketing_ should
-  // be computed during calls to FindBestRuleSetAndAdd.
+  // be computed during calls to FindBestBucketAndAdd.
   enum class BucketCoverage {
     kIgnore,
     kCompute,
   };
 
   template <BucketCoverage bucket_coverage>
-  void FindBestRuleSetAndAdd(CSSSelector&, const RuleData&, const StyleScope*);
+  void FindBestBucketAndAdd(CSSSelector&, const RuleData&, const StyleScope*);
 
   void AddRule(StyleRule*,
                unsigned selector_index,
