@@ -37,7 +37,8 @@ constexpr int kValue = 123;
 constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 MATCHER_P2(HasDouble, key, value, "") {
-  const std::optional<base::Value::Dict> v = base::JSONReader::ReadDict(arg);
+  const std::optional<base::Value::Dict> v =
+      base::JSONReader::ReadDict(arg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!v) {
     return false;
   }
@@ -46,7 +47,8 @@ MATCHER_P2(HasDouble, key, value, "") {
 }
 
 MATCHER_P2(HasInt, key, value, "") {
-  const std::optional<base::Value::Dict> v = base::JSONReader::ReadDict(arg);
+  const std::optional<base::Value::Dict> v =
+      base::JSONReader::ReadDict(arg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!v) {
     return false;
   }
@@ -55,7 +57,8 @@ MATCHER_P2(HasInt, key, value, "") {
 }
 
 MATCHER_P2(HasString, key, value, "") {
-  const std::optional<base::Value::Dict> v = base::JSONReader::ReadDict(arg);
+  const std::optional<base::Value::Dict> v =
+      base::JSONReader::ReadDict(arg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!v) {
     return false;
   }

@@ -53,7 +53,8 @@ CastSysInfoDummy::CastSysInfoDummy(const std::string& sys_info_file)
     return;
   }
 
-  auto value = base::JSONReader::ReadDict(content);
+  auto value =
+      base::JSONReader::ReadDict(content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR)
         << "Invalid sys info json file, using the default values instead.";
