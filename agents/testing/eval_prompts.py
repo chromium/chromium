@@ -17,11 +17,11 @@ import sys
 import tempfile
 import time
 
-CHROMIUM_SRC = pathlib.Path(__file__).resolve().parents[2]
+import constants
+import results
 
-sys.path.insert(0, str(CHROMIUM_SRC / 'build' / 'util'))
+sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
 from lib.results import result_sink
-from lib.results import result_types
 
 EXTENSIONS_TO_INSTALL = [
     'build_information',
@@ -324,9 +324,9 @@ def _discover_testcase_files() -> list[pathlib.Path]:
         A list of Paths, each path pointing to a .yaml file containing a
         promptfoo test case. No specific ordering is guaranteed.
     """
-    extensions_path = CHROMIUM_SRC / 'agents' / 'extensions'
+    extensions_path = constants.CHROMIUM_SRC / 'agents' / 'extensions'
     all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
-    prompts_path = CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
+    prompts_path = constants.CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
     all_tests.extend(list(prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
     return all_tests
 
@@ -487,28 +487,6 @@ def _fetch_sandbox_image() -> bool:
             return False
 
 
-def _report_result(result_sink_client: result_sink.ResultSinkClient,
-                   success: bool, test_log: str, test_path: pathlib.Path,
-                   duration: float) -> None:
-    """Reports a test result to ResultDB if possible.
-
-    Args:
-        result_sink_client: A ResultSinkClient to use for reporting.
-        success: Whether the test successfully passed.
-        test_log: The stdout/stderr output by the test.
-        test_path: The path to the test config file on disk.
-        duration: How long the test took to run in seconds.
-    """
-    relative_path = test_path.relative_to(CHROMIUM_SRC)
-    posix_path = relative_path.as_posix()
-    result_sink_client.Post(
-        test_id=str(posix_path),
-        status=result_types.PASS if success else result_types.FAIL,
-        duration=duration * 1000,
-        test_log=test_log,
-        test_file=f'//{str(posix_path)}')
-
-
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """Performs all the necessary steps to run prompt evaluation tests.
 
@@ -576,11 +554,12 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                 logging.warning('Test failed in %.2f seconds: %s', duration,
                                 str(config))
             if result_sink_client:
-                _report_result(result_sink_client=result_sink_client,
-                               success=success,
-                               test_log=proc.stdout,
-                               test_path=config,
-                               duration=duration)
+                r = results.TestResult(test_file=config,
+                                       success=success,
+                                       duration=duration,
+                                       test_log=proc.stdout)
+                results.report_result(result_sink_client=result_sink_client,
+                                      test_result=r)
 
     return returncode
 

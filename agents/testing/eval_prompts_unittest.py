@@ -508,7 +508,8 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
-    @mock.patch('eval_prompts.CHROMIUM_SRC', pathlib.Path('/chromium/src'))
+    @mock.patch('eval_prompts.constants.CHROMIUM_SRC',
+                pathlib.Path('/chromium/src'))
     def test_discover_testcase_files(self):
         """Tests that testcase files are discovered correctly."""
         self.fs.create_file(
@@ -855,47 +856,6 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'))
 
 
-@mock.patch('eval_prompts.CHROMIUM_SRC', pathlib.Path('/chromium/src'))
-@mock.patch('eval_prompts.result_types')
-class ReportResultUnittest(unittest.TestCase):
-    """Unit tests for the `_report_result` function."""
-
-    def setUp(self):
-        self.result_sink_client = mock.Mock()
-
-    def test_report_result_success(self, mock_result_types):
-        """Tests that a passing result is reported correctly."""
-        mock_result_types.PASS = 'PASS'
-        eval_prompts._report_result(
-            result_sink_client=self.result_sink_client,
-            success=True,
-            test_log='Success',
-            test_path=pathlib.Path('/chromium/src/test/a.yaml'),
-            duration=1.23)
-        self.result_sink_client.Post.assert_called_once_with(
-            test_id='test/a.yaml',
-            status='PASS',
-            duration=1230.0,
-            test_log='Success',
-            test_file='//test/a.yaml')
-
-    def test_report_result_failure(self, mock_result_types):
-        """Tests that a failing result is reported correctly."""
-        mock_result_types.FAIL = 'FAIL'
-        eval_prompts._report_result(
-            result_sink_client=self.result_sink_client,
-            success=False,
-            test_log='Failure',
-            test_path=pathlib.Path('/chromium/src/test/b.yaml'),
-            duration=4.56)
-        self.result_sink_client.Post.assert_called_once_with(
-            test_id='test/b.yaml',
-            status='FAIL',
-            duration=4560.0,
-            test_log='Failure',
-            test_file='//test/b.yaml')
-
-
 class RunPromptEvalTestsUnittest(unittest.TestCase):
     """Unit tests for the `_run_prompt_eval_tests` function."""
 
@@ -976,7 +936,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_subprocess_run = subprocess_run_patcher.start()
         self.addCleanup(subprocess_run_patcher.stop)
 
-        report_result_patcher = mock.patch('eval_prompts._report_result')
+        report_result_patcher = mock.patch(
+            'eval_prompts.results.report_result')
         self.mock_report_result = report_result_patcher.start()
         self.addCleanup(report_result_patcher.stop)
 
@@ -1110,12 +1071,16 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             returncode = eval_prompts._run_prompt_eval_tests(self.args)
 
         self.assertEqual(returncode, 0)
-        self.mock_report_result.assert_called_once_with(
-            result_sink_client=mock_client,
-            success=True,
-            test_log='Success',
-            test_path=pathlib.Path('/test/a.yaml'),
-            duration=1.5)
+        self.mock_report_result.assert_called_once()
+        call_args = self.mock_report_result.call_args[1]
+        self.assertEqual(call_args['result_sink_client'], mock_client)
+        self.assertEqual(
+            call_args['test_result'],
+            eval_prompts.results.TestResult(
+                test_file=pathlib.Path('/test/a.yaml'),
+                success=True,
+                duration=1.5,
+                test_log='Success'))
 
     def test_run_prompt_eval_tests_no_result_sink_client(self):
         """Tests that results are not reported when no client is available."""
