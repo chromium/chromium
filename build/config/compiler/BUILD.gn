@@ -323,7 +323,12 @@ config("compiler") {
     configs += [ "//build/config/win:compiler" ]
   } else if (is_android) {
     configs += [ "//build/config/android:compiler" ]
-  } else if (is_linux || is_chromeos) {
+  } else if (is_chromeos) {
+    configs += [
+      "//build/config/linux:compiler",
+      "//build/config/chromeos:compiler",
+    ]
+  } else if (is_linux) {
     configs += [ "//build/config/linux:compiler" ]
   } else if (is_mac) {
     configs += [ "//build/config/mac:compiler" ]
@@ -578,6 +583,21 @@ config("compiler") {
   # ---------------------------------------
   if (is_chromeos) {
     cflags += [ "-Werror=poison-system-directories" ]
+
+    # Enable std::vector []-operator bounds checking.
+    cflags_cc += [ "-D__google_stl_debug_vector=1" ]
+
+    # Use -fdebug-types-section to avoid out-of-range relocations
+    # (crbug.com/1050819). When using ThinLTO, pass the equivalent
+    # to the code generator.
+    if (use_thin_lto) {
+      ldflags += [
+        "-Wl,-mllvm",
+        "-Wl,-generate-type-units",
+      ]
+    } else {
+      cflags += [ "-fdebug-types-section" ]
+    }
   }
 
   if (is_chromeos_device && current_toolchain == default_toolchain) {
@@ -3079,16 +3099,25 @@ config("symbols") {
       swiftflags = [ "-g" ]
     }
 
+    split_dwarf_flags = []
     if (use_debug_fission) {
-      cflags += [ "-gsplit-dwarf" ]
+      split_dwarf_flags += [ "-gsplit-dwarf" ]
+
+      # When building for ChromeOS, turn off split DWARF inlining.
+      # Breakpad does not correctly handle files generated with
+      # that feature (https://g-issues.chromium.org/issues/41312543).
+      if (is_chromeos) {
+        split_dwarf_flags += [ "-fno-split-dwarf-inlining" ]
+      }
     }
+    cflags += split_dwarf_flags
     asmflags = cflags
     ldflags = []
 
     # Split debug info with all thinlto builds except apple.
     # thinlto requires -gsplit-dwarf in ldflags.
     if (use_debug_fission && use_thin_lto && !is_apple) {
-      ldflags += [ "-gsplit-dwarf" ]
+      ldflags += split_dwarf_flags
     }
 
     _enable_gdb_index = symbol_level == 2 && !is_apple && use_lld && !is_wasm

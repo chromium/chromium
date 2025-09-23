@@ -6,6 +6,17 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos)
 
+config("compiler") {
+  cflags = [ "-faddrsig" ]
+
+  # Strip prefix paths from predefined preprocessor macros and __builtin_FILE()
+  # so that log lines is easier to read. See crbug.com/405206784.
+  # This makes source file paths relative to the src directory, instead of
+  # prefixing them with something like "../../../../../path/to/chromium/src".
+  src_prefix = rebase_path("//", root_build_dir)
+  cflags += [ "-fmacro-prefix-map=${src_prefix}=" ]
+}
+
 config("compiler_cpu_abi") {
   # These flags are added by the Chrome OS toolchain compiler wrapper,
   # or are implicitly passed by Chome OS's toolchain's clang due to
