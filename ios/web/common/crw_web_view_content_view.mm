@@ -4,8 +4,6 @@
 
 #import "ios/web/common/crw_web_view_content_view.h"
 
-#import <WebKit/WebKit.h>
-
 #import <cmath>
 #import <limits>
 
