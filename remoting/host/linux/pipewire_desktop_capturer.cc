@@ -28,7 +28,7 @@ PipewireDesktopCapturer::~PipewireDesktopCapturer() {
   }
 }
 
-bool PipewireDesktopCapturer::SupportsFrameCallbacks() {
+bool PipewireDesktopCapturer::SupportsFrameCallbacks() const {
   return kSupportsFrameCallbacks;
 }
 

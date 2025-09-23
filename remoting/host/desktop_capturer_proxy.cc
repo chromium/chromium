@@ -283,7 +283,7 @@ void DesktopCapturerProxy::SetMaxFrameRate(std::uint32_t max_frame_rate) {
                                 base::Unretained(core_.get()), max_frame_rate));
 }
 
-bool DesktopCapturerProxy::SupportsFrameCallbacks() {
+bool DesktopCapturerProxy::SupportsFrameCallbacks() const {
   return supports_frame_callbacks_;
 }
 

@@ -11,9 +11,7 @@ namespace remoting {
 
 DesktopAndCursorConditionalComposer::DesktopAndCursorConditionalComposer(
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
-#if defined(WEBRTC_USE_GIO)
   desktop_capturer_ = desktop_capturer.get();
-#endif
   capturer_ = webrtc::DesktopAndCursorComposer::CreateWithoutMouseCursorMonitor(
       std::move(desktop_capturer));
 }
@@ -95,6 +93,10 @@ bool DesktopAndCursorConditionalComposer::IsOccluded(
 void DesktopAndCursorConditionalComposer::SetMaxFrameRate(
     uint32_t max_frame_rate) {
   capturer_->SetMaxFrameRate(max_frame_rate);
+}
+
+bool DesktopAndCursorConditionalComposer::SupportsFrameCallbacks() const {
+  return desktop_capturer_->SupportsFrameCallbacks();
 }
 
 #if defined(WEBRTC_USE_GIO)

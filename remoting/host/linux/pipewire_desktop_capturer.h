@@ -39,7 +39,7 @@ class PipewireDesktopCapturer : public DesktopCapturer,
 
   // DesktopCapturer interface.
   // These methods can be called on any sequence.
-  bool SupportsFrameCallbacks() override;
+  bool SupportsFrameCallbacks() const override;
   void Start(Callback* callback) override;
   void CaptureFrame() override;
   void SetMaxFrameRate(std::uint32_t max_frame_rate) override;

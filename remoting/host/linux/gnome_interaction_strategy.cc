@@ -15,6 +15,7 @@
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/curtain_mode.h"
+#include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
@@ -117,7 +118,12 @@ std::unique_ptr<DesktopCapturer> GnomeInteractionStrategy::CreateVideoCapturer(
              << " will be initialized after the stream is ready.";
     pending_desktop_capturer_proxies_[id] = proxy->GetWeakPtr();
   }
-  return proxy;
+  // The underlying webrtc::DesktopAndCursorComposer simply composes the desktop
+  // by combining pixels from the cursor image and the desktop frame. It won't
+  // scale the cursor based on the DPIs.
+  // TODO: crbug.com/433298869 - See if we can fix this for mixed-DPI scenarios.
+  return std::make_unique<DesktopAndCursorConditionalComposer>(
+      std::move(proxy));
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>

@@ -58,7 +58,7 @@ class DesktopCapturerProxy : public DesktopCapturer {
                             callback) override;
 #endif
 
-  bool SupportsFrameCallbacks() override;
+  bool SupportsFrameCallbacks() const override;
 
   void set_supports_frame_callbacks(bool supports_frame_callbacks) {
     supports_frame_callbacks_ = supports_frame_callbacks;
