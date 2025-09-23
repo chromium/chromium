@@ -1314,11 +1314,11 @@ const FeatureEntry::FeatureParam kOmniboxSearchAggregatorProdParams[] = {
     {"shortcut", "agentspace"},
     {"search_url",
      "https://vertexaisearch.cloud.google.com/home/cid/"
-     "8884f744-aae1-4fbc-8a64-b8bf7cbf270e?q={searchTerms}"},
+     "fdd1e98d-1f52-4407-98fd-80e27c61fbc9?q={searchTerms}"},
     {"suggest_url",
-     "https://discoveryengine.googleapis.com/v1alpha/projects/862721868538/"
+     "https://discoveryengine.googleapis.com/v1alpha/projects/670560280865/"
      "locations/global/collections/default_collection/engines/"
-     "teamfood-v11_1720671063545/completionConfig:completeQuery"}};
+     "spark_dogfood_search_assistant_v1/completionConfig:completeQuery"}};
 const FeatureEntry::FeatureParam kOmniboxSearchAggregatorStagingParams[] = {
     {"name", "Agentspace (staging)"},
     {"shortcut", "agentspace"},
