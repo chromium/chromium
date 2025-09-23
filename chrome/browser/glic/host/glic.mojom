@@ -7,6 +7,7 @@ module glic.mojom;
 import "chrome/browser/glic/host/glic_features.mojom";
 import "chrome/common/actor_webui.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
@@ -970,6 +971,37 @@ struct OpenPanelInfo {
   bool can_user_resize;
 };
 
+// Data for AdditionalContext.
+struct ContextData {
+  // The MIME type of the context data.
+  string mime_type;
+  // The context data.
+  mojo_base.mojom.BigBuffer data;
+};
+
+// Part of an additional context object.
+union AdditionalContextPart {
+  ContextData data;
+  Screenshot screenshot;
+  WebPageData web_page_data;
+  AnnotatedPageData annotated_page_data;
+  PdfDocumentData pdf_document_data;
+};
+
+// An additional context object.
+struct AdditionalContext {
+  // The name of the context.
+  string? name;
+  // Tab id, if associated with a tab.
+  int32? tab_id;
+  // Origin of the frame the content came from (if it came from a frame).
+  url.mojom.Origin? origin;
+  // url of the frame the content came from (if it came from a frame).
+  url.mojom.Url? frameUrl;
+  // The parts of the context.
+  array<AdditionalContextPart> parts;
+};
+
 // Access from the browser to the Glic web client by proxy of the WebUI page.
 interface WebClient {
   // Informs the web client that the panel will open. Chrome will wait to open
@@ -1078,6 +1110,9 @@ interface WebClient {
   RequestToShowUserConfirmationDialog(
       actor.webui.mojom.UserConfirmationDialogRequest request)
       => (actor.webui.mojom.UserConfirmationDialogResponse response);
+
+  // Informs the client that additional context is available.
+  NotifyAdditionalContext(AdditionalContext context);
 };
 
 // Information extracted from a tab.

@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 class BrowserWindowInterface;
@@ -248,6 +250,13 @@ class GlicKeyedService : public KeyedService,
   // Get the GlicInstance associated with the given browser's active tab, or
   // null if there is none. `bwi` can be null if preloaded with no browser open.
   GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
+
+  // Sends additional context to the web client associated with the given tab.
+  // If no web client exists for the tab, then this method does nothing. It is
+  // the responsibility of the caller to ensure that a host exists before
+  // calling this method.
+  void SendAdditionalContext(tabs::TabHandle tab_handle,
+                             mojom::AdditionalContextPtr context);
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback

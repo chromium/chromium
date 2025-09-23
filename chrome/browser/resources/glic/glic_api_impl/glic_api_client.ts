@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, AdditionalContext, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException, SelectCredentialDialogErrorReason, UserConfirmationDialogErrorReason} from './request_types.js';
 
 
@@ -305,6 +305,31 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       this.host.userConfirmationDialogRequestSubject.next(requestWithCallback);
     });
   }
+
+  glicWebClientNotifyAdditionalContext(payload: {
+    context: AdditionalContextPrivate,
+  }): void {
+    const context = payload.context;
+    const parts = context.parts.map(p => {
+      const annotatedPageData = p.annotatedPageData &&
+          convertAnnotatedPageDataFromPrivate(p.annotatedPageData);
+      const pdf = p.pdf && convertPdfDocumentDataFromPrivate(p.pdf);
+      const data = p.data && new Blob([p.data.data], {type: p.data.mimeType});
+      return {
+        ...p,
+        data,
+        annotatedPageData,
+        pdf,
+      };
+    });
+    this.host.additionalContextSubject.next({
+      name: context.name,
+      tabId: context.tabId,
+      origin: context.origin,
+      frameUrl: context.frameUrl,
+      parts,
+    });
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -348,6 +373,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private actorTaskState =
       new Map<number, ObservableValueImpl<ActorTaskState>>();
   readonly viewChangeRequestsSubject = new Subject<ViewChangeRequest>();
+  readonly additionalContextSubject = new Subject<AdditionalContext>();
   pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
       new Map();
   readonly selectCredentialDialogRequestSubject =
@@ -898,6 +924,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   maybeRefreshUserStatus?(): void {
     this.sender.requestNoResponse(
         'glicBrowserMaybeRefreshUserStatus', undefined);
+  }
+
+  getAdditionalContext?(): Observable<AdditionalContext> {
+    return this.additionalContextSubject;
   }
 
   getHostCapabilities(): Set<HostCapability> {

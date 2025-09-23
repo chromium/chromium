@@ -373,6 +373,12 @@ void Host::SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request) {
   }
 }
 
+void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
+  if (auto* client = GetPrimaryWebClient()) {
+    client->NotifyAdditionalContext(std::move(context));
+  }
+}
+
 void Host::OnViewChanged(GlicWebClientAccess* client,
                          mojom::CurrentView new_view) {
   if (client != GetPrimaryWebClient()) {

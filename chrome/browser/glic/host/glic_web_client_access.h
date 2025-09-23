@@ -33,6 +33,9 @@ class GlicWebClientAccess {
   // the requested change (e.g., because the user clicked a UI element to toggle
   // to a different view).
   virtual void RequestViewChange(mojom::ViewChangeRequestPtr request) = 0;
+
+  // Informs the web client that additional context is available.
+  virtual void NotifyAdditionalContext(mojom::AdditionalContextPtr context) = 0;
 };
 
 }  // namespace glic

@@ -207,6 +207,9 @@ class Host : public GlicSharingManagerProvider {
   // Sends a ViewChangeRequest to the primary client.
   void SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request);
 
+  // Informs the web client that additional context is available.
+  void NotifyAdditionalContext(mojom::AdditionalContextPtr context);
+
   // Returns the current view (conversation or actuation) in the floaty.
   mojom::CurrentView GetPrimaryCurrentView();
 

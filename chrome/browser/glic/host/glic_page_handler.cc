@@ -1353,6 +1353,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->RequestViewChange(std::move(request));
   }
 
+  void NotifyAdditionalContext(mojom::AdditionalContextPtr context) override {
+    web_client_->NotifyAdditionalContext(std::move(context));
+  }
+
   // BrowserAttachmentObserver implementation.
   void CanAttachToBrowserChanged(bool can_attach) override {
     web_client_->NotifyPanelCanAttachChange(can_attach);

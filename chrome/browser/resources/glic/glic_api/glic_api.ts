@@ -38,6 +38,42 @@ export declare interface GlicHostRegistry {
   registerWebClient(webClient: GlicWebClient): Promise<void>;
 }
 
+/** Additional context object. */
+export declare interface AdditionalContext {
+  /** User facing name of the context.  Eg. the filename, or full url */
+  name?: string;
+
+  /**
+   * Tab id, if associated with a tab.
+   * Callers may use this to associate context but should not assume this
+   * relationship persists as tab contents change.
+   */
+  tabId?: string;
+
+  /** Origin of the frame where the data came from (if it came from a frame) */
+  origin?: string;
+
+  /** url of the frame where the data came from (if it came from a frame) */
+  frameUrl?: string;
+
+  /** The parts of the context. */
+  parts: AdditionalContextPart[];
+}
+
+/** Part of an additional context object. Only one field will be present. */
+export declare interface AdditionalContextPart {
+  /**
+   * The context data. The MIME type is available from the `type` property.
+   * Callers can use `arrayBuffer()` to get the data as a buffer, or `stream()`
+   * to read it as a stream if the data is large.
+   */
+  data?: Blob;
+  screenshot?: Screenshot;
+  webPageData?: WebPageData;
+  annotatedPageData?: AnnotatedPageData;
+  pdf?: PdfDocumentData;
+}
+
 /**
  * Implemented by the Glic web client, with its methods being called by the
  * browser. Most functions are optional.
@@ -732,6 +768,11 @@ export declare interface GlicBrowserHost {
    *  - `UNKNOWN`: An unknown error occurred.
    */
   registerConversation?(info: ConversationInfo): Promise<void>;
+
+  /**
+   * Returns an observable that emits when additional context is available.
+   */
+  getAdditionalContext?(): Observable<AdditionalContext>;
 }
 
 /** Information about a conversation. */
@@ -1762,6 +1803,8 @@ export declare interface UserConfirmationDialogResponse {
 export interface BackwardsCompatibleTypes {
   actInFocusedTabParams: ActInFocusedTabParams;
   actInFocusedTabResult: ActInFocusedTabResult;
+  additionalContext: AdditionalContext;
+  additionalContextPart: AdditionalContextPart;
   annotatedPageData: AnnotatedPageData;
   browserHost: GlicBrowserHost;
   chromeVersion: ChromeVersion;

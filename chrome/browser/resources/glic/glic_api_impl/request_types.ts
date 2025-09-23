@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AnnotatedPageData, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, ChromeVersion, ConversationInfo,Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -637,6 +637,11 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyAdditionalContext: {
+    request: {
+      context: AdditionalContextPrivate,
+    },
+  },
 }>;
 
 
@@ -762,7 +767,7 @@ type ArrayElement<ArrayType extends unknown[]> =
 
 // This can be extended for other transferable types when we need them. Using
 // 'extends ...' for all possible Transferable types is too permissive.
-type TransferableTypes = ArrayBuffer;
+type TransferableTypes = ArrayBuffer|Blob;
 type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
 type CheckStructuredClonable<T> =
     T extends StructuredClonableBasicType ? never : T extends any[] ?
@@ -872,6 +877,18 @@ export declare interface AnnotatedPageDataPrivate extends
     Omit<AnnotatedPageData, 'annotatedPageContent'> {
   annotatedPageContent?: ArrayBuffer;
   metadata?: PageMetadata;
+}
+
+export declare interface AdditionalContextPartPrivate extends
+    Omit<AdditionalContextPart, 'annotatedPageData'|'pdf'|'data'> {
+  annotatedPageData?: AnnotatedPageDataPrivate;
+  pdf?: PdfDocumentDataPrivate;
+  data?: {mimeType: string, data: ArrayBuffer};
+}
+
+export declare interface AdditionalContextPrivate extends
+    Omit<AdditionalContext, 'parts'> {
+  parts: AdditionalContextPartPrivate[];
 }
 
 export declare interface CredentialPrivate extends Omit<Credential, 'getIcon'> {

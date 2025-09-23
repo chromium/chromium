@@ -76,12 +76,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2048,6 +2050,74 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetPageMetadataTabDestroyed) {
       CLOSE_NONE);
 
   // Continue the JS test to verify the observable is completed.
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAdditionalContext) {
+  // Runs the JS test until the first `advanceToNextStep()`.
+  ExecuteJsTest();
+
+  // The JS test is now paused. We can now send the additional context.
+  auto context = mojom::AdditionalContext::New();
+  std::vector<mojom::AdditionalContextPartPtr> parts;
+  {
+    auto context_data = mojom::ContextData::New();
+    context_data->mime_type = "text/plain";
+    context_data->data =
+        mojo_base::BigBuffer(std::vector<uint8_t>{'t', 'e', 's', 't'});
+    parts.push_back(
+        mojom::AdditionalContextPart::NewData(std::move(context_data)));
+  }
+  {
+    auto screenshot = mojom::Screenshot::New();
+    screenshot->width_pixels = 10;
+    screenshot->height_pixels = 20;
+    screenshot->mime_type = "image/png";
+    screenshot->data = std::vector<uint8_t>{1, 2, 3, 4};
+    screenshot->origin_annotations = mojom::ImageOriginAnnotations::New();
+    parts.push_back(
+        mojom::AdditionalContextPart::NewScreenshot(std::move(screenshot)));
+  }
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kFirstTab);
+  auto* web_contents = AsInstrumentedWebContents(element)->web_contents();
+  context->name = "part with everything";
+  context->tab_id = GetTabId(web_contents);
+  context->origin = url::Origin::Create(web_contents->GetLastCommittedURL());
+  context->frameUrl = web_contents->GetLastCommittedURL();
+
+  {
+    auto web_page_data = mojom::WebPageData::New();
+    web_page_data->main_document = mojom::DocumentData::New();
+    web_page_data->main_document->origin =
+        url::Origin::Create(context->frameUrl.value());
+    web_page_data->main_document->inner_text = "some inner text";
+    web_page_data->main_document->inner_text_truncated = false;
+    parts.push_back(
+        mojom::AdditionalContextPart::NewWebPageData(std::move(web_page_data)));
+  }
+
+  {
+    parts.push_back(mojom::AdditionalContextPart::NewAnnotatedPageData(
+        mojom::AnnotatedPageData::New()));
+  }
+
+  {
+    auto pdf_data = mojom::PdfDocumentData::New();
+    pdf_data->origin = url::Origin::Create(context->frameUrl.value());
+    pdf_data->size_limit_exceeded = false;
+    pdf_data->pdf_data = std::vector<uint8_t>{'p', 'd', 'f'};
+    parts.push_back(
+        mojom::AdditionalContextPart::NewPdfDocumentData(std::move(pdf_data)));
+  }
+  context->parts = std::move(parts);
+
+  GetService()->SendAdditionalContext(tabs::TabHandle(GetTabId(web_contents)),
+                                      std::move(context));
+
+  // Continue the JS test to verify the additional context is received.
   ContinueJsTest();
 }
 
