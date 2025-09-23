@@ -1420,19 +1420,18 @@ static std::optional<CSSSelector> GetImplicitlyAddedSelector(
     return std::nullopt;
   }
 
-  Vector<const CSSSelector*> selectors;
+  const CSSSelector* leftmost_simple = nullptr;
   for (const CSSSelector* selector = list->First(); selector;
        selector = selector->NextSimpleSelector()) {
-    selectors.push_back(selector);
+    leftmost_simple = selector;
   }
-  // The back of `selectors` now contains the leftmost simple CSSSelector.
 
-  const CSSSelector* back = !selectors.empty() ? selectors.back() : nullptr;
-  if (!back || back->Match() != CSSSelector::kPseudoClass ||
-      !back->IsImplicit()) {
+  if (!leftmost_simple ||
+      leftmost_simple->Match() != CSSSelector::kPseudoClass ||
+      !leftmost_simple->IsImplicit()) {
     return std::nullopt;
   }
-  return *back;
+  return *leftmost_simple;
 }
 
 static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
