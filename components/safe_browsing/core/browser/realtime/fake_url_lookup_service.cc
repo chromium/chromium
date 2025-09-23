@@ -69,6 +69,11 @@ std::string FakeRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Mock";
 }
 
+bool FakeRealTimeUrlLookupService::ShouldOverrideKnownSafeUrlDecision(
+    const GURL& url) const {
+  return false;
+}
+
 void FakeRealTimeUrlLookupService::SendSampledRequest(
     const GURL& url,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

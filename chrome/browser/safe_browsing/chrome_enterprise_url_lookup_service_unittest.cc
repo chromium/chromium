@@ -568,4 +568,14 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest, CanCheckUrl_IPAddresses) {
   EXPECT_TRUE(enterprise_rt_service()->CanCheckUrl(GURL("http://127.0.0.1")));
 }
 
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       CheckShouldOverrideKnownSafeUrlDecision) {
+  EXPECT_TRUE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://flags/")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://newtab/")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("http://example.com/")));
+}
+
 }  // namespace safe_browsing

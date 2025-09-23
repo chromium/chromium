@@ -96,6 +96,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       const override;
   std::string GetContentAreaAccountEmail(const GURL& tab_url) const override;
   std::string GetMetricSuffix() const override;
+  bool ShouldOverrideKnownSafeUrlDecision(const GURL& url) const override;
   bool CanCheckUrl(const GURL& url) override;
 
 #if defined(UNIT_TEST)

@@ -176,7 +176,12 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   base::UmaHistogramEnumeration(
       "SafeBrowsing.BrowserThrottle.RequestDestination", request->destination);
 
-  if (KnownSafeUrl(request->url)) {
+  // Decision override used in enterprise mode to send safe urls for check
+  // since admins can ban chrome:// pages
+  bool should_override_known_safe_decision =
+      url_real_time_lookup_enabled_ &&
+      url_lookup_service_->ShouldOverrideKnownSafeUrlDecision(request->url);
+  if (KnownSafeUrl(request->url) && !should_override_known_safe_decision) {
     skip_checks_ = true;
     return;
   }

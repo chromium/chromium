@@ -211,6 +211,11 @@ std::string RealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Consumer";
 }
 
+bool RealTimeUrlLookupService::ShouldOverrideKnownSafeUrlDecision(
+    const GURL& url) const {
+  return false;
+}
+
 bool RealTimeUrlLookupService::CanCheckUrl(const GURL& url) {
   if (VerdictCacheManager::has_artificial_cached_url()) {
     return true;

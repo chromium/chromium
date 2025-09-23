@@ -35,6 +35,13 @@ namespace safe_browsing {
 
 namespace {
 
+// From chrome/common/webui_url_constants.h
+inline constexpr char kChromeUINewTabPageURL[] = "chrome://new-tab-page/";
+inline constexpr char kChromeUINewTabURL[] = "chrome://newtab/";
+
+// From content/public/common/url_constants.h
+inline constexpr char kChromeUIScheme[] = "chrome";
+
 // Return an override for the Url filtering endpoint set via command line.
 std::optional<GURL> GetUrlOverride(bool is_command_line_switch_supported) {
   // Ignore this flag on Stable and Beta to avoid abuse.
@@ -209,6 +216,13 @@ ChromeEnterpriseRealTimeUrlLookupService::GetTrafficAnnotationTag() const {
 
 std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Enterprise";
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::
+    ShouldOverrideKnownSafeUrlDecision(const GURL& url) const {
+  // No need to check new tab to reduce number of rpc calls
+  bool new_tab = url == kChromeUINewTabPageURL || url == kChromeUINewTabURL;
+  return url.SchemeIs(kChromeUIScheme) && !new_tab;
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {

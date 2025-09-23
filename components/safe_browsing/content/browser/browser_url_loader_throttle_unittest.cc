@@ -117,6 +117,11 @@ class FakeRealTimeUrlLookupService
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       SessionID tab_id,
       std::optional<internal::ReferringAppInfo> referring_app_info) override {}
+
+  MOCK_METHOD(bool,
+              ShouldOverrideKnownSafeUrlDecision,
+              (const GURL&),
+              (const, override));
 };
 
 class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
@@ -342,6 +347,9 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
 
     url_ = GURL("https://example.com/");
     response_head_ = network::mojom::URLResponseHead::New();
+    ON_CALL(*url_lookup_service_,
+            ShouldOverrideKnownSafeUrlDecision(::testing::_))
+        .WillByDefault(::testing::Return(false));
   }
 
   void SetSyncUrlCheckerForTesting(
@@ -1193,6 +1201,30 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   throttle_.reset();
   VerifyHistograms(/*is_async_check_faster=*/std::nullopt,
                    /*is_async_check_transferred=*/std::nullopt);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
+       VerifyDefer_OverrideKnownSafeUrl) {
+  SetUpTest({.url_real_time_lookup_enabled = true});
+  url_ = GURL("chrome://flags");
+
+  EXPECT_CALL(*url_lookup_service_,
+              ShouldOverrideKnownSafeUrlDecision(::testing::_))
+      .WillOnce(::testing::Return(true));
+
+  AddCallbackInfo(/*should_proceed=*/false,
+                  /*should_show_interstitial=*/true,
+                  /*should_delay_callback=*/false);
+
+  bool defer = CallWillStartRequest();
+  // Safe Browsing and URL loader are performed in parallel. Safe Browsing
+  // doesn't defer the start of the request.
+  EXPECT_FALSE(defer);
+  EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_BLOCKED_BY_CLIENT);
+  EXPECT_EQ(throttle_delegate_->GetCustomReason(), "SafeBrowsing");
+
+  defer = CallWillProcessResponse();
+  EXPECT_TRUE(defer);
 }
 
 }  // namespace safe_browsing
