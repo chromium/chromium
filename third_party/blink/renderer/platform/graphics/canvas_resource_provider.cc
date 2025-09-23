@@ -534,7 +534,7 @@ void CanvasResourceProviderSharedImage::WillDrawInternal(
 
       RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
                                          Size().width(), Size().height());
-    } else if (use_oop_rasterization_) {
+    } else {
       // If we're not copying over the previous contents, we need to ensure
       // that the image is cleared on the next BeginRasterCHROMIUM.
       is_cleared_ = false;
