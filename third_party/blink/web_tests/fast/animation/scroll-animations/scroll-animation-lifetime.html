@@ -31,6 +31,7 @@ promise_test(async t => {
   animation.play();
   await animation.ready;
 
+  await waitForNextFrame();
   scroller.scrollTop = maxScroll;
   await animation.finished;
 
