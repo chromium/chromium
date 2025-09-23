@@ -20,8 +20,8 @@ test(function() {
   assert_equals(point.y, 200);
 
   // Check assigning invalid points.
-  point.x = point;
-  assert_equals(point.x, NaN);
+  assert_throws_js(TypeError, function() { point.x = point; });
+  assert_equals(point.x, 100);
   point.y = null;
   assert_equals(point.y, 0);
 

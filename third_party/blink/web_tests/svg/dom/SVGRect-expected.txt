@@ -24,17 +24,17 @@ PASS rect.height is 400
 
 
 Check assigning invalid rects
-PASS rect.x = rect is rect
+PASS rect.x = rect threw exception TypeError: Failed to set the 'x' property on 'SVGRect': The provided float value is non-finite..
 PASS rect.y = null is null
-PASS rect.width = 'aString' is 'aString'
-PASS rect.height = svgElement is svgElement
+PASS rect.width = 'aString' threw exception TypeError: Failed to set the 'width' property on 'SVGRect': The provided float value is non-finite..
+PASS rect.height = svgElement threw exception TypeError: Failed to set the 'height' property on 'SVGRect': The provided float value is non-finite..
 
 
 Check that the rect contains the correct values
-PASS rect.x is NaN
+PASS rect.x is 100
 PASS rect.y is 0
-PASS rect.width is NaN
-PASS rect.height is NaN
+PASS rect.width is 300
+PASS rect.height is 400
 PASS successfullyParsed is true
 
 TEST COMPLETE
