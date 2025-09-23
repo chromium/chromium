@@ -66,7 +66,6 @@ class CanvasResource;
 class CanvasResourceSharedImage;
 class CanvasResourceProviderBitmap;
 class CanvasResourceProviderSharedImage;
-class ExternalCanvasResource;
 class MemoryManagedPaintCanvas;
 class StaticBitmapImage;
 class WebGraphicsSharedImageInterfaceProvider;
@@ -263,12 +262,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // (in cases where the resource is scanned out directly) and irregular frame
   // rate.
   virtual bool IsSingleBuffered() const = 0;
-
-  // Subclasses implementing import of external canvas resources must override
-  // this method.
-  virtual void ImportResource(scoped_refptr<ExternalCanvasResource>&&) {
-    NOTREACHED();
-  }
 
   // CanvasResourceProviderSharedImage overrides these methods as part of
   // implementing resource recycling.
