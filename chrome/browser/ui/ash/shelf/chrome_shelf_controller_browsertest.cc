@@ -2305,13 +2305,15 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(id)->status);
 
   // Find the browser which holds our app.
-  Browser* app_browser = nullptr;
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->is_type_app()) {
-      app_browser = browser;
-      break;
-    }
-  }
+  BrowserWindowInterface* app_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::TYPE_APP) {
+          app_browser = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
   ASSERT_TRUE(app_browser);
 
   // After navigating away in the app, we should still be active.
@@ -2320,8 +2322,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   // Make sure the navigation was entirely performed.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(id)->status);
-  app_browser->tab_strip_model()->CloseWebContentsAt(0,
-                                                     TabCloseTypes::CLOSE_NONE);
+  app_browser->GetFeatures().tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_NONE);
   // Make sure that the app is really gone.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(id)->status);

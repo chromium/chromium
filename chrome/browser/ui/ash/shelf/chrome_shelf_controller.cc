@@ -79,6 +79,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -1618,16 +1620,21 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
     const Profile* profile) {
   // This function cannot rely on the controller's enumeration functionality
   // since the extension has already been unloaded.
-  std::vector<Browser*> browser_to_close;
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if ((browser->is_type_app() || browser->is_type_app_popup()) &&
-        app_id == web_app::GetAppIdFromApplicationName(browser->app_name()) &&
-        profile == browser->profile()) {
-      browser_to_close.push_back(browser);
-    }
-  }
+  std::vector<BrowserWindowInterface*> browser_to_close;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if ((browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+             browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP) &&
+            app_id == web_app::GetAppIdFromApplicationName(
+                          browser->GetBrowserForMigrationOnly()->app_name()) &&
+            profile == browser->GetProfile()) {
+          browser_to_close.push_back(browser);
+        }
+        return true;  // continue iterating
+      });
   while (!browser_to_close.empty()) {
-    TabStripModel* tab_strip = browser_to_close.back()->tab_strip_model();
+    TabStripModel* tab_strip =
+        browser_to_close.back()->GetFeatures().tab_strip_model();
     if (!tab_strip->empty()) {
       tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
     }
