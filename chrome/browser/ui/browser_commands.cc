@@ -2145,7 +2145,7 @@ void ToggleVerticalTabs(Browser* browser) {
     return;
   }
 
-  bool initial_tab_orientation = controller->ShouldDisplayVerticalTabs();
+  bool initial_tab_orientation = controller->IsVerticalTabsEnabled();
 
   controller->SetVerticalTabsEnabled(!initial_tab_orientation);
 }

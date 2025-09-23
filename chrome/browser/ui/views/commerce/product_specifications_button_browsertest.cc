@@ -135,7 +135,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ProductSpecificationsButtonOrder) {
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
+  if (tabs::AreVerticalTabsEnabled()) {
     // TODO(crbug.com/444520866): The order of buttons will be different in
     // verticals tabs so this test will need to be rewritten when we get to that
     // point.

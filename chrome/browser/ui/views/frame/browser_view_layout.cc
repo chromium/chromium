@@ -353,7 +353,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
     window_scrim_->SetBoundsRect(available_bounds);
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (tabs::AreVerticalTabsEnabled() && IsVerticalTabsEnabled()) {
     LayoutVerticalTabStrip(available_bounds);
   }
 
@@ -542,7 +542,7 @@ void BrowserViewLayout::LayoutTabStripRegion(gfx::Rect& available_bounds) {
         0, 0, 0, web_app_frame_toolbar_->GetPreferredSize().width()));
   }
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (tabs::AreVerticalTabsEnabled() && IsVerticalTabsEnabled()) {
     SetViewVisibility(tab_strip_region_view_, false);
   } else {
     SetViewVisibility(tab_strip_region_view_, true);
@@ -572,7 +572,7 @@ void BrowserViewLayout::LayoutToolbar(gfx::Rect& available_bounds) {
   bool toolbar_visible = delegate_->IsToolbarVisible();
   SetViewVisibility(toolbar_, toolbar_visible);
 
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (tabs::AreVerticalTabsEnabled() && IsVerticalTabsEnabled()) {
     gfx::Rect toolbar_bounds(
         delegate_->GetBoundsForToolbarInVerticalTabBrowserView());
     toolbar_bounds.set_x(available_bounds.x());
@@ -721,7 +721,7 @@ BrowserViewLayout::CalculateContentsContainerLayout(
   contents_container_bounds.set_height(available_bounds.height() -
                                        available_bounds.y());
   int vertical_tab_offset = 0;
-  if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
+  if (tabs::AreVerticalTabsEnabled() && IsVerticalTabsEnabled()) {
     vertical_tab_offset = BrowserView::kVerticalTabStripWidth;
     contents_container_bounds.set_width(available_bounds.width() -
                                         vertical_tab_offset);
@@ -968,9 +968,9 @@ void BrowserViewLayout::SetDelegateForTesting(
   browser_view_->InvalidateLayout();
 }
 
-bool BrowserViewLayout::ShouldDisplayVerticalTabs() const {
+bool BrowserViewLayout::IsVerticalTabsEnabled() const {
   return browser_view_->browser()
       ->browser_window_features()
       ->vertical_tab_strip_state_controller()
-      ->ShouldDisplayVerticalTabs();
+      ->IsVerticalTabsEnabled();
 }

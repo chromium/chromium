@@ -23,7 +23,7 @@ class VerticalTabStripStateController {
       const VerticalTabStripStateController&) = delete;
   ~VerticalTabStripStateController();
 
-  bool ShouldDisplayVerticalTabs() const;
+  bool IsVerticalTabsEnabled() const;
   void SetVerticalTabsEnabled(bool enabled);
 
   bool IsCollapsed() const;

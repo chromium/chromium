@@ -48,18 +48,18 @@ class VerticalTabStripStateControllerTest : public testing::Test {
 };
 
 TEST_F(VerticalTabStripStateControllerTest, Initial) {
-  EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_FALSE(controller()->IsVerticalTabsEnabled());
   EXPECT_FALSE(controller()->IsCollapsed());
   EXPECT_EQ(0, controller()->GetUncollapsedWidth());
 }
 
 TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabled) {
   controller()->SetVerticalTabsEnabled(true);
-  EXPECT_TRUE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_TRUE(controller()->IsVerticalTabsEnabled());
   EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
 
   controller()->SetVerticalTabsEnabled(false);
-  EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_FALSE(controller()->IsVerticalTabsEnabled());
   EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
 }
 
