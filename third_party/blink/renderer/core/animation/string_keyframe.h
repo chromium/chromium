@@ -34,8 +34,14 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     PropertyHandle Deref(const Keyframe* keyframe) const override;
     bool AtEnd(const Keyframe* keyframe) const override;
 
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(css_property_map_);
+      VirtualPropertyIterator::Trace(visitor);
+    }
+
    private:
-    base::span<const CSSPropertyValue> css_properties_;
+    Member<MutableCSSPropertyValueSet> css_property_map_;
+    unsigned index_ = 0;
   };
 
   class CORE_EXPORT IterableStringKeyframeProperties

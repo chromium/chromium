@@ -41,7 +41,7 @@ class PropertyIterator : public Keyframe::VirtualPropertyIterator {
 Keyframe::PropertyIteratorWrapper
 TransitionKeyframe::IterableTransitionKeyframeProperty::begin() const {
   return Keyframe::PropertyIteratorWrapper(
-      nullptr, std::make_unique<PropertyIterator>(&property_));
+      nullptr, MakeGarbageCollected<PropertyIterator>(&property_));
 }
 
 void TransitionKeyframe::SetCompositorValue(
