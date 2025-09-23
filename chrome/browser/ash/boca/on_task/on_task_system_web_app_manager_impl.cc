@@ -345,9 +345,15 @@ void OnTaskSystemWebAppManagerImpl::SetParentTabsRestriction(
   for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
     content::WebContents* const tab =
         browser->tab_strip_model()->GetWebContentsAt(idx);
-    GURL last_committed_url = tab->GetLastCommittedURL();
+
+    // Use the visible URL if the navigation has not been committed. It is
+    // safe to do so because this is normally triggered when the app has been
+    // launched.
+    const GURL tab_url = tab->GetLastCommittedURL().is_empty()
+                             ? tab->GetVisibleURL()
+                             : tab->GetLastCommittedURL();
     window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
-        tab, last_committed_url, restriction_level);
+        tab, tab_url, restriction_level);
   }
   window_tracker->set_can_start_navigation_throttle(true);
 }
