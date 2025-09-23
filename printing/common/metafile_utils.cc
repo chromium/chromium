@@ -177,7 +177,9 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
     case ax::mojom::Role::kListItem:
       tag->fTypeString = kPDFStructureTypeListItemBody;
       break;
+    case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kTable:
+    case ax::mojom::Role::kTreeGrid:
       tag->fTypeString = kPDFStructureTypeTable;
       break;
     case ax::mojom::Role::kRow:
@@ -195,7 +197,8 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
                                   kPDFTableHeaderScopeAttribute,
                                   kPDFTableHeaderScopeRow);
       break;
-    case ax::mojom::Role::kCell: {
+    case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kGridCell: {
       tag->fTypeString = kPDFStructureTypeTableCell;
 
       // Append an attribute consisting of the string IDs of all of the

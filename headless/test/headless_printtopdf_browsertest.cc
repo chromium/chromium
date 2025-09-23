@@ -733,22 +733,75 @@ const char kExpectedAsideStructTreeJSON[] = R"({
 }
 )";
 
+const char kExpectedTableStructTreeJSON[] = R"({
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "Table",
+      "~children": [ {
+         "type": "TR",
+         "~children": [ {
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "type": "TH",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      }, {
+         "type": "TR",
+         "~children": [ {
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         }, {
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      } ]
+   } ]
+}
+)";
+
 struct TaggedPDFTestData {
   const char* url;
   const char* expected_json;
 };
 
+// TaggedPDFTestData is used in a parameterized test. In order to more easily
+// identify failing tests or run specific test, add a comment with the index
+// into the array for each new entries.
 constexpr TaggedPDFTestData kTaggedPDFTestData[] = {
+    // Test 0
     {"/structured_doc.html", kExpectedStructTreeJSON},
+    // Test 1
     {"/structured_doc_only_figure.html", kExpectedFigureOnlyStructTreeJSON},
+    // Test 2
     {"/structured_doc_only_figure_role.html",
      kExpectedFigureRoleOnlyStructTreeJSON},
+    // Test 3
     {"/structured_doc_only_image.html", kExpectedImageOnlyStructTreeJSON},
+    // Test 4
     {"/structured_doc_only_image_role.html",
      kExpectedImageRoleOnlyStructTreeJSON},
+    // Test 5
     {"/structured_doc_emphasis.html", kExpectedEmphasisStructTreeJSON},
+    // Test 6
     {"/structured_doc_strong.html", kExpectedStrongStructTreeJSON},
+    // Test 7
     {"/structured_doc_aside.html", kExpectedAsideStructTreeJSON},
+    // Test 8
+    {"/structured_doc_grid.html", kExpectedTableStructTreeJSON},
+    // Test 9
+    {"/structured_doc_table.html", kExpectedTableStructTreeJSON},
+    // Test 10
+    {"/structured_doc_treegrid.html", kExpectedTableStructTreeJSON},
 };
 
 class HeadlessTaggedPDFBrowserTest
