@@ -10614,14 +10614,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "AvatarButtonSyncPromo")},
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
-    {"enable-extensions-explicit-browser-signin",
-     flag_descriptions::kEnableExtensionsExplicitBrowserSigninName,
-     flag_descriptions::kEnableExtensionsExplicitBrowserSigninDescription,
-     kOsMac | kOsWin | kOsLinux | kOsCrOS,
-     FEATURE_VALUE_TYPE(switches::kEnableExtensionsExplicitBrowserSignin)},
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     {"enable-hls-playback", flag_descriptions::kEnableHlsPlaybackName,
      flag_descriptions::kEnableHlsPlaybackDescription,

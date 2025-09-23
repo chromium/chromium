@@ -1132,12 +1132,11 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-// Test that the extensions explicit signin pref is set if the feature flag is
-// enabled and the user signs in through the extension install bubble.
+// Test that the extensions explicit signin pref is set if
+// switches::IsExtensionsExplicitBrowserSigninEnabled() is enabled and the user
+// signs in through the extension install bubble.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
-  base::test::ScopedFeatureList feature{
-      switches::kEnableExtensionsExplicitBrowserSignin};
-
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1160,7 +1159,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
       "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
       /*sample=*/true, /*expected_bucket_count=*/1);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Clearing signin.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
 
@@ -1211,17 +1209,13 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref) {
   histogram_tester_.ExpectBucketCount(
       "Signin.Extensions.ExplicitSigninFromExtensionInstallBubble",
       /*sample=*/false, /*expected_count=*/1);
-
-#endif
 }
+#endif
 
 // Test that the extension explicit signin pref should not be set if the user
 // performs an explicit signin through a non extension access point.
 TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninExtensionPref_NonExtensionAccessPoint) {
-  base::test::ScopedFeatureList feature{
-      switches::kEnableExtensionsExplicitBrowserSignin};
-
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
@@ -1238,97 +1232,6 @@ TEST_F(PrimaryAccountManagerTest,
 
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-}
-
-// Test that the user cannot perform an explicit signin for extensions if the
-// feature flag is disabled.
-TEST_F(PrimaryAccountManagerTest, ExplicitSigninExtensionPref_FlagNotEnabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
-  CreatePrimaryAccountManager();
-  GaiaId gaia_id("account_id");
-  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-
-  // Sign in through the extension install bubble, but this won't be an explicit
-  // signin since the feature flag is disabled.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kExtensionInstallBubble);
-
-  EXPECT_FALSE(
-      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-}
-
-// Test that the extension explicit signin pref is preserved across restarts if
-// the feature flag is still enabled, but is reset to its default value (false)
-// if rhe feature flag is disabled.
-TEST_F(PrimaryAccountManagerTest,
-       RollingBackUsersOfExtensionExplicitSigninPrefCheck) {
-  GaiaId gaia_id("account_id");
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-
-  // Explicit sign in with `switches::kEnableExtensionsExplicitBrowserSignin`
-  // on.
-  {
-    base::test::ScopedFeatureList feature{
-        switches::kEnableExtensionsExplicitBrowserSignin};
-
-    CreatePrimaryAccountManager();
-    CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-    // Simulate an explicit signin through the Extension Install bubble.
-    manager_->SetPrimaryAccountInfo(
-        account_tracker()->GetAccountInfo(account_id),
-        signin::ConsentLevel::kSignin,
-        signin_metrics::AccessPoint::kExtensionInstallBubble);
-
-    // The explicit sign in pref should now be true.
-    EXPECT_TRUE(
-        SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-  }
-
-  // Simulate a restart by shutting down the manager and creating a new one with
-  // `switches::kEnableExtensionsExplicitBrowserSignin` on.
-  ShutDownManager();
-  {
-    ASSERT_TRUE(
-        SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-
-    base::test::ScopedFeatureList feature{
-        switches::kEnableExtensionsExplicitBrowserSignin};
-
-    CreatePrimaryAccountManager();
-
-    // The explicit signin pref should still be true.
-    EXPECT_TRUE(
-        SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-  }
-
-  // Simulate a restart by shutting down the manager and creating a new one with
-  // `switches::kEnableExtensionsExplicitBrowserSignin` off.
-  ShutDownManager();
-  {
-    ASSERT_TRUE(
-        SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-
-    base::test::ScopedFeatureList feature;
-    feature.InitAndDisableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-
-    CreatePrimaryAccountManager();
-
-    // The explicit signin pref should now be reset to its default value, which
-    // is false.
-    EXPECT_FALSE(
-        SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
-  }
 }
 
 // Test that the bookmarks explicit signin pref is set if the feature flag is
@@ -1541,7 +1444,6 @@ TEST_F(PrimaryAccountManagerTest,
       /*enabled_features=*/
       {
           switches::kEnablePreferencesAccountStorage,
-          switches::kEnableExtensionsExplicitBrowserSignin,
           switches::kSyncEnableBookmarksInTransportMode,
       },
       /*disabled_features=*/{});

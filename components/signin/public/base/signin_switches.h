@@ -225,12 +225,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSupportAddSessionEmailPrefill);
 #endif
 
-// Enables users to perform an explicit signin upon installing an extension.
-// After this, syncing for extensions will be enabled when in transport mode
-// (when a user is signed in but has not turned on full sync).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableExtensionsExplicitBrowserSignin);
-
 // This gates the new single-model approach where account bookmarks are stored
 // in separate permanent folders in BookmarkModel. The flag controls whether
 // BOOKMARKS datatype is enabled in the transport mode.

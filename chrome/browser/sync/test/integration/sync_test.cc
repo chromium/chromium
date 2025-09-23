@@ -1227,11 +1227,8 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (base::FeatureList::IsEnabled(
-            switches::kEnableExtensionsExplicitBrowserSignin)) {
-      allowed_types.Put(syncer::EXTENSIONS);
-      allowed_types.Put(syncer::EXTENSION_SETTINGS);
-    }
+    allowed_types.Put(syncer::EXTENSIONS);
+    allowed_types.Put(syncer::EXTENSION_SETTINGS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {

@@ -71,8 +71,6 @@ constexpr char kAutofillSignInPromoDismissCount[] =
 
 // Registers that the sign in occurred with an explicit user action from the
 // bubble that appears after installing an extension. False by default.
-// Note: this pref is only set to true when
-// `switches::kEnableExtensionsExplicitBrowserSignin` is enabled.
 constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
     "ExtensionsExplicitBrowserSigninEnabled";
 
@@ -278,9 +276,6 @@ int SigninPrefs::GetAutofillSigninPromoDismissCount(
 
 void SigninPrefs::SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id,
                                                      bool enabled) {
-  // The pref can only be set to true if the
-  // `switches::kEnableExtensionsExplicitBrowserSignin` flag is enabled.
-  CHECK(!enabled || switches::IsExtensionsExplicitBrowserSigninEnabled());
   SetBooleanPrefForAccount(gaia_id, kExtensionsExplicitBrowserSigninEnabled,
                            enabled);
 }

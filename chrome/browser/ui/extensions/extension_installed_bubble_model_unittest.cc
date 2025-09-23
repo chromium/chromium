@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/common/extensions/api/omnibox.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -25,10 +24,7 @@ using extensions::Extension;
 class ExtensionInstalledBubbleModelTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
-  ExtensionInstalledBubbleModelTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-  }
+  ExtensionInstalledBubbleModelTest() = default;
 
   ~ExtensionInstalledBubbleModelTest() override = default;
 
@@ -61,9 +57,6 @@ class ExtensionInstalledBubbleModelTest
                 .Set("suggested_key", key)
                 .Set("description", "Invoke the page action")));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {

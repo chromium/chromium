@@ -131,25 +131,14 @@ TEST(SigninPromoTest, IsSignInPromo_AutofillTypes) {
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
 }
-TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithExplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin},
-      /*disabled_features=*/{});
 
+// Extensions explicit signin is not enabled in ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithExplicitSignin) {
   EXPECT_TRUE(
       IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
 }
-
-TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithoutExplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
-
-  EXPECT_FALSE(
-      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
-}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST(SigninPromoTest, IsSignInPromo_BookmarksWithExplicitSignin) {
   base::test::ScopedFeatureList feature_list;
@@ -228,15 +217,6 @@ TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutExplicitSignIn) {
   EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
-TEST_F(ShowPromoTest, DoNotShowExtensionSignInPromoWithoutExplicitSignIn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
-
-  EXPECT_FALSE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 class ShowSyncPromoTest : public ShowPromoTest {
  protected:
@@ -266,11 +246,6 @@ TEST_F(ShowSyncPromoTest, ShouldShowSyncPromoSyncEnabled) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(ShowSyncPromoTest, ShowExtensionSyncPromoWithoutFeatureFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kEnableExtensionsExplicitBrowserSignin});
-
   EXPECT_TRUE(ShouldShowExtensionSyncPromo(*profile(), *CreateExtension()));
 }
 
@@ -333,8 +308,7 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
     ShowPromoTest::SetUp();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kSyncEnableBookmarksInTransportMode,
-         switches::kEnableExtensionsExplicitBrowserSignin},
+        {switches::kSyncEnableBookmarksInTransportMode},
         /*disabled_features=*/{});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));

@@ -57,7 +57,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync/test/fake_sync_change_processor.h"
@@ -3506,14 +3505,15 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// Signing into transport mode and Sign outs are not supported for ChromeOS
+// hence DeveloperPrivateApiTransportModeUnitTest is not run for ChromeOS.
+// TODO(crbug.com/439448250): Enable on desktop android. Currently all the
+// DeveloperPrivateApiTransportModeUnitTest tests block forever on WaitForEvent.
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
 class DeveloperPrivateApiTransportModeUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
-  DeveloperPrivateApiTransportModeUnitTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {switches::kEnableExtensionsExplicitBrowserSignin},
-        /*disabled_features=*/{});
-  }
+  DeveloperPrivateApiTransportModeUnitTest() = default;
 
   void SetUp() override {
     DeveloperPrivateApiUnitTest::SetUp();
@@ -3592,15 +3592,10 @@ class DeveloperPrivateApiTransportModeUnitTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 };
 
-// TODO(crbug.com/439448250): Enable on desktop android. Currently all the
-// DeveloperPrivateApiTransportModeUnitTest tests block forever on WaitForEvent.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that extensions cannot be uploaded if the user is signed out.
 TEST_F(DeveloperPrivateApiTransportModeUnitTest,
        UploadExtensionToAccount_SignedOut) {
@@ -3824,9 +3819,6 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
 
-// Sign outs are not supported for ChromeOS hence this test is not run for
-// ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
 // Test that extensions can no longer be uploaded once the user signs out.
 TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadAfterSignOut) {
   // Test setup: Sign in and simulate an empty initial sync so the extension is
@@ -3853,7 +3845,6 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest, CannotUploadAfterSignOut) {
   EXPECT_FALSE(info.can_upload_as_account_extension);
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Test that extensions can no longer be uploaded by the user if they sign into
 // full sync mode.
@@ -3921,6 +3912,6 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
   EXPECT_FALSE(info.can_upload_as_account_extension);
   EXPECT_FALSE(CanUploadToAccount(*extension));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

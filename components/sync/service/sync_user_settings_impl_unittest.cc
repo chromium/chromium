@@ -200,7 +200,6 @@ TEST_F(SyncUserSettingsImplTest,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
-                            switches::kEnableExtensionsExplicitBrowserSignin,
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{kReplaceSyncPromosWithSignInPromos});
 
@@ -243,7 +242,6 @@ TEST_F(SyncUserSettingsImplTest,
                             kSeparateLocalAndAccountSearchEngines,
                             syncer::kSeparateLocalAndAccountThemes,
 #endif
-                            switches::kEnableExtensionsExplicitBrowserSignin,
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
@@ -260,6 +258,11 @@ TEST_F(SyncUserSettingsImplTest,
   UserSelectableTypeSet expected_disabled_types = {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kSavedTabGroups, UserSelectableType::kCookies};
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Extensions syncing in transport mode is not supported on ChromeOS.
+  expected_disabled_types.Put(UserSelectableType::kExtensions);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Themes is not supported on mobile.

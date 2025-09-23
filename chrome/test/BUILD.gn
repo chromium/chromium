@@ -5055,7 +5055,6 @@ if (!is_android) {
         "../browser/ui/views/desktop_capture/desktop_media_picker_views_browsertest.cc",
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
-        "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
         "../browser/ui/views/extensions/extension_install_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_installed_bubble_view_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.cc",
@@ -5196,6 +5195,7 @@ if (!is_android) {
         deps += [ "//chromeos/ash/services/multidevice_setup/public/cpp:prefs" ]
       } else {
         sources += [
+          "../browser/ui/views/extensions/dialogs/upload_extension_to_account_dialog_browsertest.cc",
           "../browser/ui/views/extensions/extension_installed_bubble_view_signin_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
@@ -9301,7 +9301,6 @@ test("unit_tests") {
       "../browser/extensions/shared_module_service_unittest.cc",
       "../browser/extensions/standard_management_policy_provider_unittest.cc",
       "../browser/extensions/sync/account_extension_tracker_unittest.cc",
-      "../browser/extensions/sync/extension_local_data_batch_uploader_unittest.cc",
       "../browser/extensions/sync/extension_sync_data_unittest.cc",
       "../browser/extensions/sync/extension_sync_service_unittest.cc",
       "../browser/extensions/tab_helper_unittest.cc",
@@ -9727,6 +9726,8 @@ test("unit_tests") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      # Batch upload is only available on Windows, Mac and Linux.
+      "../browser/extensions/sync/extension_local_data_batch_uploader_unittest.cc",
       "../browser/sharing_hub/sharing_hub_model_unittest.cc",
       "../browser/ui/extensions/settings_overridden_dialog_unittest.cc",
       "../browser/ui/views/sharing_hub/preview_view_unittest.cc",

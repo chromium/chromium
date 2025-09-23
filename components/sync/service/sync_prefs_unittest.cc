@@ -479,7 +479,6 @@ TEST_F(SyncPrefsTest,
                             kSeparateLocalAndAccountSearchEngines,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                             syncer::kSeparateLocalAndAccountThemes,
-                            switches::kEnableExtensionsExplicitBrowserSignin,
                             switches::kEnablePreferencesAccountStorage},
       /*disabled_features=*/{});
 
@@ -487,6 +486,9 @@ TEST_F(SyncPrefsTest,
   // listed because it isn't supported in transport mode.
   const UserSelectableTypeSet expected_types = Difference(
       UserSelectableTypeSet::All(), {
+#if BUILDFLAG(IS_CHROMEOS)
+                                        UserSelectableType::kExtensions,
+#endif  // BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,

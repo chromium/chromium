@@ -13,7 +13,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "extensions/browser/extension_system.h"
@@ -99,14 +98,11 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
             GetAccountExtensionType(external_extension->id()));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Same as the above test, except this uses transport mode (signed in but not
-// syncing) instead of sync, and an explicit user sign in.
+// syncing) instead of sync, and an explicit user sign in. Not run for ChromeOS
+// because the user should not be able to sign into transport mode in ChromeOS.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   // The extension's AccountExtensionType is `kLocal` because the user has not
   // explicitly signed in yet.
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
@@ -140,14 +136,8 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
             GetAccountExtensionType(external_extension->id()));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountExtensionTrackerUnitTest,
        AccountExtensionTypeResetWhenSignedOut) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
@@ -165,11 +155,6 @@ TEST_F(AccountExtensionTrackerUnitTest,
 }
 
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionsRemovedWhenSignedOut) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");

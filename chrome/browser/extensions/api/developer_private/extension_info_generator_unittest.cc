@@ -47,7 +47,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "extensions/browser/blocklist_state.h"
@@ -1273,10 +1272,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 // signed out or signed in with full sync consent (automatically syncs all data
 // types including extensions).
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   // Create two extensions: one syncable and one non-syncable.
   const scoped_refptr<const Extension> syncable_extension = CreateExtension(
       "test1", base::Value::List(), ManifestLocation::kInternal);
@@ -1313,13 +1308,10 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
 
 // Same test as above, except test that extensions CAN be uploaded if the user
 // is signed into transport mode with extensions sync enabled.
+// Disabled on ChromeOS since users should not be able to sign into transport
+// mode on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
-  // Allow extensions to sync in transport mode.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {switches::kEnableExtensionsExplicitBrowserSignin},
-      /*disabled_features=*/{});
-
   // Sign the user in without full sync with an explicit signin.
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
@@ -1351,6 +1343,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
   info = GenerateExtensionInfo(syncable_extension->id());
   EXPECT_FALSE(info->can_upload_as_account_extension);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
     : public ExtensionInfoGeneratorUnitTest,

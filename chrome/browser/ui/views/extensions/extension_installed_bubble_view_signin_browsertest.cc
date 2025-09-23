@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -35,14 +34,23 @@
 class ExtensionInstalledBubbleViewsSignInBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstalledBubbleViewsSignInBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-  }
-
+  ExtensionInstalledBubbleViewsSignInBrowserTest() = default;
   ~ExtensionInstalledBubbleViewsSignInBrowserTest() override = default;
 
  protected:
+  extensions::AccountExtensionTracker* account_extension_tracker() {
+    return extensions::AccountExtensionTracker::Get(profile());
+  }
+
+  extensions::AccountExtensionTracker::AccountExtensionType
+  GetAccountExtensionType(const extensions::ExtensionId& id) {
+    return account_extension_tracker()->GetAccountExtensionType(id);
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(profile());
+  }
+
   views::Widget* ShowBubble(
       scoped_refptr<const extensions::Extension> extension) {
     views::Widget::Widgets old_widgets =
@@ -68,8 +76,29 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
     return extension_loader.LoadExtension(test_data_dir_.AppendASCII(path));
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // Initiates a sign in flow from the bubble promo shown for the provided
+  // `extension`.
+  void InitiateSignInFromExtensionPromo(
+      scoped_refptr<const extensions::Extension> extension,
+      const AccountInfo& account_info = AccountInfo()) {
+    views::Widget* bubble_view_widget = ShowBubble(extension);
+    ASSERT_TRUE(bubble_view_widget);
+
+    auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
+        bubble_view_widget->widget_delegate());
+    ASSERT_TRUE(view_delegate);
+
+    // The sign in promo should be shown for a syncable extension.
+    EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->profile(),
+                                                       *extension));
+
+    // Initiate a sign in from the promo.
+    BubbleSignInPromoDelegate delegate(
+        *browser()->tab_strip_model()->GetActiveWebContents(),
+        signin_metrics::AccessPoint::kExtensionInstallBubble,
+        syncer::LocalDataItemModel::DataId(extension->id()));
+    delegate.OnSignIn(account_info);
+  }
 };
 
 // Test that by default, signing in from the extension installed bubble will
@@ -110,61 +139,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
 }
 
-// A variant of the above test except signing in from the promo will be an
-// explicit sign in to transport mode.
-class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
-    : public ExtensionInstalledBubbleViewsSignInBrowserTest {
- public:
-  ExtensionInstalledBubbleViewsExplicitSignInBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {switches::kEnableExtensionsExplicitBrowserSignin}, {});
-  }
-
- protected:
-  extensions::AccountExtensionTracker* account_extension_tracker() {
-    return extensions::AccountExtensionTracker::Get(profile());
-  }
-
-  extensions::AccountExtensionTracker::AccountExtensionType
-  GetAccountExtensionType(const extensions::ExtensionId& id) {
-    return account_extension_tracker()->GetAccountExtensionType(id);
-  }
-
-  signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(profile());
-  }
-
-  // Initiates a sign in flow from the bubble promo shown for the provided
-  // `extension`.
-  void InitiateSignInFromExtensionPromo(
-      scoped_refptr<const extensions::Extension> extension,
-      const AccountInfo& account_info = AccountInfo()) {
-    views::Widget* bubble_view_widget = ShowBubble(extension);
-    ASSERT_TRUE(bubble_view_widget);
-
-    auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
-        bubble_view_widget->widget_delegate());
-    ASSERT_TRUE(view_delegate);
-
-    // The sign in promo should be shown for a syncable extension.
-    EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->profile(),
-                                                       *extension));
-
-    // Initiate a sign in from the promo.
-    BubbleSignInPromoDelegate delegate(
-        *browser()->tab_strip_model()->GetActiveWebContents(),
-        signin_metrics::AccessPoint::kExtensionInstallBubble,
-        syncer::LocalDataItemModel::DataId(extension->id()));
-    delegate.OnSignIn(account_info);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test that users can perform an explicit sign in through the extension
 // installed promo in transport mode.
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
                        BubbleExplicitSignin) {
   // Load three extensions.
   auto old_extension = LoadPackedExtension("simple_with_file");
@@ -234,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
 // extension installed promo should still promote the extension to an account
 // extension.
 // This tests the fix for crbug.com/400522723
-IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
                        BubbleExplicitSigninWithAccount) {
   auto extension = LoadPackedExtension("simple_with_file");
   ASSERT_TRUE(extension);

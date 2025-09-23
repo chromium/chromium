@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -96,10 +95,8 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
        LocalDataDescriptionOnlyReturnsUploadableExtensions) {
   // Enable extension syncing in transport mode.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kEnableExtensionsExplicitBrowserSignin,
-       syncer::kReplaceSyncPromosWithSignInPromos},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 
@@ -150,10 +147,8 @@ TEST_F(ExtensionLocalDataBatchUploaderTest,
 
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kEnableExtensionsExplicitBrowserSignin,
-       syncer::kReplaceSyncPromosWithSignInPromos},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 
@@ -197,10 +192,8 @@ TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigration) {
 
 TEST_F(ExtensionLocalDataBatchUploaderTest, TriggerLocalDataMigrationForItems) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {switches::kEnableExtensionsExplicitBrowserSignin,
-       syncer::kReplaceSyncPromosWithSignInPromos},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   ExtensionLocalDataBatchUploader uploader(profile());
 

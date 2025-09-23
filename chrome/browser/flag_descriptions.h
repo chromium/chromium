@@ -4875,11 +4875,6 @@ extern const char kEnableOAuthMultiloginCookiesBindingName[];
 extern const char kEnableOAuthMultiloginCookiesBindingDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
-extern const char kEnableExtensionsExplicitBrowserSigninName[];
-extern const char kEnableExtensionsExplicitBrowserSigninDescription[];
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 extern const char kEnableBoundSessionCredentialsName[];
 extern const char kEnableBoundSessionCredentialsDescription[];

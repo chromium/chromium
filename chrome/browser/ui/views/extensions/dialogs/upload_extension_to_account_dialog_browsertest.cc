@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,7 +11,6 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -49,10 +47,7 @@ void SignIn(Profile* profile) {
 class UploadExtensionToAccountDialogBrowserTest
     : public ExtensionsDialogBrowserTest {
  public:
-  UploadExtensionToAccountDialogBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-  }
+  UploadExtensionToAccountDialogBrowserTest() = default;
   ~UploadExtensionToAccountDialogBrowserTest() override = default;
   UploadExtensionToAccountDialogBrowserTest(
       const UploadExtensionToAccountDialogBrowserTest&) = delete;
@@ -90,9 +85,6 @@ class UploadExtensionToAccountDialogBrowserTest
                                        /*accept_callback=*/base::DoNothing(),
                                        /*cancel_callback=*/base::DoNothing());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(UploadExtensionToAccountDialogBrowserTest,

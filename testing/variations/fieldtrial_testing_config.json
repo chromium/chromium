@@ -9792,23 +9792,6 @@
             ]
         }
     ],
-    "EnableExtensionsExplicitBrowserSignin": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableExtensionsExplicitBrowserSignin"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableFallbackFontsCrashReporting": [
         {
             "platforms": [

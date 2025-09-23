@@ -90,7 +90,6 @@ class SingleClientStandaloneTransportSyncTest
           .InitWithFeatures(/*enabled_features=*/
                             {syncer::
                                  kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-                             switches::kEnableExtensionsExplicitBrowserSignin,
                              switches::kSyncEnableBookmarksInTransportMode,
 #if !BUILDFLAG(IS_ANDROID)
                              syncer::

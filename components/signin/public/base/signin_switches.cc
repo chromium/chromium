@@ -234,11 +234,12 @@ BASE_FEATURE(kSupportAddSessionEmailPrefill, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif
 
-BASE_FEATURE(kEnableExtensionsExplicitBrowserSignin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsExtensionsExplicitBrowserSigninEnabled() {
-  return base::FeatureList::IsEnabled(kEnableExtensionsExplicitBrowserSignin);
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
 }
 
 BASE_FEATURE(kSyncEnableBookmarksInTransportMode,

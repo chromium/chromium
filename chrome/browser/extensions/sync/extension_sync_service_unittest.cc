@@ -38,7 +38,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -2125,13 +2124,11 @@ TEST_F(BlocklistedExtensionSyncServiceTest, InstallBlocklistedExtension) {
   EXPECT_TRUE(processor()->changes().empty());
 }
 
+// Users should not be able to sign into transport mode on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
  public:
-  ExtensionSyncServiceTransportModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-  }
-
+  ExtensionSyncServiceTransportModeTest() = default;
   ExtensionSyncServiceTransportModeTest(
       const ExtensionSyncServiceTransportModeTest&) = delete;
   ExtensionSyncServiceTransportModeTest& operator=(
@@ -2162,8 +2159,6 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 };
@@ -2387,3 +2382,4 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   EXPECT_THAT(signed_in_account_extensions,
               ::testing::ElementsAre(second_extension.get()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)

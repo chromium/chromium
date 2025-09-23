@@ -9,7 +9,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +31,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -854,9 +852,6 @@ class SigninViewControllerInteractiveBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      switches::kEnableExtensionsExplicitBrowserSignin};
-
   // chrome/test/data/extensions/
   base::FilePath extension_data_dir_;
 };
