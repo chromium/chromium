@@ -46,6 +46,8 @@ constexpr const char kRendererThrottleCreationResultMetricName[] =
 constexpr const char kRendererThrottleRedirectsMetricName[] =
     "FingerprintingProtection.RendererThrottleRedirects";
 
+constexpr const char kAllowedDomain[] = "allowed.com";
+
 // =================================== Tests ==================================
 //
 // Note: Similar to the FPF component, these tests leverage Subresource Filter
@@ -403,8 +405,14 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // included_script.html, unless the document is loaded from an allowed (not in
   // the blocklist) domain. This enables the third part of this test disallowing
   // a load only after the first redirect.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html"));
+  auto allowed_substring =
+      subresource_filter::testing::CreateAllowlistSubstringRule(
+          embedded_test_server()->GetURL(kAllowedDomain, "/").spec());
+  auto disallowed_suffix = subresource_filter::testing::CreateSuffixRule(
+      "/frame_with_included_script.html");
+  ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_substring)}));
+
   // `url` will load three subframes:
   //   1. frame_with_included_script.html
   //   2. frame_with_allowed_script.html
@@ -484,13 +492,6 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
   // Finally, navigate the first subframe to an allowed URL that redirects to a
   // disallowed URL, and verify that the navigation gets blocked and the frame
   // collapsed.
-  //
-  // TODO(crbug.com/444949843): We are blocking URLs with the suffix
-  // "frame_with_included_script.html" which includes
-  // https://allowed.com/.../frame_with_included_script.html, so the code below
-  // isn't actually exercising the redirect logic because the request
-  // gets immediately blocked.
-  const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
       GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
@@ -505,12 +506,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
       kSubframeNames, kExpectOnlySecondSubframe));
 
   content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
-  const auto last_committed_url = frame->GetLastCommittedURL();
-
   ASSERT_TRUE(frame);
-  AssertUrlContained(last_committed_url,
-                     redirect_to_disallowed_subdocument_url);
-  AssertUrlContained(last_committed_url, disallowed_subdocument_url);
+  const auto last_committed_url = frame->GetLastCommittedURL();
+  EXPECT_EQ(last_committed_url, disallowed_subdocument_url);
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
@@ -555,10 +553,15 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // Would disallow loading child frame documents that in turn would end up
   // loading included_script.js, unless the document is loaded from an allowed
   // (not in the blocklist) domain to enable the third part of the test dealing
-  // with redirects. However, in dry run mode, all framees are expected as
+  // with redirects. However, in dry run mode, all frames are expected as
   // nothing is blocked.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
+  auto allowed_substring =
+      subresource_filter::testing::CreateAllowlistSubstringRule(
+          embedded_test_server()->GetURL(kAllowedDomain, "/").spec());
+  auto disallowed_suffix = subresource_filter::testing::CreateSuffixRule(
+      "/frame_with_included_script.html");
+  ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_substring)}));
 
   ASSERT_TRUE(NavigateToDestination(url));
   NavigateSubframesToCrossOriginSite();
@@ -586,7 +589,6 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
   // Finally, navigate the first subframe to an allowed URL that redirects to a
   // URL that would be disallowed, and verify that the navigation does not get
   // blocked and the frame doesn't collapse under dry run mode.
-  const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
       GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
@@ -743,8 +745,13 @@ IN_PROC_BROWSER_TEST_F(
   // loading included_script.js, unless the document is loaded from an allowed
   // (not in the blocklist) domain. This enables the third part of this test
   // disallowing a load only after the first redirect.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithSubstring("frame_with_included_script.html"));
+  auto allowed_substring =
+      subresource_filter::testing::CreateAllowlistSubstringRule(
+          embedded_test_server()->GetURL(kAllowedDomain, "/").spec());
+  auto disallowed_suffix = subresource_filter::testing::CreateSuffixRule(
+      "/frame_with_included_script.html");
+  ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_substring)}));
 
   ASSERT_TRUE(NavigateToDestination(url));
   NavigateSubframesToCrossOriginSite();
@@ -772,7 +779,6 @@ IN_PROC_BROWSER_TEST_F(
   // Finally, navigate the first subframe to an allowed URL that redirects to a
   // disallowed URL, and verify that the navigation gets blocked and the frame
   // collapsed.
-  const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
       GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
@@ -783,12 +789,9 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
 
   content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
-  const auto last_committed_url = frame->GetLastCommittedURL();
-
   ASSERT_TRUE(frame);
-  AssertUrlContained(last_committed_url,
-                     redirect_to_disallowed_subdocument_url);
-  AssertUrlContained(last_committed_url, disallowed_subdocument_url);
+  const auto last_committed_url = frame->GetLastCommittedURL();
+  EXPECT_EQ(last_committed_url, disallowed_subdocument_url);
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
@@ -1569,8 +1572,13 @@ IN_PROC_BROWSER_TEST_F(
   // loading included_script.js, unless the document is loaded from an allowed
   // (not in the blocklist) domain. This enables the third part of this test
   // disallowing a load only after the first redirect.
-  ASSERT_NO_FATAL_FAILURE(
-      SetRulesetToDisallowURLsWithSubstring("included_script.html"));
+  auto allowed_substring =
+      subresource_filter::testing::CreateAllowlistSubstringRule(
+          embedded_test_server()->GetURL(kAllowedDomain, "/").spec());
+  auto disallowed_suffix = subresource_filter::testing::CreateSuffixRule(
+      "/frame_with_included_script.html");
+  ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules(
+      {std::move(disallowed_suffix), std::move(allowed_substring)}));
 
   ASSERT_TRUE(NavigateToDestination(url));
   NavigateSubframesToCrossOriginSite();
@@ -1598,7 +1606,6 @@ IN_PROC_BROWSER_TEST_F(
   // Finally, navigate the first subframe to an allowed URL that redirects to a
   // disallowed URL, and verify that the navigation gets blocked and the frame
   // collapsed.
-  const char kAllowedDomain[] = "allowed.com";
   GURL disallowed_subdocument_url(
       GetCrossSiteTestUrl("/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
@@ -1609,12 +1616,9 @@ IN_PROC_BROWSER_TEST_F(
       kSubframeNames, kExpectOnlySecondSubframe));
 
   content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
-  const auto last_committed_url = frame->GetLastCommittedURL();
-
   ASSERT_TRUE(frame);
-  AssertUrlContained(last_committed_url,
-                     redirect_to_disallowed_subdocument_url);
-  AssertUrlContained(last_committed_url, disallowed_subdocument_url);
+  const auto last_committed_url = frame->GetLastCommittedURL();
+  EXPECT_EQ(last_committed_url, disallowed_subdocument_url);
 
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 
