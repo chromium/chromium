@@ -36,10 +36,12 @@ struct DifferingProfileWithTypeSet {
   bool operator==(const DifferingProfileWithTypeSet& other) const = default;
 };
 
-// kAccount profiles are synced from an external source and have potentially
-// originated from outside of Autofill. In order to determine the added value
-// for Autofill, the `AutofillProfile::RecordType` is further resolved in some
-// metrics.
+// A superset of `AutofillProfile::RecordType` used for metrics. It breaks the
+// kAccount RecordType further down into kAccountChrome and kAccountNonChrome:
+// - kAccountChrome are addresses initially saved to the account by Chrome.
+// - kAccountNonChrome are addresses initially saved to the account by another
+//   integrator and made available to Chrome. Even if they are modified in
+//   Chrome, they remain kAccountNonChrome for metrics purposes.
 enum class AutofillProfileRecordTypeCategory {
   kLocalOrSyncable = 0,
   kAccountChrome = 1,

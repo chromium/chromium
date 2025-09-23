@@ -22,10 +22,14 @@
 
 namespace autofill::autofill_metrics {
 
-// To measure the added value of kAccount profiles, the filling readiness and
-// assistance metrics are split by profile category.
-// Even for assistance, the `kMixed` case is possible, since the metric is
-// emitted at navigation (rather than filling) time.
+// A superset of `AutofillProfileRecordTypeCategory` that additionally contains
+// a value `kMixed`. It is used to measure key metrics, broken down by the
+// `AutofillProfileRecordTypeCategory`. This helps to answer questions like,
+// "what is the acceptance of local addresses?" or "what percentage of users are
+// only ready because of home and work addresses?".
+// Since key metrics are only emitted on navigation, it is possible that users
+// are ready/were assisted/accepted profiles of different record type
+// categories. This case is represented by the kMixed enum value.
 enum class CategoryResolvedKeyMetricBucket {
   kNone = 0,
   kLocalOrSyncable = 1,

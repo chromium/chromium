@@ -44,25 +44,50 @@ class LogBuffer;
 // to the requested form group type.
 class AutofillProfile : public FormGroup {
  public:
-  // Describes where the profile is stored and how it is synced.
+  // Each profile has exactly one `RecordType`, describing what kind of profile
+  // it is.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class RecordType {
-    // Not synced at all or synced through the `AutofillProfileSyncBridge`. This
-    // corresponds to profiles that local to Autofill only.
+    // The default type of new profiles for signed-out users and non-account
+    // storage eligible users (see kAccount below). For signed-out users,
+    // kLocalOrSyncable profiles are only available on the device they were
+    // created on. For syncing users, they are still synced through
+    // `AutofillProfileSyncBridge` - but this is about to be deprecated.
+    // If a kLocalOrSyncable profile is filled, signed-in users are asked to
+    // migrate it to a kAccount profile on form submission.
     kLocalOrSyncable = 0,
-    // Synced through the `ContactInfoSyncBridge`. This corresponds to profiles
-    // that are shared beyond Autofill across different services.
-    // kAccountHome and kAccountWork represent special account addresses, only a
-    // single one of which can exist each.
+    // The default type of new profiles for signed-in, account storage eligible
+    // users (most users are eligible, see `ContactInfoPreconditionChecker`).
+    // Addresses of this type are stored in the signed-in users account and are
+    // available across devices through `ContactInfoSyncBridge`.
     kAccount = 1,
+    // kAccountHome and kAccountWork represent special account addresses. They
+    // are distinguished from kAccount because they cannot be edited in Chrome
+    // and because they are displayed slightly differently (e.g, different
+    // icons).
+    // Like kAccount addresses, kAccountHome and kAccountWork are read through
+    // `ContactInfoSyncBridge` (but the latter two are not written, since they
+    // are read-only). As a result, the same eligiblity criteria from
+    // `ContactInfoPreconditionChecker` apply.
+    // Users need to set a Home/Work addresses from outside of Chrome (e.g. in
+    // MyAccount) for them to become available in Chrome. At most one of each
+    // type can exist.
+    // Even though they are read-only in Chrome, some metadata (like use counts)
+    // are still synced across devices. See `HomeAndWorkMetadataStore`.
     kAccountHome = 2,
     kAccountWork = 3,
-    // This profile is stored locally. Data for this profile comes from the
-    // account. Not synced at all.
-    // TODO(crbug.com/356845298): Update the comment with the name of the
-    // manager handling the metadata updates once implemented.
+    // A profile created from the sign-in user's account name and email address.
+    // It it created from data of the `signin::IdentityManager` and not synced
+    // through `ContactInfoSyncBridge`, so it isn't restricted by the
+    // `ContactInfoPreconditionChecker`'s eligibility criteria (but it does
+    // respect the "Addresses and more" sync setting).
+    // Like kAccountHome and kAccountWork, kAccountNameEmail is read-only in
+    // Chrome and at most one kAccountNameEmail can exist.
+    // The profile is only stored locally, since it can be recreated on other
+    // devices based on their identity managers. Some properties (e.g, removal)
+    // are synced via syncable (priority) prefs in `AccountNameEmailStore`.
     kAccountNameEmail = 4,
     kMaxValue = kAccountNameEmail,
   };
