@@ -525,6 +525,7 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/SyntheticGestureTarget.java",
     "java/src/org/chromium/content/browser/TtsPlatformImpl.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoBuilder.java",
+    "java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoUtils.java",
     "java/src/org/chromium/content/browser/accessibility/AssistDataBuilder.java",
     "java/src/org/chromium/content/browser/accessibility/ViewStructureBuilder.java",
     "java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",

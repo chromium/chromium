@@ -62,11 +62,50 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
+@JNINamespace("content")
 @NullMarked
-public class AccessibilityNodeInfoUtils {
+public final class AccessibilityNodeInfoUtils {
+    private AccessibilityNodeInfoUtils() {}
+
+    @CalledByNative
+    public static <K> Map<K, int[][]> createTextAttributeRangesMap() {
+        return new HashMap<K, int[][]>();
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapFloatValue(
+            Map<Float, int[][]> map, float value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapIntValue(
+            Map<Integer, int[][]> map, int value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapStringValue(
+            Map<String, int[][]> map, String value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    public static <T> void setTextAttributeRangesMapValue(
+            Map<T, int[][]> map, T value, int[] starts, int[] ends) {
+        if (map == null || value == null || starts == null || ends == null) {
+            return;
+        }
+        map.put(value, new int[][] {starts, ends});
+    }
+
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
      *

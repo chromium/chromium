@@ -49,6 +49,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/AccessibilityNodeInfoBuilder_jni.h"
+#include "content/public/android/content_jni_headers/AccessibilityNodeInfoUtils_jni.h"
 #include "content/public/android/content_jni_headers/AssistDataBuilder_jni.h"
 #include "content/public/android/content_jni_headers/WebContentsAccessibilityImpl_jni.h"
 
@@ -467,7 +468,7 @@ ScopedJavaLocalRef<jobject> ToJavaRangesMap(
   // Due to type erasure, the map key type is always `jobject`, so we must make
   // sure to call with the correct actual key type.
   ScopedJavaLocalRef<jobject> java_map =
-      Java_AccessibilityNodeInfoBuilder_createTextAttributeRangesMap(env);
+      Java_AccessibilityNodeInfoUtils_createTextAttributeRangesMap(env);
   for (const auto& entry : *text_style_map) {
     JavaType java_map_key = to_java_map_key.Run(entry.first);
     std::pair<std::vector<int>, std::vector<int>> pair =
@@ -489,7 +490,7 @@ ScopedJavaLocalRef<jobject> ToJavaFloatRangesMap(
     int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
-      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapFloatValue,
+      &Java_AccessibilityNodeInfoUtils_setTextAttributeRangesMapFloatValue,
       base::BindRepeating(
           [](float value) { return static_cast<jfloat>(value); }),
       ranges_count);
@@ -502,7 +503,7 @@ ScopedJavaLocalRef<jobject> ToJavaIntRangesMap(
     int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
-      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapIntValue,
+      &Java_AccessibilityNodeInfoUtils_setTextAttributeRangesMapIntValue,
       base::BindRepeating([](T value) { return static_cast<jint>(value); }),
       ranges_count);
 }
@@ -514,7 +515,7 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
     int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
-      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
+      &Java_AccessibilityNodeInfoUtils_setTextAttributeRangesMapStringValue,
       base::BindRepeating(&base::android::ConvertUTF16ToJavaString,
                           base::Unretained(env)),
       ranges_count);
@@ -2595,7 +2596,7 @@ WebContentsAccessibilityAndroid::ToJavaCanonicalStringRangesMap(
     int* ranges_count) {
   return ToJavaRangesMap(
       env, text_style_map,
-      &Java_AccessibilityNodeInfoBuilder_setTextAttributeRangesMapStringValue,
+      &Java_AccessibilityNodeInfoUtils_setTextAttributeRangesMapStringValue,
       base::BindRepeating(
           [](WebContentsAccessibilityAndroid& node, JNIEnv* env,
              const std::string& value) {
