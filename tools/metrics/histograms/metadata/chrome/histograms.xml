@@ -66,14 +66,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
-    expires_after="2023-12-31">
+    expires_after="M150">
   <owner>kvitekp@google.com</owner>
   <owner>headless-owners@chromium.org</owner>
+  <component>1456776</component>
   <summary>
     Records headless chrome action, e.g. remote debugging, screenshot, print to
     PDF, DOM dump. Reported once when the browser process is launched in
     headless mode. If more than one action is requested only one will be
     reported.
+
+    This histogram expired in December 2023 and was revived in M142.
   </summary>
 </histogram>
 
