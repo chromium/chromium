@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -71,6 +72,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -959,22 +961,25 @@ IN_PROC_BROWSER_TEST_P(
       "test@example.com", signin::ConsentLevel::kSignin);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithAccountStatus();
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the unconsented primary account is always returned.
-  EXPECT_EQ("test@example.com", info->email);
-  EXPECT_EQ("gaia_id_for_test_example.com", info->id);
-#else
+
   // The unconsented (Sync off) primary account is returned conditionally,
   // depending on the accountStatus parameter.
   if (account_status() == "ANY") {
     EXPECT_EQ("test@example.com", info->email);
     EXPECT_EQ("gaia_id_for_test_example.com", info->id);
   } else {
-    // accountStatus is SYNC or unspecified.
-    EXPECT_TRUE(info->email.empty());
-    EXPECT_TRUE(info->id.empty());
+    // accountStatus is SYNC or unspecified. In this case, the account is only
+    // returned if extensions are syncing. Whether or not extensions sync upon
+    // sign-in depends on `syncer::kReplaceSyncPromosWithSignInPromos`.
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      EXPECT_EQ("test@example.com", info->email);
+      EXPECT_EQ("gaia_id_for_test_example.com", info->id);
+    } else {
+      EXPECT_TRUE(info->email.empty());
+      EXPECT_TRUE(info->id.empty());
+    }
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
