@@ -163,6 +163,22 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
+    public void testAbsorbsContextClicks() throws TimeoutException {
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, /* animate= */ false);
+
+        assertTrue(
+                "The scrim view should be context clickable.",
+                mScrimManager.getViewForTesting().isContextClickable());
+
+        assertTrue(
+                "The scrim view should have a listener to absorb context clicks.",
+                mScrimManager.getViewForTesting().performContextClick());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
     public void testVisibilityWithForceToFinish() throws TimeoutException {
         PropertyModel model = buildModel(false, true, Color.RED);
         showScrim(model, /* animate= */ true);
