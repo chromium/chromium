@@ -130,6 +130,11 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";
 
+// Pref for policy to enable/disable force-install extensions with non-malware
+// violations.
+inline constexpr char kExtensionForceInstallWithNonMalwareViolationsEnabled[] =
+    "extensions.extension_force_install_with_non_malware_violations_enabled";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.

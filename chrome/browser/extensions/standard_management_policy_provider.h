@@ -25,7 +25,6 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
  public:
   explicit StandardManagementPolicyProvider(ExtensionManagement* settings,
                                             Profile* profile);
-
   ~StandardManagementPolicyProvider() override;
 
   // ManagementPolicy::Provider implementation.

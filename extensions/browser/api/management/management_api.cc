@@ -502,11 +502,13 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                                 ->Get(browser_context())
                                                 ->GetDelegate();
-    delegate->DisableExtension(
-        browser_context(), extension(), extension_id_,
-        Manifest::IsPolicyLocation(target_extension->location())
-            ? disable_reason::DISABLE_BLOCKED_BY_POLICY
-            : disable_reason::DISABLE_USER_ACTION);
+    auto reason = (extension() &&
+                   (Manifest::IsPolicyLocation(extension()->location()) ||
+                    Manifest::IsComponentLocation(extension()->location())))
+                      ? disable_reason::DISABLE_BLOCKED_BY_POLICY
+                      : disable_reason::DISABLE_USER_ACTION;
+    delegate->DisableExtension(browser_context(), extension(), extension_id_,
+                               reason);
     return RespondNow(NoArguments());
   }
 

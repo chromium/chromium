@@ -841,6 +841,19 @@ void ExtensionRegistrar::OnGreylistStateRemoved(
                                                    extension_prefs_);
   RemoveDisableReasonAndMaybeEnable(extension_id,
                                     disable_reason::DISABLE_GREYLIST);
+
+  // A user can enable and disable a force-installed extension while it is
+  // greylisted. If a user disables an extension while greylisted, the
+  // extension gets a DISABLE_USER_ACTION disable reason assigned to it. So
+  // remove the DISABLE_USER_ACTION disable reason as well when a
+  // force-installed extension gets "un-greylisted" to allow the extension
+  // to be re-enabled.
+  const Extension* extension = registry_->GetInstalledExtension(extension_id);
+  if (extension && extension_system_->management_policy()->MustRemainEnabled(
+                       extension, nullptr)) {
+    RemoveDisableReasonAndMaybeEnable(extension_id,
+                                      disable_reason::DISABLE_USER_ACTION);
+  }
 }
 
 void ExtensionRegistrar::OnGreylistStateAdded(const std::string& extension_id,
@@ -885,7 +898,11 @@ void ExtensionRegistrar::GreylistExtensionForTest(
     const BitMapBlocklistState& state) {
   blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(extension_id, state,
                                                           extension_prefs_);
-  OnGreylistStateAdded(extension_id, state);
+  if (state == BitMapBlocklistState::NOT_BLOCKLISTED) {
+    OnGreylistStateRemoved(extension_id);
+  } else {
+    OnGreylistStateAdded(extension_id, state);
+  }
 }
 
 void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(

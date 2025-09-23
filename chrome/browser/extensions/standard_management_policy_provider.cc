@@ -22,9 +22,8 @@ namespace extensions {
 
 namespace {
 
-// Returns whether the extension can be modified under admin policy or not, and
-// fills |error| with corresponding error message if necessary.
-bool AdminPolicyIsModifiable(const Extension* source_extension,
+bool AdminPolicyIsModifiable(ExtensionManagement* settings,
+                             const Extension* source_extension,
                              const Extension* extension,
                              std::u16string* error) {
   // Component and force installed extensions can enable/disable all other
@@ -46,15 +45,31 @@ bool AdminPolicyIsModifiable(const Extension* source_extension,
 
   bool is_modifiable = true;
 
+  // Component extensions are not modifiable.
   if (Manifest::IsComponentLocation(extension->location()))
     is_modifiable = false;
-  if ((!component_or_force_installed || is_webstore_hosted_app) &&
-      Manifest::IsPolicyLocation(extension->location())) {
+
+  if (Manifest::IsPolicyLocation(extension->location())) {
+    // A policy-installed extension *generally* can't be modified.
     is_modifiable = false;
+
+    // Exceptions:
+    // A policy-installed extension can be modified by other
+    // policy-installed or component extensions (other than the Webstore).
+    if (component_or_force_installed && !is_webstore_hosted_app) {
+      is_modifiable = true;
+    } else if (!source_extension &&
+               settings->IsGreylistedForceInstalledInLowTrustEnvironment(
+                   extension->id())) {
+      // A policy-installed extension that is greylisted in a low-trust
+      // environment is modifiable by the user.
+      is_modifiable = true;
+    }
   }
 
-  if (is_modifiable)
+  if (is_modifiable) {
     return true;
+  }
 
   if (error) {
     *error = l10n_util::GetStringFUTF16(
@@ -171,20 +186,20 @@ bool StandardManagementPolicyProvider::UserMayInstall(
 bool StandardManagementPolicyProvider::UserMayModifySettings(
     const Extension* extension,
     std::u16string* error) const {
-  return AdminPolicyIsModifiable(nullptr, extension, error);
+  return AdminPolicyIsModifiable(settings_, nullptr, extension, error);
 }
 
 bool StandardManagementPolicyProvider::ExtensionMayModifySettings(
     const Extension* source_extension,
     const Extension* extension,
     std::u16string* error) const {
-  return AdminPolicyIsModifiable(source_extension, extension, error);
+  return AdminPolicyIsModifiable(settings_, source_extension, extension, error);
 }
 
 bool StandardManagementPolicyProvider::MustRemainEnabled(
     const Extension* extension,
     std::u16string* error) const {
-  return !AdminPolicyIsModifiable(nullptr, extension, error);
+  return !AdminPolicyIsModifiable(settings_, nullptr, extension, error);
 }
 
 bool StandardManagementPolicyProvider::MustRemainDisabled(

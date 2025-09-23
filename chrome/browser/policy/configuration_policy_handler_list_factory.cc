@@ -2196,6 +2196,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls,
     extensions::pref_names::kExtendedBackgroundLifetimeForPortConnectionsToUrls,
     base::Value::Type::LIST },
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    { key::kExtensionForceInstallWithNonMalwareViolationsEnabled,
+    extensions::pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
+    base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 
   { key::kScrollToTextFragmentEnabled,

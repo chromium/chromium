@@ -13,11 +13,14 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
@@ -130,6 +133,50 @@ TEST_F(StandardManagementPolicyProviderTest,
   EXPECT_FALSE(provider_.MustRemainDisabled(extension.get(), nullptr));
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
   EXPECT_NE(std::u16string(), error16);
+}
+
+// Tests the behavior of the ManagementPolicy provider methods for greylisted
+// extensions force-installed in low-trust environments.
+TEST_F(StandardManagementPolicyProviderTest,
+       GreylistedForceInstalledExtensionsInLowTrustEnvironment) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list(
+      kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted);
+  bool expected = true;
+#else
+  bool expected = false;
+#endif
+
+  // Mark enterprise management authority for platform as NONE to simulate an
+  // un-trusted environment.
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  // Force-install a CWS extension.
+  auto extension = ExtensionBuilder("CWSPolicyInstalledExtension")
+                       .SetVersion("1.0")
+                       .SetLocation(ManifestLocation::kExternalPolicy)
+                       .SetManifestKey("update_url",
+                                       extension_urls::kChromeWebstoreUpdateURL)
+                       .AddFlags(Extension::FROM_WEBSTORE)
+                       .Build();
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, extension->id(),
+                                     extension_urls::kChromeWebstoreUpdateURL);
+  profile_.GetTestingPrefService()->SetManagedPref(
+      pref_names::kInstallForceList, forced_list_pref.Clone());
+
+  // Greylist the extension.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      ExtensionPrefs::Get(&profile_));
+
+  EXPECT_EQ(expected,
+            provider_.UserMayModifySettings(extension.get(), nullptr));
+  EXPECT_EQ(expected, provider_.ExtensionMayModifySettings(
+                          nullptr, extension.get(), nullptr));
+  EXPECT_NE(expected, provider_.MustRemainEnabled(extension.get(), nullptr));
 }
 
 TEST_F(StandardManagementPolicyProviderTest, UnsupportedDeveloperExtension) {

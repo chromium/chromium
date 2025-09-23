@@ -11,3 +11,4 @@ Extensions:
   - ExtensionManifestV2Availability
   - ExtensionUnpublishedAvailability
   - ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls
+  - ExtensionForceInstallWithNonMalwareViolationsEnabled

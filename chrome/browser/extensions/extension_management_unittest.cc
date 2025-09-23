@@ -29,6 +29,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
@@ -1560,6 +1561,124 @@ TEST_F(ExtensionManagementServiceTest, IsForceInstalledInLowTrustEnvironment) {
 
     EXPECT_FALSE(extension_management_->IsForceInstalledInLowTrustEnvironment(
         *forced_extension));
+  }
+}
+
+TEST_F(ExtensionManagementServiceTest,
+       IsGreylistedForceInstalledInLowTrustEnvironment) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list(
+      kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted);
+#endif
+
+  {
+    // Greylisted, force-installed in a low-trust environment.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    constexpr bool expect_greylisted_in_low_trust =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        true;
+#else
+        false;
+#endif
+    EXPECT_EQ(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()),
+        expect_greylisted_in_low_trust);
+  }
+  {
+    // Greylisted, force-installed in a high-trust environment.
+
+    // Force-install an extension in high-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // Not greylisted.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Don't greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(), BitMapBlocklistState::NOT_BLOCKLISTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // `ExtensionForceInstallWithNonMalwareViolationsEnabled` policy is true.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    profile_->GetPrefs()->SetBoolean(
+        pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
+        true);
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // Not force-installed.
+
+    // Set up a non-forced extension in a low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> extension =
+        CreateNormalExtension(kTargetExtension3);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(), BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            extension->id()));
   }
 }
 
