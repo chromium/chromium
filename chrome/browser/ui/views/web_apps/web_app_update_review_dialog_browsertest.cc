@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -42,6 +44,9 @@
 namespace web_app {
 namespace {
 
+constexpr char kUpdateDialogLoadingTimeHistogram[] =
+    "WebApp.UpdateReviewDialog.TriggerToShowTime";
+
 class WebAppUpdateReviewDialog : public DialogBrowserTest {
  public:
   const GURL kTestUrl = GURL("http://www.test.com");
@@ -50,18 +55,15 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   WebAppUpdateReviewDialog& operator=(const WebAppUpdateReviewDialog&) = delete;
 
   void SetUpOnMainThread() override {
-    old_icon_ =
-        ::shortcuts::GenerateBitmap(WebAppUpdateIdentityView::kLogoSize, u"A");
-    new_icon_ =
-        ::shortcuts::GenerateBitmap(WebAppUpdateIdentityView::kLogoSize, u"D");
+    old_icon_ = ::shortcuts::GenerateBitmap(kIconSizeForUpdateDialog, u"A");
+    new_icon_ = ::shortcuts::GenerateBitmap(kIconSizeForUpdateDialog, u"D");
 
     std::unique_ptr<WebAppInstallInfo> web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(kTestUrl);
     web_app_info->title = u"Abc";
-    web_app_info->icon_bitmaps.any[WebAppUpdateIdentityView::kLogoSize] =
+    web_app_info->icon_bitmaps.any[kIconSizeForUpdateDialog] = old_icon_;
+    web_app_info->trusted_icon_bitmaps.any[kIconSizeForUpdateDialog] =
         old_icon_;
-    web_app_info->trusted_icon_bitmaps
-        .any[WebAppUpdateIdentityView::kLogoSize] = old_icon_;
     app_id_ = web_app::test::InstallWebApp(browser()->profile(),
                                            std::move(web_app_info));
     update_.old_title = u"Abc";
@@ -87,6 +89,7 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
     }
 
     web_app::ShowWebAppReviewUpdateDialog(app_id_, update_, browser(),
+                                          base::TimeTicks::Now(),
                                           dialog_result_.GetCallback());
   }
 
@@ -112,7 +115,9 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, InvokeUi_NameChange) {
+  base::HistogramTester histogram_tester;
   ShowAndVerifyUi();
+  histogram_tester.ExpectTotalCount(kUpdateDialogLoadingTimeHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
@@ -206,6 +211,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, ShowWhileAlreadyShowing) {
 
   base::test::TestFuture<WebAppIdentityUpdateResult> update_result;
   web_app::ShowWebAppReviewUpdateDialog(app_id_, update_, browser(),
+                                        base::TimeTicks::Now(),
                                         update_result.GetCallback());
   EXPECT_TRUE(update_result.Wait());
   EXPECT_EQ(update_result.Get(), WebAppIdentityUpdateResult::kUnexpectedError);

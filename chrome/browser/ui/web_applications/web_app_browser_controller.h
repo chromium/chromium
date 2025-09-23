@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -44,6 +45,10 @@ class SystemWebAppDelegate;
 namespace content_relationship_verification {
 class DigitalAssetLinksHandler;
 }
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace web_app {
 
@@ -108,6 +113,8 @@ class WebAppBrowserController : public AppBrowserController,
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
   bool HasPendingUpdate() const override;
+  void CreateMetadataAndTriggerAppUpdateDialog(
+      base::TimeTicks start_time) const override;
 #if BUILDFLAG(IS_CHROMEOS)
   const ash::SystemWebAppDelegate* system_app() const override;
   bool ShouldShowCustomTabBar() const override;
@@ -158,6 +165,9 @@ class WebAppBrowserController : public AppBrowserController,
   void OnReadHomeTabIcon(SkBitmap home_tab_icon_bitmap) const;
   void OnReadIcon(IconPurpose purpose, SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
+  void OnMetadataObtainedTriggerUpdateDialog(
+      base::TimeTicks start_time,
+      std::optional<WebAppIdentityUpdate> identity_update) const;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void CheckDigitalAssetLinkRelationshipForAndroidApp(

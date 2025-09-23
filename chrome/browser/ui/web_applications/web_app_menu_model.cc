@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -113,7 +114,10 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case IDC_WEB_APP_UPGRADE_DIALOG:
       CHECK(base::FeatureList::IsEnabled(
           features::kWebAppPredictableAppUpdating));
-      NOTIMPLEMENTED();
+      // TODO(crbug.com/432252208): Log menu action for predictable app
+      // updating.
+      browser()->app_controller()->CreateMetadataAndTriggerAppUpdateDialog(
+          base::TimeTicks::Now());
       break;
     default:
       AppMenuModel::ExecuteCommand(command_id, event_flags);

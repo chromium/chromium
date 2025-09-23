@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
@@ -211,6 +213,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kWebAppUpdateReviewIgnoreButton);
 void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                                   const WebAppIdentityUpdate& update,
                                   Browser* browser,
+                                  base::TimeTicks start_time,
                                   UpdateReviewDialogCallback callback) {
   CHECK(!callback.is_null());
 
@@ -331,6 +334,9 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
   views::Widget* widget = constrained_window::ShowBrowserModal(
       std::move(dialog_model), browser->window()->GetNativeWindow());
   delegate_weak_ptr->OnWidgetShownStartTracking(widget);
+
+  base::UmaHistogramTimes("WebApp.UpdateReviewDialog.TriggerToShowTime",
+                          base::TimeTicks::Now() - start_time);
 }
 
 }  // namespace web_app

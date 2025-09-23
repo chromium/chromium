@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -26,9 +27,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
+#include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -225,6 +229,15 @@ bool WebAppBrowserController::HasPendingUpdate() const {
   }
   const WebApp* app = registrar().GetAppById(app_id());
   return app && app->pending_update_info().has_value();
+}
+
+void WebAppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
+    base::TimeTicks start_time) const {
+  provider_->scheduler().ReadAppUpdateDataFromDisk(
+      app_id(),
+      base::BindOnce(
+          &WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog,
+          weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -718,6 +731,20 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 
   CheckDigitalAssetLinkRelationshipForAndroidApp(*package_name, *fingerprint);
 #endif
+}
+
+void WebAppBrowserController::OnMetadataObtainedTriggerUpdateDialog(
+    base::TimeTicks start_time,
+    std::optional<WebAppIdentityUpdate> identity_update) const {
+  if (!identity_update) {
+    return;
+  }
+
+  // TODO(crbug.com/436868803): Pipe calling of the final update command to this
+  // function.
+  web_app::ShowWebAppReviewUpdateDialog(app_id(), *identity_update, browser(),
+                                        start_time,
+                                        base::DoNothingWithBoundArgs());
 }
 
 std::optional<SkColor>

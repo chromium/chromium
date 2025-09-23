@@ -58,8 +58,26 @@ struct IconMetadataFromDisk {
   IconPurpose purpose = IconPurpose::ANY;
 };
 
+// Returning icon metadata about icons that will be shown on the app identity
+// update dialog. The `to_icon` can be not populated if there are no pending
+// trusted icons.
+struct IconMetadataForUpdate {
+  IconMetadataForUpdate();
+  ~IconMetadataForUpdate();
+  IconMetadataForUpdate(IconMetadataForUpdate&& icon_metadata);
+  IconMetadataForUpdate& operator=(IconMetadataForUpdate&& icon_metadata);
+
+  SkBitmap from_icon;
+  std::optional<SkBitmap> to_icon;
+  IconPurpose from_icon_purpose = IconPurpose::ANY;
+  std::optional<IconPurpose> to_icon_purpose;
+};
+
 using ReadIconMetadataCallback =
     base::OnceCallback<void(IconMetadataFromDisk icon_bitmap_metadata)>;
+
+using ReadIconMetadataForUpdateCallback =
+    base::OnceCallback<void(IconMetadataForUpdate icon_bitmap_metadata)>;
 
 // Exclusively used from the UI thread.
 class WebAppIconManager : public WebAppInstallManagerObserver {
@@ -146,6 +164,16 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       const SortedSizesPx& icon_sizes,
       IconPurpose purpose_for_fallback,
       ReadIconMetadataCallback callback);
+
+  // Returns 2 icons, one from the pending trusted icons folder of `size` and
+  // `purpose_for_pending_info` if that is set, and the other from the trusted
+  // icons folder of the app of the same `size`. The purpose for the latter icon
+  // is determined from the cached icon sizes in the app for correctness.
+  void ReadIconsForPendingUpdate(
+      const webapps::AppId& app_id,
+      SquareSizePx size,
+      std::optional<IconPurpose> purpose_for_pending_info,
+      ReadIconMetadataForUpdateCallback callback);
 
   // Mimics WebAppShortcutsMenuItemInfo but stores timestamps instead of icons
   // for os integration.

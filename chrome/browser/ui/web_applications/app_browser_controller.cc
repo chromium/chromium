@@ -12,6 +12,7 @@
 #include "base/memory/values_equivalent.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -441,6 +442,9 @@ bool AppBrowserController::HasReloadButton() const {
 bool AppBrowserController::HasPendingUpdate() const {
   return false;
 }
+
+void AppBrowserController::CreateMetadataAndTriggerAppUpdateDialog(
+    base::TimeTicks start_time) const {}
 
 bool AppBrowserController::IsPreventCloseEnabled() const {
   auto* provider = WebAppProvider::GetForWebApps(browser()->profile());

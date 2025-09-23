@@ -2733,6 +2733,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.UpdateReviewDialog.TriggerToShowTime" units="ms"
+    expires_after="2026-09-19">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the time taken in milliseconds for the user to click on the 3-dot
+    menu option for reviewing an app update to the update dialog actually
+    showing up. Useful for measuring the latency of certain things like icon
+    reading from disk as well as icon masking.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.WebAppOriginAssociationFetchResult"
     enum="WebAppOriginAssociationFetchResult" expires_after="2026-03-05">
   <owner>mek@chromium.org</owner>

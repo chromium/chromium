@@ -17,7 +17,6 @@ class WebAppUpdateIdentityView : public views::View {
   METADATA_HEADER(WebAppUpdateIdentityView, views::View)
 
  public:
-  static constexpr int kLogoSize = 96;
   explicit WebAppUpdateIdentityView(const WebAppIdentity& identity);
 
   WebAppUpdateIdentityView(const WebAppUpdateIdentityView&) = delete;

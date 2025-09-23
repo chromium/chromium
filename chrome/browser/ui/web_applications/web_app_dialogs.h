@@ -33,7 +33,8 @@ class Browser;
 
 namespace base {
 class FilePath;
-}
+class TimeTicks;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -93,6 +94,7 @@ void ShowWebAppIdentityUpdateDialog(const std::string& app_id,
 void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                                   const WebAppIdentityUpdate& update,
                                   Browser* browser,
+                                  base::TimeTicks start_time,
                                   UpdateReviewDialogCallback callback);
 
 // Shows the web app uninstallation dialog on a page whenever user has decided

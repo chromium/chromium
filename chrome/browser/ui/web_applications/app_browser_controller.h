@@ -48,6 +48,10 @@ namespace ui {
 class ImageModel;
 }
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace web_app {
 
 class WebAppBrowserController;
@@ -250,6 +254,11 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   // Returns true if there is a pending update available for this app.
   virtual bool HasPendingUpdate() const;
+
+  // Constructs the metadata required for app identity updating and triggers the
+  // corresponding dialog.
+  virtual void CreateMetadataAndTriggerAppUpdateDialog(
+      base::TimeTicks start_time) const;
 
   // Returns whether prevent close is enabled.
   bool IsPreventCloseEnabled() const;

@@ -15,6 +15,8 @@
 
 namespace web_app {
 
+inline constexpr int kIconSizeForUpdateDialog = 96;
+
 struct WebAppIdentity {
   WebAppIdentity();
   WebAppIdentity(const std::u16string& title,
