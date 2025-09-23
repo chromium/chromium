@@ -463,11 +463,6 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
       AppServiceProxyFactory::GetForProfile(profile()));
   ASSERT_TRUE(arc_apps.get());
   arc_apps->Initialize();
-  // Call `OnInitialized` manually as ArcSessionManager is already initialized.
-  // TODO(crbug.com/446582547): Fix this test and avoid this call. We should
-  // destroy/reinitialize objects to simulate a restart instead of just
-  // recreating another ArcApps. Do not copy & paste this pattern.
-  arc_apps->OnInitialized();
 
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
@@ -502,8 +497,7 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
     }
   }
 
-  // TODO(crbug.com/446582547): Fix this test and avoid this call.
-  arc_apps->OnShutdown();
+  arc_apps->Shutdown();
 }
 
 TEST_F(PublisherTest, ArcApps_CapabilityAccess) {

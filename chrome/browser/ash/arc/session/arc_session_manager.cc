@@ -886,8 +886,6 @@ void ArcSessionManager::Initialize() {
                     "has reached the maximum number of retries";
   }
 
-  observer_list_.Notify(&ArcSessionManagerObserver::OnInitialized);
-
   // Chrome may be shut down before completing ARC data removal.
   // For such a case, start removing the data now, if necessary.
   MaybeStartArcDataRemoval();

@@ -501,14 +501,11 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     model_ = std::make_unique<ash::ShelfModel>();
     browser_controller_.emplace();
 
-    arc_test_.PreProfileSetUp();
-
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
     service_->Init();
 
     OnBeforeArcTestSetup();
-
     arc_test_.set_initialize_real_intent_helper_bridge(true);
     arc_test_.SetUp(profile_.get());
 
@@ -950,6 +947,7 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
   }
 
   void StopArc() {
+    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_.get());
     arc_test()->TearDown();
     RemoveArcApps(profile_.get(), model_updater());
     ResetBuilder();

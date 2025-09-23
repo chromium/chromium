@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
@@ -555,13 +554,7 @@ ArcApps* ArcApps::Get(Profile* profile) {
 }
 
 ArcApps::ArcApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()) {
-  if (auto* arc_session_manager = arc::ArcSessionManager::Get()) {
-    arc_session_manager_observation_.Observe(arc_session_manager);
-  } else {
-    CHECK_IS_TEST();
-  }
-}
+    : AppPublisher(proxy), profile_(proxy->profile()) {}
 
 ArcApps::~ArcApps() {
   proxy()->UnregisterPublisher(AppType::kArc);
@@ -573,19 +566,12 @@ void ArcApps::Initialize() {
     return;
   }
 
-  // Register this to AppService.
-  RegisterPublisher(AppType::kArc);
-}
-
-void ArcApps::OnInitialized() {
   // Make some observee-observer connections.
-
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
   }
   arc_app_list_prefs_observation_.Observe(prefs);
-
   proxy()->SetArcIsRegistered();
 
   auto* intent_helper_bridge =
@@ -603,14 +589,12 @@ void ArcApps::OnInitialized() {
         ash::ArcNotificationsHostInitializer::Get());
   }
 
-  auto* arc_privacy_items_bridge =
+  auto* arc_bridge_service =
       arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile_);
-  if (arc_privacy_items_bridge) {
-    arc_privacy_items_bridge_observation_.Observe(arc_privacy_items_bridge);
+  if (arc_bridge_service) {
+    arc_privacy_items_bridge_observation_.Observe(arc_bridge_service);
   }
 
-  // TODO(crbug.com/446576749): Move out the logic in `OnInstanceUpdate` and
-  // do not observe the instance registry here.
   auto* instance_registry = &proxy()->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
@@ -619,6 +603,8 @@ void ArcApps::OnInitialized() {
   if (web_app::AreWebAppsEnabled(profile_)) {
     web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
   }
+
+  RegisterPublisher(AppType::kArc);
 
   std::vector<AppPtr> apps;
   for (const auto& app_id : prefs->GetAppIds()) {
@@ -633,27 +619,19 @@ void ArcApps::OnInitialized() {
   ObserveDisabledSystemFeaturesPolicy();
 }
 
-void ArcApps::OnShutdown() {
-  // Corresponds to ObserveDisabledSystemFeaturesPolicy.
-  local_state_pref_change_registrar_.Reset();
-
-  // Disconnect the observee-observer connections that we made during
-  // `OnInitialize`.
-
-  instance_registry_observation_.Reset();
-
-  arc_privacy_items_bridge_observation_.Reset();
-
-  notification_initializer_observation_.Reset();
+void ArcApps::Shutdown() {
+  // Disconnect the observee-observer connections that we made during the
+  // constructor.
+  arc_app_list_prefs_observation_.Reset();
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper_bridge) {
     intent_helper_bridge->SetAdaptiveIconDelegate(nullptr);
-    arc_intent_helper_observation_.Reset();
   }
 
-  arc_app_list_prefs_observation_.Reset();
+  arc_intent_helper_observation_.Reset();
+  arc_privacy_items_bridge_observation_.Reset();
 }
 
 void ArcApps::GetCompressedIconData(const std::string& app_id,
@@ -1340,9 +1318,11 @@ void ArcApps::OnSetArcNotificationsInstance(
   notification_observation_.Observe(arc_notification_manager);
 }
 
-// TODO(crbug.com/442761233): Remove this.
 void ArcApps::OnArcNotificationInitializerDestroyed(
-    ash::ArcNotificationsHostInitializer* initializer) {}
+    ash::ArcNotificationsHostInitializer* initializer) {
+  DCHECK(notification_initializer_observation_.IsObservingSource(initializer));
+  notification_initializer_observation_.Reset();
+}
 
 void ArcApps::OnNotificationUpdated(const std::string& notification_id,
                                     const std::string& app_id) {
@@ -1441,7 +1421,6 @@ void ArcApps::OnPrivacyItemsChanged(
   proxy()->OnCapabilityAccesses(std::move(accesses));
 }
 
-// TODO(crbug.com/446576749): Move this logic to somewhere else.
 void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (!update.StateChanged()) {
     return;
@@ -1449,7 +1428,6 @@ void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (update.AppId() != arc::kSettingsAppId) {
     return;
   }
-
   if (update.State() & apps::InstanceState::kActive) {
     settings_app_is_active_ = true;
   } else if (settings_app_is_active_) {
@@ -1462,9 +1440,11 @@ void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 }
 
-// TODO(crbug.com/442761233): Remove this.
 void ArcApps::OnInstanceRegistryWillBeDestroyed(
-    apps::InstanceRegistry* instance_registry) {}
+    apps::InstanceRegistry* instance_registry) {
+  DCHECK(instance_registry_observation_.IsObservingSource(instance_registry));
+  instance_registry_observation_.Reset();
+}
 
 AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
                           const std::string& app_id,
