@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(ActorTaskState) -->
+
+<variants name="ActorTaskState">
+  <variant name="Acting" summary="ActorTask in Acting state."/>
+  <variant name="Cancelled" summary="ActorTask in Cancelled state."/>
+  <variant name="Created" summary="ActorTask in Created state."/>
+  <variant name="Finished" summary="ActorTask in Finished state."/>
+  <variant name="PausedByActor" summary="ActorTask in PausedByActor state."/>
+  <variant name="PausedByUser" summary="ActorTask in PausedByUser state."/>
+  <variant name="Reflecting" summary="ActorTask in Reflecting state."/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
+
 <histogram name="Actor.DomNodeGeometry.GetDomNodeResult"
     enum="GetDomNodeResult" expires_after="2026-08-11">
   <owner>kmg@google.com</owner>
@@ -88,6 +102,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Task.Created" enum="Boolean" expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Recorded when a task is triggered for the first time.</summary>
+</histogram>
+
 <histogram name="Actor.Task.Duration.Cancelled" units="ms"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
@@ -108,6 +129,32 @@ chromium-metrics-reviews@google.com.
     Recorded when a task is completed. This captures the runtime of the task
     excluding any paused state.
   </summary>
+</histogram>
+
+<histogram
+    name="Actor.Task.StateTransition.ActionCount.{ActorTaskState}_{ActorTaskState}"
+    units="count" expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task makes a state transition from the first
+    {ActorTaskState} to the second {ActorTaskState}. This captures the number of
+    actions the task took in the first {ActorTaskState}.
+  </summary>
+  <token key="ActorTaskState" variants="ActorTaskState"/>
+</histogram>
+
+<histogram name="Actor.Task.StateTransition.Duration.{ActorTaskState}"
+    units="ms" expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task makes a state transition. This captures the duration of
+    time the task spent in the {ActorTaskState} state.
+  </summary>
+  <token key="ActorTaskState" variants="ActorTaskState"/>
 </histogram>
 
 <histogram name="Actor.Tools.TimeOfUseValidation" enum="TimeOfUseResult"

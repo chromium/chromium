@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -36,6 +37,8 @@ std::unique_ptr<ui::ActorUiStateManagerInterface> BuildUiStateManagerMock() {
       });
   return ui_state_manager;
 }
+
+constexpr char kActorTaskCreatedHistogram[] = "Actor.Task.Created";
 
 class ActorKeyedServiceTest : public testing::Test {
  public:
@@ -172,6 +175,15 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
     loop.Run();
   }
   EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+}
+
+TEST_F(ActorKeyedServiceTest, LogsActorTaskCreatedOnCreateTask) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kActorTaskCreatedHistogram, 0);
+
+  ActorKeyedService::Get(profile())->CreateTask();
+
+  histogram_tester.ExpectBucketCount(kActorTaskCreatedHistogram, true, 1);
 }
 
 }  // namespace

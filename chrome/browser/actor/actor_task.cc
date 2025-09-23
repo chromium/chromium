@@ -12,6 +12,7 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,35 +87,36 @@ void ActorTask::SetState(State state) {
   }
 #endif  // DCHECK_IS_ON()
 
-  if ((state_ == kPausedByActor || state_ == kPausedByUser) &&
-      state != kCancelled && state != kFinished) {
-    current_timer_.emplace();
+  const base::TimeDelta old_state_duration = current_state_timer_.Elapsed();
+
+  // If the old state was not a paused state, add its duration to the total
+  // active time for the task.
+  if (!IsPaused()) {
+    total_active_time_ += old_state_duration;
   }
+
+  // Record granular state transition histograms.
+  RecordActorTaskStateTransitionDuration(old_state_duration, state_);
+  RecordActorTaskStateTransitionActionCount(actions_in_current_state_, state_,
+                                            state);
 
   ui_event_dispatcher_->OnActorTaskSyncChange(
       ui::UiEventDispatcher::ChangeTaskState{
           .task_id = id_, .old_state = state_, .new_state = state});
   state_ = state;
+  current_state_timer_ = base::ElapsedTimer();
+  actions_in_current_state_ = 0;
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
-
-  if (state_ == kPausedByActor || state_ == kPausedByUser ||
-      state_ == kFinished || state_ == kCancelled) {
-    // If new state is to be paused or done, add the current time.
-    if (current_timer_) {
-      total_active_time_ += current_timer_->Elapsed();
-    }
-    current_timer_ = std::nullopt;
-  }
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished) {
     base::UmaHistogramCounts1000("Actor.Task.Count.Completed",
-                                 number_of_steps_);
+                                 total_number_of_actions_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
                                    total_active_time_);
   } else if (state_ == kCancelled) {
     base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
-                                 number_of_steps_);
+                                 total_number_of_actions_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
                                    total_active_time_);
   }
@@ -133,7 +135,10 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     return;
   }
   SetState(State::kActing);
-  number_of_steps_ += actions.size();
+
+  actions_in_current_state_ += actions.size();
+  total_number_of_actions_ += actions.size();
+
   execution_engine_->Act(
       std::move(actions),
       base::BindOnce(&ActorTask::OnFinishedAct, weak_ptr_factory_.GetWeakPtr(),

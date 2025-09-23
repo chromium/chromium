@@ -14,6 +14,7 @@ source_set("actor") {
   public = [
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
+    "actor_metrics.h",
     "actor_navigation_throttle.h",
     "actor_switches.h",
     "actor_tab_data.h",
@@ -72,6 +73,7 @@ source_set("impl") {
     "actor_features.h",
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
+    "actor_metrics.cc",
     "actor_navigation_throttle.cc",
     "actor_switches.cc",
     "actor_tab_data.cc",

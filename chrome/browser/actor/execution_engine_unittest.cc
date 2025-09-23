@@ -545,6 +545,68 @@ TEST_F(ExecutionEngineTest, CancelledHistogram) {
   histograms_.ExpectBucketCount(kActorTaskCountCancelledHistogram, 2, 1);
 }
 
+TEST_F(ExecutionEngineTest, CountAndDurationHistograms) {
+  // Task in Created state followed by Acting then Reflecting states.
+  const base::TimeDelta created_duration = base::Seconds(5);
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action1 =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  std::unique_ptr<ToolRequest> action2 =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  std::unique_ptr<ToolRequest> action3 =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_environment()->FastForwardBy(created_duration);
+
+  task_->Act(ToRequestList(action1, action2, action3), result.GetCallback());
+
+  histograms_.ExpectTimeBucketCount(
+      "Actor.Task.StateTransition.Duration.Created", created_duration, 1);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.Created_Acting", 0, 1);
+
+  // Task in PausedByUser state
+  task_->Pause(/*from_actor=*/false);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.Acting_PausedByUser", 3, 1);
+
+  const base::TimeDelta pause_duration = base::Seconds(7);
+  task_environment()->FastForwardBy(pause_duration);
+
+  // Task in Resumed state.
+  task_->Resume();
+  histograms_.ExpectTimeBucketCount(
+      "Actor.Task.StateTransition.Duration.PausedByUser", pause_duration, 1);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.PausedByUser_Reflecting", 0, 1);
+
+  const base::TimeDelta reflecting_duration = base::Seconds(8);
+  task_environment()->FastForwardBy(reflecting_duration);
+
+  // Task in PausedByActor state.
+  task_->Pause(/*from_actor=*/true);
+  histograms_.ExpectTimeBucketCount(
+      "Actor.Task.StateTransition.Duration.Reflecting", reflecting_duration, 1);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.Reflecting_PausedByActor", 0, 1);
+
+  task_environment()->FastForwardBy(pause_duration);
+  // Task in Resumed state.
+  task_->Resume();
+  histograms_.ExpectTimeBucketCount(
+      "Actor.Task.StateTransition.Duration.PausedByActor", pause_duration, 1);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.PausedByActor_Reflecting", 0, 1);
+
+  // Task in Finished state.
+  task_environment()->FastForwardBy(reflecting_duration);
+  task_->Stop(/*success=*/true);
+  histograms_.ExpectTimeBucketCount(
+      "Actor.Task.StateTransition.Duration.Reflecting", reflecting_duration, 2);
+  histograms_.ExpectBucketCount(
+      "Actor.Task.StateTransition.ActionCount.Reflecting_Finished", 0, 1);
+}
+
 TEST_F(ExecutionEngineTest, LatencyInfo) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));

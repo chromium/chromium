@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
@@ -132,6 +133,7 @@ void ActorKeyedService::ResetForTesting() {
 
 TaskId ActorKeyedService::CreateTask(webui::mojom::TaskOptionsPtr options) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
+  base::UmaHistogramBoolean("Actor.Task.Created", true);
   auto execution_engine = std::make_unique<ExecutionEngine>(profile_.get());
   auto actor_task = std::make_unique<ActorTask>(
       profile_.get(), std::move(execution_engine),
