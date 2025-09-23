@@ -19,6 +19,7 @@ source_set("cross_device_pref_tracker_factory") {
     "//components/sync_preferences/cross_device_pref_tracker",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
   ]
 }

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/ios_chrome_cross_device_pref_provider.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 // static
 sync_preferences::CrossDevicePrefTracker*
@@ -38,6 +39,7 @@ CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 CrossDevicePrefTrackerFactory::~CrossDevicePrefTrackerFactory() = default;
@@ -56,5 +58,5 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
       profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
-      std::move(pref_provider));
+      SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
 }

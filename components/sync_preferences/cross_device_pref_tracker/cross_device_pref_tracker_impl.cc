@@ -12,10 +12,15 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -230,19 +235,24 @@ base::Value::Dict BuildCrossDevicePrefEntry(
 // Synchronizes the value of a local pref to the shared cross-device storage.
 // If `observed_change_time` is provided, it indicates the time the change was
 // observed locally; otherwise, it's considered an initial sync or an update
-// triggered by `OnDeviceInfoChange` (e.g. after sign-in).
+// triggered by readiness changes (e.g. after sign-in or `DeviceInfo` ready).
 void ApplyPrefChangeToCrossDevice(
     const PrefService* tracked_pref_service,
     PrefService* profile_pref_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
+    bool is_sync_configured_for_writes,
     std::string_view tracked_pref_name,
     std::optional<base::Time> observed_change_time) {
   CHECK(tracked_pref_service);
   CHECK(profile_pref_service);
   CHECK(device_info_sync_service);
 
-  // TODO(crbug.com/444632366): Check if Sync is enabled for this specific
-  // pref type before attempting to write.
+  // Do not attempt writes if Sync is not configured for the relevant types
+  // (e.g. user is signed out or has disabled PREFERENCES sync). The state will
+  // be refreshed when Sync becomes configured again via `OnSyncStateChanged()`.
+  if (!is_sync_configured_for_writes) {
+    return;
+  }
 
   const std::optional<std::string> cache_guid =
       GetLocalCacheGuid(device_info_sync_service);
@@ -366,18 +376,27 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
     PrefService* profile_pref_service,
     PrefService* local_pref_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
+    syncer::SyncService* sync_service,
     std::unique_ptr<CrossDevicePrefProvider> pref_provider)
     : profile_pref_service_(profile_pref_service),
       local_pref_service_(local_pref_service),
       device_info_sync_service_(device_info_sync_service),
+      sync_service_(sync_service),
       pref_provider_(std::move(pref_provider)) {
   CHECK(profile_pref_service_);
   CHECK(local_pref_service_);
   CHECK(device_info_sync_service_);
+  // `sync_service_` can be null in tests or if Sync is disabled.
   CHECK(pref_provider_);
 
   is_local_device_info_ready_ =
       GetLocalCacheGuid(device_info_sync_service_).has_value();
+
+  if (sync_service_) {
+    sync_service_observation_.Observe(sync_service_);
+  }
+
+  is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
 
   // Initialize `DeviceInfoTracker` observation and cache known GUIDs.
   if (syncer::DeviceInfoTracker* tracker =
@@ -500,11 +519,13 @@ void CrossDevicePrefTrackerImpl::Shutdown() {
   local_pref_registrar_.RemoveAll();
   cross_device_pref_registrar_.RemoveAll();
   device_info_observation_.Reset();
+  sync_service_observation_.Reset();
   pref_provider_.reset();
 
   profile_pref_service_ = nullptr;
   local_pref_service_ = nullptr;
   device_info_sync_service_ = nullptr;
+  sync_service_ = nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
   Java_CrossDevicePrefTracker_clearNativePtr(
@@ -522,6 +543,16 @@ void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
   HandleRemoteDeviceInfoChanges();
 
   // TODO(crbug.com/441330511): Implement garbage collection.
+}
+
+void CrossDevicePrefTrackerImpl::OnStateChanged(syncer::SyncService* sync) {
+  OnSyncStateChanged();
+}
+
+void CrossDevicePrefTrackerImpl::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable because this `KeyedService` gets `Shutdown()` before the
+  // `SyncService`.
+  NOTREACHED();
 }
 
 void CrossDevicePrefTrackerImpl::StartObservingCrossDevicePrefs() {
@@ -584,7 +615,8 @@ void CrossDevicePrefTrackerImpl::SyncOnDevicePrefsToCrossDevice(
     PrefService* tracked_pref_service) {
   for (std::string_view pref_name : pref_names) {
     ApplyPrefChangeToCrossDevice(tracked_pref_service, profile_pref_service_,
-                                 device_info_sync_service_, pref_name,
+                                 device_info_sync_service_,
+                                 is_sync_configured_for_writes_, pref_name,
                                  /*observed_change_time=*/std::nullopt);
   }
 }
@@ -596,9 +628,9 @@ void CrossDevicePrefTrackerImpl::OnTrackedProfilePrefChanged(
   base::Time change_time = base::Time::Now();
 
   // Update the cross-device storage, marking this as an observed change.
-  ApplyPrefChangeToCrossDevice(profile_pref_service_, profile_pref_service_,
-                               device_info_sync_service_, tracked_pref_name,
-                               change_time);
+  ApplyPrefChangeToCrossDevice(
+      profile_pref_service_, profile_pref_service_, device_info_sync_service_,
+      is_sync_configured_for_writes_, tracked_pref_name, change_time);
 }
 
 void CrossDevicePrefTrackerImpl::OnTrackedLocalStatePrefChanged(
@@ -609,9 +641,9 @@ void CrossDevicePrefTrackerImpl::OnTrackedLocalStatePrefChanged(
 
   // Update the cross-device storage (always a Profile pref service because it's
   // syncing), marking this as an observed change.
-  ApplyPrefChangeToCrossDevice(local_pref_service_, profile_pref_service_,
-                               device_info_sync_service_, tracked_pref_name,
-                               change_time);
+  ApplyPrefChangeToCrossDevice(
+      local_pref_service_, profile_pref_service_, device_info_sync_service_,
+      is_sync_configured_for_writes_, tracked_pref_name, change_time);
 }
 
 void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
@@ -770,6 +802,43 @@ void CrossDevicePrefTrackerImpl::HandleLocalDeviceInfoIfAvailable() {
 
   // Now that the Cache GUID is available, push the initial state of all
   // tracked prefs. This is NOT considered an observed change.
+  // This uses the cached `is_sync_configured_for_writes_`.
+  SyncAllOnDevicePrefsToCrossDevice();
+}
+
+void CrossDevicePrefTrackerImpl::OnSyncStateChanged() {
+  bool was_configured = is_sync_configured_for_writes_;
+  is_sync_configured_for_writes_ = IsSyncConfiguredForWrites();
+
+  if (!was_configured && is_sync_configured_for_writes_) {
+    // If Sync just became configured (e.g. user signed in or enabled Prefs
+    // sync), refresh all pref states to ensure the cross-device storage
+    // reflects the latest local values, as writes were blocked while
+    // unconfigured.
+    SyncAllOnDevicePrefsToCrossDevice();
+  }
+}
+
+bool CrossDevicePrefTrackerImpl::IsSyncConfiguredForWrites() const {
+  if (!sync_service_) {
+    return false;
+  }
+
+  // Check if the user has selected PREFERENCES for syncing. Rely on
+  // `GetUserSettings()->GetSelectedTypes()` instead of `GetActiveDataTypes()`
+  // so that writes are allowed even if Sync is temporarily paused or inactive
+  // (e.g. network issues).
+  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPreferences)) {
+    return false;
+  }
+
+  return true;
+}
+
+void CrossDevicePrefTrackerImpl::SyncAllOnDevicePrefsToCrossDevice() {
+  // Push the current state of all tracked prefs. This is NOT considered an
+  // observed change.
   SyncOnDevicePrefsToCrossDevice(pref_provider_->GetProfilePrefs(),
                                  profile_pref_service_);
   SyncOnDevicePrefsToCrossDevice(pref_provider_->GetLocalStatePrefs(),
