@@ -5,7 +5,9 @@
 #ifndef UI_BASE_ACCELERATORS_ACCELERATOR_MAP_H_
 #define UI_BASE_ACCELERATORS_ACCELERATOR_MAP_H_
 
+// TODO(oshima): Remove this.
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,10 +20,18 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #endif
 
+namespace std {
+template <>
+struct std::hash<ui::Accelerator> {
+  size_t operator()(const ui::Accelerator& a) const { return a.hash(); }
+};
+
+}  // namespace std
+
 namespace ui {
 
-// This is a wrapper around an internal std::map of type
-// |std::map<Accelerator, V>| where |V| is the mapped value.
+// This is a wrapper around an internal std::unordered_map of type
+// |std::unordered_map<Accelerator, V>| where |V| is the mapped value.
 //
 // Accelerators in Chrome on all platforms are specified with the |key_code|,
 // aka VKEY, however certain keys (eg. brackets, comma, period, plus, minus),
@@ -48,8 +58,9 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
   AcceleratorMap() = default;
   ~AcceleratorMap() = default;
 
-  using iterator = typename std::map<Accelerator, V>::iterator;
-  using const_iterator = typename std::map<Accelerator, V>::const_iterator;
+  using iterator = typename std::unordered_map<Accelerator, V>::iterator;
+  using const_iterator =
+      typename std::unordered_map<Accelerator, V>::const_iterator;
 
   // Lookup an accelerator and return a pointer to the value. If the
   // accelerator is not in the map, this returns nullptr.
@@ -136,7 +147,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
 #endif
 
  private:
-  std::map<Accelerator, V> map_;
+  std::unordered_map<Accelerator, V> map_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool use_positional_lookup_ = false;

@@ -139,9 +139,12 @@ bool AcceleratorManager::AcceleratorTargetInfo::Unregister(
     has_priority_handler_ = false;
 
   // Attempt to remove the target and return true if it was present.
-  const size_t original_target_count = targets_.size();
-  targets_.remove(target);
-  return original_target_count != targets_.size();
+  auto iter = std::find(targets_.begin(), targets_.end(), target);
+  if (iter != targets_.end()) {
+    targets_.erase(iter);
+    return true;
+  }
+  return false;
 }
 
 bool AcceleratorManager::AcceleratorTargetInfo::TryProcess(
