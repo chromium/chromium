@@ -389,6 +389,16 @@ std::optional<size_t> View::GetIndexOf(const View* view) const {
                                      std::distance(children_.cbegin(), i)));
 }
 
+void View::PropagateWillClearFocusManager() {
+  {
+    internal::ScopedChildrenLock lock(this);
+    for (views::View* child : children_) {
+      child->PropagateWillClearFocusManager();
+    }
+  }
+  WillClearFocusManager();
+}
+
 // Size and disposition --------------------------------------------------------
 
 void View::SetBounds(int x, int y, int width, int height) {
@@ -2326,6 +2336,10 @@ void View::OnVisibleBoundsChanged() {}
 void View::ViewHierarchyChanged(const ViewHierarchyChangedDetails& details) {}
 
 void View::VisibilityChanged(View* starting_from, bool is_visible) {}
+
+void View::WillClearFocusManager() {
+  UnregisterAccelerators(true);
+}
 
 void View::NativeViewHierarchyChanged() {
   RegisterPendingAccelerators();
