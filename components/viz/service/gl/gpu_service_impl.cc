@@ -278,9 +278,6 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif
 
-  gpu_memory_buffer_factory_ = gpu::GpuMemoryBufferFactory::CreateNativeType(
-      vulkan_context_provider(), io_runner_);
-
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -321,18 +318,9 @@ GpuServiceImpl::~GpuServiceImpl() {
   if (watchdog_thread_)
     watchdog_thread_->OnGpuProcessTearDown();
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (owned_shared_image_manager_) {
-    // Clear the SharedImageManager's raw_ptr to the GMB factory before
-    // destroying the latter below.
-    owned_shared_image_manager_->clear_gpu_memory_buffer_factory();
-  }
-#endif
-
   compositor_gpu_thread_.reset();
   media_gpu_channel_manager_.reset();
   gpu_channel_manager_.reset();
-  gpu_memory_buffer_factory_.reset();
 
   // WebNN must be destroyed before the scheduler is destroyed.
   webnn_context_provider_.reset();
@@ -1322,7 +1310,8 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
   bool thread_safe_manager = true;
   owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
       thread_safe_manager, display_context_on_another_thread,
-      gpu_memory_buffer_factory_.get());
+      gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider(),
+                                                    io_runner_));
 #if BUILDFLAG(IS_OZONE)
   owned_shared_image_manager_->SetSupportsOverlays(supports_overlays);
 #endif

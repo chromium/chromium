@@ -16,6 +16,12 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
+
+// There is a circular GN dependency that is tricky to resolve. As the two GN
+// targets here are always built together in production and test contexts,
+// just allow this until we eliminate GpuMemoryBufferFactory entirely.
+// TODO(crbug.com/404905709): Eliminate GpuMemoryBufferFactory.
+#include "gpu/ipc/service/gpu_memory_buffer_factory.h"  // nogncheck
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -27,7 +33,6 @@ class D3DSharedFence;
 
 namespace gpu {
 class DXGISharedHandleManager;
-class GpuMemoryBufferFactory;
 class SharedImageRepresentationFactoryRef;
 
 class GPU_GLES2_EXPORT SharedImageManager
@@ -40,10 +45,10 @@ class GPU_GLES2_EXPORT SharedImageManager
   // SharedImages that will be used in the display context have thread-safe
   // backings and therefore it is safe to create representations on the thread
   // that holds the display context.
-  explicit SharedImageManager(
-      bool thread_safe = false,
-      bool display_context_on_another_thread = false,
-      GpuMemoryBufferFactory* gpu_memory_buffer_factory = nullptr);
+  explicit SharedImageManager(bool thread_safe = false,
+                              bool display_context_on_another_thread = false,
+                              std::unique_ptr<GpuMemoryBufferFactory>
+                                  gpu_memory_buffer_factory = nullptr);
 
   SharedImageManager(const SharedImageManager&) = delete;
   SharedImageManager& operator=(const SharedImageManager&) = delete;
@@ -157,10 +162,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   }
 
   GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
-    return gpu_memory_buffer_factory_;
-  }
-  void clear_gpu_memory_buffer_factory() {
-    gpu_memory_buffer_factory_ = nullptr;
+    return gpu_memory_buffer_factory_.get();
   }
 
   bool SupportsScanoutImages();
@@ -203,7 +205,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   bool supports_overlays_on_ozone_ = false;
 #endif
 
-  raw_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+  std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 
   THREAD_CHECKER(thread_checker_);
 };
