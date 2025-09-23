@@ -311,33 +311,43 @@ bool ShouldStopExtractingAtPseudoElement(
   }
 }
 
+// A collection of values that determine which bucket a given rule goes into.
+//
+// See FindBestBucketAndAdd.
+struct BucketingValues {
+  STACK_ALLOCATED();
+
+ public:
+  AtomicString id;
+  AtomicString class_name;
+  AtomicString attr_name;
+  AtomicString attr_value;
+  bool is_exact_attr = false;
+  AtomicString custom_pseudo_element_name;
+  AtomicString tag_name;
+  AtomicString part_name;
+  AtomicString picker_name;
+  CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
+};
+
 }  // namespace
 
 // The return value indicates if extracting can continue
 // or should be stopped due to reaching some pseudo-element
 // that doesn't allow extracting bucketing rules after itself
 // in selector.
-static bool ExtractSelectorValues(const CSSSelector* selector,
-                                  const StyleScope* style_scope,
-                                  AtomicString& id,
-                                  AtomicString& class_name,
-                                  AtomicString& attr_name,
-                                  AtomicString& attr_value,
-                                  bool& is_exact_attr,
-                                  AtomicString& custom_pseudo_element_name,
-                                  AtomicString& tag_name,
-                                  AtomicString& part_name,
-                                  AtomicString& picker_name,
-                                  CSSSelector::PseudoType& pseudo_type) {
+static bool ExtractBucketingValues(const CSSSelector* selector,
+                                   const StyleScope* style_scope,
+                                   BucketingValues& values) {
   switch (selector->Match()) {
     case CSSSelector::kId:
-      id = selector->Value();
+      values.id = selector->Value();
       break;
     case CSSSelector::kClass:
-      class_name = selector->Value();
+      values.class_name = selector->Value();
       break;
     case CSSSelector::kTag:
-      tag_name = selector->TagQName().LocalName();
+      values.tag_name = selector->TagQName().LocalName();
       break;
     case CSSSelector::kPseudoElement:
       // TODO(403505399): We shouldn't allow bucketing of pseudo-classes
@@ -364,7 +374,7 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoRoot:
         case CSSSelector::kPseudoActiveViewTransition:
           // Pseudo classes.
-          pseudo_type = selector->GetPseudoType();
+          values.pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoDetailsContent:
@@ -377,19 +387,19 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoScrollbarTrackPiece:
           // Pseudo elements; do not overwrite a pseudo class
           // (in particular, :host).
-          if (pseudo_type == CSSSelector::kPseudoUnknown) {
-            pseudo_type = selector->GetPseudoType();
+          if (values.pseudo_type == CSSSelector::kPseudoUnknown) {
+            values.pseudo_type = selector->GetPseudoType();
           }
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
-          custom_pseudo_element_name = selector->Value();
+          values.custom_pseudo_element_name = selector->Value();
           break;
         case CSSSelector::kPseudoPart:
-          part_name = selector->Value();
+          values.part_name = selector->Value();
           break;
         case CSSSelector::kPseudoPicker:
-          picker_name = selector->Argument();
+          values.picker_name = selector->Argument();
           break;
         case CSSSelector::kPseudoIs:
         case CSSSelector::kPseudoWhere:
@@ -412,10 +422,8 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
           // check below, satisfying the assumptions of FindBestBucketAndAdd.
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
-            bool should_continue = ExtractSelectorValues(
-                selector_list, style_scope, id, class_name, attr_name,
-                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
-                part_name, picker_name, pseudo_type);
+            bool should_continue =
+                ExtractBucketingValues(selector_list, style_scope, values);
             CHECK(should_continue);
           }
           break;
@@ -431,10 +439,8 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
               style_scope ? style_scope->From() : nullptr;
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
-            bool should_continue = ExtractSelectorValues(
-                selector_list, style_scope, id, class_name, attr_name,
-                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
-                part_name, picker_name, pseudo_type);
+            bool should_continue =
+                ExtractBucketingValues(selector_list, style_scope, values);
             CHECK(should_continue);
           }
           break;
@@ -444,8 +450,8 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
       }
       break;
     case CSSSelector::kAttributeSet:
-      attr_name = selector->Attribute().LocalName();
-      attr_value = g_empty_atom;
+      values.attr_name = selector->Attribute().LocalName();
+      values.attr_value = g_empty_atom;
       break;
     case CSSSelector::kAttributeExact:
     case CSSSelector::kAttributeHyphen:
@@ -453,9 +459,10 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kAttributeContain:
     case CSSSelector::kAttributeBegin:
     case CSSSelector::kAttributeEnd:
-      is_exact_attr = (selector->Match() == CSSSelector::kAttributeExact);
-      attr_name = selector->Attribute().LocalName();
-      attr_value = selector->Value();
+      values.is_exact_attr =
+          (selector->Match() == CSSSelector::kAttributeExact);
+      values.attr_name = selector->Attribute().LocalName();
+      values.attr_value = selector->Value();
       break;
     default:
       break;
@@ -467,33 +474,19 @@ static bool ExtractSelectorValues(const CSSSelector* selector,
 // its buckets (e.g. for “.foo[baz]”, will return foo for class_name and
 // baz for attr_name). Returns the last subselector in the group, which is also
 // the one given the highest priority.
-static const CSSSelector* ExtractBestSelectorValues(
+static const CSSSelector* ExtractBestBucketingValues(
     const CSSSelector& component,
     const StyleScope* style_scope,
-    AtomicString& id,
-    AtomicString& class_name,
-    AtomicString& attr_name,
-    AtomicString& attr_value,
-    bool& is_exact_attr,
-    AtomicString& custom_pseudo_element_name,
-    AtomicString& tag_name,
-    AtomicString& part_name,
-    AtomicString& picker_name,
-    CSSSelector::PseudoType& pseudo_type) {
+    BucketingValues& values) {
   const CSSSelector* it = &component;
   for (; it && it->Relation() == CSSSelector::kSubSelector;
        it = it->NextSimpleSelector()) {
-    if (!ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
-                               attr_value, is_exact_attr,
-                               custom_pseudo_element_name, tag_name, part_name,
-                               picker_name, pseudo_type)) {
+    if (!ExtractBucketingValues(it, style_scope, values)) {
       return it;
     }
   }
   if (it) {
-    ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
-                          attr_value, is_exact_attr, custom_pseudo_element_name,
-                          tag_name, part_name, picker_name, pseudo_type);
+    ExtractBucketingValues(it, style_scope, values);
   }
   return it;
 }
@@ -539,34 +532,23 @@ template <RuleSet::BucketCoverage bucket_coverage>
 void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
                                    const RuleData& rule_data,
                                    const StyleScope* style_scope) {
-  AtomicString id;
-  AtomicString class_name;
-  AtomicString attr_name;
-  AtomicString attr_value;  // Unused.
-  AtomicString custom_pseudo_element_name;
-  AtomicString tag_name;
-  AtomicString part_name;
-  AtomicString picker_name;
-  CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
+  BucketingValues values;
 
 #if DCHECK_IS_ON()
   all_rules_.push_back(rule_data);
 #endif  // DCHECK_IS_ON()
 
-  bool is_exact_attr = false;
-  const CSSSelector* it = ExtractBestSelectorValues(
-      component, style_scope, id, class_name, attr_name, attr_value,
-      is_exact_attr, custom_pseudo_element_name, tag_name, part_name,
-      picker_name, pseudo_type);
+  const CSSSelector* it =
+      ExtractBestBucketingValues(component, style_scope, values);
 
   // Prefer rule sets in order of most likely to apply infrequently.
 
   // NOTE: For ::part:focus and similar, we need to go into the ::part bucket
   // (see below). This isn't a problem for #id::part and similar, since there is
-  // a hidden combinator that stops ExtractBestSelectorValues() before it finds
+  // a hidden combinator that stops ExtractBestBucketingValues() before it finds
   // the #id.
-  if (part_name.empty()) {
-    if (pseudo_type == CSSSelector::kPseudoFocus) {
+  if (values.part_name.empty()) {
+    if (values.pseudo_type == CSSSelector::kPseudoFocus) {
       if (bucket_coverage == BucketCoverage::kCompute) {
         MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
           return selector.Match() == CSSSelector::kPseudoClass &&
@@ -576,7 +558,7 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       AddToBucket(focus_pseudo_class_rules_, rule_data);
       return;
     }
-    if (pseudo_type == CSSSelector::kPseudoFocusVisible) {
+    if (values.pseudo_type == CSSSelector::kPseudoFocusVisible) {
       if (bucket_coverage == BucketCoverage::kCompute) {
         MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
           return selector.Match() == CSSSelector::kPseudoClass &&
@@ -586,15 +568,15 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       AddToBucket(focus_visible_pseudo_class_rules_, rule_data);
       return;
     }
-    if (pseudo_type == CSSSelector::kPseudoScrollbarButton ||
-        pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
-        pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
-        pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
+    if (values.pseudo_type == CSSSelector::kPseudoScrollbarButton ||
+        values.pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
+        values.pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
+        values.pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
+        values.pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
       AddToBucket(scrollbar_rules_, rule_data);
       return;
     }
-    if (pseudo_type == CSSSelector::kPseudoActiveViewTransition) {
+    if (values.pseudo_type == CSSSelector::kPseudoActiveViewTransition) {
       if (bucket_coverage == BucketCoverage::kCompute) {
         MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
           return selector.Match() == CSSSelector::kPseudoClass &&
@@ -607,32 +589,35 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
     }
   }
 
-  if (!id.empty()) {
+  if (!values.id.empty()) {
     if (bucket_coverage == BucketCoverage::kCompute) {
-      MarkAsCoveredByBucketing(component, [&id](const CSSSelector& selector) {
-        return selector.Match() == CSSSelector::kId && selector.Value() == id;
-      });
+      MarkAsCoveredByBucketing(component,
+                               [&values](const CSSSelector& selector) {
+                                 return selector.Match() == CSSSelector::kId &&
+                                        selector.Value() == values.id;
+                               });
     }
-    AddToBucket(id, id_rules_, rule_data);
+    AddToBucket(values.id, id_rules_, rule_data);
     return;
   }
 
-  if (!class_name.empty()) {
+  if (!values.class_name.empty()) {
     if (bucket_coverage == BucketCoverage::kCompute) {
       MarkAsCoveredByBucketing(
-          component, [&class_name](const CSSSelector& selector) {
+          component, [&values](const CSSSelector& selector) {
             return selector.Match() == CSSSelector::kClass &&
-                   selector.Value() == class_name;
+                   selector.Value() == values.class_name;
           });
     }
-    AddToBucket(class_name, class_rules_, rule_data);
+    AddToBucket(values.class_name, class_rules_, rule_data);
     return;
   }
 
-  if (!attr_name.empty()) {
+  if (!values.attr_name.empty()) {
     // input[type="<foo>"] have their own RuleMap.
-    if (tag_name == html_names::kInputTag.LocalName() &&
-        attr_name == html_names::kTypeAttr.LocalName() && is_exact_attr) {
+    if (values.tag_name == html_names::kInputTag.LocalName() &&
+        values.attr_name == html_names::kTypeAttr.LocalName() &&
+        values.is_exact_attr) {
       // Same logic as tag_name below. Note that this will not
       // mark the rules in the UA stylesheet as covered by bucketing
       // (because they only match elements in the HTML namespace),
@@ -645,12 +630,12 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
                  selector.TagQName().NamespaceURI() == g_star_atom;
         });
       }
-      AddToBucket(attr_value.LowerASCII(), input_rules_, rule_data);
+      AddToBucket(values.attr_value.LowerASCII(), input_rules_, rule_data);
       return;
     }
 
-    AddToBucket(attr_name, attr_rules_, rule_data);
-    if (attr_name == html_names::kStyleAttr) {
+    AddToBucket(values.attr_name, attr_rules_, rule_data);
+    if (values.attr_name == html_names::kStyleAttr) {
       has_bucket_for_style_attr_ = true;
     }
     // NOTE: Cannot mark anything as covered by bucketing, since the bucketing
@@ -661,11 +646,11 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
   }
 
   auto get_ua_shadow_pseudo = [&]() -> const AtomicString& {
-    if (picker_name == "select") {
+    if (values.picker_name == "select") {
       return shadow_element_names::kPickerSelect;
-    } else if (pseudo_type != CSSSelector::kPseudoUnknown) {
+    } else if (values.pseudo_type != CSSSelector::kPseudoUnknown) {
       return shadow_element_utils::StringForUAShadowPseudoId(
-          CSSSelector::GetPseudoId(pseudo_type));
+          CSSSelector::GetPseudoId(values.pseudo_type));
     }
     return g_null_atom;
   };
@@ -676,15 +661,12 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
   // must go in the bucket for the *innermost* such pseudo-element.
 
   // TODO(dbaron): Should this eventually check kShadowSlot as well?
-  if (part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
+  if (values.part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
       (it->Relation() == CSSSelector::RelationType::kUAShadow ||
        it->Relation() == CSSSelector::RelationType::kShadowPart)) {
     const CSSSelector* previous = it->NextSimpleSelector();
     if (previous->Match() == CSSSelector::kPseudoElement) {
-      ExtractSelectorValues(previous, style_scope, id, class_name, attr_name,
-                            attr_value, is_exact_attr,
-                            custom_pseudo_element_name, tag_name, part_name,
-                            picker_name, pseudo_type);
+      ExtractBucketingValues(previous, style_scope, values);
       ua_shadow_pseudo = get_ua_shadow_pseudo();
     }
   }
@@ -692,21 +674,21 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
   // Any selector with or following ::part() must go in the part bucket,
   // because we look in that bucket in higher scopes to find rules that need
   // to match inside the shadow tree.
-  if (!part_name.empty()) {
+  if (!values.part_name.empty()) {
     // TODO: Mark as covered by bucketing?
     AddToBucket(part_pseudo_rules_, rule_data);
     return;
   }
 
-  if (!custom_pseudo_element_name.empty()) {
+  if (!values.custom_pseudo_element_name.empty()) {
     // Custom pseudos come before ids and classes in the order of
     // NextSimpleSelector(), and have a relation of ShadowPseudo between them.
     // Therefore we should never be a situation where ExtractSelectorValues
     // finds id and className in addition to custom pseudo.
-    DCHECK(id.empty());
-    DCHECK(class_name.empty());
-    AddToBucket(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
-                rule_data);
+    DCHECK(values.id.empty());
+    DCHECK(values.class_name.empty());
+    AddToBucket(values.custom_pseudo_element_name,
+                ua_shadow_pseudo_element_rules_, rule_data);
     // TODO: Mark as covered by bucketing?
     return;
   }
@@ -724,7 +706,7 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
     return;
   }
 
-  switch (pseudo_type) {
+  switch (values.pseudo_type) {
     case CSSSelector::kPseudoCue:
       AddToBucket(cue_pseudo_rules_, rule_data);
       return;
@@ -773,18 +755,18 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       break;
   }
 
-  if (!tag_name.empty()) {
+  if (!values.tag_name.empty()) {
     // Covered by bucketing only if the selector would match any namespace
     // (since the bucketing does not take the namespace into account).
     if (bucket_coverage == BucketCoverage::kCompute) {
       MarkAsCoveredByBucketing(
-          component, [&tag_name](const CSSSelector& selector) {
+          component, [&values](const CSSSelector& selector) {
             return selector.Match() == CSSSelector::kTag &&
-                   selector.TagQName().LocalName() == tag_name &&
+                   selector.TagQName().LocalName() == values.tag_name &&
                    selector.TagQName().NamespaceURI() == g_star_atom;
           });
     }
-    AddToBucket(tag_name, tag_rules_, rule_data);
+    AddToBucket(values.tag_name, tag_rules_, rule_data);
     return;
   }
 
@@ -1617,25 +1599,14 @@ void RuleSet::CreateSubstringMatchers(
     int rule_index = 0;
     Seeker<StyleScope> scope_seeker(scope_intervals);
     for (const RuleData& rule : ruleset) {
-      AtomicString id;
-      AtomicString class_name;
-      AtomicString attr_name;
-      AtomicString attr_value;
-      AtomicString custom_pseudo_element_name;
-      AtomicString tag_name;
-      AtomicString part_name;
-      AtomicString picker_name;
-      bool is_exact_attr = false;
-      CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
+      BucketingValues values;
       const StyleScope* style_scope = scope_seeker.Seek(rule.GetPosition());
-      ExtractBestSelectorValues(rule.Selector(), style_scope, id, class_name,
-                                attr_name, attr_value, is_exact_attr,
-                                custom_pseudo_element_name, tag_name, part_name,
-                                picker_name, pseudo_type);
-      DCHECK(!attr_name.empty());
+      ExtractBestBucketingValues(rule.Selector(), style_scope, values);
 
-      if (attr_value.empty()) {
-        if (is_exact_attr) {
+      DCHECK(!values.attr_name.empty());
+
+      if (values.attr_value.empty()) {
+        if (values.is_exact_attr) {
           // The empty string would make the entire tree useless
           // (it is a substring of every possible value),
           // so as a special case, we ignore it, and have a separate
@@ -1650,7 +1621,7 @@ void RuleSet::CreateSubstringMatchers(
         }
       }
 
-      std::string pattern = attr_value.LowerASCII().Utf8();
+      std::string pattern = values.attr_value.LowerASCII().Utf8();
 
       // SubstringSetMatcher doesn't like duplicates, and since we only
       // use the tree for true/false information anyway, we can remove them.
