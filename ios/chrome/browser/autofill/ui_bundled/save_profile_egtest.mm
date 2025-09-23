@@ -108,7 +108,7 @@ id<GREYMatcher> ModalButtonMatcher() {
 // Matcher for the "Update Address" modal button.
 id<GREYMatcher> UpdateModalButtonMatcher() {
   return chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-      IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
+      IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_OK_BUTTON_LABEL));
 }
 
 // Matcher for the modal button.
@@ -254,6 +254,11 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 
   if ([self isRunningTest:@selector(testSubmissionErrorReporting_Disabled)]) {
     config.features_disabled.push_back(kAutofillReportFormSubmissionErrors);
+  }
+
+  if ([self isRunningTest:@selector(testUserData_LocalUpdate)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
 
   // TODO(crbug.com/428189566): Re-enable after the test is fixed for

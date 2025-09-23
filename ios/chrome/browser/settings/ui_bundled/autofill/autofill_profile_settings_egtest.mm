@@ -155,7 +155,9 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 
   if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
       [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
-      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)]) {
+      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)] ||
+      [self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
+      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
@@ -209,13 +211,11 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
       performAction:grey_tap()];
 }
 
-// Returns the delete button on the deletion confirmation action sheet.
-- (id<GREYMatcher>)confirmButtonForNumberOfAddressesBeingDeleted:
-    (int)numberOfAddresses {
+// Returns the matcher for the delete button in the deletion confirmation sheet.
+- (id<GREYMatcher>)confirmButtonForDeleteAddress {
   id<GREYMatcher> baseMatcher = grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
-          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
-          numberOfAddresses)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESSES_CONFIRMATION_BUTTON)),
       grey_accessibilityTrait(UIAccessibilityTraitButton),
       grey_userInteractionEnabled(), nil);
 
@@ -484,8 +484,7 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
                                           SettingsBottomToolbarDeleteButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:
-                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
+  [[EarlGrey selectElementWithMatcher:[self confirmButtonForDeleteAddress]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
@@ -517,8 +516,7 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
                                        UIAccessibilityTraitNotEnabled)),
                                    nil)] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:
-                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
+  [[EarlGrey selectElementWithMatcher:[self confirmButtonForDeleteAddress]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
