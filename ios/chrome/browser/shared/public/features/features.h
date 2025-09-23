@@ -1005,6 +1005,13 @@ bool IsSignInButtonNoAvatarEnabled();
 // Feature flag to enable background customization on the NTP.
 BASE_DECLARE_FEATURE(kNTPBackgroundCustomization);
 
+// The parameter representing the maximum number of recently used NTP
+// backgrounds to store.
+extern const base::FeatureParam<int> kMaxRecentlyUsedBackgrounds;
+
+// The maximum number of recently used NTP backgrounds to store.
+int MaxRecentlyUsedBackgrounds();
+
 // Checks if background customization is enabled on the NTP.
 bool IsNTPBackgroundCustomizationEnabled();
 

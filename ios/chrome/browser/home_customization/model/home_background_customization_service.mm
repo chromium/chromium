@@ -25,13 +25,6 @@
 #import "third_party/skia/include/core/SkColor.h"
 #import "url/gurl.h"
 
-namespace {
-
-// Maximum number of recently used backgrounds to store.
-const int kMaxRecentlyUsedBackgrounds = 7;
-
-}  // namespace
-
 namespace sync_pb {
 bool operator==(const sync_pb::NtpCustomBackground& lhs,
                 const sync_pb::NtpCustomBackground& rhs) {
@@ -511,7 +504,8 @@ void HomeBackgroundCustomizationService::AddToRecentlyUsedBackgroundsList(
   recently_used_backgrounds_.Put(
       std::forward<RecentlyUsedBackgroundInternal>(recent_background));
 
-  while (recently_used_backgrounds_.size() > kMaxRecentlyUsedBackgrounds) {
+  while (recently_used_backgrounds_.size() >
+         static_cast<size_t>(MaxRecentlyUsedBackgrounds())) {
     auto last_element = --recently_used_backgrounds_.end();
     DeleteRecentlyUsedBackground(last_element);
   }
