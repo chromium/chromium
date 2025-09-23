@@ -48,6 +48,10 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-1.1"),
     "MPL 2.0":
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
+    "MPL-2.0":
+      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
+    "MPL-2":
+      ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
     "NCSA":
       ("NCSA", LicenseType.NOTICE, "SPDX-license-identifier-NCSA"),
     "unencumbered":
@@ -62,8 +66,6 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
 #
 # The current structure is Mapper(dictionary_key, expected_value, value_to_write)
 POST_PROCESS_OPERATION = {
-    "url/third_party/mozilla/README.chromium": create_license_post_processing(
-        Mapper("License", ['MPL-2'], ["MPL 2.0"])),
     "third_party/apache-portable-runtime/README.chromium": create_license_post_processing(
         Mapper("License", ['Apache-2.0', 'dso', 'Zlib', 'ISC', 'BSD-4-Clause-UC'], ["Apache 2.0"])),
     "third_party/compiler-rt/README.chromium": create_license_post_processing(
