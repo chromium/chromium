@@ -78,10 +78,16 @@ export class SettingsCrostiniSubpageElement extends
         },
       },
 
+      /**
+       * Whether port-forwarding UI should be displayed.
+       * Determined by policy setting and if current termina guest is of
+       * baguette type.
+       */
       showCrostiniPortForwarding_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showCrostiniPortForwarding');
+          return loadTimeData.getBoolean('showCrostiniPortForwarding') &&
+              !loadTimeData.getBoolean('isBaguette');
         },
       },
 

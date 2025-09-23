@@ -31,7 +31,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_select.js';
 
-import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, type CrostiniPortActiveSetting, type CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl, type CrostiniPortActiveSetting, type CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_VM_TYPE} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_port_forwarding.html.js';
 
 type HtmlElementWithData<T extends HTMLElement = HTMLElement> = T&{
@@ -173,6 +173,7 @@ export class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
       port.container_id = port.container_id || {
         vm_name: port['vm_name'] || DEFAULT_CROSTINI_VM,
         container_name: port['container_name'] || DEFAULT_CROSTINI_CONTAINER,
+        vm_type: DEFAULT_CROSTINI_VM_TYPE,
       };
       this.push('allPorts_', port);
     }

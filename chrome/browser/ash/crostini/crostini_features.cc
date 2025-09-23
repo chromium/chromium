@@ -6,8 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -338,6 +341,21 @@ bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
   // the user is either unmanaged, the policy is not set or the policy is set
   // as true. In either of those 3 cases, port forwarding is allowed.
   return true;
+}
+
+bool CrostiniFeatures::IsBaguette(Profile* profile) const {
+  bool is_baguette = false;
+  const base::Value::List& container_list =
+      profile->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
+  for (const auto& container : container_list) {
+    guest_os::GuestId id(container);
+    if (id.vm_type == guest_os::VmType::BAGUETTE) {
+      is_baguette = true;
+      break;
+    }
+  }
+
+  return is_baguette;
 }
 
 bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {

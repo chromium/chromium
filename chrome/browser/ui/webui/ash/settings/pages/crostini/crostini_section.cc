@@ -555,6 +555,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           IsAdbSideloadingAllowed());
   html_source->AddBoolean("showCrostiniPortForwarding",
                           IsPortForwardingAllowed());
+  html_source->AddBoolean("isBaguette", IsBaguette());
   html_source->AddBoolean("showCrostiniExtraContainers",
                           IsMultiContainerAllowed());
   html_source->AddBoolean("isOwnerProfile",
@@ -703,6 +704,10 @@ bool CrostiniSection::IsContainerUpgradeAllowed() const {
 
 bool CrostiniSection::IsPortForwardingAllowed() const {
   return crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_);
+}
+
+bool CrostiniSection::IsBaguette() const {
+  return crostini::CrostiniFeatures::Get()->IsBaguette(profile_);
 }
 
 bool CrostiniSection::IsMultiContainerAllowed() const {

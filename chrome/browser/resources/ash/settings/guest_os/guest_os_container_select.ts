@@ -18,7 +18,8 @@ import {getTemplate} from './guest_os_container_select.html.js';
 
 export function equalContainerId(first: GuestId, second: GuestId): boolean {
   return first.vm_name === second.vm_name &&
-      first.container_name === second.container_name;
+      first.container_name === second.container_name &&
+      first.vm_type === second.vm_type;
 }
 
 export function containerLabel(

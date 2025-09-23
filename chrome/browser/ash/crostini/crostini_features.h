@@ -80,6 +80,9 @@ class CrostiniFeatures {
   // false.
   virtual bool IsPortForwardingAllowed(Profile* profile);
 
+  // Returns whether we are running a baguette (containerless) crostini.
+  virtual bool IsBaguette(Profile* profile) const;
+
   // Returns true if user is allowed to use multiple (non-default) containers.
   virtual bool IsMultiContainerAllowed(Profile*);
 

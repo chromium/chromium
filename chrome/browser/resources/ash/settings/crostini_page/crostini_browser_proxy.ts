@@ -33,6 +33,7 @@ export enum VmType {
 // Identifiers for the default Crostini VM and container.
 export const DEFAULT_CROSTINI_VM = TERMINA_VM_TYPE;
 export const DEFAULT_CROSTINI_CONTAINER = 'penguin';
+export const DEFAULT_CROSTINI_VM_TYPE = VmType.TERMINA;
 
 export const DEFAULT_BAGUETTE_VM = TERMINA_VM_TYPE;
 export const DEFAULT_BAGUETTE_CONTAINER = 'penguin';

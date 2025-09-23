@@ -28,6 +28,93 @@ interface PrefParams {
   bruschettaInstalled?: boolean;
 }
 
+suite('<settings-crostini-subpage> for baguette', () => {
+  let subpage: SettingsCrostiniSubpageElement;
+  let guestOsBrowserProxy: TestGuestOsBrowserProxy;
+  let crostiniBrowserProxy: TestCrostiniBrowserProxy;
+
+  function setCrostiniPrefs(enabled: boolean, {
+    sharedPaths = {},
+    forwardedPorts = [],
+    micAllowed = false,
+    arcEnabled = false,
+    bruschettaInstalled = false,
+  }: PrefParams = {}): void {
+    subpage.prefs = {
+      arc: {
+        enabled: {value: arcEnabled},
+      },
+      bruschetta: {
+        installed: {
+          value: bruschettaInstalled,
+        },
+      },
+      crostini: {
+        enabled: {value: enabled},
+        mic_allowed: {value: micAllowed},
+        port_forwarding: {ports: {value: forwardedPorts}},
+      },
+      guest_os: {
+        paths_shared_to_vms: {value: sharedPaths},
+      },
+    };
+    flush();
+  }
+
+  setup(async () => {
+    loadTimeData.overrideValues({
+      isBaguette: true,
+      isCrostiniAllowed: true,
+      isCrostiniSupported: true,
+      showCrostiniExportImport: true,
+      showCrostiniContainerUpgrade: true,
+      showCrostiniPortForwarding: true,
+      showCrostiniDiskResize: true,
+      arcAdbSideloadingSupported: true,
+      showCrostiniExtraContainers: false,
+    });
+
+    crostiniBrowserProxy = new TestCrostiniBrowserProxy();
+    CrostiniBrowserProxyImpl.setInstanceForTesting(crostiniBrowserProxy);
+    guestOsBrowserProxy = new TestGuestOsBrowserProxy();
+    GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
+
+    Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
+
+    clearBody();
+    subpage = document.createElement('settings-crostini-subpage');
+    document.body.appendChild(subpage);
+    setCrostiniPrefs(true, {arcEnabled: true});
+    await flushTasks();
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Basic, no port forwarding', () => {
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniSharedPathsRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow')));
+    assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#container-upgrade')));
+    assertFalse(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostini-mic-permission-toggle')));
+    assertTrue(
+        isVisible(subpage.shadowRoot!.querySelector('#crostiniDiskResizeRow')));
+    assertFalse(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniExtraContainersRow')));
+  });
+});
+
 suite('<settings-crostini-subpage>', () => {
   let subpage: SettingsCrostiniSubpageElement;
   let guestOsBrowserProxy: TestGuestOsBrowserProxy;
@@ -65,6 +152,7 @@ suite('<settings-crostini-subpage>', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
+      isBaguette: false,
       isCrostiniAllowed: true,
       isCrostiniSupported: true,
       showCrostiniExportImport: true,
