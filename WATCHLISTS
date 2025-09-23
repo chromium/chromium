@@ -1519,6 +1519,10 @@
                   'ios/chrome/browser/language|'\
                   'ios/web_view/internal/language'
     },
+    'legion': {
+      'filepath': 'components/legion|'\
+                  'chrome/browser/legion'
+    },
     'lens_desktop': {
       'filepath': 'components/lens/|'\
                   'chrome/browser/ui/lens/'
@@ -3065,6 +3069,7 @@
                                             'simonha@google.com'],
     'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
+    'legion': ['heronyang@google.com', 'mghiware@google.com'],
     'lens_desktop': ['lens-chrome-eng+reviews@google.com',
                      'stanfield+watch@google.com',
                      'mercerd+watch@google.com'],
