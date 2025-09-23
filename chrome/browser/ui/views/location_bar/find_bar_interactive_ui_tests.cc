@@ -40,9 +40,7 @@ class FindBarInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_P(FindBarInteractiveUiTest, FindIconVisibility) {
   RunTestSequence(EnsureNotPresent(FindBarIcon::kElementId), TriggerFind(),
-                  If([&]() { return GetParam(); },
-                     Then(EnsureNotPresent(FindBarIcon::kElementId)),
-                     Else(WaitForShow(FindBarIcon::kElementId))));
+                  WaitForShow(FindBarIcon::kElementId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

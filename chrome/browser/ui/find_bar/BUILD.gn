@@ -23,7 +23,10 @@ source_set("find_bar") {
   if (!is_android) {
     sources += [ "find_bar_controller.h" ]
 
-    public_deps += [ "//content/public/browser" ]
+    public_deps += [
+      "//chrome/browser/ui/views/page_action",
+      "//content/public/browser",
+    ]
   }
 }
 
