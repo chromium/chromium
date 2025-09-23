@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Bookmarks.BulkSaveBookmarksInAccountCount"
-    units="bookmarks" expires_after="2025-11-05">
+    units="bookmarks" expires_after="2026-09-22">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Bookmarks.BulkSaveBookmarksInAccountViewRecreated"
-    enum="BooleanHit" expires_after="2025-11-05">
+    enum="BooleanHit" expires_after="2026-09-22">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
