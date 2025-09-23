@@ -1170,7 +1170,12 @@ template <bool expand_pseudo_references>
 void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
                                           uintptr_t scope_id) const {
   bool suppress_selector_list = false;
-  if (Match() == kId) {
+  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
+    SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
+                                     IsAttributeSelector());
+    SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
+                             builder);
+  } else if (Match() == kId) {
     builder.Append('#');
     SerializeIdentifier(SerializingValue(), builder);
   } else if (Match() == kClass) {
@@ -1388,13 +1393,6 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
 template <bool expand_pseudo_references>
 const CSSSelector* CSSSelector::SerializeCompound(StringBuilder& builder,
                                                   uintptr_t scope_id) const {
-  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
-    SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
-                                     IsAttributeSelector());
-    SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
-                             builder);
-  }
-
   for (const CSSSelector* simple_selector = this; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
     simple_selector->SerializeSimpleSelector<expand_pseudo_references>(
@@ -1470,15 +1468,8 @@ String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
 
 String CSSSelector::SimpleSelectorTextForDebug() const {
   StringBuilder builder;
-  if ((Match() == kTag || Match() == kUniversalTag) && !IsImplicit()) {
-    SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
-                                     IsAttributeSelector());
-    SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
-                             builder);
-  } else {
-    // `scope_id` is ignored when `expand_pseudo_references` is false.
-    SerializeSimpleSelector<!kExpandPseudoReferences>(builder, /*scope_id=*/0);
-  }
+  // `scope_id` is ignored when `expand_pseudo_references` is false.
+  SerializeSimpleSelector<!kExpandPseudoReferences>(builder, /*scope_id=*/0);
   return builder.ToString();
 }
 
