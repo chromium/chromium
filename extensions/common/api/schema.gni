@@ -84,7 +84,7 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_udp.idl",
     "system_display.idl",
-    "system_storage.idl",
+    "system_storage.webidl",
     "usb.idl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",
