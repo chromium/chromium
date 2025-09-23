@@ -41,6 +41,9 @@ class TestSupport {
     this.owner_ = owner;
 
     Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_CREATE_FACE_LANDMARKER_FOR_TEST,
+        () => this.createFaceLandmarker());
+    Messenger.registerHandler(
         OffscreenCommandType.FACEGAZE_MOCK_NO_CAMERA_FOR_TEST,
         () => this.mockNoCamera_());
     Messenger.registerHandler(
@@ -112,6 +115,11 @@ class TestSupport {
   setWebCamRetriesRemaining(message: {retries: number}): void {
     // @ts-ignore Private member access.
     this.owner_.connectToWebCamRetriesRemaining_ = message.retries;
+  }
+
+  async createFaceLandmarker(): Promise<void> {
+    // @ts-ignore Private member access.
+    return this.owner_.createFaceLandmarker_();
   }
 
   hasFaceLandmarker(): boolean {

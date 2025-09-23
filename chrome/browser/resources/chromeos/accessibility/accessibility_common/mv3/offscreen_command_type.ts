@@ -20,6 +20,8 @@ export enum OffscreenCommandType {
   FACEGAZE_WEBCAM_INITIALIZE = 'FacegazeWebCamInitialize',
   FACEGAZE_WEBCAM_STOP = 'FacegazeWebCamStop',
   // Test-only:
+  FACEGAZE_CREATE_FACE_LANDMARKER_FOR_TEST =
+      'FacegazeCreateFaceLandmarkerForTest',
   FACEGAZE_MOCK_NO_CAMERA_FOR_TEST = 'FacegazeMockNoCameraForTest',
   FACEGAZE_MOCK_TIMEOUT_FOR_TEST = 'FacegazeMockTimeoutForTest',
   FACEGAZE_MOCK_RUN_LATEST_TIMEOUT_FOR_TEST = 'FacegazeRunLatestTimeoutForTest',
