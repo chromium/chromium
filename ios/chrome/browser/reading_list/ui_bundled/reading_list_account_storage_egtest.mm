@@ -543,11 +543,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // and one is removed, then after a sign-out and a new sign-in with the Reading
 // List sign-in promo with the same account, the removed item is not visible.
 - (void)testRemoveItemAfterSignInThenRefreshSignin {
-  // TODO(crbug.com/436165941): Re-enable the test on iOS26.
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -573,6 +568,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                          fakeIdentity.userEmail);
   // Remove Page 1 from the Reading List.
   OpenReadingList();
+  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       performAction:grey_longPressWithDuration(kLongPressDuration)];
   [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
@@ -605,11 +603,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // unread items sections should be shown correctly and remain so after a
 // sign-out & sign-in with the same account.
 - (void)testMoveItemThenRefreshSignIn {
-  // TODO(crbug.com/436556292): Re-enable the test on iOS26.
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -636,6 +629,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Mark Page 1 as read.
   OpenReadingList();
+  // TODO(crbug.com/446889046): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
       performAction:grey_longPressWithDuration(kLongPressDuration)];
   [[EarlGrey selectElementWithMatcher:ReadingListMarkAsReadButton()]
