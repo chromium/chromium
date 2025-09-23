@@ -35,7 +35,8 @@
 
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:
-                               (const FramingCoordinates&)coordinates {
+                               (const FramingCoordinates&)coordinates
+                            accessibilityName:(NSString*)accessibilityName {
   self = [super init];
   if (self) {
     _backgroundStyle = HomeCustomizationBackgroundStyle::kUserUploaded;
@@ -45,6 +46,7 @@
     _configurationID = [NSString
         stringWithFormat:@"%@_%ld_%@", kBackgroundCellIdentifier,
                          _backgroundStyle, [imagePath lastPathComponent]];
+    _accessibilityName = accessibilityName;
   }
   return self;
 }

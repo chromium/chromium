@@ -567,7 +567,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       return [[BackgroundCustomizationConfigurationItem alloc]
           initWithUserUploadedImagePath:imagePath
                      framingCoordinates:currentUserUploadedBackground
-                                            .framing_coordinates];
+                                            .framing_coordinates
+                      accessibilityName:
+                          l10n_util::GetNSString(
+                              IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_PHOTO_LIBRARY_ACCESSIBILITY_LABEL)];
     }
   } else {
     sync_pb::UserColorTheme colorTheme =

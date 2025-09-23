@@ -50,10 +50,12 @@ class NtpCustomBackground;
 - (instancetype)initWithNoBackground;
 
 // Initializes a new instance of the background customization configuration
-// with a user-uploaded image path and framing coordinates.
+// with a user-uploaded image path, a framing coordinates and an accessibility
+// name.
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:
-                               (const FramingCoordinates&)coordinates;
+                               (const FramingCoordinates&)coordinates
+                            accessibilityName:(NSString*)accessibilityName;
 
 // A pointer to a CollectionImage that points to the background image.
 @property(readonly, nonatomic) const CollectionImage& collectionImage;
