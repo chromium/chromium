@@ -676,6 +676,12 @@ set_defaults("ios_appex_bundle") {
 #       the depend on it (unless the "bundle_data" target sets "product_type"
 #       to "com.apple.product-type.framework").
 #
+#   app_ext_safe
+#       (optional) boolean, whether the shared library should be compiled as
+#       app extension safe or not; when true, the code and its dependencies
+#       will be build in ${current_toolchain}_app_ext which ensure it can be
+#       safely used from application extensions.
+#
 # This template provides two targets for the resulting framework bundle. The
 # link-time behavior varies depending on which of the two targets below is
 # added as a dependency:
@@ -749,12 +755,21 @@ template("ios_framework_bundle") {
     _output_name = invoker.output_name
   }
 
-  _product_type = "com.apple.product-type.framework"
+  if (defined(invoker.app_ext_safe)) {
+    _app_ext_safe = invoker.app_ext_safe
+  } else {
+    _app_ext_safe = false
+  }
+
   _has_public_headers =
       defined(invoker.public_headers) && invoker.public_headers != []
 
   _shared_library_target = _target_name + "_shared_library"
-  _link_target_name = _target_name + "+link"
+  if (!_app_ext_safe) {
+    _shared_library_toolchain = current_toolchain
+  } else if (!ios_is_app_extension) {
+    _shared_library_toolchain = "${current_toolchain}_app_ext"
+  }
 
   if (_has_public_headers) {
     _default_toolchain_target_gen_dir =
@@ -762,15 +777,59 @@ template("ios_framework_bundle") {
 
     _framework_headers_target = _target_name + "_framework_headers"
 
-    _headers_map_config = _target_name + "_headers_map"
     _header_map_filename =
         "$_default_toolchain_target_gen_dir/$_output_name.headers.hmap"
-    config(_headers_map_config) {
-      visibility = [
-        ":${_shared_library_target}",
-        ":${_target_name}_signed_bundle",
-      ]
-      include_dirs = [ _header_map_filename ]
+
+    if (!_app_ext_safe || ios_is_app_extension) {
+      _headers_map_config = _target_name + "_headers_map"
+      config(_headers_map_config) {
+        visibility = [ ":${_shared_library_target}" ]
+        include_dirs = [ _header_map_filename ]
+      }
+    }
+  }
+
+  # When _app_ext_safe is true, only build the shared library in a toolchain
+  # that is safe for application extension.
+  if (!_app_ext_safe || ios_is_app_extension) {
+    shared_library(_shared_library_target) {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "bundle_deps",
+                               "bundle_deps_filter",
+                               "data_deps",
+                               "enable_code_signing",
+                               "extra_substitutions",
+                               "info_plist",
+                               "info_plist_target",
+                               "output_name",
+                               "public_configs",
+                               "transparent",
+                               "visibility",
+                             ])
+
+      visibility = [ ":${_target_name}_signed_bundle" ]
+
+      if (!defined(ldflags)) {
+        ldflags = []
+      }
+      ldflags +=
+          [ "-Wl,-install_name,@rpath/$_output_name.framework/$_output_name" ]
+
+      if (_has_public_headers) {
+        configs += [ ":$_headers_map_config" ]
+
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ ":$_framework_headers_target" ]
+      }
+
+      output_extension = ""
+      output_name = _output_name
+      output_prefix_override = true
+      output_dir = target_out_dir
     }
   }
 
@@ -783,46 +842,6 @@ template("ios_framework_bundle") {
   config(_framework_public_config) {
     configs = [ ":$_framework_headers_config" ]
     frameworks = [ "$_output_name.framework" ]
-  }
-
-  shared_library(_shared_library_target) {
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "bundle_deps",
-                             "bundle_deps_filter",
-                             "data_deps",
-                             "enable_code_signing",
-                             "extra_substitutions",
-                             "info_plist",
-                             "info_plist_target",
-                             "output_name",
-                             "public_configs",
-                             "transparent",
-                             "visibility",
-                           ])
-
-    visibility = [ ":${_target_name}_signed_bundle" ]
-
-    if (!defined(ldflags)) {
-      ldflags = []
-    }
-    ldflags +=
-        [ "-Wl,-install_name,@rpath/$_output_name.framework/$_output_name" ]
-
-    if (_has_public_headers) {
-      configs += [ ":$_headers_map_config" ]
-
-      if (!defined(deps)) {
-        deps = []
-      }
-      deps += [ ":$_framework_headers_target" ]
-    }
-
-    output_extension = ""
-    output_name = _output_name
-    output_prefix_override = true
-    output_dir = target_out_dir
   }
 
   if (_has_public_headers) {
@@ -919,124 +938,136 @@ template("ios_framework_bundle") {
     }
   }
 
-  # Bundle identifier should respect rfc1034, so replace "_" with "-".
-  _bundle_identifier =
-      "$ios_app_bundle_id_prefix." + string_replace(_output_name, "_", "-")
+  # When _app_ext_safe is true, only define the following targets if the
+  # current toolchain is not a target safe for app extensions.
+  #
+  # This assumes ios_is_app_extension is false for the default toolchain.
+  # If this is not the case, then the build will likely fail.
+  if (!_app_ext_safe || !ios_is_app_extension) {
+    # Bundle identifier should respect rfc1034, so replace "_" with "-".
+    _bundle_identifier =
+        "$ios_app_bundle_id_prefix." + string_replace(_output_name, "_", "-")
 
-  _info_plist_target = _target_name + "_info_plist"
-  _info_plist_bundle = _target_name + "_info_plist_bundle"
-  ios_info_plist(_info_plist_target) {
-    visibility = [ ":$_info_plist_bundle" ]
-    executable_name = _output_name
-    forward_variables_from(invoker,
-                           [
-                             "info_plist",
-                             "info_plist_target",
-                           ])
+    _info_plist_target = _target_name + "_info_plist"
+    _info_plist_bundle = _target_name + "_info_plist_bundle"
+    ios_info_plist(_info_plist_target) {
+      visibility = [ ":$_info_plist_bundle" ]
+      executable_name = _output_name
+      forward_variables_from(invoker,
+                             [
+                               "info_plist",
+                               "info_plist_target",
+                             ])
 
-    extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
-    if (defined(invoker.extra_substitutions)) {
-      extra_substitutions += invoker.extra_substitutions
-    }
-  }
-
-  bundle_data(_info_plist_bundle) {
-    visibility = [ ":${_target_name}_signed_bundle" ]
-    forward_variables_from(invoker, [ "testonly" ])
-    sources = get_target_outputs(":$_info_plist_target")
-    public_deps = [ ":$_info_plist_target" ]
-    product_type = _product_type
-
-    if (target_environment != "catalyst") {
-      outputs = [ "{{bundle_contents_dir}}/Info.plist" ]
-    } else {
-      outputs = [ "{{bundle_resources_dir}}/Info.plist" ]
-    }
-  }
-
-  ios_create_signed_bundle(_target_name + "_signed_bundle") {
-    forward_variables_from(invoker,
-                           [
-                             "bundle_deps",
-                             "bundle_deps_filter",
-                             "data_deps",
-                             "deps",
-                             "enable_code_signing",
-                             "public_configs",
-                             "public_deps",
-                             "testonly",
-                             "transparent",
-                             "visibility",
-                           ])
-
-    product_type = _product_type
-    bundle_extension = ".framework"
-
-    output_name = _output_name
-    bundle_binary_target = ":$_shared_library_target"
-    bundle_binary_output = _output_name
-
-    # Framework do not have entitlements nor mobileprovision because they use
-    # the one from the bundle using them (.app or .appex) as they are just
-    # dynamic library with shared code.
-    disable_entitlements = true
-    disable_embedded_mobileprovision = true
-
-    if (!defined(deps)) {
-      deps = []
-    }
-    deps += [ ":$_info_plist_bundle" ]
-  }
-
-  group(_target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "public_configs",
-                             "public_deps",
-                             "testonly",
-                             "visibility",
-                           ])
-    if (!defined(public_deps)) {
-      public_deps = []
-    }
-    public_deps += [ ":${_target_name}_signed_bundle" ]
-
-    if (_has_public_headers) {
-      if (!defined(public_configs)) {
-        public_configs = []
+      extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
+      if (defined(invoker.extra_substitutions)) {
+        extra_substitutions += invoker.extra_substitutions
       }
-      public_configs += [ ":$_framework_headers_config" ]
     }
-  }
 
-  group(_link_target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "public_configs",
-                             "public_deps",
-                             "testonly",
-                             "visibility",
-                           ])
-    if (!defined(public_deps)) {
-      public_deps = []
+    _product_type = "com.apple.product-type.framework"
+    bundle_data(_info_plist_bundle) {
+      visibility = [ ":${_target_name}_signed_bundle" ]
+      forward_variables_from(invoker, [ "testonly" ])
+      sources = get_target_outputs(":$_info_plist_target")
+      public_deps = [ ":$_info_plist_target" ]
+      product_type = _product_type
+
+      if (target_environment != "catalyst") {
+        outputs = [ "{{bundle_contents_dir}}/Info.plist" ]
+      } else {
+        outputs = [ "{{bundle_resources_dir}}/Info.plist" ]
+      }
     }
-    public_deps += [ ":$_target_name" ]
 
-    if (!defined(all_dependent_configs)) {
-      all_dependent_configs = []
+    ios_create_signed_bundle(_target_name + "_signed_bundle") {
+      forward_variables_from(invoker,
+                             [
+                               "bundle_deps",
+                               "bundle_deps_filter",
+                               "data_deps",
+                               "deps",
+                               "enable_code_signing",
+                               "public_configs",
+                               "public_deps",
+                               "testonly",
+                               "transparent",
+                               "visibility",
+                             ])
+
+      product_type = _product_type
+      bundle_extension = ".framework"
+
+      output_name = _output_name
+      bundle_binary_output = _output_name
+      bundle_binary_target =
+          ":$_shared_library_target($_shared_library_toolchain)"
+
+      # Framework do not have entitlements nor mobileprovision because they use
+      # the one from the bundle using them (.app or .appex) as they are just
+      # dynamic library with shared code.
+      disable_entitlements = true
+      disable_embedded_mobileprovision = true
+
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ ":$_info_plist_bundle" ]
+      if (_has_public_headers) {
+        deps += [ ":$_framework_headers_target" ]
+      }
     }
-    all_dependent_configs += [ ":$_framework_public_config" ]
-  }
 
-  bundle_data(_target_name + "+bundle") {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    public_deps = [ ":$_target_name" ]
-    sources = [ "$root_out_dir/$_output_name.framework" ]
-    outputs = [ "{{bundle_contents_dir}}/Frameworks/$_output_name.framework" ]
+    group(_target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "public_configs",
+                               "public_deps",
+                               "testonly",
+                               "visibility",
+                             ])
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += [ ":${_target_name}_signed_bundle" ]
+
+      if (_has_public_headers) {
+        if (!defined(public_configs)) {
+          public_configs = []
+        }
+        public_configs += [ ":$_framework_headers_config" ]
+      }
+    }
+
+    group(_target_name + "+link") {
+      forward_variables_from(invoker,
+                             [
+                               "public_configs",
+                               "public_deps",
+                               "testonly",
+                               "visibility",
+                             ])
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += [ ":$_target_name" ]
+
+      if (!defined(all_dependent_configs)) {
+        all_dependent_configs = []
+      }
+      all_dependent_configs += [ ":$_framework_public_config" ]
+    }
+
+    bundle_data(_target_name + "+bundle") {
+      forward_variables_from(invoker,
+                             [
+                               "testonly",
+                               "visibility",
+                             ])
+      public_deps = [ ":$_target_name" ]
+      sources = [ "$root_out_dir/$_output_name.framework" ]
+      outputs = [ "{{bundle_contents_dir}}/Frameworks/$_output_name.framework" ]
+    }
   }
 }
 
