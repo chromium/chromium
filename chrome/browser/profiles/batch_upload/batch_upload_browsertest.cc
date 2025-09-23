@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
@@ -289,7 +290,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   test_helper().SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
 
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar_button->GetText(), std::u16string());
+  const std::u16string original_avatar_button_text(avatar_button->GetText());
+  ASSERT_NE(original_avatar_button_text,
+            l10n_util::GetStringUTF16(
+                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
 
   ASSERT_FALSE(batch_upload()->IsDialogOpened());
 
@@ -300,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   delegate->SimulateCancel();
 
   EXPECT_FALSE(batch_upload()->IsDialogOpened());
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(avatar_button->GetText(), original_avatar_button_text);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
@@ -310,7 +314,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   test_helper().SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
 
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar_button->GetText(), std::u16string());
+  ASSERT_NE(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
 
   ASSERT_FALSE(batch_upload()->IsDialogOpened());
 

@@ -82,7 +82,7 @@ class BatchUploadServiceTestHelper {
       std::unique_ptr<BatchUploadDelegate> delegate,
       content::BrowserContext* browser_context);
 
-  syncer::MockSyncService mock_sync_service_;
+  testing::NiceMock<syncer::MockSyncService> mock_sync_service_;
   std::map<syncer::DataType, syncer::LocalDataDescription>
       returned_descriptions_;
 };
