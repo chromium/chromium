@@ -64,7 +64,7 @@ String DOMURLUtilsReadOnly::search(const KURL& kurl) {
 }
 
 String DOMURLUtilsReadOnly::hash(const KURL& kurl) {
-  return kurl.FragmentIdentifierWithLeadingNumberSign().ToAtomicString();
+  return kurl.FragmentIdentifierWithLeadingNumberSign().ToString();
 }
 
 }  // namespace blink
