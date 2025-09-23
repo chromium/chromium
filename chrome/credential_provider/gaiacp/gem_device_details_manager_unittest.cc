@@ -103,7 +103,9 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
     base::Value::Dict body_dict =
-        base::JSONReader::ReadDict(request_data.body).value();
+        base::JSONReader::ReadDict(request_data.body,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
 
     std::string uploaded_dm_token = GetDictStringUTF8(body_dict, "dm_token");
     ASSERT_EQ(uploaded_dm_token, base::WideToUTF8(dm_token));

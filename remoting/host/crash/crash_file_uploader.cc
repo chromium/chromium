@@ -156,8 +156,8 @@ bool RetrieveCrashReportDetails(const base::FilePath& crash_guid,
     return false;
   }
 
-  std::optional<base::Value::Dict> opt_metadata =
-      base::JSONReader::ReadDict(metadata_file_contents);
+  std::optional<base::Value::Dict> opt_metadata = base::JSONReader::ReadDict(
+      metadata_file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!opt_metadata.has_value()) {
     error_reason = "Failed to parse metadata file contents";
     return false;
