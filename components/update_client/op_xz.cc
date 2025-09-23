@@ -45,6 +45,7 @@ void Done(base::OnceCallback<
             if (success) {
               return out_file;
             }
+            DeleteFileAndEmptyParentDirectory(out_file);
             return base::unexpected<CategorizedError>(
                 {.category = ErrorCategory::kUnpack,
                  .code = static_cast<int>(UnpackerError::kXzFailed)});
