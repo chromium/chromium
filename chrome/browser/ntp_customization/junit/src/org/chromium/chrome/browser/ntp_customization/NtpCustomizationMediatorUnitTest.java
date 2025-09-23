@@ -93,6 +93,7 @@ public class NtpCustomizationMediatorUnitTest {
         FeedFeatures.setFakePrefsForTest(mPrefService);
         mMediator =
                 new NtpCustomizationMediator(
+                        mContext,
                         mBottomSheetController,
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,

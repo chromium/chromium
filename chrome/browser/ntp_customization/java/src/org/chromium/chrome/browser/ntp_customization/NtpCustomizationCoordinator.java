@@ -157,6 +157,7 @@ public class NtpCustomizationCoordinator {
 
         mMediator =
                 new NtpCustomizationMediator(
+                        context,
                         bottomSheetController,
                         bottomSheetContent,
                         viewFlipperPropertyModel,
@@ -302,6 +303,11 @@ public class NtpCustomizationCoordinator {
             @Override
             public BottomSheetController getBottomSheetController() {
                 return mBottomSheetController;
+            }
+
+            @Override
+            public void onNewColorSelected(boolean isDifferentColor) {
+                mMediator.onNewColorSelected(isDifferentColor);
             }
         };
     }

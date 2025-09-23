@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
@@ -180,6 +181,12 @@ public class NtpThemeMediator {
     void handleChromeDefaultSectionClick(View view) {
         updateTrailingIconVisibilityForSectionType(CHROME_DEFAULT);
 
+        @NtpBackgroundImageType
+        int currentBackgroundType = mNtpCustomizationConfigManager.getBackgroundImageType();
+        if (currentBackgroundType == NtpBackgroundImageType.CHROME_COLOR) {
+            // We need to update the app's theme when a customized background color is removed.
+            mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
+        }
         mNtpCustomizationConfigManager.onBackgroundColorChanged(
                 mContext,
                 /* colorInfo= */ null,

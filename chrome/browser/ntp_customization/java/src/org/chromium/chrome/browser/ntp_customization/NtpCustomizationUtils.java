@@ -420,13 +420,13 @@ public class NtpCustomizationUtils {
      *
      * @param color The new primary theme color.
      */
-    static void setCustomizedPrimaryColor(@ColorInt int color) {
+    public static void setCustomizedPrimaryColor(@ColorInt int color) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, color);
     }
 
     /** Gets the customized primary color from the SharedPreference. */
-    static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
+    public static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR,

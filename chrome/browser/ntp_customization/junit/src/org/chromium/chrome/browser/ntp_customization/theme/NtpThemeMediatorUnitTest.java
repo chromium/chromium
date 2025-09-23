@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
@@ -219,6 +221,29 @@ public class NtpThemeMediatorUnitTest {
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(CHROME_COLORS, true)));
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    public void testHandleSectionClick_onNewColorSelected() {
+        createMediator(/* shouldShowAlone= */ true);
+        when(mNtpCustomizationConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.DEFAULT);
+
+        // Verifies the case of background type from default to default.
+        mMediator.handleChromeDefaultSectionClick(mView);
+        verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
+
+        // Verifies the case of background type from upload-image to default.
+        when(mNtpCustomizationConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        mMediator.handleChromeDefaultSectionClick(mView);
+        verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
+
+        // Verifies the case of background type from chrome-color to default.
+        when(mNtpCustomizationConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.CHROME_COLOR);
+        mMediator.handleChromeDefaultSectionClick(mView);
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
     }
 
     private void createMediator(boolean shouldShowAlone) {

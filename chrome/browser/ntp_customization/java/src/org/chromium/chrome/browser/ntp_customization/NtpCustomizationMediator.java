@@ -75,9 +75,11 @@ public class NtpCustomizationMediator {
     private final boolean mNtpCustomizationForMvtFeatureEnabled;
     private @Nullable Profile mProfile;
     private @Nullable Integer mCurrentBottomSheet;
+    private boolean mShouldRecreate;
     private static @Nullable PrefService sPrefServiceForTest;
 
     public NtpCustomizationMediator(
+            Context context,
             BottomSheetController bottomSheetController,
             NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel viewFlipperPropertyModel,
@@ -105,6 +107,12 @@ public class NtpCustomizationMediator {
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                         mBottomSheetContent.onSheetClosed();
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
+                        // Recreates the activity if a new customized theme color is selected or
+                        // removed.
+                        if (mShouldRecreate) {
+                            // TODO(https://crbug.com/423579377): Notify to recreate the activity to
+                            // apply the new theme.
+                        }
                     }
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
@@ -137,6 +145,11 @@ public class NtpCustomizationMediator {
             mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         }
         NtpCustomizationMetricsUtils.recordBottomSheetShown(type);
+    }
+
+    // Called when a customized theme color is selected or removed.
+    void onNewColorSelected(boolean isDifferentColor) {
+        mShouldRecreate = isDifferentColor;
     }
 
     /** Handles system back press and back button clicks on the bottom sheet. */

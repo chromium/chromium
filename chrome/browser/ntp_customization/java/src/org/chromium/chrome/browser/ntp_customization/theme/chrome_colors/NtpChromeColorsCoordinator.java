@@ -43,6 +43,7 @@ public class NtpChromeColorsCoordinator {
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final Context mContext;
+    private final BottomSheetDelegate mDelegate;
     private final ColorGridView mChromeColorsRecyclerView;
     private final int mItemWidth;
     private final int mSpacing;
@@ -59,6 +60,7 @@ public class NtpChromeColorsCoordinator {
     public NtpChromeColorsCoordinator(
             Context context, BottomSheetDelegate delegate, Runnable onChromeColorSelectedCallback) {
         mContext = context;
+        mDelegate = delegate;
         mOnChromeColorSelectedCallback = onChromeColorSelectedCallback;
         View ntpChromeColorsBottomSheetView =
                 LayoutInflater.from(mContext)
@@ -125,7 +127,11 @@ public class NtpChromeColorsCoordinator {
      *
      * @param ntpThemeColorInfo The color instance that the user clicked.
      */
-    private void onItemClicked(NtpThemeColorInfo ntpThemeColorInfo) {
+    @VisibleForTesting
+    void onItemClicked(NtpThemeColorInfo ntpThemeColorInfo) {
+        mDelegate.onNewColorSelected(
+                mPrimaryColor == null
+                        || ntpThemeColorInfo.primaryColor != mPrimaryColor.intValue());
         NtpCustomizationConfigManager.getInstance()
                 .onBackgroundColorChanged(
                         mContext,
@@ -149,6 +155,10 @@ public class NtpChromeColorsCoordinator {
     @VisibleForTesting
     void handleLearnMoreClick(View view) {
         launchUriActivity(view.getContext(), LEARN_MORE_CLICK_URL);
+    }
+
+    public @Nullable @ColorInt Integer getPrimaryColorForTesting() {
+        return mPrimaryColor;
     }
 
     /**

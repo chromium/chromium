@@ -42,4 +42,11 @@ public interface BottomSheetDelegate {
 
     /** Returns the controller that manages the bottom sheet's lifecycle and behavior. */
     BottomSheetController getBottomSheetController();
+
+    /**
+     * Called when a new customized color is selected.
+     *
+     * @param isDifferentColor Whether a different primary color is selected by users.
+     */
+    void onNewColorSelected(boolean isDifferentColor);
 }

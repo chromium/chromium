@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -34,7 +37,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator.ColorGridView;
 
@@ -58,6 +66,8 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+
         mCoordinator =
                 new NtpChromeColorsCoordinator(
                         mContext, mBottomSheetDelegate, mOnChromeColorSelectedCallback);
@@ -142,5 +152,48 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
         // Verify the callback is called.
         verify(mOnChromeColorSelectedCallback).run();
+    }
+
+    @Test
+    public void testOnItemClicked_noPrimaryColorSelected() {
+        @Nullable
+        @ColorInt
+        Integer primaryColor = mCoordinator.getPrimaryColorForTesting();
+
+        assertNull(primaryColor);
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.BLUE);
+        mCoordinator.onItemClicked(colorInfo);
+
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    public void testOnItemClicked_withPrimaryColorSelected() {
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.BLUE);
+        NtpThemeColorInfo colorInfo1 =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.LIGHT_BLUE);
+        @ColorInt Integer primaryColor = colorInfo.primaryColor;
+        NtpCustomizationUtils.setCustomizedPrimaryColor(primaryColor);
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_COLOR);
+        assertEquals(primaryColor, NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+
+        mCoordinator =
+                new NtpChromeColorsCoordinator(
+                        mContext, mBottomSheetDelegate, mOnChromeColorSelectedCallback);
+        assertEquals(primaryColor, mCoordinator.getPrimaryColorForTesting());
+
+        mCoordinator.onItemClicked(colorInfo);
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(false));
+
+        mCoordinator.onItemClicked(colorInfo1);
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 }
