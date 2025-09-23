@@ -6,16 +6,16 @@
 
 #include <string>
 
-#include "base/callback_list.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -29,22 +29,7 @@ PageInfoBubbleViewBase::BubbleType g_shown_bubble_type =
     PageInfoBubbleViewBase::BUBBLE_NONE;
 PageInfoBubbleViewBase* g_page_info_bubble = nullptr;
 
-PageInfoBubbleViewBase::PageInfoBubbleCreatedCallbackList&
-GetPageInfoBubbleCreatedCallbackList() {
-  static base::NoDestructor<
-      PageInfoBubbleViewBase::PageInfoBubbleCreatedCallbackList>
-      bubble_created_callback_list;
-  return *bubble_created_callback_list;
-}
-
 }  // namespace
-
-// static
-base::CallbackListSubscription
-PageInfoBubbleViewBase::RegisterPageInfoCreatedCallback(
-    PageInfoBubbleCreatedCallback callback) {
-  return GetPageInfoBubbleCreatedCallbackList().Add(std::move(callback));
-}
 
 // static
 PageInfoBubbleViewBase::BubbleType
@@ -58,6 +43,8 @@ PageInfoBubbleViewBase::GetPageInfoBubbleForTesting() {
   return g_page_info_bubble;
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoBubbleViewBase,
+                                      kPageInfoBubbleElementIdentifier);
 PageInfoBubbleViewBase::PageInfoBubbleViewBase(
     views::BubbleAnchor anchor,
     const gfx::Rect& anchor_rect,
@@ -79,11 +66,7 @@ PageInfoBubbleViewBase::PageInfoBubbleViewBase(
   if (std::holds_alternative<std::nullptr_t>(anchor)) {
     SetAnchorRect(anchor_rect);
   }
-}
-
-void PageInfoBubbleViewBase::AddedToWidget() {
-  views::BubbleDialogDelegateView::AddedToWidget();
-  GetPageInfoBubbleCreatedCallbackList().Notify(this);
+  SetProperty(views::kElementIdentifierKey, kPageInfoBubbleElementIdentifier);
 }
 
 void PageInfoBubbleViewBase::OnWidgetDestroying(views::Widget* widget) {

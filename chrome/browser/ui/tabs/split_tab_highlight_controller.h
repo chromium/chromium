@@ -8,16 +8,14 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
-#include "components/tabs/public/tab_interface.h"
-#include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
 class BrowserView;
-class PageInfoBubbleViewBase;
 
 namespace content {
 class WebContents;
@@ -26,7 +24,11 @@ class WebContents;
 namespace ui {
 class ElementIdentifier;
 class TrackedElement;
-}
+}  // namespace ui
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace split_tabs {
 
@@ -34,8 +36,7 @@ class SplitTabHighlightDelegate;
 
 // Coordinates when active tab in a split is highlighted.
 class SplitTabHighlightController : public OmniboxTabHelper::Observer,
-                                    public ChipController::Observer,
-                                    public views::WidgetObserver {
+                                    public ChipController::Observer {
  public:
   explicit SplitTabHighlightController(BrowserView* browser_view);
   ~SplitTabHighlightController() override;
@@ -53,10 +54,6 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
   void OnPermissionPromptShown() override;
   void OnPermissionPromptHidden() override;
 
-  // views::WidgetObserver:
-  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
  private:
   void AddShowHideElementSubscriptions(
       ui::ElementIdentifier element_identifier);
@@ -66,16 +63,13 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
   void OnTabWillDiscard(tabs::TabInterface* tab_interface,
                         content::WebContents* old_contents,
                         content::WebContents* new_contents);
-  void OnPageInfoBubbleCreated(PageInfoBubbleViewBase* bubble_view);
   void OnElementShown(ui::TrackedElement* tracked_element);
   void OnElementHidden(ui::TrackedElement* tracked_element);
   void UpdateHighlight();
 
   bool is_permission_prompt_showing_ = false;
-  bool is_page_info_bubble_showing_ = false;
   bool is_omnibox_popup_showing_ = false;
-  bool is_device_chooser_bubble_showing_ = false;
-  bool is_file_access_bubble_showing_ = false;
+  base::flat_map<ui::ElementIdentifier, bool> tracked_bubble_visibility_;
   std::vector<base::CallbackListSubscription> browser_scoped_subscriptions_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription tab_will_discard_subscription_;
@@ -83,8 +77,6 @@ class SplitTabHighlightController : public OmniboxTabHelper::Observer,
       omnibox_tab_helper_observation_{this};
   base::ScopedObservation<ChipController, ChipController::Observer>
       chip_controller_observation_{this};
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      page_info_bubble_observation_{this};
   std::unique_ptr<SplitTabHighlightDelegate> split_tab_highlight_delegate_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };

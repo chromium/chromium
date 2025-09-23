@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_BASE_H_
 
-#include "base/callback_list.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -41,16 +41,10 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
     BUBBLE_SAFETY_TIP,
   };
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPageInfoBubbleElementIdentifier);
+
   PageInfoBubbleViewBase(const PageInfoBubbleViewBase&) = delete;
   PageInfoBubbleViewBase& operator=(const PageInfoBubbleViewBase&) = delete;
-
-  using PageInfoBubbleCreatedCallbackList =
-      base::RepeatingCallbackList<void(PageInfoBubbleViewBase* bubble_view)>;
-  using PageInfoBubbleCreatedCallback =
-      PageInfoBubbleCreatedCallbackList::CallbackType;
-
-  static base::CallbackListSubscription RegisterPageInfoCreatedCallback(
-      PageInfoBubbleCreatedCallback callback);
 
   // Returns the type of the bubble being shown. For testing only.
   static BubbleType GetShownBubbleType();
@@ -66,7 +60,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
                          content::WebContents* web_contents);
 
   // views::BubbleDialogDelegateView:
-  void AddedToWidget() override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // WebContentsObserver:

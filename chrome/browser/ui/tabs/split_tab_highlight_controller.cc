@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
 
+#include <algorithm>
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_delegate.h"
@@ -27,6 +32,18 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+const std::vector<ui::ElementIdentifier>& GetTrackedBubbleDialogs() {
+  static const base::NoDestructor<std::vector<ui::ElementIdentifier>>
+      kTrackedBubbleDialogs(
+          {DeviceChooserContentView::kDeviceChooserDialogBubbleElementId,
+           PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier,
+           FileSystemAccessRestorePermissionBubbleView::
+               kFileSystemAccessBubbleElementIdentifier});
+  return *kTrackedBubbleDialogs;
+}
+}  // namespace
+
 namespace split_tabs {
 
 SplitTabHighlightController::SplitTabHighlightController(
@@ -35,29 +52,28 @@ SplitTabHighlightController::SplitTabHighlightController(
           std::make_unique<split_tabs::SplitTabHighlightDelegateImpl>(
               browser_view)),
       browser_window_interface_(browser_view->browser()) {
+  tracked_bubble_visibility_ = base::MakeFlatMap<ui::ElementIdentifier, bool>(
+      GetTrackedBubbleDialogs(), {},
+      [](ui::ElementIdentifier id) { return std::make_pair(id, false); });
   browser_scoped_subscriptions_.emplace_back(
       browser_window_interface_->RegisterActiveTabDidChange(
           base::BindRepeating(&SplitTabHighlightController::OnActiveTabChange,
                               base::Unretained(this))));
   chip_controller_observation_.Observe(
       browser_view->toolbar()->location_bar()->GetChipController());
-  browser_scoped_subscriptions_.emplace_back(
-      PageInfoBubbleViewBase::RegisterPageInfoCreatedCallback(
-          base::BindRepeating(
-              &SplitTabHighlightController::OnPageInfoBubbleCreated,
-              base::Unretained(this))));
-  AddShowHideElementSubscriptions(
-      DeviceChooserContentView::kDeviceChooserDialogBubbleElementId);
-  AddShowHideElementSubscriptions(FileSystemAccessRestorePermissionBubbleView::
-                                      kFileSystemAccessBubbleElementIdentifier);
+  for (ui::ElementIdentifier identifier : GetTrackedBubbleDialogs()) {
+    AddShowHideElementSubscriptions(identifier);
+  }
 }
 
 SplitTabHighlightController::~SplitTabHighlightController() = default;
 
 bool SplitTabHighlightController::ShouldHighlight() {
+  const bool is_any_tracked_bubbles_visible = std::any_of(
+      tracked_bubble_visibility_.begin(), tracked_bubble_visibility_.end(),
+      [](const auto& pair) { return pair.second; });
   return is_omnibox_popup_showing_ || is_permission_prompt_showing_ ||
-         is_page_info_bubble_showing_ || is_device_chooser_bubble_showing_ ||
-         is_file_access_bubble_showing_;
+         is_any_tracked_bubbles_visible;
 }
 
 void SplitTabHighlightController::OnOmniboxPopupVisibilityChanged(
@@ -73,19 +89,6 @@ void SplitTabHighlightController::OnPermissionPromptShown() {
 
 void SplitTabHighlightController::OnPermissionPromptHidden() {
   is_permission_prompt_showing_ = false;
-  UpdateHighlight();
-}
-
-void SplitTabHighlightController::OnWidgetVisibilityChanged(
-    views::Widget* widget,
-    bool visible) {
-  is_page_info_bubble_showing_ = visible;
-  UpdateHighlight();
-}
-
-void SplitTabHighlightController::OnWidgetDestroyed(views::Widget* widget) {
-  page_info_bubble_observation_.Reset();
-  is_page_info_bubble_showing_ = false;
   UpdateHighlight();
 }
 
@@ -147,46 +150,15 @@ void SplitTabHighlightController::OnTabWillDiscard(
   UpdateHighlight();
 }
 
-void SplitTabHighlightController::OnPageInfoBubbleCreated(
-    PageInfoBubbleViewBase* bubble_view) {
-  views::Widget* const bubble_widget = bubble_view->GetWidget();
-  if (browser_window_interface_->GetActiveTabInterface()->GetContents() ==
-      bubble_view->web_contents()) {
-    page_info_bubble_observation_.Reset();
-    page_info_bubble_observation_.Observe(bubble_widget);
-  }
-
-  is_page_info_bubble_showing_ = bubble_widget->IsVisible();
-  UpdateHighlight();
-}
-
 void SplitTabHighlightController::OnElementShown(
     ui::TrackedElement* tracked_element) {
-  const ui::ElementIdentifier tracked_identifier =
-      tracked_element->identifier();
-  if (tracked_identifier ==
-      DeviceChooserContentView::kDeviceChooserDialogBubbleElementId) {
-    is_device_chooser_bubble_showing_ = true;
-  } else {
-    CHECK_EQ(tracked_identifier, FileSystemAccessRestorePermissionBubbleView::
-                                     kFileSystemAccessBubbleElementIdentifier);
-    is_file_access_bubble_showing_ = true;
-  }
+  tracked_bubble_visibility_[tracked_element->identifier()] = true;
   UpdateHighlight();
 }
 
 void SplitTabHighlightController::OnElementHidden(
     ui::TrackedElement* tracked_element) {
-  const ui::ElementIdentifier tracked_identifier =
-      tracked_element->identifier();
-  if (tracked_identifier ==
-      DeviceChooserContentView::kDeviceChooserDialogBubbleElementId) {
-    is_device_chooser_bubble_showing_ = false;
-  } else {
-    CHECK_EQ(tracked_identifier, FileSystemAccessRestorePermissionBubbleView::
-                                     kFileSystemAccessBubbleElementIdentifier);
-    is_file_access_bubble_showing_ = false;
-  }
+  tracked_bubble_visibility_[tracked_element->identifier()] = false;
   UpdateHighlight();
 }
 
