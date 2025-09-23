@@ -71,7 +71,7 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
 }
 
 void GlicFloatingUi::SwitchConversation(
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   NOTIMPLEMENTED();
 }

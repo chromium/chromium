@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActiveBrowserInfo, AnnotatedPageData, ChromeVersion, ConversationInfo, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, Journal, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
@@ -571,14 +571,17 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return result.modelQualityClientId;
   }
 
-  async switchConversation(conversationId: string): Promise<void> {
+  async switchConversation(info?: ConversationInfo): Promise<void> {
+    if (info && !info.conversationId) {
+      throw new Error('conversationId cannot be empty.');
+    }
     await this.sender.requestWithResponse(
-        'glicBrowserSwitchConversation', {conversationId});
+        'glicBrowserSwitchConversation', {info});
   }
 
-  async registerConversation(conversationId: string): Promise<void> {
+  async registerConversation(info: ConversationInfo): Promise<void> {
     await this.sender.requestWithResponse(
-        'glicBrowserRegisterConversation', {conversationId});
+        'glicBrowserRegisterConversation', {info});
   }
 
   async getContextFromFocusedTab(options: TabContextOptions):

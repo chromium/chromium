@@ -75,9 +75,9 @@ bool GlicSidePanelUi::IsShowing() const {
 }
 
 void GlicSidePanelUi::SwitchConversation(
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  delegate_->SwitchConversation(tab_.get(), conversation_id,
+  delegate_->SwitchConversation(tab_.get(), std::move(info),
                                 std::move(callback));
 }
 

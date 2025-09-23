@@ -818,13 +818,19 @@ interface WebClientHandler {
 
   // Switches the active conversation in the web client.
   // `conversation_id` must be non-empty to be considered valid.
-  SwitchConversation(string conversation_id)
+  SwitchConversation(ConversationInfo? info)
       => (SwitchConversationErrorReason? error_reason);
 
   // Registers a conversation in the web client.
   // `conversation_id` must be non-empty to be considered valid.
-  RegisterConversation(string conversation_id)
+  RegisterConversation(ConversationInfo info)
       => (RegisterConversationErrorReason? error_reason);
+};
+
+// Information about a conversation.
+struct ConversationInfo {
+  string conversation_id;
+  string conversation_title;
 };
 
 // @generate glic_api
@@ -1052,7 +1058,8 @@ interface WebClient {
 
   // Informs the client that the metadata tags have changed.
   // Contents from meta tags are passed unsanitized from the renderer.
-  NotifyPageMetadataChanged(int32 tab_id, blink.mojom.PageMetadata? metadata);
+  NotifyPageMetadataChanged(
+      int32 tab_id, blink.mojom.PageMetadata? metadata);
 
   // Informs the client when the default state for tab context sharing for new
   // sessions changes.
@@ -1062,14 +1069,14 @@ interface WebClient {
   // for actor login. The web client should show the dialog and wait for the
   // user to interact with it.
   RequestToShowCredentialSelectionDialog(
-    actor.webui.mojom.SelectCredentialDialogRequest request)
+      actor.webui.mojom.SelectCredentialDialogRequest request)
       => (actor.webui.mojom.SelectCredentialDialogResponse response);
 
   // Requests the web client to show a dialog for deterministic user
   // confirmation. This should occur when Chrome detects the actor
   // engaging in security-sensitive operations that require user permission.
   RequestToShowUserConfirmationDialog(
-    actor.webui.mojom.UserConfirmationDialogRequest request)
+      actor.webui.mojom.UserConfirmationDialogRequest request)
       => (actor.webui.mojom.UserConfirmationDialogResponse response);
 };
 
@@ -1232,7 +1239,7 @@ enum HostCapability {
   // safely.
   kGetModelQualityClientId = 2,
   // Glic is in multi-instance mode.
-  kMultiInstance= 3,
+  kMultiInstance = 3,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

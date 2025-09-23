@@ -58,7 +58,7 @@ class GlicInstanceImpl : public GlicInstance,
     virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
     virtual void SwitchConversation(
         tabs::TabInterface* tab,
-        const std::string& conversation_id,
+        glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
 
@@ -118,7 +118,7 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicUiEmbedder::Delegate:
   void SwitchConversation(
       tabs::TabInterface* tab,
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:

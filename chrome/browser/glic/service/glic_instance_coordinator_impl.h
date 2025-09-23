@@ -60,7 +60,7 @@ class GlicInstanceCoordinatorImpl
   void OnInstanceOrphaned(GlicInstance* instance) override;
   void SwitchConversation(
       tabs::TabInterface* tab,
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // GlicWindowController implementation

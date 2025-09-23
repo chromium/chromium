@@ -337,10 +337,10 @@ void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
 
 void GlicInstanceImpl::SwitchConversation(
     tabs::TabInterface* tab,
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   if (attachment_delegate_) {
-    attachment_delegate_->SwitchConversation(tab, conversation_id,
+    attachment_delegate_->SwitchConversation(tab, std::move(info),
                                              std::move(callback));
   } else {
     std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);

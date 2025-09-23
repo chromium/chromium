@@ -28,7 +28,7 @@ class GlicUiEmbedder {
     virtual ~Delegate() = default;
     virtual void SwitchConversation(
         tabs::TabInterface* tab,
-        const std::string& conversation_id,
+        glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
     virtual Host& host() = 0;
   };

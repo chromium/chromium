@@ -50,7 +50,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
   void SwitchConversation(
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // GlicSidePanelCoordinator::StateObserver

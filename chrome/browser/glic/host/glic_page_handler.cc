@@ -584,24 +584,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   GlicSharingManager& sharing_manager() { return host().sharing_manager(); }
 
   // glic::mojom::WebClientHandler implementation.
-  void SwitchConversation(const std::string& conversation_id,
+  void SwitchConversation(glic::mojom::ConversationInfoPtr info,
                           SwitchConversationCallback callback) override {
-    if (conversation_id.empty()) {
-      receiver_.ReportBadMessage(
-          "DetachPanel cannot be called when always detached mode is enabled.");
+    if (info && info->conversation_id.empty()) {
+      receiver_.ReportBadMessage("conversation_id cannot be empty.");
     }
-    page_handler_->host().SwitchConversation(conversation_id,
+    page_handler_->host().SwitchConversation(std::move(info),
                                              std::move(callback));
   }
 
-  void RegisterConversation(const std::string& conversation_id,
+  void RegisterConversation(glic::mojom::ConversationInfoPtr info,
                             RegisterConversationCallback callback) override {
     // TODO(crbug.com/443793992): Plumb the conversation switch into
     // `GlicInstance`.
-    NOTIMPLEMENTED() << "RegisterConversation called with: " << conversation_id;
-    if (conversation_id.empty()) {
-      receiver_.ReportBadMessage(
-          "DetachPanel cannot be called when always detached mode is enabled.");
+    NOTIMPLEMENTED() << "RegisterConversation called with: "
+                     << info->conversation_id;
+    if (info->conversation_id.empty()) {
+      receiver_.ReportBadMessage("conversation_id cannot be empty.");
     }
     std::move(callback).Run(
         glic::mojom::RegisterConversationErrorReason::kUnknown);

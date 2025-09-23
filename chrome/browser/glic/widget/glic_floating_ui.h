@@ -40,7 +40,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
   void SwitchConversation(
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:

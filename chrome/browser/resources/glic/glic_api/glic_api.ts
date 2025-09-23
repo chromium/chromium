@@ -670,7 +670,8 @@ export declare interface GlicBrowserHost {
    *
    * When the tab is destroyed, the observable will complete.
    */
-  getPageMetadata?(tabId: string, names: string[]): ObservableValue<PageMetadata>;
+  getPageMetadata?
+      (tabId: string, names: string[]): ObservableValue<PageMetadata>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
@@ -706,7 +707,10 @@ export declare interface GlicBrowserHost {
 
   /**
    * Switches to a use a different instance that shows the conversation
-   * represented by the provided id.
+   * represented by the provided id. If `info` is not provided, a new instance
+   * will be created with an empty conversation. When a new conversation is
+   * created, the web client is expected to call `registerConversation` after
+   * the first turn.
    *
    * If there are no other surfaces bound to the existing conversation, that
    * web client will be destroyed.
@@ -715,7 +719,7 @@ export declare interface GlicBrowserHost {
    * on the browser side. The promise will be rejected if the switch fails.
    * The only possible error reason is `UNKNOWN`.
    */
-  switchConversation?(conversationId: string): Promise<void>;
+  switchConversation?(info?: ConversationInfo): Promise<void>;
 
   /**
    * Registers a conversation in the web client.
@@ -727,8 +731,20 @@ export declare interface GlicBrowserHost {
    *    conversation ID.
    *  - `UNKNOWN`: An unknown error occurred.
    */
-  registerConversation?(conversationId: string): Promise<void>;
+  registerConversation?(info: ConversationInfo): Promise<void>;
 }
+
+/** Information about a conversation. */
+export declare interface ConversationInfo {
+  /** The unique ID of the conversation. This will be stored. */
+  conversationId: string;
+  /**
+   *  The title of the conversation. This will be stored. It is expected that
+   *  titles don't change.
+   */
+  conversationTitle: string;
+}
+
 /** Fields of interest from the system settings page. */
 export type OsPermissionType = 'media'|'geolocation';
 

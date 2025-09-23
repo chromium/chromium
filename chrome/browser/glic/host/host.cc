@@ -41,7 +41,7 @@ void DummyHostDelegate::Resize(const gfx::Size& size,
 }
 
 void DummyHostDelegate::SwitchConversation(
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   std::move(callback).Run(std::nullopt);
 }
@@ -119,9 +119,9 @@ void Host::PanelWasClosed() {
 }
 
 void Host::SwitchConversation(
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  delegate_->SwitchConversation(conversation_id, std::move(callback));
+  delegate_->SwitchConversation(std::move(info), std::move(callback));
 }
 
 void Host::AddObserver(Observer* observer) {

@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "components/tabs/public/tab_interface.h"
@@ -65,7 +65,7 @@ class Host : public GlicSharingManagerProvider {
     virtual bool IsShowing() const = 0;
 
     virtual void SwitchConversation(
-        const std::string& conversation_id,
+        glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
 
@@ -141,7 +141,7 @@ class Host : public GlicSharingManagerProvider {
   void PanelWasClosed();
 
   void SwitchConversation(
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback);
 
   // Delete the owned web contents and prepare for destruction.
@@ -340,7 +340,7 @@ class DummyHostDelegate : public Host::Delegate {
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
   bool IsShowing() const override;
   void SwitchConversation(
-      const std::string& conversation_id,
+      glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:

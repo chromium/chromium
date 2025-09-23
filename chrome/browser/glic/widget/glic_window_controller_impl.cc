@@ -1490,7 +1490,7 @@ bool GlicWindowControllerImpl::IsShowing() const {
 }
 
 void GlicWindowControllerImpl::SwitchConversation(
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
 }

@@ -417,17 +417,17 @@ bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
 
 void GlicInstanceCoordinatorImpl::SwitchConversation(
     tabs::TabInterface* tab,
-    const std::string& conversation_id,
+    glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   GlicInstanceImpl* current_instance = GetInstanceImplForTab(tab);
 
   GlicInstanceImpl* target_instance = nullptr;
-  if (conversation_id.empty()) {
+  if (!info) {
     target_instance = CreateGlicInstance();
   } else {
     for (const auto& [id, instance] : instances_) {
       if (instance->conversation_id().has_value() &&
-          instance->conversation_id().value() == conversation_id) {
+          instance->conversation_id().value() == info->conversation_id) {
         target_instance = instance.get();
         break;
       }

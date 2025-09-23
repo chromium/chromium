@@ -141,11 +141,15 @@ class WebClient implements GlicWebClient {
     $.switchConversationBtn.addEventListener('click', async () => {
       if (this.browser?.switchConversation) {
         const conversationId = $.conversationIdInput.value;
+        const conversationTitle = $.conversationTitleInput.value;
+        const info =
+            conversationId ? {conversationId, conversationTitle} : undefined;
         try {
-          await this.browser.switchConversation(conversationId);
-          logMessage(`switchConversation(${conversationId})`);
+          await this.browser.switchConversation(info);
+          logMessage(`switchConversation(${JSON.stringify(info)})`);
         } catch (e) {
-          logMessage(`switchConversation(${conversationId}) failed: ${e}`);
+          logMessage(
+              `switchConversation(${JSON.stringify(info)}) failed: ${e}`);
         }
       }
     });
@@ -153,11 +157,18 @@ class WebClient implements GlicWebClient {
     $.registerConversationBtn.addEventListener('click', async () => {
       if (this.browser?.registerConversation) {
         const conversationId = $.conversationIdInput.value;
+        if (!conversationId) {
+          logMessage('Cannot register conversation with empty ID.');
+          return;
+        }
+        const conversationTitle = $.conversationTitleInput.value;
+        const info = {conversationId, conversationTitle};
         try {
-          await this.browser.registerConversation(conversationId);
-          logMessage(`registerConversation(${conversationId})`);
+          await this.browser.registerConversation(info);
+          logMessage(`registerConversation(${JSON.stringify(info)})`);
         } catch (e) {
-          logMessage(`registerConversation(${conversationId}) failed: ${e}`);
+          logMessage(
+              `registerConversation(${JSON.stringify(info)}) failed: ${e}`);
         }
       }
     });

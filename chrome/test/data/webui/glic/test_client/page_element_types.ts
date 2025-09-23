@@ -150,6 +150,7 @@ export interface PageElementTypes {
   mqlsClientIdBtn: HTMLButtonElement;
   multiTabFetchScreenshot: HTMLInputElement;
   conversationIdInput: HTMLInputElement;
+  conversationTitleInput: HTMLInputElement;
   switchConversationBtn: HTMLButtonElement;
   registerConversationBtn: HTMLButtonElement;
   conversationId: HTMLInputElement;
