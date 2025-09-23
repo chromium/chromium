@@ -274,6 +274,14 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.in_subtree_of_page_scale_layer = wire.in_subtree_of_page_scale_layer;
   node.delegates_to_parent_for_backface = wire.delegates_to_parent_for_backface;
   node.will_change_transform = wire.will_change_transform;
+  node.maximum_animation_scale = wire.maximum_animation_scale;
+  node.node_and_ancestors_are_animated_or_invertible =
+      wire.node_and_ancestors_are_animated_or_invertible;
+  node.is_invertible = wire.is_invertible;
+  node.ancestors_are_invertible = wire.ancestors_are_invertible;
+  node.node_and_ancestors_are_flat = wire.node_and_ancestors_are_flat;
+  node.node_or_ancestors_will_change_transform =
+      wire.node_or_ancestors_will_change_transform;
 
   node.visible_frame_element_id = wire.visible_frame_element_id;
   node.SetTransformChanged(cc::DamageReason::kUntracked);

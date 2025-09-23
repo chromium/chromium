@@ -407,6 +407,12 @@ struct TransformNode {
   bool transform_changed;
   bool delegates_to_parent_for_backface;
   bool will_change_transform;
+  float maximum_animation_scale;
+  bool node_and_ancestors_are_animated_or_invertible;
+  bool is_invertible;
+  bool ancestors_are_invertible;
+  bool node_and_ancestors_are_flat;
+  bool node_or_ancestors_will_change_transform;
 
   // The stable ElementId of the client-side object (e.g. document, in Blink)
   // corresponding to this node, if this node corresponds to the root of a
