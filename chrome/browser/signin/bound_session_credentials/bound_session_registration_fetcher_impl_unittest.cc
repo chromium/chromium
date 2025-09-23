@@ -198,6 +198,8 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
   void ExpectRecordedMetrics(RegistrationError error) {
     histogram_tester_.ExpectUniqueSample(
         "Signin.BoundSessionCredentials.SessionRegistrationResult", error, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", false, 1);
     histogram_tester_.ExpectTotalCount(
         "Signin.BoundSessionCredentials.SessionRegistrationTotalDuration", 1);
     histogram_tester_.ExpectTotalCount(

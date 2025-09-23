@@ -1870,6 +1870,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard"
+    enum="Boolean" expires_after="2026-03-18">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records whether a Google Device Bound Session registration was
+    performed by the Device Bound Session Standard in Net code. The alternative
+    is that it was done by BoundSessionCredentials SignIn code. Standard Device
+    Bound Session registration is described in
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This histogram
+    is logged every time the Standard or the BoundSessionCredentials SignIn code
+    has just completed trying to register a new Google session, whether or not
+    that registration succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshResult"
     enum="DeviceBoundSessionError" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>

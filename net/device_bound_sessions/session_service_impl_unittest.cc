@@ -1610,4 +1610,38 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kUnknown);
 }
 
+TEST_F(SessionServiceImplTest, GoogleRegistrationLog) {
+  base::HistogramTester histogram_tester;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      GURL("https://accounts.google.com/"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
+      /*original_request_initiator=*/std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", true, 1);
+}
+
+TEST_F(SessionServiceImplTest, NoGoogleRegistrationLog) {
+  base::HistogramTester histogram_tester;
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      GURL("https://notgoogle.com/"),
+      {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
+      /*original_request_initiator=*/std::nullopt);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", 0);
+}
+
 }  // namespace net::device_bound_sessions

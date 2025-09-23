@@ -228,6 +228,8 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
   base::UmaHistogramEnumeration(
       "Signin.BoundSessionCredentials.SessionRegistrationResult",
       error_for_metrics);
+  base::UmaHistogramBoolean(
+      "Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard", false);
   CHECK(registration_duration_.has_value());
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.SessionRegistrationTotalDuration",

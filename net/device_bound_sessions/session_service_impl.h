@@ -134,6 +134,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnLoadSessionsComplete(SessionsMap sessions);
 
   void OnRegistrationComplete(OnAccessCallback on_access_callback,
+                              bool is_google_subdomain_for_histograms,
                               RegistrationFetcher* fetcher,
                               RegistrationResult result);
   void OnRefreshRequestCompletion(OnAccessCallback on_access_callback,
