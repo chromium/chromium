@@ -164,9 +164,9 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*is_inertial=*/false,
           cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           /*delta=*/gesture_event.data.scroll_update.delta_y,
-          /*timestamp=*/frame_time,
-          /*arrived_in_browser_main_timestamp=*/frame_time,
-          /*blocking_touch_dispatched_to_renderer=*/frame_time,
+          /*timestamp=*/gesture_event.TimeStamp(),
+          /*arrived_in_browser_main_timestamp=*/gesture_event.TimeStamp(),
+          /*blocking_touch_dispatched_to_renderer=*/gesture_event.TimeStamp(),
           /*trace_id=*/
           base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()));
   metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
