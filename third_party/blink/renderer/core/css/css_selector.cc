@@ -1167,7 +1167,7 @@ String CSSSelector::SelectorTextExpandingPseudoReferences(
 }
 
 template <bool expand_pseudo_references>
-bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
+void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
                                           uintptr_t scope_id) const {
   bool suppress_selector_list = false;
   if (Match() == kId) {
@@ -1383,7 +1383,6 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
                                                     scope_id);
     builder.Append(')');
   }
-  return true;
 }
 
 template <bool expand_pseudo_references>
@@ -1398,10 +1397,8 @@ const CSSSelector* CSSSelector::SerializeCompound(StringBuilder& builder,
 
   for (const CSSSelector* simple_selector = this; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
-    if (!simple_selector->SerializeSimpleSelector<expand_pseudo_references>(
-            builder, scope_id)) {
-      return nullptr;
-    }
+    simple_selector->SerializeSimpleSelector<expand_pseudo_references>(
+        builder, scope_id);
     if (simple_selector->Relation() != kSubSelector) {
       return simple_selector;
     }

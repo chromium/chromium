@@ -726,7 +726,7 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForPage() const;
 
   template <bool expand_pseudo_references>
-  bool SerializeSimpleSelector(StringBuilder& builder,
+  void SerializeSimpleSelector(StringBuilder& builder,
                                uintptr_t scope_id) const;
 
   template <bool expand_pseudo_references>
