@@ -12,7 +12,6 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_consumer.h"
 #import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_presenter.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_presentation_environment.h"
@@ -78,7 +77,6 @@ typedef struct {
 @interface BrowserViewController
     : UIViewController <BrowserCommands,
                         ContextualSheetPresenter,
-                        FindBarPresentationDelegate,
                         IncognitoReauthConsumer,
                         LensPresentationDelegate,
                         LensOverlayPresentationEnvironment,

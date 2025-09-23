@@ -2850,36 +2850,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   return nil;
 }
 
-#pragma mark - FindBarPresentationDelegate
-
-- (void)setHeadersForFindBarCoordinator:
-    (FindBarCoordinator*)findBarCoordinator {
-  [self setFramesForHeaders:[self headerViews]
-                   atOffset:[self currentHeaderOffset]];
-}
-
-- (void)findBarDidAppearForFindBarCoordinator:
-    (FindBarCoordinator*)findBarCoordinator {
-  _findBarVisible = YES;
-  // When the Find bar is presented, hide underlying elements from VoiceOver.
-  self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
-  self.toolbarCoordinator.primaryToolbarViewController.view
-      .accessibilityElementsHidden = YES;
-  self.toolbarCoordinator.secondaryToolbarViewController.view
-      .accessibilityElementsHidden = YES;
-}
-
-- (void)findBarDidDisappearForFindBarCoordinator:
-    (FindBarCoordinator*)findBarCoordinator {
-  _findBarVisible = NO;
-  // When the Find bar is dismissed, show underlying elements to VoiceOver.
-  self.contentArea.accessibilityElementsHidden = self.contentAreaObstructed;
-  self.toolbarCoordinator.primaryToolbarViewController.view
-      .accessibilityElementsHidden = NO;
-  self.toolbarCoordinator.secondaryToolbarViewController.view
-      .accessibilityElementsHidden = NO;
-}
-
 #pragma mark - LensPresentationDelegate
 
 - (CGRect)webContentAreaForLensCoordinator:(LensCoordinator*)lensCoordinator {

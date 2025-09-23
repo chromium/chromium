@@ -65,7 +65,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
-    "//ios/chrome/browser/find_bar/ui_bundled:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

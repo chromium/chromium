@@ -22,7 +22,6 @@ source_set("ui_bundled") {
     "//base:i18n",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/find_bar/ui_bundled/resources",
     "//ios/chrome/browser/find_in_page/model",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/main/model",

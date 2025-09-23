@@ -4,7 +4,6 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_app_interface.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_egtest_util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"

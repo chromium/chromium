@@ -112,8 +112,6 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_controller_ios.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_coordinator.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
@@ -382,6 +380,7 @@ enum class ToolbarKind {
     EnhancedCalendarCommands,
     EditMenuBuilder,
     EnterprisePromptCoordinatorDelegate,
+    FindInPageCommands,
     FormInputAccessoryCoordinatorNavigator,
     BWGCommands,
     GoogleOneCommands,
@@ -524,9 +523,6 @@ enum class ToolbarKind {
 // Coordinator to show the Autofill error dialog.
 @property(nonatomic, strong)
     AutofillErrorDialogCoordinator* autofillErrorDialogCoordinator;
-
-// Coordinator for the find bar.
-@property(nonatomic, strong) FindBarCoordinator* findBarCoordinator;
 
 // Coordinator for the First Follow modal.
 @property(nonatomic, strong) FirstFollowCoordinator* firstFollowCoordinator;
@@ -1643,9 +1639,6 @@ enum class ToolbarKind {
 - (void)stopChildCoordinators {
   [self.ARQuickLookCoordinator stop];
   self.ARQuickLookCoordinator = nil;
-
-  [self.findBarCoordinator stop];
-  self.findBarCoordinator = nil;
 
   [self.firstFollowCoordinator stop];
   self.firstFollowCoordinator = nil;
@@ -2951,9 +2944,6 @@ enum class ToolbarKind {
   DCHECK(helper);
   if (helper->IsFindUIActive()) {
     helper->StopFinding();
-  } else {
-    [self.findBarCoordinator stop];
-    self.findBarCoordinator = nil;
   }
 }
 
@@ -2980,17 +2970,6 @@ enum class ToolbarKind {
     // The System Find Panel UI cannot be "defocused" so closing Find in Page
     // altogether instead.
     [self closeFindInPage];
-}
-
-- (void)searchFindInPage {
-  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
-  DCHECK(activeWebState);
-  auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
-  helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
-
-  if (!self.isOffTheRecord) {
-    helper->PersistSearchTerm();
-  }
 }
 
 - (void)findNextStringInPage {
@@ -3029,39 +3008,6 @@ enum class ToolbarKind {
   // is sufficient to call `StartFinding()` directly on the Find tab helper of
   // the current web state.
   helper->StartFinding(@"");
-}
-
-- (void)showFindBar {
-  if (!self.canShowFindBar) {
-    return;
-  }
-
-  [self.findBarCoordinator stop];
-  self.findBarCoordinator = [self newFindBarCoordinator];
-  [self.findBarCoordinator start];
-}
-
-- (BOOL)canShowFindBar {
-  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
-  if (!activeWebState) {
-    return NO;
-  }
-
-  auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
-  return (helper && helper->CurrentPageSupportsFindInPage() &&
-          !helper->IsFindUIActive());
-}
-
-- (FindBarCoordinator*)newFindBarCoordinator {
-  FindBarCoordinator* findBarCoordinator =
-      [[FindBarCoordinator alloc] initWithBaseViewController:self.viewController
-                                                     browser:self.browser];
-
-  findBarCoordinator.presenter = _toolbarAccessoryPresenter;
-  findBarCoordinator.delegate = self;
-  findBarCoordinator.presentationDelegate = self.viewController;
-
-  return findBarCoordinator;
 }
 
 #pragma mark - AddContactsCommands
@@ -3324,9 +3270,6 @@ enum class ToolbarKind {
 
 - (void)toolbarAccessoryCoordinatorDidDismissUI:
     (ChromeCoordinator*)coordinator {
-  [self.findBarCoordinator stop];
-  self.findBarCoordinator = nil;
-
   [self hideTextZoomUI];
 
   if (!_nextToolbarToPresent.has_value()) {
