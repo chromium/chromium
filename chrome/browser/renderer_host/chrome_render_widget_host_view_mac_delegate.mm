@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
@@ -33,7 +32,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
@@ -453,14 +451,6 @@
     return AcceptMouseEvents::kWhenInActiveApp;
   }
 #endif
-
-  if (content::WebUI* web_ui = webContents->GetWebUI()) {
-    // If the ActorOverlayUI webui controller exists for the WebContents, we
-    // should accept mouse events when any window of the application is active.
-    if (web_ui->GetController()->GetAs<actor::ui::ActorOverlayUI>()) {
-      return AcceptMouseEvents::kWhenInActiveApp;
-    }
-  }
 
   return AcceptMouseEvents::kWhenInActiveWindow;
 }
