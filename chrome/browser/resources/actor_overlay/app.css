@@ -15,6 +15,9 @@
 
 :host(.background-visible) {
   background: linear-gradient(158.37deg, rgba(33, 123, 254, 0.25) 16.24%, rgba(7, 142, 251, 0.25) 36.54%, rgba(161, 144, 255, 0.25) 74.67%, rgba(189, 153, 254, 0.25) 91.45%);
+}
+
+:host(:hover) {
   cursor: not-allowed;
 }
 
