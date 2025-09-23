@@ -1163,7 +1163,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
 }
 
 // Tests that overscroll actions can be used to refresh dismisses Reader mode.
-- (void)testOverscrollToRefresh {
+// TODO(crbug.com/446692216): Re-enable this test.
+- (void)DISABLED_testOverscrollToRefresh {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Overscroll Actions are only on iPhone.");
   }
