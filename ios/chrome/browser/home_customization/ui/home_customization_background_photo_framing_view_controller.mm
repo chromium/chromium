@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_photo_framing_view_controller.h"
 
+#import <algorithm>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -513,10 +515,12 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   // bounds of the original image.
   visibleRectInOriginal.origin.x = std::clamp<CGFloat>(
       visibleRectInOriginal.origin.x, 0,
-      _originalImage.size.width - visibleRectInOriginal.size.width);
+      std::max<CGFloat>(
+          0, _originalImage.size.width - visibleRectInOriginal.size.width));
   visibleRectInOriginal.origin.y = std::clamp<CGFloat>(
       visibleRectInOriginal.origin.y, 0,
-      _originalImage.size.height - visibleRectInOriginal.size.height);
+      std::max<CGFloat>(
+          0, _originalImage.size.height - visibleRectInOriginal.size.height));
 
   return [[HomeCustomizationFramingCoordinates alloc]
       initWithVisibleRect:visibleRectInOriginal];
