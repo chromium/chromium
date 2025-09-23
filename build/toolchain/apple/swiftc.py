@@ -418,6 +418,11 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
   for (attr_name, forwarder) in ARGUMENT_FORWARDER_FOR_ATTR:
     forwarder.forward(swiftc_args, getattr(args, attr_name), args.target_triple)
 
+  # Handle optional -Xcc arguments.
+  if args.xcc_args:
+    for xcc_arg in args.xcc_args:
+      swiftc_args.extend(['-Xcc', xcc_arg])
+
   # Handle -whole-module-optimization flag.
   num_threads = max(1, multiprocessing.cpu_count() // 2)
   if args.whole_module_optimization:
@@ -644,6 +649,11 @@ def main(args):
   parser.add_argument('sources',
                       nargs='+',
                       help='Swift source files to compile')
+
+  parser.add_argument('-Xcc',
+                      action='append',
+                      dest='xcc_args',
+                      help='add argument to the clang compiler')
 
   parsed, extras = parser.parse_known_args(args)
   compile_module(parsed, extras, build_signature(os.environ, args))
