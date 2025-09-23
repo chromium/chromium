@@ -786,6 +786,7 @@ TEST_F(WindowEventDispatcherTest, MouseMovesHeld) {
   std::unique_ptr<aura::Window> window(
       test::CreateTestWindow({.delegate = &delegate,
                               .parent = root_window(),
+                              .bounds = {100, 100},
                               .window_id = 1}));
 
   ui::MouseEvent mouse_move_event(ui::EventType::kMouseMoved, gfx::Point(0, 0),
@@ -2836,8 +2837,8 @@ TEST_F(WindowEventDispatcherTest, DestroyWindowOnCaptureChanged) {
   delegate.set_window(std::move(window_first));
   EXPECT_TRUE(delegate.has_window());
 
-  std::unique_ptr<aura::Window> window_second(
-      test::CreateTestWindow({.parent = root_window(), .window_id = 2}));
+  std::unique_ptr<aura::Window> window_second(test::CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 2}));
   window_second->Show();
 
   client::CaptureDelegate* capture_delegate = host()->dispatcher();
