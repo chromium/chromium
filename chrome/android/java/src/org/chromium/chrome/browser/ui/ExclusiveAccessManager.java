@@ -15,6 +15,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.content_public.browser.WebContents;
 
@@ -33,6 +37,8 @@ public class ExclusiveAccessManager
     private long mExclusiveAccessManagerAndroidNativePointer;
     private final FullscreenManager mFullscreenManager;
     private @MonotonicNonNull DesktopWindowStateManager mDesktopWindowStateManager;
+    @Nullable private TabModelSelector mTabModelSelector;
+    private final TabModelObserver mTabModelObserver;
 
     public ExclusiveAccessManager(
             Activity activity,
@@ -47,6 +53,45 @@ public class ExclusiveAccessManager
             mDesktopWindowStateManager = desktopWindowStateManager;
             mDesktopWindowStateManager.addObserver(this);
         }
+        mFullscreenManager.setFullscreenManagerDelegate(
+                new FullscreenManager.FullscreenManagerDelegate() {
+                    @Override
+                    public void onExitFullscreen(@Nullable Tab tab) {
+                        if (tab == null) {
+                            ExclusiveAccessManagerJni.get()
+                                    .exitExclusiveAccess(
+                                            mExclusiveAccessManagerAndroidNativePointer);
+                        } else {
+                            deactivateTab(tab);
+                        }
+                    }
+                });
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                        ExclusiveAccessManagerJni.get()
+                                .onTabClosing(
+                                        mExclusiveAccessManagerAndroidNativePointer,
+                                        tab.getWebContents());
+                    }
+                };
+    }
+
+    public void initialize(TabModelSelector modelSelector) {
+        mTabModelSelector = modelSelector;
+        for (TabModel model : modelSelector.getModels()) {
+            model.addObserver(mTabModelObserver);
+        }
+    }
+
+    private void deactivateTab(Tab tab) {
+        ExclusiveAccessManagerJni.get()
+                .onTabDeactivated(
+                        mExclusiveAccessManagerAndroidNativePointer, tab.getWebContents());
+        ExclusiveAccessManagerJni.get()
+                .onTabDetachedFromView(
+                        mExclusiveAccessManagerAndroidNativePointer, tab.getWebContents());
     }
 
     /**
@@ -82,6 +127,9 @@ public class ExclusiveAccessManager
      * @return is currently in fullscreen
      */
     public boolean isFullscreenForTabOrPending(WebContents webContents) {
+        if (webContents == null) {
+            return false;
+        }
         return ExclusiveAccessManagerJni.get()
                 .isFullscreenForTabOrPending(
                         mExclusiveAccessManagerAndroidNativePointer, webContents);
@@ -154,6 +202,11 @@ public class ExclusiveAccessManager
             mExclusiveAccessManagerAndroidNativePointer = 0;
         }
         if (mDesktopWindowStateManager != null) mDesktopWindowStateManager.removeObserver(this);
+        if (mTabModelSelector != null) {
+            for (TabModel model : mTabModelSelector.getModels()) {
+                model.removeObserver(mTabModelObserver);
+            }
+        }
     }
 
     @NativeMethods
@@ -197,6 +250,15 @@ public class ExclusiveAccessManager
         void lostPointerLock(long nativeExclusiveAccessManagerAndroid);
 
         void exitExclusiveAccess(long nativeExclusiveAccessManagerAndroid);
+
+        void onTabDeactivated(
+                long nativeExclusiveAccessManagerAndroid, @Nullable WebContents webContents);
+
+        void onTabDetachedFromView(
+                long nativeExclusiveAccessManagerAndroid, @Nullable WebContents webContents);
+
+        void onTabClosing(
+                long nativeExclusiveAccessManagerAndroid, @Nullable WebContents webContents);
 
         void destroy(long nativeExclusiveAccessManagerAndroid);
     }

@@ -61,6 +61,15 @@ class ExclusiveAccessManagerAndroid {
 
   void ExitExclusiveAccess(JNIEnv* env);
 
+  void OnTabDeactivated(JNIEnv* env,
+                        const jni_zero::JavaRef<jobject>& jweb_contents);
+
+  void OnTabDetachedFromView(JNIEnv* env,
+                             const jni_zero::JavaRef<jobject>& jweb_contents);
+
+  void OnTabClosing(JNIEnv* env,
+                    const jni_zero::JavaRef<jobject>& jweb_contents);
+
  private:
   // Our global reference to the Java ExclusiveAccessManagerAndroid.
   base::android::ScopedJavaGlobalRef<jobject> j_eam_;

@@ -977,6 +977,10 @@ public class RootUiCoordinator
                     mCallbackController.makeCancelable(this::initProfileDependentFeatures));
         }
 
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
+            mExclusiveAccessManager.initialize(mTabModelSelectorSupplier.get());
+        }
+
         initMessagesInfra();
         initScrollCapture();
         mAdaptiveToolbarUiCoordinator.onFinishNativeInitialization();

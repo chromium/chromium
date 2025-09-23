@@ -6,11 +6,25 @@ package org.chromium.chrome.browser.fullscreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
-/** An interface for observing fullscreen mode and exiting fullscreen mode. */
+/** An interface for observing and changing fullscreen mode. */
 @NullMarked
 public interface FullscreenManager {
+    /**
+     * A delegate for different behaviours of system callbacks. Used for Exclusive Access Manager
+     * transition.
+     */
+    interface FullscreenManagerDelegate {
+        /**
+         * The callback for action when exit fullscreen e.g. when multi window mode was entered.
+         *
+         * @param tab {@link Tab} current active tab.
+         */
+        void onExitFullscreen(@Nullable Tab tab);
+    }
+
     /** A listener that gets notified of changes to the fullscreen state. */
     interface Observer {
         /**
@@ -65,7 +79,11 @@ public interface FullscreenManager {
 
     /**
      * Exit fullscreen.
+     *
      * @param tab {@link Tab} that goes out of fullscreen.
      */
     void onExitFullscreen(Tab tab);
+
+    /** Sets the custom FullscreenManagerDelegate. */
+    void setFullscreenManagerDelegate(FullscreenManagerDelegate delegate);
 }

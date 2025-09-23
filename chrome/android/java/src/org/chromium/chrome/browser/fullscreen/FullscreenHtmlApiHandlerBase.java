@@ -115,6 +115,8 @@ public abstract class FullscreenHtmlApiHandlerBase
     // in the current Tab.
     private @Nullable ContentView mContentView;
 
+    private FullscreenManagerDelegate mFullscreenManagerDelegate;
+
     protected @Nullable ContentView getContentView() {
         return mContentView;
     }
@@ -237,7 +239,7 @@ public abstract class FullscreenHtmlApiHandlerBase
                         && !mActivity.isInPictureInPictureMode() // Not in the PIP mode
                         && !mIsInMultiWindowMode // Window was in the fullscreen mode
                         && isInMultiWindowMode) { // Window is not in fullscreen anymore
-                    onExitFullscreen(mTab);
+                    mFullscreenManagerDelegate.onExitFullscreen(mTab);
                 }
             }
             mIsInMultiWindowMode = isInMultiWindowMode;
@@ -262,6 +264,19 @@ public abstract class FullscreenHtmlApiHandlerBase
         mActivity = activity;
         mAreControlsHidden = areControlsHidden;
         mAreControlsHidden.addObserver(this::maybeEnterFullscreenFromPendingState);
+
+        mFullscreenManagerDelegate =
+                new FullscreenManagerDelegate() {
+                    @Override
+                    public void onExitFullscreen(@Nullable Tab tab) {
+                        if (tab == null) {
+                            exitPersistentFullscreenMode();
+                        } else {
+                            FullscreenHtmlApiHandlerBase.this.onExitFullscreen(tab);
+                        }
+                    }
+                };
+
         mHandler = new FullscreenHandler(this);
 
         mPersistentModeSupplier = new ObservableSupplierImpl<>();
@@ -274,11 +289,13 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     /**
      * Initialize the FullscreeHtmlApiHandler.
+     *
      * @param activityTabProvider Provider of the current activity tab.
      * @param modelSelector The tab model selector that will be monitored for tab changes.
      */
     void initialize(ActivityTabProvider activityTabProvider, TabModelSelector modelSelector) {
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
+
         ApplicationStatus.registerWindowFocusChangedListener(this);
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
@@ -302,14 +319,14 @@ public abstract class FullscreenHtmlApiHandlerBase
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int reason) {
                         // Clean up any fullscreen state that might impact other tabs.
-                        exitPersistentFullscreenMode();
+                        mFullscreenManagerDelegate.onExitFullscreen(null);
                     }
 
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
                         if (!navigation.isSameDocument() && tab == modelSelector.getCurrentTab()) {
-                            exitPersistentFullscreenMode();
+                            mFullscreenManagerDelegate.onExitFullscreen(null);
                         }
                     }
 
@@ -852,10 +869,11 @@ public abstract class FullscreenHtmlApiHandlerBase
     @Override
     public void onActivityStateChange(Activity activity, int newState) {
         if (newState == ActivityState.STOPPED && mExitFullscreenOnStop) {
-            // Exit fullscreen in onStop to ensure the system UI flags are set correctly when
+            // Exit fullscreen in onStop to ensure the system UI flags are set
+            // correctly when
             // showing again (on JB MR2+ builds, the omnibox would be covered by the
             // notification bar when this was done in onStart()).
-            exitPersistentFullscreenMode();
+            mFullscreenManagerDelegate.onExitFullscreen(null);
         } else if (newState == ActivityState.DESTROYED) {
             ApplicationStatus.unregisterActivityStateListener(this);
             ApplicationStatus.unregisterWindowFocusChangedListener(this);
@@ -877,6 +895,11 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (mTabInFullscreen == null || !getPersistentFullscreenMode() || !hasWindowFocus) return;
         mHandler.sendEmptyMessageDelayed(
                 MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS, ANDROID_CONTROLS_SHOW_DURATION_MS);
+    }
+
+    @Override
+    public void setFullscreenManagerDelegate(FullscreenManagerDelegate delegate) {
+        mFullscreenManagerDelegate = delegate;
     }
 
     /*
