@@ -61,7 +61,6 @@ using optimization_guide::proto::Action;
 using optimization_guide::proto::Actions;
 using optimization_guide::proto::ActionTarget;
 using optimization_guide::proto::AnnotatedPageContent;
-using optimization_guide::proto::BrowserAction;
 using tabs::TabInterface;
 
 namespace actor {
