@@ -3852,13 +3852,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.UserSession.Logins"
-    enum="EnterpriseUserSessionLogins" expires_after="2024-01-14">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>sduraisamy@chromium.org</owner>
-  <summary>Tracks the sign-in events on an enrolled device.</summary>
-</histogram>
-
 <histogram name="Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints"
     enum="Boolean" expires_after="2026-02-10">
   <owner>lmasopust@google.com</owner>

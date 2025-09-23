@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
-#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
@@ -836,10 +835,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
     }
-  }
-  if (is_enterprise_managed) {
-    enterprise_user_session_metrics::RecordSignInEvent(
-        user_context, last_login_attempt_was_auto_login_);
   }
 }
 

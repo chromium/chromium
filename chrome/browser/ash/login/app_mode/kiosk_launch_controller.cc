@@ -49,7 +49,6 @@
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
-#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -98,13 +97,6 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
 
   UMA_HISTOGRAM_ENUMERATION("Kiosk.LaunchType", launch_type,
                             KIOSK_LAUNCH_TYPE_COUNT);
-
-  if (is_enterprise_managed) {
-    enterprise_user_session_metrics::RecordSignInEvent(
-        is_auto_launch
-            ? enterprise_user_session_metrics::SignInEventType::AUTOMATIC_KIOSK
-            : enterprise_user_session_metrics::SignInEventType::MANUAL_KIOSK);
-  }
 }
 
 void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
