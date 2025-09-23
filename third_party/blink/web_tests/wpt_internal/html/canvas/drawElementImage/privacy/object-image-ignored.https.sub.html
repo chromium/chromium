@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>drawElementImage does not draw cross-origin background images</title>
+  <title>drawElementImage does not draw cross-origin object element content</title>
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
   <style>
@@ -14,30 +14,25 @@
     position: absolute;
     left: 0px;
     top: 0px;
-    width: 100px;
-    height: 100px;
-    background-image: url("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.svg");
   }
   #crossOrigin {
     position: absolute;
     left: 0px;
     top: 100px;
-    width: 100px;
-    height: 100px;
-    background-image: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.svg");
   }
   </style>
 </head>
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
     <div id=child>
-      <div id=sameOrigin></div>
-      <div id=crossOrigin></div>
+      <object id=sameOrigin width=100 height=100 type="image/png"
+           data="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png"/>
+      <object id=crossOrigin width=100 height=100 type="image/png"
+           data="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png"/>
     </div>
   </canvas>
-
   <script>
-    window.onload = () => {
+    window.onload = function() {
       test(function(t) {
         var context = canvas.getContext("2d");
         context.drawElementImage(child, 0, 0);
@@ -54,7 +49,7 @@
 
         t.done();
       });
-    }
+    };
   </script>
 </body>
 </html>

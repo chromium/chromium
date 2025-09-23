@@ -29,10 +29,10 @@
 <body>
   <canvas id=canvas width="100" height="200" layoutsubtree>
     <div id=child>
-      <video id=sameOrigin poster="https://{{location[host]}}/css/css-masking/mask-image/support/red-100x100.png" >
+      <video id=sameOrigin poster="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png" >
         <source src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/white.webm" type="video/webm" />
       </video>
-      <video id=crossOrigin poster="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/css/css-masking/mask-image/support/red-100x100.png" >
+      <video id=crossOrigin poster="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png" >
         <source src="https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/white.webm" type="video/webm"/>
       </video>
     </div>
