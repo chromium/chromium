@@ -87,7 +87,8 @@ class VideoEncodeDelegateFactory
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       ID3D12VideoDevice3* video_device,
       const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) override {
-    return D3D12VideoEncodeDelegate::GetSupportedProfiles(video_device, codecs);
+    return D3D12VideoEncodeDelegate::GetSupportedProfiles(
+        video_device, gpu_workarounds_, codecs);
   }
 
  private:

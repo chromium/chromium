@@ -3755,6 +3755,23 @@
       "features": [
         "disable_d3d12_h264_encoder_non_reference_frames"
       ]
+    },
+    {
+      "id": 464,
+      "cr_bugs": [],
+      "description": "Old Intel drivers have video corruption issues for D3D12 AV1 VEA using multi-number reference frames.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<",
+        "value": "32.0.101.7026"
+      },
+      "multi_gpu_category": "active",
+      "features": [
+        "disable_d3d12_av1_multi_ref_encoding"
+      ]
     }
   ]
 }

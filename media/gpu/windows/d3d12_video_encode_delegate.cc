@@ -75,6 +75,7 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
 VideoEncodeAccelerator::SupportedProfiles
 D3D12VideoEncodeDelegate::GetSupportedProfiles(
     ID3D12VideoDevice3* video_device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) {
   CHECK(video_device);
   VideoEncodeAccelerator::SupportedProfiles supported_profiles;
@@ -129,7 +130,9 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
         SVCScalabilityMode::kL1T1,
         SVCScalabilityMode::kL1T2,
     };
-    if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAcceleratorL1T3)) {
+    if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAcceleratorL1T3) &&
+        !(codec == D3D12_VIDEO_ENCODER_CODEC_AV1 &&
+          gpu_workarounds.disable_d3d12_av1_multi_ref_encoding)) {
       supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
     }
     supported_profile.is_software_codec = false;
