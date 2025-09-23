@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DiskCache.0.Error" enum="DiskCacheError"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>wfh@chromium.org</owner>
   <owner>src/net/disk_cache/OWNERS</owner>
   <summary>

@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
-    enum="KAnonymityServiceJoinSetAction" expires_after="2026-01-18">
+    enum="KAnonymityServiceJoinSetAction" expires_after="2026-03-22">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Action"
-    enum="KAnonymityServiceQuerySetAction" expires_after="2026-01-18">
+    enum="KAnonymityServiceQuerySetAction" expires_after="2026-03-22">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>

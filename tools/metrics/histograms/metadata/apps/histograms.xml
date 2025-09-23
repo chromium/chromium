@@ -2218,7 +2218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppShimSignatureValidationResult"
-    enum="WebAppShimSignatureValidationResult" expires_after="2026-01-18">
+    enum="WebAppShimSignatureValidationResult" expires_after="2026-03-22">
   <owner>markrowe@chromium.org</owner>
   <owner>chrome-platform-security-core@google.com</owner>
   <summary>
@@ -2347,7 +2347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcuts.Mac.Result2"
-    enum="WebAppCreateShortcutMacResult" expires_after="2026-01-18">
+    enum="WebAppCreateShortcutMacResult" expires_after="2026-03-22">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

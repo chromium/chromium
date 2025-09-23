@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.DecompressionTime"
-    units="ms" expires_after="2026-01-18">
+    units="ms" expires_after="2026-03-22">
   <owner>lizeb@chromium.org</owner>
   <owner>jpgravel@chromium.org</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.Ratio" units="%"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>lizeb@chromium.org</owner>
   <owner>jpgravel@chromium.org</owner>
   <summary>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.2DLayerBridge.Compression.ThreadTime" units="ms"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>lizeb@chromium.org</owner>
   <owner>jpgravel@chromium.org</owner>
   <summary>
@@ -4201,7 +4201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Network.ParseDataURLTime{Type}{CharacterCount}"
-    units="microseconds" expires_after="2026-01-18">
+    units="microseconds" expires_after="2026-03-22">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

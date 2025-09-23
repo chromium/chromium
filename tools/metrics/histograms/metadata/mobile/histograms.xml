@@ -1039,7 +1039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.Progress.{MobileFreEntryType}"
-    enum="MobileFreProgress" expires_after="2026-01-18">
+    enum="MobileFreProgress" expires_after="2026-03-22">
   <owner>bsazonov@chromium.org</owner>
   <owner>samarchehade@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>

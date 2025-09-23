@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestStorageAccess2"
-    enum="RequestStorageResult" expires_after="2026-01-18">
+    enum="RequestStorageResult" expires_after="2026-03-22">
   <owner>mkwst@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
@@ -1496,7 +1496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBSize" units="KB"
-    expires_after="2026-01-18">
+    expires_after="2026-03-22">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
