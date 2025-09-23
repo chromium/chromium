@@ -602,7 +602,7 @@ void BaseSearchProvider::AddMatchToMap(
     return;
   if (match.IsSearchAimSuggestion() &&
       (!omnibox_feature_configs::AiMode::Get().allow_ai_mode_matches ||
-       !AimEligibilityService::IsAimAllowedByPolicy(client_->GetPrefs()))) {
+       !client_->GetAimEligibilityService()->IsAimLocallyEligible())) {
     return;
   }
   match.RecordAdditionalInfo(kRelevanceFromServerKey,
