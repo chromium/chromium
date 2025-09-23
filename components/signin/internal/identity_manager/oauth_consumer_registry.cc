@@ -92,6 +92,7 @@ constexpr char kNearbyPresenceServerClientName[] =
     "nearby_presence_server_client";
 constexpr char kCryptAuthClientName[] = "crypt_auth_client";
 constexpr char kAmbientModeName[] = "ambient_mode";
+constexpr char kProfileDownloaderName[] = "profile_downloader";
 
 }  // namespace
 
@@ -391,6 +392,11 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kAmbientModeName,
           /*scopes=*/{GaiaConstants::kPhotosOAuth2Scope,
                       GaiaConstants::kCastBackdropOAuth2Scope});
+    case OAuthConsumerId::kProfileDownloader:
+      return OAuthConsumer(
+          /*name=*/kProfileDownloaderName,
+          /*scopes=*/{GaiaConstants::kGoogleUserInfoProfile,
+                      GaiaConstants::kGoogleUserInfoEmail});
   }
   NOTREACHED();
 }

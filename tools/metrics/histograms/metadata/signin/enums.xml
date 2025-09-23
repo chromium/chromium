@@ -751,6 +751,7 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Nearby Presence Server Client"/>
   <int value="61" label="Crypt Auth Client"/>
   <int value="62" label="Ambient Mode CrOS"/>
+  <int value="63" label="Profile Downloader"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

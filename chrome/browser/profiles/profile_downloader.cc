@@ -25,8 +25,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/scope_set.h"
-#include "google_apis/gaia/gaia_constants.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -120,14 +119,9 @@ void ProfileDownloader::StartFetchingImage() {
 }
 
 void ProfileDownloader::StartFetchingOAuth2AccessToken() {
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  // Required to determine if lock should be enabled.
-  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          account_id_, "profile_downloader", scopes,
+          account_id_, signin::OAuthConsumerId::kProfileDownloader,
           base::BindOnce(&ProfileDownloader::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
