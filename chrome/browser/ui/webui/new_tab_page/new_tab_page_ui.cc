@@ -831,7 +831,7 @@ void NewTabPageUI::BindInterface(
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), profile_, web_contents(),
-      service->metrics_reporter(), /*omnibox_controller=*/nullptr);
+      service->metrics_reporter());
 }
 
 void NewTabPageUI::BindInterface(

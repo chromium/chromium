@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -49,6 +50,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -896,6 +898,34 @@ void SearchboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
   autocomplete_controller()->DeleteMatch(*match);
 }
 
+void SearchboxHandler::ExecuteAction(uint8_t line,
+                                     uint8_t action_index,
+                                     const GURL& url,
+                                     base::TimeTicks match_selection_timestamp,
+                                     uint8_t mouse_button,
+                                     bool alt_key,
+                                     bool ctrl_key,
+                                     bool meta_key,
+                                     bool shift_key) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+  if (!match) {
+    // This can happen due to asynchronous updates changing the result while
+    // the web UI is referencing a stale match.
+    return;
+  }
+  if (action_index >= match->actions.size()) {
+    return;
+  }
+  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  OmniboxPopupSelection selection(
+      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
+      action_index);
+  edit_model()->OpenSelection(selection, match_selection_timestamp,
+                              disposition);
+}
+
 void SearchboxHandler::GetPlaceholderConfig(
     GetPlaceholderConfigCallback callback) {
   const auto placeholder_config = ntp_composebox::FeatureConfig::Get()
@@ -1007,12 +1037,12 @@ void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   int max_tab_suggestions =
       std::min(static_cast<int>(tabs.size()),
                ntp_composebox::kContextMenuMaxTabSuggestions.Get());
-  std::partial_sort(
-      tabs.begin(), tabs.begin() + max_tab_suggestions, tabs.end(),
-      [](const searchbox::mojom::TabInfoPtr& a,
-         const searchbox::mojom::TabInfoPtr& b) {
-        return a->last_active > b->last_active;
-      });
+  std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
+                    tabs.end(),
+                    [](const searchbox::mojom::TabInfoPtr& a,
+                       const searchbox::mojom::TabInfoPtr& b) {
+                      return a->last_active > b->last_active;
+                    });
   tabs.resize(max_tab_suggestions);
 
   // Invoke the callback with the results.

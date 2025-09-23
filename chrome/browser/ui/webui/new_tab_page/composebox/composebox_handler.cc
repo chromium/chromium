@@ -79,6 +79,9 @@ ComposeboxHandler::ComposeboxHandler(
 ComposeboxHandler::~ComposeboxHandler() {
   query_controller_->RemoveObserver(this);
   autocomplete_controller_observation_.Reset();
+  // Even though these are owned by `SearchboxHandler` whose destructor would
+  // have destroyed these anyways, they have to be deconstructed here because
+  // they have a pointer to `query_controller_`.
   controller_ = nullptr;
   owned_controller_.reset();
 }

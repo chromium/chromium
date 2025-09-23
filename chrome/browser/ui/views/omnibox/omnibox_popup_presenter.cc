@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -68,7 +68,7 @@ void OmniboxPopupPresenter::Show() {
         this, location_bar_view_, /*is_webui=*/true));
     widget_->AddObserver(this);
   }
-  RealboxHandler* handler = GetHandler();
+  WebuiOmniboxHandler* handler = GetHandler();
   if (handler && !handler->HasObserver(this)) {
     handler->AddObserver(this);
   }
@@ -85,7 +85,7 @@ bool OmniboxPopupPresenter::IsShown() const {
   return !!widget_;
 }
 
-RealboxHandler* OmniboxPopupPresenter::GetHandler() {
+WebuiOmniboxHandler* OmniboxPopupPresenter::GetHandler() {
   const bool ready = IsHandlerReady();
   if (!requested_handler_) {
     // Only log on first access.
@@ -141,7 +141,7 @@ bool OmniboxPopupPresenter::IsHandlerReady() {
 }
 
 void OmniboxPopupPresenter::ReleaseWidget(bool close) {
-  RealboxHandler* handler = GetHandler();
+  WebuiOmniboxHandler* handler = GetHandler();
   if (handler && handler->HasObserver(this)) {
     handler->RemoveObserver(this);
   }

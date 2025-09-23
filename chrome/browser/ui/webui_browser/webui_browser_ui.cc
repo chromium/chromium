@@ -130,7 +130,7 @@ void WebUIBrowserUI::BindInterface(
   content::WebContents* web_contents = webui->GetWebContents();
   realbox_handler_ = std::make_unique<RealboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(webui), web_contents,
-      &metrics_reporter_, /*omnibox_controller=*/nullptr);
+      &metrics_reporter_);
 }
 
 void WebUIBrowserUI::BindInterface(

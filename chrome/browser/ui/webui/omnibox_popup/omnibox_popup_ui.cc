@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "chrome/grit/omnibox_popup_resources_map.h"
@@ -38,7 +38,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIOmniboxPopupHost);
 
-  RealboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
+  WebuiOmniboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
 
   webui::SetupWebUIDataSource(source, kOmniboxPopupResources,
                               IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML);
@@ -66,7 +66,7 @@ void OmniboxPopupUI::BindInterface(
 
   MetricsReporterService* metrics_reporter_service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  handler_ = std::make_unique<RealboxHandler>(
+  handler_ = std::make_unique<WebuiOmniboxHandler>(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents(), metrics_reporter_service->metrics_reporter(),
       omnibox_controller);

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -15,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/vector_icon_types.h"
 
+class GURL;
 class MetricsReporter;
 class OmniboxController;
 class Profile;
@@ -69,6 +71,15 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
+  void ExecuteAction(uint8_t line,
+                     uint8_t action_index,
+                     const GURL& url,
+                     base::TimeTicks match_selection_timestamp,
+                     uint8_t mouse_button,
+                     bool alt_key,
+                     bool ctrl_key,
+                     bool meta_key,
+                     bool shift_key) override;
   void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
 
@@ -96,6 +107,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<MetricsReporter> metrics_reporter_;
   raw_ptr<OmniboxController> controller_;
+  // Children classes should use `omnibox_controller()` or `controller_`.
   std::unique_ptr<OmniboxController> owned_controller_;
 
   base::ScopedObservation<AutocompleteController,

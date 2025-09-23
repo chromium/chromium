@@ -19,7 +19,7 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 
 class Profile;
-class RealboxHandler;
+class WebuiOmniboxHandler;
 
 namespace ui {
 class ColorChangeHandler;
@@ -57,10 +57,10 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
-  RealboxHandler* handler() { return handler_.get(); }
+  WebuiOmniboxHandler* handler() { return handler_.get(); }
 
  private:
-  std::unique_ptr<RealboxHandler> handler_;
+  std::unique_ptr<WebuiOmniboxHandler> handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   raw_ptr<Profile> profile_;
 

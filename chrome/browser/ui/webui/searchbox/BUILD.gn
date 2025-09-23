@@ -15,6 +15,8 @@ source_set("searchbox") {
     "searchbox_handler.h",
     "searchbox_omnibox_client.cc",
     "searchbox_omnibox_client.h",
+    "webui_omnibox_handler.cc",
+    "webui_omnibox_handler.h",
   ]
   public_deps = [
     "//base",

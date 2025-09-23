@@ -16,12 +16,14 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -38,7 +40,7 @@
 
 namespace {
 
-class TestObserver : public OmniboxWebUIPopupChangeObserver {
+class TestObserver : public OmniboxWebuiPopupChangeObserver {
  public:
   void OnPopupElementSizeChanged(gfx::Size size) override { called_ = true; }
   bool called() const { return called_; }
@@ -111,8 +113,7 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get(), /*metrics_reporter=*/nullptr,
-        /*omnibox_controller=*/nullptr);
+        web_contents_.get(), /*metrics_reporter=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -128,64 +129,6 @@ TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
 
   EXPECT_EQ("CGQ", *source()->GetLocalizedStrings()->FindString(
                        "searchboxLensVariations"));
-}
-
-TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {
-  searchbox::mojom::OmniboxPopupSelectionPtr old_selection;
-  searchbox::mojom::OmniboxPopupSelectionPtr selection;
-  EXPECT_CALL(page_, UpdateSelection)
-      .Times(4)
-      .WillRepeatedly([&old_selection, &selection](
-                          searchbox::mojom::OmniboxPopupSelectionPtr arg0,
-                          searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
-        old_selection = std::move(arg0);
-        selection = std::move(arg1);
-      });
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
-  page_.FlushForTesting();
-  EXPECT_EQ(0, selection->line);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
-  page_.FlushForTesting();
-  EXPECT_EQ(1, selection->line);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
-            selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
-                            4));
-  page_.FlushForTesting();
-  EXPECT_EQ(2, selection->line);
-  EXPECT_EQ(4, selection->action_index);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kFocusedButtonAction,
-            selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
-      OmniboxPopupSelection(
-          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
-  page_.FlushForTesting();
-  EXPECT_EQ(3, selection->line);
-  EXPECT_EQ(
-      searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
-      selection->state);
-}
-
-TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
-  TestObserver observer;
-  EXPECT_FALSE(observer.called());
-  handler_->AddObserver(&observer);
-  EXPECT_TRUE(handler_->HasObserver(&observer));
-  handler_->RemoveObserver(&observer);
-  EXPECT_FALSE(handler_->HasObserver(&observer));
-  EXPECT_TRUE(observer.called());
 }
 
 TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
@@ -309,8 +252,8 @@ class RealboxHandlerTabsTest : public RealboxHandlerTest {
     content::WebContentsTester::For(contents_unique_ptr.get())
         ->NavigateAndCommit(url);
     content::WebContents* content_ptr = contents_unique_ptr.get();
-    content::WebContentsTester::For(content_ptr)->SetLastActiveTimeTicks(
-        IncrementTimeTicksAndGet());
+    content::WebContentsTester::For(content_ptr)
+        ->SetLastActiveTimeTicks(IncrementTimeTicksAndGet());
     tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
     tabs::TabInterface* tab_interface =
         tab_strip_model()->GetTabForWebContents(content_ptr);
@@ -576,4 +519,99 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
     testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
   }
+}
+
+class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
+ public:
+  WebuiOmniboxHandlerTest() = default;
+
+  WebuiOmniboxHandlerTest(const WebuiOmniboxHandlerTest&) = delete;
+  WebuiOmniboxHandlerTest& operator=(const WebuiOmniboxHandlerTest&) = delete;
+  ~WebuiOmniboxHandlerTest() override = default;
+
+ protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<WebuiOmniboxHandler> handler_;
+
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
+
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        /*view=*/nullptr, std::make_unique<TestOmniboxClient>(),
+        kAutocompleteDefaultStopTimerDuration);
+
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    handler_ = std::make_unique<WebuiOmniboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        web_contents_.get(), /*metrics_reporter=*/nullptr,
+        omnibox_controller_.get());
+    handler_->SetPage(page_.BindAndGetRemote());
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    SearchboxHandlerTest::TearDown();
+  }
+
+  std::unique_ptr<OmniboxController> omnibox_controller_;
+};
+
+TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxObservationWorks) {
+  TestObserver observer;
+  EXPECT_FALSE(observer.called());
+  handler_->AddObserver(&observer);
+  EXPECT_TRUE(handler_->HasObserver(&observer));
+  handler_->RemoveObserver(&observer);
+  EXPECT_FALSE(handler_->HasObserver(&observer));
+  EXPECT_TRUE(observer.called());
+}
+
+TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
+  searchbox::mojom::OmniboxPopupSelectionPtr old_selection;
+  searchbox::mojom::OmniboxPopupSelectionPtr selection;
+  EXPECT_CALL(page_, UpdateSelection)
+      .Times(4)
+      .WillRepeatedly([&old_selection, &selection](
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg0,
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
+        old_selection = std::move(arg0);
+        selection = std::move(arg1);
+      });
+
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+  page_.FlushForTesting();
+  EXPECT_EQ(0, selection->line);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
+
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
+      OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
+  page_.FlushForTesting();
+  EXPECT_EQ(1, selection->line);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
+            selection->state);
+
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
+      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+                            4));
+  page_.FlushForTesting();
+  EXPECT_EQ(2, selection->line);
+  EXPECT_EQ(4, selection->action_index);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kFocusedButtonAction,
+            selection->state);
+
+  handler_->UpdateSelection(
+      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
+      OmniboxPopupSelection(
+          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
+  page_.FlushForTesting();
+  EXPECT_EQ(3, selection->line);
+  EXPECT_EQ(
+      searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
+      selection->state);
 }

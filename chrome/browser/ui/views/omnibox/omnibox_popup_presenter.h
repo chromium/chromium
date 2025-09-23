@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,7 +27,7 @@ class OmniboxController;
 // code, work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver,
-                              public OmniboxWebUIPopupChangeObserver,
+                              public OmniboxWebuiPopupChangeObserver,
                               public views::ViewObserver {
   METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
 
@@ -47,12 +47,12 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Get the handler for communicating with the WebUI interface.
   // Returns nullptr if handler is not ready.
-  RealboxHandler* GetHandler();
+  WebuiOmniboxHandler* GetHandler();
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
-  // RealboxWebUIChangeClient:
+  // OmniboxWebuiPopupChangeObserver:
   void OnPopupElementSizeChanged(gfx::Size size) override;
 
   // views::ViewObserver:
