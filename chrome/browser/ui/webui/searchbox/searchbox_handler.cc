@@ -110,6 +110,9 @@ constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/searchbox/icons/sites.svg";
 constexpr char kGoogleLensMonochromeLogoIcon[] =
     "//resources/cr_components/searchbox/icons/camera.svg";
+constexpr char kGoogleAgentspaceMonochromeLogoIcon[] =
+    "//resources/cr_components/searchbox/icons/"
+    "google_agentspace_monochrome_logo.svg";
 #endif
 const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
 const char* kIncognitoIconResourceName =
@@ -691,9 +694,7 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
     return kGoogleLensMonochromeLogoIcon;
   }
   if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
-    // TODO(crbug.com/445750712): Temporarily use the non-monochrome agentspace
-    //  logo.
-    return kGoogleAgentspaceIconResourceName;
+    return kGoogleAgentspaceMonochromeLogoIcon;
   }
 #endif
   if (icon.name == omnibox::kIncognitoIcon.name ||
