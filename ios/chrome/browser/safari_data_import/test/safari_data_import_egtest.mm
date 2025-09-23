@@ -11,7 +11,6 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -90,19 +89,14 @@
 /// Settings.
 - (void)testShowEntryPointInSettings {
   if (@available(iOS 18.2, *)) {
-    ScopedSynchronizationDisabler disabler;
     /// Clean restart without experimental settings.
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:
             [self appConfigurationNoOverrideBehavior]];
     [ChromeEarlGreyUI openSettingsMenu];
-    [[[EarlGrey selectElementWithMatcher:
-                    grey_allOf(grey_accessibilityID(
-                                   kSettingsSafariDataImportSettingsCellId),
-                               grey_interactable(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-        onElementWithMatcher:grey_accessibilityID(kSettingsTableViewId)]
-        performAction:grey_tap()];
+    [ChromeEarlGreyUI
+        tapSettingsMenuButton:grey_accessibilityID(
+                                  kSettingsSafariDataImportSettingsCellId)];
     /// Verify visibility and that the reminder button is not displaying.
     GREYAssertTrue(IsSafariDataImportEntryPointVisible(),
                    @"Safari data import workflow is not displayed.");
@@ -123,16 +117,18 @@
 }
 
 /// Tests that the entry point displays in full screen in landscape mode.
-// TODO(crbug.com/446122860): Test is flaky.
-- (void)FLAKY_testFullscreenEntryPointLandscapeMode {
+- (void)testFullscreenEntryPointIPhoneLandscapeMode {
   if (@available(iOS 18.2, *)) {
+    if ([ChromeEarlGrey isIPadIdiom]) {
+      EARL_GREY_TEST_SKIPPED(@"Inapplicable on iPad.");
+    }
     /// Verify that NTP logo is visible before rotation.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
         assertWithMatcher:grey_sufficientlyVisible()];
     /// Rotate.
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                   error:nil];
-    /// Verify that NTP logo is hidden after rotation.
+    /// Verify that NTP logo is mostly hidden after rotation.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
         assertWithMatcher:grey_not(grey_sufficientlyVisible())];
     /// Verify that the user is still able to proceed in landscape mode.
@@ -164,9 +160,10 @@
         grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
     [[EarlGrey selectElementWithMatcher:buttonInNavBar]
         performAction:grey_tap()];
-    /// Verify that NTP logo is visible, and that the entry point is dismissed.
+    /// Verify that NTP logo is interactable, which means that the entry point
+    /// is dismissed.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
-        assertWithMatcher:grey_sufficientlyVisible()];
+        assertWithMatcher:grey_interactable()];
     GREYAssertFalse(IsSafariDataImportEntryPointVisible(),
                     @"Safari data import workflow is not fully dismissed.");
   }
