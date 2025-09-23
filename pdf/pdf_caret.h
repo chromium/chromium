@@ -56,10 +56,10 @@ class PdfCaret {
   void SetBlinkInterval(base::TimeDelta interval);
 
   // Sets the caret's char position and updates its screen rect. Invalidates the
-  // old caret rect but not the new caret rect. Requires a page with at least
-  // one char and a valid char index (from 0 up to the page's char count,
-  // inclusive), otherwise crashes. Use this over `SetCharAndDraw()` when the
-  // new caret should not appear on screen (e.g. during text selection).
+  // old caret rect if visible but not the new caret rect. Requires a page with
+  // at least one char and a valid char index (from 0 up to the page's char
+  // count, inclusive), otherwise crashes. Use this over `SetCharAndDraw()` when
+  // the new caret should not appear on screen (e.g. during text selection).
   void SetChar(const PageCharacterIndex& next_char);
 
   // Same as `SetChar()`, but also draws the caret at the new position if

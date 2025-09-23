@@ -64,7 +64,8 @@ void PdfCaret::SetChar(const PageCharacterIndex& next_char) {
 
   const gfx::Rect old_screen_rect = caret_screen_rect_;
   caret_screen_rect_ = GetScreenRectForCaret(index_);
-  if (!old_screen_rect.IsEmpty() && old_screen_rect != caret_screen_rect_) {
+  if (is_blink_visible_ && !old_screen_rect.IsEmpty() &&
+      old_screen_rect != caret_screen_rect_) {
     client_->InvalidateRect(old_screen_rect);
   }
 }
