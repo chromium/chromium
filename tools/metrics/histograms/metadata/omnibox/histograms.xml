@@ -345,6 +345,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name="Directions"/>
     <variant name="Lens"/>
     <variant name="Reviews"/>
+    <variant name="TabSwitch"/>
   </token>
 </histogram>
 

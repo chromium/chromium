@@ -44,6 +44,9 @@ const char* ToString(ActionType type) {
       return "Reviews";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return "Aim";
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return "TabSwitch";
     default:
       NOTREACHED();
   }
@@ -100,6 +103,14 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
           IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
           IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
           IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
+      },
+      {
+          omnibox::
+              SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS,
       }};
 
   for (const auto& test_case : test_cases) {
@@ -134,7 +145,8 @@ TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
-      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM};
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH};
 
   for (auto test_case : test_cases) {
     TemplateAction template_action;
@@ -210,6 +222,8 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
     kWebsite,
     kReviews,
     kAim,
+    kLens,
+    kTabSwitch,
   };
 
   // Correlation between ActionType and UMA-recorded bucket.
@@ -227,6 +241,9 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
        UmaTypeForTest::kReviews, "Omnibox.ActionInSuggest.UsageByType.Reviews"},
       {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
        UmaTypeForTest::kAim, "Omnibox.ActionInSuggest.UsageByType.AIM"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH,
+       UmaTypeForTest::kTabSwitch,
+       "Omnibox.ActionInSuggest.UsageByType.TabSwitch"},
   };
 
   for (const auto& test_case : test_cases) {

@@ -87,6 +87,7 @@ message SuggestTemplateInfo {
       REVIEWS = 20;
       CHROME_AIM = 1000;
       CHROME_LENS = 1001;
+      CHROME_TAB_SWITCH = 1002;
     }
 
     // The URI to open when the action is invoked.

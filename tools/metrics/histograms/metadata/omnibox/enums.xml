@@ -35,6 +35,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Reviews"/>
   <int value="5" label="Aim"/>
   <int value="6" label="Lens"/>
+  <int value="7" label="TabSwitch"/>
 </enum>
 
 <!-- LINT.IfChange(AimEligibilityRequestStatus) -->

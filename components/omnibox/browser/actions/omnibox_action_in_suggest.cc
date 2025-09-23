@@ -36,9 +36,10 @@ enum class ActionInSuggestUmaType {
   kReviews,
   kAim,
   kLens,
+  kTabSwitch,
 
   // Sentinel value. Must be set to the last valid ActionInSuggestUmaType.
-  kMaxValue = kLens
+  kMaxValue = kTabSwitch
 };
 
 constexpr const char* ToUmaUsageHistogramName(
@@ -54,6 +55,9 @@ constexpr const char* ToUmaUsageHistogramName(
       return "Omnibox.ActionInSuggest.UsageByType.AIM";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
       return "Omnibox.ActionInSuggest.UsageByType.Lens";
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return "Omnibox.ActionInSuggest.UsageByType.TabSwitch";
   }
   NOTREACHED() << "Unexpected type of Action: " << (int)type;
 }
@@ -72,6 +76,9 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
       return ActionInSuggestUmaType::kAim;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
       return ActionInSuggestUmaType::kLens;
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return ActionInSuggestUmaType::kTabSwitch;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -89,6 +96,9 @@ constexpr int ToActionHint(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
       return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_HINT;
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return IDS_OMNIBOX_TAB_SUGGEST_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -106,6 +116,9 @@ constexpr int ToActionContents(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS:
       return IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_SUGGESTION_CONTENTS;
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
