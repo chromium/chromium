@@ -73,10 +73,6 @@ patterns = [
 command = ["tools/jj/formatters/python.py", "$path"]
 patterns = ["glob:'**/*.py'"]
 
-[fix.tools.swift-format]
-command = ["tools/jj/formatters/swift.py", "format"]
-patterns = ["glob:'**/*.swift'"]
-
 [fix.tools.mojom-format]
 command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
 patterns = [
@@ -87,3 +83,10 @@ patterns = [
 [fix.tools.lucicfg-format]
 command = ["lucicfg", "fmt", "-stdio", "$path"]
 patterns = ["glob:'**/*.star'"]
+
+# This formatter is only available on macos
+[[--scope]]
+--when.platforms = ["macos"]
+[--scope.fix.tools.swift-format]
+command = ["third_party/depot_tools/swift_format", "format"]
+patterns = ["glob:'**/*.swift'"]
