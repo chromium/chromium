@@ -280,8 +280,9 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
         profile_indicator_icon_->bounds().y();
   }
   if (GetShowCaptionButtonsWhenNotInOverview()) {
+    const auto caption_bounds = caption_button_container_->bounds();
     params.trailing_exclusion.content =
-        gfx::SizeF(caption_button_container_->GetPreferredSize());
+        gfx::SizeF(width() - caption_bounds.x(), caption_bounds.bottom());
   }
   return params;
 }

@@ -494,11 +494,11 @@ BrowserFrameViewMac::GetCaptionButtonBounds() const {
   // These are empirically determined; feel free to change them if they're
   // not precise.
   if (@available(macOS 26, *)) {
-    result.bounds = gfx::RectF(12, 10.5f, 62, 18);
-    result.margins = gfx::OutsetsF::VH(10.5, 12);
+    result.bounds = gfx::RectF(12, 10, 62, 18);
+    result.margins = gfx::OutsetsF::VH(10, 12);
   } else {
-    result.bounds = gfx::RectF(20, 11.5f, 54, 16);
-    result.margins = gfx::OutsetsF::VH(11.5, 20);
+    result.bounds = gfx::RectF(20, 11, 54, 16);
+    result.margins = gfx::OutsetsF::VH(11, 20);
   }
 
   return result;
