@@ -4,16 +4,12 @@
 
 source_set("ui_bundled") {
   sources = [
-    "badges_container_view.h",
-    "badges_container_view.mm",
     "location_bar_consumer.h",
     "location_bar_coordinator.h",
     "location_bar_coordinator.mm",
     "location_bar_generic_coordinator.h",
     "location_bar_mediator.h",
     "location_bar_mediator.mm",
-    "location_bar_metrics.h",
-    "location_bar_metrics.mm",
     "location_bar_placeholder_type.h",
     "location_bar_steady_view.h",
     "location_bar_steady_view.mm",
@@ -24,9 +20,11 @@ source_set("ui_bundled") {
     "location_bar_view_controller.mm",
   ]
   deps = [
+    ":badges",
     ":constants",
     ":fakebox_buttons_snapshot",
     ":location_bar_model_delegate",
+    ":metrics",
     ":protocols",
     "//base",
     "//components/feature_engagement/public",
@@ -66,6 +64,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/lens_overlay/model:presentation_type",
     "//ios/chrome/browser/lens_overlay/ui:entry_point",
     "//ios/chrome/browser/location_bar/model",
+    "//ios/chrome/browser/location_bar/ui/badge",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/ntp/model",
@@ -133,6 +132,30 @@ source_set("ui_bundled") {
     "QuartzCore.framework",
     "UIKit.framework",
   ]
+}
+
+source_set("badges") {
+  sources = [
+    "badges_container_view.h",
+    "badges_container_view.mm",
+  ]
+  deps = [
+    ":metrics",
+    "//ios/chrome/browser/badges/ui_bundled",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/reader_mode/ui:chip",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "location_bar_metrics.h",
+    "location_bar_metrics.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("protocols") {

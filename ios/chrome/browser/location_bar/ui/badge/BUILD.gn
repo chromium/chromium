@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ui") {
+source_set("badge") {
   sources = [
     "location_bar_badge_coordinator.h",
     "location_bar_badge_coordinator.mm",
@@ -13,6 +13,8 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/location_bar/ui_bundled:badges",
+    "//ios/chrome/browser/reader_mode/coordinator:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
   ]
   frameworks = [ "UIKit.framework" ]

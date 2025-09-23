@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
+#import "ios/chrome/browser/location_bar/ui/badge/location_bar_badge_coordinator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
@@ -151,6 +152,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 // Coordinator for the reader mode chip.
 @property(nonatomic, strong)
     ReaderModeChipCoordinator* readerModeChipCoordinator;
+// Coordinator for the location bar badge view.
+@property(nonatomic, strong)
+    LocationBarBadgeCoordinator* locationBarBadgeCoordinator;
 // Coordinator for the omnibox.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 @property(nonatomic, strong) LocationBarMediator* mediator;
@@ -289,6 +293,14 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     [self.readerModeChipCoordinator start];
     [self.viewController setReaderModeChipView:self.readerModeChipCoordinator
                                                    .viewController.view];
+  }
+
+  // TODO(crbug.com/445784670): Connect LocationBarViewController to
+  // BadgeContainerView.
+  if (IsAskGeminiChipEnabled()) {
+    self.locationBarBadgeCoordinator = [[LocationBarBadgeCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
   }
 
   // Create button factory that wil be used by the ViewController to get
