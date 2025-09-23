@@ -9,6 +9,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -75,6 +76,18 @@ public class ListMenuButton extends ChromeImageButton {
      */
     public void setDelegate(@Nullable ListMenuDelegate delegate, boolean overrideOnClickListener) {
         mListMenuHost.setDelegate(delegate, overrideOnClickListener);
+    }
+
+    /**
+     * Set the root view for {@link AnchoredPopupWindow} to use. This is necessary when the root
+     * view of {@link mView} does not match the root view of the application, for example when the
+     * {@link mView} is inside another {@link AnchoredPopupWindow}. This must be called before the
+     * popup window is shown.
+     *
+     * @param rootView The {@link View} to use to get window tokens.
+     */
+    public void setRootView(View rootView) {
+        mListMenuHost.setRootView(rootView);
     }
 
     /**

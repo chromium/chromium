@@ -60,6 +60,7 @@ public class ListMenuHost
     private static ListMenuHost.@Nullable PopupMenuHelper sPopupMenuHelperForTesting;
 
     private final View mView;
+    private @Nullable View mRootView;
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
 
@@ -151,6 +152,17 @@ public class ListMenuHost
         mMenuMaxWidth = maxWidth;
     }
 
+    /**
+     * Set the root view for {@link AnchoredPopupWindow} to use. This is necessary when the root
+     * view of {@link mView} does not match the root view of the application, for example when the
+     * {@link mView} is inside another {@link AnchoredPopupWindow}.
+     *
+     * @param rootView The {@link View} to use to get window tokens.
+     */
+    public void setRootView(View rootView) {
+        mRootView = rootView;
+    }
+
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
@@ -168,7 +180,7 @@ public class ListMenuHost
         AnchoredPopupWindow.Builder builder =
                 new AnchoredPopupWindow.Builder(
                                 mView.getContext(),
-                                mView,
+                                mRootView != null ? mRootView : mView,
                                 new ColorDrawable(Color.TRANSPARENT),
                                 () -> contentView,
                                 mDelegate.getRectProvider(mView))
@@ -236,7 +248,7 @@ public class ListMenuHost
         AnchoredPopupWindow popupMenu =
                 new AnchoredPopupWindow.Builder(
                                 mView.getContext(),
-                                mView,
+                                mRootView != null ? mRootView : mView,
                                 new ColorDrawable(Color.TRANSPARENT),
                                 () -> contentView,
                                 new RectProvider(calculateFlyoutAnchorRect(view)))
@@ -259,7 +271,8 @@ public class ListMenuHost
         itemView.getLocationOnScreen(result);
 
         int[] rootCoordinates = new int[2];
-        mView.getRootView().getLocationOnScreen(rootCoordinates);
+        View rootView = mRootView != null ? mRootView : mView;
+        rootView.getRootView().getLocationOnScreen(rootCoordinates);
 
         int horizontalOverlap =
                 itemView.getContext()
