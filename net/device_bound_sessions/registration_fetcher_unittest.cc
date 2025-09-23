@@ -268,6 +268,14 @@ std::unique_ptr<test_server::HttpResponse> ReturnUnauthorized(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse> ReturnForbidden(
+    const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_FORBIDDEN);
+  response->AddCustomHeader(GetSessionChallengeHeaderName(), R"("challenge")");
+  return response;
+}
+
 std::unique_ptr<test_server::HttpResponse> ReturnTextResponse(
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
@@ -328,19 +336,37 @@ class UnauthorizedThenSuccessResponseContainer {
  public:
   explicit UnauthorizedThenSuccessResponseContainer(
       int unauthorize_response_times)
-      : run_times(0), error_respose_times(unauthorize_response_times) {}
+      : error_response_times(unauthorize_response_times) {}
 
   std::unique_ptr<test_server::HttpResponse> Return(
       const test_server::HttpRequest& request) {
-    if (run_times++ < error_respose_times) {
+    if (run_times++ < error_response_times) {
       return ReturnUnauthorized(request);
     }
     return ReturnResponse(HTTP_OK, kBasicValidJson, request);
   }
 
  private:
-  int run_times;
-  int error_respose_times;
+  int run_times = 0;
+  int error_response_times = 0;
+};
+
+class ForbiddenThenSuccessResponseContainer {
+ public:
+  explicit ForbiddenThenSuccessResponseContainer(int forbidden_response_times)
+      : error_response_times(forbidden_response_times) {}
+
+  std::unique_ptr<test_server::HttpResponse> Return(
+      const test_server::HttpRequest& request) {
+    if (run_times++ < error_response_times) {
+      return ReturnForbidden(request);
+    }
+    return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+  }
+
+ private:
+  int run_times = 0;
+  int error_response_times = 0;
 };
 
 MATCHER_P3(EqualsInclusionRule, rule_type, rule_host, rule_path, "") {
@@ -1200,13 +1226,50 @@ TEST_F(RegistrationTest, ServerError500) {
             SessionError::ErrorType::kTransientHttpError);
 }
 
-TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
+TEST_F(RegistrationTestWithoutOriginTrialFeedback,
+       ServerErrorReturnOne401ThenSuccess) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   auto* container = new UnauthorizedThenSuccessResponseContainer(1);
   server_.RegisterRequestHandler(
       base::BindRepeating(&UnauthorizedThenSuccessResponseContainer::Return,
                           base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationRequestParam param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  proto::Session session = out_session.session().ToProto();
+  EXPECT_TRUE(session.session_inclusion_rules().do_include_site());
+  EXPECT_THAT(
+      session.session_inclusion_rules().url_rules(),
+      ElementsAre(
+          EqualsInclusionRule(proto::RuleType::INCLUDE, "trusted.a.test",
+                              "/only_trusted_path"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+  EXPECT_THAT(
+      session.cookie_cravings(),
+      ElementsAre(EqualsCredential(
+          "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       ServerErrorReturnOne403ThenSuccess) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  auto* container = new ForbiddenThenSuccessResponseContainer(1);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ForbiddenThenSuccessResponseContainer::Return, base::Owned(container)));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
@@ -1333,7 +1396,10 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
     EXPECT_TRUE(session_iter != request.headers.end() &&
                 !session_iter->second.empty());
 
-    response->set_code(HTTP_UNAUTHORIZED);
+    response->set_code(base::FeatureList::IsEnabled(
+                           features::kDeviceBoundSessionsOriginTrialFeedback)
+                           ? HTTP_FORBIDDEN
+                           : HTTP_UNAUTHORIZED);
     response->AddCustomHeader(GetSessionChallengeHeaderName(),
                               R"("test_challenge";id="session_id")");
     return response;
@@ -1349,6 +1415,14 @@ std::unique_ptr<test_server::HttpResponse>
 Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_UNAUTHORIZED);
+  response->AddCustomHeader(GetSessionChallengeHeaderName(), "");
+  return response;
+}
+
+std::unique_ptr<test_server::HttpResponse>
+Return403ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_FORBIDDEN);
   response->AddCustomHeader(GetSessionChallengeHeaderName(), "");
   return response;
 }
@@ -1465,11 +1539,38 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
           "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
 }
 
-TEST_F(RegistrationTest,
+TEST_F(RegistrationTestWithoutOriginTrialFeedback,
        FetchRegistrationAndChallengeRequired_InvalidChallengeParams) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&Return401ResponseWithInvalidChallenge));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), /*session_identifier=*/std::nullopt, kChallenge);
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, std::ref(unexportable_key_service()), context_.get(),
+          std::ref(isolation_info),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+                                     callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kInvalidChallenge);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       FetchRegistrationAndChallengeRequired_InvalidChallengeParams) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&Return403ResponseWithInvalidChallenge));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
@@ -1696,13 +1797,44 @@ TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
       1u);
 }
 
-TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
+TEST_F(RegistrationTestWithoutOriginTrialFeedback,
+       TerminateSessionOnRepeatedChallenge) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   auto* container = new UnauthorizedThenSuccessResponseContainer(100);
   server_.RegisterRequestHandler(
       base::BindRepeating(&UnauthorizedThenSuccessResponseContainer::Return,
                           base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  auto request_param = RegistrationRequestParam::CreateForTesting(
+      GetBaseURL(), kSessionIdentifier, kChallenge);
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, std::ref(unexportable_key_service()), context_.get(),
+          std::ref(isolation_info),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+                                     callback.callback());
+  callback.WaitForCall();
+
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  const SessionError& session_error = out_session.error();
+  EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       TerminateSessionOnRepeatedChallenge) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  auto* container = new ForbiddenThenSuccessResponseContainer(100);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ForbiddenThenSuccessResponseContainer::Return, base::Owned(container)));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;

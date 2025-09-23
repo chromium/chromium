@@ -51,7 +51,7 @@
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const authResponseAfterExpiry = await fetch('verify_authenticated.py');
-    assert_equals(authResponseAfterExpiry.status, 401);
+    assert_equals(authResponseAfterExpiry.status, 403);
     assert_false(documentHasCookie(expectedCookieAndValue));
   }, "Registration of first-party session not allowed in third-party context");
 
@@ -146,7 +146,7 @@
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const authResponseAfterExpiry = await fetch('verify_authenticated.py');
-    assert_equals(authResponseAfterExpiry.status, 401);
+    assert_equals(authResponseAfterExpiry.status, 403);
     assert_false(documentHasCookie(expectedCookieAndValue));
   }, "Set challenge of first-party not allowed in third-party context");
 

@@ -525,7 +525,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    if (response_code == 401) {
+    if ((base::FeatureList::IsEnabled(
+             features::kDeviceBoundSessionsOriginTrialFeedback) &&
+         response_code == 403) ||
+        (!base::FeatureList::IsEnabled(
+             features::kDeviceBoundSessionsOriginTrialFeedback) &&
+         response_code == 401)) {
       auto challenge_params =
           device_bound_sessions::SessionChallengeParam::CreateIfValid(
               fetcher_endpoint_, headers);

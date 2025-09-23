@@ -7,7 +7,7 @@ def main(request, response):
     if test_session_manager.get_registration_sends_challenge():
         # Only send back a challenge on the first call.
         test_session_manager.reset_registration_sends_challenge()
-        return (401, [('Secure-Session-Challenge', '"login_challenge_value"')], "")
+        return (403, [('Secure-Session-Challenge', '"login_challenge_value"')], "")
 
     jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Secure-Session-Response").decode('utf-8'))
     session_id = test_session_manager.create_new_session()

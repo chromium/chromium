@@ -30,7 +30,7 @@ def main(request, response):
     if test_session_manager.get_refresh_sends_challenge():
         challenge = "refresh_challenge_value"
         if request.headers.get("Secure-Session-Response") == None:
-            return (401, [('Secure-Session-Challenge', f'"{challenge}";id="{session_id}"')], "")
+            return (403, [('Secure-Session-Challenge', f'"{challenge}";id="{session_id}"')], "")
 
         jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Secure-Session-Response").decode('utf-8'), session_key)
 

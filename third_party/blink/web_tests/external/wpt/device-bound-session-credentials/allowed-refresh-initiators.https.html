@@ -30,7 +30,7 @@
     assert_false(documentHasCookie(expectedCookieAndValue));
 
     const authStatusAfterExpiry = await crossSiteFetch(origin, `${location.origin}/device-bound-session-credentials/verify_authenticated.py`, {credentials: "include"});
-    assert_equals(authStatusAfterExpiry, refresh_expected ? 200 : 401);
+    assert_equals(authStatusAfterExpiry, refresh_expected ? 200 : 403);
     assert_equals(documentHasCookie(expectedCookieAndValue), refresh_expected);
   }
 
