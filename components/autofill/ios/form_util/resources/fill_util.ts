@@ -648,7 +648,7 @@ gCrWebLegacy.fill.getAriaDescription = function(element: Element): string {
  * @param element An element to examine.
  * @return Whether the element is inside a <form> or <fieldset>.
  */
-gCrWebLegacy.fill.isElementInsideFormOrFieldSet = function(
+function isElementInsideFormOrFieldSet(
     element: fillConstants.FormControlElement): boolean {
   let parentNode = element.parentNode;
   while (parentNode) {
@@ -660,7 +660,7 @@ gCrWebLegacy.fill.isElementInsideFormOrFieldSet = function(
     parentNode = parentNode.parentNode;
   }
   return false;
-};
+}
 
 /**
  * @param element Form or form input element.
@@ -713,4 +713,5 @@ export {
   setRemoteFrameToken,
   getRemoteFrameToken,
   valueForElement,
+  isElementInsideFormOrFieldSet,
 };
