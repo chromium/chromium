@@ -22,6 +22,7 @@
 struct CoreAccountInfo;
 class DiceTabHelper;
 class ProfilePickerWebContentsHost;
+class SigninUIError;
 
 BASE_DECLARE_FEATURE(kProfilePickerGaiaBlankContinueUrl);
 
@@ -124,6 +125,9 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
       Profile* profile,
       content::WebContents* contents,
       const CoreAccountInfo& account_info);
+  void ShowSigninError(Profile* profile,
+                       content::WebContents* contents,
+                       const SigninUIError& error);
 
   void OnSignInContentsFreedUp();
 
