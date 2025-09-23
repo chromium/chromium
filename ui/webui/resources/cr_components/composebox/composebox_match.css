@@ -54,7 +54,7 @@
 #iconContainer {
   align-items: center;
   display: flex;
-  padding-inline-start: 16px;
+  padding-inline-start: 18px;
   justify-content: center;
 }
 
@@ -62,9 +62,9 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
-  background-color: var(--color-new-tab-page-composebox-results-icon);
-  height: 24px;
-  width: 24px;
+  background-color: var(--color-new-tab-page-composebox-input-icon);
+  height: 20px;
+  width: 20px;
 }
 
 #textContainer {

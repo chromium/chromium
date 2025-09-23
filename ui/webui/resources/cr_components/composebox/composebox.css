@@ -177,17 +177,13 @@
 
 :host([expanded_]) #composebox {
   height: calc-size(auto, size);
-  max-height: 254px;
+  max-height: 422px;
   transition-duration: var(--expand-duration);
 }
 
 :host([is-collapsible][expanded_]) #composebox {
   min-height: 136px;
   max-height: 254px;
-}
-
-:host([expanded_][show-dropdown_]) #composebox {
-  max-height: 422px;
 }
 
 #inputContainer {
@@ -221,6 +217,11 @@
 }
 
 #aimIcon {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  background-color: var(--color-new-tab-page-composebox-input-icon);
   height: 24px;
   width: 24px;
 }
@@ -259,12 +260,20 @@
   transition: padding var(--height-expand-duration) var(--standard-curve);
 }
 
+#input::placeholder {
+  color: var(--color-new-tab-page-composebox-type-ahead);
+}
+
 #smartCompose {
   pointer-events: none;
   position: absolute;
   overflow: scroll;
   top: 0;
   left: 0;
+}
+
+:host(:not([smart-compose-enabled_])) #smartCompose {
+  display: none;
 }
 
 #invisibleText {
@@ -313,14 +322,7 @@
   display: none;
 }
 
-ntp-composebox-dropdown {
-  opacity: 0;
-  transition: var(--icon-exit-transition);
-}
-
 :host([expanded_][show-dropdown_]) ntp-composebox-dropdown {
-  opacity: 1;
-  transition: var(--icon-entry-transition);
   padding-bottom: 8px;
 }
 
@@ -603,7 +605,7 @@ ntp-composebox-dropdown {
   font-weight: 400;
   left: 50%;
   line-height: 18px;
-  margin-top: 38px;
+  margin-top: 20px;
   position: absolute;
   transform: translate(-50%);
 }
