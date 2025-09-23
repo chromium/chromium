@@ -81,6 +81,15 @@ MATCHER_P2(IsTimestampedPrefValue, expected_value, expected_time, "") {
   return true;
 }
 
+// A gMock matcher to verify the GUID of a syncer::DeviceInfo object.
+MATCHER_P(HasGuid, expected_guid, "") {
+  if (arg.guid() != expected_guid) {
+    *result_listener << "whose GUID is " << arg.guid();
+    return false;
+  }
+  return true;
+}
+
 // A fake `CrossDevicePrefProvider` for controlling which prefs are tracked.
 class FakeCrossDevicePrefProvider : public CrossDevicePrefProvider {
  public:
@@ -101,6 +110,17 @@ class FakeCrossDevicePrefProvider : public CrossDevicePrefProvider {
  private:
   base::flat_set<std::string_view> profile_prefs_;
   base::flat_set<std::string_view> local_state_prefs_;
+};
+
+// A mock observer to verify remote pref change notifications.
+class MockObserver : public CrossDevicePrefTracker::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnRemotePrefChanged,
+              (std::string_view pref_name,
+               const TimestampedPrefValue& value,
+               const syncer::DeviceInfo& device_info),
+              (override));
 };
 
 class CrossDevicePrefTrackerTest : public testing::Test {
@@ -399,9 +419,12 @@ TEST_F(CrossDevicePrefTrackerTest, SyncsLatestValueAfterDelayedInitialization) {
 }
 
 // Verifies that after `Shutdown()` is called, the tracker no longer observes or
-// syncs pref changes.
+// syncs pref changes (local or remote).
 TEST_F(CrossDevicePrefTrackerTest, ShutdownStopsTrackingChanges) {
   CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
   profile_prefs_.SetInteger(kTrackedProfilePref, 10);
   const base::Value::Dict* entry1 =
       GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid);
@@ -412,7 +435,8 @@ TEST_F(CrossDevicePrefTrackerTest, ShutdownStopsTrackingChanges) {
 
   tracker_->Shutdown();
 
-  // This change should be ignored.
+  // This local change should be ignored.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
   profile_prefs_.SetInteger(kTrackedProfilePref, 100);
 
   // The value should remain at the state before shutdown.
@@ -422,6 +446,15 @@ TEST_F(CrossDevicePrefTrackerTest, ShutdownStopsTrackingChanges) {
   EXPECT_EQ(entry2->FindInt(kValueKey), 10);
   EXPECT_TRUE(entry2->contains(kUpdateTimeKey));
   EXPECT_TRUE(entry2->contains(kLastObservedChangeTimeKey));
+
+  // Remote changes should also be ignored after shutdown, as the
+  // cross_device_pref_registrar_ is cleared.
+  const std::string kRemoteGuid = "remote_guid";
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(200), base::Time::Now(), std::nullopt);
+
+  // Explicitly remove the observer before it goes out of scope.
+  tracker_->RemoveObserver(&mock_observer);
 }
 
 // Verifies the optimization where a write is skipped if a pref's value has not
@@ -850,6 +883,265 @@ TEST_F(CrossDevicePrefTrackerTest,
   std::optional<TimestampedPrefValue> result =
       tracker_->GetMostRecentValue(kTrackedProfilePref, filter);
   EXPECT_FALSE(result.has_value());
+}
+
+// Verifies that observers are notified when a remote device updates a pref
+// value, provided the DeviceInfo is already available.
+TEST_F(CrossDevicePrefTrackerTest,
+       NotifiesObserverWhenRemoteDeviceUpdatesPrefValue) {
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kUpdateTime = base::Time::Now() + base::Seconds(10);
+  const int kNewValue = 100;
+
+  // Add the remote device info.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(remote_device.get());
+
+  // Expect a notification when the remote update occurs.
+  EXPECT_CALL(
+      mock_observer,
+      OnRemotePrefChanged(
+          testing::StrEq(kTrackedProfilePref),
+          // Value 100, No observed time (base::Time()).
+          IsTimestampedPrefValue(kNewValue, base::Time()),
+          // Use testing::Ref to ensure the correct DeviceInfo is passed.
+          testing::Ref(*remote_device)));
+
+  // Simulate a remote update by injecting the entry directly into the pref
+  // service. This triggers the `cross_device_pref_registrar_`.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(kNewValue), kUpdateTime, std::nullopt);
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that observers are NOT notified when the local device removes
+// (clears) a pref value (suppression of self-notification for removals).
+TEST_F(CrossDevicePrefTrackerTest,
+       DoesNotNotifyObserverWhenLocalDeviceRemovesPrefValue) {
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // 1. Set an initial non-default value locally.
+  profile_prefs_.SetInteger(kTrackedProfilePref, 50);
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+
+  // Ensure no notifications are sent for local removals.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+
+  // 2. Trigger a local removal (clear back to default). This updates the
+  // cross-device pref dictionary synchronously by removing the local entry.
+  // The implementation should identify this removal as local and suppress the
+  // notification.
+  profile_prefs_.ClearPref(kTrackedProfilePref);
+
+  ASSERT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that if a pref is removed remotely, but the corresponding
+// DeviceInfo is no longer available (e.g., device removed from Sync),
+// observers are NOT notified, as the source metadata is missing.
+TEST_F(CrossDevicePrefTrackerTest,
+       DoesNotNotifyObserverOfRemovalIfDeviceInfoIsMissing) {
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kInitialTime = base::Time::Now();
+
+  // 1. Initialize the state with an existing value from the remote device.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(100), kInitialTime, std::nullopt);
+
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // Note: Do NOT add the DeviceInfo for kRemoteGuid to the tracker.
+
+  // Expect no notification because the DeviceInfo is missing when the removal
+  // is processed.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+
+  // 2. Simulate a remote removal.
+  ScopedDictPrefUpdate update(&profile_prefs_, kCrossDeviceProfilePref);
+  update->Remove(kRemoteGuid);
+
+  // If DeviceInfo arrived later, it would only trigger notifications for
+  // existing values (if any), not past removals.
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that if pref data arrives via Sync before the corresponding
+// DeviceInfo, observers are notified later when the DeviceInfo becomes
+// available.
+TEST_F(CrossDevicePrefTrackerTest,
+       NotifiesObserverWhenDeviceInfoArrivesAfterPrefData) {
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kUpdateTime = base::Time::Now() + base::Seconds(10);
+  const int kValue = 200;
+
+  // 1. Initialize the tracker. DeviceInfo for kRemoteGuid is NOT present yet.
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  // 2. Set expectation that no calls should occur when the data is injected.
+  // Although the data will be cached, the corresponding DeviceInfo is missing.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+
+  // 3. Inject pref data. This simulates data arriving via Sync before
+  // DeviceInfo.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(kValue), kUpdateTime, std::nullopt);
+
+  // 4. Simulate DeviceInfo becoming available.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kLinux,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+
+  // Expect a notification now that the DeviceInfo is available, triggered by
+  // HandleRemoteDeviceInfoChanges().
+  EXPECT_CALL(mock_observer,
+              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
+                                  IsTimestampedPrefValue(kValue, base::Time()),
+                                  testing::Ref(*remote_device)));
+
+  // Adding the device triggers OnDeviceInfoChange().
+  GetTracker()->Add(remote_device.get());
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that the tracker correctly notifies multiple observers for different
+// preferences and handles observer removal.
+TEST_F(CrossDevicePrefTrackerTest, HandlesMultipleObserversAndPrefs) {
+  CreateTracker();
+  MockObserver mock_observer1;
+  MockObserver mock_observer2;
+  tracker_->AddObserver(&mock_observer1);
+  tracker_->AddObserver(&mock_observer2);
+
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kTime1 = base::Time::Now() + base::Seconds(10);
+  const base::Time kTime2 = base::Time::Now() + base::Seconds(20);
+
+  // Add the remote device info.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(remote_device.get());
+
+  // Expect both observers to be notified for the first pref change.
+  EXPECT_CALL(mock_observer1,
+              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
+                                  IsTimestampedPrefValue(100, base::Time()),
+                                  testing::Ref(*remote_device)));
+  EXPECT_CALL(mock_observer2,
+              OnRemotePrefChanged(testing::StrEq(kTrackedProfilePref),
+                                  IsTimestampedPrefValue(100, base::Time()),
+                                  testing::Ref(*remote_device)));
+
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(100), kTime1, std::nullopt);
+
+  // Remove one observer.
+  tracker_->RemoveObserver(&mock_observer2);
+
+  // Expect only the remaining observer to be notified for the second pref
+  // change.
+  EXPECT_CALL(
+      mock_observer1,
+      OnRemotePrefChanged(testing::StrEq(kTrackedLocalStatePref),
+                          // Observed time included in this notification.
+                          IsTimestampedPrefValue(200, kTime2),
+                          testing::Ref(*remote_device)));
+  EXPECT_CALL(mock_observer2, OnRemotePrefChanged).Times(0);
+
+  // Inject change for a different pref (LocalState).
+  InjectCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kRemoteGuid,
+                             base::Value(200), kTime2, kTime2);
+
+  // Ensure the remaining observer is also removed before destruction.
+  tracker_->RemoveObserver(&mock_observer1);
+}
+
+// Verifies that observers are NOT notified if a remote update contains
+// malformed or incomplete data.
+TEST_F(CrossDevicePrefTrackerTest, DoesNotNotifyIfRemoteUpdateIsMalformed) {
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  const std::string kRemoteGuid = "remote_guid";
+
+  // Add the remote device info.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(remote_device.get());
+
+  // Ensure no notifications are sent for malformed data.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+
+  // Simulate a remote update with invalid data (e.g., missing timestamp).
+  // We must manually manipulate the dictionary as InjectCrossDevicePrefEntry
+  // enforces the correct format.
+  ScopedDictPrefUpdate update(&profile_prefs_, kCrossDeviceProfilePref);
+  base::Value::Dict entry;
+  entry.Set(kValueKey, base::Value(100));
+  // Missing kUpdateTimeKey, which makes ParseCrossDevicePrefEntry() fail.
+  update->Set(kRemoteGuid, std::move(entry));
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that the internal caching mechanism prevents duplicate notifications
+// if the PrefService signals a change but the actual dictionary content remains
+// the same.
+TEST_F(CrossDevicePrefTrackerTest, DoesNotNotifyIfRemoteValueIsUnchanged) {
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kUpdateTime = base::Time::Now() + base::Seconds(10);
+  const int kValue = 100;
+
+  // Add the remote device info.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(remote_device.get());
+
+  // Expect the first notification.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(1);
+
+  // First update.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(kValue), kUpdateTime, std::nullopt);
+
+  // Reset mocks to check for the second update.
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+
+  // Second update with the exact same data. Injecting it again triggers the
+  // PrefChangeRegistrar, but the tracker logic in OnCrossDevicePrefChanged()
+  // should compare the new dictionary with the cached one and skip
+  // notification.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(kValue), kUpdateTime, std::nullopt);
+
+  tracker_->RemoveObserver(&mock_observer);
 }
 
 }  // namespace

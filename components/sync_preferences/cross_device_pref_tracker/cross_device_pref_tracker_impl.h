@@ -11,13 +11,16 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_provider.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
@@ -82,13 +85,24 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:
+  // Initializes observation of the cross-device storage prefs and the cache
+  // structure. This also performs validation of all pref mappings.
+  void StartObservingCrossDevicePrefs();
+
   // Starts tracking a set of pref names by validating, observing, and
-  // synchronizing each pref.
+  // synchronizing each pref. The associated PrefService is derived from the
+  // `registrar`.
   void StartTrackingPrefs(
       const base::flat_set<std::string_view>& pref_names,
-      PrefService* tracked_pref_service,
       PrefChangeRegistrar& registrar,
       const PrefChangeRegistrar::NamedChangeAsViewCallback& callback);
+
+  // Pushes the current state of the specified prefs to the cross-device
+  // storage. This is used for initial synchronization and is NOT considered
+  // an observed change.
+  void SyncOnDevicePrefsToCrossDevice(
+      const base::flat_set<std::string_view>& pref_names,
+      PrefService* tracked_pref_service);
 
   // Handles notifications from the `PrefChangeRegistrar` when a tracked profile
   // pref is modified.
@@ -98,17 +112,49 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // state pref is modified.
   void OnTrackedLocalStatePrefChanged(std::string_view tracked_pref_name);
 
+  // Handles notifications from the `PrefChangeRegistrar` when a cross-device
+  // storage dictionary pref is modified (due to local or remote changes).
+  void OnCrossDevicePrefChanged(std::string_view cross_device_pref_name);
+
+  // Compares the old and new states of a dictionary to identify changes and
+  // notifies observers only if the changes are remote.
+  void ProcessRemoteUpdates(const std::string& cross_device_pref_name,
+                            const base::Value::Dict& old_dict,
+                            const base::Value::Dict& new_dict);
+
+  // Attempts to parse the dictionary `entry` (if provided) associated with
+  // `remote_device_info` and notifies observers if successful. If `entry` is
+  // null, it signifies a deletion.
+  // `remote_device_info` is guaranteed to be valid for the duration of the
+  // synchronous observer calls.
+  void NotifyRemotePrefChanged(const std::string& cross_device_pref_name,
+                               const base::Value::Dict* entry,
+                               const syncer::DeviceInfo& remote_device_info);
+
+  // Checks if local device info became ready and performs initial sync if so.
+  void HandleLocalDeviceInfoIfAvailable();
+
+  // Detects newly available devices by comparing known GUIDs with the current
+  // list from `DeviceInfoTracker`, and triggers notifications for their prefs.
+  void HandleRemoteDeviceInfoChanges();
+
+  // Iterates over the storage cache and notifies observers about existing
+  // values for newly available devices (handles asynchronous `DeviceInfo`).
+  // Pointers in `new_devices` are valid for the duration of the call.
+  void NotifyObserversOfExistingPrefsForNewDevices(
+      const std::vector<const syncer::DeviceInfo*>& new_devices);
+
   // `PrefService` for profile-based preferences (including syncable prefs).
-  // Must outlive this object until Shutdown().
+  // Must outlive this object until `Shutdown()`.
   raw_ptr<PrefService> profile_pref_service_;
 
   // `PrefService` for local-state preferences.
-  // Must outlive this object until Shutdown().
+  // Must outlive this object until `Shutdown()`.
   raw_ptr<PrefService> local_pref_service_;
 
   // Provides access to `LocalDeviceInfoProvider` (for local Cache GUID) and
   // `DeviceInfoTracker` (for remote metadata).
-  // Must outlive this object until Shutdown().
+  // Must outlive this object until `Shutdown()`.
   raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
 
   // Provides the lists of prefs to be tracked.
@@ -117,6 +163,20 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Registrars for observing changes to tracked prefs.
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
+
+  // Registrar for observing changes to cross-device storage prefs (remote
+  // changes). These are Profile prefs.
+  PrefChangeRegistrar cross_device_pref_registrar_;
+
+  // Cache of the last known state for each cross-device dictionary.
+  // Used to identify changes when a pref is updated on a remote device.
+  // Maps `cross_device_pref_name` -> dictionary value.
+  base::flat_map<std::string, base::Value::Dict> cross_device_storage_cache_;
+
+  // Set of Cache GUIDs for which `DeviceInfo` is currently available.
+  // Used to detect when entries become visible due to `DeviceInfo` updates.
+  // Stores copies of the GUID strings for safety.
+  base::flat_set<std::string> known_device_guids_;
 
   // Observation for changes in `DeviceInfo`.
   base::ScopedObservation<syncer::DeviceInfoTracker,

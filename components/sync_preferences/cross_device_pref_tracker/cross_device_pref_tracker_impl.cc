@@ -63,8 +63,10 @@ constexpr char kLastObservedChangeTimeKey[] = "last_observed_change_time";
 // Internal, sortable representation of a `TimestampedPrefValue`.
 //
 // This is a helper struct used to implement the tracker's Query API
-// (e.g., `GetValues()`, `GetMostRecentValue()`). It enables easier processing
-// of cross-device entries from the syncing pref dictionary before their
+// (e.g., `GetValues()`, `GetMostRecentValue()`) and the observer notification
+// system.
+//
+// It enables easier processing of cross-device entries before their
 // conversion to `TimestampedPrefValue` using `ToPublicApi()`.
 struct TimestampedPrefValueInternal {
   // The stored preference value itself.
@@ -77,8 +79,9 @@ struct TimestampedPrefValueInternal {
   // Timestamp indicating when the tracked pref was observed to change locally.
   base::Time last_observed_change_time;
 
-  // Sort by most recent time. Primary key: `update_timestamp`. Secondary key:
-  // `device_last_updated_timestamp' (for tie-breakers).
+  // Sort by most recent time.
+  // Primary key: `update_timestamp`.
+  // Secondary key: `device_last_updated_timestamp` (for tie-breakers).
   auto operator<=>(const TimestampedPrefValueInternal& other) const {
     return std::tie(update_timestamp, device_last_updated_timestamp) <=>
            std::tie(other.update_timestamp,
@@ -99,6 +102,34 @@ std::string GetCrossDevicePrefName(std::string_view tracked_pref_name) {
       << "'.";
 
   return base::StrCat({kCrossDevicePrefPrefix, tracked_pref_name});
+}
+
+// Helper to retrieve the local device's Cache GUID from
+// `DeviceInfoSyncService`. Returns `std::nullopt` if the service or local
+// device info is not available.
+std::optional<std::string> GetLocalCacheGuid(
+    syncer::DeviceInfoSyncService* service) {
+  if (!service) {
+    return std::nullopt;
+  }
+
+  syncer::LocalDeviceInfoProvider* local_provider =
+      service->GetLocalDeviceInfoProvider();
+
+  if (!local_provider) {
+    return std::nullopt;
+  }
+
+  const syncer::DeviceInfo* local_device_info =
+      local_provider->GetLocalDeviceInfo();
+
+  if (!local_device_info) {
+    return std::nullopt;
+  }
+
+  CHECK(!local_device_info->guid().empty());
+
+  return local_device_info->guid();
 }
 
 // Helper to check if a `DeviceInfo` matches the provided filter criteria.
@@ -168,6 +199,34 @@ void ValidatePrefMapping(const PrefService* tracked_pref_service,
       << "' must be a dictionary.";
 }
 
+// Constructs the dictionary entry for the cross-device storage pref.
+// Handles the logic for setting timestamps based on whether the change was
+// observed locally.
+base::Value::Dict BuildCrossDevicePrefEntry(
+    const base::Value& value,
+    std::optional<base::Time> observed_change_time) {
+  base::Value::Dict entry;
+
+  entry.Set(kValueKey, value.Clone());
+
+  // Use the observed change time as the update time for consistency. If this is
+  // not an observed change (e.g., initial sync), use the current time.
+  const base::Time update_time =
+      observed_change_time.value_or(base::Time::Now());
+
+  entry.Set(kUpdateTimeKey, base::TimeToValue(update_time));
+
+  // Record the observed change timestamp, but only if this is an explicit
+  // local change. For initial syncs (where `observed_change_time` is null),
+  // this key remains unset, even if the value changed since the last sync.
+  if (observed_change_time.has_value()) {
+    entry.Set(kLastObservedChangeTimeKey,
+              base::TimeToValue(observed_change_time.value()));
+  }
+
+  return entry;
+}
+
 // Synchronizes the value of a local pref to the shared cross-device storage.
 // If `observed_change_time` is provided, it indicates the time the change was
 // observed locally; otherwise, it's considered an initial sync or an update
@@ -182,25 +241,18 @@ void ApplyPrefChangeToCrossDevice(
   CHECK(profile_pref_service);
   CHECK(device_info_sync_service);
 
-  // TODO(crbug.com/444632366): Check if Sync is enabled before attempting to
-  // write to the cross-device dictionary.
-  syncer::LocalDeviceInfoProvider* local_provider =
-      device_info_sync_service->GetLocalDeviceInfoProvider();
-  if (!local_provider) {
-    return;
-  }
+  // TODO(crbug.com/444632366): Check if Sync is enabled for this specific
+  // pref type before attempting to write.
 
-  const syncer::DeviceInfo* local_device_info =
-      local_provider->GetLocalDeviceInfo();
-  if (!local_device_info) {
+  const std::optional<std::string> cache_guid =
+      GetLocalCacheGuid(device_info_sync_service);
+
+  if (!cache_guid.has_value()) {
     // Early return if the local device info (Cache GUID) isn't ready.
     // This update will be retried when `OnDeviceInfoChange()` signals
-    // readiness.
+    // readiness via `HandleLocalDeviceInfoIfAvailable()`.
     return;
   }
-
-  const std::string& cache_guid = local_device_info->guid();
-  CHECK(!cache_guid.empty());
 
   const PrefService::Preference* tracked_pref =
       tracked_pref_service->FindPreference(tracked_pref_name);
@@ -214,7 +266,7 @@ void ApplyPrefChangeToCrossDevice(
   // signal that this device no longer has a value set by the user.
   if (tracked_pref->IsDefaultValue()) {
     ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
-    update->Remove(cache_guid);
+    update->Remove(cache_guid.value());
     return;
   }
 
@@ -223,7 +275,7 @@ void ApplyPrefChangeToCrossDevice(
   const base::Value::Dict& cross_device_dict =
       profile_pref_service->GetDict(cross_device_pref_name);
   const base::Value::Dict* existing_cross_device_entry =
-      cross_device_dict.FindDict(cache_guid);
+      cross_device_dict.FindDict(cache_guid.value());
 
   // Optimization: Minimize writes to the syncable pref to reduce sync traffic,
   // but ensure observed changes always update timestamps for recency.
@@ -245,25 +297,12 @@ void ApplyPrefChangeToCrossDevice(
   // If the value changed, it's an observed change (even if value is the same),
   // or if no entry exists, the update must proceed.
 
-  base::Value::Dict entry;
-  entry.Set(kValueKey, current_value.Clone());
-
-  // Always update the timestamp indicating when this write occurred. This is
-  // required for recency sorting in the Query API.
-  // Use the observed time if available for consistency, otherwise use the
-  // current time.
-  base::Time update_time = observed_change_time.value_or(base::Time::Now());
-  entry.Set(kUpdateTimeKey, base::TimeToValue(update_time));
-
-  // Record the observed change timestamp, but only if this is an explicit
-  // local change. For initial syncs (where `observed_change_time` is null),
-  // this key remains unset.
-  if (observed_change_time.has_value()) {
-    entry.Set(kLastObservedChangeTimeKey, base::TimeToValue(update_time));
-  }
+  base::Value::Dict entry =
+      BuildCrossDevicePrefEntry(current_value, observed_change_time);
 
   ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
-  update->Set(cache_guid, std::move(entry));
+
+  update->Set(cache_guid.value(), std::move(entry));
 }
 
 // Retrieves, filters, and parses all valid cross-device pref entries that
@@ -310,6 +349,17 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
   return matching_cross_device_entries;
 }
 
+// Helper to extract the tracked pref name from a cross-device pref name.
+std::string_view GetTrackedPrefNameFromCrossDevice(
+    std::string_view cross_device_pref_name) {
+  CHECK(cross_device_pref_name.starts_with(kCrossDevicePrefPrefix))
+      << "Cross-device pref name must start with the reserved prefix.";
+
+  cross_device_pref_name.remove_prefix(strlen(kCrossDevicePrefPrefix));
+
+  return cross_device_pref_name;
+}
+
 }  // namespace
 
 CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
@@ -326,40 +376,45 @@ CrossDevicePrefTrackerImpl::CrossDevicePrefTrackerImpl(
   CHECK(device_info_sync_service_);
   CHECK(pref_provider_);
 
-  syncer::LocalDeviceInfoProvider* local_provider =
-      device_info_sync_service_->GetLocalDeviceInfoProvider();
   is_local_device_info_ready_ =
-      (local_provider && local_provider->GetLocalDeviceInfo());
+      GetLocalCacheGuid(device_info_sync_service_).has_value();
+
+  // Initialize `DeviceInfoTracker` observation and cache known GUIDs.
+  if (syncer::DeviceInfoTracker* tracker =
+          device_info_sync_service_->GetDeviceInfoTracker()) {
+    device_info_observation_.Observe(tracker);
+
+    std::vector<const syncer::DeviceInfo*> all_devices =
+        tracker->GetAllDeviceInfo();
+
+    for (const auto* device_info : all_devices) {
+      known_device_guids_.insert(device_info->guid());
+    }
+  }
 
   // Initialize the registrars with the corresponding `PrefService`.
   profile_pref_registrar_.Init(profile_pref_service_);
   local_pref_registrar_.Init(local_pref_service_);
+  cross_device_pref_registrar_.Init(profile_pref_service_);
 
-  // Initialize tracking for profile prefs. Tracked and cross-device storage are
-  // both in the profile pref service.
+  // Initialize cross-device pref observation, validation, and caching.
+  // This must happen before `StartTrackingPrefs()` so the cache is ready if
+  // `ApplyPrefChangeToCrossDevice()` triggers synchronous notifications.
+  StartObservingCrossDevicePrefs();
+
+  // Initialize tracking for profile prefs (local changes).
   StartTrackingPrefs(
-      pref_provider_->GetProfilePrefs(), profile_pref_service_,
-      profile_pref_registrar_,
+      pref_provider_->GetProfilePrefs(), profile_pref_registrar_,
       base::BindRepeating(
           &CrossDevicePrefTrackerImpl::OnTrackedProfilePrefChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
-  // Initialize tracking for local state prefs. Tracked in local state, but
-  // cross-device storage is in the profile pref service (as it must be
-  // syncable).
+  // Initialize tracking for local state prefs (local changes).
   StartTrackingPrefs(
-      pref_provider_->GetLocalStatePrefs(), local_pref_service_,
-      local_pref_registrar_,
+      pref_provider_->GetLocalStatePrefs(), local_pref_registrar_,
       base::BindRepeating(
           &CrossDevicePrefTrackerImpl::OnTrackedLocalStatePrefChanged,
           weak_ptr_factory_.GetWeakPtr()));
-
-  // Start observing the `DeviceInfoTracker`. This is required to map remote
-  // Cache GUIDs to device metadata and to handle delayed initialization.
-  if (syncer::DeviceInfoTracker* tracker =
-          device_info_sync_service_->GetDeviceInfoTracker()) {
-    device_info_observation_.Observe(tracker);
-  }
 
 #if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -443,6 +498,7 @@ CrossDevicePrefTrackerImpl::GetMostRecentValue(
 void CrossDevicePrefTrackerImpl::Shutdown() {
   profile_pref_registrar_.RemoveAll();
   local_pref_registrar_.RemoveAll();
+  cross_device_pref_registrar_.RemoveAll();
   device_info_observation_.Reset();
   pref_provider_.reset();
 
@@ -457,65 +513,84 @@ void CrossDevicePrefTrackerImpl::Shutdown() {
 }
 
 // `DeviceInfo` changes are relevant for several reasons:
-// 1. Local `DeviceInfo` might now be available. If initialization happened
-//    before the Cache GUID was ready, the initial state of all tracked prefs
-//    needs to be pushed now.
-// 2. Metadata (OS/FormFactor) might change, affecting query results or
-//    observer notifications.
-// 3. This is the signal to perform garbage collection of stale Cache GUIDs
-//    from the syncable dictionary prefs.
+// 1. Local `DeviceInfo` might now be available (Cache GUID readiness).
+// 2. New devices might become visible (asynchronous `DeviceInfo`), or metadata
+//    (`OS`/`FormFactor`) might change.
+// 3. Signal for garbage collection of stale Cache GUIDs.
 void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
-  CHECK(device_info_sync_service_);
+  HandleLocalDeviceInfoIfAvailable();
+  HandleRemoteDeviceInfoChanges();
 
-  if (!is_local_device_info_ready_) {
-    syncer::LocalDeviceInfoProvider* local_provider =
-        device_info_sync_service_->GetLocalDeviceInfoProvider();
-    if (local_provider && local_provider->GetLocalDeviceInfo()) {
-      is_local_device_info_ready_ = true;
+  // TODO(crbug.com/441330511): Implement garbage collection.
+}
 
-      // Now that the Cache GUID is available, push the initial state of all
-      // tracked prefs. This is NOT considered an observed change.
-      for (std::string_view pref_name : pref_provider_->GetProfilePrefs()) {
-        ApplyPrefChangeToCrossDevice(
-            profile_pref_service_, profile_pref_service_,
-            device_info_sync_service_, pref_name, std::nullopt);
-      }
+void CrossDevicePrefTrackerImpl::StartObservingCrossDevicePrefs() {
+  base::flat_set<std::string> cross_device_pref_names;
 
-      for (std::string_view pref_name : pref_provider_->GetLocalStatePrefs()) {
-        ApplyPrefChangeToCrossDevice(local_pref_service_, profile_pref_service_,
-                                     device_info_sync_service_, pref_name,
-                                     std::nullopt);
-      }
-    }
+  // Helper lambda to validate mappings and collect cross-device pref names.
+  auto process_prefs =
+      [&](const base::flat_set<std::string_view>& tracked_prefs,
+          PrefService* tracked_pref_service) {
+        for (std::string_view tracked_pref_name : tracked_prefs) {
+          // Validate the mapping early. This `CHECK`-fails if misconfigured.
+          ValidatePrefMapping(tracked_pref_service, profile_pref_service_,
+                              tracked_pref_name);
+
+          cross_device_pref_names.insert(
+              GetCrossDevicePrefName(tracked_pref_name));
+        }
+      };
+
+  const auto& profile_prefs = pref_provider_->GetProfilePrefs();
+  const auto& local_state_prefs = pref_provider_->GetLocalStatePrefs();
+
+  process_prefs(profile_prefs, profile_pref_service_);
+  process_prefs(local_state_prefs, local_pref_service_);
+
+  // `GetProfilePrefs()` and `GetLocalStatePrefs()` should never have any
+  // overlap.
+  CHECK_EQ(cross_device_pref_names.size(),
+           profile_prefs.size() + local_state_prefs.size())
+      << "Tracked pref lists must not have any overlap.";
+
+  for (const std::string& pref_name : cross_device_pref_names) {
+    cross_device_storage_cache_[pref_name] =
+        profile_pref_service_->GetDict(pref_name).Clone();
+
+    cross_device_pref_registrar_.Add(
+        pref_name, base::BindRepeating(
+                       &CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // TODO(crbug.com/441330511): Implement garbage collection and handle metadata
-  // updates.
-  // TODO(crbug.com/442902926): Notify Java side of updates.
 }
 
 void CrossDevicePrefTrackerImpl::StartTrackingPrefs(
     const base::flat_set<std::string_view>& pref_names,
-    PrefService* tracked_pref_service,
     PrefChangeRegistrar& registrar,
     const PrefChangeRegistrar::NamedChangeAsViewCallback& callback) {
+  PrefService* tracked_pref_service = registrar.prefs();
+  CHECK(tracked_pref_service);
+
   for (std::string_view pref_name : pref_names) {
-    ValidatePrefMapping(tracked_pref_service, profile_pref_service_, pref_name);
-
     registrar.Add(std::string(pref_name), callback);
+  }
 
-    // Perform the initial sync of the pref's current value. This is NOT
-    // considered an observed change.
+  // Perform the initial sync of the pref's current value.
+  SyncOnDevicePrefsToCrossDevice(pref_names, tracked_pref_service);
+}
+
+void CrossDevicePrefTrackerImpl::SyncOnDevicePrefsToCrossDevice(
+    const base::flat_set<std::string_view>& pref_names,
+    PrefService* tracked_pref_service) {
+  for (std::string_view pref_name : pref_names) {
     ApplyPrefChangeToCrossDevice(tracked_pref_service, profile_pref_service_,
                                  device_info_sync_service_, pref_name,
-                                 std::nullopt);
+                                 /*observed_change_time=*/std::nullopt);
   }
 }
 
 void CrossDevicePrefTrackerImpl::OnTrackedProfilePrefChanged(
     std::string_view tracked_pref_name) {
-  CHECK(device_info_sync_service_);
-
   // This method is called by the `PrefChangeRegistrar`, meaning the pref has
   // changed locally. Record the current time as the observed change time.
   base::Time change_time = base::Time::Now();
@@ -528,8 +603,6 @@ void CrossDevicePrefTrackerImpl::OnTrackedProfilePrefChanged(
 
 void CrossDevicePrefTrackerImpl::OnTrackedLocalStatePrefChanged(
     std::string_view tracked_pref_name) {
-  CHECK(device_info_sync_service_);
-
   // This method is called by the `PrefChangeRegistrar`, meaning the pref has
   // changed locally. Record the current time as the observed change time.
   base::Time change_time = base::Time::Now();
@@ -539,6 +612,227 @@ void CrossDevicePrefTrackerImpl::OnTrackedLocalStatePrefChanged(
   ApplyPrefChangeToCrossDevice(local_pref_service_, profile_pref_service_,
                                device_info_sync_service_, tracked_pref_name,
                                change_time);
+}
+
+void CrossDevicePrefTrackerImpl::OnCrossDevicePrefChanged(
+    std::string_view cross_device_pref_name_view) {
+  CHECK(profile_pref_service_);
+  std::string pref_name(cross_device_pref_name_view);
+
+  const base::Value::Dict& new_dict = profile_pref_service_->GetDict(pref_name);
+
+  auto cache_it = cross_device_storage_cache_.find(pref_name);
+
+  // This should not happen as the cache is initialized with all tracked prefs.
+  CHECK(cache_it != cross_device_storage_cache_.end());
+
+  const base::Value::Dict& old_dict = cache_it->second;
+
+  // Optimization: Check if the dictionaries are identical before proceeding.
+  if (old_dict == new_dict) {
+    return;
+  }
+
+  // Process updates and notify observers only for remote changes.
+  // Local updates (triggered synchronously by `ApplyPrefChangeToCrossDevice`)
+  // are identified and suppressed within this call by checking the Cache GUID.
+  ProcessRemoteUpdates(pref_name, old_dict, new_dict);
+
+  // Update the cache for the next iteration. This must happen regardless of
+  // whether the change was local or remote.
+  cache_it->second = new_dict.Clone();
+}
+
+void CrossDevicePrefTrackerImpl::ProcessRemoteUpdates(
+    const std::string& cross_device_pref_name,
+    const base::Value::Dict& old_dict,
+    const base::Value::Dict& new_dict) {
+  CHECK(device_info_sync_service_);
+  syncer::DeviceInfoTracker* device_info_tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+
+  if (!device_info_tracker) {
+    return;
+  }
+
+  const std::optional<std::string> local_cache_guid =
+      GetLocalCacheGuid(device_info_sync_service_);
+
+  // Iterate over the new dictionary to find added or updated entries.
+  for (const auto [cache_guid, new_entry_value] : new_dict) {
+    // Skip updates from the local device first to short-circuit.
+    if (local_cache_guid.has_value() &&
+        cache_guid == local_cache_guid.value()) {
+      continue;
+    }
+
+    const base::Value::Dict* new_entry = new_entry_value.GetIfDict();
+
+    // Skip malformed entries.
+    if (!new_entry) {
+      continue;
+    }
+
+    const base::Value::Dict* old_entry = old_dict.FindDict(cache_guid);
+
+    // Check if the entry is new or updated by comparing the dictionaries.
+    if (!old_entry || *old_entry != *new_entry) {
+      // Remote change detected.
+
+      const syncer::DeviceInfo* device_info =
+          device_info_tracker->GetDeviceInfo(cache_guid);
+
+      if (!device_info) {
+        // Device info not available yet. Skip notification for now.
+        // It will be handled in `OnDeviceInfoChange()` when the corresponding
+        // `DeviceInfo` appears.
+        continue;
+      }
+
+      NotifyRemotePrefChanged(cross_device_pref_name, new_entry, *device_info);
+    }
+  }
+
+  // Iterate over the old dictionary to find deleted entries.
+  for (const auto [cache_guid, old_entry_value] : old_dict) {
+    // Skip local deletions.
+    if (local_cache_guid.has_value() &&
+        cache_guid == local_cache_guid.value()) {
+      continue;
+    }
+
+    if (new_dict.contains(cache_guid)) {
+      continue;
+    }
+
+    // Remote deletion detected.
+
+    const syncer::DeviceInfo* device_info =
+        device_info_tracker->GetDeviceInfo(cache_guid);
+
+    if (!device_info) {
+      // `DeviceInfo` for the device that previously held the pref is
+      // unavailable; cannot notify without the source device's metadata, so
+      // don't notify observers.
+      continue;
+    }
+
+    // Notify observers of the removal. Passing nullptr for the entry signifies
+    // that the preference is no longer set on the remote device.
+    NotifyRemotePrefChanged(cross_device_pref_name, /*entry=*/nullptr,
+                            *device_info);
+  }
+}
+
+void CrossDevicePrefTrackerImpl::NotifyRemotePrefChanged(
+    const std::string& cross_device_pref_name,
+    const base::Value::Dict* entry,
+    const syncer::DeviceInfo& remote_device_info) {
+  // Default constructed value signifies deletion (null value and null time).
+  TimestampedPrefValue timestamped_value;
+
+  if (entry) {
+    std::optional<TimestampedPrefValueInternal> internal_value =
+        ParseCrossDevicePrefEntry(*entry, remote_device_info);
+
+    if (!internal_value.has_value()) {
+      // Entry is invalid, skip notifying observers.
+      return;
+    }
+
+    timestamped_value = std::move(internal_value.value()).ToPublicApi();
+  }
+
+  // If `entry` is null, it's a deletion, and `timestamped_value` remains
+  // default constructed.
+
+  std::string_view tracked_pref_name =
+      GetTrackedPrefNameFromCrossDevice(cross_device_pref_name);
+
+  for (auto& observer : observers_) {
+    observer.OnRemotePrefChanged(tracked_pref_name, timestamped_value,
+                                 remote_device_info);
+  }
+
+  // TODO(crbug.com/442902926): Notify Java side of updates.
+}
+
+void CrossDevicePrefTrackerImpl::HandleLocalDeviceInfoIfAvailable() {
+  if (is_local_device_info_ready_) {
+    return;
+  }
+
+  if (!GetLocalCacheGuid(device_info_sync_service_).has_value()) {
+    return;
+  }
+
+  is_local_device_info_ready_ = true;
+
+  // Now that the Cache GUID is available, push the initial state of all
+  // tracked prefs. This is NOT considered an observed change.
+  SyncOnDevicePrefsToCrossDevice(pref_provider_->GetProfilePrefs(),
+                                 profile_pref_service_);
+  SyncOnDevicePrefsToCrossDevice(pref_provider_->GetLocalStatePrefs(),
+                                 local_pref_service_);
+}
+
+void CrossDevicePrefTrackerImpl::HandleRemoteDeviceInfoChanges() {
+  syncer::DeviceInfoTracker* tracker =
+      device_info_sync_service_->GetDeviceInfoTracker();
+
+  if (!tracker) {
+    return;
+  }
+
+  std::vector<const syncer::DeviceInfo*> all_devices =
+      tracker->GetAllDeviceInfo();
+
+  base::flat_set<std::string> current_device_guids;
+
+  std::vector<const syncer::DeviceInfo*> new_devices;
+
+  const std::optional<std::string> local_cache_guid =
+      GetLocalCacheGuid(device_info_sync_service_);
+
+  for (const auto* device_info : all_devices) {
+    const std::string& guid = device_info->guid();
+    current_device_guids.insert(guid);
+
+    // If this is the local device appearing, skip notifying.
+    if (local_cache_guid.has_value() && guid == local_cache_guid.value()) {
+      continue;
+    }
+
+    // Check if this GUID was previously unknown.
+    if (!known_device_guids_.contains(device_info->guid())) {
+      new_devices.push_back(device_info);
+    }
+  }
+
+  // If there are new devices, notify observers about their existing pref
+  // values. This handles the case where pref data arrived via Sync before the
+  // corresponding `DeviceInfo`.
+  if (!new_devices.empty()) {
+    NotifyObserversOfExistingPrefsForNewDevices(new_devices);
+  }
+
+  // Update the cached set of known devices for the next iteration.
+  // This handles device removals as well.
+  known_device_guids_ = std::move(current_device_guids);
+}
+
+void CrossDevicePrefTrackerImpl::NotifyObserversOfExistingPrefsForNewDevices(
+    const std::vector<const syncer::DeviceInfo*>& new_devices) {
+  for (const auto& [pref_name, dict_value] : cross_device_storage_cache_) {
+    for (const syncer::DeviceInfo* device_info : new_devices) {
+      const base::Value::Dict* entry = dict_value.FindDict(device_info->guid());
+
+      if (entry) {
+        // Found an existing pref value for the newly available device.
+        NotifyRemotePrefChanged(pref_name, entry, *device_info);
+      }
+    }
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
