@@ -56,6 +56,41 @@ namespace content {
 
 namespace {
 
+// When enabled, the SiteInstance used to initialize a prerender frame tree is
+// associated with a SiteInfo derived from the prerendering URL, rather than an
+// empty SiteInfo. This ensures that RenderProcessHost selection for a prerender
+// navigation follows the same rules as a regular navigation to the same URL.
+//
+// Extra details:
+//
+// A PrerenderHost creates a 1st SiteInstance to init the frame tree. This is
+// the SiteInstance for which this features changes the SiteInfo. This
+// SiteInstance gets its RenderProcessHost in this stack:
+//
+//     content::SiteInstanceImpl::GetOrCreateProcess
+//     content::RenderFrameHostManager::CreateRenderFrameHost
+//     content::RenderFrameHostManager::InitRoot
+//     content::FrameTree::Init
+//     content::PrerenderHost::PrerenderHost
+//
+// Then, when the prerender navigation occurs, the SiteInstance for that
+// navigation attempts to reuse the same process in this stack:
+//
+//     content::SiteInstanceImpl::ReuseExistingProcessIfPossible
+//     content::RenderFrameHostManager::GetSiteInstanceForNavigation
+//     content::RenderFrameHostManager::GetSiteInstanceForNavigationRequest
+//     content::RenderFrameHostManager::GetFrameHostForNavigation
+//     content::NavigationRequest::SelectFrameHostForOnResponseStarted
+//     content::NavigationRequest::OnResponseStarted
+//     content::NavigationRequest::OnResponseStarted
+//     content::NavigationURLLoaderImpl::NotifyResponseStarted
+//
+// The fact that the 2nd SiteInstance attempts to reuse the same
+// RenderProcessHost as the 1st SiteInstance is what makes it important to
+// carefully choose the RenderProcessHost for the 1st SiteInstance.
+BASE_FEATURE(CreatePrerenderSiteInstanceWithURL,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 base::OnceCallback<void(FrameTreeNodeId)>& GetHostCreationCallback() {
   static base::NoDestructor<base::OnceCallback<void(FrameTreeNodeId)>>
       host_creation_callback;
@@ -400,7 +435,10 @@ PrerenderHost::PrerenderHost(
     frame_tree_delegate_ = std::make_unique<PrerenderFrameTreeDelegate>(
         web_contents.GetBrowserContext(), web_contents, *this);
     scoped_refptr<SiteInstanceImpl> site_instance =
-        SiteInstanceImpl::Create(web_contents.GetBrowserContext());
+        base::FeatureList::IsEnabled(kCreatePrerenderSiteInstanceWithURL)
+            ? SiteInstanceImpl::CreateForURL(web_contents.GetBrowserContext(),
+                                             attributes.prerendering_url)
+            : SiteInstanceImpl::Create(web_contents.GetBrowserContext());
     GetFrameTree()->Init(site_instance.get(),
                          /*renderer_initiated_creation=*/false,
                          /*main_frame_name=*/"", /*opener_for_origin=*/nullptr,
