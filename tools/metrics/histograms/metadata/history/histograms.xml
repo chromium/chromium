@@ -1434,12 +1434,13 @@ chromium-metrics-reviews@google.com.
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Number of unique domains visited by the user within a calendar day in user's
-    local timezone. For each regular profile (not incognito, guest, system,
-    etc.), reported at profile open (which usually happens at startup) for each
-    unreported day (up to 7 days) prior to the current date, and also reported
-    once every 24 hours thereafter for the latest unreported day, while the
-    profile remains open. If no domains are visited in a given day, a count of 0
-    will be reported for that day.
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1476,12 +1477,13 @@ chromium-metrics-reviews@google.com.
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Number of unique domains visited by the user within a calendar day in user's
-    local timezone. For each regular profile (not incognito, guest, system,
-    etc.), reported at profile open (which usually happens at startup) for each
-    unreported day (up to 7 days) prior to the current date, and also reported
-    once every 24 hours thereafter for the latest unreported day, while the
-    profile remains open. If no domains are visited in a given day, a count of 0
-    will be reported for that day.
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1511,13 +1513,14 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 28 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 28-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 28-day period, a count of 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1553,13 +1556,14 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 28 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 28-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 28-day period, a count of 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1589,13 +1593,14 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 7 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 7-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 7-day period, a count 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
@@ -1631,13 +1636,14 @@ chromium-metrics-reviews@google.com.
   <component>1456716</component>
   <summary>
     Number of unique domains visited by the user within a 7 calendar day period
-    in user's local timezone. For each regular profile (not incognito, guest,
-    system, etc.), reported at profile open (which usually happens at startup)
-    for each unreported 7-day period (up to 7 periods) ending on the current
-    day, current day - 1, current day - 2, etc. Also reported once every 24
-    hours thereafter for the latest unreported period, while the profile remains
-    open. If no domains are visited during a 7-day period, a count 0 will be
-    reported for that period.
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
 
     Warning about Android activity types (custom tabs, browser app, etc.): Do
     not look at this data using an activity type filter; when looking at data
