@@ -119,7 +119,7 @@ class BASE_EXPORT JSONReader {
   // If |json| is not a properly formed JSON list string, returns std::nullopt.
   static std::optional<Value::List> ReadList(
       std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      int options,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json| like Read(). On success returns a Value as the

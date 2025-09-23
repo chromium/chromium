@@ -1209,12 +1209,14 @@ TEST(JSONReaderTest, UnescapedControls) {
 
 TEST(JSONReaderTest, ReadingJsonIntoDictAndList) {
   {
-    std::optional<base::Value::List> list = JSONReader::ReadList("[1, 2, 3]");
+    std::optional<base::Value::List> list =
+        JSONReader::ReadList("[1, 2, 3]", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(list);
   }
 
   {
-    std::optional<base::Value::List> list = JSONReader::ReadList("{}");
+    std::optional<base::Value::List> list =
+        JSONReader::ReadList("{}", JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_FALSE(list);
   }
 
