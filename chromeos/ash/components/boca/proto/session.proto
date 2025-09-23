@@ -149,6 +149,8 @@ message ViewScreenConfig {
     ACTIVE = 3;
 
     INACTIVE = 4;
+
+    AVAILABLE_FOR_KIOSK_RECEIVER = 5;
   }
 
   ViewScreenState view_screen_state = 1;
