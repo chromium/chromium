@@ -133,6 +133,10 @@ class ArcAppTest {
     persist_service_manager_ = persist_service_manager;
   }
 
+  void set_start_app_service_publisher(bool start_app_service_publisher) {
+    start_app_service_publisher_ = start_app_service_publisher;
+  }
+
   void set_initialize_real_intent_helper_bridge(bool value) {
     initialize_real_intent_helper_bridge_ = value;
   }
@@ -159,6 +163,10 @@ class ArcAppTest {
   // Whether arc service manager should be destroyed when this object gets torn
   // down.
   bool persist_service_manager_ = false;
+
+  // Whether the ArcApps AppService publisher should be started during
+  // initialization.
+  bool start_app_service_publisher_ = true;
 
   // If set to true, the real ArcIntentHelperBridge is initialized on test start
   // up.
