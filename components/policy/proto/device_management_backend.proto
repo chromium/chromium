@@ -3637,6 +3637,7 @@ message TpmVersionInfo {
   // This field represents the tpm device id and vendor id
   // which is a combined value as declared in the TPM spec.
   optional string did_vid = 8;
+  optional string kernel_version = 9;
 }
 
 // Contains status of the TPM unit.
