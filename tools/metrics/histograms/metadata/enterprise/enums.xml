@@ -623,6 +623,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="File download"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseEnrollmentType) -->
+
 <enum name="EnterpriseEnrollmentType">
   <summary>
     Result of device enrollment as defined in
@@ -850,7 +852,13 @@ chromium-metrics-reviews@google.com.
     A registration certificate could not be obtained from the PCA due to the
     attestation service not being available on the device.
   </int>
+  <int value="69" label="Organization unit initial enrollment limit exceeded">
+    The admin configured organization unit initial enrollment limit has been
+    exceeded.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//components/policy/core/common/cloud/enterprise_metrics.h:MetricEnrollment) -->
 
 <!-- LINT.IfChange(EnterpriseEventBasedLogUploadResult) -->
 
@@ -2300,6 +2308,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(EnterprisePolicyDeviceIdValidity) -->
+
 <enum name="EnterprisePolicyDeviceIdValidity">
   <summary>
     Defined as PolicyDeviceIdValidity in
@@ -2311,6 +2321,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Invalid"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/policy/core/common/cloud/enterprise_metrics.h:PolicyDeviceIdValidity) -->
+
+<!-- LINT.IfChange(EnterprisePolicyInvalidations) -->
+
 <enum name="EnterprisePolicyInvalidations">
   <summary>
     Defined as PolicyInvalidationType in
@@ -2321,6 +2335,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No payload; expired"/>
   <int value="4" label="Payload; expired"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/policy/core/common/cloud/enterprise_metrics.h:PolicyInvalidationType) -->
 
 <enum name="EnterprisePolicyLoadStatus">
   <summary>
@@ -2354,6 +2370,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="PARSE_ERROR">Parse error.</int>
 </enum>
 
+<!-- LINT.IfChange(EnterprisePolicyRefresh) -->
+
 <enum name="EnterprisePolicyRefresh">
   <summary>
     Defined as MetricPolicyRefresh in
@@ -2365,6 +2383,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Invalidated; Changed"/>
   <int value="4" label="Invalidated; Unchanged"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/policy/core/common/cloud/enterprise_metrics.h:MetricPolicyRefresh) -->
 
 <enum name="EnterprisePolicyUserVerification">
   <summary>
