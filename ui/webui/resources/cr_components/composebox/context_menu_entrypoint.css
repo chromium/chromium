@@ -19,13 +19,8 @@
   --cr-button-text-color: var(--color-new-tab-page-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+  --cr-icon-button-margin-start: 6px;
   border: initial;
-  gap: 2px;
-  padding-bottom: 10px;
-}
-
-#entrypoint cr-icon {
-  padding: 2px;
 }
 
 #description {

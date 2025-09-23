@@ -78,7 +78,8 @@ export function getHtml(this: ComposeboxElement) {
           @open-file-upload="${this.openFileUpload_}"
           @add-tab-context="${this.addTabContext_}"
           @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
-          ?inputs-disabled="${this.inputsDisabled_}">
+          ?inputs-disabled="${this.inputsDisabled_}"
+          ?show-entrypoint-description="${this.showContextMenuDescription_}">
       </composebox-context-menu-entrypoint>
     ` : html`
       <div id="uploadContainer" class="icon-fade">

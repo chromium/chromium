@@ -43,6 +43,9 @@ extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
 extern const base::FeatureParam<bool> kShowNextRealbox;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
+// Whether or not to show a description in the context menu entrypoint, or just
+// the icon.
+extern const base::FeatureParam<bool> kShowContextMenuDescription;
 // Whether to show the tools and models picker in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
 

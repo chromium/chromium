@@ -9,13 +9,22 @@ import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <cr-button id="entrypoint"
-      @click="${this.onEntrypointClick_}"
-      ?disabled="${this.inputsDisabled}"
-      title="${this.i18n('addContextTitle')}">
-    <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-    <span id="description">${this.i18n('addContext')}</span>
-  </cr-button>
+    ${this.showEntrypointDescription ? html`
+    <cr-button id="entrypoint"
+        @click="${this.onEntrypointClick_}"
+        ?disabled="${this.inputsDisabled}"
+        title="${this.i18n('addContextTitle')}">
+      <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
+      <span id="description">${this.i18n('addContext')}</span>
+    </cr-button>
+    `: html`
+      <cr-icon-button id="entrypoint"
+          iron-icon="cr:add"
+          @click="${this.onEntrypointClick_}"
+          ?disabled="${this.inputsDisabled}"
+          title="${this.i18n('addContextTitle')}">
+      </cr-icon-button>
+    `}
 
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
     ${this.tabSuggestions.length > 0 ? html`

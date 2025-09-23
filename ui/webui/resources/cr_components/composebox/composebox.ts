@@ -87,6 +87,7 @@ export class ComposeboxElement extends I18nMixinLit
     return {
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
+      showContextMenuDescription_: {type: Boolean},
       files_: {type: Object},
       input_: {type: String},
       imageFileTypes_: {type: String},
@@ -157,6 +158,8 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getString('composeboxAttachmentFileTypes');
   protected accessor contextMenuEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
+  protected accessor showContextMenuDescription_: boolean =
+      loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');

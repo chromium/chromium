@@ -24,7 +24,6 @@ const MENU_WIDTH_PX = 190;
 export interface ContextMenuEntrypointElement {
   $: {
     entrypoint: HTMLElement,
-    entrypointIcon: HTMLElement,
     menu: CrActionMenuElement,
   };
 }
@@ -48,11 +47,13 @@ export class ContextMenuEntrypointElement extends
   static override get properties() {
     return {
       inputsDisabled: {type: Boolean},
+      showEntrypointDescription: {type: Boolean},
       tabSuggestions: {type: Array},
     };
   }
 
   accessor inputsDisabled: boolean = false;
+  accessor showEntrypointDescription: boolean;
   accessor tabSuggestions: TabInfo[] = [];
 
   constructor() {
@@ -61,8 +62,8 @@ export class ContextMenuEntrypointElement extends
 
   protected onEntrypointClick_() {
     this.fire('refresh-tab-suggestions', {onRefreshComplete: () => {
-      this.$.menu.showAt(this.$.entrypointIcon, {
-        top: this.$.entrypointIcon.getBoundingClientRect().bottom,
+      this.$.menu.showAt(this.$.entrypoint, {
+        top: this.$.entrypoint.getBoundingClientRect().bottom,
         width: MENU_WIDTH_PX,
         anchorAlignmentX: AnchorAlignment['AFTER_START'],
       });

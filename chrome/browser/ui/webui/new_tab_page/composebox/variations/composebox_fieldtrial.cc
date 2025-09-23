@@ -187,6 +187,11 @@ const base::FeatureParam<bool> kShowNextRealbox(&kNtpComposebox,
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 
+const base::FeatureParam<bool> kShowContextMenuDescription(
+    &kNtpComposebox,
+    "ShowContextMenuDescription",
+    false);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;

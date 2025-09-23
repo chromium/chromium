@@ -562,6 +562,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("showNextRealbox", ntp_composebox::kShowNextRealbox.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
+  source->AddBoolean("composeboxShowContextMenuDescription",
+                     ntp_composebox::kShowContextMenuDescription.Get());
 
   source->AddBoolean("composeboxCloseByEscape",
                      composebox_config.close_by_escape());
