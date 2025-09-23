@@ -69,6 +69,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "home_customization_background_configuration_mediator_unittest.mm",
     "home_customization_coordinator_unittest.mm",
     "home_customization_mediator_unittest.mm",
   ]
@@ -77,12 +78,20 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/themes",
+    "//components/themes:prefs",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
     "//ios/chrome/browser/home_customization/model",
+    "//ios/chrome/browser/home_customization/model:test_support",
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/image_fetcher/model",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -91,6 +100,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }
