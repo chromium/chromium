@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/check_is_test.h"
+#include "base/i18n/number_formatting.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -111,7 +112,14 @@ GetKeyToValueFilterPairMap(
         feature_params::kPermissionPromptSurveyInitialPermissionStatusFilter
             .Get()}},
       {kPermissionPromptSurveyPromptOptionsKey,
-       {PromptOptionsToString(prompt_parameters.prompt_options), ""}}};
+       {PromptOptionsToString(prompt_parameters.prompt_options), ""}},
+      {kPermissionPromptSurveyPromptDisplayDurationKey,
+       {prompt_parameters.prompt_display_duration.has_value()
+            ? base::UTF16ToUTF8(base::FormatNumber(
+                  prompt_parameters.prompt_display_duration.value()
+                      .InMilliseconds()))
+            : "",
+        ""}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -254,6 +262,7 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionPromptSurveyInitialPermissionStatusKey,
       kPermissionPromptSurveyUrlKey,
       kPermissionPromptSurveyPromptOptionsKey,
+      kPermissionPromptSurveyPromptDisplayDurationKey,
   };
 
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);

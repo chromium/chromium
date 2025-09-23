@@ -65,6 +65,9 @@ const char kPermissionPromptSurveyInitialPermissionStatusKey[] =
 
 const char kPermissionPromptSurveyPromptOptionsKey[] = "PromptOptions";
 
+const char kPermissionPromptSurveyPromptDisplayDurationKey[] =
+    "PromptDisplayDuration";
+
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 

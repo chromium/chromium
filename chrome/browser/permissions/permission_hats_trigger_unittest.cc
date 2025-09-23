@@ -499,7 +499,7 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
                 permissions::PermissionPromptDispositionReason::
                     DEFAULT_FALLBACK,
                 permissions::PermissionRequestGestureType::GESTURE, "beta",
-                permissions::kOnPromptResolved, base::Minutes(1),
+                permissions::kOnPromptResolved, base::Seconds(2),
                 permissions::PermissionHatsTriggerHelper::
                     OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
                 trigger_gurl, std::nullopt, CONTENT_SETTING_DEFAULT,
@@ -531,6 +531,9 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
     EXPECT_EQ(survey_data.survey_string_data.at(
                   permissions::kPermissionPromptSurveyUrlKey),
               trigger_gurl);
+    EXPECT_EQ(survey_data.survey_string_data.at(
+                  permissions::kPermissionPromptSurveyPromptDisplayDurationKey),
+              "2,000");
   }
 
   {

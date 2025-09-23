@@ -95,6 +95,12 @@ extern const char kPermissionPromptSurveyInitialPermissionStatusKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionPromptSurveyPromptOptionsKey[];
 
+// The key in `Product Specific Strings Data` under which the prompt display
+// duration (time to decision) in milliseconds is recorded, iff the
+// SurveyDisplayTime is OnPromptResolved.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const char kPermissionPromptSurveyPromptDisplayDurationKey[];
+
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.
 
