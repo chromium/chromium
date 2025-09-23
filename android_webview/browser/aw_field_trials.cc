@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/features.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "storage/browser/blob/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -302,4 +303,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // policy currently blocks iframes from using it. crbug.com/442879527
   aw_feature_overrides.DisableFeature(
       network::features::kLocalNetworkAccessChecks);
+
+  // SystemTracing is enabled by default only in WebView for now.
+  aw_feature_overrides.EnableFeature(features::kEnablePerfettoSystemTracing);
 }
