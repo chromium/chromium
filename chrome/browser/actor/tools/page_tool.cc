@@ -191,7 +191,8 @@ bool ValidateTargetFrameCandidate(
 // TargetNodeInfo struct.
 mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
     const std::optional<optimization_guide::TargetNodeInfo>&
-        observed_target_node_info) {
+        observed_target_node_info,
+    RenderFrameHost& target_frame) {
   if (!observed_target_node_info) {
     return nullptr;
   }
@@ -208,16 +209,23 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
   if (content_attributes.has_geometry()) {
     observed_target->node_attribute->geometry =
         blink::mojom::AIPageContentGeometry::New();
-    observed_target->node_attribute->geometry->outer_bounding_box =
-        gfx::Rect(content_attributes.geometry().outer_bounding_box().x(),
-                  content_attributes.geometry().outer_bounding_box().y(),
-                  content_attributes.geometry().outer_bounding_box().width(),
-                  content_attributes.geometry().outer_bounding_box().height());
+    // Transform to frame's widget coordinate space.
+    const gfx::Point outer_box_origin_point = gfx::ToRoundedPoint(
+        target_frame.GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(
+            content_attributes.geometry().outer_bounding_box().x(),
+            content_attributes.geometry().outer_bounding_box().y())));
+    observed_target->node_attribute->geometry->outer_bounding_box = gfx::Rect(
+        outer_box_origin_point,
+        {content_attributes.geometry().outer_bounding_box().width(),
+         content_attributes.geometry().outer_bounding_box().height()});
+    const gfx::Point visible_box_origin_point = gfx::ToRoundedPoint(
+        target_frame.GetView()->TransformRootPointToViewCoordSpace(gfx::PointF(
+            content_attributes.geometry().visible_bounding_box().x(),
+            content_attributes.geometry().visible_bounding_box().y())));
     observed_target->node_attribute->geometry->visible_bounding_box = gfx::Rect(
-        content_attributes.geometry().visible_bounding_box().x(),
-        content_attributes.geometry().visible_bounding_box().y(),
-        content_attributes.geometry().visible_bounding_box().width(),
-        content_attributes.geometry().visible_bounding_box().height());
+        visible_box_origin_point,
+        {content_attributes.geometry().visible_bounding_box().width(),
+         content_attributes.geometry().visible_bounding_box().height()});
     observed_target->node_attribute->geometry->is_fixed_or_sticky_position =
         content_attributes.geometry().is_fixed_or_sticky_position();
   }
@@ -333,7 +341,8 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     }
   }
 
-  observed_target_ = ToMojoObservedToolTarget(observed_target_node_info);
+  observed_target_ =
+      ToMojoObservedToolTarget(observed_target_node_info, *frame);
   has_completed_time_of_use_ = true;
   target_document_ = frame->GetWeakDocumentPtr();
 
