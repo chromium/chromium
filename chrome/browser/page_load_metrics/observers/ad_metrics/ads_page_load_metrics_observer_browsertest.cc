@@ -57,6 +57,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -1770,6 +1771,9 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
         {{subresource_filter::kAdTagging, {}},
          {subresource_filter::kAdsInterventionsEnforced, {}},
          {heavy_ad_intervention::features::kHeavyAdIntervention, {}},
+         {heavy_ad_intervention::features::
+              kHeavyAdInterventionSendReportToEmbedder,
+          {}},
          {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
           {{"host-threshold", "3"}}}},
         {});
@@ -2221,6 +2225,141 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   EXPECT_TRUE(got_report);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    AdsPageLoadMetricsObserverResourceBrowserTest,
+    HeavyAdInterventionFired_ReportSentToEmbedderOfSameOriginIframe) {
+  base::HistogramTester histogram_tester;
+  auto incomplete_resource_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/ads_observer/incomplete_resource.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "a.com", "/ads_observer/ad_with_incomplete_resource.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::DOMMessageQueue message_queue(web_contents);
+
+  const std::string report_script = R"(
+      function process(report) {
+        if (report.body.id === 'HeavyAdIntervention') {
+          window.domAutomationController.send(report.body.message);
+        }
+      }
+
+      let observer = new ReportingObserver((reports, observer) => {
+        reports.forEach(process);
+      });
+      observer.observe();
+
+      window.addEventListener('pagehide', function(event) {
+        observer.takeRecords().forEach(process);
+        window.domAutomationController.send('END');
+      });
+  )";
+  EXPECT_TRUE(content::ExecJs(web_contents, report_script));
+
+  // Load a resource large enough to trigger the intervention.
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
+
+  std::string report_message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&report_message));
+
+  EXPECT_THAT(report_message, testing::HasSubstr("Ad was removed"));
+
+  // The intervention report should identify the subframe using an empty
+  // identifier, as the iframe lacks 'id' and 'src' attributes (e.g., created
+  // via 'srcdoc').
+  EXPECT_THAT(report_message, testing::HasSubstr("(id=;url=)"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AdsPageLoadMetricsObserverResourceBrowserTest,
+    HeavyAdInterventionFired_ReportSentToEmbedderOfCrossOriginIframe) {
+  base::HistogramTester histogram_tester;
+  auto incomplete_resource_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/ads_observer/incomplete_resource.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "a.com", "/ads_observer/blank_with_adiframe_writer.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL redirect_to_url = embedded_test_server()->GetURL(
+      "c.com", "/ads_observer/doc_with_incomplete_resource.html");
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair(
+      "{{REDIRECT_HEADER}}", "Location: " + redirect_to_url.spec()));
+
+  GURL redirect_from_url_without_fragment = embedded_test_server()->GetURL(
+      "b.com", net::test_server::GetFilePathWithReplacements(
+                   "/ads_observer/redirect_from.html", replacement));
+
+  GURL redirect_from_url =
+      GURL(redirect_from_url_without_fragment.spec() + "#abc");
+
+  content::TestNavigationObserver child_observer(web_contents);
+  EXPECT_TRUE(ExecJs(web_contents, content::JsReplace(R"(
+          createAdIframeWithSrc($1, /*id=*/123);
+      )",
+                                                      redirect_from_url)));
+  child_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(child_observer.last_navigation_succeeded());
+
+  content::DOMMessageQueue message_queue(web_contents);
+
+  const std::string report_script = R"(
+      function process(report) {
+        if (report.body.id === 'HeavyAdIntervention') {
+          window.domAutomationController.send(report.body.message);
+        }
+      }
+
+      let observer = new ReportingObserver((reports, observer) => {
+        reports.forEach(process);
+      });
+      observer.observe();
+
+      window.addEventListener('pagehide', function(event) {
+        observer.takeRecords().forEach(process);
+        window.domAutomationController.send('END');
+      });
+  )";
+  EXPECT_TRUE(content::ExecJs(web_contents, report_script));
+
+  // Load a resource large enough to trigger the intervention.
+  page_load_metrics::LoadLargeResource(
+      incomplete_resource_response.get(),
+      page_load_metrics::kMaxHeavyAdNetworkSize);
+
+  std::string report_message;
+  EXPECT_TRUE(message_queue.WaitForMessage(&report_message));
+
+  EXPECT_THAT(report_message, testing::HasSubstr("Ad was removed"));
+
+  // The intervention report should identify the subframe using the frame
+  // element's `id` and its initial URL (pre-redirect). The URL is sanitized by
+  // removing the fragment.
+  EXPECT_THAT(report_message, testing::HasSubstr("id=123"));
+  EXPECT_THAT(
+      report_message,
+      testing::HasSubstr("url=" + redirect_from_url_without_fragment.spec()));
+  EXPECT_THAT(report_message,
+              testing::Not(testing::HasSubstr(redirect_from_url.spec())));
+}
+
 // Verifies that reports are sent to all children.
 // crbug.com/1189635: flaky on win and linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -2282,9 +2421,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   error_observer.WaitForNavigationFinished();
 
-  // Every frame should get a report (ad_with_incomplete_resource.html loads two
-  // frames).
-  EXPECT_EQ(4u, console_observer.messages().size());
+  // The embedder frame and every child frame should get a report
+  // (ad_with_incomplete_resource.html loads two frames).
+  EXPECT_EQ(5u, console_observer.messages().size());
 }
 
 // Verifies that the frame is navigated to the intervention page when a

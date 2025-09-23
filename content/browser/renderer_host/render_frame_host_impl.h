@@ -541,7 +541,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback,
       int max_length) override;
   void SendInterventionReport(const std::string& id,
-                              const std::string& message) override;
+                              const std::string& message,
+                              RenderFrameHost* child_frame) override;
   WebUI* GetWebUI() override;
   void AllowBindings(BindingsPolicySet bindings) override;
   BindingsPolicySet GetEnabledBindings() override;

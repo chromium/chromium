@@ -103,7 +103,10 @@ class LocalFrameMojoHandler
   void GetTextSurroundingSelection(
       uint32_t max_length,
       GetTextSurroundingSelectionCallback callback) final;
-  void SendInterventionReport(const String& id, const String& message) final;
+  void SendInterventionReport(
+      const String& id,
+      const String& message,
+      const std::optional<FrameToken>& child_frame_token) final;
   void SetFrameOwnerProperties(
       mojom::blink::FrameOwnerPropertiesPtr properties) final;
   void NotifyUserActivation(

@@ -46,8 +46,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetTextSurroundingSelection(
       uint32_t max_length,
       GetTextSurroundingSelectionCallback callback) override;
-  void SendInterventionReport(const std::string& id,
-                              const std::string& message) override;
+  void SendInterventionReport(
+      const std::string& id,
+      const std::string& message,
+      const std::optional<blink::FrameToken>& child_frame_token) override;
   void SetFrameOwnerProperties(
       blink::mojom::FrameOwnerPropertiesPtr properties) override;
   void NotifyUserActivation(

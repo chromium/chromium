@@ -15,6 +15,11 @@ const char kHeavyAdReportingEnabledParamName[] = "reporting-enabled";
 // resource usage.
 BASE_FEATURE(kHeavyAdIntervention, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables sending the heavy ad report to the root ad frame's
+// embedder.
+BASE_FEATURE(kHeavyAdInterventionSendReportToEmbedder,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables reporting on the intervention that unloads ad iframes
 // with intensive resource usage.
 BASE_FEATURE(kHeavyAdInterventionWarning, base::FEATURE_ENABLED_BY_DEFAULT);

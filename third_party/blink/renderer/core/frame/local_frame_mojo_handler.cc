@@ -525,9 +525,39 @@ void LocalFrameMojoHandler::GetTextSurroundingSelection(
                           surrounding_text.EndOffsetInTextContent());
 }
 
-void LocalFrameMojoHandler::SendInterventionReport(const String& id,
-                                                   const String& message) {
-  Intervention::GenerateReport(frame_, id, message);
+void LocalFrameMojoHandler::SendInterventionReport(
+    const String& id,
+    const String& message,
+    const std::optional<FrameToken>& child_frame_token) {
+  if (!child_frame_token) {
+    Intervention::GenerateReport(frame_, id, message);
+    return;
+  }
+
+  // If the intervention report pertains to a child frame, append details about
+  // the child frame to the message.
+  if (auto* child_frame = Frame::ResolveFrame(child_frame_token.value())) {
+    auto* child_frame_owner = To<HTMLFrameOwnerElement>(child_frame->Owner());
+    CHECK(child_frame_owner);
+
+    const AtomicString& src_value =
+        child_frame_owner->FastGetAttribute(html_names::kSrcAttr);
+    KURL url = child_frame_owner->GetDocument().CompleteURL(src_value);
+
+    // Any URLs in the report should strip the username, password, and fragment.
+    // https://w3c.github.io/reporting/#capability-urls
+    String sanitized_url = url.StrippedForUseAsReferrer();
+
+    StringBuilder builder;
+    builder.Append(message);
+    builder.Append(" (id=");
+    builder.Append(child_frame_owner->GetIdAttribute());
+    builder.Append(";url=");
+    builder.Append(sanitized_url);
+    builder.Append(")");
+
+    Intervention::GenerateReport(frame_, id, builder.ReleaseString());
+  }
 }
 
 void LocalFrameMojoHandler::SetFrameOwnerProperties(

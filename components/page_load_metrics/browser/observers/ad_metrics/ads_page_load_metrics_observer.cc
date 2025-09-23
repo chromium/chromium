@@ -1457,14 +1457,26 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   issue->details->heavy_ad_issue_details = std::move(heavy_ad_details);
   render_frame_host->ReportInspectorIssue(std::move(issue));
 
-  // Report to all child frames that will be unloaded. Once all reports are
-  // queued, the frame will be unloaded. Because the IPC messages are ordered
-  // wrt to each frames unload, we do not need to wait before loading the
-  // error page. Reports will be added to ReportingObserver queues
-  // synchronously when the IPC message is handled, which guarantees they will
-  // be available in the the unload handler.
+  // Report to the embedder frame and all child frames that will be unloaded.
+  // Once all reports are queued, the frame will be unloaded. Because the IPC
+  // messages are ordered wrt to each frames unload, we do not need to wait
+  // before loading the error page. Reports will be added to ReportingObserver
+  // queues synchronously when the IPC message is handled, which guarantees they
+  // will be available in the the unload handler.
   std::string report_message =
       GetHeavyAdReportMessage(*frame_data, action == HeavyAdAction::kUnload);
+
+  static constexpr char kReportId[] = "HeavyAdIntervention";
+
+  if (base::FeatureList::IsEnabled(
+          heavy_ad_intervention::features::
+              kHeavyAdInterventionSendReportToEmbedder)) {
+    if (auto* parent = render_frame_host->GetParent()) {
+      parent->SendInterventionReport(kReportId, report_message,
+                                     /*child_frame=*/render_frame_host);
+    }
+  }
+
   render_frame_host->ForEachRenderFrameHostWithAction(
       [&report_message,
        &page = render_frame_host->GetPage()](content::RenderFrameHost* frame) {
@@ -1473,9 +1485,9 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
         if (&page != &frame->GetPage()) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
-        static constexpr char kReportId[] = "HeavyAdIntervention";
         if (frame->IsRenderFrameLive()) {
-          frame->SendInterventionReport(kReportId, report_message);
+          frame->SendInterventionReport(kReportId, report_message,
+                                        /*child_frame=*/nullptr);
         }
         return content::RenderFrameHost::FrameIterationAction::kContinue;
       });

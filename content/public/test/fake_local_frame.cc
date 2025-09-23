@@ -38,8 +38,10 @@ void FakeLocalFrame::GetTextSurroundingSelection(
   std::move(callback).Run(std::u16string(), 0, 0);
 }
 
-void FakeLocalFrame::SendInterventionReport(const std::string& id,
-                                            const std::string& message) {}
+void FakeLocalFrame::SendInterventionReport(
+    const std::string& id,
+    const std::string& message,
+    const std::optional<blink::FrameToken>& child_frame_token) {}
 
 void FakeLocalFrame::SetFrameOwnerProperties(
     blink::mojom::FrameOwnerPropertiesPtr properties) {}

@@ -893,11 +893,23 @@ interface LocalFrame {
       => (mojo_base.mojom.String16 content, uint32 start_offset,
           uint32 end_offset);
 
-  // Creates an intervention report in the frame with contents |id| and
-  // |message|, returns once the report has been queued. |id| identifies the
-  // intervention that occurred. |message| is a human-readable string that
-  // can provide additional context to the cause of the intervention.
-  SendInterventionReport(string id, string message);
+  // Queues an intervention report for this frame or a specific child frame.
+  //
+  // This report is always sent via the context of *this* frame.
+  //
+  // Args:
+  //   `id`: Identifies the intervention type (e.g., "HeavyAdIntervention").
+  //   `message`: A human-readable string providing additional context about
+  //       why the intervention occurred.
+  //   `child_frame_token`:
+  //       - If null, the intervention report pertains directly to *this* frame.
+  //       - If provided, the intervention report pertains to the specified
+  //         child frame (which could be a LocalFrame or RemoteFrame proxy).
+  //         `message` may be augmented with additional info about the child
+  //         frame. The report is still sent from this frame, which contains
+  //         the child frame's owner element.
+  SendInterventionReport(string id, string message,
+                         blink.mojom.FrameToken? child_frame_token);
 
   // Updates this frame's FrameOwner properties, such as scrolling, margin,
   // or allowfullscreen.  This is used when this frame's parent is in
