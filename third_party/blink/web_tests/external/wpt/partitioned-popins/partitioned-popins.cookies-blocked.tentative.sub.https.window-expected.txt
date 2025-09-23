@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify Partitioned Popins cookie access when third-party cookie access blocked
+  assert_equals: expected "ReadOnLoad:ThirdPartyNone-,ReadOnFetch:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnDocument:ThirdPartyNone-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:ThirdPartyNone-ThirdPartyNonePopin-ThirdPartyNonePopinAfterRSA-" but got "ReadOnLoad:FirstPartyNone-ThirdPartyNone-,ReadOnFetch:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnDocument:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-,ReadOnFetchAfterRSA:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-FirstPartyNonePopinAfterRSA-ThirdPartyNonePopinAfterRSA-,ReadOnDocumentAfterRSA:FirstPartyNone-ThirdPartyNone-FirstPartyNonePopin-ThirdPartyNonePopin-FirstPartyNonePopinAfterRSA-ThirdPartyNonePopinAfterRSA-"
+Harness: the test ran to completion.
+
