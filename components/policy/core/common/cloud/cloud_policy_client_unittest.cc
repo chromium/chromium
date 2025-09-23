@@ -21,9 +21,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -59,10 +59,13 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
+using base::test::RunOnceClosure;
+using base::test::TaskEnvironment;
 using testing::_;
 using testing::Contains;
 using testing::DoAll;
 using testing::ElementsAre;
+using testing::Invoke;
 using testing::Key;
 using testing::Mock;
 using testing::NiceMock;
@@ -482,7 +485,8 @@ class CloudPolicyClientTest : public testing::Test {
 
   CloudPolicyClientTest()
       : CloudPolicyClientTest(
-            std::make_unique<base::test::SingleThreadTaskEnvironment>()) {}
+            std::make_unique<base::test::SingleThreadTaskEnvironment>(
+                TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   void RegisterClient(const std::string& device_dm_token) {
     StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
@@ -550,36 +554,34 @@ class CloudPolicyClientTest : public testing::Test {
   void RunClientTaskAndWaitRegistration(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     EXPECT_CALL(client_observer, OnRegistrationStateChanged)
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void RunClientTaskAndWaitPolicyFetch(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
-    EXPECT_CALL(client_observer, OnPolicyFetched).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
+    base::test::TestFuture<void> future;
+    EXPECT_CALL(client_observer, OnPolicyFetched)
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void RunClientTaskAndWaitError(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
-    EXPECT_CALL(client_observer, OnClientError).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
+    base::test::TestFuture<void> future;
+    EXPECT_CALL(client_observer, OnClientError)
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void ExpectAndCaptureJob(const em::DeviceManagementResponse& response) {
@@ -656,7 +658,7 @@ class CloudPolicyClientTest : public testing::Test {
                     std::string_view flex_product_name,
                     std::string_view flex_product_version) {
     service_.ScheduleInitialization(0);
-    base::RunLoop().RunUntilIdle();
+    task_environment_->FastForwardBy(base::Seconds(60));
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -677,8 +679,8 @@ class CloudPolicyClientTest : public testing::Test {
 class CloudPolicyClientMultipleThreadsTest : public CloudPolicyClientTest {
  public:
   CloudPolicyClientMultipleThreadsTest()
-      : CloudPolicyClientTest(std::make_unique<base::test::TaskEnvironment>()) {
-  }
+      : CloudPolicyClientTest(std::make_unique<base::test::TaskEnvironment>(
+            TaskEnvironment::TimeSource::MOCK_TIME)) {}
 };
 
 TEST_F(CloudPolicyClientTest, Init) {
@@ -1537,10 +1539,9 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
 
   StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
       client_.get());
-  base::RunLoop run_loop;
-  EXPECT_CALL(client_observer, OnClientError).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(client_observer, OnClientError)
+      .WillOnce(RunOnceClosure(future.GetCallback()));
 
   CloudPolicyClient::RegistrationParameters register_user(
       em::DeviceRegisterRequest::USER,
@@ -1548,8 +1549,8 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
   client_->Register(register_user, std::string() /* no client_id*/,
                     kOAuthToken);
   // Verify that registration request is still pending.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  task_environment_->FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(future.IsReady());
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
@@ -1569,7 +1570,7 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
 
   // Expect failure with yet another retry.
   service_.SendJobResponseNow(&job, net::ERR_NETWORK_CHANGED, 0);
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(job.IsActive());
   EXPECT_FALSE(client_->is_registered());
 }
@@ -3537,13 +3538,11 @@ TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
   base::test::TestFuture<const em::GetUserEligiblePromotionsResponse>
       result_future;
 
-  base::RunLoop run_loop;
-  client_->DeterminePromotionEligibility(
-      result_future.GetCallback().Then(run_loop.QuitClosure()));
+  client_->DeterminePromotionEligibility(result_future.GetCallback());
 
   client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
-  run_loop.Run();
 
+  EXPECT_TRUE(result_future.Wait());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
             job_type_);
