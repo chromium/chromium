@@ -89,4 +89,22 @@ TEST_F(NtpPromoRegistryTest, AreAnyPromosRegistered) {
   EXPECT_TRUE(registry_.AreAnyPromosRegistered());
 }
 
+TEST_F(NtpPromoRegistryTest, ClearAllPromosForTesting) {
+  registry_.AddPromo(CreateTestPromoSpec("Promo1"));
+  registry_.AddPromo(CreateTestPromoSpec("Promo2"));
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  registry_.ClearPromosForTesting();
+  EXPECT_FALSE(registry_.AreAnyPromosRegistered());
+}
+
+TEST_F(NtpPromoRegistryTest, ClearOnePromoForTesting) {
+  registry_.AddPromo(CreateTestPromoSpec("Promo1"));
+  registry_.AddPromo(CreateTestPromoSpec("Promo2"));
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  registry_.ClearPromoForTesting("Promo1");
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  EXPECT_THAT(registry_.GetNtpPromoIdentifiers(),
+              testing::ElementsAre("Promo2"));
+}
+
 }  // namespace user_education
