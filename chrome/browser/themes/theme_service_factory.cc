@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -97,6 +98,7 @@ ThemeServiceFactory::ThemeServiceFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ChromeExtensionSystemFactory::GetInstance());
+  DependsOn(NtpCustomBackgroundServiceFactory::GetInstance());
 }
 
 ThemeServiceFactory::~ThemeServiceFactory() = default;

@@ -27,8 +27,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
-#include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/url_constants.h"
@@ -196,10 +194,8 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       clock_(base::DefaultClock::GetInstance()),
       background_updated_timestamp_(base::TimeTicks::Now()) {
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
-  theme_service_ = ThemeServiceFactory::GetForProfile(profile_);
   if (background_service_)
     background_service_observation_.Observe(background_service_.get());
-  theme_service_observation_.Observe(theme_service_);
 
   // Update theme info when the pref is changed via Sync.
   pref_change_registrar_.Init(pref_service_);
@@ -212,7 +208,11 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       std::make_unique<ImageDecoderImpl>(), profile_->GetURLLoaderFactory());
 }
 
-NtpCustomBackgroundService::~NtpCustomBackgroundService() = default;
+NtpCustomBackgroundService::~NtpCustomBackgroundService() {
+  if (theme_delegate_) {
+    theme_delegate_->OnNtpCustomBackgroundServiceShuttingDown();
+  }
+}
 
 void NtpCustomBackgroundService::OnCollectionInfoAvailable() {}
 
@@ -246,12 +246,6 @@ void NtpCustomBackgroundService::OnNtpBackgroundServiceShuttingDown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   background_service_observation_.Reset();
   background_service_ = nullptr;
-}
-
-void NtpCustomBackgroundService::OnThemeChanged() {}
-
-void NtpCustomBackgroundService::OnCustomNtpBackgroundObsolete() {
-  ResetNtpTheme(profile_);
 }
 
 void NtpCustomBackgroundService::UpdateBackgroundFromSync() {
@@ -326,8 +320,9 @@ void NtpCustomBackgroundService::UpdateLocalCustomBackgroundPrefsWithColor(
   // Make sure that local background is still set.
   if (pref_service_->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice)) {
     // Set background color.
-    theme_service_->SetUserColorAndBrowserColorVariant(
-        color, ui::mojom::BrowserColorVariant::kTonalSpot);
+    if (theme_delegate_) {
+      theme_delegate_->OnBackgroundColorExtracted(color);
+    }
   }
 }
 
@@ -373,7 +368,7 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Do not refresh background & color if extension theme is in use.
-  if (theme_service_->UsingExtensionTheme()) {
+  if (theme_delegate_ && theme_delegate_->UsingExtensionTheme()) {
     return;
   }
 
@@ -507,6 +502,14 @@ void NtpCustomBackgroundService::AddObserver(
 void NtpCustomBackgroundService::RemoveObserver(
     NtpCustomBackgroundServiceObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void NtpCustomBackgroundService::SetThemeDelegate(ThemeDelegate* delegate) {
+  theme_delegate_ = delegate;
+}
+
+void NtpCustomBackgroundService::RemoveThemeDelegate() {
+  theme_delegate_ = nullptr;
 }
 
 bool NtpCustomBackgroundService::IsCustomBackgroundDisabledByPolicy() {
@@ -648,8 +651,9 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundPrefsWithColor(
   if (current_bg_url == image_url) {
     pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
                            GetBackgroundInfoWithColor(&background_info, color));
-    theme_service_->SetUserColorAndBrowserColorVariant(
-        color, ui::mojom::BrowserColorVariant::kTonalSpot);
+    if (theme_delegate_) {
+      theme_delegate_->OnBackgroundColorExtracted(color);
+    }
   }
 }
 

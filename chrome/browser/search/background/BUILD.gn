@@ -7,14 +7,21 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("background") {
-  public = [ "ntp_background_service_factory.h" ]
-  sources = [ "ntp_background_service_factory.cc" ]
+  public = [
+    "ntp_background_service_factory.h",
+    "theme_delegate.h",
+  ]
+  sources = [
+    "ntp_background_service_factory.cc",
+    "theme_delegate.cc",
+  ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/themes:ntp_background_proto",
     "//content/public/browser",
+    "//ui/gfx:color_utils",
   ]
   deps = [
     "//chrome/browser:browser_process",
@@ -42,7 +49,6 @@ source_set("background") {
       "wallpaper_search/wallpaper_search_data.cc",
     ]
     public_deps += [
-      "//chrome/browser/themes",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//components/image_fetcher/core",
       "//components/prefs",

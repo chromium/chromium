@@ -21,6 +21,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
 
 class NewTabFooterHandler : public new_tab_footer::mojom::NewTabFooterHandler,
                             public extensions::ExtensionRegistryObserver,
