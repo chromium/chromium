@@ -423,7 +423,7 @@
         Upload successful
       </message>
       <message name="IDS_SAVE_TO_DRIVE_DIALOG_UNKNOWN_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to an unknown error.">
-        Something unexpected happened. <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>Learn more about Drive uploads<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
+        Something unexpected happened. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about Drive uploads<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
       </message>
       <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOAD_STATUS_DONE" desc="When a download is finished, let the user know.">
         Done
