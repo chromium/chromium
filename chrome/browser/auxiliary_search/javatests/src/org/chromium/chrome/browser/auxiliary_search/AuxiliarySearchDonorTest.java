@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -89,6 +90,7 @@ public final class AuxiliarySearchDonorTest {
         "AndroidAppIntegrationMultiDataSource:multi_data_source_skip_schema_check/true"
     })
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
+    @DisabledTest(message = "crbug.com/446976343")
     public void testDonateTabs() {
         testDonateTabsImpl();
     }
@@ -99,6 +101,7 @@ public final class AuxiliarySearchDonorTest {
         "AndroidAppIntegrationMultiDataSource:multi_data_source_skip_schema_check/true"
     })
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
+    @DisabledTest(message = "crbug.com/446975071")
     public void testDonateTabs_MultiDataSource() {
         testDonateTabsImpl();
     }
