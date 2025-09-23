@@ -106,7 +106,8 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
 
-  auto checker = CreateChecker(future.GetRepeatingCallback());
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
   ASSERT_TRUE(checker->capturer());
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
@@ -128,7 +129,8 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
         .WillOnce(WithArg<3>(&PostResponse<true>));
   }
 
-  auto checker = CreateChecker(future.GetRepeatingCallback());
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
   // First model call should be negative, the user is not logged in.
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
@@ -148,26 +150,14 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
       /* expected_retry_count=*/1);
 }
 
-TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
-  base::test::TestFuture<bool> future;
-  auto checker = CreateChecker(future.GetRepeatingCallback());
-  ASSERT_TRUE(checker->capturer());
-  checker->capturer()->ReplyWithContent(std::nullopt);
-  EXPECT_FALSE(future.Take());
-  VerifyQualityFields(
-      logs_uploader()->GetFinalLog(),
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE,
-      /* expected_retry_count=*/0);
-}
-
 TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
   base::test::TestFuture<bool> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(LoginStateChecker::kMaxLoginChecks)
       .WillRepeatedly(WithArg<3>(&PostResponse<false>));
 
-  auto checker = CreateChecker(future.GetRepeatingCallback());
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
   for (int i = 0; i < LoginStateChecker::kMaxLoginChecks; ++i) {
     checker->capturer()->ReplyWithContent(
         optimization_guide::AIPageContentResult());
@@ -195,7 +185,8 @@ TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
 TEST_F(LoginStateCheckerTest, CachesPageContentIfRequestInFlight) {
   base::test::TestFuture<bool> future;
 
-  auto checker = CreateChecker(future.GetRepeatingCallback());
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
   ASSERT_TRUE(checker->capturer());
 
   // Trigger first request.
@@ -232,7 +223,8 @@ TEST_F(LoginStateCheckerTest, CachesOnlyLastPageContent) {
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       optimization_guide_callback;
 
-  auto checker = CreateChecker(future.GetRepeatingCallback());
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(MoveArg<3>(&optimization_guide_callback));
   checker->capturer()->ReplyWithContent(
@@ -261,4 +253,58 @@ TEST_F(LoginStateCheckerTest, CachesOnlyLastPageContent) {
 
   PostResponse<true>(std::move(optimization_guide_callback));
   EXPECT_TRUE(future.Take());
+}
+
+TEST_F(LoginStateCheckerTest, NoRequestWithEmptyCachedPageContent) {
+  base::test::TestFuture<bool> future;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      optimization_guide_callback_1;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      optimization_guide_callback_2;
+
+  std::unique_ptr<LoginStateChecker> checker =
+      CreateChecker(future.GetRepeatingCallback());
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback_1));
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  ASSERT_TRUE(optimization_guide_callback_1);
+
+  // A new content is capture while the first request is in
+  // flight. This is cached.
+  static_cast<content::WebContentsObserver*>(checker.get())
+      ->DidFinishNavigation(nullptr);
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
+  // Model replies that the user is not logged in.
+  // This triggers the cached request.
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback_2));
+  PostResponse<false>(std::move(optimization_guide_callback_1));
+  EXPECT_FALSE(future.Take());
+  ASSERT_TRUE(optimization_guide_callback_2);
+
+  // The cached request also fails with user not being logged in.
+  PostResponse<false>(std::move(optimization_guide_callback_2));
+  EXPECT_FALSE(future.Take());
+
+  // Simulate a new navigation which triggers a new login check.
+  testing::Mock::VerifyAndClearExpectations(optimization_service());
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback_1));
+  static_cast<content::WebContentsObserver*>(checker.get())
+      ->DidFinishNavigation(nullptr);
+  // New content is captured and the login check succeeds with it.
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  ASSERT_TRUE(optimization_guide_callback_1);
+  PostResponse<true>(std::move(optimization_guide_callback_1));
+  EXPECT_TRUE(future.Take());
+
+  VerifyQualityFields(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+      /* expected_retry_count=*/2);
 }
