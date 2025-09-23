@@ -20,7 +20,6 @@
 #import "ios/web/content/web_state/content_web_state_builder.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 #import "ios/web/content/web_state/crc_web_viewport_container_view.h"
-#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_util.h"
@@ -161,9 +160,6 @@ ContentWebState::ContentWebState(const CreateParams& params,
   web_view_proxy_ = proxy;
 
   [web_view_ addSubview:web_contents_view];
-
-  // These should be moved when the are removed from CRWWebController.
-  web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
 
   session_storage_ = session_storage;
   if (session_storage) {
