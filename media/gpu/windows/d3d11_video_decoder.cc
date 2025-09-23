@@ -152,6 +152,12 @@ D3D11VideoDecoder::~D3D11VideoDecoder() {
   // Log whatever usage we measured, if any.
   LogPictureBufferUsage();
 
+  // Driver may cache allocated D3D11 resources even we release them. Adding
+  // a Flush() here, so driver will less likely perform caching.
+  if (device_context_) {
+    device_context_->Flush();
+  }
+
   // Explicitly destroy the decoder, since it can reference picture buffers.
   accelerated_video_decoder_.reset();
 }
