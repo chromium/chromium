@@ -39,7 +39,7 @@
   overflow: hidden;
   padding-bottom: var(--cr-searchbox-match-padding, 6px);
   padding-inline-end: 16px;
-  padding-inline-start: var(--cr-searchbox-match-padding-inline-start);
+  padding-inline-start: var(--cr-searchbox-match-padding-inline-start, 12px);
   padding-top: var(--cr-searchbox-match-padding, 6px);
   position: relative;
 }
