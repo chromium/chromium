@@ -48,8 +48,8 @@ std::string GetSerializedDict(PrefService* pref_service,
 void SetDict(PrefService* pref_service,
              const std::string& pref_name,
              const std::string& serialized_dict) {
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(serialized_dict);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      serialized_dict, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     // This should only happen if there was a bug when backing up the data, or
     // if data was corrupted. It's not appropriate to crash for the latter, so

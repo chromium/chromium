@@ -114,8 +114,8 @@ std::optional<FormData> DeserializeFormData(
 
 void DeserializeOpaqueLocalData(const std::string& opaque_metadata,
                                 PasswordForm& password_form) {
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(opaque_metadata);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      opaque_metadata, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return;
   }
