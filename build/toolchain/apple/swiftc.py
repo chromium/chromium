@@ -78,7 +78,7 @@ class FrameworkArgumentForwarder(ArgumentForwarder):
     ArgumentForwarder.__init__(self,
                                arg_name,
                                arg_join=lambda _: len(arg_name) == 1,
-                               to_swift=lambda _: True,
+                               to_swift=lambda _: arg_name != '-iframework',
                                to_clang=lambda _: True)
 
 
@@ -99,6 +99,7 @@ ARGUMENT_FORWARDER_FOR_ATTR = (
     ('system_include_dirs', IncludeArgumentForwarder('-isystem')),
     ('framework_dirs', FrameworkArgumentForwarder('-F')),
     ('system_framework_dirs', FrameworkArgumentForwarder('-Fsystem')),
+    ('iframework_dirs', FrameworkArgumentForwarder('-iframework')),
     ('defines', DefineArgumentForwarder('-D')),
 )
 
@@ -630,6 +631,11 @@ def main(args):
   parser.add_argument('-Fsystem',
                       action='append',
                       dest='system_framework_dirs',
+                      help='add directory to system framework search path')
+
+  parser.add_argument('-iframework',
+                      action='append',
+                      dest='iframework_dirs',
                       help='add directory to system framework search path')
 
   parser.add_argument('-D',
