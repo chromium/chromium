@@ -48,18 +48,19 @@ const char* kFetchPath = "/fetchtarget.html";
 
 // Tests for the PageStabilityMonitor's functionality of delaying renderer-tool
 // completion until the page is ready for an observation.
-class ActorPageStabilityTest : public InProcessBrowserTest {
+class ActorPageStabilityTestBase : public InProcessBrowserTest {
  public:
-  ActorPageStabilityTest() {
+  ActorPageStabilityTestBase() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                               features::kGlicActor},
         /*disabled_features=*/{features::kGlicWarming});
   }
-  ActorPageStabilityTest(const ActorPageStabilityTest&) = delete;
-  ActorPageStabilityTest& operator=(const ActorPageStabilityTest&) = delete;
+  ActorPageStabilityTestBase(const ActorPageStabilityTestBase&) = delete;
+  ActorPageStabilityTestBase& operator=(const ActorPageStabilityTestBase&) =
+      delete;
 
-  ~ActorPageStabilityTest() override = default;
+  ~ActorPageStabilityTestBase() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -138,10 +139,25 @@ class ActorPageStabilityTest : public InProcessBrowserTest {
   ScopedFeatureList scoped_feature_list_;
 };
 
+class ActorPageStabilityTest : public ActorPageStabilityTestBase,
+                               public ::testing::WithParamInterface<
+                                   ::features::ActorPaintStabilityMode> {
+ public:
+  ActorPageStabilityTest() {
+    paint_monitor_feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{::features::kActorPaintStabilityMode.name,
+          ::features::kActorPaintStabilityMode.GetName(GetParam())}});
+  }
+
+ private:
+  base::test::ScopedFeatureList paint_monitor_feature_list_;
+};
+
 // Ensure the page isn't considered stable until after a network fetch is
 // resolved.
 // TODO(crbug.com/427596767): Fails flakily
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -173,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnNetworkFetch) {
 // Simulate a network fetch followed by heavy main thread activity. Ensure the
 // page isn't considered stable until after the main thread work finishes.
 // TODO(crbug.com/427619749): Fails flakily
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -213,23 +229,42 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityTest, DISABLED_WaitOnFetchAndWork) {
   ASSERT_EQ(GetFetchOutput(), "WORK DONE");
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorPageStabilityTest,
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled));
+
 // Shorten timeouts to test they work.
 // LocalTimeout is the timeout delay used when waiting on non-network actions
 // like an idle main thread and display compositor frame presentation.
 // GlobalTimeout is the timeout delay used end-to-end in the
 template <int LocalTimeout, int GlobalTimeout>
-class ActorPageStabilityTimeoutTest : public ActorPageStabilityTest {
+class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
+                                      public ::testing::WithParamInterface<
+                                          ::features::ActorPaintStabilityMode> {
  public:
   ActorPageStabilityTimeoutTest() {
     std::string local_timeout = absl::StrFormat("%dms", LocalTimeout);
     std::string global_timeout = absl::StrFormat("%dms", GlobalTimeout);
+    // Make the paint timeouts high enough that the local and global
+    // timeouts apply, to simulate not reaching paint stability.
+    std::string paint_timeout =
+        absl::StrFormat("%dms", GlobalTimeout + LocalTimeout);
     timeout_scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlic, {}},
-                              {features::kTabstripComboButton, {}},
-                              {features::kGlicActor,
-                               {{"glic-actor-observation-delay", local_timeout},
-                                {"glic-actor-page-stability-timeout",
-                                 global_timeout}}}},
+        /*enabled_features=*/
+        {{features::kGlic, {}},
+         {features::kTabstripComboButton, {}},
+         {features::kGlicActor,
+          {{"glic-actor-observation-delay", local_timeout},
+           {"glic-actor-page-stability-timeout", global_timeout},
+           {::features::kActorPaintStabilityMode.name,
+            ::features::kActorPaintStabilityMode.GetName(GetParam())},
+           {::features::kActorPaintStabilityIntialPaintTimeout.name,
+            paint_timeout},
+           {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
+            paint_timeout}}}},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ActorPageStabilityTimeoutTest(const ActorPageStabilityTimeoutTest&) = delete;
@@ -251,7 +286,7 @@ using ActorPageStabilityGlobalTimeoutTest =
 
 // Ensure that if a network request runs long, the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -276,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, NetworkTimeout) {
 
 // Ensure that if the main thread never becomes idle the stability monitor will
 // eventually timeout.
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -294,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityGlobalTimeoutTest, BusyMainThread) {
 
 // Ensure that if the main thread never becomes idle the stability monitor will
 // eventually timeout on the local timeout.
-IN_PROC_BROWSER_TEST_F(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url_fetch = embedded_test_server()->GetURL(kFetchPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -310,6 +345,19 @@ IN_PROC_BROWSER_TEST_F(ActorPageStabilityLocalTimeoutTest, BusyMainThread) {
   ExpectOkResult(result);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorPageStabilityGlobalTimeoutTest,
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorPageStabilityLocalTimeoutTest,
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled));
+
 enum class NavigationDelay { kInstant, kDelayed };
 enum class NavigationType { kSameDocument, kSameSite, kCrossSite };
 
@@ -321,14 +369,16 @@ enum class NavigationType { kSameDocument, kSameSite, kCrossSite };
 // induced delay.
 // TODO(crbug.com/414662842): Move to page_stability_browsertest.cc.
 class ActorPageStabilityNavigationTypesTest
-    : public ActorPageStabilityTest,
+    : public ActorPageStabilityTestBase,
       public testing::WithParamInterface<
-          std::tuple<NavigationDelay, NavigationType>> {
+          std::tuple<NavigationDelay,
+                     NavigationType,
+                     ::features::ActorPaintStabilityMode>> {
  public:
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    auto [delay, navigation_type] = info.param;
+    auto [delay, navigation_type, paint_monitor_mode] = info.param;
     std::stringstream params_description;
     switch (delay) {
       case NavigationDelay::kInstant:
@@ -349,6 +399,17 @@ class ActorPageStabilityNavigationTypesTest
         params_description << "_CrossSite";
         break;
     }
+    switch (paint_monitor_mode) {
+      case ::features::ActorPaintStabilityMode::kDisabled:
+        params_description << "_PaintMonitorDisabled";
+        break;
+      case ::features::ActorPaintStabilityMode::kLogOnly:
+        params_description << "_PaintMonitorLog";
+        break;
+      case ::features::ActorPaintStabilityMode::kEnabled:
+        params_description << "_PaintMonitorEnabled";
+        break;
+    }
     return params_description.str();
   }
 
@@ -360,7 +421,10 @@ class ActorPageStabilityNavigationTypesTest
     page_tools_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kGlic, {}},
                               {features::kTabstripComboButton, {}},
-                              {features::kGlicActor, {}},
+                              {features::kGlicActor,
+                               {{::features::kActorPaintStabilityMode.name,
+                                 ::features::kActorPaintStabilityMode.GetName(
+                                     std::get<2>(GetParam()))}}},
                               {kGlicActionAllowlist, allowlist_params}},
         /*disabled_features=*/{features::kGlicWarming});
   }
@@ -466,11 +530,14 @@ IN_PROC_BROWSER_TEST_P(ActorPageStabilityNavigationTypesTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     ActorPageStabilityNavigationTypesTest,
-    testing::Combine(testing::Values(NavigationDelay::kInstant,
-                                     NavigationDelay::kDelayed),
-                     testing::Values(NavigationType::kSameDocument,
-                                     NavigationType::kSameSite,
-                                     NavigationType::kCrossSite)),
+    testing::Combine(
+        testing::Values(NavigationDelay::kInstant, NavigationDelay::kDelayed),
+        testing::Values(NavigationType::kSameDocument,
+                        NavigationType::kSameSite,
+                        NavigationType::kCrossSite),
+        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                        ::features::ActorPaintStabilityMode::kLogOnly,
+                        ::features::ActorPaintStabilityMode::kEnabled)),
     ActorPageStabilityNavigationTypesTest::DescribeParams);
 
 }  // namespace

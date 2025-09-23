@@ -66,6 +66,11 @@ class ToolBase {
   // scrolling.
   virtual void EnsureTargetInView();
 
+  // Whether or not the tool supports page stability monitoring via paint
+  // stability tracking, which is currently only supported on a subset of
+  // interactions.
+  virtual bool SupportsPaintStability() const;
+
  protected:
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.

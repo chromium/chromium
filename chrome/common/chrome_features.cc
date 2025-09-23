@@ -16,6 +16,32 @@ namespace features {
 
 // All features in alphabetical order.
 
+// Controls if page stability monitoring uses paint stability as a signal.
+constexpr base::FeatureParam<ActorPaintStabilityMode>::Option
+    kActorPaintStabilityModeOptions[] = {
+        {ActorPaintStabilityMode::kDisabled, "disabled"},
+        {ActorPaintStabilityMode::kLogOnly, "log-only"},
+        {ActorPaintStabilityMode::kEnabled, "enabled"},
+};
+BASE_FEATURE_ENUM_PARAM(ActorPaintStabilityMode,
+                        kActorPaintStabilityMode,
+                        &kGlicActor,
+                        "actor-paint-stability-mode",
+                        ActorPaintStabilityMode::kLogOnly,
+                        &kActorPaintStabilityModeOptions);
+// Timeout controlling how long the paint stability monitor waits after the
+// initial contentful paint before considering the UI to have stabilized.
+const base::FeatureParam<base::TimeDelta>
+    kActorPaintStabilityIntialPaintTimeout{
+        &kGlicActor, "actor-paint-stability-initial-paint-timeout",
+        base::Seconds(1)};
+// Timeout controlling how long the paint stability monitor waits for subsequent
+// contenful paints before considering the UI to have stabilized.
+const base::FeatureParam<base::TimeDelta>
+    kActorPaintStabilitySubsequentPaintTimeout{
+        &kGlicActor, "actor-paint-stability-subsequent-paint-timeout",
+        base::Milliseconds(500)};
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kAppPreloadService, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)

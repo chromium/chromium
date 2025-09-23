@@ -20,6 +20,8 @@ source_set("actor") {
     "no_op_tool.h",
     "page_stability_monitor.cc",
     "page_stability_monitor.h",
+    "paint_stability_monitor.cc",
+    "paint_stability_monitor.h",
     "script_tool.cc",
     "script_tool.h",
     "scroll_tool.cc",
@@ -49,7 +51,10 @@ source_set("actor") {
 
 source_set("browser_tests") {
   testonly = true
-  sources = [ "tool_utils_browsertest.cc" ]
+  sources = [
+    "paint_stability_monitor_browsertest.cc",
+    "tool_utils_browsertest.cc",
+  ]
   deps = [
     ":actor",
     "//base/test:test_support",

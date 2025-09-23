@@ -56,6 +56,10 @@ base::TimeDelta ToolBase::ExecutionObservationDelay() const {
   return base::TimeDelta();
 }
 
+bool ToolBase::SupportsPaintStability() const {
+  return false;
+}
+
 ToolBase::ToolBase(content::RenderFrame& frame,
                    Journal::TaskId task_id,
                    Journal& journal,

@@ -99,6 +99,10 @@ std::string ClickTool::DebugString() const {
                          base::ToString(action_->count));
 }
 
+bool ClickTool::SupportsPaintStability() const {
+  return true;
+}
+
 ClickTool::ValidatedResult ClickTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());

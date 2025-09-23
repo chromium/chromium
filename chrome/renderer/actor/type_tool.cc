@@ -434,6 +434,10 @@ base::TimeDelta TypeTool::ExecutionObservationDelay() const {
   return kObservationDelay;
 }
 
+bool TypeTool::SupportsPaintStability() const {
+  return true;
+}
+
 TypeTool::ValidatedResult TypeTool::Validate() const {
   CHECK(frame_->GetWebFrame());
   CHECK(frame_->GetWebFrame()->FrameWidget());

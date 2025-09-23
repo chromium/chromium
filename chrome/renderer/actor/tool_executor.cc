@@ -146,7 +146,8 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       NOTREACHED();
   }
 
-  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(*frame_);
+  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
+      *frame_, tool_->SupportsPaintStability());
 
   if (features::kGlicActorScrollTargetIntoView.Get()) {
     tool_->EnsureTargetInView();

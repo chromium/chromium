@@ -41,6 +41,7 @@ class TypeTool : public ToolBase {
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
   base::TimeDelta ExecutionObservationDelay() const override;
+  bool SupportsPaintStability() const override;
 
  private:
   // Structure to hold all necessary parameters for generating keyboard events

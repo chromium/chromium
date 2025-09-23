@@ -36,6 +36,7 @@ class ClickTool : public ToolBase {
   // actor::ToolBase
   void Execute(ToolFinishedCallback callback) override;
   std::string DebugString() const override;
+  bool SupportsPaintStability() const override;
 
  private:
   using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;

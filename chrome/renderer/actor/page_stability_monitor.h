@@ -19,6 +19,7 @@ class RenderFrame;
 
 namespace actor {
 
+class PaintStabilityMonitor;
 class ToolBase;
 
 // Helper class for monitoring page stability after tool usage. Its lifetime
@@ -27,8 +28,12 @@ class ToolBase;
 class PageStabilityMonitor : public content::RenderFrameObserver {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
-  // the given RenderFrame.
-  explicit PageStabilityMonitor(content::RenderFrame& frame);
+  // the given RenderFrame. If `supports_paint_stability` is true, paint
+  // stability will be included in page stability heuristics if the `frame`
+  // supports it.
+  PageStabilityMonitor(content::RenderFrame& frame,
+                       bool supports_paint_stability);
+
   ~PageStabilityMonitor() override;
 
   // Invokes the given callback when the page is deemed stable enough for an
@@ -83,6 +88,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
     kNavigationCommitted,
     kNavigationFailed,
 
+    // The `paint_stability_monitor_` has determined that paint stability has
+    // been reached. This just moves to kInokeCallback.
+    kPaintStabilityReached,
+
     kDone
   } state_ = State::kInitial;
   friend std::ostream& operator<<(std::ostream& o,
@@ -110,6 +119,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
 
   void DCheckStateTransition(State old_state, State new_state);
 
+  void OnPaintStabilityReached();
+
   // The number of active network requests at the time this object was
   // initialized. Used to compare to the number of requests after monitoring
   // begins to determine if new network requests were started in that interval.
@@ -129,6 +140,11 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   // A navigation may commit while waiting to start monitoring. Cancel the task
   // and don't move to `kStartMonitoring` when the delay expires in this case.
   base::DelayedTaskHandle start_monitoring_delayed_handle_;
+
+  // This will be null if paint stability monitoring is disabled, or if we're
+  // monitoring an unsupported interaction. This must be destroyed before
+  // `journal_entry_` to avoid a dangling pointer.
+  std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

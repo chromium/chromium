@@ -15,6 +15,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/paint_stability_monitor.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -52,8 +53,12 @@ base::TimeDelta GetMainThreadTimeoutDelay() {
 
 }  // namespace
 
-PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame)
-    : RenderFrameObserver(&frame) {
+PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame,
+                                           bool supports_paint_stability)
+    : RenderFrameObserver(&frame),
+      paint_stability_monitor_(supports_paint_stability
+                                   ? PaintStabilityMonitor::MaybeCreate(frame)
+                                   : nullptr) {
   CHECK(render_frame());
   CHECK(render_frame()->GetWebFrame());
   starting_request_count_ =
@@ -80,6 +85,10 @@ void PageStabilityMonitor::WaitForStable(const ToolBase& tool,
 
   is_stable_callback_ = std::move(callback);
 
+  if (paint_stability_monitor_) {
+    paint_stability_monitor_->Start(journal_entry_.get());
+  }
+
   SetTimeout(State::kTimeoutGlobal, GetGlobalTimeoutDelay());
   MoveToState(State::kMonitorStartDelay);
 }
@@ -95,6 +104,7 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
           .Add("transition", PageTransitionGetCoreTransitionString(transition))
           .Build());
   start_monitoring_delayed_handle_.CancelTask();
+  paint_stability_monitor_.reset();
   MoveToState(State::kNavigationCommitted);
 }
 
@@ -103,6 +113,7 @@ void PageStabilityMonitor::DidFailProvisionalLoad() {
     // TODO(b/436573891): Should this go back to `kStartMonitoring`?
     journal_entry_->EndEntry(
         JournalDetailsBuilder().AddError("DidFailProvisionalLoad").Build());
+    paint_stability_monitor_.reset();
     MoveToState(State::kNavigationFailed);
   }
 }
@@ -145,15 +156,27 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       if (render_frame()->IsRequestingNavigation()) {
         journal_entry_->Log("WaitForNavigation");
         next_state = State::kWaitForNavigation;
-      } else if (after_request_count > starting_request_count_) {
-        journal_entry_->Log("WaitForNetworkIdle",
-                            JournalDetailsBuilder()
-                                .Add("requests", after_request_count)
-                                .Build());
-        next_state = State::kWaitForNetworkIdle;
+        // If there's a pending navigation, don't monitor paint stability, since
+        // commit/fail is the signal we want to use.
+        paint_stability_monitor_.reset();
       } else {
-        journal_entry_->Log("WaitForMainThreadIdle");
-        next_state = State::kWaitForMainThreadIdle;
+        // Race paint stability with network/thread stability, if paint
+        // stability is supported.
+        if (paint_stability_monitor_) {
+          paint_stability_monitor_->WaitForStable(
+              base::BindOnce(&PageStabilityMonitor::OnPaintStabilityReached,
+                             weak_ptr_factory_.GetWeakPtr()));
+        }
+        if (after_request_count > starting_request_count_) {
+          journal_entry_->Log("WaitForNetworkIdle",
+                              JournalDetailsBuilder()
+                                  .Add("requests", after_request_count)
+                                  .Build());
+          next_state = State::kWaitForNetworkIdle;
+        } else {
+          journal_entry_->Log("WaitForMainThreadIdle");
+          next_state = State::kWaitForMainThreadIdle;
+        }
       }
 
       MoveToState(next_state);
@@ -239,6 +262,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       MoveToState(State::kInvokeCallback);
       break;
     }
+    case State::kPaintStabilityReached:
+      MoveToState(State::kInvokeCallback);
+      break;
     case State::kDone: {
       CHECK(!is_stable_callback_);
       break;
@@ -284,6 +310,12 @@ void PageStabilityMonitor::SetTimeout(State timeout_type,
   PostMoveToStateClosure(timeout_type, delay).Run();
 }
 
+void PageStabilityMonitor::OnPaintStabilityReached() {
+  // Do this in a separate task since paint stability can be reached while
+  // transitioning to `State::kStartMonitoring`.
+  PostMoveToStateClosure(State::kPaintStabilityReached).Run();
+}
+
 void PageStabilityMonitor::DCheckStateTransition(State old_state,
                                                  State new_state) {
 #if DCHECK_IS_ON()
@@ -298,6 +330,7 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kNavigationCommitted}},
           {State::kStartMonitoring, {
               State::kWaitForNavigation,
+              State::kPaintStabilityReached,
               State::kWaitForNetworkIdle,
               State::kWaitForMainThreadIdle}},
           {State::kWaitForNavigation, {
@@ -306,14 +339,17 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kTimeoutGlobal}},
           {State::kWaitForNetworkIdle, {
               State::kWaitForMainThreadIdle,
+              State::kPaintStabilityReached,
               State::kTimeoutGlobal,
               State::kNavigationCommitted}},
           {State::kWaitForMainThreadIdle, {
               State::kWaitForVisualStateRequest,
+              State::kPaintStabilityReached,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
               State::kNavigationCommitted}},
           {State::kWaitForVisualStateRequest, {
+              State::kPaintStabilityReached,
               State::kMaybeDelayCallback,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
@@ -323,6 +359,7 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
           {State::kTimeoutGlobal, {
               State::kInvokeCallback}},
           {State::kMaybeDelayCallback, {
+              State::kPaintStabilityReached,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
@@ -330,6 +367,8 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
           {State::kNavigationCommitted, {
               State::kMaybeDelayCallback}},
           {State::kNavigationFailed, {
+              State::kInvokeCallback}},
+          {State::kPaintStabilityReached, {
               State::kInvokeCallback}},
           {State::kInvokeCallback, {
               State::kDone}}
