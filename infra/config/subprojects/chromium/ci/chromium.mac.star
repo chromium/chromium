@@ -623,10 +623,7 @@ ci.thin_tester(
                             shards = 7,
                         ),
                     ),
-                    "mac_15_arm64",
                 ],
-                # TODO(crbug.com/436628295): test fails on VM
-                remove_mixins = "mac_15_vm_optional",
             ),
             # TODO(crbug.com/436628295): test fails on VM
             "headless_shell_wpt_tests": targets.per_test_modification(
