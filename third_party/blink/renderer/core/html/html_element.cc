@@ -3391,6 +3391,13 @@ void HTMLElement::OnContainerTimingAttrChanged(
   if (!RuntimeEnabledFeatures::ContainerTimingEnabled()) {
     return;
   }
+
+  // Drop previous records in ContainerTiming
+  if (auto* window = GetDocument().domWindow()) {
+    ContainerTiming::From(*window).MaybeUpdateContainerRootIdentifier(
+        this, params.new_value);
+  }
+
   bool had_container_timing = !params.old_value.IsNull();
   bool has_container_timing = !params.new_value.IsNull();
   if (had_container_timing == has_container_timing) {

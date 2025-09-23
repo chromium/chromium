@@ -175,6 +175,22 @@ void ContainerTiming::MaybeUpdateContainerRootNestingPolicy(
   }
 }
 
+void ContainerTiming::MaybeUpdateContainerRootIdentifier(
+    Element* element,
+    const AtomicString& new_value) {
+  auto it = container_root_records_.find(element);
+  if (it != container_root_records_.end()) {
+    Record* record = it->value;
+
+    if (new_value.IsNull() || record->identifier() != new_value) {
+      // If containertiming is unset, drop record.
+      // Also, once the identifier changes, the old values should not be used
+      // for the new events.
+      container_root_records_.erase(it);
+    }
+  }
+}
+
 void ContainerTiming::OnElementPainted(
     const DOMPaintTimingInfo& paint_timing_info,
     Element* element,

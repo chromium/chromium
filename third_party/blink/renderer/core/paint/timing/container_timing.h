@@ -39,6 +39,8 @@ class CORE_EXPORT ContainerTiming final
   bool CanReportToContainerTiming() const;
   void MaybeUpdateContainerRootNestingPolicy(Element* element,
                                              const AtomicString& new_value);
+  void MaybeUpdateContainerRootIdentifier(Element* element,
+                                          const AtomicString& new_value);
 
   void EmitPerformanceEntries();
 
@@ -63,6 +65,7 @@ class CORE_EXPORT ContainerTiming final
     static NestingPolicy ToNestingPolicy(const AtomicString& str);
 
     NestingPolicy GetNestingPolicy() const { return nesting_policy_; }
+    const AtomicString& identifier() const { return identifier_; }
 
     void MaybeUpdateLastNewPaintedArea(
         ContainerTiming* container_timing,
