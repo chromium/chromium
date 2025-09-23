@@ -24,6 +24,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/events:test_support",
     "//ui/views:test_support",
   ]
 }

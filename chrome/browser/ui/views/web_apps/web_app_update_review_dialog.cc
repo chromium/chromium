@@ -110,12 +110,21 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
   void OnAcceptButtonClicked() {
     std::move(callback_).Run(WebAppIdentityUpdateResult::kAccept);
   }
+
+  // Close the dialog if the "Ignore" button is clicked.
   void OnIgnoreButtonClicked(const ui::Event& event) {
-    std::move(callback_).Run(WebAppIdentityUpdateResult::kIgnore);
+    CHECK(dialog_model() && dialog_model()->host());
+    // `callback_` is being moved out to the stack because `Close()`
+    // synchronously deletes `this`.
+    auto callback = std::move(callback_);
+    dialog_model()->host()->Close();
+    std::move(callback).Run(WebAppIdentityUpdateResult::kIgnore);
   }
+
   void OnUninstallButtonClicked() {
     std::move(callback_).Run(WebAppIdentityUpdateResult::kUninstallApp);
   }
+
   void OnClose() {
     // This should not be called, but due to lack of clarity with UI framework
     // assumptions, we should still handle this even if we asked for the close

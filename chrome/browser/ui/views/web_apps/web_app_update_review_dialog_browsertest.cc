@@ -24,12 +24,16 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/root_view.h"
@@ -164,6 +168,32 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
       browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey));
   EXPECT_EQ(dialog_result_.Get(),
             WebAppIdentityUpdateResult::kAppUninstalledDuringDialog);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
+                       CloseUpdateReviewDialogOnIgnore) {
+  views::NamedWidgetShownWaiter update_dialog_waiter(
+      views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
+  ShowUi("NameChange");
+  views::Widget* dialog_widget = update_dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog_widget != nullptr);
+  ASSERT_FALSE(dialog_widget->IsClosed());
+
+  // Find the "Ignore" button and click it.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_widget);
+  views::ElementTrackerViews* tracker_views =
+      views::ElementTrackerViews::GetInstance();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog_widget);
+  views::Button* button = tracker_views->GetUniqueViewAs<views::Button>(
+      kWebAppUpdateReviewIgnoreButton, context);
+  views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+  destroyed_waiter.Wait();
+
+  // Verify dialog is closed, and the ignore result is obtained.
+  EXPECT_FALSE(
+      browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey));
+  EXPECT_EQ(dialog_result_.Get(), WebAppIdentityUpdateResult::kIgnore);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, ShowWhileAlreadyShowing) {
