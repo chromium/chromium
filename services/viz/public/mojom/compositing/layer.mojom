@@ -24,6 +24,7 @@ import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // Some properties on the Layer are rarely set, and so are bundled
@@ -118,6 +119,9 @@ struct TileDisplayLayerExtra {
 
   // Will be set to true for PictureLayers that use nearest neighbor filtering.
   bool nearest_neighbor;
+
+  // The color usage of the layer's content.
+  gfx.mojom.ContentColorUsage content_color_usage;
 };
 
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added

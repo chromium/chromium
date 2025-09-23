@@ -925,6 +925,8 @@ void SerializeLayer(LayerImpl& layer,
       tile_display_extra->is_directly_composited_image =
           picture_layer.IsDirectlyCompositedImage();
       tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
+      tile_display_extra->content_color_usage =
+          picture_layer.GetContentColorUsage();
       wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
           std::move(tile_display_extra));
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,

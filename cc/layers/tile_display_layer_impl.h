@@ -170,6 +170,11 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
                              gfx::SizeF* resource_uv_size) const override;
   gfx::Rect GetDamageRect() const override;
   void ResetChangeTracking() override;
+  gfx::ContentColorUsage GetContentColorUsage() const override;
+
+  void SetContentColorUsage(gfx::ContentColorUsage content_color_usage) {
+    content_color_usage_ = content_color_usage;
+  }
 
   void RecordDamage(const gfx::Rect& damage_rect);
 
@@ -189,6 +194,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   bool is_backdrop_filter_mask_ = false;
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;
+  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.

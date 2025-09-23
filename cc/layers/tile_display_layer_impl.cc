@@ -384,6 +384,10 @@ void TileDisplayLayerImpl::ResetChangeTracking() {
   damage_rect_.SetRect(0, 0, 0, 0);
 }
 
+gfx::ContentColorUsage TileDisplayLayerImpl::GetContentColorUsage() const {
+  return content_color_usage_;
+}
+
 void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
   damage_rect_.Union(damage_rect);
 }
