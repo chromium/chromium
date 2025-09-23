@@ -346,6 +346,9 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_WebGLGreen
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColorBackground_TreesInViz [ Skip ]
 crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPasses_TreesInViz [ Skip ]
 
+# This test runs slow on DCHECK enabled Fuchsia builds, and need extra time to address.
+crbug.com/425745937 [ fuchsia web-engine-shell ] Pixel_ViewTransitionsCapture_TreesInViz [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
