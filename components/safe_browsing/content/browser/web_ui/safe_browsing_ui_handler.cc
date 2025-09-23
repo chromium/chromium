@@ -22,21 +22,21 @@ SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     : browser_context_(context), delegate_(std::move(delegate)) {}
 
 SafeBrowsingUIHandler::~SafeBrowsingUIHandler() {
-  WebUIInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
 }
 
 void SafeBrowsingUIHandler::OnJavascriptAllowed() {
   // We don't want to register the SafeBrowsingUIHandler with the
   // WebUIInfoSingleton at construction, since this can lead to
   // messages being sent to the renderer before it's ready. So register it here.
-  WebUIInfoSingleton::GetInstance()->RegisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->RegisterWebUIInstance(this);
 }
 
 void SafeBrowsingUIHandler::OnJavascriptDisallowed() {
   // In certain situations, Javascript can become disallowed before the
   // destructor is called (e.g. tab refresh/renderer crash). In these situation,
   // we want to stop receiving JS messages.
-  WebUIInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
+  WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
 }
 
 void SafeBrowsingUIHandler::GetExperiments(const base::Value::List& args) {
@@ -69,7 +69,8 @@ void SafeBrowsingUIHandler::GetCookie(const base::Value::List& args) {
   std::string callback_id = args[0].GetString();
 
   cookie_manager_remote_ =
-      WebUIInfoSingleton::GetInstance()->GetCookieManager(browser_context_);
+      WebUIContentInfoSingleton::GetInstance()->GetCookieManager(
+          browser_context_);
   cookie_manager_remote_->GetAllCookies(
       base::BindOnce(&SafeBrowsingUIHandler::OnGetCookie,
                      weak_factory_.GetWeakPtr(), std::move(callback_id)));
@@ -164,7 +165,8 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
 void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
     const base::Value::List& args) {
   const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
-      urls_checked = WebUIInfoSingleton::GetInstance()->download_urls_checked();
+      urls_checked =
+          WebUIContentInfoSingleton::GetInstance()->download_urls_checked();
 
   base::Value::List urls_checked_value;
   for (const auto& url_and_result : urls_checked) {
@@ -182,7 +184,7 @@ void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
 void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
     const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& cdrs =
-      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_download_requests_sent();
 
   base::Value::List cdrs_sent;
 
@@ -199,7 +201,8 @@ void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
 void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
     const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientDownloadResponse>>& cdrs =
-      WebUIInfoSingleton::GetInstance()->client_download_responses_received();
+      WebUIContentInfoSingleton::GetInstance()
+          ->client_download_responses_received();
 
   base::Value::List cdrs_received;
 
@@ -216,7 +219,7 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
 void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
     const base::Value::List& args) {
   const std::vector<web_ui::ClientPhishingRequestAndToken>& cprs =
-      WebUIInfoSingleton::GetInstance()->client_phishing_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_phishing_requests_sent();
 
   base::Value::List cprs_sent;
 
@@ -233,7 +236,8 @@ void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
 void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
     const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientPhishingResponse>>& cprs =
-      WebUIInfoSingleton::GetInstance()->client_phishing_responses_received();
+      WebUIContentInfoSingleton::GetInstance()
+          ->client_phishing_responses_received();
 
   base::Value::List cprs_received;
 
@@ -249,7 +253,7 @@ void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
 
 void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>>& reports =
-      WebUIInfoSingleton::GetInstance()->csbrrs_sent();
+      WebUIContentInfoSingleton::GetInstance()->csbrrs_sent();
 
   base::Value::List sent_reports;
 
@@ -265,7 +269,7 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetSentHitReports(const base::Value::List& args) {
   const std::vector<std::unique_ptr<HitReport>>& reports =
-      WebUIInfoSingleton::GetInstance()->hit_reports_sent();
+      WebUIContentInfoSingleton::GetInstance()->hit_reports_sent();
 
   base::Value::List sent_reports;
 
@@ -281,7 +285,7 @@ void SafeBrowsingUIHandler::GetSentHitReports(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
   const std::vector<sync_pb::UserEventSpecifics>& events =
-      WebUIInfoSingleton::GetInstance()->pg_event_log();
+      WebUIContentInfoSingleton::GetInstance()->pg_event_log();
 
   base::Value::List events_sent;
 
@@ -297,7 +301,7 @@ void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetSecurityEvents(const base::Value::List& args) {
   const std::vector<sync_pb::GaiaPasswordReuse>& events =
-      WebUIInfoSingleton::GetInstance()->security_event_log();
+      WebUIContentInfoSingleton::GetInstance()->security_event_log();
 
   base::Value::List events_sent;
 
@@ -313,7 +317,7 @@ void SafeBrowsingUIHandler::GetSecurityEvents(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetPGPings(const base::Value::List& args) {
   const std::vector<web_ui::LoginReputationClientRequestAndToken> requests =
-      WebUIInfoSingleton::GetInstance()->pg_pings();
+      WebUIContentInfoSingleton::GetInstance()->pg_pings();
 
   base::Value::List pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
@@ -332,7 +336,7 @@ void SafeBrowsingUIHandler::GetPGPings(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
   const std::map<int, LoginReputationClientResponse> responses =
-      WebUIInfoSingleton::GetInstance()->pg_responses();
+      WebUIContentInfoSingleton::GetInstance()->pg_responses();
 
   base::Value::List responses_sent;
   for (const auto& token_and_response : responses) {
@@ -351,7 +355,7 @@ void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetURTLookupPings(const base::Value::List& args) {
   const std::vector<web_ui::URTLookupRequest> requests =
-      WebUIInfoSingleton::GetInstance()->urt_lookup_pings();
+      WebUIContentInfoSingleton::GetInstance()->urt_lookup_pings();
 
   base::Value::List pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
@@ -371,7 +375,7 @@ void SafeBrowsingUIHandler::GetURTLookupPings(const base::Value::List& args) {
 void SafeBrowsingUIHandler::GetURTLookupResponses(
     const base::Value::List& args) {
   const std::map<int, RTLookupResponse> responses =
-      WebUIInfoSingleton::GetInstance()->urt_lookup_responses();
+      WebUIContentInfoSingleton::GetInstance()->urt_lookup_responses();
 
   base::Value::List responses_sent;
   for (const auto& token_and_response : responses) {
@@ -390,7 +394,7 @@ void SafeBrowsingUIHandler::GetURTLookupResponses(
 
 void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::Value::List& args) {
   const std::vector<web_ui::HPRTLookupRequest> requests =
-      WebUIInfoSingleton::GetInstance()->hprt_lookup_pings();
+      WebUIContentInfoSingleton::GetInstance()->hprt_lookup_pings();
 
   base::Value::List pings_sent;
   for (size_t request_index = 0; request_index < requests.size();
@@ -410,7 +414,7 @@ void SafeBrowsingUIHandler::GetHPRTLookupPings(const base::Value::List& args) {
 void SafeBrowsingUIHandler::GetHPRTLookupResponses(
     const base::Value::List& args) {
   const std::map<int, V5::SearchHashesResponse> responses =
-      WebUIInfoSingleton::GetInstance()->hprt_lookup_responses();
+      WebUIContentInfoSingleton::GetInstance()->hprt_lookup_responses();
 
   base::Value::List responses_sent;
   for (const auto& token_and_response : responses) {
@@ -432,7 +436,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
   const std::string& url_string = args[1].GetString();
 
   ReferrerChainProvider* provider =
-      WebUIInfoSingleton::GetInstance()->GetReferrerChainProvider(
+      WebUIContentInfoSingleton::GetInstance()->GetReferrerChainProvider(
           browser_context_);
 
   const std::string& callback_id = args[0].GetString();
@@ -463,7 +467,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
 void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   base::Value::Dict referring_app_value;
   internal::ReferringAppInfo info =
-      WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
+      WebUIContentInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());
   referring_app_value = web_ui::SerializeReferringAppInfo(info);
 
@@ -480,12 +484,12 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
 void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
   base::Value::List reporting_events;
   for (const auto& reporting_event :
-       WebUIInfoSingleton::GetInstance()->reporting_events()) {
+       WebUIContentInfoSingleton::GetInstance()->reporting_events()) {
     reporting_events.Append(reporting_event.Clone());
   }
 
   for (const auto& request_result_pair :
-       WebUIInfoSingleton::GetInstance()->upload_event_requests()) {
+       WebUIContentInfoSingleton::GetInstance()->upload_event_requests()) {
     reporting_events.Append(web_ui::SerializeUploadEventsRequest(
         request_result_pair.first, request_result_pair.second));
   }
@@ -498,7 +502,7 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
 
 void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
   const std::vector<std::pair<base::Time, std::string>>& log_messages =
-      WebUIInfoSingleton::GetInstance()->log_messages();
+      WebUIContentInfoSingleton::GetInstance()->log_messages();
 
   base::Value::List messages_received;
   for (const auto& message : log_messages) {
@@ -516,7 +520,7 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
   base::Value::List pings_sent;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
   for (const auto& token_and_data :
-       WebUIInfoSingleton::GetInstance()->deep_scan_requests()) {
+       WebUIContentInfoSingleton::GetInstance()->deep_scan_requests()) {
     pings_sent.Append(SerializeDeepScanDebugData(token_and_data.first,
                                                  token_and_data.second));
   }
@@ -535,7 +539,7 @@ base::Value::Dict SafeBrowsingUIHandler::GetFormattedTailoredVerdictOverride() {
   const char kStatusKey[] = "status";
   const char kOverrideValueKey[] = "override_value";
   const web_ui::TailoredVerdictOverrideData& override_data =
-      WebUIInfoSingleton::GetInstance()->tailored_verdict_override();
+      WebUIContentInfoSingleton::GetInstance()->tailored_verdict_override();
   if (!override_data.override_value) {
     override_dict.Set(kStatusKey, base::Value("No override set."));
   } else {
@@ -574,8 +578,8 @@ void SafeBrowsingUIHandler::SetTailoredVerdictOverride(
         ClientDownloadResponse::TailoredVerdict::SUSPICIOUS_ARCHIVE);
   }
 
-  WebUIInfoSingleton::GetInstance()->SetTailoredVerdictOverride(std::move(tv),
-                                                                this);
+  WebUIContentInfoSingleton::GetInstance()->SetTailoredVerdictOverride(
+      std::move(tv), this);
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
         // !BUILDFLAG(IS_ANDROID)
 
@@ -590,7 +594,7 @@ void SafeBrowsingUIHandler::GetTailoredVerdictOverride(
 void SafeBrowsingUIHandler::ClearTailoredVerdictOverride(
     const base::Value::List& args) {
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
-  WebUIInfoSingleton::GetInstance()->ClearTailoredVerdictOverride();
+  WebUIContentInfoSingleton::GetInstance()->ClearTailoredVerdictOverride();
 #endif
 
   ResolveTailoredVerdictOverrideCallback(args[0].GetString());

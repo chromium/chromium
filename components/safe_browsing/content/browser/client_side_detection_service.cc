@@ -29,7 +29,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -359,9 +359,10 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   // dropped and the |request| object deleted.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingRequestsSent,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(request), access_token));
+      base::BindOnce(
+          &WebUIContentInfoSingleton::AddToClientPhishingRequestsSent,
+          base::Unretained(WebUIContentInfoSingleton::GetInstance()),
+          std::move(request), access_token));
 }
 
 void ClientSideDetectionService::HandlePhishingVerdict(
@@ -390,9 +391,10 @@ void ClientSideDetectionService::HandlePhishingVerdict(
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToClientPhishingResponsesReceived,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::make_unique<ClientPhishingResponse>(response)));
+      base::BindOnce(
+          &WebUIContentInfoSingleton::AddToClientPhishingResponsesReceived,
+          base::Unretained(WebUIContentInfoSingleton::GetInstance()),
+          std::make_unique<ClientPhishingResponse>(response)));
 
   if (!info->callback.is_null()) {
     if (response_code.has_value() && response_code.value() == 0) {

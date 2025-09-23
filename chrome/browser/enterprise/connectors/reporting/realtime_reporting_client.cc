@@ -33,7 +33,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -446,7 +446,7 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
   base::Value::Dict error_details = ReportErrorDetails(upload_result);
   event_wrapper.Merge(std::move(error_details));
 
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()->AddToReportingEvents(
       std::move(event_wrapper));
 
   if (upload_result.IsSuccess()) {
@@ -474,7 +474,7 @@ void RealtimeReportingClient::UploadCallback(
     EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()->AddToReportingEvents(
       std::move(request), ReportErrorDetails(upload_result));
 
   if (upload_result.IsSuccess()) {
@@ -527,7 +527,7 @@ void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
                   "details below in error_message and error_code.");
 
   error_value.Set("status", client->last_dm_status());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()->AddToReportingEvents(
       error_value);
 
   // This is the status set when the server returned 403, which is what the

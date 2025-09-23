@@ -24,9 +24,9 @@ class SafeBrowsingUI : public content::WebUIController {
   ~SafeBrowsingUI() override;
 };
 
-// Used for streaming messages to the WebUIInfoSingleton. Collects streamed
-// messages, then sends them to the WebUIInfoSingleton when destroyed. Intended
-// to be used in CRSBLOG macro.
+// Used for streaming messages to the WebUIContentInfoSingleton. Collects
+// streamed messages, then sends them to the WebUIContentInfoSingleton when
+// destroyed. Intended to be used in CRSBLOG macro.
 class CrSBLogMessage {
  public:
   CrSBLogMessage();
@@ -49,10 +49,10 @@ class CrSBLogVoidify {
   void operator&(std::ostream&) {}
 };
 
-#define CRSBLOG                                         \
-  (!::safe_browsing::WebUIInfoSingleton::HasListener()) \
-      ? static_cast<void>(0)                            \
-      : ::safe_browsing::CrSBLogVoidify() &             \
+#define CRSBLOG                                                \
+  (!::safe_browsing::WebUIContentInfoSingleton::HasListener()) \
+      ? static_cast<void>(0)                                   \
+      : ::safe_browsing::CrSBLogVoidify() &                    \
             ::safe_browsing::CrSBLogMessage().stream()
 
 }  // namespace safe_browsing

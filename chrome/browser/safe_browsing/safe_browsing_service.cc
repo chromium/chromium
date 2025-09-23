@@ -55,7 +55,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
@@ -218,7 +218,7 @@ void SafeBrowsingServiceImpl::Initialize() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(result);
 
-  WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(this);
+  WebUIContentInfoSingleton::GetInstance()->set_safe_browsing_service(this);
 
   ui_manager_ = CreateUIManager();
 
@@ -260,7 +260,7 @@ void SafeBrowsingServiceImpl::ShutDown() {
 
   services_delegate_->ShutdownServices();
 
-  WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(nullptr);
+  WebUIContentInfoSingleton::GetInstance()->set_safe_browsing_service(nullptr);
 
   proxy_config_monitor_.reset();
 }

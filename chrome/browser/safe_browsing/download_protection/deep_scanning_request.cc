@@ -38,7 +38,7 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -278,13 +278,15 @@ void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,
                           BinaryUploadService::Result result) {
   const std::string result_info =
       safe_browsing::BinaryUploadService::ResultToString(result);
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "",
-      /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
-      /*upload_url*/ "", request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"", result_info,
-      enterprise_connectors::ContentAnalysisResponse());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanRequests(
+          request->per_profile_request(), /*access_token*/ "",
+          /*upload_info*/ base::StrCat({"Skipped - ", result_info}),
+          /*upload_url*/ "", request->content_analysis_request());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanResponses(
+          /*token=*/"", result_info,
+          enterprise_connectors::ContentAnalysisResponse());
 }
 
 }  // namespace

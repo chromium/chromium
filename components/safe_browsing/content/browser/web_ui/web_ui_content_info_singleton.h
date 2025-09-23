@@ -11,8 +11,8 @@
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_INFO_SINGLETON_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_INFO_SINGLETON_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_CONTENT_INFO_SINGLETON_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_CONTENT_INFO_SINGLETON_H_
 
 namespace content {
 class BrowserContext;
@@ -27,17 +27,19 @@ class ReferrerChainProvider;
 class SafeBrowsingServiceInterface;
 class SafeBrowsingUIHandler;
 
-class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
-                           public PingManager::WebUIDelegate,
-                           public HashRealTimeService::WebUIDelegate {
+class WebUIContentInfoSingleton
+    : public RealTimeUrlLookupServiceBase::WebUIDelegate,
+      public PingManager::WebUIDelegate,
+      public HashRealTimeService::WebUIDelegate {
  public:
-  WebUIInfoSingleton();
-  ~WebUIInfoSingleton() override;
+  WebUIContentInfoSingleton();
+  ~WebUIContentInfoSingleton() override;
 
-  static WebUIInfoSingleton* GetInstance();
+  static WebUIContentInfoSingleton* GetInstance();
 
-  WebUIInfoSingleton(const WebUIInfoSingleton&) = delete;
-  WebUIInfoSingleton& operator=(const WebUIInfoSingleton&) = delete;
+  WebUIContentInfoSingleton(const WebUIContentInfoSingleton&) = delete;
+  WebUIContentInfoSingleton& operator=(const WebUIContentInfoSingleton&) =
+      delete;
 
   // Returns true when there is a listening chrome://safe-browsing tab.
   static bool HasListener();
@@ -155,7 +157,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void ClearLogMessages();
 
   // Notify listeners of changes to the log messages. Static to avoid this being
-  // called after the destruction of the WebUIInfoSingleton
+  // called after the destruction of the WebUIContentInfoSingleton
   static void NotifyLogMessageListeners(const base::Time& timestamp,
                                         const std::string& message);
 
@@ -487,4 +489,4 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 };
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_INFO_SINGLETON_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_WEB_UI_CONTENT_INFO_SINGLETON_H_

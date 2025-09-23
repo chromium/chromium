@@ -32,9 +32,10 @@ class SafeBrowsingUITest : public testing::Test {
     SafeBrowsingUIHandler* handler = handler_unique.get();
     handler->SetWebUIForTesting(&web_ui_);
     // Calling AllowJavascript will register the handler as a web UI instance
-    // for WebUIInfoSingleton::GetInstance(). We do this instead of registering
-    // the instance directly because otherwise, the first SafeBrowsingUIHandler
-    // call to AllowJavascript will re-register the instance.
+    // for WebUIContentInfoSingleton::GetInstance(). We do this instead of
+    // registering the instance directly because otherwise, the first
+    // SafeBrowsingUIHandler call to AllowJavascript will re-register the
+    // instance.
     handler->AllowJavascriptForTesting();
 
     web_ui_.AddMessageHandler(std::move(handler_unique));
@@ -42,7 +43,7 @@ class SafeBrowsingUITest : public testing::Test {
   }
 
   void UnregisterHandler(SafeBrowsingUIHandler* handler) {
-    WebUIInfoSingleton::GetInstance()->UnregisterWebUIInstance(handler);
+    WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(handler);
   }
 
  protected:
@@ -81,7 +82,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   std::string ohttp_key = "testing_ohttp_key";
   // Add request to pings.
   std::optional<int> token =
-      WebUIInfoSingleton::GetInstance()->AddToHPRTLookupPings(
+      WebUIContentInfoSingleton::GetInstance()->AddToHPRTLookupPings(
           inner_request.get(), relay_url_spec, ohttp_key);
   // Validate request call_data.
   ASSERT_TRUE(token.has_value());
@@ -127,8 +128,8 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   full_hash_detail_3->add_attributes(
       ::safe_browsing::V5::ThreatAttribute::FRAME_ONLY);
   // Add response to pings.
-  WebUIInfoSingleton::GetInstance()->AddToHPRTLookupResponses(token.value(),
-                                                              response.get());
+  WebUIContentInfoSingleton::GetInstance()->AddToHPRTLookupResponses(
+      token.value(), response.get());
   // Validate response call_data.
   ASSERT_EQ(2u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[1]->arg1()->GetString(),

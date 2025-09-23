@@ -14,7 +14,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -69,7 +69,7 @@ ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(
           &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile),
-      safe_browsing::WebUIInfoSingleton::GetInstance(),
+      safe_browsing::WebUIContentInfoSingleton::GetInstance(),
       content::GetUIThreadTaskRunner({}),
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile),

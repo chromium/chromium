@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
@@ -151,7 +151,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void SetWebUIForTesting(content::WebUI* web_ui);
 
  private:
-  friend class WebUIInfoSingleton;
+  friend class WebUIContentInfoSingleton;
 
   // Called when a new download URL is checked while one or more WebUI tabs are
   // open.

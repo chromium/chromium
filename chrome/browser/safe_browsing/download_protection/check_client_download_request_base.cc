@@ -21,7 +21,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -535,9 +535,10 @@ void CheckClientDownloadRequestBase::SendRequest() {
   // dropped and the |client_download_request_| object deleted.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebUIInfoSingleton::AddToClientDownloadRequestsSent,
-                     base::Unretained(WebUIInfoSingleton::GetInstance()),
-                     std::move(client_download_request_)));
+      base::BindOnce(
+          &WebUIContentInfoSingleton::AddToClientDownloadRequestsSent,
+          base::Unretained(WebUIContentInfoSingleton::GetInstance()),
+          std::move(client_download_request_)));
 }
 
 void CheckClientDownloadRequestBase::OnURLLoaderComplete(
@@ -617,8 +618,8 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &WebUIInfoSingleton::AddToClientDownloadResponsesReceived,
-            base::Unretained(WebUIInfoSingleton::GetInstance()),
+            &WebUIContentInfoSingleton::AddToClientDownloadResponsesReceived,
+            base::Unretained(WebUIContentInfoSingleton::GetInstance()),
             std::make_unique<ClientDownloadResponse>(response)));
 
     GetAdditionalPromptResult(response, &result, &reason, &token);
@@ -627,7 +628,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
       SetDownloadProtectionData(
           token, response.verdict(),
 #if !BUILDFLAG(IS_ANDROID)
-          WebUIInfoSingleton::GetInstance()
+          WebUIContentInfoSingleton::GetInstance()
               ->tailored_verdict_override()
               .override_value.value_or(response.tailored_verdict())
 #else

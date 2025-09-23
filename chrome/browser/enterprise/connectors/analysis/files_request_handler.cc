@@ -22,7 +22,7 @@
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 
 namespace enterprise_connectors {
 
@@ -285,12 +285,16 @@ void FilesRequestHandler::FinishRequestEarly(
     safe_browsing::BinaryUploadService::Result result) {
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "", /*upload_info*/ "",
-      /*upload_url=*/"", request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
-      enterprise_connectors::ContentAnalysisResponse());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanRequests(request->per_profile_request(),
+                              /*access_token*/ "", /*upload_info*/ "",
+                              /*upload_url=*/"",
+                              request->content_analysis_request());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanResponses(
+          /*token=*/"",
+          safe_browsing::BinaryUploadService::ResultToString(result),
+          enterprise_connectors::ContentAnalysisResponse());
 
   request->FinishRequest(result,
                          enterprise_connectors::ContentAnalysisResponse());

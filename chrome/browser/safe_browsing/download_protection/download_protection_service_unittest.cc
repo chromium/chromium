@@ -87,7 +87,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -4209,7 +4209,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
   identity_test_env_adaptor_->identity_test_env()
       ->SetAutomaticIssueOfAccessTokens(/*grant=*/true);
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   {
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
@@ -4253,7 +4253,8 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     run_loop.Run();
 
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-        WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+        WebUIContentInfoSingleton::GetInstance()
+            ->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
   }
 
@@ -4300,11 +4301,12 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     run_loop.Run();
 
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-        WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+        WebUIContentInfoSingleton::GetInstance()
+            ->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 2u);
   }
 
-  WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 
 TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
@@ -4314,7 +4316,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
       ->SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   {
     NiceMockDownloadItem item;
@@ -4364,7 +4366,8 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
     run_loop.Run();
 
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-        WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+        WebUIContentInfoSingleton::GetInstance()
+            ->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
     identity_test_env_adaptor_->identity_test_env()
         ->SetCallbackForNextAccessTokenRequest(base::NullCallback());
@@ -4414,18 +4417,19 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
     run_loop.Run();
 
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-        WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+        WebUIContentInfoSingleton::GetInstance()
+            ->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 2u);
   }
 
-  WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 #endif
 
 TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   sb_service_->CreateTestURLLoaderFactoryForProfile(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -4475,11 +4479,12 @@ TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
     run_loop.Run();
 
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-        WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+        WebUIContentInfoSingleton::GetInstance()
+            ->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
   }
 
-  WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 
 TEST_F(DownloadProtectionServiceTest,

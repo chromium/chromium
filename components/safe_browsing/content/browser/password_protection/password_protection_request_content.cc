@@ -12,7 +12,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -168,13 +168,14 @@ void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
 
 void PasswordProtectionRequestContent::MaybeAddPingToWebUI(
     const std::string& oauth_token) {
-  web_ui_token_ = WebUIInfoSingleton::GetInstance()->AddToPGPings(
+  web_ui_token_ = WebUIContentInfoSingleton::GetInstance()->AddToPGPings(
       *request_proto_, oauth_token);
 }
 
 void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
     const LoginReputationClientResponse& response) {
-  WebUIInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_, response);
+  WebUIContentInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_,
+                                                             response);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

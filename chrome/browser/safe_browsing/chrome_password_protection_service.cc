@@ -65,7 +65,7 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -711,8 +711,9 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIInfoSingleton::HasListener())
+  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
     return;
+  }
 
   syncer::UserEventService* user_event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(profile_);
@@ -747,7 +748,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(
       break;
   }
 
-  WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
+  WebUIContentInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
   user_event_service->RecordUserEvent(std::move(specifics));
 }
 
@@ -756,8 +757,9 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
     PasswordReuseDialogInteraction::InteractionResult interaction_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIInfoSingleton::HasListener())
+  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
     return;
+  }
 
   syncer::UserEventService* user_event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(profile_);
@@ -774,7 +776,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
           ->mutable_dialog_interaction();
   dialog_interaction->set_interaction_result(interaction_result);
 
-  WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
+  WebUIContentInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
   user_event_service->RecordUserEvent(std::move(specifics));
 }
 
@@ -783,8 +785,9 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupResult(
     PasswordReuseLookup::LookupResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIInfoSingleton::HasListener())
+  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
     return;
+  }
 
   syncer::UserEventService* user_event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(profile_);
@@ -799,7 +802,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupResult(
   auto* const reuse_lookup =
       specifics->mutable_gaia_password_reuse_event()->mutable_reuse_lookup();
   reuse_lookup->set_lookup_result(result);
-  WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
+  WebUIContentInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
   user_event_service->RecordUserEvent(std::move(specifics));
 }
 
@@ -812,8 +815,9 @@ void ChromePasswordProtectionService::
         const std::string& verdict_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsIncognito() && !WebUIInfoSingleton::HasListener())
+  if (IsIncognito() && !WebUIContentInfoSingleton::HasListener()) {
     return;
+  }
 
   PasswordReuseLookup reuse_lookup;
   reuse_lookup.set_lookup_result(result);
@@ -842,7 +846,7 @@ void ChromePasswordProtectionService::
                          WarningAction::CHANGE_PASSWORD,
                          GetPasswordProtectionReusedPasswordAccountType(
                              password_type, username_for_last_shown_warning()));
-        WebUIInfoSingleton::GetInstance()->AddToSecurityEvents(
+        WebUIContentInfoSingleton::GetInstance()->AddToSecurityEvents(
             gaia_password_reuse_event);
         SecurityEventRecorderFactory::GetForProfile(profile_)
             ->RecordGaiaPasswordReuse(gaia_password_reuse_event);
@@ -861,7 +865,7 @@ void ChromePasswordProtectionService::
 
     *(specifics->mutable_gaia_password_reuse_event())->mutable_reuse_lookup() =
         reuse_lookup;
-    WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
+    WebUIContentInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
     user_event_service->RecordUserEvent(std::move(specifics));
   }
 }
@@ -1444,7 +1448,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordCapture(bool did_log_in) {
       did_log_in ? GaiaPasswordCaptured::USER_LOGGED_IN
                  : GaiaPasswordCaptured::EXPIRED_28D_TIMER);
 
-  WebUIInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
+  WebUIContentInfoSingleton::GetInstance()->AddToPGEvents(*specifics);
   user_event_service->RecordUserEvent(std::move(specifics));
 
   // Set a timer to log it again in 24-28 days. Spread it to avoid hammering the

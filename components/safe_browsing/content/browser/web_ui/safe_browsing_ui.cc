@@ -46,7 +46,7 @@ SafeBrowsingUI::~SafeBrowsingUI() = default;
 CrSBLogMessage::CrSBLogMessage() = default;
 
 CrSBLogMessage::~CrSBLogMessage() {
-  WebUIInfoSingleton::GetInstance()->LogMessage(stream_.str());
+  WebUIContentInfoSingleton::GetInstance()->LogMessage(stream_.str());
   DLOG(WARNING) << stream_.str();
 }
 

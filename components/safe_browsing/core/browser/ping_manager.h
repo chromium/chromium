@@ -246,9 +246,9 @@ class PingManager : public KeyedService {
   // based on whether they're a signed-in ESB user.
   base::RepeatingCallback<bool()> get_should_fetch_access_token_;
 
-  // WebUIInfoSingleton extends PingManager::WebUIDelegate to enable the
-  // workaround of calling methods in WebUIInfoSingleton without /core having a
-  // dependency on /content.
+  // WebUIContentInfoSingleton extends PingManager::WebUIDelegate to enable the
+  // workaround of calling methods in WebUIContentInfoSingleton without /core
+  // having a dependency on /content.
   raw_ptr<WebUIDelegate> webui_delegate_;
 
   // The task runner for the UI thread.

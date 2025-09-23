@@ -10,7 +10,7 @@
 #include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#include "components/safe_browsing/content/browser/web_ui/web_ui_info_singleton.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -56,7 +56,7 @@ HashRealTimeServiceFactory::BuildServiceInstanceForBrowserContext(
                           profile),
       VerdictCacheManagerFactory::GetForProfile(profile),
       OhttpKeyServiceFactory::GetForProfile(profile),
-      WebUIInfoSingleton::GetInstance());
+      WebUIContentInfoSingleton::GetInstance());
 }
 
 // static
