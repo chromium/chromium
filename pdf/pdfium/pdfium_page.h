@@ -311,6 +311,16 @@ class PDFiumPage {
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageOverlappingTest, CountPartialOverlaps);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageTextFieldTest, PopulateTextFields);
 
+  // Key: Marked content id for the text element as specified in the struct
+  //      tree.
+  // Value: A list of indices in the `text_runs_` vector.
+  using MarkedContentIdToTextRunInfoMap = std::map<int, std::vector<size_t>>;
+
+  // Key: Marked content id for the image element as specified in the struct
+  //      tree.
+  // Value: Index of the image in the `images_` vector.
+  using MarkedContentIdToImageMap = std::map<int, size_t>;
+
   struct Link {
     Link();
     Link(const Link& that);
@@ -455,17 +465,8 @@ class PDFiumPage {
   // Calculates the set of character indices on which text runs need to be
   // broken for page objects such as links and images.
   void CalculatePageObjectTextRunBreaks();
-
-  // Key    :  Marked content id for the text element as specified in the struct
-  //           tree.
-  // Value:    A list of pointers to the associated text runs.
-  using MarkedContentIdToTextRunInfoMap =
-      std::map<int, std::vector<raw_ptr<AccessibilityTextRunInfo>>>;
-
-  // Key    :  Marked content id for the image element as specified in the
-  // struct tree.
-  // Value  :  Index of the image in the `images_` vector.
-  using MarkedContentIdToImageMap = std::map<int, size_t>;
+  // Calculate and caches all text runs and character information on the page.
+  void CalculateTextRuns();
 
   // Traverses the entire struct tree of the page recursively and extracts the
   // text run type or the alt text from struct tree elements corresponding to
@@ -476,13 +477,12 @@ class PDFiumPage {
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // text run type or the alt text from struct elements corresponding to the
-  // marked content IDs present in `marked_content_id_text_run_info_map` or
+  // marked content IDs present in `marked_content_id_to_text_runs_map_` or
   // `marked_content_id_image_map_` respectively. Uses `visited_elements` to
   // guard against malformed struct trees.
   void PopulateTextRunTypeAndImageAltTextForStructElement(
       FPDF_STRUCTELEMENT current_element,
-      std::set<FPDF_STRUCTELEMENT>& visited_elements,
-      MarkedContentIdToTextRunInfoMap& marked_content_id_text_run_info_map);
+      std::set<FPDF_STRUCTELEMENT>& visited_elements);
 
   bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
                                    FormField* form_field);
@@ -497,6 +497,9 @@ class PDFiumPage {
   uint32_t index_;
   int preventing_unload_count_ = 0;
   gfx::Rect rect_;
+  bool calculated_text_runs_ = false;
+  MarkedContentIdToTextRunInfoMap marked_content_id_to_text_runs_map_;
+  std::vector<AccessibilityTextRunInfo> text_runs_;
   bool calculated_links_ = false;
   std::vector<Link> links_;
   bool calculated_images_ = false;

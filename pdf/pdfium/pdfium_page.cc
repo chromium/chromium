@@ -1253,6 +1253,36 @@ PDFiumPage::Area PDFiumPage::GetURITarget(FPDF_ACTION uri_action,
   return WEBLINK_AREA;
 }
 
+void PDFiumPage::CalculateTextRuns() {
+  if (calculated_text_runs_) {
+    return;
+  }
+  calculated_text_runs_ = true;
+  const int raw_char_count = GetCharCount();
+  // Treat a char count of -1 (error) as 0 (an empty page), since
+  // other pages might have valid content.
+  const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
+  uint32_t char_index = 0;
+  while (char_index < char_count) {
+    AccessibilityTextRunInfo text_run = GetTextRunInfo(char_index).value();
+    CHECK_LE(char_index + text_run.len, char_count);
+    text_runs_.push_back(text_run);
+    if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
+      FPDF_TEXTPAGE text_page = GetTextPage();
+      FPDF_PAGEOBJECT text_object =
+          FPDFText_GetTextObject(text_page, char_index);
+      int marked_content_id = FPDFPageObj_GetMarkedContentID(text_object);
+      if (marked_content_id >= 0) {
+        auto [iter, _] = marked_content_id_to_text_runs_map_.emplace(
+            marked_content_id, std::vector<size_t>());
+        CHECK_GT(text_runs_.size(), 0u);
+        iter->second.push_back(text_runs_.size() - 1);
+      }
+    }
+    char_index += text_run.len;
+  }
+}
+
 int PDFiumPage::GetLink(int char_index, LinkTarget* target) {
   if (!available_)
     return -1;
@@ -1441,6 +1471,7 @@ void PDFiumPage::CalculateImages() {
 
 void PDFiumPage::PopulateTextRunTypeAndImageAltText(
     std::vector<AccessibilityTextRunInfo>& text_runs) {
+  CalculateTextRuns();
   CalculateImages();
 
   ScopedFPDFStructTree struct_tree(FPDF_StructTree_GetForPage(GetPage()));
@@ -1448,27 +1479,7 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltText(
     return;
   }
 
-  // TODO(crbug.com/40707542): Consolidate `Accessibility"TextRunInfo` building
-  // logic into this class and remove the following block.
-  MarkedContentIdToTextRunInfoMap marked_content_id_text_run_info_map;
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
-    FPDF_TEXTPAGE text_page = GetTextPage();
-    uint32_t char_index = 0;
-    for (auto& text_run : text_runs) {
-      FPDF_PAGEOBJECT text_object =
-          FPDFText_GetTextObject(text_page, char_index);
-      int marked_content_id = FPDFPageObj_GetMarkedContentID(text_object);
-      if (marked_content_id == -1) {
-        continue;
-      }
-      auto [iter, _] = marked_content_id_text_run_info_map.emplace(
-          marked_content_id, std::vector<raw_ptr<AccessibilityTextRunInfo>>());
-      iter->second.push_back(&text_run);
-      char_index += text_run.len;
-    }
-  }
-
-  if (marked_content_id_text_run_info_map.empty() &&
+  if (marked_content_id_to_text_runs_map_.empty() &&
       marked_content_id_image_map_.empty()) {
     return;
   }
@@ -1478,15 +1489,20 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltText(
   for (int i = 0; i < tree_children_count; ++i) {
     FPDF_STRUCTELEMENT current_element =
         FPDF_StructTree_GetChildAtIndex(struct_tree.get(), i);
-    PopulateTextRunTypeAndImageAltTextForStructElement(
-        current_element, visited_elements, marked_content_id_text_run_info_map);
+    PopulateTextRunTypeAndImageAltTextForStructElement(current_element,
+                                                       visited_elements);
+  }
+
+  // TODO(crbug.com/40707542): Remove this once we use text_runs_ directly.
+  text_runs.resize(text_runs_.size());
+  for (size_t i = 0; i < text_runs.size(); ++i) {
+    text_runs[i].tag_type = text_runs_[i].tag_type;
   }
 }
 
 void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
     FPDF_STRUCTELEMENT current_element,
-    std::set<FPDF_STRUCTELEMENT>& visited_elements,
-    MarkedContentIdToTextRunInfoMap& marked_content_id_text_run_info_map) {
+    std::set<FPDF_STRUCTELEMENT>& visited_elements) {
   if (!current_element) {
     return;
   }
@@ -1504,17 +1520,17 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
   if (marked_content_id >= 0) {
     if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
       auto text_runs_iter =
-          marked_content_id_text_run_info_map.find(marked_content_id);
-      if (text_runs_iter != marked_content_id_text_run_info_map.end()) {
-        std::vector<raw_ptr<AccessibilityTextRunInfo>>& text_runs =
-            text_runs_iter->second;
+          marked_content_id_to_text_runs_map_.find(marked_content_id);
+      if (text_runs_iter != marked_content_id_to_text_runs_map_.end()) {
+        const std::vector<size_t>& text_run_indices = text_runs_iter->second;
         const std::string tag_type =
             base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
                 base::BindRepeating(&FPDF_StructElement_GetType,
                                     current_element),
                 /*check_expected_size=*/true));
-        for (raw_ptr<AccessibilityTextRunInfo>& text_run : text_runs) {
-          text_run->tag_type = tag_type;
+        for (size_t text_run_index : text_run_indices) {
+          CHECK_LT(text_run_index, text_runs_.size());
+          text_runs_[text_run_index].tag_type = tag_type;
         }
       }
     }
@@ -1534,8 +1550,7 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
   for (int i = 0; i < children_count; ++i) {
     FPDF_STRUCTELEMENT child =
         FPDF_StructElement_GetChildAtIndex(current_element, i);
-    PopulateTextRunTypeAndImageAltTextForStructElement(
-        child, visited_elements, marked_content_id_text_run_info_map);
+    PopulateTextRunTypeAndImageAltTextForStructElement(child, visited_elements);
   }
 }
 
