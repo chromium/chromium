@@ -265,8 +265,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // CanvasResourceProviderSharedImage overrides these methods as part of
   // implementing resource recycling.
-  virtual void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&&) {}
   virtual void SetResourceRecyclingEnabled(bool) {}
   virtual void ClearUnusedResources() {}
 
@@ -575,7 +573,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void ClearUnusedResources() override { unused_resources_.clear(); }
   bool IsSingleBuffered() const override;
   void OnResourceRefReturned(
-      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+      scoped_refptr<CanvasResourceSharedImage>&& resource);
   void OnDestroyResource() override { --num_inflight_resources_; }
 
  protected:
