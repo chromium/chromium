@@ -217,14 +217,6 @@ class BrowserWidget : public views::Widget,
 #if BUILDFLAG(IS_LINUX)
   bool tiled_ = false;
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Store the number of virtual desks that currently exist and if the window
-  // state is float state type. Used to determine  whether the system menu
-  // should be reset.
-  std::optional<int> num_desks_;
-  std::optional<bool> is_float_state_type_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_WIDGET_H_

@@ -27,7 +27,7 @@ class SimpleMenuModel;
 // model.
 class SystemMenuModelBuilder {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwitchTabToSideElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleVerticalTabsElementId);
   SystemMenuModelBuilder(ui::AcceleratorProvider* provider, Browser* browser);
 
   SystemMenuModelBuilder(const SystemMenuModelBuilder&) = delete;

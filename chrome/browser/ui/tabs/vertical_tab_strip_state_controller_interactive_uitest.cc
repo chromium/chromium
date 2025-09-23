@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -44,6 +45,17 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  bool SystemMenuContainsStringId(int message_id) {
+    ui::MenuModel* menu_model =
+        browser()->GetBrowserView().browser_widget()->GetSystemMenuModel();
+    for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
+      if (l10n_util::GetStringUTF16(message_id) == menu_model->GetLabelAt(i)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -63,13 +75,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       ->vertical_tab_strip_state_controller()
       ->SetVerticalTabsEnabled(false);
 
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
+
   RunTestSequence(
       WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       MoveMouseTo(kTabStripFrameGrabHandleElementId),
       MayInvolveNativeContextMenu(ClickMouse(ui_controls::RIGHT)),
-      SelectMenuItem(SystemMenuModelBuilder::kSwitchTabToSideElementId),
+      WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+      SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
       WaitForShow(kVerticalTabStripRegionElementId));
+
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
 }
 
 }  // namespace base::test

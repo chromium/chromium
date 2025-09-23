@@ -4876,6 +4876,17 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
   if (ShouldDrawTabStrip()) {
+    if (tabs::AreVerticalTabsEnabled()) {
+      // See if the mouse pointer is within the bounds of the
+      // VerticalTabStripRegionView.
+      // TODO(crbug.com/446182346): Handle mouse pointer logic within the
+      // VerticalTabStripRegionView
+      if (vertical_tab_strip_container_->bounds().Contains(
+              point_in_browser_view_coords)) {
+        return HTCAPTION;
+      }
+    }
+
     // See if the mouse pointer is within the bounds of the TabStripRegionView.
     gfx::Point test_point(point);
     if (ConvertedHitTest(parent(), tab_strip_region_view_, &test_point)) {

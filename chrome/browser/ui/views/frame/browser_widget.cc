@@ -512,38 +512,11 @@ bool BrowserWidget::IsMenuRunnerRunningForTesting() const {
 ui::MenuModel* BrowserWidget::GetSystemMenuModel() {
   // TODO(b/271137301): Refactor this class to remove chromeos specific code to
   // subclasses.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1) {
-    // In Multi user mode, the number of users as well as the order of users
-    // can change. Coming here we have more than one user and since the menu
-    // model contains the user information, it must get updated to show any
-    // changes happened since the last invocation.
-    menu_model_builder_.reset();
-  }
-
-  auto* desks_helper = chromeos::DesksHelper::Get(GetNativeWindow());
-  int current_num_desks = desks_helper ? desks_helper->GetNumberOfDesks() : -1;
-  if (current_num_desks != num_desks_) {
-    // Since the number of desks can change, the model must update to show any
-    // changes happened since the last invocation.
-    menu_model_builder_.reset();
-    num_desks_ = current_num_desks;
-  }
-
-  bool is_float_state_type =
-      GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
-      chromeos::WindowStateType::kFloated;
-  if (is_float_state_type != is_float_state_type_) {
-    menu_model_builder_.reset();
-    is_float_state_type_ = is_float_state_type;
-  }
-#endif
   if (!menu_model_builder_.get()) {
     menu_model_builder_ = std::make_unique<SystemMenuModelBuilder>(
         browser_view_, browser_view_->browser());
-    menu_model_builder_->Init();
   }
+  menu_model_builder_->Init();
   return menu_model_builder_->menu_model();
 }
 

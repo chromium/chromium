@@ -49,7 +49,7 @@
 #endif
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemMenuModelBuilder,
-                                      kSwitchTabToSideElementId);
+                                      kToggleVerticalTabsElementId);
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
@@ -123,7 +123,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
                                  IDS_SWITCH_TO_VERTICAL_TAB);
     }
     model->SetElementIdentifierAt(model->GetItemCount() - 1,
-                                  kSwitchTabToSideElementId);
+                                  kToggleVerticalTabsElementId);
   }
 
   if (chrome::CanOpenTaskManager()) {
