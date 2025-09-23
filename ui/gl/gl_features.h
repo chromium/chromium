@@ -65,6 +65,8 @@ GL_EXPORT bool IsSwiftShaderAllowed(const base::CommandLine* command_line);
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
 #endif
 
+GL_EXPORT bool IsWARPAllowedByFeature();
+
 // Check if any form of software WebGL fallback is available
 GL_EXPORT bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line);
 
