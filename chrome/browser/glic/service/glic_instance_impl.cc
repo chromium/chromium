@@ -43,7 +43,7 @@ GlicInstanceImpl::GlicInstanceImpl(
     : profile_(profile),
       attachment_delegate_(attachment_delegate),
       id_(instance_id),
-      host_(std::make_unique<Host>(profile_, this, this)),
+      host_(profile_, this, this),
       sharing_manager_(
           std::make_unique<GlicEmptyFocusedTabManager>(),
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
@@ -179,7 +179,7 @@ bool GlicInstanceImpl::IsOrphaned() const {
 }
 
 Host& GlicInstanceImpl::host() {
-  return *host_;
+  return host_;
 }
 
 const InstanceId& GlicInstanceImpl::id() const {
@@ -278,7 +278,7 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   active_embedder_key_.reset();
   // Avoids use-after-free bugs. This is a temporary fix until swapping
   // delegates is properly supported (crbug.com/446219126).
-  host_->Initialize(it->second.embedder.get()->GetHostDelegate());
+  host_.Initialize(it->second.embedder.get()->GetHostDelegate());
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
@@ -312,16 +312,16 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
     return;
   }
 
-  host_->Initialize(delegate);
+  host_.Initialize(delegate);
 
   // Create the WebContents if it's not already created.
-  host_->CreateContents(/*initially_hidden=*/false);
-  host_->NotifyWindowIntentToShow();
+  host_.CreateContents(/*initially_hidden=*/false);
+  host_.NotifyWindowIntentToShow();
 
   // TODO: NotifyPanelStateChanged() here
   // TODO: pass in the correct invocation source
   // TODO: pass in the conversation id
-  host_->PanelWillOpen(mojom::InvocationSource::kTopChromeButton, {});
+  host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton, {});
 }
 
 void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,

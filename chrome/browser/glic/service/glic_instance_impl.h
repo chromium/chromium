@@ -170,7 +170,7 @@ class GlicInstanceImpl : public GlicInstance,
   // The single, unambiguous source of truth for the active UI.
   std::optional<EmbedderKey> active_embedder_key_;
 
-  std::unique_ptr<Host> host_;
+  Host host_;
   std::optional<std::string> conversation_id_;
   GlicSharingManagerImpl sharing_manager_;
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
