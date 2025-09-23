@@ -63,7 +63,7 @@ bool AreTabGroupShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupShortcuts);
 }
 
-bool AreVerticalTabsEnabled() {
+bool IsVerticalTabsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kVerticalTabs);
 }
 

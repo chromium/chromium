@@ -794,7 +794,7 @@ BrowserView::BrowserView(Browser* browser)
   tab_strip_region_view_ =
       top_container_->AddChildView(std::make_unique<TabStripRegionView>(this));
 
-  if (tabs::AreVerticalTabsEnabled()) {
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
             browser_->GetFeatures()
@@ -918,7 +918,7 @@ BrowserView::BrowserView(Browser* browser)
     focus_manager_observation_.Observe(GetFocusManager());
   }
 
-  if (tabs::AreVerticalTabsEnabled()) {
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
     vertical_tab_subscription_ =
         browser_->browser_window_features()
             ->vertical_tab_strip_state_controller()

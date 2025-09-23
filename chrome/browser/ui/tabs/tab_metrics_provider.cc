@@ -43,7 +43,7 @@ VerticalTabsState TabMetricsProvider::GetVerticalTabsState() {
 
 void TabMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  if (!tabs::AreVerticalTabsEnabled()) {
+  if (!tabs::IsVerticalTabsFeatureEnabled()) {
     return;
   }
 
