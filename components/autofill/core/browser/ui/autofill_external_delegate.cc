@@ -317,9 +317,7 @@ const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
 
 void AutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
-    const std::vector<Suggestion>& input_suggestions,
-    std::optional<autofill_metrics::SuggestionRankingContext>
-        suggestion_ranking_context) {
+    const std::vector<Suggestion>& input_suggestions) {
   // These are guards against outdated suggestion results.
   if (field_id != query_field_.global_id()) {
     return;
@@ -329,15 +327,12 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 #endif
-  AttemptToDisplayAutofillSuggestions(
-      input_suggestions, std::move(suggestion_ranking_context), trigger_source_,
-      /*is_update=*/false);
+  AttemptToDisplayAutofillSuggestions(input_suggestions, trigger_source_,
+                                      /*is_update=*/false);
 }
 
 void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     std::vector<Suggestion> suggestions,
-    std::optional<autofill_metrics::SuggestionRankingContext>
-        suggestion_ranking_context,
     AutofillSuggestionTriggerSource trigger_source,
     bool is_update) {
   PossiblyRemoveAutofillWarnings(suggestions);
@@ -351,7 +346,6 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
   // it on, not AED.
   trigger_source_ = trigger_source;
 
-  suggestion_ranking_context_ = std::move(suggestion_ranking_context);
   shown_suggestion_types_.clear();
   for (const Suggestion& suggestion : suggestions) {
     shown_suggestion_types_.push_back(suggestion.type);
@@ -432,10 +426,9 @@ AutofillExternalDelegate::CreateUpdateSuggestionsCallback() {
                 .value_or(SessionId()) != session_id) {
           return;
         }
-        self->AttemptToDisplayAutofillSuggestions(
-            std::move(suggestions),
-            /*suggestion_ranking_context=*/std::nullopt, trigger_source,
-            /*is_update=*/true);
+        self->AttemptToDisplayAutofillSuggestions(std::move(suggestions),
+                                                  trigger_source,
+                                                  /*is_update=*/true);
       },
       GetWeakPtr(), *session_id);
 }
@@ -1225,22 +1218,6 @@ void AutofillExternalDelegate::InsertDataListValues(
   }
 }
 
-void AutofillExternalDelegate::LogRankingContextAfterSuggestionAccepted(
-    const Suggestion& accepted_suggestion) {
-  CHECK(accepted_suggestion.type == SuggestionType::kCreditCardEntry);
-  const Suggestion::Guid& suggestion_guid =
-      accepted_suggestion.GetPayload<Suggestion::Guid>();
-  if (suggestion_ranking_context_ &&
-      suggestion_ranking_context_->RankingsAreDifferent() &&
-      suggestion_ranking_context_->suggestion_rankings_difference_map.contains(
-          suggestion_guid)) {
-    autofill_metrics::LogAutofillRankingSuggestionDifference(
-        suggestion_ranking_context_->suggestion_rankings_difference_map
-            .find(suggestion_guid)
-            ->second);
-  }
-}
-
 void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
@@ -1327,10 +1304,6 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row, FillingProduct::kCreditCard,
           manager_->client().IsOffTheRecord());
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableRankingFormulaCreditCards)) {
-        LogRankingContextAfterSuggestionAccepted(suggestion);
-      }
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,

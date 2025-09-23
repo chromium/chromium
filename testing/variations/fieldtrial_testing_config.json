@@ -2577,27 +2577,6 @@
             ]
         }
     ],
-    "AutofillEnableNewCardProfileRankingAlgorithm": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableRankingFormulaAddressProfiles",
-                        "AutofillEnableRankingFormulaCreditCards"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableNewFopDisplayDesktop": [
         {
             "platforms": [

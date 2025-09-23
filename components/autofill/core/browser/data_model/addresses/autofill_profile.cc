@@ -403,28 +403,14 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-double AutofillProfile::GetRankingScore(base::Time current_time,
-                                        bool use_frecency) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableRankingFormulaAddressProfiles) &&
-      !use_frecency) {
-    // Exponentially decay the use count by the days since the data model was
-    // last used.
-    return log10(usage_history_information_.use_count() + 1) *
-           exp(-usage_history_information_.GetDaysSinceLastUse(current_time) /
-               features::kAutofillRankingFormulaAddressProfilesUsageHalfLife
-                   .Get());
-  }
-  // Default to legacy frecency scoring.
+double AutofillProfile::GetRankingScore(base::Time current_time) const {
   return usage_history_information_.GetRankingScore(current_time);
 }
 
 bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
-                                            base::Time comparison_time,
-                                            bool use_frecency) const {
-  const double score = GetRankingScore(comparison_time, use_frecency);
-  const double other_score =
-      other->GetRankingScore(comparison_time, use_frecency);
+                                            base::Time comparison_time) const {
+  const double score = GetRankingScore(comparison_time);
+  const double other_score = other->GetRankingScore(comparison_time);
   return usage_history_information_.CompareRankingScores(
       score, other_score, other->usage_history().use_date());
 }

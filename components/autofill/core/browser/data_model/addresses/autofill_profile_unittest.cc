@@ -1779,63 +1779,6 @@ TEST_F(AutofillProfileTest, EmitsDaysUntilFirstUsageProfile) {
       1UL);
 }
 
-enum Expectation { GREATER, LESS };
-struct ProfileRankingTestCase {
-  const int use_count_a;
-  const base::TimeDelta days_since_last_use_a;
-  const int use_count_b;
-  const base::TimeDelta days_since_last_use_b;
-  const Expectation expectation;
-};
-
-class ProfileRankingTest
-    : public AutofillProfileTest,
-      public testing::WithParamInterface<ProfileRankingTestCase> {
- private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillEnableRankingFormulaAddressProfiles};
-};
-
-TEST_P(ProfileRankingTest, HasGreaterRankingThan) {
-  const ProfileRankingTestCase& test_case = GetParam();
-
-  const base::Time now = base::Time::Now();
-  AutofillProfile profile1 = test::GetFullProfile();
-  profile1.usage_history().set_use_count(test_case.use_count_a);
-  profile1.usage_history().set_use_date(now - test_case.days_since_last_use_a);
-
-  AutofillProfile profile2 = test::GetFullProfile();
-  profile2.usage_history().set_use_count(test_case.use_count_b);
-  profile2.usage_history().set_use_date(now - test_case.days_since_last_use_b);
-
-  EXPECT_EQ(test_case.expectation == GREATER,
-            profile1.HasGreaterRankingThan(&profile2, now));
-  EXPECT_NE(test_case.expectation == GREATER,
-            profile2.HasGreaterRankingThan(&profile1, now));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillProfileTest,
-    ProfileRankingTest,
-    testing::Values(
-        // Same days since last use, profile1 has a bigger use count.
-        ProfileRankingTestCase{10, base::Days(0), 8, base::Days(0), GREATER},
-        // Same days since last use, profile1 has a smaller use count.
-        ProfileRankingTestCase{8, base::Days(0), 10, base::Days(0), LESS},
-        // Same use count, profile1 has smaller days since last use.
-        ProfileRankingTestCase{8, base::Days(0), 8, base::Days(1), GREATER},
-        // Same use count, profile2 has smaller days since last use.
-        ProfileRankingTestCase{8, base::Days(1), 8, base::Days(0), LESS},
-        // Special case: occasional profiles. A profile with relatively low
-        // usage and used recently (profile2) should not rank higher than a more
-        // used profile that has been unused for a short amount of time
-        // (profile1).
-        ProfileRankingTestCase{300, base::Days(5), 10, base::Days(1), GREATER},
-        // Special case: moving. A new profile used frequently (profile2) should
-        // rank higher than a profile with more usage that has not been used for
-        // a while (profile1).
-        ProfileRankingTestCase{90, base::Days(20), 10, base::Days(5), LESS}));
-
 }  // namespace
 
 }  // namespace autofill

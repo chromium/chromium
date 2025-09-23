@@ -782,11 +782,9 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
     bool suppress_disused_cards,
     bool prefix_match,
     bool require_non_empty_value_on_trigger_field,
-    bool include_virtual_cards,
-    bool use_legacy_algorithm = false) {
+    bool include_virtual_cards) {
   std::vector<const CreditCard*> available_cards = GetCreditCardsToSuggest(
-      client.GetPersonalDataManager().payments_data_manager(),
-      use_legacy_algorithm);
+      client.GetPersonalDataManager().payments_data_manager());
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
   if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
@@ -1074,8 +1072,7 @@ BnplSuggestionUpdateResult& BnplSuggestionUpdateResult::operator=(
 BnplSuggestionUpdateResult::~BnplSuggestionUpdateResult() = default;
 
 std::vector<const CreditCard*> GetCreditCardsToSuggest(
-    const PaymentsDataManager& payments_data_manager,
-    bool should_use_legacy_algorithm) {
+    const PaymentsDataManager& payments_data_manager) {
   if (!payments_data_manager.IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
@@ -1088,15 +1085,13 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
   // Rank the cards by ranking score (see UsageHistoryInformation for details).
   // All expired cards should be suggested last, also by ranking score.
   std::ranges::sort(
-      cards_to_suggest,
-      [comparison_time = base::Time::Now(), should_use_legacy_algorithm](
-          const CreditCard* a, const CreditCard* b) {
+      cards_to_suggest, [comparison_time = base::Time::Now()](
+                            const CreditCard* a, const CreditCard* b) {
         if (const bool a_is_expired = a->IsExpired(comparison_time);
             a_is_expired != b->IsExpired(comparison_time)) {
           return !a_is_expired;
         }
-        return a->HasGreaterRankingThan(*b, comparison_time,
-                                        should_use_legacy_algorithm);
+        return a->HasGreaterRankingThan(*b, comparison_time);
       });
   return cards_to_suggest;
 }
@@ -1205,19 +1200,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
         autofilled_last_four_digits_in_form_for_filtering, cards_to_suggest);
   }
 
-  bool new_ranking_experiment_enabled = base::FeatureList::IsEnabled(
-      features::kAutofillEnableRankingFormulaCreditCards);
-  std::vector<CreditCard> cards_ranked_by_legacy_algorithm;
-  if (new_ranking_experiment_enabled) {
-    // Get credit cards ranked by legacy algorithm to use for comparison with
-    // the new algorithm's rankings inside the loop below.
-    cards_ranked_by_legacy_algorithm = GetOrderedCardsToSuggest(
-        client, trigger_field, trigger_field_type, suppress_disused_cards,
-        /*prefix_match=*/should_prefix_match,
-        /*require_non_empty_value_on_trigger_field=*/
-        require_non_empty_value_on_trigger_field,
-        /*include_virtual_cards=*/true, /*use_legacy_algorithm=*/true);
-  }
   summary.metadata_logging_context =
       autofill_metrics::GetMetadataLoggingContext(cards_to_suggest);
   std::vector<Suggestion> suggestions;
@@ -1230,21 +1212,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
         base::Contains(card_linked_offers_map, credit_card.guid()),
         summary.metadata_logging_context);
     suggestions.push_back(suggestion);
-
-    if (new_ranking_experiment_enabled) {
-      // Find the ranking of the card in the old and new algorithm and
-      // mark if they are ranked higher, lower, or the same.
-      size_t ranking_legacy_algorithm =
-          std::ranges::find(cards_ranked_by_legacy_algorithm, credit_card) -
-          cards_ranked_by_legacy_algorithm.begin();
-      autofill_metrics::SuggestionRankingContext::RelativePosition
-          ranking_difference = autofill_metrics::SuggestionRankingContext::
-              GetRelativePositionEnum(ranking_legacy_algorithm,
-                                      current_card_index);
-
-      summary.ranking_context.suggestion_rankings_difference_map.insert(
-          {suggestion.GetPayload<Suggestion::Guid>(), ranking_difference});
-    }
   }
   summary.with_cvc = !std::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
@@ -1720,12 +1687,11 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     bool suppress_disused_cards,
     bool prefix_match,
     bool require_non_empty_value_on_trigger_field,
-    bool include_virtual_cards,
-    bool use_legacy_algorithm) {
+    bool include_virtual_cards) {
   return GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
                                   suppress_disused_cards, prefix_match,
                                   require_non_empty_value_on_trigger_field,
-                                  include_virtual_cards, use_legacy_algorithm);
+                                  include_virtual_cards);
 }
 
 Suggestion CreateCreditCardSuggestionForTest(

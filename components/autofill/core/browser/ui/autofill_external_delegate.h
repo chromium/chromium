@@ -97,13 +97,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // Records query results and correctly formats them before sending them off
   // to be displayed. Called when an Autofill query result is available.
-  // `suggestion_ranking_context` contains information regarding the ranking of
-  // suggestions in `input_suggestions` and is used for metrics logging.
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& input_suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context);
+      const std::vector<Suggestion>& input_suggestions);
 
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
@@ -122,12 +118,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   void AttemptToDisplayAutofillSuggestionsForTest(
       std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update) {
     AttemptToDisplayAutofillSuggestions(std::move(suggestions),
-                                        std::move(suggestion_ranking_context),
                                         trigger_source, is_update);
   }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtrForTest() {
@@ -142,8 +135,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // `SuggestionsUiSessionId` will be assigned.
   void AttemptToDisplayAutofillSuggestions(
       std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          suggestion_ranking_context,
       AutofillSuggestionTriggerSource trigger_source,
       bool is_update);
 
@@ -240,11 +231,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  // Checks the user's accepted suggestion and logs metrics on the ranking of
-  // the suggestion in the Autofill dropdown.
-  void LogRankingContextAfterSuggestionAccepted(
-      const Suggestion& accepted_suggestion);
-
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
@@ -261,12 +247,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   AutofillSuggestionTriggerSource trigger_source_;
 
   std::vector<SuggestionType> shown_suggestion_types_;
-
-  // Contains information on the ranking of suggestions using the new and old
-  // ranking algorithm. Used for metrics logging. If the new ranking algorithm
-  // is not enabled, this will be nullopt.
-  std::optional<autofill_metrics::SuggestionRankingContext>
-      suggestion_ranking_context_;
 
   // The current data list values.
   std::vector<SelectOption> datalist_;

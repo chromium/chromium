@@ -339,16 +339,13 @@ class CreditCard : public FormGroup {
   // Returns true if expiration date for `this` card is the same as `other`.
   [[nodiscard]] bool HasSameExpirationDateAs(const CreditCard& other) const;
 
-  // Calculates the ranking score used for ranking the card suggestion. If
-  // `use_frecency` is true we use the new ranking algorithm.
-  double GetRankingScore(base::Time current_time,
-                         bool use_frecency = false) const;
+  // Calculates the ranking score used for ranking the card suggestion.
+  double GetRankingScore(base::Time current_time) const;
 
   // Compares two credit cards and returns if the current card has a greater
   // ranking score than `other`.
   bool HasGreaterRankingThan(const CreditCard& other,
-                             base::Time comparison_time,
-                             bool use_frecency = false) const;
+                             base::Time comparison_time) const;
 
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.

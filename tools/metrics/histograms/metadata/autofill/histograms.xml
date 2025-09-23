@@ -7121,18 +7121,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.SuggestionAccepted.SuggestionRankingDifference.CreditCard"
-    enum="RelativePosition" expires_after="2026-06-01">
-  <owner>vinnypersky@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs the ranking difference for a recently-selected Autofill suggestion,
-    recording if the suggestion was ranked higher or lower in the new ranking
-    algorithm compared to the legacy ranking algorithm.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.SuggestionAcceptedIndex{SuggestionType}"
     units="position" expires_after="2026-03-01">
   <owner>battre@chromium.org</owner>

@@ -252,33 +252,6 @@ BASE_FEATURE(kAutofillDisableFilling, base::FEATURE_DISABLED_BY_DEFAULT);
 // Kill switch for Autofill address import.
 BASE_FEATURE(kAutofillDisableAddressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, autofill will use the new ranking algorithm for address profile
-// autofill suggestions.
-BASE_FEATURE(kAutofillEnableRankingFormulaAddressProfiles,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// The half life applied to the use count of profiles in the ranking formula.
-const base::FeatureParam<int>
-    kAutofillRankingFormulaAddressProfilesUsageHalfLife{
-        &kAutofillEnableRankingFormulaAddressProfiles,
-        "autofill_ranking_formula_address_profiles_usage_half_life", 20};
-
-// When enabled, autofill will use the new ranking algorithm for credit card
-// autofill suggestions.
-BASE_FEATURE(kAutofillEnableRankingFormulaCreditCards,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// The half life applied to the use count.
-const base::FeatureParam<int> kAutofillRankingFormulaCreditCardsUsageHalfLife{
-    &kAutofillEnableRankingFormulaCreditCards,
-    "autofill_ranking_formula_credit_cards_usage_half_life", 20};
-// The boost factor applied to ranking virtual cards.
-const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoost{
-    &kAutofillEnableRankingFormulaCreditCards,
-    "autofill_ranking_formula_virtual_card_boost", 5};
-// The half life applied to the virtual card boost.
-const base::FeatureParam<int> kAutofillRankingFormulaVirtualCardBoostHalfLife{
-    &kAutofillEnableRankingFormulaCreditCards,
-    "autofill_ranking_formula_virtual_card_boost_half_life", 15};
-
 // Enables a new implementation for address field parsing that is based on
 // backtracking.
 BASE_FEATURE(kAutofillEnableAddressFieldParserNG,

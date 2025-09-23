@@ -453,9 +453,7 @@ class AutofillExternalDelegateTest : public testing::Test,
 
   void OnSuggestionsReturned(FieldGlobalId field_id,
                              const std::vector<Suggestion>& input_suggestions) {
-    autofill_metrics::SuggestionRankingContext context;
-    external_delegate().OnSuggestionsReturned(field_id, input_suggestions,
-                                              context);
+    external_delegate().OnSuggestionsReturned(field_id, input_suggestions);
   }
 
   AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
@@ -2905,8 +2903,8 @@ TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
 
   OnSuggestionsReturned(queried_field().global_id(), suggestions1);
   external_delegate().AttemptToDisplayAutofillSuggestionsForTest(
-      suggestions2, /*suggestion_ranking_context=*/std::nullopt,
-      AutofillSuggestionTriggerSource::kUnspecified, /*is_update=*/true);
+      suggestions2, AutofillSuggestionTriggerSource::kUnspecified,
+      /*is_update=*/true);
 }
 
 // TODO(crbug.com/41483208): Add test case where 'Show cards from your Google
@@ -2924,73 +2922,6 @@ TEST_F(AutofillExternalDelegateTest, ShouldDiscardOutdatedSuggestions) {
   OnSuggestionsReturned(old_field_id, std::vector<Suggestion>());
 }
 #endif
-
-// Tests logging with the new ranking algorithm experiment for Autofill
-// suggestions enabled.
-class AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm
-    : public AutofillExternalDelegateTest {
- public:
-  void SetUp() override {
-    AutofillExternalDelegateTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kAutofillEnableRankingFormulaCreditCards,
-         features::kAutofillEnableRankingFormulaAddressProfiles},
-        /*disabled_features=*/{});
-  }
-
-  void SetUpRankingDifferenceAndSelectCreditCard(
-      autofill_metrics::SuggestionRankingContext::RelativePosition
-          relative_position) {
-    // Set up SuggestionRankingContext.
-    autofill_metrics::SuggestionRankingContext context;
-    context.suggestion_rankings_difference_map = {
-        {Suggestion::Guid(base::Uuid().AsLowercaseString()),
-         relative_position}};
-
-    // Simulate showing and selecting a credit card suggestion.
-    external_delegate().OnSuggestionsReturned(
-        queried_field().global_id(),
-        {Suggestion(SuggestionType::kCreditCardEntry)}, context);
-    external_delegate().DidAcceptSuggestion(
-        Suggestion(SuggestionType::kCreditCardEntry),
-        SuggestionPosition{.row = 0});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that the SuggestionRankingDifference metric is logged after a credit
-// card suggestion is accepted.
-TEST_F(AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm,
-       SuggestionAccepted_LogSuggestionRankingDifference_CreditCard) {
-  base::HistogramTester histogram;
-  IssueOnQuery();
-  SetUpRankingDifferenceAndSelectCreditCard(
-      autofill_metrics::SuggestionRankingContext::RelativePosition::
-          kRankedLower);
-  histogram.ExpectBucketCount(
-      base::StrCat({"Autofill.SuggestionAccepted.SuggestionRankingDifference."
-                    "CreditCard"}),
-      autofill_metrics::SuggestionRankingContext::RelativePosition::
-          kRankedLower,
-      1);
-}
-
-// Test that the SuggestionRankingDifference metric is not logged after a credit
-// card suggestion is accepted if the rankings are the same in both algorithms.
-TEST_F(
-    AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm,
-    SuggestionAccepted_LogSuggestionRankingDifference_NotLoggedWhenRankingsAreTheSame) {
-  base::HistogramTester histogram;
-  IssueOnQuery();
-  histogram.ExpectBucketCount(
-      base::StrCat({"Autofill.SuggestionAccepted.SuggestionRankingDifference."
-                    "CreditCard"}),
-      autofill_metrics::SuggestionRankingContext::RelativePosition::kRankedSame,
-      0);
-}
 
 }  // namespace
 

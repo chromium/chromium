@@ -194,16 +194,13 @@ class AutofillProfile : public FormGroup {
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
   FieldTypeSet GetSupportedTypes() const override;
 
-  // Calculates the ranking score used for ranking the profile suggestion. If
-  // `use_frecency` is true we use the new ranking algorithm.
-  double GetRankingScore(base::Time current_time,
-                         bool use_frecency = false) const;
+  // Calculates the ranking score used for ranking the profile suggestion.
+  double GetRankingScore(base::Time current_time) const;
 
   // Compares two profiles and returns if the current profile has a greater
   // ranking score than `other`.
   bool HasGreaterRankingThan(const AutofillProfile* other,
-                             base::Time comparison_time,
-                             bool use_frecency = false) const;
+                             base::Time comparison_time) const;
 
   // Every `GetSupportedType()` is either a storable type or has a corresponding
   // storable type. For example, ADDRESS_HOME_LINE1 corresponds to the storable

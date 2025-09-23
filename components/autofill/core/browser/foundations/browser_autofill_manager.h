@@ -79,7 +79,6 @@ struct SuggestionsContext;
 namespace autofill_metrics {
 
 class CreditCardFormEventLogger;
-struct SuggestionRankingContext;
 
 }  // namespace autofill_metrics
 
@@ -105,14 +104,10 @@ class BrowserAutofillManager : public AutofillManager {
  public:
   // Triggered when `GenerateSuggestionsAndMaybeShowUIPhase2` is complete.
   // `show_suggestions` indicates whether or not the list of `suggestions`
-  // should be displayed (via the `external_delegate_`). `ranking_context`
-  // contains information regarding the ranking of suggestions and is used for
-  // metrics logging.
-  using OnGenerateSuggestionsCallback = base::OnceCallback<void(
-      bool show_suggestions,
-      std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          ranking_context)>;
+  // should be displayed (via the `external_delegate_`).
+  using OnGenerateSuggestionsCallback =
+      base::OnceCallback<void(bool show_suggestions,
+                              std::vector<Suggestion> suggestions)>;
 
   explicit BrowserAutofillManager(AutofillDriver* driver);
 
@@ -420,16 +415,14 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns a list of values from the stored credit cards that match
   // the type and value of `trigger_field` and returns the labels of the
-  // matching credit cards. `ranking_context` contains information regarding the
-  // ranking of suggestions and is used for metrics logging.
+  // matching credit cards.
   // TODO(crbug.com/40227496): Keep only one of `form` or `form_structure` and
   // `trigger_field` or `autofill_trigger_field`.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormData& form,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,
-      const AutofillField& autofill_trigger_field,
-      autofill_metrics::SuggestionRankingContext& ranking_context);
+      const AutofillField& autofill_trigger_field);
 
   // Returns a list of suggestions from the stored loyalty cards for the given
   // last committed primary main frame URL obtained from `client()` and the
@@ -494,8 +487,7 @@ class BrowserAutofillManager : public AutofillManager {
   // Returns a list with the suggestions available for `field`. Which fields of
   // the `form` are filled depends on the `trigger_source`. `context` could
   // contain additional information about the suggestions, such as ablation
-  // study related fields.  `ranking_context` contains information
-  // regarding the ranking of suggestions and is used for metrics logging.
+  // study related fields.
   // TODO(crbug.com/340494671): Move ablation study fields out of the function
   // and make the context a const ref.
   std::vector<Suggestion> GetAvailableSuggestions(
@@ -506,8 +498,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       std::optional<std::string> plus_address_email_override,
       const std::vector<std::string>& one_time_passwords,
-      SuggestionsContext& context,
-      autofill_metrics::SuggestionRankingContext& ranking_context);
+      SuggestionsContext& context);
 
   // Called when all suggestion generators have finished fetching their data for
   // the given `field` in `form`. It schedules the generation of the individual
@@ -594,17 +585,14 @@ class BrowserAutofillManager : public AutofillManager {
   // `GenerateSuggestionsAndMaybeShowUIPhase2` and displays them if
   // `show_suggestions` is true (via the `external_delegate_`). It also logs
   // whether there is a suggestion for the user and whether the suggestion is
-  // shown. `ranking_context` contains information regarding the ranking of
-  // suggestions and is used for metrics logging.
+  // shown.
   void OnGenerateSuggestionsComplete(
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source,
       const SuggestionsContext& context,
       bool show_suggestions,
-      std::vector<Suggestion> suggestions,
-      std::optional<autofill_metrics::SuggestionRankingContext>
-          ranking_context);
+      std::vector<Suggestion> suggestions);
 
   // Combines plus address and address profile suggestions into a single list,
   // prioritizing plus address suggestions first. Runs `callback` with the

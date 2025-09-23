@@ -44,9 +44,6 @@ struct CreditCardSuggestionSummary {
   bool with_card_info_retrieval_enrolled = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-  // Contains information regarding the ranking of suggestions and is used for
-  // metrics logging.
-  autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
 // Holds the result of `MaybeUpdateDesktopSuggestionsWithBnpl`.
@@ -66,11 +63,9 @@ struct BnplSuggestionUpdateResult {
 
 // Returns the credit cards to suggest to the user. Those have been deduped
 // and ordered by frecency with the expired cards put at the end of the
-// vector. `should_use_legacy_algorithm` indicates if we should rank credit
-// cards using the legacy ranking algorithm.
+// vector.
 std::vector<const CreditCard*> GetCreditCardsToSuggest(
-    const PaymentsDataManager& payments_data_manager,
-    bool should_use_legacy_algorithm = false);
+    const PaymentsDataManager& payments_data_manager);
 
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
@@ -198,8 +193,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     bool suppress_disused_cards,
     bool prefix_match,
     bool require_non_empty_value_on_trigger_field,
-    bool include_virtual_cards,
-    bool use_legacy_algorithm = false);
+    bool include_virtual_cards);
 
 // Exposes `CreateCreditCardSuggestion` in tests.
 Suggestion CreateCreditCardSuggestionForTest(

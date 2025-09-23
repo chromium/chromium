@@ -47,15 +47,11 @@ void TestAutofillExternalDelegate::OnQuery(
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
-    const std::vector<Suggestion>& suggestions,
-    std::optional<autofill_metrics::SuggestionRankingContext>
-        suggestion_ranking_context) {
+    const std::vector<Suggestion>& suggestions) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  suggestion_ranking_context_ = suggestion_ranking_context;
-  AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
-                                                  suggestion_ranking_context);
+  AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {

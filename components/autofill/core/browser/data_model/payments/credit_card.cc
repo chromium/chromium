@@ -431,40 +431,14 @@ PaymentsMetadata CreditCard::GetMetadata() const {
   return metadata;
 }
 
-double CreditCard::GetRankingScore(base::Time current_time,
-                                   bool use_frecency) const {
-  if (use_frecency || !base::FeatureList::IsEnabled(
-                          features::kAutofillEnableRankingFormulaCreditCards)) {
-    // Default to legacy frecency scoring.
-    return usage_history_information_.GetRankingScore(current_time);
-  }
-
-  // Calculate score with new ranking algorithm. The new algorithm is only used
-  // when `use_frecency` is false and the new ranking experiment is enabled.
-  const int virtual_card_boost =
-      virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
-          ? 0
-          : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
-                exp(-usage_history_information_.GetDaysSinceLastUse(
-                        current_time) /
-                    features::kAutofillRankingFormulaVirtualCardBoostHalfLife
-                        .Get());
-
-  // Exponentially decay the use count by the days since the data model was
-  // last used. Add a virtual card boost if the model is a virtual card.
-  return (log10(usage_history_information_.use_count() + 1) *
-          exp(-usage_history_information_.GetDaysSinceLastUse(current_time) /
-              features::kAutofillRankingFormulaCreditCardsUsageHalfLife
-                  .Get())) +
-         virtual_card_boost;
+double CreditCard::GetRankingScore(base::Time current_time) const {
+  return usage_history_information_.GetRankingScore(current_time);
 }
 
 bool CreditCard::HasGreaterRankingThan(const CreditCard& other,
-                                       base::Time comparison_time,
-                                       bool use_frecency) const {
-  const double score = GetRankingScore(comparison_time, use_frecency);
-  const double other_score =
-      other.GetRankingScore(comparison_time, use_frecency);
+                                       base::Time comparison_time) const {
+  const double score = GetRankingScore(comparison_time);
+  const double other_score = other.GetRankingScore(comparison_time);
   return usage_history_information_.CompareRankingScores(
       score, other_score, other.usage_history_information_.use_date());
 }

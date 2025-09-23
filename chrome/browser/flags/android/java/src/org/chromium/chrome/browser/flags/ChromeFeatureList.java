@@ -263,10 +263,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableLoyaltyCardsFilling";
     public static final String AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT =
             "AutofillEnableNewCardBenefitsToggleText";
-    public static final String AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES =
-            "AutofillEnableRankingFormulaAddressProfiles";
-    public static final String AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS =
-            "AutofillEnableRankingFormulaCreditCards";
     public static final String AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID =
             "AutofillEnableSecurityTouchEventFilteringAndroid";
     public static final String AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM =
