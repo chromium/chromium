@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +39,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
@@ -44,6 +50,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A controller for the account mismatched notice message. */
+@NullMarked
 public class MismatchNotificationController
         implements SigninManager.SignInStateObserver, AccountsChangeObserver {
     // LINT.IfChange(SuppressedReason)
@@ -81,8 +88,8 @@ public class MismatchNotificationController
     private PropertyModel mMessageProperties;
     private boolean mMessageReachedFullyVisible;
 
-    @Nullable
-    private static MismatchNotificationController sMismatchNotificationControllerForTesting;
+    private static @Nullable MismatchNotificationController
+            sMismatchNotificationControllerForTesting;
 
     public static MismatchNotificationController get(
             WindowAndroid windowAndroid, Profile profile, String appAccountName) {
@@ -97,12 +104,14 @@ public class MismatchNotificationController
         mWindowAndroid = windowAndroid;
         mProfile = profile;
         mAppAccountEmail = appAccountName;
-        mAppAccountId =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
-                        .findExtendedAccountInfoByEmailAddress(appAccountName)
-                        .getId();
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        assert identityManager != null;
+        AccountInfo accountInfo =
+                identityManager.findExtendedAccountInfoByEmailAddress(appAccountName);
+        assert accountInfo != null;
+        mAppAccountId = accountInfo.getId();
+        mSigninManager = assertNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
         mSigninManager.addSignInStateObserver(this);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
@@ -116,6 +125,7 @@ public class MismatchNotificationController
                 SuppressedReason.MAX);
     }
 
+    @Initializer
     public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
@@ -150,6 +160,7 @@ public class MismatchNotificationController
                         .build();
 
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
+        assert dispatcher != null;
         dispatcher.enqueueWindowScopedMessage(mMessageProperties, /* highPriority= */ false);
     }
 
@@ -179,8 +190,7 @@ public class MismatchNotificationController
                         .selectedCoreAccountId(mAppAccountId)
                         .build();
 
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 signinAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context,
                         mProfile,
