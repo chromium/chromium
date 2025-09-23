@@ -548,7 +548,6 @@ void FocusManager::ViewRemoved(View* removed) {
   if (removed->Contains(focused_view_)) {
     SetFocusedView(nullptr);
   }
-  removed->PropagateWillClearFocusManager();
 }
 
 void FocusManager::AddFocusChangeListener(FocusChangeListener* listener) {
