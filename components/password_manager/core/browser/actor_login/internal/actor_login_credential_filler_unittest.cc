@@ -147,6 +147,8 @@ class ActorLoginCredentialFillerTest : public ::testing::Test {
         .WillByDefault(Return(false));
   }
 
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
   std::unique_ptr<PasswordFormManager> CreateFormManagerWithParsedForm(
       const url::Origin& origin,
       const autofill::FormData& form_data) {
