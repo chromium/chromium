@@ -45,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.autofill.AndroidAutofillFeatures;
@@ -237,6 +238,7 @@ public class TabUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testSetIsPinnedWithChange() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes attributes = TabStateAttributes.from(mTab);

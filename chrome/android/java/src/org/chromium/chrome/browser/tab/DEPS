@@ -126,6 +126,7 @@ specific_include_rules = {
     "+chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/UrlConstants.java",
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
     "+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutUtils.java",
 
     "-components",
     "+components/android_autofill/browser/java/src/org/chromium/components/autofill",

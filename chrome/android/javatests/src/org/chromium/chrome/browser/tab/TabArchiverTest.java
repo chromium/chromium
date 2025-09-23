@@ -1409,6 +1409,7 @@ public class TabArchiverTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinnedTabsAreNotArchived() {
         mActivityTestRule.loadUrlInNewTab(
                 mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -2660,6 +2661,13 @@ class TabImpl implements Tab {
     @Override
     @CalledByNative
     public void setIsPinned(boolean isPinned) {
+        boolean isPinnedTabFeatureEnabled =
+                StripLayoutUtils.isTabPinningFromStripEnabled()
+                        || ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
+
+        // Remove the tab pinned state if the feature is disabled.
+        isPinned = isPinnedTabFeatureEnabled && isPinned;
+
         if (mIsPinned == isPinned || isDestroyed()) return;
         mIsPinned = isPinned;
         for (TabObserver observer : mObservers) {

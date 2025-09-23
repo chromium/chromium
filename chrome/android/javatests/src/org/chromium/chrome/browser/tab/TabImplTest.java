@@ -22,7 +22,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -137,5 +139,15 @@ public class TabImplTest {
         assertTrue(
                 rootNode.getExtras()
                         .containsKey("org.chromium.chrome.browser.AnnotatedPageContents"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @DisableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
+    public void testSetIsPinned_TrueBecomesFalseWhenFeatureDisabled() {
+        TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.setIsPinned(true));
+        assertFalse("Tab should not be pinned when the feature is disabled.", tab.getIsPinned());
     }
 }

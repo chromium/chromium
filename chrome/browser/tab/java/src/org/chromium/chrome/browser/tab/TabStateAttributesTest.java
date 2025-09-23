@@ -37,6 +37,8 @@ import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -413,6 +415,7 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testIsPinnedUpdates() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);

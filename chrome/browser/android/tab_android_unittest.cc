@@ -10,11 +10,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_interface_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -98,6 +100,9 @@ TEST_F(TabAndroidTest, TabIsInitialized) {
 }
 
 TEST_F(TabAndroidTest, PinnedCollectionParent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chrome::android::kAndroidPinnedTabs);
+
   EXPECT_FALSE(tab_android_->IsPinned());
 
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection =
