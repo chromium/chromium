@@ -77,6 +77,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Post navigation lookup"/>
 </enum>
 
+<enum name="DataProtectionVerdictCacheEvent">
+  <int value="0" label="Cache Hit"/>
+  <int value="1" label="URL Scan Request"/>
+</enum>
+
 <enum name="DeviceIdentifierStatus">
   <int value="0" label="all device identifiers are present"/>
   <int value="1" label="serial number is missing"/>
