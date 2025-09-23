@@ -582,8 +582,6 @@ ci.thin_tester(
             "chromium_mac_rel_isolated_scripts",
         ],
         mixins = [
-            # Only run selected test suites on CQ. https://crbug.com/40192006.
-            "ci_only",
             "mac_15_vm_optional",
         ],
         per_test_modifications = {
@@ -615,20 +613,25 @@ ci.thin_tester(
                 mixins = "mac_15_arm64",
                 remove_mixins = "mac_15_vm_optional",
             ),
+            # TODO(crbug.com/436628295): test fails on VM
+            "headless_shell_wpt_tests": targets.per_test_modification(
+                mixins = "mac_15_arm64",
+                remove_mixins = "mac_15_vm_optional",
+            ),
             "interactive_ui_tests": targets.per_test_modification(
                 mixins = [
                     targets.mixin(
-                        ci_only = False,
                         swarming = targets.swarming(
                             shards = 7,
                         ),
                     ),
                 ],
             ),
-            # TODO(crbug.com/436628295): test fails on VM
-            "headless_shell_wpt_tests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_15_vm_optional",
+            "sync_integration_tests": targets.mixin(
+                ci_only = True,
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                ci_only = True,
             ),
         },
     ),
