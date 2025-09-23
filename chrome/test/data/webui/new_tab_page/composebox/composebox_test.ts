@@ -1093,6 +1093,42 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
 
+  test('composebox does not show when image is present', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowZps: true,
+      composeboxShowTypedSuggest: true,
+      composeboxShowImageSuggest: false,
+    });
+    createComposeboxElement();
+    // Autocomplete queried once when composebox is created.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+    const matches = [createSearchMatch()];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16(''),
+          matches,
+        }));
+    assertTrue(await areMatchesShowing());
+
+    // Upload an image.
+    const id = generateZeroId();
+    await uploadFileAndVerify(
+        id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+
+    callbackRouterRemote.onContextualInputStatusChanged(
+        id, FileUploadStatus.kUploadSuccessful, null);
+
+    // Matches should not show when image is present.
+    assertFalse(await areMatchesShowing());
+
+    // Do not query autocomplete with image present.
+    composeboxElement.$.input.value = 'T';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+  });
+
   test('delete button removes match', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
     createComposeboxElement();
