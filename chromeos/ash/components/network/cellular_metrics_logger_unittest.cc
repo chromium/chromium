@@ -1452,8 +1452,8 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const std::optional<base::Value::Dict> policy =
-      base::JSONReader::ReadDict(kEnterpriseESimPolicy);
+  const std::optional<base::Value::Dict> policy = base::JSONReader::ReadDict(
+      kEnterpriseESimPolicy, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(policy.has_value());
 
   EXPECT_CALL(*mock_managed_network_configuration_handler_,
@@ -1511,8 +1511,8 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const std::optional<base::Value::Dict> policy =
-      base::JSONReader::ReadDict(kEnterpriseESimPolicy);
+  const std::optional<base::Value::Dict> policy = base::JSONReader::ReadDict(
+      kEnterpriseESimPolicy, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(policy.has_value());
 
   EXPECT_CALL(*mock_managed_network_configuration_handler_,

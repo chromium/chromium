@@ -642,8 +642,8 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string tethering_config = arg_list[1].GetString();
-    std::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(tethering_config);
+    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+        tethering_config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (!value) {
       NET_LOG(ERROR) << "Invalid tethering configuration: " << tethering_config;

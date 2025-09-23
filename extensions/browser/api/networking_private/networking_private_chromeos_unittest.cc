@@ -321,7 +321,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     if (!ui_data_json) {
       return std::nullopt;
     }
-    return base::JSONReader::ReadDict(*ui_data_json);
+    return base::JSONReader::ReadDict(*ui_data_json,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   bool GetUserSettingStringData(const std::string& guid,

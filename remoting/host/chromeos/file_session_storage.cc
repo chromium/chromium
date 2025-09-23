@@ -76,7 +76,8 @@ void FileSessionStorage::RetrieveSession(
                     return make_nullopt<base::Value::Dict>();
                   }
 
-                  auto dict_optional = base::JSONReader::ReadDict(*content);
+                  auto dict_optional = base::JSONReader::ReadDict(
+                      *content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
                   LOG_IF(ERROR, !dict_optional.has_value())
                       << "Failed to parse stored CRD session information";
                   return dict_optional;

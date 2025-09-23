@@ -210,7 +210,8 @@ void HttpExchange::OnURLLoaderCompleted(
     std::move(callback).Run(StatusCode::kInvalidResponse);
     return;
   }
-  auto parsed = base::JSONReader::ReadDict(*response_body);
+  auto parsed = base::JSONReader::ReadDict(
+      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     error_msg_ = "Cannot parse JSON payload.";
     std::move(callback).Run(StatusCode::kInvalidResponse);

@@ -93,7 +93,8 @@ class PipeReaderWrapper final {
       return;
     }
 
-    std::optional<base::Value::Dict> logs = base::JSONReader::ReadDict(*result);
+    std::optional<base::Value::Dict> logs = base::JSONReader::ReadDict(
+        *result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!logs.has_value()) {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(

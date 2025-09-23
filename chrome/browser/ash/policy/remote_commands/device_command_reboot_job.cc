@@ -64,8 +64,8 @@ std::optional<base::TimeDelta> ExtractUserSessionDelayFromCommandLine() {
 
 std::optional<base::TimeDelta> ExtractUserSessionDelayFromPayload(
     const std::string& command_payload) {
-  const std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  const std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return std::nullopt;
   }

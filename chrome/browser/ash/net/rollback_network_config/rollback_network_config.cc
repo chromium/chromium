@@ -364,7 +364,8 @@ RollbackNetworkConfig::Importer::~Importer() {
 void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
                                              ImportCallback callback) {
   std::optional<base::Value::Dict> managed_onc_network_config =
-      base::JSONReader::ReadDict(network_config);
+      base::JSONReader::ReadDict(network_config,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!managed_onc_network_config) {
     std::move(callback).Run(false);

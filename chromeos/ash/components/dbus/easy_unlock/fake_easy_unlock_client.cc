@@ -24,7 +24,8 @@ const char kEc256PublicKeyKey[] = "ec_p256_public_key";
 // Extracts key pair index from a key in format "<key_type>: <key_pair_index>}".
 int ExtractKeyPairIndexFromKey(const std::string& key,
                                const std::string& key_type) {
-  std::optional<base::Value::Dict> json_value = base::JSONReader::ReadDict(key);
+  std::optional<base::Value::Dict> json_value =
+      base::JSONReader::ReadDict(key, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_value)
     return -1;
 

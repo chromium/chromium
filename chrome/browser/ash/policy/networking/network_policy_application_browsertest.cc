@@ -864,8 +864,8 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
         properties->FindString(shill::kUIDataProperty);
     if (!ui_data_json)
       return {};
-    std::optional<base::Value::Dict> ui_data_value =
-        base::JSONReader::ReadDict(*ui_data_json);
+    std::optional<base::Value::Dict> ui_data_value = base::JSONReader::ReadDict(
+        *ui_data_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!ui_data_value) {
       return {};
     }

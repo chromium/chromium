@@ -64,8 +64,8 @@ const char* const kV3Features[] = {
 
 std::unique_ptr<WireMessage> DeserializeJsonMessageBody(
     const std::string& serialized_message_body) {
-  std::optional<base::Value::Dict> body_value =
-      base::JSONReader::ReadDict(serialized_message_body);
+  std::optional<base::Value::Dict> body_value = base::JSONReader::ReadDict(
+      serialized_message_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!body_value) {
     PA_LOG(WARNING) << "Unable to parse message as JSON.";
     return nullptr;

@@ -30,7 +30,8 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
     std::string_view input,
     std::string_view key,
     base::Value::Type target_type) {
-  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(input);
+  std::optional<base::Value::Dict> parsed =
+      base::JSONReader::ReadDict(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return std::nullopt;
   }

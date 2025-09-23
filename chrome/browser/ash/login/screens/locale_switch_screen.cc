@@ -74,8 +74,8 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
       response_body.emplace();
     }
 
-    std::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(*response_body);
+    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+        *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();

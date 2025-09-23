@@ -262,8 +262,8 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
     return;
   }
 
-  std::optional<base::Value::Dict> error(
-      base::JSONReader::ReadDict(error_response));
+  std::optional<base::Value::Dict> error(base::JSONReader::ReadDict(
+      error_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   const std::string response_name =
       base::StringPrintf("%s response error:", is_setup ? "Setup" : "Clean up");
   if (!error) {
@@ -476,8 +476,8 @@ void DemoLoginController::OnSetupDemoAccountComplete(
 void DemoLoginController::HandleSetupDemoAcountResponse(
     const std::string& sign_in_scoped_device_id,
     const std::unique_ptr<std::string> response_body) {
-  std::optional<base::DictValue> response_json(
-      base::JSONReader::ReadDict(*response_body));
+  std::optional<base::DictValue> response_json(base::JSONReader::ReadDict(
+      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (!response_json) {
     OnSetupDemoAccountError(ResultCode::kResponseParsingError);
     return;

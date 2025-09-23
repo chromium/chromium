@@ -598,8 +598,8 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  std::optional<base::Value::Dict> shortcut =
-      base::JSONReader::ReadDict(shortcut_id);
+  std::optional<base::Value::Dict> shortcut = base::JSONReader::ReadDict(
+      shortcut_id, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!shortcut) {
     return false;
   }

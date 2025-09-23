@@ -346,7 +346,8 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
               base::JSONReader::ReadDict(request.request_body->elements()
                                              ->at(0)
                                              .As<network::DataElementBytes>()
-                                             .AsStringPiece());
+                                             .AsStringPiece(),
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           if (!request_body) {
             SimulateBadRequest(kGetChallengeDataUrl);
             return;
@@ -1013,7 +1014,8 @@ TEST_F(SecondDeviceAuthBrokerTest,
             base::JSONReader::ReadDict(request.request_body->elements()
                                            ->at(0)
                                            .As<network::DataElementBytes>()
-                                           .AsStringPiece());
+                                           .AsStringPiece(),
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         if (!request_body) {
           SimulateBadRequest(kStartSessionUrl);
           return;
