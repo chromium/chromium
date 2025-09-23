@@ -43,23 +43,35 @@ class OptimizationGuideModelProvider {
   virtual ~OptimizationGuideModelProvider() = default;
 };
 
+// Helper class to facilitate observing model updates for a given optimization
+// target. This is similar to base::ScopedObservation and takes care of adding
+// and removing the observer from the model provider.
 class OptimizationGuideModelProviderObservation {
  public:
   OptimizationGuideModelProviderObservation(
       OptimizationGuideModelProvider* model_provider,
-      proto::OptimizationTarget optimization_target,
-      const std::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer)
-      : model_provider_(model_provider),
-        optimization_target_(optimization_target),
-        observer_(observer) {
+      : model_provider_(model_provider), observer_(observer) {}
+
+  ~OptimizationGuideModelProviderObservation() { Reset(); }
+
+  void Observe(proto::OptimizationTarget optimization_target,
+               const std::optional<proto::Any>& model_metadata) {
+    optimization_target_ = optimization_target;
     model_provider_->AddObserverForOptimizationTargetModel(
-        optimization_target_, model_metadata, observer_);
+        optimization_target, model_metadata, observer_);
   }
 
-  ~OptimizationGuideModelProviderObservation() {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        optimization_target_, observer_);
+  void Reset() {
+    if (optimization_target_ != proto::OPTIMIZATION_TARGET_UNKNOWN) {
+      model_provider_->RemoveObserverForOptimizationTargetModel(
+          optimization_target_, observer_);
+      optimization_target_ = proto::OPTIMIZATION_TARGET_UNKNOWN;
+    }
+  }
+
+  bool IsRegistered() const {
+    return optimization_target_ != proto::OPTIMIZATION_TARGET_UNKNOWN;
   }
 
   OptimizationGuideModelProviderObservation(
@@ -69,8 +81,13 @@ class OptimizationGuideModelProviderObservation {
 
  private:
   const raw_ptr<OptimizationGuideModelProvider> model_provider_;
-  const proto::OptimizationTarget optimization_target_;
   const raw_ptr<OptimizationTargetModelObserver> observer_;
+
+  // The optimization target for which the models are being observed. If this is
+  // OPTIMIZATION_TARGET_UNKNOWN, then the observation is not currently
+  // registered.
+  proto::OptimizationTarget optimization_target_ =
+      proto::OPTIMIZATION_TARGET_UNKNOWN;
 };
 
 }  // namespace optimization_guide

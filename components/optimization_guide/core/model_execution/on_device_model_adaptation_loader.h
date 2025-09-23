@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -159,7 +159,7 @@ class OnDeviceModelAdaptationLoader final
   proto::OptimizationTarget target_;
 
   // The model provider to observe for updates to model adaptations.
-  raw_ref<OptimizationGuideModelProvider> model_provider_;
+  OptimizationGuideModelProviderObservation model_provider_observation_;
   OnLoadFn on_load_fn_;
 
   // The compatibility spec that we've registered for adaptations with.

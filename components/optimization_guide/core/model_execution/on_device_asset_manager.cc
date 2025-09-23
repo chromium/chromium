@@ -44,12 +44,13 @@ OnDeviceAssetManager::OnDeviceAssetManager(
       usage_tracker_(usage_tracker),
       on_device_component_state_manager_(component_state_manager),
       service_controller_(service_controller),
-      model_provider_(model_provider),
       adaptation_loaders_(
           model_provider,
           base::BindRepeating(
               &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
-              service_controller.GetWeakPtr())) {
+              service_controller.GetWeakPtr())),
+      text_safety_model_observation_(&model_provider, this),
+      language_detection_model_observation_(&model_provider, this) {
   usage_tracker_->AddObserver(this);
   on_device_component_state_manager_->AddObserver(this);
 
@@ -73,16 +74,15 @@ void OnDeviceAssetManager::RegisterTextSafetyAndLanguageModels() {
     return;
   }
 
-  if (!text_safety_model_observation_) {
-    text_safety_model_observation_.emplace(
-        &model_provider_.get(), GetOptimizationTargetForSafetyModel(),
-        /*model_metadata=*/std::nullopt, this);
+  if (!text_safety_model_observation_.IsRegistered()) {
+    text_safety_model_observation_.Observe(
+        GetOptimizationTargetForSafetyModel(),
+        /*model_metadata=*/std::nullopt);
   }
-  if (!language_detection_model_observation_) {
-    language_detection_model_observation_.emplace(
-        &model_provider_.get(),
+  if (!language_detection_model_observation_.IsRegistered()) {
+    language_detection_model_observation_.Observe(
         proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        /*model_metadata=*/std::nullopt, this);
+        /*model_metadata=*/std::nullopt);
   }
 }
 

@@ -194,7 +194,7 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     : feature_(feature),
       target_(
           *features::internal::GetOptimizationTargetForCapability(feature_)),
-      model_provider_(model_provider),
+      model_provider_observation_(&model_provider, this),
       on_load_fn_(on_load_fn),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
@@ -205,7 +205,7 @@ OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
 
 void OnDeviceModelAdaptationLoader::Unregister() {
   if (registered_spec_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(target_, this);
+    model_provider_observation_.Reset();
     registered_spec_.reset();
   }
 }
@@ -248,8 +248,7 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
     model_metadata.SerializeToString(any_metadata.mutable_value());
   }
 
-  model_provider_->AddObserverForOptimizationTargetModel(target_, any_metadata,
-                                                         this);
+  model_provider_observation_.Observe(target_, any_metadata);
 }
 
 void OnDeviceModelAdaptationLoader::OnModelUpdated(

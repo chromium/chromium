@@ -61,16 +61,12 @@ class OnDeviceAssetManager final
   // Controller for the on-device service.
   raw_ref<OnDeviceModelServiceController> service_controller_;
 
-  // The model provider to observe for updates to auxiliary models.
-  raw_ref<OptimizationGuideModelProvider> model_provider_;
-
   // Map from feature to its model adaptation loader. Present only for features
   // that require model adaptation.
   AdaptationLoaderMap adaptation_loaders_;
 
-  std::optional<OptimizationGuideModelProviderObservation>
-      text_safety_model_observation_;
-  std::optional<OptimizationGuideModelProviderObservation>
+  OptimizationGuideModelProviderObservation text_safety_model_observation_;
+  OptimizationGuideModelProviderObservation
       language_detection_model_observation_;
 };
 
