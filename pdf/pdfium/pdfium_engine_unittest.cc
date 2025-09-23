@@ -82,6 +82,9 @@ using ::testing::StrictMock;
 constexpr char kSelectTextExpectedText[] =
     "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
 
+constexpr gfx::PointF kHelloWorldStartPosition{35.0f, 110.0f};
+constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
+
 MATCHER_P2(LayoutWithSize, width, height, "") {
   return arg.size() == gfx::Size(width, height);
 }
@@ -1015,9 +1018,6 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 class PDFiumEngineSelectionTest : public PDFiumEngineTest {
  public:
-  static constexpr gfx::PointF kHelloWorldStartPosition{35.0f, 110.0f};
-  static constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
-
   void TearDown() override {
     // Reset `engine_` before PDFium gets uninitialized.
     engine_.reset();
@@ -2388,7 +2388,6 @@ class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
   static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 96.592f,
                                                           136.496f, 111.792f};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  static constexpr gfx::PointF kStartTextPositionPage0{35.0f, 110.0f};
   static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
 
   void TearDown() override {
@@ -2430,10 +2429,9 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
 
-  constexpr gfx::PointF kEndPosition(100.0f, 110.0f);
-  EXPECT_TRUE(engine->ExtendSelectionByPoint(kEndPosition));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldEndPosition));
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -2449,7 +2447,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
 
   constexpr gfx::PointF kEndPosition(75.0f, 480.0f);
   EXPECT_TRUE(engine->ExtendSelectionByPoint(kEndPosition));
@@ -2472,7 +2470,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/2);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/2);
 
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -2511,7 +2509,7 @@ TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithTripleClick) {
   PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/3);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/3);
 
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
   EXPECT_THAT(
