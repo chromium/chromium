@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 // A service for importing user data coming from other browsers. It implements
 // a gRPC API, called the "OS migration system app API".
@@ -45,6 +46,8 @@ public class DataImporterServiceImpl extends SplitCompatService.Impl {
     private static final String TAG = "DataImporterService";
 
     private static boolean sSkipSecurityPolicyForTesting;
+    private static @Nullable CountDownLatch sOnDestroyLatchForTesting;
+    private static boolean sFailNextOnBindForTesting;
 
     /** If true, the gRPC server will not enforce a security policy. Only for use in tests. */
     @VisibleForTesting
@@ -53,52 +56,72 @@ public class DataImporterServiceImpl extends SplitCompatService.Impl {
         sSkipSecurityPolicyForTesting = skip;
     }
 
+    @VisibleForTesting
+    public static void setOnDestroyLatchForTesting(CountDownLatch latch) {
+        ResettersForTesting.register(() -> sOnDestroyLatchForTesting = null);
+        sOnDestroyLatchForTesting = latch;
+    }
+
+    @VisibleForTesting
+    public static void setFailNextOnBindForTesting(boolean fail) {
+        ResettersForTesting.register(() -> sFailNextOnBindForTesting = false);
+        sFailNextOnBindForTesting = fail;
+    }
+
     private @Nullable IBinderReceiver mBinderReceiver;
     private @Nullable Server mServer;
-    private boolean mStarted;
-
-    @Override
-    public void onCreate() {
-        if (!ChromeFeatureList.sAndroidDataImporterService.isEnabled()) {
-            Log.w(TAG, "AndroidDataImporterService not enabled");
-            return;
-        }
-        mBinderReceiver = new IBinderReceiver();
-        BinderServerBuilder builder =
-                BinderServerBuilder.forAddress(
-                                AndroidComponentAddress.forContext(getService()), mBinderReceiver)
-                        .addService(
-                                ServerInterceptors.intercept(
-                                        new TargetService(), new ParcelableMetadataInterceptor()))
-                        .inboundParcelablePolicy(getInboundParcelablePolicy());
-        if (!sSkipSecurityPolicyForTesting) {
-            builder.securityPolicy(getServerSecurityPolicy());
-        }
-        mServer = builder.build();
-    }
 
     @Override
     public @Nullable IBinder onBind(Intent intent) {
+        if (sFailNextOnBindForTesting) {
+            sFailNextOnBindForTesting = false;
+            return null;
+        }
         if (!ChromeFeatureList.sAndroidDataImporterService.isEnabled()) {
             Log.w(TAG, "AndroidDataImporterService not enabled");
             return null;
         }
-        // `mServer` and `mBinderReceiver` were created by `onCreate()` earlier.
-        assert (mServer != null);
-        assert (mBinderReceiver != null);
-
-        if (!mStarted) {
+        if (mServer == null) {
             try {
-                mStarted = true;
+                mBinderReceiver = new IBinderReceiver();
+                BinderServerBuilder builder =
+                        BinderServerBuilder.forAddress(
+                                        AndroidComponentAddress.forContext(getService()),
+                                        mBinderReceiver)
+                                .addService(
+                                        ServerInterceptors.intercept(
+                                                new TargetService(),
+                                                new ParcelableMetadataInterceptor()))
+                                .inboundParcelablePolicy(getInboundParcelablePolicy());
+                if (!sSkipSecurityPolicyForTesting) {
+                    builder.securityPolicy(getServerSecurityPolicy());
+                }
+                mServer = builder.build();
                 mServer.start();
-                // TODO(crbug.com/436826856): Figure out when to shut down the server again (and
-                // then handle the server being in the shutdown process here).
             } catch (IOException e) {
                 Log.e(TAG, "Failed to start grpc server for TargetService", e);
+                // The server failed to start. Null out members in case they were partially
+                // initialized.
+                mServer = null;
+                mBinderReceiver = null;
                 return null;
             }
         }
+        if (mBinderReceiver == null) return null;
         return mBinderReceiver.get();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mServer != null && !mServer.isShutdown()) {
+            mServer.shutdownNow();
+            mServer = null;
+            mBinderReceiver = null;
+        }
+        super.onDestroy();
+        if (sOnDestroyLatchForTesting != null) {
+            sOnDestroyLatchForTesting.countDown();
+        }
     }
 
     private static final String RESTORE_PACKAGE_NAME = "com.google.android.apps.restore";

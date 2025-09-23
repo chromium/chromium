@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_import;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,8 @@ import com.google.protobuf.ByteString;
 
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
-
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.binder.BinderChannelBuilder;
 import io.grpc.stub.MetadataUtils;
 
@@ -29,18 +31,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /** End-to-end tests for {@link DataImporterServiceImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @Features.EnableFeatures(ChromeFeatureList.ANDROID_DATA_IMPORTER_SERVICE)
 public class DataImporterServiceImplTest {
 
@@ -66,6 +68,73 @@ public class DataImporterServiceImplTest {
     @After
     public void tearDown() {
         mChannel.shutdownNow();
+    }
+
+    @Test
+    @SmallTest
+    public void testUnbindAndRebind() throws TimeoutException, InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        DataImporterServiceImpl.setOnDestroyLatchForTesting(latch);
+
+        // Unbind the service from the rule.
+        mServiceTestRule.unbindService();
+        // Shut down the channel from setUp. This should be the last client, causing onDestroy.
+        mChannel.shutdownNow();
+
+        // Wait for onDestroy to be called.
+        assertTrue(
+                "Timed out waiting for service to be destroyed.",
+                latch.await(5, TimeUnit.SECONDS));
+
+        // Verify the server is gone by trying to establish a new connection, which should fail
+        // because we'll make the next onBind return null.
+        DataImporterServiceImpl.setFailNextOnBindForTesting(true);
+        Context appContext = ApplicationProvider.getApplicationContext();
+        io.grpc.binder.AndroidComponentAddress address =
+                io.grpc.binder.AndroidComponentAddress.forComponent(
+                        new android.content.ComponentName(appContext, DataImporterService.class));
+        ManagedChannel newChannel = BinderChannelBuilder.forAddress(address, appContext).build();
+        try {
+            TargetServiceGrpc.TargetServiceBlockingStub newStub =
+                    TargetServiceGrpc.newBlockingStub(newChannel);
+            TargetHandshakeRequest handshakeRequest =
+                    TargetHandshakeRequest.newBuilder()
+                            .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
+                            .setSessionId(ByteString.copyFromUtf8("test_unbind_session"))
+                            .build();
+            newStub.withDeadlineAfter(3, TimeUnit.SECONDS).handshake(handshakeRequest);
+            fail("RPC should have failed because the service is destroyed.");
+        } catch (StatusRuntimeException e) {
+            // This can be DEADLINE_EXCEEDED if the service doesn't exist to refuse the
+            // connection, causing a timeout. Or UNAVAILABLE if it refuses. CANCELLED can
+            // happen if the channel shuts down before the call completes. UNIMPLEMENTED can
+            // happen in some transient states. All are fine.
+            Status.Code code = e.getStatus().getCode();
+            assertTrue(
+                    "Unexpected RPC status code: " + code,
+                    code == Status.Code.UNAVAILABLE
+                            || code == Status.Code.CANCELLED
+                            || code == Status.Code.UNIMPLEMENTED);
+        } finally {
+            newChannel.shutdownNow();
+        }
+
+        // Rebind the service. DataImporterServiceImpl.setFailNextOnBindForTesting is already false.
+        Intent intent = new Intent(appContext, DataImporterService.class);
+        mServiceTestRule.bindService(intent);
+
+        // Create a new channel to the rebound service.
+        mChannel = BinderChannelBuilder.forAddress(address, appContext).build();
+        mStub = TargetServiceGrpc.newBlockingStub(mChannel);
+
+        // Verify that the server is running again.
+        TargetHandshakeRequest handshakeRequest =
+                TargetHandshakeRequest.newBuilder()
+                        .setItemType(SystemAppApiItemType.SYSTEM_APP_API_ITEM_TYPE_BROWSER_DATA)
+                        .setSessionId(ByteString.copyFromUtf8("test_rebind_session"))
+                        .build();
+        TargetHandshakeResponse response = mStub.handshake(handshakeRequest);
+        assertTrue(response.getSupported());
     }
 
     @Test
