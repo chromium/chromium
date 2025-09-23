@@ -12,9 +12,11 @@
 #import "base/feature_list.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/sharing_message/features.h"
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_client.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/reminder_notifications/model/reminder_notification_client.h"
@@ -250,6 +252,12 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
 
       AddPushNotificationClient(std::move(reminder_client));
     }
+  }
+  if (IsMobilePromoOnDesktopNotificationsEnabled() &&
+      IsMultiProfilePushNotificationHandlingEnabled()) {
+    std::unique_ptr<CrossPlatformPromosNotificationClient> client =
+        std::make_unique<CrossPlatformPromosNotificationClient>(profile_);
+    AddPushNotificationClient(std::move(client));
   }
 }
 

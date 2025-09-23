@@ -21,11 +21,28 @@ source_set("model") {
   ]
 }
 
+source_set("notification_client") {
+  sources = [
+    "cross_platform_promos_notification_client.h",
+    "cross_platform_promos_notification_client.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "cross_platform_promos_service_unittest.mm" ]
+  sources = [
+    "cross_platform_promos_notification_client_unittest.mm",
+    "cross_platform_promos_service_unittest.mm",
+  ]
   deps = [
     ":model",
+    ":notification_client",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",

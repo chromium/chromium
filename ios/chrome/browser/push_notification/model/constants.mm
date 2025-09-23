@@ -14,6 +14,7 @@ const char kSafetyCheckNotificationKey[] = "SAFETY_CHECK";
 const char kSendTabNotificationKey[] = "SEND_TAB";
 const char kSportsNotificationKey[] = "SPORTS";
 const char kTipsNotificationKey[] = "TIPS";
+const char kCrossPlatformPromosNotificationKey[] = "XPLAT_PROMOS";
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/histograms.xml:ClientId)
 
 NSString* const kSendTabNotificationCategoryIdentifier = @"SendTabNotification";
@@ -59,5 +60,7 @@ std::string PushNotificationClientIdToString(
       return kSendTabNotificationKey;
     case PushNotificationClientId::kReminders:
       return kReminderNotificationKey;
+    case PushNotificationClientId::kCrossPlatformPromos:
+      return kCrossPlatformPromosNotificationKey;
   }
 }

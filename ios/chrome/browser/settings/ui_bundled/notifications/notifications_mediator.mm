@@ -441,6 +441,9 @@
     case PushNotificationClientId::kReminders:
       // Reminders does not exist as an item in the UI.
       NOTREACHED();
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
+      NOTREACHED();
   }
   // If Send Tab has not previously been disabled, then whenever another
   // notification type is enabled through the notification settings, Send Tab
@@ -484,6 +487,9 @@
     case PushNotificationClientId::kSports:
     case PushNotificationClientId::kReminders:
       // Not a switch.
+      NOTREACHED();
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
       NOTREACHED();
   }
 }

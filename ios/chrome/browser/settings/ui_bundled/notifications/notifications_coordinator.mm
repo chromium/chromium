@@ -140,6 +140,9 @@
     case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kReminders:
       return ItemIdentifierSendTab;
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
+      NOTREACHED();
   }
 }
 

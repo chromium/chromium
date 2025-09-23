@@ -211,6 +211,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
       case PushNotificationClientId::kSendTab:
       case PushNotificationClientId::kSafetyCheck:
       case PushNotificationClientId::kReminders:
+      case PushNotificationClientId::kCrossPlatformPromos:
         // Features do not support feedback.
         NOTREACHED();
     }

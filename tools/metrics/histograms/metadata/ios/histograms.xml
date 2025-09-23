@@ -4864,6 +4864,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SEND_TAB" summary="Send Tab To Self feature"/>
     <variant name="SPORTS" summary="Sports feature"/>
     <variant name="TIPS" summary="Tips feature"/>
+    <variant name="XPLAT_PROMOS" summary="Cross-Platform Promos feature"/>
   </token>
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.mm:ClientId) -->
 

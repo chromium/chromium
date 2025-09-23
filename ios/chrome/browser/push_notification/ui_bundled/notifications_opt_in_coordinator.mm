@@ -203,6 +203,9 @@
       case PushNotificationClientId::kReminders:
         // Reminders are enabled with SendTab.
         NOTREACHED();
+      case PushNotificationClientId::kCrossPlatformPromos:
+        // TODO:(crbug.com/445662240): Add toggle for this feature.
+        NOTREACHED();
     }
   }
 }

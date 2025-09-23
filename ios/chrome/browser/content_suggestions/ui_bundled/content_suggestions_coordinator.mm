@@ -1430,9 +1430,7 @@ using segmentation_platform::TipIdentifier;
       return ContentSuggestionsModuleType::kSafetyCheck;
     case PushNotificationClientId::kSendTab:
       return ContentSuggestionsModuleType::kSendTabPromo;
-    case PushNotificationClientId::kContent:
-    case PushNotificationClientId::kSports:
-    case PushNotificationClientId::kReminders:
+    default:
       NOTREACHED();
   }
 }
