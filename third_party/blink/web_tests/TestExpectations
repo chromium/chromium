@@ -9729,3 +9729,8 @@ crbug.com/444150315 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context
 # Gardener 2025-09-19
 crbug.com/446017690 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/smooth-scroll/track-scroll.html [ Pass Timeout ]
 crbug.com/446017690 [ Linux ] virtual/threaded-prefer-compositing/fast/scrolling/overflow-clip-with-page-scale.html [ Pass Failure ]
+
+# Gardener 2025-09-23
+crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-in-child-of-head.tentative.html?designMode=off&method=backspace [ Failure ]
+crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=br [ Failure ]
+crbug.com/446773671 [ Mac ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/031.html [ Failure ]
