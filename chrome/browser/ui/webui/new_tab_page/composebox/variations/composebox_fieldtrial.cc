@@ -110,39 +110,15 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
     return false;
   }
 
-  // The AimEligibilityService depends on the TemplateURLService. If the
-  // TemplateURLService does not exist for this profile, then the
-  // AimEligibilityService cannot be created.
+  // The `AimEligibilityService` depends on the `TemplateURLService`. If the
+  // `TemplateURLService` does not exist for this profile, then the
+  // `AimEligibilityService` cannot be created.
   if (!TemplateURLServiceFactory::GetForProfile(profile)) {
     return false;
   }
 
-  auto* feature_list = base::FeatureList::GetInstance();
-  if (feature_list && feature_list->IsFeatureOverridden(kNtpComposebox.name) &&
-      !base::FeatureList::IsEnabled(kNtpComposebox)) {
-    return false;
-  }
-
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  if (!aim_eligibility_service) {
-    return false;
-  }
-
-  // If the server eligibility is enabled, check overall eligibility alone.
-  // The service will control locale rollout so there's no need to check locale
-  // or the state of kNtpComposebox below.
-  if (aim_eligibility_service->IsServerEligibilityEnabled()) {
-    return aim_eligibility_service->IsAimEligible();
-  }
-
-  // If not locally eligible, return false.
-  if (!aim_eligibility_service->IsAimLocallyEligible()) {
-    return false;
-  }
-
-  // Otherwise, check the generic composebox feature.
-  return base::FeatureList::IsEnabled(kNtpComposebox);
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      AimEligibilityServiceFactory::GetForProfile(profile), kNtpComposebox);
 }
 
 BASE_FEATURE(kNtpComposebox,
