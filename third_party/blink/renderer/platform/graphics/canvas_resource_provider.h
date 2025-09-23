@@ -266,7 +266,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // CanvasResourceProviderSharedImage overrides these methods as part of
   // implementing resource recycling.
   virtual void SetResourceRecyclingEnabled(bool) {}
-  virtual void ClearUnusedResources() {}
 
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
@@ -570,7 +569,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void ClearUnusedResources() override { unused_resources_.clear(); }
+  void ClearUnusedResources() { unused_resources_.clear(); }
   bool IsSingleBuffered() const override;
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
