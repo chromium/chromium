@@ -2807,7 +2807,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '9940fbf1e0c0863907e77e0600b99bb3e2bc2b9f',
 
   'src/third_party/search_engines_data/resources':
-    Var('chromium_git') + '/external/search_engines_data.git' + '@' + '0c5ccd76be0fc23a79deb688089168db3ce64105',
+    Var('chromium_git') + '/external/search_engines_data.git' + '@' + 'd5532f82099d33fb441b936ac9ecf832d275a3fa',
 
   'src/third_party/search_engines_data/resources_internal': {
     'url': Var('chrome_git') + '/external/search_engines_data_internal.git' + '@' + 'ece9c32daf8e6979df506aaef4d3b8c3d5c04b30',
