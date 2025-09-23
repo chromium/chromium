@@ -348,8 +348,10 @@ void BrowserTestBase::SetUp() {
                                     "127.0.0.1:0=public");
   }
 
-  if (!command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream))
+  if (use_fake_media_stream_devices_ &&
+      !command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream)) {
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+  }
 
   // Features that depend on external factors (e.g. memory pressure monitor) can
   // disable themselves based on the switch below (to ensure that browser tests
@@ -1079,6 +1081,11 @@ void BrowserTestBase::PostTaskToInProcessRendererAndWait(
 void BrowserTestBase::EnablePixelOutput(float force_device_scale_factor) {
   enable_pixel_output_ = true;
   force_device_scale_factor_ = force_device_scale_factor;
+}
+
+void BrowserTestBase::SetUseFakeMediaStreamDevices(
+    bool use_fake_media_stream_devices) {
+  use_fake_media_stream_devices_ = use_fake_media_stream_devices;
 }
 
 void BrowserTestBase::UseSoftwareCompositing() {

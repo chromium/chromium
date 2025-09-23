@@ -274,6 +274,10 @@ class BrowserTestBase : public ::testing::Test {
   // display densities.
   void EnablePixelOutput(float force_device_scale_factor = 1.f);
 
+  // Call this before SetUp() to specify whether fake media stream devices
+  // should be used. True by default.
+  void SetUseFakeMediaStreamDevices(bool use_fake_media_stream_devices);
+
   // Call this before SetUp() to not use GL, but use software compositing
   // instead.
   void UseSoftwareCompositing();
@@ -365,6 +369,11 @@ class BrowserTestBase : public ::testing::Test {
   // explicit value to ensure consistent results. This value will be passed to
   // the --force-device-scale-factor flag in SetUp.
   float force_device_scale_factor_ = 0;
+
+  // When true, fake media stream devices will be used instead of real ones.
+  // Real devices may depend on OS-specific implementations and may not work on
+  // bots.
+  bool use_fake_media_stream_devices_ = true;
 
   // When verifying pixel output, animations are disabled to reduce flakiness.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
