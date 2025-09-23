@@ -62,6 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
+import org.chromium.ui.widget.ViewRectUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -446,7 +447,13 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         mBookmarkBarView,
                         AppCompatResources.getDrawable(mActivity, R.drawable.default_popup_menu_bg),
                         popupListMenu::getContentView,
-                        new ViewRectProvider(anchorView),
+                        new ViewRectProvider(
+                                anchorView,
+                                (view, rect, onRectChanged) -> {
+                                    var updater = new ViewRectUpdater(view, rect, onRectChanged);
+                                    updater.setIncludePadding(true);
+                                    return updater;
+                                }),
                         mBrowserControlsRectProvider);
 
         mAnchoredPopupWindow.setFocusable(true);
@@ -457,12 +464,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.bookmarks_bar_popup_elevation));
-
-        // Set the margin because anchoredPopupWindow is responsible for calculating the dynamic
-        // height of the popup.
-        int marginPx =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.bookmarks_bar_popup_margin);
-        mAnchoredPopupWindow.setMargin(marginPx);
 
         // Create an observer that will re-run the sizing logic whenever the list content changes.
         // This is triggered when navigating into or out of a submenu. This observer is needed
@@ -783,6 +784,15 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             mRect.set(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
             mRect.top += topControlsHeight;
             mRect.bottom -= bottomControlsHeight;
+
+            // Add a margin to the bottom of the rect to prevent the popup from getting too close
+            // to the bottom of the screen.
+            int marginPx =
+                    mActivity
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.bookmarks_bar_popup_margin);
+            mRect.bottom -= marginPx;
+
             // Notify the observer that the rect has changed.
             notifyRectChanged();
         }
