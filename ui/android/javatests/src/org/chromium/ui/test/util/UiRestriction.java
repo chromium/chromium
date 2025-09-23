@@ -45,10 +45,8 @@ public final class UiRestriction {
         check.addHandler(DeviceFormFactor.DESKTOP, () -> !isDesktop());
         // isTablet() returns True if the display is large enough to be considered a tablet, so
         // it is always True on desktop devices as well.
-        // TODO(crbug.com/415126396): Change PHONE to "isDesktop() || isTablet()"
-        check.addHandler(DeviceFormFactor.PHONE, () -> isTablet());
-        // TODO(crbug.com/415126396): Change TABLET to "isDesktop() || !isTablet()"
-        check.addHandler(DeviceFormFactor.ONLY_TABLET, () -> !isTablet());
+        check.addHandler(DeviceFormFactor.PHONE, () -> isDesktop() || isTablet());
+        check.addHandler(DeviceFormFactor.ONLY_TABLET, () -> isDesktop() || !isTablet());
         check.addHandler(DeviceFormFactor.TABLET_OR_DESKTOP, () -> !isTablet());
         check.addHandler(DeviceFormFactor.PHONE_OR_TABLET, () -> isDesktop());
     }
