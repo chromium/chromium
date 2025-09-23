@@ -48,6 +48,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace ui {
 class ListSelectionModel;
 }
@@ -225,9 +229,28 @@ class TabsGetAllInWindowFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("tabs.getAllInWindow", TABS_GETALLINWINDOW)
 };
 class TabsQueryFunction : public ExtensionFunction {
-  ~TabsQueryFunction() override = default;
+ public:
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.query", TABS_QUERY)
+
+ private:
+  ~TabsQueryFunction() override = default;
+
+  // Returns true if the given `candidate_profile` matches the calling
+  // extension's profile (taking into account incognito access).
+  bool MatchesProfile(Profile* candidate_profile);
+
+  bool MatchesWindow(BrowserWindowInterface* candidate_browser,
+                     BrowserWindowInterface* current_browser,
+                     BrowserWindowInterface* last_active_browser,
+                     const std::string& target_window_type,
+                     int target_window_id);
+
+  bool MatchesTab(tabs::TabInterface* candidate_tab,
+                  const URLPatternSet& target_url_patterns);
+
+  // The query parameters passed by the extension.
+  api::tabs::Query::Params::QueryInfo query_info_;
 };
 class TabsCreateFunction : public ExtensionFunction {
   ~TabsCreateFunction() override = default;
