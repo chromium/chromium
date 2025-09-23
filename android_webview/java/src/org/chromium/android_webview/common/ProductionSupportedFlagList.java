@@ -1153,6 +1153,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 CcFeatures.OVERSCROLL_BEHAVIOR_RESPECTED_ON_ALL_SCROLL_CONTAINERS,
                 "Enables overscroll-behavior to be respected on all scroll containers."),
+        Flag.baseFeature(
+                BlinkFeatures.SEPARATE_DEFER_MODULE_SCRIPT_TASKS,
+                "Enables yielding to the event loop between executing deferred module scripts to"
+                        + " improve responsiveness."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
