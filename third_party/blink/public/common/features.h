@@ -1266,6 +1266,43 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kMemoryCacheIntelligentPruningTypeWeight);
 
+// Enables extending the list of resource types for strong references
+// in MemoryCache via boolean FeatureParams.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReferenceExtensions);
+
+// --- High Priority ---
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kMemoryCacheStrongRefXSLStyleSheet);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kMemoryCacheStrongRefRaw);
+
+// --- Medium Priority ---
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefImage);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kMemoryCacheStrongRefSVGDocument);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefManifest);
+
+// --- Low Priority ---
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefAudio);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefVideo);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefTextTrack);
+
+// --- Lowest Priority ---
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kMemoryCacheStrongRefLinkPrefetch);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kMemoryCacheStrongRefSpeculationRules);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kMemoryCacheStrongRefDictionary);
+
 // Keep strong references in the blink memory cache to maximize resource reuse.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);

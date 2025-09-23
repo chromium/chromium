@@ -207,12 +207,52 @@ bool ShouldResourceBeAddedToMemoryCache(const FetchParameters& params,
 bool ShouldResourceBeKeptStrongReferenceByType(
     Resource* resource,
     const SecurityOrigin* settings_object_origin) {
-  // Image, fonts, stylesheets and scripts are the most commonly reused scripts.
+  // By default, only the most commonly reused, critical resource types are
+  // candidates for being kept as strong references in the MemoryCache.
+  const auto resource_type = resource->GetType();
 
-  return resource->GetType() == ResourceType::kScript ||
-         resource->GetType() == ResourceType::kFont ||
-         resource->GetType() == ResourceType::kCSSStyleSheet ||
-         resource->GetType() == ResourceType::kMock;  // For tests.
+  // Some resource types are kept as strong references by default. Others can
+  // be enabled via kMemoryCacheStrongReferenceExtensions feature flags. The
+  // groupings below are based on the priorities from GetResourceTypePriority.
+  switch (resource_type) {
+    // --- Default values ---
+    case ResourceType::kScript:
+    case ResourceType::kFont:
+    case ResourceType::kCSSStyleSheet:
+      return true;
+    case ResourceType::kMock:  // Used by tests.
+      return true;
+
+    // --- High Priority ---
+    case ResourceType::kXSLStyleSheet:
+      return features::kMemoryCacheStrongRefXSLStyleSheet.Get();
+    case ResourceType::kRaw:
+      return features::kMemoryCacheStrongRefRaw.Get();
+
+    // --- Medium Priority ---
+    case ResourceType::kImage:
+      return features::kMemoryCacheStrongRefImage.Get();
+    case ResourceType::kSVGDocument:
+      return features::kMemoryCacheStrongRefSVGDocument.Get();
+    case ResourceType::kManifest:
+      return features::kMemoryCacheStrongRefManifest.Get();
+
+    // --- Low Priority ---
+    case ResourceType::kAudio:
+      return features::kMemoryCacheStrongRefAudio.Get();
+    case ResourceType::kVideo:
+      return features::kMemoryCacheStrongRefVideo.Get();
+    case ResourceType::kTextTrack:
+      return features::kMemoryCacheStrongRefTextTrack.Get();
+
+    // --- Lowest Priority ---
+    case ResourceType::kLinkPrefetch:
+      return features::kMemoryCacheStrongRefLinkPrefetch.Get();
+    case ResourceType::kSpeculationRules:
+      return features::kMemoryCacheStrongRefSpeculationRules.Get();
+    case ResourceType::kDictionary:
+      return features::kMemoryCacheStrongRefDictionary.Get();
+  }
 }
 
 bool ShouldResourceBeKeptStrongReference(
