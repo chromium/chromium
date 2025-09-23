@@ -35,9 +35,7 @@ MockBlobStorageContext::~MockBlobStorageContext() = default;
 void MockBlobStorageContext::RegisterFromDataItem(
     mojo::PendingReceiver<::blink::mojom::Blob> blob,
     const std::string& uuid,
-    storage::mojom::BlobDataItemPtr item) {
-  NOTREACHED();
-}
+    storage::mojom::BlobDataItemPtr item) {}
 
 void MockBlobStorageContext::RegisterFromMemory(
     mojo::PendingReceiver<::blink::mojom::Blob> blob,

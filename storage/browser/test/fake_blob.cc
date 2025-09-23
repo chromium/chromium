@@ -4,7 +4,9 @@
 
 #include "storage/browser/test/fake_blob.h"
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 
 namespace storage {
 
@@ -33,8 +35,12 @@ void FakeBlob::ReadRange(uint64_t offset,
   NOTREACHED();
 }
 
-void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
-                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {}
+void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle handle,
+                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
+  if (!body_.empty()) {
+    CHECK(mojo::BlockingCopyFromString(body_, handle));
+  }
+}
 
 void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,
                     const std::string& method,

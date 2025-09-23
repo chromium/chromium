@@ -406,7 +406,9 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRange) {
     std::vector<IndexedDBExternalObject> external_objects;
     for (size_t j = 0; j < 4; ++j) {
       std::string type = "type " + base::NumberToString(j);
-      external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+      std::string payload = "payload " + base::NumberToString(j);
+      external_objects.push_back(
+          CreateBlobInfo(base::UTF8ToUTF16(type), payload));
     }
 
     // Reset from previous iteration.
@@ -502,7 +504,9 @@ TEST_P(BackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
     std::vector<IndexedDBExternalObject> external_objects;
     for (size_t j = 0; j < 4; ++j) {
       std::string type = "type " + base::NumberToString(j);
-      external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+      std::string payload = "payload " + base::NumberToString(j);
+      external_objects.push_back(
+          CreateBlobInfo(base::UTF8ToUTF16(type), payload));
     }
 
     // Reset from previous iteration.
@@ -572,7 +576,9 @@ TEST_P(BackingStoreTestWithExternalObjects, ClearObjectStoreObjects) {
   std::vector<IndexedDBExternalObject> external_objects;
   for (size_t j = 0; j < 4; ++j) {
     std::string type = "type " + base::NumberToString(j);
-    external_objects.push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+    std::string payload = "payload " + base::NumberToString(j);
+    external_objects.push_back(
+        CreateBlobInfo(base::UTF8ToUTF16(type), payload));
   }
 
   const auto keys =

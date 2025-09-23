@@ -59,6 +59,15 @@ class BackingStoreTestBase : public testing::Test {
 
   BackingStore* backing_store();
 
+  static IndexedDBExternalObject CreateBlobInfo(const std::u16string& file_name,
+                                                const std::u16string& type,
+                                                base::Time last_modified,
+                                                int64_t size);
+  static IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
+                                                std::string_view blob_data);
+
+  static IndexedDBExternalObject CreateFileSystemAccessHandle();
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -98,15 +107,6 @@ class BackingStoreWithExternalObjectsTestBase : public BackingStoreTestBase {
   virtual bool IncludesFileSystemAccessHandles() = 0;
 
   void SetUp() override;
-
-  IndexedDBExternalObject CreateBlobInfo(const std::u16string& file_name,
-                                         const std::u16string& type,
-                                         base::Time last_modified,
-                                         int64_t size);
-  IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
-                                         int64_t size);
-
-  IndexedDBExternalObject CreateFileSystemAccessHandle();
 
   // This just checks the data that survive getting stored and recalled, e.g.
   // the file path and UUID will change and thus aren't verified.

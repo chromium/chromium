@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/blob_writer.h"
 #include "content/browser/indexed_db/status.h"
+#include "content/common/content_export.h"
 #include "sql/streaming_blob_handle.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
@@ -51,7 +53,7 @@ class BackingStoreTransactionImpl;
 // IndexedDB database. Also owns the schema, operations and in-memory metadata
 // for this database. BackingStore interface methods call into this class to
 // perform the actual database operations.
-class DatabaseConnection {
+class CONTENT_EXPORT DatabaseConnection {
  public:
   // Opens a connection to the specified database. When `name` is present, it
   // will create a new DB if one does not exist. When `name` is null and a DB
@@ -239,6 +241,9 @@ class DatabaseConnection {
   StatusOr<IndexedDBValue> AddExternalObjectMetadataToValue(
       IndexedDBValue value,
       int64_t record_row_id);
+
+  // Changes the size at which blobs are chunked.
+  static void OverrideMaxBlobSizeForTesting(base::ByteCount size);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DatabaseConnectionTest, TooNew);

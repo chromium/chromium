@@ -155,6 +155,7 @@ source_set("unit_tests") {
     "instance/mock_factory_client.h",
     "instance/mock_file_system_access_context.cc",
     "instance/mock_file_system_access_context.h",
+    "instance/sqlite/backing_store_sqlite_unittest.cc",
     "instance/sqlite/database_connection_unittest.cc",
     "instance/transaction_unittest.cc",
     "list_set_unittest.cc",

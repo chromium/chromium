@@ -64,7 +64,10 @@ int64_t GetId(indexed_db::BackingStore::Database& db) {
 
 class LevelDbBackingStoreTest : public BackingStoreTestBase {
  public:
-  LevelDbBackingStoreTest() = default;
+  LevelDbBackingStoreTest()
+      : sqlite_override_(
+            BucketContext::OverrideShouldUseSqliteForTesting(false)) {}
+
   LevelDbBackingStoreTest(const LevelDbBackingStoreTest&) = delete;
   LevelDbBackingStoreTest& operator=(const LevelDbBackingStoreTest&) = delete;
 
@@ -72,6 +75,9 @@ class LevelDbBackingStoreTest : public BackingStoreTestBase {
     return static_cast<level_db::BackingStore*>(
         BackingStoreTestBase::backing_store());
   }
+
+ private:
+  base::AutoReset<std::optional<bool>> sqlite_override_;
 };
 
 class LevelDbBackingStoreTestForThirdPartyStoragePartitioning
@@ -286,7 +292,8 @@ TEST_P(LevelDbBackingStoreTestWithExternalObjects, BlobWriteCleanup) {
   external_objects().clear();
   for (size_t j = 0; j < 4; ++j) {
     std::string type = "type " + base::NumberToString(j);
-    external_objects().push_back(CreateBlobInfo(base::UTF8ToUTF16(type), 1));
+    external_objects().push_back(
+        CreateBlobInfo(base::UTF8ToUTF16(type), "payload"));
   }
 
   auto values = std::to_array({
@@ -806,8 +813,8 @@ TEST_P(LevelDbBackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
 
   // Insert an initial blob.
   std::string initial_blob_name = "initial_blob";
-  IndexedDBExternalObject initial_blob =
-      CreateBlobInfo(base::UTF8ToUTF16(initial_blob_name), /*size=*/100);
+  IndexedDBExternalObject initial_blob = CreateBlobInfo(
+      base::UTF8ToUTF16(initial_blob_name), std::string('a', 100));
   IndexedDBValue initial_value("initial_value", {initial_blob});
   IndexedDBKey initial_key(u"initial_key");
   EXPECT_TRUE(initial_transaction
@@ -838,7 +845,7 @@ TEST_P(LevelDbBackingStoreTestWithExternalObjects, RollbackClearsDiskSpace) {
   IndexedDBKey key(u"key0");
   std::string name = "name0";
   IndexedDBExternalObject test_blob =
-      CreateBlobInfo(base::UTF8ToUTF16(name), 100);
+      CreateBlobInfo(base::UTF8ToUTF16(name), std::string('a', 100));
   IndexedDBValue value = IndexedDBValue("value0", {test_blob});
 
   // Insert additional blob that will be rolled back.

@@ -75,11 +75,16 @@
 namespace content::indexed_db::sqlite {
 namespace {
 
+// Used for tests.
+std::optional<base::ByteCount> g_max_blob_size_override;
+
 // The maximum number of bytes that will be stored in a single SQLite BLOB
 // column. If a blob is larger than this, it will be chunked into multiple rows
 // in the `overflow_blob_chunks` table. Small value is here temporarily to cause
 // tests to exercise the chunking codepaths. Final value TBD.
-constexpr base::ByteCount kMaxBlobSize = base::KiB(25);
+base::ByteCount GetMaxBlobSize() {
+  return g_max_blob_size_override.value_or(base::KiB(25));
+}
 
 // The separator used to join the strings when encoding an `IndexedDBKeyPath` of
 // type array. Spaces are not allowed in the individual strings, which makes
@@ -237,7 +242,7 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // case for legacy blobs. It's also temporarily null while FSA handles are
       // being serialized into a token (after which point, this holds the
       // token). If there are more bytes than fit into a single SQLite BLOB
-      // (kMaxBlobSize), additional bytes will be stored in
+      // (GetMaxBlobSize()), additional bytes will be stored in
       // `overflow_blob_chunks` table.
       " bytes BLOB,"
       // Null for FSA handles.
@@ -1550,7 +1555,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       // Write metadata and reserve space for the `bytes` column. Blob bytes are
       // not actually written yet though.
       int main_chunk_size =
-          std::min(external_object.size(), kMaxBlobSize.InBytes());
+          std::min(external_object.size(), GetMaxBlobSize().InBytes());
       {
         sql::Statement statement(
             db_->GetCachedStatement(SQL_FROM_HERE,
@@ -1582,7 +1587,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
       for (int64_t bytes_written = main_chunk_size;
            bytes_written < external_object.size();) {
         const int64_t chunk_size = std::min(
-            external_object.size() - bytes_written, kMaxBlobSize.InBytes());
+            external_object.size() - bytes_written, GetMaxBlobSize().InBytes());
         sql::Statement statement(
             db_->GetCachedStatement(SQL_FROM_HERE,
                                     "INSERT INTO overflow_blob_chunks "
@@ -1795,7 +1800,7 @@ DatabaseConnection::CreateAllExternalObjects(
           base::BindRepeating(&DatabaseConnection::OpenBlobChunkForStreaming,
                               base::Unretained(this), object.blob_number(),
                               /*readonly=*/true),
-          kMaxBlobSize.InBytes(),
+          GetMaxBlobSize().InBytes(),
           base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                          base::Unretained(this), object.blob_number()));
       it = active_blobs_.insert({object.blob_number(), std::move(streamer)})
@@ -2051,6 +2056,11 @@ void DatabaseConnection::ValidateInputs(int64_t object_store_id,
   auto iter = metadata_.object_stores.find(object_store_id);
   CHECK(iter != metadata_.object_stores.end());
   CHECK(iter->second.indexes.contains(index_id));
+}
+
+// static
+void DatabaseConnection::OverrideMaxBlobSizeForTesting(base::ByteCount size) {
+  g_max_blob_size_override = size;
 }
 
 }  // namespace content::indexed_db::sqlite

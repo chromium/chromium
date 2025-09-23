@@ -190,7 +190,7 @@ void BackingStoreWithExternalObjectsTestBase::SetUp() {
   const int64_t kTime2 = 13287455133000000ll;
   // useful keys and values during tests
   if (IncludesBlobs()) {
-    external_objects_.push_back(CreateBlobInfo(u"blob type", 1));
+    external_objects_.push_back(CreateBlobInfo(u"blob type", "blob payload"));
     external_objects_.push_back(CreateBlobInfo(
         u"file name", u"file type",
         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(kTime1)),
@@ -208,7 +208,7 @@ void BackingStoreWithExternalObjectsTestBase::SetUp() {
   key3_ = IndexedDBKey(u"key3");
 }
 
-IndexedDBExternalObject BackingStoreWithExternalObjectsTestBase::CreateBlobInfo(
+IndexedDBExternalObject BackingStoreTestBase::CreateBlobInfo(
     const std::u16string& file_name,
     const std::u16string& type,
     base::Time last_modified,
@@ -230,27 +230,28 @@ IndexedDBExternalObject BackingStoreWithExternalObjectsTestBase::CreateBlobInfo(
   return info;
 }
 
-IndexedDBExternalObject BackingStoreWithExternalObjectsTestBase::CreateBlobInfo(
+IndexedDBExternalObject BackingStoreTestBase::CreateBlobInfo(
     const std::u16string& type,
-    int64_t size) {
+    std::string_view blob_data) {
   auto uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   mojo::PendingRemote<blink::mojom::Blob> remote;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::string uuid,
+          [](std::string uuid, std::string blob_data,
              mojo::PendingReceiver<blink::mojom::Blob> pending_receiver) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<storage::FakeBlob>(uuid),
-                std::move(pending_receiver));
+            auto fake_blob = std::make_unique<storage::FakeBlob>(uuid);
+            fake_blob->set_body(blob_data);
+            mojo::MakeSelfOwnedReceiver(std::move(fake_blob),
+                                        std::move(pending_receiver));
           },
-          uuid, remote.InitWithNewPipeAndPassReceiver()));
-  IndexedDBExternalObject info(std::move(remote), type, size);
+          uuid, std::string(blob_data),
+          remote.InitWithNewPipeAndPassReceiver()));
+  IndexedDBExternalObject info(std::move(remote), type, blob_data.size());
   return info;
 }
 
-IndexedDBExternalObject
-BackingStoreWithExternalObjectsTestBase::CreateFileSystemAccessHandle() {
+IndexedDBExternalObject BackingStoreTestBase::CreateFileSystemAccessHandle() {
   auto id = base::UnguessableToken::Create();
   mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> remote;
   base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
