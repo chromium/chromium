@@ -101,13 +101,13 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
 void Gamepad::SetMapping(device::GamepadMapping mapping) {
   switch (mapping) {
     case device::GamepadMapping::kNone:
-      mapping_ = "";
+      mapping_ = V8GamepadMappingType(V8GamepadMappingType::Enum::k);
       return;
     case device::GamepadMapping::kStandard:
-      mapping_ = "standard";
+      mapping_ = V8GamepadMappingType(V8GamepadMappingType::Enum::kStandard);
       return;
     case device::GamepadMapping::kXrStandard:
-      mapping_ = "xr-standard";
+      mapping_ = V8GamepadMappingType(V8GamepadMappingType::Enum::kXRStandard);
       return;
   }
   NOTREACHED();
