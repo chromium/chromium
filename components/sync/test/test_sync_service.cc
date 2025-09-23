@@ -327,9 +327,10 @@ DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(DataType type) {}
 
-void TestSyncService::TriggerRefresh(const DataTypeSet& types) {
+void TestSyncService::TriggerRefresh(TriggerRefreshSource source,
+                                     const DataTypeSet& types) {
   if (trigger_refresh_cb_) {
-    trigger_refresh_cb_.Run(types);
+    trigger_refresh_cb_.Run(source, types);
   }
 }
 
@@ -466,8 +467,8 @@ void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     std::vector<LocalDataItemModel::DataId> items) {}
 
 void TestSyncService::SetTriggerRefreshCallback(
-    const base::RepeatingCallback<void(syncer::DataTypeSet)>&
-        trigger_refresh_cb) {
+    const base::RepeatingCallback<
+        void(TriggerRefreshSource, const DataTypeSet&)>& trigger_refresh_cb) {
   trigger_refresh_cb_ = trigger_refresh_cb;
 }
 

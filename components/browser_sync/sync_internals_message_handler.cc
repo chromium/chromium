@@ -270,7 +270,9 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
     return;
   }
 
-  sync_service_->TriggerRefresh(syncer::DataTypeSet::All());
+  sync_service_->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kSyncInternals,
+      syncer::DataTypeSet::All());
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(

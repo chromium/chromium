@@ -1064,7 +1064,8 @@ fake_server::FakeServer* SyncTest::GetFakeServer() const {
 
 void SyncTest::TriggerSyncForDataTypes(int index,
                                        syncer::DataTypeSet data_types) {
-  GetSyncService(index)->TriggerRefresh(data_types);
+  GetSyncService(index)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, data_types);
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {

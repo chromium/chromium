@@ -105,7 +105,8 @@ class TestSyncService : public SyncService {
 
   // The passed callback (if non-null) will be called on TriggerRefresh().
   void SetTriggerRefreshCallback(
-      const base::RepeatingCallback<void(DataTypeSet)>& trigger_refresh_cb);
+      const base::RepeatingCallback<
+          void(TriggerRefreshSource, const DataTypeSet&)>& trigger_refresh_cb);
 
   void FireStateChanged();
   void FireSyncCycleCompleted();
@@ -142,7 +143,8 @@ class TestSyncService : public SyncService {
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
-  void TriggerRefresh(const DataTypeSet& types) override;
+  void TriggerRefresh(TriggerRefreshSource source,
+                      const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
@@ -220,7 +222,8 @@ class TestSyncService : public SyncService {
   base::RepeatingClosure send_passphrase_to_platform_client_cb_;
 
   // Nullable.
-  base::RepeatingCallback<void(syncer::DataTypeSet)> trigger_refresh_cb_;
+  base::RepeatingCallback<void(TriggerRefreshSource, const DataTypeSet&)>
+      trigger_refresh_cb_;
 
   base::WeakPtrFactory<TestSyncService> weak_factory_{this};
 };

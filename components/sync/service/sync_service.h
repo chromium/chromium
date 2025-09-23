@@ -512,9 +512,26 @@ class SyncService : public KeyedService {
   // TODO(crbug.com/40901006): Remove this API.
   virtual void OnDataTypeRequestsSyncStartup(DataType type) = 0;
 
+  // The reason why TriggerRefresh() was called.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(TriggerRefreshSource)
+  enum class TriggerRefreshSource {
+    kUnknown = 0,
+    kBrowserTabsModelProvider = 1,
+    kAndroidSyncServiceBridge = 2,
+    kSyncInvalidationsService = 3,
+    kLocalSync = 4,
+    kSyncInternals = 5,
+    kForeignSessionHelper = 6,
+    kMaxValue = kForeignSessionHelper,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:TriggerRefreshSource)
+
   // Triggers a GetUpdates call for the specified `types`, pulling any new data
-  // from the sync server. Used by tests and debug UI (sync-internals).
-  virtual void TriggerRefresh(const DataTypeSet& types) = 0;
+  // from the sync server.
+  virtual void TriggerRefresh(TriggerRefreshSource source,
+                              const DataTypeSet& types) = 0;
 
   // Informs the data type manager that the preconditions for a controller have
   // changed. If preconditions are NOT met, the datatype will be stopped

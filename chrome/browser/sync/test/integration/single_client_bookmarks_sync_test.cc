@@ -1244,7 +1244,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // After restart, the last sync cycle snapshot should be empty.
   // Once a sync request happened (e.g. by a poll), that snapshot is populated.
   // We use the following checker to simply wait for an non-empty snapshot.
-  GetSyncService(0)->TriggerRefresh({syncer::BOOKMARKS});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::BOOKMARKS});
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 
@@ -1989,7 +1990,9 @@ IN_PROC_BROWSER_TEST_F(
   // Run a sync cycle to trigger bookmarks reupload on browser startup. This is
   // required since bookmarks get reuploaded only after the latest changes are
   // downloaded to avoid uploading outdated data.
-  GetSyncService(kSingleProfileIndex)->TriggerRefresh({syncer::BOOKMARKS});
+  GetSyncService(kSingleProfileIndex)
+      ->TriggerRefresh(syncer::SyncService::TriggerRefreshSource::kUnknown,
+                       {syncer::BOOKMARKS});
 
   // Bookmark favicon will be loaded if there are local changes.
   ASSERT_TRUE(

@@ -341,7 +341,9 @@ InteractiveFamilyLiveTest::WaitForStateSeeding(
                  id,
                  [&]() {
                    SyncServiceFactory::GetForProfile(&browser_user.profile())
-                       ->TriggerRefresh(syncer::DataTypeSet::All());
+                       ->TriggerRefresh(
+                           syncer::SyncService::TriggerRefreshSource::kUnknown,
+                           syncer::DataTypeSet::All());
                    return state.Check(browser_user.GetServices());
                  },
                  /*polling_interval=*/base::Seconds(2)),

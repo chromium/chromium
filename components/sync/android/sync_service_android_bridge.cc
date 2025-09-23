@@ -460,7 +460,9 @@ jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
 }
 
 void SyncServiceAndroidBridge::TriggerRefresh(JNIEnv* env) {
-  native_sync_service_->TriggerRefresh(DataTypeSet::All());
+  native_sync_service_->TriggerRefresh(
+      SyncService::TriggerRefreshSource::kAndroidSyncServiceBridge,
+      DataTypeSet::All());
 }
 
 jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {

@@ -2247,6 +2247,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TriggerRefreshSource" enum="TriggerRefreshSource"
+    expires_after="2026-09-22">
+  <owner>mtatarski@google.com</owner>
+  <owner>chrome-sync-dev@chromium.org</owner>
+  <summary>
+    Recorded whenever SyncService::TriggerRefresh() is called, records the call
+    site/reason why it's called. This method forces a download of latest updates
+    from the server. This histogram helps to track existing and new use cases
+    and have an alert in case there are too many usages of it leading to
+    additional traffic to the server.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultAddKeysAttemptIsSuccessful" enum="Boolean"
     expires_after="2026-03-15">
   <owner>mmoskvitin@google.com</owner>

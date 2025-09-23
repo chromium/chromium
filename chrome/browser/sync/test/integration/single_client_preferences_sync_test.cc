@@ -220,7 +220,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   // After restart, the last sync cycle snapshot should be empty.
   // Once a sync request happened (e.g. by a poll), that snapshot is populated.
   // We use the following checker to simply wait for an non-empty snapshot.
-  GetSyncService(0)->TriggerRefresh({syncer::PREFERENCES});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
+      {syncer::PREFERENCES});
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(

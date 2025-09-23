@@ -562,7 +562,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
-  GetSyncService(0)->TriggerRefresh({syncer::BOOKMARKS});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::BOOKMARKS});
   EXPECT_TRUE(NotificationHintChecker(syncer::BOOKMARKS).Wait());
 }
 
@@ -599,7 +600,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
-  GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
+      {syncer::DEVICE_INFO});
   EXPECT_TRUE(NotificationHintChecker(syncer::DEVICE_INFO).Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

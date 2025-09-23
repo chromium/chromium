@@ -186,7 +186,9 @@ void ForeignSessionHelper::TriggerSessionSync(JNIEnv* env) {
     return;
   }
 
-  service->TriggerRefresh({syncer::SESSIONS});
+  service->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kForeignSessionHelper,
+      {syncer::SESSIONS});
 }
 
 void ForeignSessionHelper::SetOnForeignSessionCallback(

@@ -488,7 +488,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   // Download all the updates from the server to prevent DeviceInfo update while
   // committing.
-  GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
+      {syncer::DEVICE_INFO});
 
   // Everything's ready to verify that the next commit request contains
   // single_client which is false. Commit a bookmark to trigger a commit

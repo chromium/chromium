@@ -63,7 +63,9 @@ void BrowserTabsModelProviderImpl::TriggerRefresh() {
   // sources of latency (e.g. for delivering an invalidation), but not others
   // (e.g. backend replication delay). I.e SyncService::TriggerRefresh() will
   // not guarantee an immediate update.
-  sync_service_->TriggerRefresh({syncer::SESSIONS});
+  sync_service_->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kBrowserTabsModelProvider,
+      {syncer::SESSIONS});
 }
 
 bool BrowserTabsModelProviderImpl::IsBrowserTabSyncEnabled() {

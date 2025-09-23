@@ -1473,6 +1473,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/themes/theme_syncable_service.h:ThemePrefInMigration) -->
 
+<!-- LINT.IfChange(TriggerRefreshSource) -->
+
+<enum name="TriggerRefreshSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Browser Tabs Model Provider"/>
+  <int value="2" label="Android Sync Service Bridge"/>
+  <int value="3" label="Sync Invalidations Service"/>
+  <int value="4" label="Local Sync"/>
+  <int value="5" label="Sync Internals"/>
+  <int value="6" label="Foreign Session Helper"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:TriggerRefreshSource) -->
+
 <!-- LINT.IfChange(TrustedVaultDegradedRecoverabilityValue) -->
 
 <enum name="TrustedVaultDegradedRecoverabilityValue">

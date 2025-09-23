@@ -808,7 +808,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 #if BUILDFLAG(IS_ANDROID)
   // On Android, invalidations for HISTORY are disabled, so trigger an explicit
   // refresh to fetch the updated data.
-  GetSyncService(0)->TriggerRefresh({syncer::HISTORY});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::HISTORY});
 #endif
 
   // Wait for the updates to arrive.
@@ -941,7 +942,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
 #if BUILDFLAG(IS_ANDROID)
   // On Android, invalidations for HISTORY are disabled by default, so
   // explicitly trigger a GetUpdates.
-  GetSyncService(0)->TriggerRefresh({syncer::HISTORY});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::HISTORY});
 #endif  // BUILDFLAG(IS_ANDROID)
   WaitForLocalHistory({{new_url, testing::SizeIs(1)}});
 
