@@ -1313,5 +1313,250 @@ TEST_F(CrossDevicePrefTrackerTest, InactiveWhenDataTypeIsDisabled) {
   EXPECT_EQ(entry->FindInt(kValueKey), 20);
 }
 
+// Verifies that entries corresponding to devices removed from DeviceInfoTracker
+// are garbage collected from the cross-device preference dictionaries.
+TEST_F(CrossDevicePrefTrackerTest, GarbageCollectsStaleCacheGuids) {
+  CreateTracker();
+  const base::Time kNow = base::Time::Now();
+  const std::string kGuidA = "guid_a";
+  const std::string kGuidB = "guid_b";
+
+  // 1. Add two remote devices.
+  std::unique_ptr<syncer::DeviceInfo> device_a =
+      CreateDeviceInfo(kGuidA, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  std::unique_ptr<syncer::DeviceInfo> device_b =
+      CreateDeviceInfo(kGuidB, syncer::DeviceInfo::OsType::kMac,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  // Adding devices triggers OnDeviceInfoChange, updating `known_device_guids_`.
+  GetTracker()->Add(device_a.get());
+  GetTracker()->Add(device_b.get());
+
+  // 2. Inject pref entries for both. This updates the internal cache via
+  // OnCrossDevicePrefChanged.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidA, base::Value(100),
+                             kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidB, base::Value(200),
+                             kNow, std::nullopt);
+
+  // 3. Verify both entries exist.
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidA), nullptr);
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidB), nullptr);
+
+  // 4. Remove Device B and manually trigger the device info change notification
+  // to run GarbageCollectStaleCacheGuids().
+  GetTracker()->Remove(device_b.get());
+  tracker_->OnDeviceInfoChange();
+
+  // 5. Verify Device A persists and Device B is removed.
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidA), nullptr);
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidB), nullptr);
+}
+
+// Verifies that garbage collection works correctly across multiple tracked
+// preferences simultaneously.
+TEST_F(CrossDevicePrefTrackerTest,
+       GarbageCollectsStaleGuidsAcrossMultiplePrefs) {
+  CreateTracker();
+  const base::Time kNow = base::Time::Now();
+  const std::string kStaleGuid = "guid_stale";
+  const std::string kActiveGuid = "guid_active";
+
+  // Add devices.
+  std::unique_ptr<syncer::DeviceInfo> stale_device =
+      CreateDeviceInfo(kStaleGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  std::unique_ptr<syncer::DeviceInfo> active_device =
+      CreateDeviceInfo(kActiveGuid, syncer::DeviceInfo::OsType::kMac,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(stale_device.get());
+  GetTracker()->Add(active_device.get());
+
+  // Inject entries for both devices in both tracked prefs.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid,
+                             base::Value(1), kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kActiveGuid,
+                             base::Value(2), kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kStaleGuid,
+                             base::Value(3), kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kActiveGuid,
+                             base::Value(4), kNow, std::nullopt);
+
+  // Verify initial state.
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid),
+            nullptr);
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kStaleGuid),
+            nullptr);
+
+  // Remove the stale device.
+  GetTracker()->Remove(stale_device.get());
+  tracker_->OnDeviceInfoChange();
+
+  // Verify stale entries are gone from both prefs.
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid),
+            nullptr);
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kStaleGuid),
+            nullptr);
+
+  // Verify active entries remain.
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kActiveGuid),
+            nullptr);
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceLocalStatePref, kActiveGuid),
+            nullptr);
+}
+
+// Verifies that the removal of entries during garbage collection does not
+// trigger OnRemotePrefChanged notifications.
+TEST_F(CrossDevicePrefTrackerTest,
+       GarbageCollectionDoesNotTriggerRemoteNotifications) {
+  CreateTracker();
+  MockObserver mock_observer;
+  tracker_->AddObserver(&mock_observer);
+
+  const std::string kRemoteGuid = "remote_guid";
+  const base::Time kNow = base::Time::Now();
+
+  // Add the remote device.
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(remote_device.get());
+
+  // Inject an entry. Expect one notification (for the addition).
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(1);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(100), kNow, std::nullopt);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  ASSERT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid),
+            nullptr);
+
+  // Remove the device. This triggers garbage collection.
+  // Ensure no notifications are sent during this process. The implementation
+  // of ProcessRemoteUpdates only iterates over the *new* dictionary to find
+  // additions/updates, so removals (like garbage collection) shouldn't trigger
+  // notifications.
+  EXPECT_CALL(mock_observer, OnRemotePrefChanged).Times(0);
+  GetTracker()->Remove(remote_device.get());
+  tracker_->OnDeviceInfoChange();
+
+  // Verify the entry is gone.
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid),
+            nullptr);
+
+  tracker_->RemoveObserver(&mock_observer);
+}
+
+// Verifies that the local device's entry is preserved during garbage collection
+// as long as the local device remains active in the DeviceInfoTracker.
+TEST_F(CrossDevicePrefTrackerTest, GarbageCollectionPreservesLocalDeviceEntry) {
+  CreateTracker();
+  // The local device (kLocalCacheGuid) is active by default in the test setup.
+
+  // Set a local pref, creating an entry for the local device.
+  profile_prefs_.SetInteger(kTrackedProfilePref, 50);
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+
+  // Add and then remove a remote device to trigger OnDeviceInfoChange() and
+  // garbage collection explicitly.
+  const std::string kRemoteGuid = "remote_guid";
+  std::unique_ptr<syncer::DeviceInfo> remote_device =
+      CreateDeviceInfo(kRemoteGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+
+  GetTracker()->Add(remote_device.get());
+  // Inject an entry for the remote device to ensure garbage collection has
+  // potential work.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid,
+                             base::Value(100), base::Time::Now(), std::nullopt);
+
+  // Remove the remote device, triggering garbage collection.
+  GetTracker()->Remove(remote_device.get());
+  tracker_->OnDeviceInfoChange();
+
+  // Verify the remote entry is gone, but the local entry remains.
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kRemoteGuid),
+            nullptr);
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+}
+
+// Verifies that multiple entries corresponding to devices removed from
+// DeviceInfoTracker are garbage collected simultaneously in a single pass.
+TEST_F(CrossDevicePrefTrackerTest,
+       GarbageCollectsMultipleStaleCacheGuidsSimultaneously) {
+  CreateTracker();
+  const base::Time kNow = base::Time::Now();
+  const std::string kActiveGuid = "guid_active";
+  const std::string kStaleGuid1 = "guid_stale_1";
+  const std::string kStaleGuid2 = "guid_stale_2";
+
+  // 1. Add devices.
+  std::unique_ptr<syncer::DeviceInfo> active_device =
+      CreateDeviceInfo(kActiveGuid, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  std::unique_ptr<syncer::DeviceInfo> stale_device1 =
+      CreateDeviceInfo(kStaleGuid1, syncer::DeviceInfo::OsType::kMac,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  std::unique_ptr<syncer::DeviceInfo> stale_device2 =
+      CreateDeviceInfo(kStaleGuid2, syncer::DeviceInfo::OsType::kLinux,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(active_device.get());
+  GetTracker()->Add(stale_device1.get());
+  GetTracker()->Add(stale_device2.get());
+
+  // 2. Inject pref entries.
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kActiveGuid,
+                             base::Value(1), kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid1,
+                             base::Value(2), kNow, std::nullopt);
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid2,
+                             base::Value(3), kNow, std::nullopt);
+
+  // 3. Remove stale devices and trigger garbage collection once.
+  GetTracker()->Remove(stale_device1.get());
+  GetTracker()->Remove(stale_device2.get());
+  tracker_->OnDeviceInfoChange();
+
+  // 4. Verify results.
+  EXPECT_NE(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kActiveGuid),
+            nullptr);
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid1),
+            nullptr);
+  EXPECT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kStaleGuid2),
+            nullptr);
+}
+
+// Verifies that garbage collection correctly handles the case where all entries
+// for a preference are stale, resulting in an empty dictionary.
+TEST_F(CrossDevicePrefTrackerTest, GarbageCollectsAllEntriesIfAllAreStale) {
+  CreateTracker();
+  // Ensure the local device doesn't have an entry initially for this pref
+  // to allow the dictionary to become empty.
+  ASSERT_EQ(GetCrossDevicePrefEntry(kCrossDeviceProfilePref, kLocalCacheGuid),
+            nullptr);
+
+  const base::Time kNow = base::Time::Now();
+  const std::string kGuidA = "guid_a";
+
+  // 1. Add device and pref entry.
+  std::unique_ptr<syncer::DeviceInfo> device_a =
+      CreateDeviceInfo(kGuidA, syncer::DeviceInfo::OsType::kWindows,
+                       syncer::DeviceInfo::FormFactor::kDesktop);
+  GetTracker()->Add(device_a.get());
+  InjectCrossDevicePrefEntry(kCrossDeviceProfilePref, kGuidA, base::Value(100),
+                             kNow, std::nullopt);
+
+  ASSERT_FALSE(profile_prefs_.GetDict(kCrossDeviceProfilePref).empty());
+
+  // 2. Remove device and trigger garbage collection.
+  GetTracker()->Remove(device_a.get());
+  tracker_->OnDeviceInfoChange();
+
+  // 3. Verify the dictionary is now empty.
+  EXPECT_TRUE(profile_prefs_.GetDict(kCrossDeviceProfilePref).empty());
+}
+
 }  // namespace
 }  // namespace sync_preferences

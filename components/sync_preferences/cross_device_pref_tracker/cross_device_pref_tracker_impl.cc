@@ -541,8 +541,7 @@ void CrossDevicePrefTrackerImpl::Shutdown() {
 void CrossDevicePrefTrackerImpl::OnDeviceInfoChange() {
   HandleLocalDeviceInfoIfAvailable();
   HandleRemoteDeviceInfoChanges();
-
-  // TODO(crbug.com/441330511): Implement garbage collection.
+  GarbageCollectStaleCacheGuids();
 }
 
 void CrossDevicePrefTrackerImpl::OnStateChanged(syncer::SyncService* sync) {
@@ -900,6 +899,43 @@ void CrossDevicePrefTrackerImpl::NotifyObserversOfExistingPrefsForNewDevices(
         // Found an existing pref value for the newly available device.
         NotifyRemotePrefChanged(pref_name, entry, *device_info);
       }
+    }
+  }
+}
+
+void CrossDevicePrefTrackerImpl::GarbageCollectStaleCacheGuids() {
+  CHECK(profile_pref_service_);
+
+  // Rely on `known_device_guids_` which contains the set of all currently
+  // active Cache GUIDs known by `DeviceInfoTracker`.
+  const base::flat_set<std::string>& active_guids = known_device_guids_;
+
+  // Identify stale entries without modifying the PrefService or cache.
+  base::flat_map<std::string, std::vector<std::string>> entries_to_remove;
+
+  for (const auto& [cross_device_pref_name, cache_dict] :
+       cross_device_storage_cache_) {
+    std::vector<std::string> guids_to_remove;
+
+    for (const auto [guid, value] : cache_dict) {
+      if (!active_guids.contains(guid)) {
+        guids_to_remove.push_back(guid);
+      }
+    }
+
+    if (!guids_to_remove.empty()) {
+      entries_to_remove[cross_device_pref_name] = std::move(guids_to_remove);
+    }
+  }
+
+  // Remove the stale entries. It is now safe for the cache to be updated.
+  for (const auto& [cross_device_pref_name, guids_to_remove] :
+       entries_to_remove) {
+    ScopedDictPrefUpdate update(profile_pref_service_, cross_device_pref_name);
+
+    for (const std::string& guid : guids_to_remove) {
+      bool removed = update->Remove(guid);
+      CHECK(removed);
     }
   }
 }

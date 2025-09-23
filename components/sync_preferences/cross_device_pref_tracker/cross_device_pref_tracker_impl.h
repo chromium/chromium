@@ -167,6 +167,11 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   void NotifyObserversOfExistingPrefsForNewDevices(
       const std::vector<const syncer::DeviceInfo*>& new_devices);
 
+  // Removes entries from cross-device storage dictionaries corresponding to
+  // devices that are no longer known by `DeviceInfoTracker`. Relies on
+  // `known_device_guids_` being up-to-date.
+  void GarbageCollectStaleCacheGuids();
+
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
   raw_ptr<PrefService> profile_pref_service_;
