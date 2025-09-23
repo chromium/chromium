@@ -101,7 +101,7 @@ class ScrollingCoordinator;
 class ScrollbarTheme;
 class Settings;
 class SpatialNavigationController;
-class SVGResourceDocumentCache;
+class SVGDocumentResourceTracker;
 class TopDocumentRootScrollerController;
 class ValidationMessageClient;
 class VisualViewport;
@@ -263,7 +263,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   DragController& GetDragController() const { return *drag_controller_; }
   FocusController& GetFocusController() const { return *focus_controller_; }
   SpatialNavigationController& GetSpatialNavigationController();
-  SVGResourceDocumentCache& GetSVGResourceDocumentCache();
+  SVGDocumentResourceTracker& GetSVGDocumentResourceTracker();
   ContextMenuController& GetContextMenuController() const {
     return *context_menu_controller_;
   }
@@ -628,7 +628,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const Member<VisualViewport> visual_viewport_;
   const Member<LinkHighlight> link_highlight_;
   Member<SpatialNavigationController> spatial_navigation_controller_;
-  Member<SVGResourceDocumentCache> svg_resource_document_cache_;
+  Member<SVGDocumentResourceTracker> svg_document_resource_tracker_;
 
   Member<PluginData> plugin_data_;
 

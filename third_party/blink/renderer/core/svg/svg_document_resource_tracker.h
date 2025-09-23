@@ -20,8 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CACHE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CACHE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_DOCUMENT_RESOURCE_TRACKER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_DOCUMENT_RESOURCE_TRACKER_H_
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -37,12 +37,12 @@ class FetchParameters;
 class SVGDocumentResource;
 class SVGResourceDocumentContent;
 
-// TODO(dmangal) Rename SVGResourceDocumentCache to SVGResourceDocumentTracker
-class CORE_EXPORT SVGResourceDocumentCache final
-    : public GarbageCollected<SVGResourceDocumentCache> {
+class CORE_EXPORT SVGDocumentResourceTracker final
+    : public GarbageCollected<SVGDocumentResourceTracker> {
  public:
-  explicit SVGResourceDocumentCache(scoped_refptr<base::SingleThreadTaskRunner>,
-                                    const String& cache_identifier);
+  explicit SVGDocumentResourceTracker(
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      const String& cache_identifier);
 
   // The key is "URL (without fragment)" and the request mode (kSameOrigin or
   // kCors - other modes should be filtered by AllowedRequestMode).
@@ -68,6 +68,7 @@ class CORE_EXPORT SVGResourceDocumentCache final
   void DisposeUnobserved();
   void ProcessCustomWeakness(const LivenessBroker&);
 
+  // TODO(dmangal) Remove below hashmap during feature flag removal.
   HeapHashMap<CacheKey, Member<SVGResourceDocumentContent>> entries_;
   HeapHashSet<Member<SVGDocumentResource>> tracked_resources_;
   scoped_refptr<base::SingleThreadTaskRunner> dispose_task_runner_;
@@ -77,4 +78,4 @@ class CORE_EXPORT SVGResourceDocumentCache final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_DOCUMENT_CACHE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_DOCUMENT_RESOURCE_TRACKER_H_

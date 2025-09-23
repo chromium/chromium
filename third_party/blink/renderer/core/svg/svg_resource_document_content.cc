@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -284,9 +284,9 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
   Page* page = document.GetPage();
-  auto& cache = page->GetSVGResourceDocumentCache();
-  const SVGResourceDocumentCache::CacheKey key =
-      SVGResourceDocumentCache::MakeCacheKey(params);
+  auto& cache = page->GetSVGDocumentResourceTracker();
+  const SVGDocumentResourceTracker::CacheKey key =
+      SVGDocumentResourceTracker::MakeCacheKey(params);
 
   if (!RuntimeEnabledFeatures::
           SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {

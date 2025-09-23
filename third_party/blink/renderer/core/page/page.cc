@@ -95,7 +95,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -582,15 +582,15 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
   return *spatial_navigation_controller_;
 }
 
-SVGResourceDocumentCache& Page::GetSVGResourceDocumentCache() {
-  if (!svg_resource_document_cache_) {
-    svg_resource_document_cache_ =
-        MakeGarbageCollected<SVGResourceDocumentCache>(
+SVGDocumentResourceTracker& Page::GetSVGDocumentResourceTracker() {
+  if (!svg_document_resource_tracker_) {
+    svg_document_resource_tracker_ =
+        MakeGarbageCollected<SVGDocumentResourceTracker>(
             GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner(),
-            SVGResourceDocumentCache::MakeCacheIdentifier(
+            SVGDocumentResourceTracker::MakeCacheIdentifier(
                 String(BrowsingContextGroupToken().ToString())));
   }
-  return *svg_resource_document_cache_;
+  return *svg_document_resource_tracker_;
 }
 
 void Page::UsesOverlayScrollbarsChanged() {
@@ -1378,7 +1378,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(visual_viewport_);
   visitor->Trace(link_highlight_);
   visitor->Trace(spatial_navigation_controller_);
-  visitor->Trace(svg_resource_document_cache_);
+  visitor->Trace(svg_document_resource_tracker_);
   visitor->Trace(main_frame_);
   visitor->Trace(previous_main_frame_for_local_swap_);
   visitor->Trace(plugin_data_);
@@ -1436,8 +1436,8 @@ void Page::WillBeDestroyed() {
     next_related_page_ = nullptr;
   }
 
-  if (svg_resource_document_cache_) {
-    svg_resource_document_cache_->WillBeDestroyed();
+  if (svg_document_resource_tracker_) {
+    svg_document_resource_tracker_->WillBeDestroyed();
   }
 
   if (scrolling_coordinator_)

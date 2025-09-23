@@ -19,8 +19,7 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 
 #include <algorithm>
 
@@ -32,13 +31,13 @@
 
 namespace blink {
 
-SVGResourceDocumentCache::SVGResourceDocumentCache(
+SVGDocumentResourceTracker::SVGDocumentResourceTracker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const String& cache_identifier)
     : dispose_task_runner_(std::move(task_runner)),
       cache_identifier_(cache_identifier) {}
 
-SVGResourceDocumentCache::CacheKey SVGResourceDocumentCache::MakeCacheKey(
+SVGDocumentResourceTracker::CacheKey SVGDocumentResourceTracker::MakeCacheKey(
     const FetchParameters& params) {
   const KURL url_without_fragment =
       MemoryCache::RemoveFragmentIdentifierIfNeeded(params.Url());
@@ -46,7 +45,7 @@ SVGResourceDocumentCache::CacheKey SVGResourceDocumentCache::MakeCacheKey(
           params.GetResourceRequest().GetMode()};
 }
 
-String SVGResourceDocumentCache::MakeCacheIdentifier(
+String SVGDocumentResourceTracker::MakeCacheIdentifier(
     StringView browser_context_group_token) {
   // Setting a unique cache identifier allows us to use global `MemoryCache`
   // to store SVG resources specific to each page.
@@ -54,13 +53,14 @@ String SVGResourceDocumentCache::MakeCacheIdentifier(
   return kSVGDocumentResourcePrefix + browser_context_group_token;
 }
 
-SVGResourceDocumentContent* SVGResourceDocumentCache::Get(const CacheKey& key) {
+SVGResourceDocumentContent* SVGDocumentResourceTracker::Get(
+    const CacheKey& key) {
   auto it = entries_.find(key);
   return it != entries_.end() ? it->value : nullptr;
 }
 
-void SVGResourceDocumentCache::Put(const CacheKey& key,
-                                   SVGResourceDocumentContent* content) {
+void SVGDocumentResourceTracker::Put(const CacheKey& key,
+                                     SVGResourceDocumentContent* content) {
   auto result = entries_.insert(key, content);
   // No existing entry, we're done.
   if (result.is_new_entry) {
@@ -74,7 +74,7 @@ void SVGResourceDocumentCache::Put(const CacheKey& key,
   }
 }
 
-void SVGResourceDocumentCache::WillBeDestroyed() {
+void SVGDocumentResourceTracker::WillBeDestroyed() {
   if (RuntimeEnabledFeatures::
           SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
     for (const auto& resource : tracked_resources_) {
@@ -89,7 +89,7 @@ void SVGResourceDocumentCache::WillBeDestroyed() {
   }
 }
 
-void SVGResourceDocumentCache::DisposeUnobserved() {
+void SVGDocumentResourceTracker::DisposeUnobserved() {
   dispose_task_pending_ = false;
 
   if (RuntimeEnabledFeatures::
@@ -117,7 +117,7 @@ void SVGResourceDocumentCache::DisposeUnobserved() {
   }
 }
 
-void SVGResourceDocumentCache::ProcessCustomWeakness(
+void SVGDocumentResourceTracker::ProcessCustomWeakness(
     const LivenessBroker& info) {
   // Don't need to do anything if there's a pending dispose task or not entries
   // to process.
@@ -150,23 +150,23 @@ void SVGResourceDocumentCache::ProcessCustomWeakness(
     }
   }
   dispose_task_pending_ = dispose_task_runner_->PostTask(
-      FROM_HERE, BindOnce(&SVGResourceDocumentCache::DisposeUnobserved,
+      FROM_HERE, BindOnce(&SVGDocumentResourceTracker::DisposeUnobserved,
                           WrapWeakPersistent(this)));
 }
 
-void SVGResourceDocumentCache::Trace(Visitor* visitor) const {
+void SVGDocumentResourceTracker::Trace(Visitor* visitor) const {
   visitor->template RegisterWeakCallbackMethod<
-      SVGResourceDocumentCache,
-      &SVGResourceDocumentCache::ProcessCustomWeakness>(this);
+      SVGDocumentResourceTracker,
+      &SVGDocumentResourceTracker::ProcessCustomWeakness>(this);
   visitor->Trace(entries_);
   visitor->Trace(tracked_resources_);
 }
 
-void SVGResourceDocumentCache::AddResource(SVGDocumentResource* resource) {
+void SVGDocumentResourceTracker::AddResource(SVGDocumentResource* resource) {
   tracked_resources_.insert(resource);
 }
 
-bool SVGResourceDocumentCache::HasContentForTesting(
+bool SVGDocumentResourceTracker::HasContentForTesting(
     SVGResourceDocumentContent* content) const {
   return std::ranges::any_of(tracked_resources_,
                              [content](const SVGDocumentResource* resource) {

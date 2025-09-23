@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -93,11 +93,11 @@ TEST_F(SVGResourceDocumentContentSimTest, LoadCompleteAfterDispose) {
           SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
     EXPECT_FALSE(GetDocument()
                      .GetPage()
-                     ->GetSVGResourceDocumentCache()
+                     ->GetSVGDocumentResourceTracker()
                      .HasContentForTesting(content));
   } else {
-    EXPECT_EQ(GetDocument().GetPage()->GetSVGResourceDocumentCache().Get(
-                  SVGResourceDocumentCache::MakeCacheKey(params)),
+    EXPECT_EQ(GetDocument().GetPage()->GetSVGDocumentResourceTracker().Get(
+                  SVGDocumentResourceTracker::MakeCacheKey(params)),
               nullptr);
   }
 
@@ -212,7 +212,7 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
       MakeGarbageCollected<FakeSVGResourceDocumentObserver>();
   content2->AddObserver(observer);
 
-  auto& cache = GetPage().GetSVGResourceDocumentCache();
+  auto& cache = GetPage().GetSVGDocumentResourceTracker();
 
   // Both document contents should be in the cache.
   if (RuntimeEnabledFeatures::
@@ -220,9 +220,9 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
     EXPECT_TRUE(cache.HasContentForTesting(content1));
     EXPECT_TRUE(cache.HasContentForTesting(content2));
   } else {
-    EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
               nullptr);
-    EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
               nullptr);
   }
 
@@ -236,9 +236,9 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
     EXPECT_FALSE(cache.HasContentForTesting(content1));
     EXPECT_TRUE(cache.HasContentForTesting(content2));
   } else {
-    EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
               nullptr);
-    EXPECT_NE(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+    EXPECT_NE(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
               nullptr);
   }
 
@@ -254,9 +254,9 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
     EXPECT_FALSE(cache.HasContentForTesting(content1));
     EXPECT_FALSE(cache.HasContentForTesting(content2));
   } else {
-    EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params1)),
+    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params1)),
               nullptr);
-    EXPECT_EQ(cache.Get(SVGResourceDocumentCache::MakeCacheKey(params2)),
+    EXPECT_EQ(cache.Get(SVGDocumentResourceTracker::MakeCacheKey(params2)),
               nullptr);
   }
 }

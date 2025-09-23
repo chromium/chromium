@@ -102,7 +102,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -1336,7 +1336,7 @@ String FrameFetchContext::GetSVGCacheIdentifier() const {
 
   Page* page = document_->GetPage();
   DCHECK(page);
-  return page->GetSVGResourceDocumentCache().GetCacheIdentifier();
+  return page->GetSVGDocumentResourceTracker().GetCacheIdentifier();
 }
 
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
