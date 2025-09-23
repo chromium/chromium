@@ -5,8 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 
+#include <iosfwd>
+
 #include "base/types/cxx23_to_underlying.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -51,11 +55,11 @@ inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
 }
 
 FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element);
-// Implemented based on this explainer:
-// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
 FocusgroupFlags ParseFocusgroup(const Element* element,
                                 const AtomicString& input);
 
+// Exported helper for tests and logging to obtain a string form.
+CORE_EXPORT String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags);
 }  // namespace focusgroup
 
 // The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.

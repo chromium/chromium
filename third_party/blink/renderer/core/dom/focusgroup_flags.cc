@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 
+#include <ostream>
+
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -301,6 +303,37 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   }
 
   return flags;
+}
+
+String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags) {
+  if (flags == FocusgroupFlags::kNone) {
+    return String("FocusgroupFlags(None)");
+  }
+  Vector<const char*> names;
+  names.ReserveInitialCapacity(8);
+  auto append_flag_name_if_set = [&](FocusgroupFlags flag, const char* name) {
+    if (flags & flag) {
+      names.push_back(name);
+    }
+  };
+  append_flag_name_if_set(FocusgroupFlags::kExtend, "Extend");
+  append_flag_name_if_set(FocusgroupFlags::kInline, "Inline");
+  append_flag_name_if_set(FocusgroupFlags::kBlock, "Block");
+  append_flag_name_if_set(FocusgroupFlags::kGrid, "Grid");
+  append_flag_name_if_set(FocusgroupFlags::kWrapInline, "WrapInline");
+  append_flag_name_if_set(FocusgroupFlags::kWrapBlock, "WrapBlock");
+  append_flag_name_if_set(FocusgroupFlags::kRowFlow, "RowFlow");
+  append_flag_name_if_set(FocusgroupFlags::kColFlow, "ColFlow");
+  StringBuilder builder;
+  builder.Append("FocusgroupFlags(");
+  for (wtf_size_t i = 0; i < names.size(); ++i) {
+    if (i) {
+      builder.Append('|');
+    }
+    builder.Append(names[i]);
+  }
+  builder.Append(')');
+  return builder.ToString();
 }
 
 }  // namespace blink::focusgroup
