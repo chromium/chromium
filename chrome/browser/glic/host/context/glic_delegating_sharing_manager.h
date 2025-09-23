@@ -94,8 +94,10 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   // Resets all internal subscriptions to empty.
   void ResetDelegateSubscriptions();
 
-  // Forces notifications for all callbacks with associated getters.
-  void ForceNotify();
+  // Forces notifications where possible.
+  // TODO(b:444463509): split sharing manager interface up so it's clear which
+  // notifications we actually force (i.e. what delegation is possible).
+  void ForceNotify(const std::vector<content::WebContents*>& old_pinned_tabs);
 
   // Callback lists. Maintains its own callback lists to seamlessly support
   // hot-swapping delegate.

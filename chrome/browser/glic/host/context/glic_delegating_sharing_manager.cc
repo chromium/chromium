@@ -158,9 +158,12 @@ void GlicDelegatingSharingManager::SubscribeToPinCandidates(
 
 void GlicDelegatingSharingManager::SetDelegate(
     base::WeakPtr<GlicSharingManager> sharing_manager_delegate) {
+  // Grab currently pinned tabs before swapping delegate so we can fire pinned
+  // status updates on them.
+  auto old_pinned_tabs = GetPinnedTabs();
   sharing_manager_delegate_ = sharing_manager_delegate;
   RefreshDelegateSubscriptions();
-  ForceNotify();
+  ForceNotify(old_pinned_tabs);
 }
 
 void GlicDelegatingSharingManager::OnFocusedTabChangedCallback(
@@ -241,9 +244,20 @@ void GlicDelegatingSharingManager::RefreshDelegateSubscriptions() {
               base::Unretained(this)));
 }
 
-void GlicDelegatingSharingManager::ForceNotify() {
+void GlicDelegatingSharingManager::ForceNotify(
+    const std::vector<content::WebContents*>& old_pinned_tabs) {
+  for (auto* tab : old_pinned_tabs) {
+    tab_pinning_status_changed_callback_list_.Notify(
+        tabs::TabInterface::GetFromContents(tab), false);
+  }
+
   if (!sharing_manager_delegate_) {
     return;
+  }
+
+  for (auto* tab : GetPinnedTabs()) {
+    tab_pinning_status_changed_callback_list_.Notify(
+        tabs::TabInterface::GetFromContents(tab), true);
   }
 
   focused_tab_changed_callback_list_.Notify(
