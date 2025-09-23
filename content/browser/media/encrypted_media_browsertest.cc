@@ -21,10 +21,6 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "media/base/android/media_codec_util.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
@@ -257,29 +253,14 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
 #endif
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
                        MAYBE_Playback_VideoAudio_WebM_Opus) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!media::MediaCodecUtil::IsOpusDecoderAvailable()) {
-    GTEST_SKIP() << "Opus decoder not available";
-  }
-#endif
   TestSimplePlayback("bear-320x240-opus-a_enc-a.webm");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!media::MediaCodecUtil::IsOpusDecoderAvailable()) {
-    GTEST_SKIP() << "Opus decoder not available";
-  }
-#endif
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!media::MediaCodecUtil::IsOpusDecoderAvailable()) {
-    GTEST_SKIP() << "Opus decoder not available";
-  }
-#endif
   TestSimplePlayback("bear-320x240-opus-av_enc-v.webm");
 }
 
@@ -288,11 +269,6 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!media::MediaCodecUtil::IsOpusDecoderAvailable()) {
-    GTEST_SKIP() << "Opus decoder not available";
-  }
-#endif
   RunMultipleFileTest(std::string(), "bear-opus-cenc.mp4", media::kEndedTitle);
 }
 

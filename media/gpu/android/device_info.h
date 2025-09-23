@@ -19,8 +19,6 @@ struct MEDIA_GPU_EXPORT DeviceInfo {
 
   virtual int SdkVersion();
   virtual bool IsVp8DecoderAvailable();
-  virtual bool IsVp9DecoderAvailable();
-  virtual bool IsAv1DecoderAvailable();
   virtual bool IsDecoderKnownUnaccelerated(VideoCodec codec);
   virtual void AddSupportedCodecProfileLevels(
       std::vector<CodecProfileLevel>* result);

@@ -150,14 +150,6 @@ MimeUtil::MimeUtil() {
 #if BUILDFLAG(IS_ANDROID)
   platform_info_.has_platform_vp8_decoder =
       MediaCodecUtil::IsVp8DecoderAvailable();
-  platform_info_.has_platform_vp9_decoder =
-      MediaCodecUtil::IsVp9DecoderAvailable();
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  platform_info_.has_platform_hevc_decoder =
-      MediaCodecUtil::IsHEVCDecoderAvailable();
-#endif
-  platform_info_.has_platform_opus_decoder =
-      MediaCodecUtil::IsOpusDecoderAvailable();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeMimeTypeMaps();
@@ -605,6 +597,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
     case MPEG4_AAC:
     case FLAC:
     case VORBIS:
+    case OPUS:
       // These codecs are always supported; via a platform decoder (when used
       // with MSE/EME) or with a software decoder (the unified pipeline).
       return true;
@@ -615,52 +608,19 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
     case MPEG_H_AUDIO:
       return false;
 
-    case OPUS:
-      // If clear, the unified pipeline can always decode Opus in software.
-      if (!is_encrypted)
-        return true;
-
-      // Otherwise, platform support is required.
-      if (!platform_info.has_platform_opus_decoder) {
-        DVLOG(3) << "Platform does not support opus";
-        return false;
-      }
-
-      return true;
-
     case H264:
       return true;
 
     case HEVC:
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      return platform_info.has_platform_hevc_decoder;
-#else
-      return false;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      return BUILDFLAG(ENABLE_PLATFORM_HEVC);
 
     case VP8:
       // If clear, the unified pipeline can always decode VP8 in software.
       return is_encrypted ? platform_info.has_platform_vp8_decoder : true;
 
     case VP9: {
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kReportVp9AsAnUnsupportedMimeType)) {
-        return false;
-      }
-
-      // If clear, the unified pipeline can always decode VP9.0,1 in software.
-      // If we don't know the profile, then support is ambiguous, but default to
-      // true for historical reasons.
-      if (!is_encrypted && (video_profile == VP9PROFILE_PROFILE0 ||
-                            video_profile == VP9PROFILE_PROFILE1 ||
-                            video_profile == VIDEO_CODEC_PROFILE_UNKNOWN)) {
-        return true;
-      }
-
-      if (!platform_info.has_platform_vp9_decoder)
-        return false;
-
-      return true;
+      return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kReportVp9AsAnUnsupportedMimeType);
     }
 
     case DOLBY_VISION:

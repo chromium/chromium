@@ -250,7 +250,10 @@ bool IsDecoderHevcProfileSupported(const VideoType& type) {
 }
 
 bool IsDecoderVp9ProfileSupported(const VideoType& type) {
-#if BUILDFLAG(ENABLE_LIBVPX)
+#if BUILDFLAG(IS_ANDROID)
+  // After Q, all VP9 profiles are required by Android
+  return IsDecoderColorSpaceSupported(type.color_space);
+#elif BUILDFLAG(ENABLE_LIBVPX)
   // High bit depth capabilities may be toggled via LibVPX config flags.
   static const bool vpx_supports_hbd = (vpx_codec_get_caps(vpx_codec_vp9_dx()) &
                                         VPX_CODEC_CAP_HIGHBITDEPTH) != 0;
@@ -265,18 +268,9 @@ bool IsDecoderVp9ProfileSupported(const VideoType& type) {
     case VP9PROFILE_PROFILE0:
     case VP9PROFILE_PROFILE1:
       return true;
-#if BUILDFLAG(IS_ANDROID)
-    case VP9PROFILE_PROFILE2:
-      return vpx_supports_hbd ||
-             MediaCodecUtil::IsVp9Profile2DecoderAvailable();
-    case VP9PROFILE_PROFILE3:
-      return vpx_supports_hbd ||
-             MediaCodecUtil::IsVp9Profile3DecoderAvailable();
-#else
     case VP9PROFILE_PROFILE2:
     case VP9PROFILE_PROFILE3:
       return vpx_supports_hbd;
-#endif  // BUILDFLAG(IS_ANDROID)
     default:
       NOTREACHED();
   }

@@ -38,25 +38,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // Indicates if the vp8 decoder or encoder is available on this device.
   static bool IsVp8DecoderAvailable();
 
-  // Indicates if the vp9 decoder is available on this device.
-  static bool IsVp9DecoderAvailable();
-  static bool IsVp9Profile2DecoderAvailable();
-  static bool IsVp9Profile3DecoderAvailable();
-
-  // Indicates if the Opus decoder is available on this device.
-  static bool IsOpusDecoderAvailable();
-
-  // Indicates if the av1 decoder is available on this device.
-  static bool IsAv1DecoderAvailable();
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  // Indicates if the h265 decoder is available on this device.
-  static bool IsHEVCDecoderAvailable();
-#endif
-
-  // Indicates if the AAC encoder is available on this device.
-  static bool IsAACEncoderAvailable();
-
   // Returns a known alignment which can be used to translate visible size into
   // coded size. E.g., a size of (1, 1) means no alignment while a size of
   // (64, 1) would mean visible width should be rounded up to the nearest

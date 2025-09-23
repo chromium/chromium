@@ -75,9 +75,8 @@ std::vector<SupportedVideoDecoderConfig> GenerateSupportedConfigs(
     // secure decoder, it will fail when creating MediaCodec.
     constexpr bool kAllowEncrypted = true;
     if ((codec == VideoCodec::kVP8 && device_info->IsVp8DecoderAvailable()) ||
-        (codec == VideoCodec::kVP9 && device_info->IsVp9DecoderAvailable()) ||
-        (codec == VideoCodec::kAV1 && device_info->IsAv1DecoderAvailable()) ||
-        (codec == VideoCodec::kH264 && IsDecoderBuiltInVideoCodec(codec))) {
+        (codec == VideoCodec::kH264 && IsDecoderBuiltInVideoCodec(codec)) ||
+        codec == VideoCodec::kVP9 || codec == VideoCodec::kAV1) {
       // Don't allow OS software decoding for bundled software decoders unless
       // the content is encrypted.
       const bool can_use_builtin_software_decoder =

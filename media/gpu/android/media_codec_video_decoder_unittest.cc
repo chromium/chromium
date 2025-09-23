@@ -63,10 +63,6 @@ std::unique_ptr<AndroidOverlay> CreateAndroidOverlayCb(
 // Tests require the presence of a software AV1 decoder, which isn't required
 // by Android at this time.
 bool HasAv1Decoder() {
-  if (!MediaCodecUtil::IsAv1DecoderAvailable()) {
-    return false;
-  }
-
   for (const auto& info : GetDecoderInfoCache()) {
     if (info.profile >= AV1PROFILE_MIN && info.profile <= AV1PROFILE_MAX) {
       return true;
@@ -362,8 +358,6 @@ TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
   if (!HasAv1Decoder()) {
     return;
   }
-  EXPECT_CALL(*device_info_, IsAv1DecoderAvailable())
-      .WillRepeatedly(Return(true));
   ASSERT_TRUE(Initialize(TestVideoConfig::Normal(VideoCodec::kAV1)));
 }
 
@@ -996,8 +990,7 @@ static std::vector<VideoCodec> GetTestList() {
 
   if (MediaCodecUtil::IsVp8DecoderAvailable())
     test_codecs.push_back(VideoCodec::kVP8);
-  if (MediaCodecUtil::IsVp9DecoderAvailable())
-    test_codecs.push_back(VideoCodec::kVP9);
+  test_codecs.push_back(VideoCodec::kVP9);
   if (HasAv1Decoder()) {
     test_codecs.push_back(VideoCodec::kAV1);
   }
