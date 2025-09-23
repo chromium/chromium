@@ -911,7 +911,8 @@ void PeerConnectionTracker::TrackSignalingStateChange(
     return;
   SendPeerConnectionUpdate(
       id, "signalingstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackIceConnectionStateChange(
@@ -923,7 +924,8 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
     return;
   SendPeerConnectionUpdate(
       id, "iceconnectionstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackConnectionStateChange(
@@ -935,7 +937,8 @@ void PeerConnectionTracker::TrackConnectionStateChange(
     return;
   SendPeerConnectionUpdate(
       id, "connectionstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackIceGatheringStateChange(
@@ -947,7 +950,8 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
     return;
   SendPeerConnectionUpdate(
       id, "icegatheringstatechange",
-      webrtc::PeerConnectionInterface::AsString(state).data());
+      StrCat({"\"", webrtc::PeerConnectionInterface::AsString(state).data(),
+              "\""}));
 }
 
 void PeerConnectionTracker::TrackSessionDescriptionCallback(
