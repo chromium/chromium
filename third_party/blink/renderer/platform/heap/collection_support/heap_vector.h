@@ -143,6 +143,9 @@ class BasicHeapVector final
       static_assert(!IsPointerToGarbageCollectedType<T>,
                     "Don't use raw pointers or reference to garbage collected "
                     "types in BasicHeapVector. Use Member<> instead.");
+      static_assert(!IsPointerToTraceableType<T>,
+                    "Don't use raw pointers or reference to traceable "
+                    "types in BasicHeapVector. Use Member<> instead.");
 
       // HeapVector may hold non-traceable types. This is useful for vectors
       // held by garbage collected objects such that the vectors' backing stores

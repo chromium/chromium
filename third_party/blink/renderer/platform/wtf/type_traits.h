@@ -183,11 +183,18 @@ class IsGarbageCollectedType<void> {
 
 template <typename T>
 concept IsPointerToGarbageCollectedType =
+    std::is_pointer_v<T> &&
     !std::is_function_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
     !std::is_void_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
-    std::is_pointer_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
     IsGarbageCollectedType<
         std::remove_const_t<std::remove_pointer_t<T>>>::value;
+
+template <typename T>
+concept IsPointerToTraceableType =
+    std::is_pointer_v<T> &&
+    !std::is_function_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    !std::is_void_v<std::remove_const_t<std::remove_pointer_t<T>>> &&
+    IsTraceable<std::remove_const_t<std::remove_pointer_t<T>>>::value;
 
 namespace internal {
 

@@ -3038,7 +3038,7 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(const GridItems& grid_items) {
 
   if (reading_flow == EReadingFlow::kGridRows ||
       reading_flow == EReadingFlow::kGridColumns) {
-    HeapVector<const GridItemData*, 16> reordered_grid_items;
+    HeapVector<Member<const GridItemData>, 16> reordered_grid_items;
     reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
     for (const auto& grid_item : grid_items) {
       reordered_grid_items.push_back(&grid_item);
