@@ -559,7 +559,7 @@ class MediaSessionImpl : public MediaSession,
   // reaction to content being hidden), if the EnterAutoPictureInPicture action
   // is registered by the browser (the user did not provide an
   // `enterpictureinpicture` action handler).
-  void MaybeEnterBrowserInitiatedAutomaticPictureInPicture() const;
+  void MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
 
   // Notifies a player of the last known auto picture-in-picture information.
   // This is used to keep newly added players updated with the latest

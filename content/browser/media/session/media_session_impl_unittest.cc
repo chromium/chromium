@@ -1464,6 +1464,52 @@ TEST_F(MediaSessionImplTest, NewPlayerReceivesAutoPictureInPictureInfo) {
   SetBrowserClientForTesting(old_client);
 }
 
+TEST_F(MediaSessionImplTest, NewPlayerReceivesAutoPictureInPictureInfoOnce) {
+  MockContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  media::PictureInPictureEventsInfo::AutoPipInfo info;
+  info.auto_pip_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+
+  // Report an info change. There are no players, so nothing should happen.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      0,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Add a player. It should be notified immediately with the cached info.
+  int player1 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Add the same player again. It should not be notified again.
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Report a change. The existing player should be notified.
+  info.is_playing = true;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      2,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Remove the player and add it back. It should be notified again.
+  GetMediaSession()->RemovePlayer(player_observer_.get(), player1);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  EXPECT_EQ(
+      3,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  SetBrowserClientForTesting(old_client);
+}
+
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
  protected:
   TestMediaSessionClient client_;
