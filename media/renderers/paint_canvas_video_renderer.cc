@@ -101,49 +101,6 @@ namespace {
 // We delete the temporary resource if it is not used for 3 seconds.
 const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
 
-// Helper class that begins/ends access to a mailbox within a scope. The mailbox
-// must have been imported into |texture|.
-class ScopedSharedImageAccess {
- public:
-  // TODO(crbug.com/40106960): Remove this ctor once we're no longer relying on
-  // texture ids for Mailbox access as that is only supported on
-  // RasterImplementationGLES.
-  ScopedSharedImageAccess(
-      gpu::raster::RasterInterface* ri,
-      GLuint texture,
-      GLenum access = GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM)
-      : ri(ri), texture(texture) {
-    ri->BeginSharedImageAccessDirectCHROMIUM(texture, access);
-  }
-
-  ~ScopedSharedImageAccess() {
-    ri->EndSharedImageAccessDirectCHROMIUM(texture);
-  }
-
- private:
-  raw_ptr<gpu::raster::RasterInterface> ri;
-  GLuint texture;
-};
-
-// Wraps a GL RGBA texture into a SkImage.
-sk_sp<SkImage> WrapGLTexture(
-    GLuint texture_id,
-    const gfx::Size& size,
-    viz::RasterContextProvider* raster_context_provider) {
-  GrGLTextureInfo texture_info;
-  texture_info.fID = texture_id;
-  texture_info.fTarget = GL_TEXTURE_2D;
-  // TODO(bsalomon): GrGLTextureInfo::fFormat and SkColorType passed to
-  // SkImage factory should reflect video_frame->format(). Update once
-  // Skia supports GL_RGB. skbug.com/7533
-  texture_info.fFormat = GL_RGBA8_OES;
-  auto backend_texture = GrBackendTextures::MakeGL(
-      size.width(), size.height(), skgpu::Mipmapped::kNo, texture_info);
-  return SkImages::AdoptTextureFrom(
-      raster_context_provider->GrContext(), backend_texture,
-      kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
-}
-
 void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
                        unsigned int target,
                        unsigned int texture,
@@ -928,20 +885,6 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 class VideoTextureBacking : public cc::TextureBacking {
  public:
   explicit VideoTextureBacking(
-      sk_sp<SkImage> sk_image,
-      scoped_refptr<gpu::ClientSharedImage> shared_image,
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      std::unique_ptr<ScopedSharedImageAccess> access)
-      : sk_image_(std::move(sk_image)),
-        sk_image_info_(sk_image_->imageInfo()),
-        shared_image_(std::move(shared_image)),
-        access_(std::move(access)) {
-    DCHECK(sk_image_->isTextureBacked());
-    CHECK(shared_image_);
-    raster_context_provider_ = std::move(raster_context_provider);
-  }
-
-  explicit VideoTextureBacking(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       const gfx::Size& coded_size,
       const gfx::ColorSpace& color_space)
@@ -992,40 +935,15 @@ class VideoTextureBacking : public cc::TextureBacking {
     return raster_context_provider_;
   }
 
-  // Create and replace SkImage and access for the non-gpu-rasterization case.
-  // Returns false when failing to create SkImage, and true if the creation
-  // is successful or not necessary.
   bool BeginAccess(gpu::raster::RasterInterface* ri) {
     CHECK(!ri_access_);
+    CHECK(raster_context_provider()->ContextCapabilities().gpu_rasterization);
     ri_access_ =
         shared_image_->BeginRasterAccess(ri, sync_token_, /*readonly=*/true);
-
-    if (raster_context_provider()->ContextCapabilities().gpu_rasterization) {
-      return true;
-    }
-
-    GLuint texture = ri->CreateAndConsumeForGpuRaster(GetMailbox());
-
-    auto access = std::make_unique<ScopedSharedImageAccess>(ri, texture);
-    auto sk_image = WrapGLTexture(texture, GetSharedImage()->size(),
-                                  raster_context_provider().get());
-    if (!sk_image) {
-      // Couldn't create the SkImage.
-      return false;
-    }
-
-    DCHECK(sk_image->isTextureBacked());
-    sk_image_ = sk_image;
-    sk_image_info_ = sk_image->imageInfo();
-
-    // The client should have called clear_access() before invoking this method.
-    DCHECK(!access_);
-    access_ = std::move(access);
     return true;
   }
 
   void clear_access() {
-    access_.reset();
     CHECK(ri_access_);
     sync_token_ = gpu::RasterScopedAccess::EndAccess(std::move(ri_access_));
   }
@@ -1094,8 +1012,6 @@ class VideoTextureBacking : public cc::TextureBacking {
   // This is a newly allocated shared image if a copy or conversion was
   // necessary.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
-
-  std::unique_ptr<ScopedSharedImageAccess> access_;
 
   std::unique_ptr<gpu::RasterScopedAccess> ri_access_;
   gpu::SyncToken sync_token_;
