@@ -212,8 +212,6 @@ TEST_P(HintsFetcherTest, FetchOptimizationGuideServiceHints) {
   EXPECT_TRUE(hints_fetched());
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 1);
-  histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
       "BatchUpdateActiveTabs",
       1);
@@ -353,7 +351,9 @@ TEST_P(HintsFetcherTest, FetchReturned404) {
 
   // Make sure histograms are recorded correctly on bad response.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
+      "BatchUpdateActiveTabs",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateActiveTabs",
@@ -371,7 +371,9 @@ TEST_P(HintsFetcherTest, FetchReturnBadResponse) {
 
   // Make sure histograms are recorded correctly on bad response.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
+      "BatchUpdateActiveTabs",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateActiveTabs",
@@ -714,8 +716,6 @@ TEST_P(HintsFetcherTest, OnlyURLsToFetch) {
   EXPECT_TRUE(SimulateResponse(response_content, net::HTTP_OK));
   EXPECT_TRUE(hints_fetched());
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency", 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency."
       "BatchUpdateActiveTabs",

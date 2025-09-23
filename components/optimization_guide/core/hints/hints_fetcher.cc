@@ -379,15 +379,10 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
     UMA_HISTOGRAM_COUNTS_100(
         "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount",
         get_hints_response->hints_size());
-    base::TimeDelta fetch_latency =
-        base::TimeTicks::Now() - hints_fetch_start_time_;
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency",
-        fetch_latency);
     base::UmaHistogramMediumTimes(
         "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency." +
             GetStringNameForRequestContext(request_context_),
-        fetch_latency);
+        base::TimeTicks::Now() - hints_fetch_start_time_);
     if (skip_cache) {
       RecordRequestStatusHistogram(request_context_,
                                    FetcherRequestStatus::kSuccess);
