@@ -1,5 +1,7 @@
 {
-  "fileFiltering": {
-    "enableRecursiveFileSearch": false
+  "context": {
+    "fileFiltering": {
+      "enableRecursiveFileSearch": false
+    }
   }
 }
