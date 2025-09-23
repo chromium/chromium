@@ -460,63 +460,76 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
                                              SandboxDelegate* delegate,
                                              TargetConfig* config) {
+  const Sandbox sandbox_type = delegate->GetSandboxType();
+
   DCHECK(!config->IsConfigured());
 
-  // Pre-startup mitigations.
-  MitigationFlags mitigations =
-      MITIGATION_HEAP_TERMINATE | MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DEP |
-      MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
-      MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
-      MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
-      MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
-      MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
+  {
+    // Pre-startup mitigations.
+    MitigationFlags mitigations =
+        MITIGATION_HEAP_TERMINATE | MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DEP |
+        MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
+        MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
+        MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
+        MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
+        MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
 
-  // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
-  // disabled for processes we know are not compatible.
-  if (!delegate->CetCompatible())
-    mitigations |= MITIGATION_CET_DISABLED;
+    // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
+    // disabled for processes we know are not compatible.
+    if (!delegate->CetCompatible()) {
+      mitigations |= MITIGATION_CET_DISABLED;
+    }
 
-  if (delegate->RestrictCoreSharing()) {
-    mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+    if (delegate->RestrictCoreSharing()) {
+      mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+    }
+
+    if (const auto result = config->SetProcessMitigations(mitigations);
+        result != SBOX_ALL_OK) {
+      return result;
+    }
   }
 
-  ResultCode result = config->SetProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
+  {
+    // Post-startup mitigations.
+    MitigationFlags mitigations = MITIGATION_DLL_SEARCH_ORDER;
+    if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
+        sandbox_type != Sandbox::kScreenAI &&
+        sandbox_type != Sandbox::kSpeechRecognition &&
+        sandbox_type != Sandbox::kMediaFoundationCdm) {
+      mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
+    }
 
-  // Post-startup mitigations.
-  mitigations = MITIGATION_DLL_SEARCH_ORDER;
-  const Sandbox sandbox_type = delegate->GetSandboxType();
-  if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-      sandbox_type != Sandbox::kScreenAI &&
-      sandbox_type != Sandbox::kSpeechRecognition &&
-      sandbox_type != Sandbox::kMediaFoundationCdm) {
-    mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
+    if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
+        sandbox_type == Sandbox::kIconReader) {
+      mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
+    }
+
+    if (base::FeatureList::IsEnabled(features::kWinSboxStrictHandleChecks)) {
+      mitigations |= MITIGATION_STRICT_HANDLE_CHECKS;
+    }
+
+    if (const auto result = config->SetDelayedProcessMitigations(mitigations);
+        result != SBOX_ALL_OK) {
+      return result;
+    }
   }
-
-  if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
-      sandbox_type == Sandbox::kIconReader) {
-    mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
-  }
-
-  result = config->SetDelayedProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
 
   if (sandbox_type == Sandbox::kRenderer) {
     // TODO(crbug.com/40088338) Remove if we can reliably not load
     // cryptbase.dll.
     config->AddKernelObjectToClose(HandleToClose::kKsecDD);
-    result = SandboxWin::AddWin32kLockdownPolicy(config);
-    if (result != SBOX_ALL_OK) {
+    if (const auto result = SandboxWin::AddWin32kLockdownPolicy(config);
+        result != SBOX_ALL_OK) {
       return result;
     }
   }
 
   if (!delegate->DisableDefaultPolicy()) {
-    result = AddDefaultConfigForSandboxedProcess(config);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = AddDefaultConfigForSandboxedProcess(config);
+        result != SBOX_ALL_OK) {
       return result;
+    }
   }
 
   // Disable apphelp for tightly sandboxed processes that are not running
@@ -530,38 +543,38 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     }
   }
 
-  result =
-      SandboxWin::SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, config);
-  if (result != SBOX_ALL_OK)
+  if (const auto result =
+          SandboxWin::SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, config);
+      result != SBOX_ALL_OK) {
     return result;
+  }
 
   if (sandbox_type == Sandbox::kGpu) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
   }
 
-  result = AddGenericConfig(config);
-  if (result != SBOX_ALL_OK) {
-    NOTREACHED();
-  }
+  CHECK_EQ(AddGenericConfig(config), SBOX_ALL_OK);
 
   std::string appcontainer_id;
   if (SandboxWin::IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
       delegate->GetAppContainerId(&appcontainer_id)) {
-    result = SandboxWin::AddAppContainerProfileToConfig(
-        cmd_line, sandbox_type, appcontainer_id, config);
-    DCHECK_EQ(result, SBOX_ALL_OK);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = SandboxWin::AddAppContainerProfileToConfig(
+            cmd_line, sandbox_type, appcontainer_id, config);
+        result != SBOX_ALL_OK) {
+      DCHECK(false);
       return result;
+    }
   }
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     // Set a policy that would normally allow for process creation. This allows
     // the mf cdm process to launch the protected media pipeline process
     // (mfpmp.exe) without process interception.
-    result = config->SetJobLevel(JobLevel::kInteractive, 0);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = config->SetJobLevel(JobLevel::kInteractive, 0);
+        result != SBOX_ALL_OK) {
       return result;
+    }
   }
 
   if (!delegate->InitializeConfig(config)) {
