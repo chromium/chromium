@@ -75,9 +75,6 @@ source_set("sync_integration_tests_impl") {
     # TODO(crbug.com/433556051): After enough of the implementation is ready
     # (CL #N), add integration tests. Careful, sync_integration_tests runs in CQ
     # but android_sync_integration_tests do not.
-    # TODO(crbug.com/445841720): After enough of the implementation is ready
-    # (CL #N), add integration tests. Careful, sync_integration_tests runs in CQ
-    # but android_sync_integration_tests do not.
   ]
   data = [ "//chrome/test/data/sync/" ]
 

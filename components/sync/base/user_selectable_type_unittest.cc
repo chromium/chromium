@@ -53,11 +53,6 @@ class UserSelectableTypeTest : public ::testing::Test {
     data_types.Put(SHARED_TAB_GROUP_ACCOUNT_DATA);
     data_types.Put(SHARED_COMMENT);
 
-    // TODO(crbug.com/445841720): In CL #3, map AI_THREAD to an existing
-    // selectable type or to a new one and remove it from here (unless it's
-    // ambiguous).
-    data_types.Put(AI_THREAD);
-
     return data_types;
   }
 };

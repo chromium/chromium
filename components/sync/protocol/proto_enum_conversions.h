@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_ENUM_CONVERSIONS_H_
 
-#include "components/sync/protocol/ai_thread_specifics.pb.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -43,8 +42,6 @@ namespace syncer {
 
 // The returned strings (which don't have to be freed) are in ASCII.
 // The result of passing in an invalid enum value is undefined.
-
-const char* ProtoEnumToString(sync_pb::AIThreadSpecifics::ThreadType type);
 
 const char* ProtoEnumToString(
     sync_pb::AppListSpecifics::AppListItemType item_type);
