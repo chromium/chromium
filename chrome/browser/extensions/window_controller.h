@@ -152,6 +152,12 @@ class WindowController {
   // Notifies that a window's bounds are changed.
   void NotifyWindowBoundsChanged();
 
+  // Notifies that a window's focus is changed.
+  //
+  // As of Sep 23, 2025, this API was only used on desktop Android.
+  // TODO(http://crbug.com/446925633): Use this API on non-Android OSes.
+  void NotifyWindowFocusChanged(bool has_focus);
+
   // Creates a base::Value::Dict representing the window for the browser and
   // scrubs any privacy-sensitive data that `extension` does not have access to.
   // `populate_tab_behavior` determines whether tabs will be populated in the

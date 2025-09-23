@@ -22,6 +22,10 @@ class MockWindowControllerListObserver final
   MOCK_METHOD(void, OnWindowControllerAdded, (WindowController*), (override));
   MOCK_METHOD(void, OnWindowControllerRemoved, (WindowController*), (override));
   MOCK_METHOD(void, OnWindowBoundsChanged, (WindowController*), (override));
+  MOCK_METHOD(void,
+              OnWindowFocusChanged,
+              (WindowController*, bool),
+              (override));
 };
 }  // namespace extensions
 

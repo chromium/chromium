@@ -87,4 +87,9 @@ void WindowController::NotifyWindowBoundsChanged() {
   WindowControllerList::GetInstance()->NotifyWindowBoundsChanged(this);
 }
 
+void WindowController::NotifyWindowFocusChanged(bool has_focus) {
+  WindowControllerList::GetInstance()->NotifyWindowFocusChanged(this,
+                                                                has_focus);
+}
+
 }  // namespace extensions

@@ -26,6 +26,13 @@ class WindowControllerListObserver {
   // Called when new bounds are committed.
   virtual void OnWindowBoundsChanged(WindowController* window_controller) {}
 
+  // Called when a window's focus is changed.
+  // As of Sep 23, 2025, this API was only used on desktop Android.
+  //
+  // TODO(http://crbug.com/446925633): Use this API on non-Android OSes.
+  virtual void OnWindowFocusChanged(WindowController* window_controller,
+                                    bool has_focus) {}
+
  protected:
   virtual ~WindowControllerListObserver() = default;
 };

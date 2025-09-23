@@ -54,6 +54,15 @@ void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
   }
 }
 
+void WindowControllerList::NotifyWindowFocusChanged(WindowController* window,
+                                                    bool has_focus) {
+  if (base::Contains(windows_, window)) {
+    for (auto& observer : observers_) {
+      observer.OnWindowFocusChanged(window, has_focus);
+    }
+  }
+}
+
 void WindowControllerList::AddObserver(WindowControllerListObserver* observer) {
   observers_.AddObserver(observer);
 }

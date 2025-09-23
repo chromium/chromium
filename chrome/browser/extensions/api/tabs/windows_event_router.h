@@ -63,6 +63,8 @@ class WindowsEventRouter :
   void OnWindowControllerAdded(WindowController* window_controller) override;
   void OnWindowControllerRemoved(WindowController* window) override;
   void OnWindowBoundsChanged(WindowController* window_controller) override;
+  void OnWindowFocusChanged(WindowController* window_controller,
+                            bool has_focus) override;
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;

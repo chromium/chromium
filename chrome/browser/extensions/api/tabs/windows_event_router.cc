@@ -252,6 +252,12 @@ void WindowsEventRouter::OnWindowBoundsChanged(
                 std::move(args));
 }
 
+void WindowsEventRouter::OnWindowFocusChanged(
+    WindowController* window_controller,
+    bool has_focus) {
+  OnActiveWindowChanged(has_focus ? window_controller : nullptr);
+}
+
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 void WindowsEventRouter::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (!focused_now)
