@@ -379,7 +379,6 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
 
-  GLuint GetBackBufferTextureId() const { return back_buffer_texture_id_; }
   scoped_refptr<gpu::ClientSharedImage> GetBackBufferClientSharedImage() {
     CHECK(back_buffer_shared_image_);
     return back_buffer_shared_image_;
@@ -407,9 +406,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       context_provider_wrapper_;
   scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image_;
   scoped_refptr<gpu::ClientSharedImage> back_buffer_shared_image_;
-  GLuint back_buffer_texture_id_ = 0u;
   gpu::SyncToken sync_token_;
-  const bool use_oop_rasterization_;
   const SkAlphaType alpha_type_;
   base::WeakPtr<CanvasResourceProvider> provider_;
 
