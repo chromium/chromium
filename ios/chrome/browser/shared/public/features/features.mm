@@ -216,6 +216,9 @@ const char kNTPMIAEntrypointParamAIMInQuickActions[] =
 BASE_FEATURE(kNTPMIAEntrypoint,
              "kNTPMIAEntrypoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNTPMIAEntrypointAllLocales,
+             "kNTPMIAEntrypointAllLocales",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled the AIM ZPS entrypoint will open the AIM prototype which
 // contains temporary UI exploration for AIM.
