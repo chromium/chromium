@@ -3207,6 +3207,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON_VOICEOVER_LABEL" desc="Voiceover label on the button that starts biometric authentication on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
        Unlock Incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
       </message>
+      <message name="IDS_IOS_INCOGNITO_SETTINGS_SECTION_HEADER" desc="Section header for Incognito settings on the Privacy and security settings page." translateable="false">
+       Incognito
+      </message>
       <message name="IDS_IOS_INFOBAR_BADGES_PASSWORD_HINT" desc="The iOS infobar badge item for saving password credentials [Length:Unlimited]">
         Options to save password
       </message>

@@ -19,6 +19,7 @@
 #import "components/handoff/pref_names_ios.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/privacy_sandbox/privacy_sandbox_features.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -70,7 +71,8 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 
 class PrivacyTableViewControllerTest
     : public LegacyChromeTableViewControllerTest,
-      public testing::WithParamInterface<std::tuple<IncognitoModePrefs, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<IncognitoModePrefs, bool, bool>> {
  protected:
   PrivacyTableViewControllerTest() {}
 
@@ -105,7 +107,10 @@ class PrivacyTableViewControllerTest
             static_cast<int>(IncognitoModeAvailability())));
 
     feature_list_.InitWithFeatureStates(
-        {{kPrivacyGuideIos, YES}, {kIOSSoftLock, SoftLockEnabled()}});
+        {{kPrivacyGuideIos, YES},
+         {kIOSSoftLock, SoftLockEnabled()},
+         {privacy_sandbox::kFingerprintingProtectionUx,
+          FingerprintingProtectionUxEnabled()}});
   }
 
   void TearDown() override {
@@ -153,6 +158,8 @@ class PrivacyTableViewControllerTest
 
   bool SoftLockEnabled() { return std::get<1>(GetParam()); }
 
+  bool FingerprintingProtectionUxEnabled() { return std::get<2>(GetParam()); }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -168,10 +175,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 7;
+  int expectedNumberOfSections = FingerprintingProtectionUxEnabled() ? 7 : 8;
 
-  // IncognitoInterstitial section.
-  expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
   int currentSection = 0;
@@ -212,8 +217,21 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
       handoffSubtitle, currentSection, 0);
 
-  currentSection++;
+  // Lockdown Mode section.
+  currentSection += FingerprintingProtectionUxEnabled() ? 1 : 3;
   EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  CheckTextCellTextAndDetailText(
+      l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
+      l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
+
+  int sectionItems = 2;
+  if (FingerprintingProtectionUxEnabled()) {
+    currentSection++;
+  } else {
+    sectionItems = 1;
+    currentSection -= 2;
+  }
+  EXPECT_EQ(sectionItems, NumberOfItemsInSection(currentSection));
   if (IsIOSSoftLockEnabled()) {
     // IncognitoLock section.
     if (IsIncognitoModeDisabled(prefService)) {
@@ -241,26 +259,22 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
   }
 
   // IncognitoInterstitial section.
-  currentSection++;
-  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  if (!FingerprintingProtectionUxEnabled()) {
+    currentSection++;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
+  }
   if ((IsIncognitoModeDisabled(prefService) ||
        IsIncognitoModeForced(prefService))) {
     // Disabled version of Incognito interstitial item is expected in this
     // case.
     CheckInfoButtonCellStatusWithIdAndTextWithId(
         IDS_IOS_SETTING_OFF, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL,
-        currentSection, 0);
+        currentSection, sectionItems - 1);
   } else {
     CheckSwitchCellStateAndTextWithId(
-        NO, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL, currentSection, 0);
+        NO, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL, currentSection,
+        sectionItems - 1);
   }
-
-  // Lockdown Mode section.
-  currentSection++;
-  EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
-      l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
 
   // Testing section index and text of the privacy footer.
   CheckSectionFooter(l10n_util::GetNSString(IDS_IOS_PRIVACY_SIGNED_OUT_FOOTER),
@@ -273,10 +287,8 @@ TEST_P(PrivacyTableViewControllerTest, TestModelFooterSignedOut) {
   CreateController();
   CheckController();
 
-  int expectedNumberOfSections = 7;
+  int expectedNumberOfSections = FingerprintingProtectionUxEnabled() ? 7 : 8;
 
-  // IncognitoInterstitial section.
-  expectedNumberOfSections++;
   EXPECT_EQ(expectedNumberOfSections, NumberOfSections());
 
   // Testing section index and text of the privacy footer.
@@ -316,5 +328,6 @@ INSTANTIATE_TEST_SUITE_P(
                          IncognitoModePrefs::kEnabled,
                          IncognitoModePrefs::kDisabled,
                          IncognitoModePrefs::kForced),
-                     /*softLockEnabled*/ testing::Bool()));
+                     /*softLockEnabled*/ testing::Bool(),
+                     /*fingerprintingProtectionUxEnabled*/ testing::Bool()));
 }  // namespace
