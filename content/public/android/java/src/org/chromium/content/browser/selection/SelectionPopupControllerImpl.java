@@ -228,6 +228,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // Cached selection menu items to check against new selections.
     private @Nullable SelectionMenuCachedResult mSelectionMenuCachedResult;
 
+    // TODO(crbug.com/445155873): Move menu items from using custom click listeners to handling them
+    //  manually in the handleMenuItemClick callback.
     /** Custom {@link android.view.View.OnClickListener} map for ActionMode menu items. */
     private final Map<MenuItem, View.OnClickListener> mCustomActionMenuItemClickListeners;
 
@@ -959,6 +961,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return true;
     }
 
+    // TODO(crbug.com/445155873): Refactor this to directly populate the Menu for ActionMode and the
+    //  MVCListAdapter.ModelList for dropdown menus.
     @VisibleForTesting
     public SortedSet<SelectionMenuGroup> getMenuItems() {
         TextProcessingIntentHandler textProcessingIntentHandler =

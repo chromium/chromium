@@ -5,10 +5,13 @@
 package org.chromium.content_public.browser.selection;
 
 import android.content.pm.ResolveInfo;
+import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -73,4 +76,15 @@ public interface SelectionActionMenuDelegate {
      *     otherwise.
      */
     boolean canReuseCachedSelectionMenu();
+
+    /**
+     * Handles when an item in the selection menu is clicked by the user or activated using the
+     * relevant shortcut.
+     *
+     * @return True if the click was handled by this class or false otherwise.
+     */
+    default boolean handleMenuItemClick(
+            MenuItem item, WebContents webContents, ViewGroup containerView) {
+        return false;
+    }
 }

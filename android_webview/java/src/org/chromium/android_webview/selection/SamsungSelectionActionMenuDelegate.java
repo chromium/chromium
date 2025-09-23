@@ -324,7 +324,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         };
     }
 
-    public static boolean handleMenuItemClick(
+    @Override
+    public boolean handleMenuItemClick(
             MenuItem item, WebContents webContents, ViewGroup containerView) {
         if (!isWritingToolKitMenuItem(item)) return false;
         SelectionPopupController selectionPopupController =

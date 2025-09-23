@@ -21,7 +21,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -29,6 +28,7 @@ import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** A class that handles selection action mode for Android WebView. */
@@ -37,13 +37,19 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
     private final Context mContext;
     private final AwContents mAwContents;
     private final SelectionPopupController mSelectionPopupController;
+    private final SelectionActionMenuDelegate mDelegate;
     private final ActionModeCallbackHelper mHelper;
     private int mAllowedMenuItems;
 
-    public AwActionModeCallback(Context context, AwContents awContents, WebContents webContents) {
+    public AwActionModeCallback(
+            Context context,
+            AwContents awContents,
+            WebContents webContents,
+            SelectionActionMenuDelegate delegate) {
         mContext = context;
         mAwContents = awContents;
         mSelectionPopupController = SelectionPopupController.fromWebContents(webContents);
+        mDelegate = delegate;
         mHelper = mSelectionPopupController.getActionModeCallbackHelper();
         mHelper.setAllowedMenuItems(0); // No item is allowed by default for WebView.
     }
@@ -94,7 +100,7 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                && SamsungSelectionActionMenuDelegate.handleMenuItemClick(
+                && mDelegate.handleMenuItemClick(
                         item, mAwContents.getWebContents(), mAwContents.getContainerView())) {
             return true;
         }

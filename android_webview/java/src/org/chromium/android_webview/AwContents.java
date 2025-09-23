@@ -1117,7 +1117,8 @@ public class AwContents implements SmartClipProvider {
         mViewEventSink = ViewEventSink.from(mWebContents);
         mViewEventSink.setHideKeyboardOnBlur(false);
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
-        controller.setActionModeCallback(new AwActionModeCallback(mContext, this, webContents));
+        controller.setActionModeCallback(
+                new AwActionModeCallback(mContext, this, webContents, selectionActionMenuDelegate));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
         controller.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         AwSelectionDropdownMenuDelegate.maybeSetWebViewDropdownSelectionMenuDelegate(controller);
