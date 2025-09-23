@@ -2375,7 +2375,7 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   handwriting_controller->OnStartStylusWriting(
       base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
                           weak_ptr_factory_.GetWeakPtr()),
-      last_stylus_handwriting_properties_.value(), *this);
+      last_stylus_handwriting_properties_.value());
   last_stylus_handwriting_properties_.reset();
 }
 
@@ -2417,11 +2417,9 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
   UpdateProximateCharacterBounds(
       focus_result ? std::move(focus_result->proximate_bounds) : nullptr);
 
-  if (focus_result) {
-    handwriting_controller->OnFocusHandled(*this);
-  } else {
-    handwriting_controller->OnFocusFailed(*this);
-  }
+  UMA_HISTOGRAM_BOOLEAN("Stylus.Handwriting.TSFFocus", !!focus_result);
+  focus_result ? handwriting_controller->OnFocusHandled()
+               : handwriting_controller->OnFocusFailed();
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(

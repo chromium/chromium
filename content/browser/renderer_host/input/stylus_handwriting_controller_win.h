@@ -27,7 +27,6 @@ class Size;
 
 namespace ui {
 struct StylusHandwritingPropertiesWin;
-class TextInputClient;
 }  // namespace ui
 
 namespace content {
@@ -90,17 +89,16 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   // ITfHandwritingSink::FocusHandwritingTarget.
   void OnStartStylusWriting(
       OnFocusHandwritingTargetCallback callback,
-      const ui::StylusHandwritingPropertiesWin& properties,
-      ui::TextInputClient& text_input_client);
+      const ui::StylusHandwritingPropertiesWin& properties);
 
   // Signal the Handwriting API whether focus has been updated successfully and
   // may begin committing edits or collect character bounds for evaluating
   // gesture recognition using TSF/IME APIs.
-  void OnFocusHandled(ui::TextInputClient& text_input_client);
+  void OnFocusHandled();
 
   // Signal the Handwriting API that focus was not updated successfully and must
   // cancel the inking session.
-  void OnFocusFailed(ui::TextInputClient& text_input_client);
+  void OnFocusFailed();
 
  private:
   friend class base::NoDestructor<StylusHandwritingControllerWin>;
@@ -115,10 +113,6 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   Microsoft::WRL::ComPtr<StylusHandwritingCallbackSinkWin>
       handwriting_callback_sink_;
   Microsoft::WRL::ComPtr<::ITfHandwriting> handwriting_;
-  // Stores the current text input client where handwriting was initiated. Used
-  // to filter out calls that come from other clients, e.g., when the focused
-  // window changes after the stylus writing has started.
-  base::WeakPtr<ui::TextInputClient> current_text_input_client_;
 };
 
 }  // namespace content

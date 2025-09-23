@@ -6,11 +6,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/win/windows_version.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #include "ui/events/win/stylus_handwriting_properties_win.h"
 
@@ -135,32 +135,29 @@ StylusHandwritingControllerWin::GetCallbackSinkForTesting() const {
 
 void StylusHandwritingControllerWin::OnStartStylusWriting(
     OnFocusHandwritingTargetCallback callback,
-    const ui::StylusHandwritingPropertiesWin& properties,
-    ui::TextInputClient& text_input_client) {
+    const ui::StylusHandwritingPropertiesWin& properties) {
   BOOL accepted;
   Microsoft::WRL::ComPtr<ITfHandwritingRequest> handwriting_request = nullptr;
   HRESULT hr = handwriting_->RequestHandwritingForPointer(
       properties.handwriting_pointer_id, properties.handwriting_stroke_id,
       &accepted, &handwriting_request);
 
-  if (SUCCEEDED(hr) && accepted) {
+  if (SUCCEEDED(hr) && accepted && handwriting_request) {
     handwriting_callback_sink_->SetCallback(std::move(callback));
     handwriting_request->SetInputEvaluation(
         ::TfInputEvaluation::TF_IE_HANDWRITING);
   }
 
-  // TODO(crbug.com/355578906): Record instances when
-  // RequestHandwritingForPointer() failed.
+  base::UmaHistogramSparse("Stylus.Handwriting.RequestHandwritingForPointer",
+                           hr);
 }
 
-void StylusHandwritingControllerWin::OnFocusHandled(
-    ui::TextInputClient& text_input_client) {
+void StylusHandwritingControllerWin::OnFocusHandled() {
   CHECK(handwriting_callback_sink_);
   handwriting_callback_sink_->OnFocusHandled();
 }
 
-void StylusHandwritingControllerWin::OnFocusFailed(
-    ui::TextInputClient& text_input_client) {
+void StylusHandwritingControllerWin::OnFocusFailed() {
   CHECK(handwriting_callback_sink_);
   handwriting_callback_sink_->OnFocusFailed();
 }

@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -6945,6 +6946,28 @@ class InputMethodStateAuraHandwritingTest : public InputMethodStateAuraTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   StylusHandwritingWinTestHelper stylus_handwriting_win_test_helper_;
 };
+
+// This test checks the histograms logged by Stylus Handwriting.
+TEST_F(InputMethodStateAuraHandwritingTest, CheckHistograms) {
+  base::HistogramTester histogram_tester;
+
+  ui::StylusHandwritingPropertiesWin last_stylus_handwriting_properties;
+  StylusHandwritingControllerWin::OnFocusHandwritingTargetCallback
+      handwriting_callback;
+  StylusHandwritingControllerWin* instance =
+      StylusHandwritingControllerWin::GetInstance();
+  instance->OnStartStylusWriting(handwriting_callback,
+                                 last_stylus_handwriting_properties);
+  histogram_tester.ExpectBucketCount(
+      "Stylus.Handwriting.RequestHandwritingForPointer", 0, 1);
+
+  tab_view()->OnEditElementFocusedForStylusWriting(nullptr);
+  histogram_tester.ExpectBucketCount("Stylus.Handwriting.TSFFocus", 0, 1);
+
+  tab_view()->OnEditElementFocusedForStylusWriting(
+      CreateStylusWritingFocusResultForTesting());
+  histogram_tester.ExpectBucketCount("Stylus.Handwriting.TSFFocus", 1, 1);
+}
 
 // This test is for "proximate" character bounds GetTextExt behavior.
 TEST_F(InputMethodStateAuraHandwritingTest, GetProximateCharacterBounds) {
