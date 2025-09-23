@@ -7309,19 +7309,22 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
+  const FormStructure& form_structure =
+      *autofill_manager().FindCachedFormById(form.global_id());
 
-  const FormFieldData& card_number_field = form.fields()[1];
+  const AutofillField& card_number_field = *form_structure.field(1);
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where autofill is enabled.
   autofill_client().SetAutofillPaymentMethodsEnabled(true);
-  EXPECT_TRUE(
-      autofill_manager().ShouldShowScanCreditCard(form, card_number_field));
+  EXPECT_TRUE(test_api(autofill_manager())
+                  .ShouldShowScanCreditCard(form_structure, card_number_field));
 
   // Test case where autofill is disabled.
   autofill_client().SetAutofillPaymentMethodsEnabled(false);
   EXPECT_FALSE(
-      autofill_manager().ShouldShowScanCreditCard(form, card_number_field));
+      test_api(autofill_manager())
+          .ShouldShowScanCreditCard(form_structure, card_number_field));
 }
 
 // Test that 'Scan New Card' suggestion is shown based on whether platform
@@ -7330,21 +7333,24 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
+  const FormStructure& form_structure =
+      *autofill_manager().FindCachedFormById(form.global_id());
 
-  const FormFieldData& card_number_field = form.fields()[1];
+  const AutofillField& card_number_field = *form_structure.field(1);
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where device and platform support scanning credit cards.
   ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
-  EXPECT_TRUE(
-      autofill_manager().ShouldShowScanCreditCard(form, card_number_field));
+  EXPECT_TRUE(test_api(autofill_manager())
+                  .ShouldShowScanCreditCard(form_structure, card_number_field));
 
   // Test case where device and platform do not support scanning credit cards.
   ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(false));
   EXPECT_FALSE(
-      autofill_manager().ShouldShowScanCreditCard(form, card_number_field));
+      test_api(autofill_manager())
+          .ShouldShowScanCreditCard(form_structure, card_number_field));
 }
 
 // Test that 'Scan New Card' suggestion is shown based on whether form field
@@ -7356,17 +7362,20 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
+  const FormStructure& form_structure =
+      *autofill_manager().FindCachedFormById(form.global_id());
 
   // Test case for credit-card-number field.
-  const FormFieldData& card_number_field = form.fields()[1];
+  const AutofillField& card_number_field = *form_structure.field(1);
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
-  EXPECT_TRUE(
-      autofill_manager().ShouldShowScanCreditCard(form, card_number_field));
+  EXPECT_TRUE(test_api(autofill_manager())
+                  .ShouldShowScanCreditCard(form_structure, card_number_field));
 
   // Test case for non-credit-card-number field.
-  const FormFieldData& cvc_field = form.fields()[4];
+  const AutofillField& cvc_field = *form_structure.field(4);
   ASSERT_EQ(cvc_field.name(), u"cvc");
-  EXPECT_FALSE(autofill_manager().ShouldShowScanCreditCard(form, cvc_field));
+  EXPECT_FALSE(test_api(autofill_manager())
+                   .ShouldShowScanCreditCard(form_structure, cvc_field));
 }
 
 // Test that 'Scan New Card' suggestion is shown based on whether the form is
@@ -7379,21 +7388,27 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
   FormData form_http = CreateTestCreditCardFormData(/*is_https=*/false,
                                                     /*use_month_type=*/false);
   FormsSeen({form_http});
+  const FormStructure& form_structure_http =
+      *autofill_manager().FindCachedFormById(form_http.global_id());
 
-  const FormFieldData& card_number_field_http = form_http.fields()[1];
+  const AutofillField& card_number_field_http = *form_structure_http.field(1);
   ASSERT_EQ(card_number_field_http.name(), u"cardnumber");
-  EXPECT_FALSE(autofill_manager().ShouldShowScanCreditCard(
-      form_http, card_number_field_http));
+  EXPECT_FALSE(test_api(autofill_manager())
+                   .ShouldShowScanCreditCard(form_structure_http,
+                                             card_number_field_http));
 
   // Test case for HTTPS form.
   FormData form_https =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form_https});
+  const FormStructure& form_structure_https =
+      *autofill_manager().FindCachedFormById(form_https.global_id());
 
-  const FormFieldData& card_number_field_https = form_https.fields()[1];
+  const AutofillField& card_number_field_https = *form_structure_https.field(1);
   ASSERT_EQ(card_number_field_https.name(), u"cardnumber");
-  EXPECT_TRUE(autofill_manager().ShouldShowScanCreditCard(
-      form_https, card_number_field_https));
+  EXPECT_TRUE(test_api(autofill_manager())
+                  .ShouldShowScanCreditCard(form_structure_https,
+                                            card_number_field_https));
 }
 
 // Tests that compose suggestions are not queried if Autofill has suggestions

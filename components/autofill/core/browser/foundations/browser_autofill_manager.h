@@ -121,10 +121,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   ~BrowserAutofillManager() override;
 
-  // Whether the |field| should show an entry to scan a credit card.
-  virtual bool ShouldShowScanCreditCard(const FormData& form,
-                                        const FormFieldData& field);
-
   // Fills or previews `form` with the information in `filling_payload`.
   // `field_id` is the ID of the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.
@@ -463,9 +459,13 @@ class BrowserAutofillManager : public AutofillManager {
   // latter check is needed because IPC messages can arrive out of order.
   void UpdateInitialInteractionTimestamp(base::TimeTicks interaction_timestamp);
 
-  // Examines |form| and returns true if it is in a non-secure context or
-  // its action attribute targets a HTTP url.
-  bool IsFormNonSecure(const FormData& form) const;
+  // Whether the `trigger_field` should show an entry to scan a credit card.
+  bool ShouldShowScanCreditCard(const FormStructure& form,
+                                const AutofillField& trigger_field);
+
+  // Examines `form` and returns true if it is in a non-secure context or its
+  // action attribute targets a HTTP url.
+  bool IsFormNonSecure(const FormStructure& form) const;
 
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This

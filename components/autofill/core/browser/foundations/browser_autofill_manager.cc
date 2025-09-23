@@ -828,22 +828,16 @@ payments::BnplManager* BrowserAutofillManager::GetPaymentsBnplManager() {
 }
 
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
-    const FormData& form,
-    const FormFieldData& field) {
+    const FormStructure& form,
+    const AutofillField& trigger_field) {
   if (!client().GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
       !client().IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 
-  AutofillField* autofill_field =
-      GetAutofillField(form.global_id(), field.global_id());
-  if (!autofill_field) {
-    return false;
-  }
-
   bool is_card_number_field =
-      autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
-      base::ContainsOnlyChars(StripCardNumberSeparators(field.value()),
+      trigger_field.Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
+      base::ContainsOnlyChars(StripCardNumberSeparators(trigger_field.value()),
                               u"0123456789");
 
   if (!is_card_number_field) {
@@ -855,7 +849,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
   }
 
   static const int kShowScanCreditCardMaxValueLength = 6;
-  return field.value().size() <= kShowScanCreditCardMaxValueLength;
+  return trigger_field.value().size() <= kShowScanCreditCardMaxValueLength;
 }
 
 bool BrowserAutofillManager::ShouldParseForms() {
@@ -1081,13 +1075,12 @@ void BrowserAutofillManager::OnTextFieldValueChangedImpl(
   UpdateInitialInteractionTimestamp(timestamp);
 }
 
-bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
+bool BrowserAutofillManager::IsFormNonSecure(const FormStructure& form) const {
   // Check if testing override applies.
   if (consider_form_as_secure_for_testing_.has_value() &&
       consider_form_as_secure_for_testing_.value()) {
     return false;
   }
-
   return IsFormOrClientNonSecure(client(), form);
 }
 
@@ -1165,7 +1158,8 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     }
     return context;
   }
-  context.is_context_secure = !IsFormNonSecure(form);
+  context.is_context_secure =
+      form_structure && !IsFormNonSecure(*form_structure);
   return context;
 }
 
@@ -3023,7 +3017,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       form_structure.IsCompleteCreditCardForm(
           FormStructure::CreditCardFormCompleteness::
               kCompleteCreditCardFormIncludingCvcAndName),
-      ShouldShowScanCreditCard(form, trigger_field),
+      ShouldShowScanCreditCard(form_structure, autofill_trigger_field),
       four_digit_combinations_in_dom_,
       /*autofilled_last_four_digits_in_form_for_filtering=*/
       is_card_number_autofilled && card_number_field_value.size() >= 4

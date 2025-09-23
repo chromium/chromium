@@ -109,6 +109,11 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->otp_manager_.get();
   }
 
+  bool ShouldShowScanCreditCard(const FormStructure& form,
+                                const AutofillField& trigger_field) {
+    return manager_->ShouldShowScanCreditCard(form, trigger_field);
+  }
+
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };
