@@ -1218,10 +1218,10 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   switch (webrtc_configuration.type) {
     case webrtc::PeerConnectionInterface::kRelay:
-      result->setIceTransportPolicy("relay");
+      result->setIceTransportPolicy(V8RTCIceTransportPolicy::Enum::kRelay);
       break;
     case webrtc::PeerConnectionInterface::kAll:
-      result->setIceTransportPolicy("all");
+      result->setIceTransportPolicy(V8RTCIceTransportPolicy::Enum::kAll);
       break;
     default:
       NOTREACHED();
@@ -1229,13 +1229,13 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   switch (webrtc_configuration.bundle_policy) {
     case webrtc::PeerConnectionInterface::kBundlePolicyMaxCompat:
-      result->setBundlePolicy("max-compat");
+      result->setBundlePolicy(V8RTCBundlePolicy::Enum::kMaxCompat);
       break;
     case webrtc::PeerConnectionInterface::kBundlePolicyMaxBundle:
-      result->setBundlePolicy("max-bundle");
+      result->setBundlePolicy(V8RTCBundlePolicy::Enum::kMaxBundle);
       break;
     case webrtc::PeerConnectionInterface::kBundlePolicyBalanced:
-      result->setBundlePolicy("balanced");
+      result->setBundlePolicy(V8RTCBundlePolicy::Enum::kBalanced);
       break;
     default:
       NOTREACHED();
@@ -1243,10 +1243,10 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
 
   switch (webrtc_configuration.rtcp_mux_policy) {
     case webrtc::PeerConnectionInterface::kRtcpMuxPolicyNegotiate:
-      result->setRtcpMuxPolicy("negotiate");
+      result->setRtcpMuxPolicy(V8RTCRtcpMuxPolicy::Enum::kNegotiate);
       break;
     case webrtc::PeerConnectionInterface::kRtcpMuxPolicyRequire:
-      result->setRtcpMuxPolicy("require");
+      result->setRtcpMuxPolicy(V8RTCRtcpMuxPolicy::Enum::kRequire);
       break;
     default:
       NOTREACHED();

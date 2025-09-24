@@ -733,21 +733,24 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   parameters->setTransactionId(webrtc_parameters->transaction_id.c_str());
 
   if (webrtc_parameters->degradation_preference.has_value()) {
-    String degradation_preference_str;
+    V8RTCDegradationPreference::Enum degradation_preference_enum;
     switch (webrtc_parameters->degradation_preference.value()) {
       case webrtc::DegradationPreference::MAINTAIN_FRAMERATE:
-        degradation_preference_str = "maintain-framerate";
+        degradation_preference_enum =
+            V8RTCDegradationPreference::Enum::kMaintainFramerate;
         break;
       case webrtc::DegradationPreference::MAINTAIN_RESOLUTION:
-        degradation_preference_str = "maintain-resolution";
+        degradation_preference_enum =
+            V8RTCDegradationPreference::Enum::kMaintainResolution;
         break;
       case webrtc::DegradationPreference::BALANCED:
-        degradation_preference_str = "balanced";
+        degradation_preference_enum =
+            V8RTCDegradationPreference::Enum::kBalanced;
         break;
-      default:
+      case webrtc::DegradationPreference::DISABLED:
         NOTREACHED();
     }
-    parameters->setDegradationPreference(degradation_preference_str);
+    parameters->setDegradationPreference(degradation_preference_enum);
   }
   RTCRtcpParameters* rtcp = RTCRtcpParameters::Create();
   rtcp->setCname(webrtc_parameters->rtcp.cname.c_str());

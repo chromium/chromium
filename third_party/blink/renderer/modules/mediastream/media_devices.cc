@@ -731,7 +731,8 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
   MediaStreamConstraints* const constraints = ToMediaStreamConstraints(options);
   if (!options->hasSelfBrowserSurface() &&
       (!options->hasPreferCurrentTab() || !options->preferCurrentTab())) {
-    constraints->setSelfBrowserSurface("exclude");
+    constraints->setSelfBrowserSurface(
+        V8DisplayMediaIncludeOrExclude::Enum::kExclude);
   }
 
   if (options->hasPreferCurrentTab() && options->preferCurrentTab()) {

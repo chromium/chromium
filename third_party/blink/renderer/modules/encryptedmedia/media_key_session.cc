@@ -983,16 +983,17 @@ void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
   MediaKeyMessageEventInit* init = MediaKeyMessageEventInit::Create();
   switch (message_type) {
     case media::CdmMessageType::LICENSE_REQUEST:
-      init->setMessageType("license-request");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRequest);
       break;
     case media::CdmMessageType::LICENSE_RENEWAL:
-      init->setMessageType("license-renewal");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRenewal);
       break;
     case media::CdmMessageType::LICENSE_RELEASE:
-      init->setMessageType("license-release");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRelease);
       break;
     case media::CdmMessageType::INDIVIDUALIZATION_REQUEST:
-      init->setMessageType("individualization-request");
+      init->setMessageType(
+          V8MediaKeyMessageType::Enum::kIndividualizationRequest);
       break;
   }
   init->setMessage(DOMArrayBuffer::Create(message));

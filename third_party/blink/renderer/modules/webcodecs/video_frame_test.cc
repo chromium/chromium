@@ -155,7 +155,7 @@ TEST_F(VideoFrameTest, ConstructorOddSize) {
   init->setTimestamp(0);
   init->setCodedWidth(kOddSize.width());
   init->setCodedHeight(kOddSize.height());
-  init->setFormat("I420A");
+  init->setFormat(V8VideoPixelFormat::Enum::kI420A);
   init->setDisplayWidth(kOddSize.width());
   init->setDisplayHeight(kOddSize.height());
 

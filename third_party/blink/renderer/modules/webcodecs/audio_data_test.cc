@@ -74,7 +74,7 @@ class AudioDataTest : public testing::Test {
     audio_data_init->setNumberOfChannels(kChannels);
     audio_data_init->setNumberOfFrames(kFrames);
     audio_data_init->setSampleRate(kSampleRate);
-    audio_data_init->setFormat("f32-planar");
+    audio_data_init->setFormat(V8AudioSampleFormat::Enum::kF32Planar);
     return audio_data_init;
   }
 
@@ -299,7 +299,7 @@ TEST_F(AudioDataTest, TransferBuffer) {
   audio_data_init->setNumberOfChannels(1);
   audio_data_init->setNumberOfFrames(static_cast<uint32_t>(data.size()));
   audio_data_init->setSampleRate(kSampleRate);
-  audio_data_init->setFormat("u8");
+  audio_data_init->setFormat(V8AudioSampleFormat::Enum::kU8);
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
@@ -341,7 +341,7 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   audio_data_init->setNumberOfChannels(1);
   audio_data_init->setNumberOfFrames(frames);
   audio_data_init->setSampleRate(kSampleRate);
-  audio_data_init->setFormat("s32");
+  audio_data_init->setFormat(V8AudioSampleFormat::Enum::kS32);
   HeapVector<Member<DOMArrayBuffer>> transfer;
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
@@ -503,26 +503,34 @@ TEST_F(AudioDataTest, Interleaved) {
 }
 
 struct U8Traits {
-  static constexpr std::string Format = "u8";
-  static constexpr std::string PlanarFormat = "u8-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kU8;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kU8Planar;
   using Traits = media::UnsignedInt8SampleTypeTraits;
 };
 
 struct S16Traits {
-  static constexpr std::string Format = "s16";
-  static constexpr std::string PlanarFormat = "s16-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kS16;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kS16Planar;
   using Traits = media::SignedInt16SampleTypeTraits;
 };
 
 struct S32Traits {
-  static constexpr std::string Format = "s32";
-  static constexpr std::string PlanarFormat = "s32-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kS32;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kS32Planar;
   using Traits = media::SignedInt32SampleTypeTraits;
 };
 
 struct F32Traits {
-  static constexpr std::string Format = "f32";
-  static constexpr std::string PlanarFormat = "f32-planar";
+  static constexpr V8AudioSampleFormat::Enum Format =
+      V8AudioSampleFormat::Enum::kF32;
+  static constexpr V8AudioSampleFormat::Enum PlanarFormat =
+      V8AudioSampleFormat::Enum::kF32Planar;
   using Traits = media::Float32SampleTypeTraits;
 };
 
@@ -531,7 +539,8 @@ struct ConversionConfig {
   using From = SourceTraits;
   using To = TargetTraits;
   static std::string config_name() {
-    return From::Format + "_to_" + To::Format;
+    return std::string(V8AudioSampleFormat(From::Format).AsCStr()) + "_to_" +
+           std::string(V8AudioSampleFormat(To::Format).AsCStr());
   }
 };
 
@@ -539,14 +548,14 @@ template <typename TestConfig>
 class AudioDataConversionTest : public testing::Test {
  protected:
   AudioDataInit* CreateAudioDataInit(AllowSharedBufferSource* data,
-                                     std::string format) {
+                                     V8AudioSampleFormat::Enum format) {
     auto* audio_data_init = AudioDataInit::Create();
     audio_data_init->setData(data);
     audio_data_init->setTimestamp(kTimestampInMicroSeconds);
     audio_data_init->setNumberOfChannels(kChannels);
     audio_data_init->setNumberOfFrames(kFrames);
     audio_data_init->setSampleRate(kSampleRate);
-    audio_data_init->setFormat(String(format));
+    audio_data_init->setFormat(format);
     return audio_data_init;
   }
 
@@ -555,7 +564,7 @@ class AudioDataConversionTest : public testing::Test {
   // kZeroPointValue; if `use_frame_count`, the last sample of every channel
   // will be kZeroPointValue. This allows us to verify that we respect bounds
   // when copying.
-  AudioData* CreateAudioData(std::string format,
+  AudioData* CreateAudioData(V8AudioSampleFormat::Enum format,
                              bool planar,
                              bool use_offset,
                              bool use_frame_count,
@@ -571,12 +580,12 @@ class AudioDataConversionTest : public testing::Test {
   // Creates CopyToOptions. If `use_offset` is true, we exclude the first
   // sample. If `use_frame_count`, we exclude the last sample.
   AudioDataCopyToOptions* CreateCopyToOptions(int plane_index,
-                                              std::string format,
+                                              V8AudioSampleFormat::Enum format,
                                               bool use_offset,
                                               bool use_frame_count) {
     auto* copy_to_options = AudioDataCopyToOptions::Create();
     copy_to_options->setPlaneIndex(plane_index);
-    copy_to_options->setFormat(String(format));
+    copy_to_options->setFormat(format);
     int total_frames = kFrames;
 
     if (use_offset) {
@@ -683,7 +692,7 @@ class AudioDataConversionTest : public testing::Test {
     using TargetType = Config::To::Traits::ValueType;
     constexpr int kChannelToCopy = 1;
 
-    std::string source_format =
+    V8AudioSampleFormat::Enum source_format =
         source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
 
     // Create original data. The first and last frame will be zero'ed, if
@@ -725,7 +734,7 @@ class AudioDataConversionTest : public testing::Test {
     using Config = TestConfig;
     using TargetType = Config::To::Traits::ValueType;
 
-    std::string source_format =
+    V8AudioSampleFormat::Enum source_format =
         source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
 
     // Create original data. The first and last frame will be zero'ed, if

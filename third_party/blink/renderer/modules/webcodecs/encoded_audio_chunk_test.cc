@@ -63,12 +63,11 @@ TEST(EncodedAudioChunkTest, ConstructorWithDuration) {
 TEST(EncodedAudioChunkTest, TransferBuffer) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
   int64_t timestamp = 1000000;
   std::string data = "test";
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(timestamp);
-  init->setType(type);
+  init->setType(V8EncodedAudioChunkType::Enum::kKey);
   auto* buffer = DOMArrayBuffer::Create(base::as_byte_span(data));
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
   HeapVector<Member<DOMArrayBuffer>> transfer;
@@ -86,7 +85,7 @@ TEST(EncodedAudioChunkTest, DecryptConfig) {
   V8TestingScope v8_scope;
   auto* init = EncodedAudioChunkInit::Create();
   init->setTimestamp(1);
-  init->setType("key");
+  init->setType(V8EncodedAudioChunkType::Enum::kKey);
   init->setData(StringToBuffer("test"));
 
   auto expected_media_decrypt_config =
