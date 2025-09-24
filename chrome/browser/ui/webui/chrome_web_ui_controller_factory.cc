@@ -165,8 +165,7 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
 // Returns a function that can be used to create the right type of WebUI for a
 // tab, based on its URL. Returns nullptr if the URL doesn't have WebUI
 // associated with it.
-WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
-                                             Profile* profile,
+WebUIFactoryFunction GetWebUIFactoryFunction(Profile* profile,
                                              const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
@@ -249,8 +248,7 @@ WebUI::TypeID ChromeWebUIControllerFactory::GetWebUIType(
     content::BrowserContext* browser_context,
     const GURL& url) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  WebUIFactoryFunction function =
-      GetWebUIFactoryFunction(nullptr, profile, url);
+  WebUIFactoryFunction function = GetWebUIFactoryFunction(profile, url);
   return function ? reinterpret_cast<WebUI::TypeID>(function) : WebUI::kNoWebUI;
 }
 
@@ -263,8 +261,8 @@ bool ChromeWebUIControllerFactory::UseWebUIForURL(
 std::unique_ptr<WebUIController>
 ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                           const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  WebUIFactoryFunction function = GetWebUIFactoryFunction(web_ui, profile, url);
+  WebUIFactoryFunction function =
+      GetWebUIFactoryFunction(Profile::FromWebUI(web_ui), url);
   if (!function) {
     return nullptr;
   }
