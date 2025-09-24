@@ -230,7 +230,8 @@ EXPORTS
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUInfoTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHUWarningTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@2@@Z
-    ??0LogMessageData@LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@3@VTime@3@@Z
+    ??0LogMessage@log_internal@absl@@QEAA@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@HW4LogSeverity@2@@Z
+    ??0LogMessageData@LogMessage@log_internal@absl@@QEAA@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@HW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageDebugFatal@log_internal@absl@@QEAA@PEBDH@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDH0@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDH@Z
@@ -947,8 +948,8 @@ EXPORTS
     ?Post@StdcppWaiter@synchronization_internal@absl@@QEAAXXZ
     ?Post@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAX_J_K11G@Z
-    ?PrepareInsertLarge@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KUFindInfo@12@@Z
-    ?PrepareInsertLargeGenerationsEnabled@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KUFindInfo@12@V?$FunctionRef@$$A6A_K_K@Z@2@@Z
+    ?PrepareInsertLarge@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KV?$NonIterableBitMask@G$0BA@$0A@@12@UFindInfo@12@@Z
+    ?PrepareInsertLargeGenerationsEnabled@container_internal@absl@@YA_KAEAVCommonFields@12@AEBUPolicyFunctions@12@_KV?$NonIterableBitMask@G$0BA@$0A@@12@UFindInfo@12@V?$FunctionRef@$$A6A_K_K@Z@2@@Z
     ?PrepareInsertSmallNonSoo@container_internal@absl@@YA?AU?$pair@PEAW4ctrl_t@container_internal@absl@@PEAX@__Cr@std@@AEAVCommonFields@12@AEBUPolicyFunctions@12@V?$FunctionRef@$$A6A_K_K@Z@2@@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AEAAXXZ
     ?PrepareToModify@Status@absl@@CAPEAVStatusRep@status_internal@2@_K@Z

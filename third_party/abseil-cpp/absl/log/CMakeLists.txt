@@ -466,6 +466,8 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::log
+    absl::nullability
+    absl::nullability_traits_internal
     absl::strings
   PUBLIC
 )

@@ -81,22 +81,37 @@ R InvokeObject(VoidPtr ptr, typename ForwardT<Args>::type... args) {
 template <typename Obj, typename Fun, Fun F, typename R, typename... Args>
 R InvokeObject(VoidPtr ptr, typename ForwardT<Args>::type... args) {
   using T = std::remove_reference_t<Obj>;
-  return static_cast<R>(
-      F(std::forward<Obj>(*const_cast<T*>(static_cast<const T*>(ptr.obj))),
+  Obj&& obj =
+      std::forward<Obj>(*const_cast<T*>(static_cast<const T*>(ptr.obj)));
+  // Avoid std::invoke() since the callee is a known function at compile time
+  if constexpr (std::is_member_function_pointer_v<Fun>) {
+    return static_cast<R>((std::forward<Obj>(obj).*F)(
         std::forward<typename ForwardT<Args>::type>(args)...));
+  } else {
+    return static_cast<R>(
+        F(std::forward<Obj>(obj),
+          std::forward<typename ForwardT<Args>::type>(args)...));
+  }
 }
 
 template <typename T, typename Fun, Fun F, typename R, typename... Args>
 R InvokePtr(VoidPtr ptr, typename ForwardT<Args>::type... args) {
-  return static_cast<R>(
-      F(const_cast<T*>(static_cast<const T*>(ptr.obj)),
-        std::forward<typename ForwardT<Args>::type>(args)...));
+  T* obj = const_cast<T*>(static_cast<const T*>(ptr.obj));
+  // Avoid std::invoke() since the callee is a known function at compile time
+  if constexpr (std::is_member_function_pointer_v<Fun>) {
+    return static_cast<R>(
+        (obj->*F)(std::forward<typename ForwardT<Args>::type>(args)...));
+  } else {
+    return static_cast<R>(
+        F(obj, std::forward<typename ForwardT<Args>::type>(args)...));
+  }
 }
 
 template <typename Fun, typename R, typename... Args>
 R InvokeFunction(VoidPtr ptr, typename ForwardT<Args>::type... args) {
   auto f = reinterpret_cast<Fun>(ptr.fun);
-  return static_cast<R>(std::invoke(f, std::forward<Args>(args)...));
+  return static_cast<R>(
+      std::invoke(f, std::forward<typename ForwardT<Args>::type>(args)...));
 }
 
 template <typename Fun, Fun F, typename R, typename... Args>

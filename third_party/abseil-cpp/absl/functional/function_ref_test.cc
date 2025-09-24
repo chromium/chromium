@@ -30,6 +30,11 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace {
 
+struct Class {
+  int Func() { return 42; }
+  int CFunc() const { return 43; }
+};
+
 int Function() { return 1337; }
 
 template <typename T>
@@ -312,6 +317,7 @@ TEST(FunctionRefTest, CorrectConstQualifiers) {
   EXPECT_EQ(42, FunctionRef<int()>(s)());
   EXPECT_EQ(1337, FunctionRef<int() const>(s)());
   EXPECT_EQ(1337, FunctionRef<int()>(std::as_const(s))());
+  EXPECT_EQ(1337, FunctionRef<int() const>(std::as_const(s))());
 }
 
 TEST(FunctionRefTest, Lambdas) {
@@ -342,11 +348,46 @@ TEST(FunctionRefTest, Lambdas) {
 }
 
 #if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
-TEST(FunctionRefTest, NonTypeParameter) {
-  EXPECT_EQ(1337, FunctionRef<int()>(nontype<&Function>)());
-  EXPECT_EQ(42, FunctionRef<int()>(nontype<&Copy<int>>, 42)());
-  EXPECT_EQ(42, FunctionRef<int()>(nontype<&Dereference<int>>,
-                                   &std::integral_constant<int, 42>::value)());
+static_assert(std::is_same_v<decltype(FunctionRef(nontype<&Class::Func>,
+                                                  std::declval<Class&>())),
+                             FunctionRef<int()>>);
+static_assert(std::is_same_v<decltype(FunctionRef(nontype<&Class::CFunc>,
+                                                  std::declval<Class&>())),
+                             FunctionRef<int() const>>);
+
+static_assert(std::is_same_v<decltype(FunctionRef(nontype<&Class::Func>,
+                                                  std::declval<Class*>())),
+                             FunctionRef<int()>>);
+static_assert(std::is_same_v<decltype(FunctionRef(nontype<&Class::CFunc>,
+                                                  std::declval<Class*>())),
+                             FunctionRef<int() const>>);
+
+TEST(FunctionRefTest, NonTypeParameterWithTemporaries) {
+  static_assert(!std::is_constructible_v<FunctionRef<int()>,
+                                         nontype_t<&Class::Func>, Class&&>);
+  static_assert(
+      !std::is_constructible_v<FunctionRef<int()>, nontype_t<&Class::Func>,
+                               const Class&&>);
+  static_assert(!std::is_constructible_v<FunctionRef<int() const>,
+                                         nontype_t<&Class::CFunc>, Class&&>);
+  static_assert(
+      !std::is_constructible_v<FunctionRef<int() const>,
+                               nontype_t<&Class::CFunc>, const Class&&>);
+}
+
+TEST(FunctionRefTest, NonTypeParameterWithDeductionGuides) {
+  EXPECT_EQ(1337, FunctionRef(nontype<&Function>)());
+  EXPECT_EQ(42, FunctionRef(nontype<&Copy<int>>,
+                            std::integral_constant<int, 42>::value)());
+  EXPECT_EQ(42, FunctionRef(nontype<&Dereference<int>>,
+                            &std::integral_constant<int, 42>::value)());
+
+  Class c;
+  EXPECT_EQ(42, FunctionRef<int()>(nontype<&Class::Func>, c)());
+  EXPECT_EQ(43, FunctionRef<int() const>(nontype<&Class::CFunc>, c)());
+
+  EXPECT_EQ(42, FunctionRef<int()>(nontype<&Class::Func>, &c)());
+  EXPECT_EQ(43, FunctionRef<int() const>(nontype<&Class::CFunc>, &c)());
 }
 #endif
 
