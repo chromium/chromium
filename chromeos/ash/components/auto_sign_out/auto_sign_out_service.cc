@@ -8,6 +8,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromeos/constants/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -90,9 +91,18 @@ void AutoSignOutService::UpdateLocalDeviceInfoWhenReady() {
     CHECK(!local_device_info_ready_subscription_);
     local_device_info_ready_subscription_ =
         local_device_info_provider->RegisterOnInitializedCallback(
-            base::BindRepeating(&AutoSignOutService::UpdateLocalDeviceInfo,
-                                weak_pointer_factory_.GetWeakPtr()));
+            base::BindRepeating(
+                &AutoSignOutService::OnLocalDeviceInfoProviderReady,
+                weak_pointer_factory_.GetWeakPtr()));
   }
+}
+
+// TODO(crbug.com/447113190): Change the way we update DeviceInfo so that we
+// don't need this PostTask.
+void AutoSignOutService::OnLocalDeviceInfoProviderReady() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&AutoSignOutService::UpdateLocalDeviceInfo,
+                                weak_pointer_factory_.GetWeakPtr()));
 }
 
 void AutoSignOutService::UpdateLocalDeviceInfo() {

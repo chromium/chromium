@@ -77,6 +77,8 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
   // Checks if local device info is ready before updating device.
   void UpdateLocalDeviceInfoWhenReady();
 
+  void OnLocalDeviceInfoProviderReady();
+
   // Updates the local device info with the new sign-in time.
   void UpdateLocalDeviceInfo();
 
