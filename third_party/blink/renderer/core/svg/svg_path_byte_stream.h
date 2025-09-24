@@ -28,12 +28,6 @@
 
 namespace blink {
 
-template <typename DataType>
-union ByteType {
-  DataType value;
-  unsigned char bytes[sizeof(DataType)];
-};
-
 class SVGPathByteStream {
   USING_FAST_MALLOC(SVGPathByteStream);
 
