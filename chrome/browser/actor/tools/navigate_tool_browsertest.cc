@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,9 +24,19 @@ namespace actor {
 
 namespace {
 
-class ActorNavigateToolBrowserTest : public ActorToolsTest {
+class ActorNavigateToolBrowserTest
+    : public ActorToolsTest,
+      public ::testing::WithParamInterface<
+          features::ActorGeneralPageStabilityMode> {
  public:
-  ActorNavigateToolBrowserTest() = default;
+  ActorNavigateToolBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {
+            {features::kActorGeneralPageStabilityMode.name,
+             features::kActorGeneralPageStabilityMode.GetName(GetParam())},
+        });
+  }
   ~ActorNavigateToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -32,10 +44,30 @@ class ActorNavigateToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorNavigateToolBrowserTest,
+    testing::Values(
+        features::ActorGeneralPageStabilityMode::kDisabled,
+        features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled),
+    [](const ::testing::TestParamInfo<features::ActorGeneralPageStabilityMode>&
+           info) {
+      switch (info.param) {
+        case features::ActorGeneralPageStabilityMode::kDisabled:
+          return "Disabled";
+        case features::ActorGeneralPageStabilityMode::
+            kNavigateAndHistoryEnabled:
+          return "NavigateAndHistoryEnabled";
+      }
+    });
+
 // Basic test of the NavigateTool.
-IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest, NavigateTool) {
+IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest, NavigateTool) {
   const GURL url_start =
       embedded_test_server()->GetURL("/actor/blank.html?start");
   const GURL url_target =
@@ -53,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest, NavigateTool) {
 
 // Ensure that when navigating to a new document, the navigate tool delays
 // completion until the new page has fired the load event.
-IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
                        NavigateTool_DelaysUntilLoad) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
@@ -93,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
   ExpectOkResult(result);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
                        NavigateTool_TargetUrlRestriction) {
   const GURL url_start =
       embedded_https_test_server().GetURL("/actor/blank.html?start");
@@ -112,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
 
 // Test that the navigate tool correctly adds the acted on tab to the task's set
 // of tabs.
-IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
                        NavigateTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 

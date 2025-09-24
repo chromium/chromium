@@ -39,7 +39,7 @@ class ToolExecutor {
                   ToolExecutorCallback callback);
 
  private:
-  void ToolFinished(int32_t task_id, mojom::ActionResultPtr result);
+  void ToolFinished(mojom::ActionResultPtr result);
   void PageStabilized(mojom::ActionResultPtr result);
 
   // Raw ref since the executor is owned by the RenderFrameObserver which has

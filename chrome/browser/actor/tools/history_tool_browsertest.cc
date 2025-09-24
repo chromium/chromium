@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,9 +29,20 @@ namespace actor {
 
 namespace {
 
-class ActorHistoryToolBrowserTest : public ActorToolsTest {
+class ActorHistoryToolBrowserTest
+    : public ActorToolsTest,
+      public ::testing::WithParamInterface<
+          features::ActorGeneralPageStabilityMode> {
  public:
-  ActorHistoryToolBrowserTest() = default;
+  ActorHistoryToolBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {
+            {features::kActorGeneralPageStabilityMode.name,
+             features::kActorGeneralPageStabilityMode.GetName(GetParam())},
+        });
+  }
+
   ~ActorHistoryToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -37,13 +50,33 @@ class ActorHistoryToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorHistoryToolBrowserTest,
+    testing::Values(
+        features::ActorGeneralPageStabilityMode::kDisabled,
+        features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled),
+    [](const ::testing::TestParamInfo<features::ActorGeneralPageStabilityMode>&
+           info) {
+      switch (info.param) {
+        case features::ActorGeneralPageStabilityMode::kDisabled:
+          return "Disabled";
+        case features::ActorGeneralPageStabilityMode::
+            kNavigateAndHistoryEnabled:
+          return "NavigateAndHistoryEnabled";
+      }
+    });
 
 // TODO(crbug.com/415385900): Add a test for navigation API canceling a
 // same-document navigation.
 
 // Basic test of the HistoryTool going back.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Back) {
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest, HistoryTool_Back) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/blank.html?start");
   const GURL url_second =
@@ -60,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Back) {
 }
 
 // Basic test of the HistoryTool going forward
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Forward) {
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest, HistoryTool_Forward) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/blank.html?start");
   const GURL url_second =
@@ -82,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_Forward) {
 
 // Basic test will, under normal circumstances use BFCache. Ensure coverage
 // without BFCache as well.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
@@ -104,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackNoBFCache) {
 
 // Test that tool fails validation if there's no further session history in the
 // direction of travel.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_FailNoSessionHistory) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/blank.html?first");
@@ -141,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 }
 
 // Test history tool across same document navigations
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_BackSameDocument) {
   const GURL url_first = embedded_test_server()->GetURL("/actor/blank.html");
   const GURL url_second =
@@ -168,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 }
 
 // Test history tool across same document navigations
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_BasicIframeBack) {
   const GURL main_frame_url =
       embedded_test_server()->GetURL("/actor/simple_iframe.html");
@@ -200,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 }
 
 // Ensure the history tool doesn't return until the navigation completes.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_SlowBack) {
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest, HistoryTool_SlowBack) {
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
@@ -229,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_SlowBack) {
 }
 
 // Test a case where history back causes navigation in two frames.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_ConcurrentNavigations) {
   const GURL main_frame_url =
       embedded_test_server()->GetURL("/actor/concurrent_navigations.html");
@@ -290,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
 // Ensure the history tool works correctly when a before unload handler is
 // present (but doesn't cause a prompt to show).
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_HasBeforeUnload) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/blank.html?start");
@@ -316,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
 // Ensure that when navigating to a new document, the history tool delays
 // completion until the new page has fired the load event.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_DelaysUntilLoad) {
   // Ensure BFCache isn't used so the back navigation loads a new document.
   content::DisableBackForwardCacheForTesting(
@@ -363,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
 // Test that the history tool correctly adds the acted on tab to the task's set
 // of tabs.
-IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorHistoryToolBrowserTest,
                        HistoryTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 

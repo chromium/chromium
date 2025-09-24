@@ -340,6 +340,21 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicActor, "glic-actor-page-stability-invoke-callback-delay",
         base::Milliseconds(200)};
 
+// Controls whether to enable general wait on renderer-side page stability.
+constexpr base::FeatureParam<ActorGeneralPageStabilityMode>::Option
+    kActorGeneralPageStabilityModeOptions[] = {
+        {ActorGeneralPageStabilityMode::kDisabled, "disabled"},
+        {ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled,
+         "navigate-and-history-enabled"},
+};
+BASE_FEATURE_ENUM_PARAM(
+    ActorGeneralPageStabilityMode,
+    kActorGeneralPageStabilityMode,
+    &kGlicActor,
+    "actor-general-page-stability-mode",
+    ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled,
+    &kActorGeneralPageStabilityModeOptions);
+
 // Controls whether typing happens incrementally.
 BASE_FEATURE(kGlicActorIncrementalTyping, base::FEATURE_ENABLED_BY_DEFAULT);
 

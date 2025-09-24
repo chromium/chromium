@@ -29,6 +29,7 @@ class SkBitmap;
 
 namespace actor {
 class Journal;
+class PageStabilityMonitor;
 }
 
 namespace gfx {
@@ -132,6 +133,14 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void StartActorJournal(
       mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
       override;
+  //  Multiple calls will clobber a PageStabilityMonitor previously created and
+  //  it's the caller's responsibility to ensure the monitor is unneeded before
+  //  creating a new one.
+  //
+  //  `task_id` identifies the ID of the active actor tool.
+  void CreatePageStabilityMonitor(
+      mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
+      int32_t task_id) override;
 #endif
 
   // Initialize a |phishing_classifier_delegate_|.
@@ -196,6 +205,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<actor::ToolExecutor> tool_executor_;
+  std::unique_ptr<actor::PageStabilityMonitor> page_stability_monitor_;
 #endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;

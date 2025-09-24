@@ -444,7 +444,9 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
   // this method.
   CHECK(frame);
 
-  return std::make_unique<ObservationDelayController>(*frame);
+  return std::make_unique<ObservationDelayController>(
+      *frame, task_id(),
+      ObservationDelayController::UsePageStabilityMonitor::kDisabled);
 }
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,

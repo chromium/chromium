@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/actor/page_stability_monitor.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -38,8 +40,8 @@ std::ostream& operator<<(std::ostream& o,
 
 namespace {
 
-// This is a high-level timeout that starts when WaitForStable is called. If it
-// isn't completed after this delay it will timeout. This is relatively long
+// This is a high-level timeout that starts when NotifyWhenStable is called. If
+// it isn't completed after this delay it will timeout. This is relatively long
 // because it often includes waiting on network.
 base::TimeDelta GetGlobalTimeoutDelay() {
   return features::kGlicActorPageStabilityTimeout.Get();
@@ -53,37 +55,53 @@ base::TimeDelta GetMainThreadTimeoutDelay() {
 
 }  // namespace
 
-PageStabilityMonitor::PageStabilityMonitor(RenderFrame& frame,
-                                           bool supports_paint_stability)
+PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
+                                           bool supports_paint_stability,
+                                           int32_t task_id,
+                                           Journal& journal)
     : RenderFrameObserver(&frame),
       paint_stability_monitor_(supports_paint_stability
                                    ? PaintStabilityMonitor::MaybeCreate(frame)
-                                   : nullptr) {
+                                   : nullptr),
+      task_id_(task_id),
+      journal_(journal) {
   CHECK(render_frame());
   CHECK(render_frame()->GetWebFrame());
   starting_request_count_ =
       render_frame()->GetWebFrame()->GetDocument().ActiveResourceRequestCount();
+
+  journal_entry_ = journal_->CreatePendingAsyncEntry(
+      task_id_, "PageStabilityInitial",
+      JournalDetailsBuilder()
+          .Add("requests_before", starting_request_count_)
+          .Build());
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() {
   start_monitoring_delayed_handle_.CancelTask();
 }
 
-void PageStabilityMonitor::WaitForStable(const ToolBase& tool,
-                                         int32_t task_id,
-                                         Journal& journal,
-                                         base::OnceClosure callback) {
-  CHECK_EQ(state_, State::kInitial);
+void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
+                                            NotifyWhenStableCallback callback) {
   CHECK(!is_stable_callback_);
-  journal_entry_ = journal.CreatePendingAsyncEntry(
-      task_id, "PageStability",
-      JournalDetailsBuilder()
-          .Add("requests_before", starting_request_count_)
-          .Build());
 
-  monitoring_start_delay_ = tool.ExecutionObservationDelay();
-
+  // This will end the PageStabilityInitial entry and start a new one.
+  journal_entry_ = journal_->CreatePendingAsyncEntry(
+      task_id_, "PageStability",
+      JournalDetailsBuilder().Add("state", state_).Build());
   is_stable_callback_ = std::move(callback);
+
+  // It's possible that the navigation has been committed before
+  // NotifyWhenStable has been called.
+  CHECK(state_ == State::kInitial ||
+        state_ == State::kInitialWithCommittedNavigation);
+
+  if (state_ == State::kInitialWithCommittedNavigation) {
+    MoveToState(State::kNavigationCommitted);
+    return;
+  }
+
+  monitoring_start_delay_ = observation_delay;
 
   if (paint_stability_monitor_) {
     paint_stability_monitor_->Start(journal_entry_.get());
@@ -97,7 +115,9 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   // If a same-RenderFrame navigation was committed a new document will be
   // loaded so finish observing the page. (loading is observed from the browser
-  // process).
+  // process). Also we intentionally don't observe
+  // `DidFinishSameDocumentNavigation()` and just wait for page stability for
+  // same-document navigations.
   journal_entry_->Log(
       "DidCommitProvisionalLoad",
       JournalDetailsBuilder()
@@ -105,7 +125,13 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
           .Build());
   start_monitoring_delayed_handle_.CancelTask();
   paint_stability_monitor_.reset();
-  MoveToState(State::kNavigationCommitted);
+
+  // Note that this could happen before NotifyWhenStable has been called.
+  if (state_ == State::kInitial) {
+    MoveToState(State::kInitialWithCommittedNavigation);
+  } else {
+    MoveToState(State::kNavigationCommitted);
+  }
 }
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
@@ -135,6 +161,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
   switch (state_) {
     case State::kInitial: {
       NOTREACHED();
+    }
+    case State::kInitialWithCommittedNavigation: {
+      // Do nothing - the state will change from NotifyWhenStable.
+      break;
     }
     case State::kMonitorStartDelay: {
       journal_entry_->Log(
@@ -195,13 +225,13 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     }
     case State::kWaitForMainThreadIdle: {
       SetTimeout(State::kTimeoutMainThread, GetMainThreadTimeoutDelay());
+      main_thread_idle_callback_.Reset(base::BindOnce(
+          [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
+            std::move(callback).Run();
+          },
+          MoveToStateClosure(State::kWaitForVisualStateRequest)));
       render_frame()->GetWebFrame()->PostIdleTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
-                std::move(callback).Run();
-              },
-              MoveToStateClosure(State::kWaitForVisualStateRequest)));
+          FROM_HERE, main_thread_idle_callback_.callback());
       break;
     }
     case State::kWaitForVisualStateRequest: {
@@ -235,6 +265,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kMaybeDelayCallback: {
+      // Ensure we release the network and main thread idle callback slots.
+      network_idle_callback_.Cancel();
+      main_thread_idle_callback_.Cancel();
+
       base::TimeDelta callback_invoke_delay =
           features::kGlicActorPageStabilityInvokeCallbackDelay.Get();
       if (callback_invoke_delay.is_zero()) {
@@ -246,8 +280,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kInvokeCallback: {
-      // Ensure we release the network idle callback slot.
+      // Ensure we release the network and main thread idle callback slots.
       network_idle_callback_.Cancel();
+      main_thread_idle_callback_.Cancel();
       // Call the callback on a separate task.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(is_stable_callback_));
@@ -323,7 +358,10 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
       base::StateTransitions<State>({
           // clang-format off
           {State::kInitial,
-              {State::kMonitorStartDelay}},
+              {State::kMonitorStartDelay,
+               State::kInitialWithCommittedNavigation}},
+          {State::kInitialWithCommittedNavigation, {
+              State::kNavigationCommitted}},
           {State::kMonitorStartDelay, {
               State::kStartMonitoring,
               State::kTimeoutGlobal,
@@ -382,6 +420,27 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
       }));
   DCHECK_STATE_TRANSITION(transitions, old_state, new_state);
 #endif  // DCHECK_IS_ON()
+}
+
+void PageStabilityMonitor::Bind(
+    mojo::PendingReceiver<mojom::PageStabilityMonitor> receiver) {
+  CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
+           features::ActorGeneralPageStabilityMode::kDisabled);
+
+  CHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
+
+  // This interface may be disconnected when the browser-side
+  // `ObservationDelayController` that owns the remote is destroyed. This could
+  // happen when the tool invocation failed and therefore there's no need to
+  // wait.
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &PageStabilityMonitor::OnMojoDisconnected, base::Unretained(this)));
+}
+
+void PageStabilityMonitor::OnMojoDisconnected() {
+  journal_entry_->Log("OnMojoDisconnected",
+                      JournalDetailsBuilder().Add("state", state_).Build());
 }
 
 }  // namespace actor

@@ -5,13 +5,19 @@
 #ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 #define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 
+#include <stdint.h>
+
 #include "base/cancelable_callback.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/time/time.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/journal.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 class RenderFrame;
@@ -19,38 +25,48 @@ class RenderFrame;
 
 namespace actor {
 
+class Journal;
 class PaintStabilityMonitor;
-class ToolBase;
 
 // Helper class for monitoring page stability after tool usage. Its lifetime
 // must not outlive the RenderFrame it is observing. This object is single-use,
-// i.e. WaitForStable can only be called once.
-class PageStabilityMonitor : public content::RenderFrameObserver {
+// i.e. NotifyWhenStable can only be called once.
+class PageStabilityMonitor : public content::RenderFrameObserver,
+                             public mojom::PageStabilityMonitor {
  public:
   // Constructs the monitor and takes a baseline observation of the document in
   // the given RenderFrame. If `supports_paint_stability` is true, paint
   // stability will be included in page stability heuristics if the `frame`
   // supports it.
   PageStabilityMonitor(content::RenderFrame& frame,
-                       bool supports_paint_stability);
+                       bool supports_paint_stability,
+                       int32_t task_id,
+                       Journal& journal);
 
   ~PageStabilityMonitor() override;
-
-  // Invokes the given callback when the page is deemed stable enough for an
-  // observation to take place or when the document is no longer active.
-  void WaitForStable(const ToolBase& tool,
-                     int32_t task_id,
-                     Journal& journal,
-                     base::OnceClosure callback);
 
   // RenderFrameObserver
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFailProvisionalLoad() override;
   void OnDestruct() override;
 
+  // mojom::PageStabilityMonitor:
+  // Invokes the given callback when the page is deemed stable enough for an
+  // observation to take place or when the document is no longer active.
+  //
+  // `observation_delay` is the amount of time to wait when observing tool
+  // execution before starting to wait for page stability.
+  void NotifyWhenStable(base::TimeDelta observation_delay,
+                        NotifyWhenStableCallback callback) override;
+
+  void Bind(mojo::PendingReceiver<mojom::PageStabilityMonitor> receiver);
+
  private:
   enum class State {
     kInitial,
+
+    // Navigation committed before waiting.
+    kInitialWithCommittedNavigation,
 
     // If a tool specifies an execution delay, wait in this state before
     // starting monitoring.
@@ -77,10 +93,10 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
     kTimeoutMainThread,
 
     // If `kGlicActorPageStabilityInvokeCallbackDelay` is set, the callback
-    // passed to WaitForStable() will be delayed by said amount of time.
+    // passed to NotifyWhenStable() will be delayed by said amount of time.
     kMaybeDelayCallback,
 
-    // Invoke the callback passed to WaitForStable and cleanup.
+    // Invoke the callback passed to NotifyWhenStable and cleanup.
     kInvokeCallback,
 
     // Navigation states - these just move to MaybeDelayCallback or
@@ -121,6 +137,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
 
   void OnPaintStabilityReached();
 
+  void OnMojoDisconnected();
+
   // The number of active network requests at the time this object was
   // initialized. Used to compare to the number of requests after monitoring
   // begins to determine if new network requests were started in that interval.
@@ -129,6 +147,11 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   // Track the callback given to the RequestNetworkIdle method so that it can be
   // canceled, the API supports only one request at a time.
   base::CancelableOnceClosure network_idle_callback_;
+
+  // Track the callback given to the PostIdleTask method so that it can be
+  // canceled, the API supports only one request at a time.
+  base::CancelableOnceCallback<void(base::TimeTicks deadline)>
+      main_thread_idle_callback_;
 
   base::OnceClosure is_stable_callback_;
 
@@ -145,6 +168,12 @@ class PageStabilityMonitor : public content::RenderFrameObserver {
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
+
+  int32_t task_id_;
+
+  base::raw_ref<Journal> journal_;
+
+  mojo::Receiver<mojom::PageStabilityMonitor> receiver_{this};
 
   base::WeakPtrFactory<PageStabilityMonitor> weak_ptr_factory_{this};
 };

@@ -147,7 +147,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   }
 
   page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
-      *frame_, tool_->SupportsPaintStability());
+      *frame_, tool_->SupportsPaintStability(), invocation->task_id, *journal_);
 
   if (features::kGlicActorScrollTargetIntoView.Get()) {
     tool_->EnsureTargetInView();
@@ -157,16 +157,14 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       invocation->task_id, "ExecuteTool",
       JournalDetailsBuilder().Add("tool", tool_->DebugString()).Build());
   tool_->Execute(base::BindOnce(&ToolExecutor::ToolFinished,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                invocation->task_id));
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ToolExecutor::ToolFinished(int32_t task_id,
-                                mojom::ActionResultPtr result) {
+void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   execute_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
-  page_stability_monitor_->WaitForStable(
-      *tool_, task_id, *journal_,
+  page_stability_monitor_->NotifyWhenStable(
+      tool_->ExecutionObservationDelay(),
       base::BindOnce(&ToolExecutor::PageStabilized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result)));
 }

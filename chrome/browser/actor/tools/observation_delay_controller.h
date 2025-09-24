@@ -8,8 +8,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/task_id.h"
+#include "chrome/common/actor.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrameHost;
@@ -26,7 +29,18 @@ namespace actor {
 class ObservationDelayController : public content::WebContentsObserver {
  public:
   using ReadyCallback = base::OnceClosure;
-  explicit ObservationDelayController(content::RenderFrameHost& target_frame);
+
+  enum class UsePageStabilityMonitor {
+    kDisabled,
+    kEnabled,
+  };
+
+  // This will create a PageStabilityMonitor in the renderer and wait for page
+  // stability if `use_page_stability_monitor` is `kEnabled`.
+  ObservationDelayController(
+      content::RenderFrameHost& target_frame,
+      TaskId task_id,
+      UsePageStabilityMonitor use_page_stability_monitor);
   ~ObservationDelayController() override;
 
   // Note: Callback will always be executed asynchronously. It may be run after
@@ -42,6 +56,8 @@ class ObservationDelayController : public content::WebContentsObserver {
   void WaitForVisualStateUpdate();
   void VisualStateUpdated(bool success);
   void Timeout();
+  void WaitForLoading();
+  void OnMonitorDisconnected();
 
   enum class State {
     kWaitingForLoadStart,
@@ -54,6 +70,7 @@ class ObservationDelayController : public content::WebContentsObserver {
   State state_ = State::kWaitingForLoadStart;
   ReadyCallback ready_callback_;
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
+  mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};
 };
 
