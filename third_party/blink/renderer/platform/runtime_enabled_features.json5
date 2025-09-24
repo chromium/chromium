@@ -1551,7 +1551,7 @@
     },
     {
       name: "CSSRubyOverhang",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSSafePrintableInset",

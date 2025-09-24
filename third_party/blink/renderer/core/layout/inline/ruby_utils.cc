@@ -153,7 +153,13 @@ AnnotationOverhang GetOverhang(
     const LineInfo& base_line,
     const HeapVector<LineInfo, 1> annotation_line_list) {
   AnnotationOverhang overhang;
-  ERubyAlign ruby_align = base_line.LineStyle().RubyAlign();
+  const ComputedStyle& base_line_style = base_line.LineStyle();
+
+  if (base_line_style.RubyOverhang() == ERubyOverhang::kNone) {
+    return overhang;
+  }
+
+  ERubyAlign ruby_align = base_line_style.RubyAlign();
   switch (ruby_align) {
     case ERubyAlign::kSpaceBetween:
       return overhang;

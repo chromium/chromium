@@ -4031,7 +4031,6 @@ crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
 crbug.com/368060001 [ Mac15-arm64 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
 crbug.com/368060001 [ Mac15 ] external/wpt/webrtc/transfer-datachannel.html [ Timeout ]
-crbug.com/366873207 external/wpt/css/css-ruby/ruby-overhang.html [ Failure ]
 crbug.com/367426146 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
 crbug.com/367426146 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParameters-scaleResolutionDownTo.https.html [ Skip Timeout ]
 crbug.com/366343782 [ Mac12 ] virtual/threaded/external/wpt/css/css-backgrounds/background-repeat/background-repeat-repeat-x.xht [ Failure ]
