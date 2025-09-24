@@ -105,28 +105,40 @@
   DCHECK(!PrerenderTabHelper::FromWebState(webState));
 
   DCHECK(_snapshotGeneratorDelegate);
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(
-      _snapshotGeneratorDelegate);
-
-  FormSuggestionTabHelper::CreateForWebState(webState, @[
-    PasswordTabHelper::FromWebState(webState)->GetSuggestionProvider(),
-    AutofillTabHelper::FromWebState(webState)->GetSuggestionProvider(),
-  ]);
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(webState);
+  if (snapshotTabHelper) {
+    snapshotTabHelper->SetDelegate(_snapshotGeneratorDelegate);
+  }
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  DCHECK(_passwordControllerDelegate);
-  DCHECK(_commandDispatcher);
-  passwordTabHelper->SetPasswordControllerDelegate(_passwordControllerDelegate);
-  passwordTabHelper->SetDispatcher(_commandDispatcher);
+  AutofillTabHelper* autofillTabHelper =
+      AutofillTabHelper::FromWebState(webState);
+  if (passwordTabHelper && autofillTabHelper) {
+    FormSuggestionTabHelper::CreateForWebState(webState, @[
+      passwordTabHelper->GetSuggestionProvider(),
+      autofillTabHelper->GetSuggestionProvider()
+    ]);
+  }
+
+  if (passwordTabHelper) {
+    DCHECK(_passwordControllerDelegate);
+    DCHECK(_commandDispatcher);
+    passwordTabHelper->SetPasswordControllerDelegate(
+        _passwordControllerDelegate);
+    passwordTabHelper->SetDispatcher(_commandDispatcher);
+  }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
-  bottomSheetTabHelper->SetAutofillBottomSheetHandler(
-      HandlerForProtocol(_commandDispatcher, AutofillCommands));
-  id<PasswordGenerationProvider> generationProvider =
-      passwordTabHelper->GetPasswordGenerationProvider();
-  bottomSheetTabHelper->SetPasswordGenerationProvider(generationProvider);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->SetAutofillBottomSheetHandler(
+        HandlerForProtocol(_commandDispatcher, AutofillCommands));
+    id<PasswordGenerationProvider> generationProvider =
+        passwordTabHelper->GetPasswordGenerationProvider();
+    bottomSheetTabHelper->SetPasswordGenerationProvider(generationProvider);
+  }
 
   SupervisedUserErrorContainer* supervisedUserErrorContainer =
       SupervisedUserErrorContainer::FromWebState(webState);
@@ -137,8 +149,10 @@
 
   if (ios::provider::IsLensSupported()) {
     LensTabHelper* lensTabHelper = LensTabHelper::FromWebState(webState);
-    lensTabHelper->SetLensCommandsHandler(
-        HandlerForProtocol(_commandDispatcher, LensCommands));
+    if (lensTabHelper) {
+      lensTabHelper->SetLensCommandsHandler(
+          HandlerForProtocol(_commandDispatcher, LensCommands));
+    }
   }
 
   DCHECK(_overscrollActionsDelegate);
@@ -165,14 +179,14 @@
       webContentsHandler);
 
   DCHECK(_baseViewController);
-  AutofillTabHelper* autofillTabHelper =
-      AutofillTabHelper::FromWebState(webState);
-  autofillTabHelper->SetBaseViewController(_baseViewController);
-  id<AutofillCommands> autofillHandler =
-      HandlerForProtocol(_commandDispatcher, AutofillCommands);
-  autofillTabHelper->SetAutofillHandler(autofillHandler);
-  autofillTabHelper->SetSnackbarHandler(
-      static_cast<id<SnackbarCommands>>(_commandDispatcher));
+  if (autofillTabHelper) {
+    autofillTabHelper->SetBaseViewController(_baseViewController);
+    id<AutofillCommands> autofillHandler =
+        HandlerForProtocol(_commandDispatcher, AutofillCommands);
+    autofillTabHelper->SetAutofillHandler(autofillHandler);
+    autofillTabHelper->SetSnackbarHandler(
+        static_cast<id<SnackbarCommands>>(_commandDispatcher));
+  }
 
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(webState);
@@ -184,7 +198,7 @@
         [_commandDispatcher
             dispatchingForProtocol:@protocol(SnackbarCommands)]) {
       readerModeTabHelper->SetSnackbarHandler(
-          HandlerForProtocol(_commandDispatcher, SnackbarCommands));
+          static_cast<id<SnackbarCommands>>(_commandDispatcher));
     }
   }
 
@@ -230,8 +244,13 @@
     priceNotificationsTabHelper->SetHelpHandler(
         HandlerForProtocol(_commandDispatcher, HelpCommands));
   }
-  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
-      _appLauncherBrowserPresentationProvider);
+
+  AppLauncherTabHelper* appLauncherTabHelper =
+      AppLauncherTabHelper::FromWebState(webState);
+  if (appLauncherTabHelper) {
+    appLauncherTabHelper->SetBrowserPresentationProvider(
+        _appLauncherBrowserPresentationProvider);
+  }
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(webState);
@@ -268,16 +287,24 @@
 
   // Remove delegates for tab helpers which may otherwise do bad things during
   // shutdown.
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(webState);
+  if (snapshotTabHelper) {
+    snapshotTabHelper->SetDelegate(nil);
+  }
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  passwordTabHelper->SetPasswordControllerDelegate(nil);
-  passwordTabHelper->SetDispatcher(nil);
+  if (passwordTabHelper) {
+    passwordTabHelper->SetPasswordControllerDelegate(nil);
+    passwordTabHelper->SetDispatcher(nil);
+  }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
-  bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
+  }
 
   SupervisedUserErrorContainer* supervisedUserErrorContainer =
       SupervisedUserErrorContainer::FromWebState(webState);
@@ -299,9 +326,11 @@
 
   AutofillTabHelper* autofillTabHelper =
       AutofillTabHelper::FromWebState(webState);
-  autofillTabHelper->SetBaseViewController(nil);
-  autofillTabHelper->SetAutofillHandler(nil);
-  autofillTabHelper->SetSnackbarHandler(nil);
+  if (autofillTabHelper) {
+    autofillTabHelper->SetBaseViewController(nil);
+    autofillTabHelper->SetAutofillHandler(nil);
+    autofillTabHelper->SetSnackbarHandler(nil);
+  }
 
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(webState);
@@ -345,8 +374,11 @@
     priceNotificationsTabHelper->SetHelpHandler(nil);
   }
 
-  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
-      nil);
+  AppLauncherTabHelper* appLauncherTabHelper =
+      AppLauncherTabHelper::FromWebState(webState);
+  if (appLauncherTabHelper) {
+    appLauncherTabHelper->SetBrowserPresentationProvider(nil);
+  }
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(webState);
