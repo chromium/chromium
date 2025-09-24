@@ -137,7 +137,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   AcceleratedStaticBitmapImage(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
-      GLuint shared_image_texture_id,
       SkAlphaType alpha_type,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
