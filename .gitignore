@@ -50,7 +50,6 @@
 /.gemini/*
 !/.gemini/commands/
 !/.gemini/OWNERS
-!/.gemini/settings.json
 .landmines
 .metadata
 .project
