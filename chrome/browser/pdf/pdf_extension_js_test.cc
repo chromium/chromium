@@ -709,7 +709,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, CircularProgressRing) {
   RunTestsInJsModule("circular_progress_ring_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, SaveToDrive) {
+// TODO(crbug.com/447037330): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveToDrive DISABLED_SaveToDrive
+#else
+#define MAYBE_SaveToDrive SaveToDrive
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, MAYBE_SaveToDrive) {
   RunTestsInJsModule("save_to_drive_test.js", "test.pdf");
 }
 
