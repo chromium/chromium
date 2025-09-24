@@ -818,7 +818,6 @@ void BuildActionsResultWithObservations(
   for (const tabs::TabHandle& handle : task.GetLastActedTabs()) {
     // Include a TabObservation entry for acted on tabs. If the tab no longer
     // exists or the fetch context failed, the observation will be empty.
-    // TODO(crbug.com/392167142): Check for a crashed tab here.
     // TODO(crbug.com/434263095): We should probably avoid capturing
     // observations if an action fails with kUrlBlocked. That might be better
     // implemented by not putting the tab into the LastActedTabs set.
@@ -834,6 +833,22 @@ void BuildActionsResultWithObservations(
                                       JournalDetailsBuilder()
                                           .Add("tabId", handle.raw_value())
                                           .AddError("TabWentAway")
+                                          .Build());
+    } else if (!tab->GetContents()
+                    ->GetPrimaryMainFrame()
+                    ->IsRenderFrameLive()) {
+      // TODO(crbug.com/392167142): We should also handle the crashed subframes.
+      // However we don't want unrelated subframe crash to terminate the task.
+      apc::TabObservation* tab_observation = response->add_tabs();
+      tab_observation->set_id(handle.raw_value());
+      tab_observation->set_result(
+          apc::TabObservation::TAB_OBSERVATION_PAGE_CRASHED);
+      actor_service->GetJournal().Log(GURL(), task.id(),
+                                      actor::mojom::JournalTrack::kActor,
+                                      "TabObservationFailed",
+                                      JournalDetailsBuilder()
+                                          .Add("tabId", handle.raw_value())
+                                          .AddError("Page crashed")
                                           .Build());
     } else {
       tabs_to_fetch.insert(tab);

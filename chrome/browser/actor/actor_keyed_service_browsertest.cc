@@ -29,6 +29,7 @@
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -180,6 +181,28 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_EQ(frame_metadata.meta_tags(2).content(), "val");
 
   actor_keyed_service()->StopTask(task_id, /*success=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       RequestTabObservationSkipCrashedMainFrame) {
+  TaskId task_id = actor_keyed_service()->CreateTask();
+
+  // Crash the main frame.
+  {
+    auto* main_frame_proc = web_contents()->GetPrimaryMainFrame()->GetProcess();
+    content::RenderProcessHostWatcher crashed_obs(
+        main_frame_proc,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    main_frame_proc->Shutdown(content::RESULT_CODE_KILLED);
+    crashed_obs.Wait();
+  }
+
+  TestFuture<ActorKeyedService::TabObservationResult> future;
+  actor_keyed_service()->RequestTabObservation(*active_tab(), task_id,
+                                               future.GetCallback());
+
+  const ActorKeyedService::TabObservationResult& result = future.Get();
+  ASSERT_FALSE(result.has_value());
 }
 
 }  // namespace
