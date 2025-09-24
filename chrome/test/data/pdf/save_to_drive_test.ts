@@ -182,15 +182,6 @@ const tests = [
     await microtasksFinished();
     assertBubbleAndProgressBar(bubble, 88, 226);
 
-    // Save to drive uploading with no bytes uploaded nor file size bytes.
-    // Progress bar should not change.
-    privateProxy.sendSaveToDriveProgress({
-      status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
-      errorType: SaveToDriveErrorType.NO_ERROR,
-    });
-    await microtasksFinished();
-    assertBubbleAndProgressBar(bubble, 88, 226);
-
     // Save to drive uploading 226/226 bytes.
     privateProxy.sendUploadInProgress(226, 226);
     await microtasksFinished();
@@ -543,6 +534,31 @@ const tests = [
     await privateProxy.whenCalled('saveToDrive');
     chrome.test.assertFalse(bubble.$.dialog.open);
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleUploadInitialized() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+
+    privateProxy.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.INITIATED,
+      errorType: SaveToDriveErrorType.NO_ERROR,
+    });
+    await microtasksFinished();
+    controls.$.save.click();
+    await microtasksFinished();
+    const progress = getRequiredElement(controls, 'circular-progress-ring');
+    chrome.test.assertEq(0, progress.value);
+    chrome.test.assertEq(
+        '566px', progress.$.innerProgress.getAttribute('stroke-dashoffset'));
+    assertBubbleAndProgressBar(bubble, 0, 0);
+
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
 
     chrome.test.succeed();
   },

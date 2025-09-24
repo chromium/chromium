@@ -1312,7 +1312,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return 0;
     }
     const fileSizeBytes = this.saveToDriveProgress_.fileSizeBytes ?? 0;
-    assert(fileSizeBytes > 0, 'Invalid file size for save to Drive');
+    if (fileSizeBytes === 0) {
+      return 0;
+    }
     const uploadedBytes = this.saveToDriveProgress_.uploadedBytes ?? 0;
     return Math.round((uploadedBytes / fileSizeBytes) * 100);
   }
