@@ -58,6 +58,12 @@ void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
   UpdateOrCreateAccountNameEmail(info);
 }
 
+void AccountNameEmailStore::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 void AccountNameEmailStore::OnAddressDataChanged() {
   if (pref_service_->GetInteger(
           prefs::kAutofillNameAndEmailProfileNotSelectedCounter) >

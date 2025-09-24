@@ -44,6 +44,9 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // updated. Used to keep the `kAccountNameEmail` profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
+  // syncer::SyncServiceObserver:
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
   // AddressDataManager::Observer:
   // Called when the address data of the `AddressDataManager` changes. If
   // `kAccountNameEmail` profile is missing but the user is still signed in,

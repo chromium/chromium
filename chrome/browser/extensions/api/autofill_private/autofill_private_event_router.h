@@ -53,6 +53,7 @@ class AutofillPrivateEventRouter : public KeyedService,
 
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService*) override;
+  void OnSyncShutdown(syncer::SyncService*) override;
 
  private:
   // Triggers an event on the router with current user's data.

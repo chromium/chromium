@@ -281,6 +281,11 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
 #endif
 }
 
+void UnifiedConsentService::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 void UnifiedConsentService::OnIsSyncingChanged() {
   if (pref_service_->IsSyncing() && !service_pref_changes_.empty()) {
     // Re-apply all observed service pref changes.

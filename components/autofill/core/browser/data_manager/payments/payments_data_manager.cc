@@ -523,8 +523,10 @@ void PaymentsDataManager::OnStateChanged(syncer::SyncService* sync_service) {
       sync_service && !sync_service->IsSyncFeatureEnabled());
 }
 
-void PaymentsDataManager::OnSyncShutdown(syncer::SyncService* sync) {
-  sync_observer_.Reset();
+void PaymentsDataManager::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
 }
 
 void PaymentsDataManager::OnAccountsCookieDeletedByUserAction() {

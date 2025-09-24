@@ -91,6 +91,7 @@ class HomeAndWorkMetadataStore : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar change_registrar_;

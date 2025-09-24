@@ -118,6 +118,7 @@ class UnifiedConsentService
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // sync_preferences::PrefServiceSyncableObserver:
   void OnIsSyncingChanged() override;

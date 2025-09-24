@@ -198,4 +198,9 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   notification_displayed_ = true;
 }
 
+void SyncErrorNotifier::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 }  // namespace ash

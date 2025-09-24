@@ -398,4 +398,10 @@ void AddressDataCleaner::OnStateChanged(syncer::SyncService* sync_service) {
   }
 }
 
+void AddressDataCleaner::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 }  // namespace autofill

@@ -228,4 +228,10 @@ void HomeAndWorkMetadataStore::OnStateChanged(
   pref_service_->ClearPref(prefs::kAutofillSilentUpdatesToWorkAddress);
 }
 
+void HomeAndWorkMetadataStore::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 }  // namespace autofill
