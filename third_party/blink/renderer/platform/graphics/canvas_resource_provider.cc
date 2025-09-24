@@ -1648,7 +1648,7 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 
     // Adjust the raster mode if we will be able to use an accelerated cache.
     if (use_accelerated_cache) {
-      raster_mode = cc::PlaybackImageProvider::RasterMode::kOop;
+      raster_mode = cc::PlaybackImageProvider::RasterMode::kGpu;
     }
     cc::ImageDecodeCache* cache_rgba8 =
         use_accelerated_cache

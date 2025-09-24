@@ -59,7 +59,7 @@ ImageProvider::ScopedResult PlaybackImageProvider::GetRasterContent(
 
   DrawImage adjusted_image(draw_image, 1.f, frame_index, target_color_params_);
   if (!cache_->UseCacheForDrawImage(adjusted_image)) {
-    if (settings_->raster_mode == RasterMode::kOop) {
+    if (settings_->raster_mode == RasterMode::kGpu) {
       return ScopedResult(DecodedDrawImage(paint_image.GetMailbox(),
                                            draw_image.filter_quality()));
     } else {

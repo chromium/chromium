@@ -1358,7 +1358,7 @@ class TestMailboxBacking : public TextureBacking {
 
 TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   RasterOptions options(gfx::Size(16, 16));
-  options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kOop;
+  options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kGpu;
   SkImageInfo backing_info = SkImageInfo::MakeN32Premul(
       options.resource_size.width(), options.resource_size.height());
 
