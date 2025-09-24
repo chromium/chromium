@@ -2288,7 +2288,8 @@ chromium-metrics-reviews@google.com.
   <int value="1393" label="IncognitoModeAllowlist"/>
   <int value="1394" label="PreferSlowKexAlgorithms"/>
   <int value="1395"
-      label="ExtensionForceInstallWithMinorPolicyViolationsEnabled"/>
+      label="ExtensionForceInstallWithNonMalwareViolationsEnabled"/>
+  <int value="1396" label="CacheEncryptionEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

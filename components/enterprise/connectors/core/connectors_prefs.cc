@@ -22,6 +22,11 @@
 namespace enterprise_connectors {
 
 // Profile Prefs
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kCacheEncryptionEnabledPref[] =
+    "enterprise_connectors.cache_encryption_enabled";
+#endif
+
 const char kOnFileAttachedPref[] = "enterprise_connectors.on_file_attached";
 
 const char kOnFileDownloadedPref[] = "enterprise_connectors.on_file_downloaded";
@@ -81,6 +86,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
+
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
 #endif
@@ -90,6 +96,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  registry->RegisterBooleanPref(kCacheEncryptionEnabledPref, false);
+#endif
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

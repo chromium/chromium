@@ -11,6 +11,11 @@ class PrefRegistrySimple;
 
 namespace enterprise_connectors {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Pref that maps to the "CacheEncryptionEnabled" policy.
+extern const char kCacheEncryptionEnabledPref[];
+#endif
+
 // Pref that maps to the "OnFileAttachedEnterpriseConnector" policy.
 extern const char kOnFileAttachedPref[];
 
