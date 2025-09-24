@@ -730,7 +730,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSiteInstanceUrl) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     // The version should have been updated.
     int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(31, cur_version);
+    ASSERT_LE(32, cur_version);
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT value FROM meta WHERE key = 'version'"));
@@ -778,7 +778,7 @@ TEST_F(HistoryBackendDBTest, MigrateEmbedderDownloadData) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     // The version should have been updated.
     int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(51, cur_version);
+    ASSERT_LE(52, cur_version);
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT value FROM meta WHERE key = 'version'"));
@@ -814,7 +814,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsSlicesTable) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     // The version should have been updated.
     int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(32, cur_version);
+    ASSERT_LE(33, cur_version);
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT value FROM meta WHERE key = 'version'"));
@@ -853,7 +853,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     // The version should have been updated.
     int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(35, cur_version);
+    ASSERT_LE(36, cur_version);
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT value FROM meta WHERE key = 'version'"));
@@ -1554,7 +1554,7 @@ TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
 }
 
 // Tests that visit segment names are recomputed and segments merged when
-// migrating to version 37.
+// migrating to version 38.
 TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(32));
 
@@ -1681,7 +1681,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSliceFinished) {
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     // The version should have been updated.
     int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(38, cur_version);
+    ASSERT_LE(39, cur_version);
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT value FROM meta WHERE key = 'version'"));
@@ -1860,7 +1860,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   DeleteBackend();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 43);
 
   {
     sql::Database db(sql::test::kTestTag);
