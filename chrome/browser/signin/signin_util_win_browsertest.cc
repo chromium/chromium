@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTestWithParams,
     auto* primary_account_mutator =
         IdentityManagerFactory::GetForProfile(profile)
             ->GetPrimaryAccountMutator();
-    primary_account_mutator->RevokeSyncConsent(
+    primary_account_mutator->ClearPrimaryAccount(
         signin_metrics::ProfileSignout::kForceSignoutAlwaysAllowedForTest);
 
     // Even with a refresh token available, no reauth happens if the profile
