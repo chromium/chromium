@@ -63,6 +63,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -85,20 +86,14 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#endif
+#include "url/third_party/mozilla/url_parse.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
-
-constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID);
 
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
@@ -1197,9 +1192,6 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
 }
 
 bool OmniboxEditModel::OnSpacePressed() {
-  if (!kIsDesktop) {
-    return false;
-  }
   if (!GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled)) {
     return false;
   }
@@ -1621,8 +1613,6 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 }
 
-// Android has its own platform-specific icon logic.
-#if !BUILDFLAG(IS_ANDROID)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color,
                                           bool dark_mode) const {
@@ -1726,7 +1716,6 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
              ? extension_icon
              : controller_->client()->GetSizedIcon(extension_icon);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     const std::optional<omnibox::GroupId>& suggestion_group_id) const {
@@ -2280,64 +2269,33 @@ void OmniboxEditModel::StepPopupSelection(
       autocomplete_controller()->input(), autocomplete_controller()->result(),
       controller_->client()->GetTemplateURLService(), view_->AimButtonVisible(),
       direction, step);
-  if (kIsDesktop) {
-    if (old_selection.IsChangeToKeyword(new_selection)) {
-      ClearKeyword();
-      SetPopupSelection(new_selection);
-    } else if (new_selection.state ==
-               OmniboxPopupSelection::LineState::KEYWORD_MODE) {
-      // Prepare for keyword mode before accepting it.
-      SetPopupSelection(OmniboxPopupSelection(
-          new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
-      // Note: Popup behavior currently depends on the entry method being tab.
-      // This is not ideal for nuanced metrics, but it is how it has worked
-      // for a long time. Consider refactoring to fix this if needed.
-      AcceptKeyword(metrics::OmniboxEventProto::TAB);
-    } else {
-      // If, as a result of the key press, we would select the first result,
-      // then we should revert the temporary text same as what pressing escape
-      // would have done.
-      //
-      // Reverting, however, does not make sense for on-focus suggestions
-      // (`user_input_in_progress_` is false) unless the first result is a
-      // verbatim match of the omnibox input (on-focus query refinements on
-      // SERP).
-      if (autocomplete_controller()->result().default_match() &&
-          has_temporary_text_ && new_selection == OmniboxPopupSelection(0) &&
-          (user_input_in_progress_ || autocomplete_controller()
-                                          ->result()
-                                          .default_match()
-                                          ->IsVerbatimType())) {
-        RevertTemporaryTextAndPopup();
-      } else {
-        SetPopupSelection(new_selection);
-      }
-    }
+  if (old_selection.IsChangeToKeyword(new_selection)) {
+    ClearKeyword();
+    SetPopupSelection(new_selection);
+  } else if (new_selection.state ==
+             OmniboxPopupSelection::LineState::KEYWORD_MODE) {
+    // Prepare for keyword mode before accepting it.
+    SetPopupSelection(OmniboxPopupSelection(
+        new_selection.line, OmniboxPopupSelection::LineState::NORMAL));
+    // Note: Popup behavior currently depends on the entry method being tab.
+    // This is not ideal for nuanced metrics, but it is how it has worked
+    // for a long time. Consider refactoring to fix this if needed.
+    AcceptKeyword(metrics::OmniboxEventProto::TAB);
   } else {
-    if (old_selection.IsChangeToKeyword(new_selection) ||
-        new_selection.IsChangeToKeyword(old_selection)) {
-      if (old_selection.IsChangeToKeyword(new_selection)) {
-        ClearKeyword();
-      }
-      SetPopupSelection(new_selection);
-      if (new_selection.IsChangeToKeyword(old_selection)) {
-        AcceptKeyword(metrics::OmniboxEventProto::TAB);
-      }
-    } else if (autocomplete_controller()->result().default_match() &&
-               has_temporary_text_ &&
-               new_selection == OmniboxPopupSelection{0} &&
-               (user_input_in_progress_ || autocomplete_controller()
-                                               ->result()
-                                               .default_match()
-                                               ->IsVerbatimType())) {
-      // If, as a result of the key press, we would select the first result,
-      // then we should revert the temporary text same as what pressing escape
-      // would have done.
-      //
-      // Reverting, however, does not make sense for on-focus suggestions
-      // (`user_input_in_progress_` is false) unless the first result is a
-      // verbatim match of the omnibox input (on-focus query refinements on
-      // SERP).
+    // If, as a result of the key press, we would select the first result,
+    // then we should revert the temporary text same as what pressing escape
+    // would have done.
+    //
+    // Reverting, however, does not make sense for on-focus suggestions
+    // (`user_input_in_progress_` is false) unless the first result is a
+    // verbatim match of the omnibox input (on-focus query refinements on
+    // SERP).
+    if (autocomplete_controller()->result().default_match() &&
+        has_temporary_text_ && new_selection == OmniboxPopupSelection(0) &&
+        (user_input_in_progress_ || autocomplete_controller()
+                                        ->result()
+                                        .default_match()
+                                        ->IsVerbatimType())) {
       RevertTemporaryTextAndPopup();
     } else {
       SetPopupSelection(new_selection);
@@ -2776,11 +2734,7 @@ void OmniboxEditModel::UpdateFeedbackOnMatch(size_t match_index,
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
-#if !BUILDFLAG(IS_ANDROID)
   return GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
-#else
-  return true;
-#endif
 }
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(

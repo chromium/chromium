@@ -394,7 +394,6 @@ class OmniboxEditModel {
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
                           SkColor vector_icon_color,
@@ -402,7 +401,6 @@ class OmniboxEditModel {
   // Gets the icon for the given `match` if the match was provided by an omnibox
   // API extension, otherwise returns empty image.
   gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;
-#endif
 
   // Gets the suggestion group header text associated with the given suggestion
   // group ID.
