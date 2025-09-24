@@ -18,6 +18,7 @@
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-data-view.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -142,9 +143,13 @@ class EmulationHandler : public DevToolsDomainHandler,
   WebContentsImpl* GetWebContents();
 
   void UpdateTouchEventEmulationState();
-  void UpdateDeviceEmulationState();
+  void UpdateDeviceEmulationState(
+      const blink::mojom::DeviceEmulationCacheBehavior& cache_behavior =
+          blink::mojom::DeviceEmulationCacheBehavior::kClearCache);
   void UpdateDeviceEmulationStateForHost(
-      RenderWidgetHostImpl* render_widget_host);
+      RenderWidgetHostImpl* render_widget_host,
+      const blink::mojom::DeviceEmulationCacheBehavior& cache_behavior =
+          blink::mojom::DeviceEmulationCacheBehavior::kClearCache);
 
   Response SetDevicePostureOverride(
       std::unique_ptr<protocol::Emulation::DevicePosture> posture) override;

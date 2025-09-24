@@ -40,6 +40,7 @@
 #include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-data-view.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
@@ -152,7 +153,8 @@ void EmulationHandler::SetRenderer(int process_host_id,
   if (touch_emulation_enabled_)
     UpdateTouchEventEmulationState();
   if (device_emulation_enabled_)
-    UpdateDeviceEmulationState();
+    UpdateDeviceEmulationState(
+        blink::mojom::DeviceEmulationCacheBehavior::kKeepCache);
 }
 
 void EmulationHandler::Wire(UberDispatcher* dispatcher) {
@@ -1069,7 +1071,8 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
   GetWebContents()->SetForceDisableOverscrollContent(touch_emulation_enabled_);
 }
 
-void EmulationHandler::UpdateDeviceEmulationState() {
+void EmulationHandler::UpdateDeviceEmulationState(
+    const blink::mojom::DeviceEmulationCacheBehavior& cache_behavior) {
   if (!host_)
     return;
 
@@ -1084,21 +1087,24 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   // WidgetMsg and acknowledgment, as well as plump the acknowledgment back to
   // the EmulationHandler somehow. Mojo callbacks should make this much simpler.
   host_->ForEachRenderFrameHostImplIncludingSpeculative(
-      [this](RenderFrameHostImpl* host) {
+      [this, &cache_behavior](RenderFrameHostImpl* host) {
         // The main frame of nested subpages (ex. fenced frames) inside this
         // page are updated as well.
         if (host->is_main_frame())
-          UpdateDeviceEmulationStateForHost(host->GetRenderWidgetHost());
+          UpdateDeviceEmulationStateForHost(host->GetRenderWidgetHost(),
+                                            cache_behavior);
       });
 }
 
 void EmulationHandler::UpdateDeviceEmulationStateForHost(
-    RenderWidgetHostImpl* render_widget_host) {
+    RenderWidgetHostImpl* render_widget_host,
+    const blink::mojom::DeviceEmulationCacheBehavior& cache_behavior) {
   auto& frame_widget = render_widget_host->GetAssociatedFrameWidget();
   if (!frame_widget)
     return;
   if (device_emulation_enabled_) {
-    frame_widget->EnableDeviceEmulation(device_emulation_params_);
+    frame_widget->EnableDeviceEmulation(device_emulation_params_,
+                                        cache_behavior);
   } else {
     frame_widget->DisableDeviceEmulation();
   }

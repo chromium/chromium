@@ -314,7 +314,8 @@ void DevToolsEmulator::SetOutputDeviceUpdateAbilityType(
 }
 
 gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
-    const DeviceEmulationParams& params) {
+    const DeviceEmulationParams& params,
+    const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior) {
   if (device_metrics_enabled_ &&
       emulation_params_.view_size == params.view_size &&
       emulation_params_.screen_type == params.screen_type &&
@@ -324,9 +325,26 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
       emulation_params_.viewport_scale == params.viewport_scale) {
     return ComputeRootLayerTransform();
   }
-  if (emulation_params_.device_scale_factor != params.device_scale_factor ||
-      !device_metrics_enabled_)
+  if ((emulation_params_.device_scale_factor != params.device_scale_factor ||
+       !device_metrics_enabled_) &&
+      cache_behavior ==
+          mojom::blink::DeviceEmulationCacheBehavior::kClearCache) {
+    // The MemoryCache does not take device parameters into account when
+    // invalidating the cache because the device is normally the same.
+    // With device emulation the device parameters can change and, therefore,
+    // DevToolsEmulator::EnableDeviceEmulation clears the memory cache if the
+    // user changes the emulation params.
+    // DevToolsEmulator::EnableDeviceEmulation can be called when the user
+    // initiates the change but also when the emulation state is synced for a
+    // new RenderFrameHost. When the change is not a result of a direct user
+    // action, we do not want to clear the cache because parameters have not
+    // actually changed. Before RenderDocument we could always clear the cache.
+    // With RenderDocument we need to it conditionally to avoid the cache being
+    // cleared on each navigation (even if the emulation params has not changed
+    // and the renderer process is reused) to allow testing the memory cache
+    // behavior.
     MemoryCache::Get()->EvictResources();
+  }
 
   emulation_params_ = params;
   device_metrics_enabled_ = true;

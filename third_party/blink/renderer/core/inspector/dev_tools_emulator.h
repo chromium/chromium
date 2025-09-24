@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
@@ -56,7 +57,9 @@ class CORE_EXPORT DevToolsEmulator final
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
-  gfx::Transform EnableDeviceEmulation(const DeviceEmulationParams&);
+  gfx::Transform EnableDeviceEmulation(
+      const DeviceEmulationParams&,
+      const mojom::blink::DeviceEmulationCacheBehavior&);
   // Disables emulation.
   void DisableDeviceEmulation();
 
