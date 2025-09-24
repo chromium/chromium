@@ -141,9 +141,9 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
   }
 }
 
-TabAndroid* TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
-                                                      TabAndroid* tab) {
-  return static_cast<TabAndroid*>(DuplicateTab(tab));
+void TabModelJniBridge::DuplicateTabForTesting(JNIEnv* env,
+                                               TabAndroid* tab) {
+  DuplicateTab(tab);
 }
 
 void TabModelJniBridge::MoveTabToWindowForTesting(
