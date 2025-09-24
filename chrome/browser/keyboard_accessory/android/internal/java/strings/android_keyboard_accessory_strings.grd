@@ -232,6 +232,9 @@
       <message name="IDS_PASSWORD_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual password container.">
         Password
       </message>
+      <message name="IDS_RECOVERY_PASSWORD_ACCESSORY_SHEET_CONTENT_DESCRIPTION" desc="Accessibility label for the individual backup password container.">
+        Recovery password
+      </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TITLE" desc="Text used as title for the address accessory sheet.">
         Addresses
       </message>

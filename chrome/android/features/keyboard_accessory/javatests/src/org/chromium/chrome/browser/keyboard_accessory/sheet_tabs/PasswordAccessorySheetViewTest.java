@@ -385,6 +385,9 @@ public class PasswordAccessorySheetViewTest {
         assertThat(
                 getUserInfoAt(1).getTitle(),
                 withText(R.string.password_accessory_recovery_password_title));
+        assertThat(
+                getUserInfoAt(1).getContentDescription(),
+                is(getString(R.string.recovery_password_accessory_sheet_content_description)));
     }
 
     @Test
