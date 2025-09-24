@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
@@ -112,6 +113,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   bool ShouldShowScanCreditCard(const FormStructure& form,
                                 const AutofillField& trigger_field) {
     return manager_->ShouldShowScanCreditCard(form, trigger_field);
+  }
+
+  AccountNameEmailStrikeManager* account_name_email_strike_manager() {
+    return manager_->account_name_email_strike_manager_.get();
   }
 
  private:

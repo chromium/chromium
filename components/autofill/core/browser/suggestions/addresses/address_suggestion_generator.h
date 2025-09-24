@@ -61,6 +61,13 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     std::optional<std::string> plus_address_email_override = std::nullopt,
     const std::string& gaia_email = "");
 
+// Returns true if a suggestion for an `AutofillProfile` with record type equal
+// to `record_type` exists in the `suggestions`, false otherwise.
+bool ContainsProfileSuggestionWithRecordType(
+    base::span<const Suggestion> suggestions,
+    const AddressDataManager& address_data_manager,
+    AutofillProfile::RecordType record_type);
+
 // `SuggestionGenerator` implementation for addresses. Obtaining the address
 // suggestions should be done only through this class.
 class AddressSuggestionGenerator : public SuggestionGenerator {

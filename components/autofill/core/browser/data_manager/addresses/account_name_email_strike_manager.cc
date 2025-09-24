@@ -1,0 +1,61 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
+
+#include <algorithm>
+
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+
+namespace autofill {
+
+AccountNameEmailStrikeManager::AccountNameEmailStrikeManager(
+    AutofillManager& autofill_manager)
+    : client_(autofill_manager.client()) {
+  autofill_manager_observation_.Observe(&autofill_manager);
+}
+
+AccountNameEmailStrikeManager::~AccountNameEmailStrikeManager() {
+  // TODO(crbug.com/356845298): Use the recorded members to set prefs correctly
+  // in `AccountNameEmailStore`.
+}
+
+void AccountNameEmailStrikeManager::OnSuggestionsShown(
+    autofill::AutofillManager& manager,
+    base::span<const autofill::Suggestion> suggestions) {
+  was_name_email_profile_suggestion_shown_ =
+      was_name_email_profile_suggestion_shown_ ||
+      ContainsProfileSuggestionWithRecordType(
+          suggestions, client_->GetPersonalDataManager().address_data_manager(),
+          AutofillProfile::RecordType::kAccountNameEmail);
+}
+
+void AccountNameEmailStrikeManager::OnFillOrPreviewForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    mojom::ActionPersistence action_persistence,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const FillingPayload& filling_payload) {
+  if (action_persistence != mojom::ActionPersistence::kFill) {
+    return;
+  }
+
+  const AutofillProfile* const* profile_payload_ptr =
+      std::get_if<const AutofillProfile*>(&filling_payload);
+  if (!profile_payload_ptr) {
+    return;
+  }
+  const AutofillProfile* profile_payload = *profile_payload_ptr;
+  CHECK(profile_payload);
+
+  if (profile_payload->record_type() ==
+      AutofillProfile::RecordType::kAccountNameEmail) {
+    was_name_email_profile_filled_ = true;
+  }
+}
+
+}  // namespace autofill

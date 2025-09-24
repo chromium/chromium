@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -693,6 +694,9 @@ class BrowserAutofillManager : public AutofillManager {
       std::make_unique<FormFiller>(*this);
 
   std::unique_ptr<OtpManager> otp_manager_;
+
+  std::unique_ptr<AccountNameEmailStrikeManager>
+      account_name_email_strike_manager_;
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form.

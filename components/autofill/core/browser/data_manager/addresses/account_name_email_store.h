@@ -16,17 +16,20 @@
 
 namespace autofill {
 
-// The `kAccountNameEmail` autofill profile is an un-syncable, locally stored,
+// The kAccountNameEmail autofill profile is an un-syncable, locally stored,
 // profile generated automatically for every signed in user, unless they deleted
 // it or didn't use it. This profile is composed of 2 pieces of data:
 // - full name
 // - email
-// Keeping `kAccountNameEmail` profile's state up to date between the devices is
+// Keeping kAccountNameEmail profile's state up to date between the devices is
 // handled through syncable prefs. `AccountNameEmailStore` is a class
 // responsible for accessing and modifying those prefs, as well as managing
-// (create, update, remove) `kAccountNameEmail` profile. In code
+// (create, update, remove) kAccountNameEmail profile. In code
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
+// TODO(441657422): `AccountNameEmailStrikeManager` should notify this class if
+// a suggestion with kAccountNameEmail profile was showed and whether it was
+// accepted.
 class AccountNameEmailStore : public signin::IdentityManager::Observer,
                               public AddressDataManager::Observer,
                               public syncer::SyncServiceObserver {

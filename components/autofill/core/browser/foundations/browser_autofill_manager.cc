@@ -67,6 +67,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -775,7 +776,9 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
       otp_manager_(
           new OtpManagerImpl(this,
-                             driver->GetAutofillClient().GetSmsOtpBackend())) {}
+                             driver->GetAutofillClient().GetSmsOtpBackend())),
+      account_name_email_strike_manager_(
+          std::make_unique<AccountNameEmailStrikeManager>(*this)) {}
 
 BrowserAutofillManager::~BrowserAutofillManager() {
   // Process log events and record into UKM when the FormStructure is destroyed.
@@ -2658,6 +2661,8 @@ void BrowserAutofillManager::Reset() {
   // Forget cached OTPs after a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
       this, driver().GetAutofillClient().GetSmsOtpBackend());
+  account_name_email_strike_manager_ =
+      std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();
   AutofillManager::Reset();
   metrics_.emplace(this);

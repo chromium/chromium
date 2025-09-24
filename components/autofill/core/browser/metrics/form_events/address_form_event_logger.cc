@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -55,24 +56,6 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
     case AutofillProfileRecordTypeCategory::kAccountNameEmail:
       return CategoryResolvedKeyMetricBucket::kAccountNameEmail;
   }
-}
-
-bool ContainsProfileSuggestionWithRecordType(
-    base::span<const Suggestion> suggestions,
-    const AddressDataManager& address_data_manager,
-    AutofillProfile::RecordType record_type) {
-  return std::ranges::any_of(suggestions, [&](const Suggestion& suggestion) {
-    if (const Suggestion::AutofillProfilePayload* profile_payload =
-            std::get_if<Suggestion::AutofillProfilePayload>(
-                &suggestion.payload)) {
-      if (const AutofillProfile* profile =
-              address_data_manager.GetProfileByGUID(
-                  profile_payload->guid.value())) {
-        return profile->record_type() == record_type;
-      }
-    }
-    return false;
-  });
 }
 
 }  // namespace

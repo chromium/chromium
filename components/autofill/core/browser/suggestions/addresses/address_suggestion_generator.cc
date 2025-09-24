@@ -799,6 +799,24 @@ std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
                                        plus_address_email_override, app_locale);
 }
 
+bool ContainsProfileSuggestionWithRecordType(
+    base::span<const Suggestion> suggestions,
+    const AddressDataManager& address_data_manager,
+    AutofillProfile::RecordType record_type) {
+  return std::ranges::any_of(suggestions, [&](const Suggestion& suggestion) {
+    if (const Suggestion::AutofillProfilePayload* profile_payload =
+            std::get_if<Suggestion::AutofillProfilePayload>(
+                &suggestion.payload)) {
+      if (const AutofillProfile* profile =
+              address_data_manager.GetProfileByGUID(
+                  profile_payload->guid.value())) {
+        return profile->record_type() == record_type;
+      }
+    }
+    return false;
+  });
+}
+
 AddressSuggestionGenerator::AddressSuggestionGenerator(
     const AutofillClient& client,
     const std::optional<std::string>& plus_address_email_override,
