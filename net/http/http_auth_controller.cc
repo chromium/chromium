@@ -32,12 +32,6 @@ namespace net {
 
 namespace {
 
-enum AuthEvent {
-  AUTH_EVENT_START = 0,
-  AUTH_EVENT_REJECT,
-  AUTH_EVENT_MAX,
-};
-
 enum AuthTarget {
   AUTH_TARGET_PROXY = 0,
   AUTH_TARGET_SECURE_PROXY,
@@ -63,71 +57,6 @@ AuthTarget DetermineAuthTarget(const HttpAuthHandler* handler) {
     default:
       NOTREACHED();
   }
-}
-
-// Records the number of authentication events per authentication scheme.
-void HistogramAuthEvent(HttpAuthHandler* handler, AuthEvent auth_event) {
-#if !defined(NDEBUG)
-  // Note: The on-same-thread check is intentionally not using a lock
-  // to protect access to first_thread. This method is meant to be only
-  // used on the same thread, in which case there are no race conditions. If
-  // there are race conditions (say, a read completes during a partial write),
-  // the DCHECK will correctly fail.
-  static base::PlatformThreadId first_thread =
-      base::PlatformThread::CurrentId();
-  DCHECK_EQ(first_thread, base::PlatformThread::CurrentId());
-#endif
-
-  HttpAuth::Scheme auth_scheme = handler->auth_scheme();
-  DCHECK(auth_scheme >= 0 && auth_scheme < HttpAuth::AUTH_SCHEME_MAX);
-
-  // Record start and rejection events for authentication.
-  //
-  // The results map to:
-  //   Basic Start: 0
-  //   Basic Reject: 1
-  //   Digest Start: 2
-  //   Digest Reject: 3
-  //   NTLM Start: 4
-  //   NTLM Reject: 5
-  //   Negotiate Start: 6
-  //   Negotiate Reject: 7
-  static constexpr int kEventBucketsEnd =
-      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_EVENT_MAX;
-  int event_bucket = int{auth_scheme} * AUTH_EVENT_MAX + auth_event;
-  DCHECK(event_bucket >= 0 && event_bucket < kEventBucketsEnd);
-  UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthCount", event_bucket,
-                            kEventBucketsEnd);
-
-  // Record the target of the authentication.
-  //
-  // The results map to:
-  //   Basic Proxy: 0
-  //   Basic Secure Proxy: 1
-  //   Basic Server: 2
-  //   Basic Secure Server: 3
-  //   Digest Proxy: 4
-  //   Digest Secure Proxy: 5
-  //   Digest Server: 6
-  //   Digest Secure Server: 7
-  //   NTLM Proxy: 8
-  //   NTLM Secure Proxy: 9
-  //   NTLM Server: 10
-  //   NTLM Secure Server: 11
-  //   Negotiate Proxy: 12
-  //   Negotiate Secure Proxy: 13
-  //   Negotiate Server: 14
-  //   Negotiate Secure Server: 15
-  if (auth_event != AUTH_EVENT_START) {
-    return;
-  }
-  static constexpr int kTargetBucketsEnd =
-      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_TARGET_MAX;
-  AuthTarget auth_target = DetermineAuthTarget(handler);
-  int target_bucket = int{auth_scheme} * AUTH_TARGET_MAX + auth_target;
-  DCHECK(target_bucket >= 0 && target_bucket < kTargetBucketsEnd);
-  UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthTarget", target_bucket,
-                            kTargetBucketsEnd);
 }
 
 base::Value::Dict ControllerParamsToValue(HttpAuth::Target target,
@@ -291,7 +220,7 @@ int HttpAuthController::HandleAuthChallenge(
         InvalidateCurrentHandler(INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS);
         break;
       case HttpAuth::AUTHORIZATION_RESULT_REJECT:
-        HistogramAuthEvent(handler_.get(), AUTH_EVENT_REJECT);
+        HistogramAuthEvent(AUTH_EVENT_REJECT);
         InvalidateCurrentHandler(INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS);
         break;
       case HttpAuth::AUTHORIZATION_RESULT_STALE:
@@ -335,7 +264,7 @@ int HttpAuthController::HandleAuthChallenge(
           network_anonymization_key_, target_, auth_scheme_host_port_,
           disabled_schemes_, net_log_, host_resolver_, &handler_);
       if (handler_.get()) {
-        HistogramAuthEvent(handler_.get(), AUTH_EVENT_START);
+        HistogramAuthEvent(AUTH_EVENT_START);
       }
     }
 
@@ -371,7 +300,7 @@ int HttpAuthController::HandleAuthChallenge(
       if (!handler_->AllowsExplicitCredentials()) {
         // If the handler doesn't accept explicit credentials, then we need to
         // choose a different auth scheme.
-        HistogramAuthEvent(handler_.get(), AUTH_EVENT_REJECT);
+        HistogramAuthEvent(AUTH_EVENT_REJECT);
         InvalidateCurrentHandler(INVALIDATE_HANDLER_AND_DISABLE_SCHEME);
       } else {
         // Pass the challenge information back to the client.
@@ -633,6 +562,61 @@ void HttpAuthController::OnGenerateAuthTokenDone(int result) {
   if (!callback_.is_null()) {
     std::move(callback_).Run(result);
   }
+}
+
+void HttpAuthController::HistogramAuthEvent(AuthEvent auth_event) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  HttpAuth::Scheme auth_scheme = handler_->auth_scheme();
+  DCHECK(auth_scheme >= 0 && auth_scheme < HttpAuth::AUTH_SCHEME_MAX);
+
+  // Record start and rejection events for authentication.
+  //
+  // The results map to:
+  //   Basic Start: 0
+  //   Basic Reject: 1
+  //   Digest Start: 2
+  //   Digest Reject: 3
+  //   NTLM Start: 4
+  //   NTLM Reject: 5
+  //   Negotiate Start: 6
+  //   Negotiate Reject: 7
+  static constexpr int kEventBucketsEnd =
+      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_EVENT_MAX;
+  int event_bucket = int{auth_scheme} * AUTH_EVENT_MAX + auth_event;
+  DCHECK(event_bucket >= 0 && event_bucket < kEventBucketsEnd);
+  UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthCount", event_bucket,
+                            kEventBucketsEnd);
+
+  // Record the target of the authentication.
+  //
+  // The results map to:
+  //   Basic Proxy: 0
+  //   Basic Secure Proxy: 1
+  //   Basic Server: 2
+  //   Basic Secure Server: 3
+  //   Digest Proxy: 4
+  //   Digest Secure Proxy: 5
+  //   Digest Server: 6
+  //   Digest Secure Server: 7
+  //   NTLM Proxy: 8
+  //   NTLM Secure Proxy: 9
+  //   NTLM Server: 10
+  //   NTLM Secure Server: 11
+  //   Negotiate Proxy: 12
+  //   Negotiate Secure Proxy: 13
+  //   Negotiate Server: 14
+  //   Negotiate Secure Server: 15
+  if (auth_event != AUTH_EVENT_START) {
+    return;
+  }
+  static constexpr int kTargetBucketsEnd =
+      int{HttpAuth::AUTH_SCHEME_MAX} * AUTH_TARGET_MAX;
+  AuthTarget auth_target = DetermineAuthTarget(handler_.get());
+  int target_bucket = int{auth_scheme} * AUTH_TARGET_MAX + auth_target;
+  DCHECK(target_bucket >= 0 && target_bucket < kTargetBucketsEnd);
+  UMA_HISTOGRAM_ENUMERATION("Net.HttpAuthTarget", target_bucket,
+                            kTargetBucketsEnd);
 }
 
 void HttpAuthController::TakeAuthInfo(std::optional<AuthChallengeInfo>* other) {
