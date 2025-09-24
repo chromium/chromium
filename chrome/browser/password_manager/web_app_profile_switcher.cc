@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -113,11 +114,11 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
            web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // The web app is already installed and can be launched, or foregrounded,
     // if it's already launched.
-    Browser* launched_app =
+    BrowserWindowInterface* launched_app =
         web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
     debug_value.Set("launched_app", !!launched_app);
     if (launched_app) {
-      launched_app->window()->Activate();
+      launched_app->GetWindow()->Activate();
       RunCompletionCallback();
     } else {
       LaunchAppWithId(app_id_,

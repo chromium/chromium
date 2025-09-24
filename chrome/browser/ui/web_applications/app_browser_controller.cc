@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
@@ -114,29 +115,35 @@ bool AppBrowserController::IsForWebApp(const BrowserWindowInterface* browser,
 }
 
 // static
-Browser* AppBrowserController::FindForWebApp(const Profile& profile,
-                                             const webapps::AppId& app_id) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (!browser->is_type_app()) {
-      continue;
-    }
-    if (browser->profile() != &profile) {
-      continue;
-    }
-    if (!IsForWebApp(browser, app_id)) {
-      continue;
-    }
-    return browser;
-  }
-  return nullptr;
+BrowserWindowInterface* AppBrowserController::FindForWebApp(
+    const Profile& profile,
+    const webapps::AppId& app_id) {
+  BrowserWindowInterface* browser_for_web_app = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetBrowserForMigrationOnly()
+                ->IsAttemptingToCloseBrowser() ||
+            browser->GetBrowserForMigrationOnly()->IsBrowserClosing()) {
+          return true;  // continue iterating
+        }
+        if (browser->GetType() != BrowserWindowInterface::TYPE_APP) {
+          return true;  // continue iterating
+        }
+        if (browser->GetProfile() != &profile) {
+          return true;  // continue iterating
+        }
+        if (!IsForWebApp(browser, app_id)) {
+          return true;  // continue iterating
+        }
+        browser_for_web_app = browser;
+        return false;  // stop iterating
+      });
+  return browser_for_web_app;
 }
 
 // static
 std::optional<int> AppBrowserController::FindTabIndexForApp(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const webapps::AppId& app_id,
     bool for_focus_existing,
     HomeTabScope home_tab_scope) {
@@ -153,17 +160,20 @@ std::optional<int> AppBrowserController::FindTabIndexForApp(
       return true;
     }
     return (home_tab_scope == HomeTabScope::kInScope) ==
-           (browser->app_controller()->GetPinnedHomeTab() == contents);
+           (browser->GetAppBrowserController()->GetPinnedHomeTab() == contents);
   };
   // The active web contents should have preference if it is in scope.
-  if (browser->tab_strip_model()->active_index() != TabStripModel::kNoTab) {
-    if (is_valid_tab(browser->tab_strip_model()->GetActiveWebContents())) {
-      return {browser->tab_strip_model()->active_index()};
+  if (browser->GetFeatures().tab_strip_model()->active_index() !=
+      TabStripModel::kNoTab) {
+    if (is_valid_tab(
+            browser->GetFeatures().tab_strip_model()->GetActiveWebContents())) {
+      return {browser->GetFeatures().tab_strip_model()->active_index()};
     }
   }
   // Otherwise, use the first one for the app.
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-    if (is_valid_tab(browser->tab_strip_model()->GetWebContentsAt(i))) {
+  for (int i = 0; i < browser->GetFeatures().tab_strip_model()->count(); ++i) {
+    if (is_valid_tab(
+            browser->GetFeatures().tab_strip_model()->GetWebContentsAt(i))) {
       return {i};
     }
   }
@@ -178,26 +188,33 @@ AppBrowserController::FindTopLevelBrowsingContextForWebApp(
     Browser::Type browser_type,
     bool for_focus_existing,
     HomeTabScope home_tab_scope) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (browser->type() != browser_type) {
-      continue;
-    }
-    if (browser->profile() != &profile) {
-      continue;
-    }
-    if (IsWebApp(browser) && !IsForWebApp(browser, app_id)) {
-      continue;
-    }
-    std::optional<int> tab_index =
-        FindTabIndexForApp(browser, app_id, for_focus_existing, home_tab_scope);
-    if (tab_index.has_value()) {
-      return {{browser, *tab_index}};
-    }
-  }
-  return std::nullopt;
+  std::optional<AppBrowserController::BrowserAndTabIndex>
+      browser_and_tab_index = std::nullopt;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetBrowserForMigrationOnly()
+                ->IsAttemptingToCloseBrowser() ||
+            browser->GetBrowserForMigrationOnly()->IsBrowserClosing()) {
+          return true;  // continue iterating
+        }
+        if (browser->GetType() != browser_type) {
+          return true;  // continue iterating
+        }
+        if (browser->GetProfile() != &profile) {
+          return true;  // continue iterating
+        }
+        if (IsWebApp(browser) && !IsForWebApp(browser, app_id)) {
+          return true;  // continue iterating
+        }
+        std::optional<int> tab_index = FindTabIndexForApp(
+            browser, app_id, for_focus_existing, home_tab_scope);
+        if (tab_index.has_value()) {
+          browser_and_tab_index = {{browser, *tab_index}};
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_and_tab_index;
 }
 
 // static

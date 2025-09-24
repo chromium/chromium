@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
 
   // Launch the app for the first profile.
   web_app::LaunchWebAppBrowser(first_profile, ash::kPasswordManagerAppId);
-  Browser* first_profile_app_browser =
+  BrowserWindowInterface* first_profile_app_browser =
       web_app::AppBrowserController::FindForWebApp(*first_profile,
                                                    ash::kPasswordManagerAppId);
   ASSERT_TRUE(first_profile_app_browser);
@@ -169,11 +170,12 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
   InstallAppForProfile(second_profile, GetTestWebAppInstallInfo());
   // Launch the app.
   web_app::LaunchWebAppBrowser(second_profile, ash::kPasswordManagerAppId);
-  Browser* second_profile_app_browser =
+  BrowserWindowInterface* second_profile_app_browser =
       web_app::AppBrowserController::FindForWebApp(*second_profile,
                                                    ash::kPasswordManagerAppId);
   ASSERT_TRUE(second_profile_app_browser);
-  EXPECT_EQ(chrome::FindLastActive(), second_profile_app_browser);
+  EXPECT_EQ(chrome::FindLastActive(),
+            second_profile_app_browser->GetBrowserForMigrationOnly());
 
   // Switch to the first profile from the second.
   base::test::TestFuture<void> profile_switch_complete;
@@ -181,13 +183,15 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                                          *second_profile,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(first_profile->GetPath());
-  ui_test_utils::BrowserActivationWaiter(first_profile_app_browser)
+  ui_test_utils::BrowserActivationWaiter(
+      first_profile_app_browser->GetBrowserForMigrationOnly())
       .WaitForActivation();
   EXPECT_TRUE(profile_switch_complete.Wait());
 
   // Check that there is only one browser for the first_profile and it's active.
   ASSERT_EQ(chrome::FindAllTabbedBrowsersWithProfile(first_profile).size(), 1U);
-  EXPECT_EQ(chrome::FindBrowserWithActiveWindow(), first_profile_app_browser);
+  EXPECT_EQ(chrome::FindBrowserWithActiveWindow(),
+            first_profile_app_browser->GetBrowserForMigrationOnly());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("PasswordManager.ShortcutMetric"),
               base::BucketsAre(base::Bucket(2, 1)));

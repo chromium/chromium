@@ -159,8 +159,9 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function_call.get(), args, profile());
 
-  Browser* m365_browser = web_app::AppBrowserController::FindForWebApp(
-      *(profile()), ash::kMicrosoft365AppId);
+  BrowserWindowInterface* m365_browser =
+      web_app::AppBrowserController::FindForWebApp(*(profile()),
+                                                   ash::kMicrosoft365AppId);
   EXPECT_FALSE(m365_browser);
   EXPECT_EQ(GURL(kExampleUrl), incognito_browser->GetTabStripModel()
                                    ->GetActiveWebContents()
@@ -184,8 +185,9 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function_call.get(), args, profile());
 
-  Browser* m365_browser = web_app::AppBrowserController::FindForWebApp(
-      *(profile()), ash::kMicrosoft365AppId);
+  BrowserWindowInterface* m365_browser =
+      web_app::AppBrowserController::FindForWebApp(*(profile()),
+                                                   ash::kMicrosoft365AppId);
   EXPECT_FALSE(m365_browser);
   EXPECT_EQ(
       GURL(kExampleUrl),
@@ -210,8 +212,9 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function_call.get(), args, profile());
 
-  Browser* m365_browser = web_app::AppBrowserController::FindForWebApp(
-      *(profile()), ash::kMicrosoft365AppId);
+  BrowserWindowInterface* m365_browser =
+      web_app::AppBrowserController::FindForWebApp(*(profile()),
+                                                   ash::kMicrosoft365AppId);
   EXPECT_FALSE(m365_browser);
   EXPECT_EQ(
       GURL(kExampleUrl),
@@ -236,8 +239,9 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   api_test_utils::RunFunction(function_call.get(), args, profile());
 
   // The tab was opened in a new M365 window
-  Browser* m365_browser = web_app::AppBrowserController::FindForWebApp(
-      *(profile()), ash::kMicrosoft365AppId);
+  BrowserWindowInterface* m365_browser =
+      web_app::AppBrowserController::FindForWebApp(*(profile()),
+                                                   ash::kMicrosoft365AppId);
   EXPECT_TRUE(m365_browser);
   EXPECT_EQ(GURL(kExampleUrl), m365_browser->GetTabStripModel()
                                    ->GetActiveWebContents()

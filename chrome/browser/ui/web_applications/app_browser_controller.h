@@ -77,17 +77,17 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
   static bool IsForWebApp(const BrowserWindowInterface* browser,
                           const webapps::AppId& app_id);
-  // Returns a Browser* that is for |app_id| and |profile| if any, searches in
-  // order of last browser activation. Ignores pop-up Browsers.
-  static Browser* FindForWebApp(const Profile& profile,
-                                const webapps::AppId& app_id);
+  // Returns a BrowserWindowInterface* that is for |app_id| and |profile| if
+  // any, searches in order of last browser activation. Ignores pop-up Browsers.
+  static BrowserWindowInterface* FindForWebApp(const Profile& profile,
+                                               const webapps::AppId& app_id);
 
   // Returns the `browser` and `tab_index` for a tab for the given `app_id` in
   // the given `profile`, where the tab does not have an opener, and the browser
   // is of the specified `browser_type`. Prefers more recently activated
   // windows and tabs over less recently used ones.
   struct BrowserAndTabIndex {
-    raw_ptr<Browser> browser = nullptr;
+    raw_ptr<BrowserWindowInterface> browser = nullptr;
     int tab_index = -1;
   };
   enum class HomeTabScope {
@@ -102,7 +102,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
       bool for_focus_existing,
       HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
   static std::optional<int> FindTabIndexForApp(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const webapps::AppId& app_id,
       bool for_focus_existing,
       HomeTabScope home_tab_scope = HomeTabScope::kDontCare);

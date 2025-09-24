@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -112,12 +113,14 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
 
   // Move second_tab contents to app, simulating open pwa from omnibox intent
   // picker.
-  Browser* app_browser = web_app::ReparentWebContentsIntoAppBrowser(
-      browser()->tab_strip_model()->GetActiveWebContents(), app_id);
-  EXPECT_TRUE(app_browser->is_type_app());
+  BrowserWindowInterface* app_browser =
+      web_app::ReparentWebContentsIntoAppBrowser(
+          browser()->tab_strip_model()->GetActiveWebContents(), app_id);
+  EXPECT_TRUE(app_browser->GetType() == BrowserWindowInterface::TYPE_APP);
 
   // App does not show side panel.
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
+  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(
+                   app_browser->GetBrowserForMigrationOnly())
                    ->unified_side_panel()
                    ->GetVisible());
 }

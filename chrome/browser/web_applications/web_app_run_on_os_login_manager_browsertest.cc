@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -243,7 +244,7 @@ class WebAppRunOnOsLoginManagerBrowserTest
     observer.Wait();
   }
 
-  Browser* FindAppBrowser(GURL app_url) {
+  BrowserWindowInterface* FindAppBrowser(GURL app_url) {
     auto web_app = FindAppWithUrlInScope(app_url);
     if (!web_app) {
       return nullptr;
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
-  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(kTestApp));
   ASSERT_TRUE(app_browser);
 }
 
@@ -301,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(kTestApp));
 
   ASSERT_TRUE(app_browser);
 }
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(kTestApp));
 
   ASSERT_TRUE(app_browser);
 }
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(kTestApp));
 
   ASSERT_TRUE(app_browser);
 }
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindAppBrowser(GURL(kTestApp));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(kTestApp));
 
   ASSERT_TRUE(app_browser);
 }
@@ -681,7 +682,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
         builder.BuildBundle(temp_dir_.Append(kBundleFileName), key_pair_));
   }
 
-  Browser* FindAppBrowser(GURL app_url) {
+  BrowserWindowInterface* FindAppBrowser(GURL app_url) {
     auto web_app = FindAppWithUrlInScope(app_url);
     if (!web_app) {
       return nullptr;
@@ -731,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,
 
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  Browser* app_browser = FindAppBrowser(GURL(manifest_id));
+  BrowserWindowInterface* app_browser = FindAppBrowser(GURL(manifest_id));
 
   ASSERT_TRUE(app_browser);
 }

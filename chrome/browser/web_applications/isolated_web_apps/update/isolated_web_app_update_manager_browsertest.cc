@@ -31,6 +31,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
@@ -1107,11 +1109,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
 
-  Browser* app_window =
+  BrowserWindowInterface* app_window =
       AppBrowserController::FindForWebApp(*profile(), GetAppId());
   ASSERT_THAT(app_window, NotNull());
   content::WebContents* web_contents =
-      app_window->tab_strip_model()->GetActiveWebContents();
+      app_window->GetFeatures().tab_strip_model()->GetActiveWebContents();
 
   content::TitleWatcher title_watcher(web_contents, u"7.0.6");
   title_watcher.AlsoWaitForTitle(u"3.0.4");

@@ -22,6 +22,8 @@
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -1053,11 +1055,12 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
 
   const webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(InstallableWebAppManifestId());
-  Browser* app_browser = web_app::AppBrowserController::FindForWebApp(
-      *browser()->profile(), app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::AppBrowserController::FindForWebApp(*browser()->profile(),
+                                                   app_id);
   auto* web_contents_after =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_NE(app_browser, browser());
+      app_browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(app_browser->GetBrowserForMigrationOnly(), browser());
   EXPECT_EQ(web_contents_before, web_contents_after);
   // Use a page target API to verify the WebContents is still attached.
   ASSERT_TRUE(

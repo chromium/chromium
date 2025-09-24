@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -477,9 +478,10 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
   CheckWebContentsDoesNotHaveAppPrefs(current_tab);
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(current_tab, app_id_);
-  ASSERT_NE(browser(), app_browser);
+  ASSERT_NE(browser(),
+            app_browser ? app_browser->GetBrowserForMigrationOnly() : nullptr);
 
   // Wait for the target parent app browser window to become the last active
   // one.

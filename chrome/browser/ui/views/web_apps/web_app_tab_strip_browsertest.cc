@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -520,8 +521,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   // Install and close app.
   webapps::AppId app_id = InstallTestWebApp(start_url);
-  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  CloseAndWait(app_browser);
+  BrowserWindowInterface* app_browser =
+      FindWebAppBrowser(browser()->profile(), app_id);
+  CloseAndWait(app_browser->GetBrowserForMigrationOnly());
 
   // Navigate to the app URL in the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -533,7 +535,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   // Reparent web contents into app browser.
   app_browser =
       web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id);
-  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  TabStripModel* tab_strip = app_browser->GetFeatures().tab_strip_model();
 
   // Expect the pinned home tab to also be opened.
   EXPECT_EQ(tab_strip->count(), 2);
@@ -551,7 +553,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   // Reparent web contents into app browser.
   EXPECT_EQ(app_browser,
             web_app::ReparentWebContentsIntoAppBrowser(web_contents, app_id));
-  tab_strip = app_browser->tab_strip_model();
+  tab_strip = app_browser->GetFeatures().tab_strip_model();
 
   // Expect home tab to be focused.
   EXPECT_EQ(tab_strip->count(), 2);

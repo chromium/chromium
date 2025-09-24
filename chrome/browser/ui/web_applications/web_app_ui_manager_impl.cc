@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -314,15 +315,18 @@ Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
     bool shortcut_created) {
   DCHECK(CanReparentAppTabToWindow(app_id, shortcut_created, contents));
   // Reparent the tab into an app window immediately.
-  return ReparentWebContentsIntoAppBrowser(contents, app_id);
+  BrowserWindowInterface* browser =
+      ReparentWebContentsIntoAppBrowser(contents, app_id);
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 Browser* WebAppUiManagerImpl::ReparentAppTabToWindow(
     content::WebContents* contents,
     const webapps::AppId& app_id,
     base::OnceCallback<void(content::WebContents*)> completion_callback) {
-  return ReparentWebContentsIntoAppBrowser(contents, app_id,
-                                           std::move(completion_callback));
+  BrowserWindowInterface* browser = ReparentWebContentsIntoAppBrowser(
+      contents, app_id, std::move(completion_callback));
+  return browser == nullptr ? nullptr : browser->GetBrowserForMigrationOnly();
 }
 
 void WebAppUiManagerImpl::ShowWebAppFileLaunchDialog(
@@ -583,23 +587,24 @@ void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     return;
   }
 
-  Browser* const app_browser =
+  BrowserWindowInterface* const app_browser =
       browser ? browser : AppBrowserController::FindForWebApp(*profile, app_id);
   if (!app_browser) {
     return;
   }
 
   if (WebAppPrefGuardrails::GetForNavigationCapturingIph(
-          app_browser->profile()->GetPrefs())
+          app_browser->GetProfile()->GetPrefs())
           .IsBlockedByGuardrails(app_id)) {
     return;
   }
 
   web_app::PostCallbackOnBrowserActivation(
-      app_browser, kToolbarAppMenuButtonElementId,
+      app_browser->GetBrowserForMigrationOnly(), kToolbarAppMenuButtonElementId,
       base::BindOnce(
           &WebAppUiManagerImpl::ShowIPHPromoForAppsLaunchedViaLinkCapturing,
-          weak_ptr_factory_.GetWeakPtr(), app_browser, app_id));
+          weak_ptr_factory_.GetWeakPtr(),
+          app_browser->GetBrowserForMigrationOnly(), app_id));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
