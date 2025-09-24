@@ -13,7 +13,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
   QuickOpen.QuickOpen.QuickOpenImpl.show('');
 
-  const dialogWidget = UIModule.Dialog.Dialog.instance.widget();
+  const dialogWidget = UIModule.Dialog.Dialog.getInstance().widget();
   const filteredListWidget = dialogWidget.defaultFocusedChild;
   TestRunner.assertTrue(filteredListWidget instanceof QuickOpen.FilteredListWidget.FilteredListWidget);
 
