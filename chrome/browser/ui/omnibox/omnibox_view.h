@@ -24,7 +24,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 
 class OmniboxController;
@@ -210,18 +209,6 @@ class OmniboxView {
   // has changed.
   virtual void OnKeywordPlaceholderTextChange() {}
 
-  // Returns the gfx::NativeView of the edit view.
-  virtual gfx::NativeView GetNativeView() const = 0;
-
-  // Gets the relative window for the pop up window of OmniboxPopupView. The pop
-  // up window will be shown under the relative window. When an IME is attached
-  // to the rich edit control, the IME window is the relative window. Otherwise,
-  // the top-most window is the relative window.
-  virtual gfx::NativeView GetRelativeWindowForPopup() const = 0;
-
-  // Returns true if the user is composing something in an IME.
-  virtual bool IsImeComposing() const = 0;
-
   // Returns true if we know for sure that an IME is showing a popup window,
   // which may overlap the omnibox's popup window.
   virtual bool IsImeShowingPopup() const;
@@ -231,13 +218,6 @@ class OmniboxView {
 
   // Hides a virtual keyboard or alternate input view if enabled.
   virtual void HideImeIfNeeded();
-
-  // Returns true if the view is displaying UI that indicates that query
-  // refinement will take place when the user selects the current match.  For
-  // search matches, this will cause the omnibox to search over the existing
-  // corpus (e.g. Images) rather than start a new Web search.  This method will
-  // only ever return true on mobile ports.
-  virtual bool IsIndicatingQueryRefinement() const;
 
  protected:
   // Tracks important state that may change between OnBeforePossibleChange() and

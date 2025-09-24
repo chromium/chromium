@@ -59,9 +59,6 @@ class TestOmniboxView : public OmniboxView {
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override {}
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
-  gfx::NativeView GetNativeView() const override;
-  gfx::NativeView GetRelativeWindowForPopup() const override;
-  bool IsImeComposing() const override;
   int GetOmniboxTextLength() const override;
   void EmphasizeURLComponents() override {}
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}

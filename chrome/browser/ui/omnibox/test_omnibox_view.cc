@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
-#include "ui/gfx/native_ui_types.h"
 
 // static
 OmniboxView::State TestOmniboxView::CreateState(std::string text,
@@ -93,18 +92,6 @@ void TestOmniboxView::OnRevertTemporaryText(const std::u16string& display_text,
 }
 
 bool TestOmniboxView::OnAfterPossibleChange(bool allow_keyword_ui_change) {
-  return false;
-}
-
-gfx::NativeView TestOmniboxView::GetNativeView() const {
-  return gfx::NativeView();
-}
-
-gfx::NativeView TestOmniboxView::GetRelativeWindowForPopup() const {
-  return gfx::NativeView();
-}
-
-bool TestOmniboxView::IsImeComposing() const {
   return false;
 }
 

@@ -229,12 +229,6 @@ void OmniboxView::ShowVirtualKeyboardIfEnabled() {}
 
 void OmniboxView::HideImeIfNeeded() {}
 
-bool OmniboxView::IsIndicatingQueryRefinement() const {
-  // The default implementation always returns false.  Mobile ports can override
-  // this method and implement as needed.
-  return false;
-}
-
 OmniboxView::State OmniboxView::GetState() const {
   State state;
   state.text = GetText();

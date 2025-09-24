@@ -613,10 +613,6 @@ int OmniboxViewViews::GetUnelidedTextWidth() const {
   return width;
 }
 
-bool OmniboxViewViews::IsImeComposing() const {
-  return IsIMEComposing();
-}
-
 gfx::Size OmniboxViewViews::GetMinimumSize() const {
   constexpr int kMinCharacters = 20;
   return gfx::Size(
@@ -1194,10 +1190,6 @@ void OmniboxViewViews::OnKeywordPlaceholderTextChange() {
 
 gfx::NativeView OmniboxViewViews::GetNativeView() const {
   return GetWidget()->GetNativeView();
-}
-
-gfx::NativeView OmniboxViewViews::GetRelativeWindowForPopup() const {
-  return GetWidget()->GetTopLevelWidget()->GetNativeView();
 }
 
 int OmniboxViewViews::GetWidth() const {

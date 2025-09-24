@@ -134,8 +134,6 @@ class OmniboxViewViews
   void SetFocus(bool is_user_initiated) override;
   void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool AimButtonVisible() const override;
-  bool IsImeComposing() const override;
-  gfx::NativeView GetRelativeWindowForPopup() const override;
   bool IsImeShowingPopup() const override;
 
   // views::Textfield:
