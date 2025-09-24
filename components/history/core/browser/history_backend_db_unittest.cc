@@ -153,19 +153,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsState) {
   // Then close the db so that we can re-open it directly.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 23);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    {
-      // The version should have been updated.
-      int cur_version = HistoryDatabase::GetCurrentVersion();
-      ASSERT_LT(22, cur_version);
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement statement(db.GetUniqueStatement(
           "SELECT id, state, opened "
@@ -234,19 +229,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
   // and danger columns.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 24);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    {
-      // The version should have been updated.
-      int cur_version = HistoryDatabase::GetCurrentVersion();
-      ASSERT_LT(23, cur_version);
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       base::Time nowish(base::Time::FromTimeT(now.ToTimeT()));
 
@@ -325,19 +315,14 @@ TEST_F(HistoryBackendDBTest, MigrateReferrer) {
   // 26, creating the referrer column.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 26);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(26, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT referrer from downloads"));
@@ -387,19 +372,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadedByExtension) {
   // 27, creating the by_ext_id and by_ext_name columns.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 27);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(27, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT by_ext_id, by_ext_name from downloads"));
@@ -452,19 +432,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadValidators) {
   // current version, creating the etag and last_modified columns.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 28);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(28, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT etag, last_modified from downloads"));
@@ -520,19 +495,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadMimeType) {
   // current version, creating the mime_type abd original_mime_type columns.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 29);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(29, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT mime_type, original_mime_type from downloads"));
@@ -608,19 +578,13 @@ TEST_F(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 30);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(30, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement("SELECT guid, id from downloads"));
       std::unordered_set<std::string> guids;
@@ -669,19 +633,14 @@ TEST_F(HistoryBackendDBTest, MigrateTabUrls) {
   // current version, creating the tab_url and tab_referrer_url columns.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 31);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(31, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT tab_url, tab_referrer_url from downloads"));
@@ -724,19 +683,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSiteInstanceUrl) {
   // current version, creating the site_url column.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 32);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(32, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement("SELECT site_url from downloads"));
       EXPECT_TRUE(s.Step());
@@ -772,19 +726,14 @@ TEST_F(HistoryBackendDBTest, MigrateEmbedderDownloadData) {
   // current version, creating the embedder_download_data column.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 52);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(52, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       sql::Statement s(db.GetUniqueStatement(
           "SELECT guid, embedder_download_data from downloads"));
@@ -808,19 +757,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsSlicesTable) {
   // current version, creating the downloads_slices table.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 33);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(33, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       // The downloads_slices table should be ready for use.
       sql::Statement s1(db.GetUniqueStatement(
@@ -847,19 +791,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
   // current version.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 36);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(36, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       // The downloads table should have last_access_time and transient
       // initialized to zero.
@@ -1675,19 +1614,13 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSliceFinished) {
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 39);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(39, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       // The downloads_slices table should have the finished column.
       sql::Statement s1(
@@ -2834,19 +2767,14 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadByWebApp) {
   // current version.
   ASSERT_TRUE(CreateBackendAndDatabase());
   DeleteBackend();
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 64);
+
   {
     // Re-open the db for manual manipulation.
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
-    // The version should have been updated.
-    int cur_version = HistoryDatabase::GetCurrentVersion();
-    ASSERT_LE(64, cur_version);
-    {
-      sql::Statement s(db.GetUniqueStatement(
-          "SELECT value FROM meta WHERE key = 'version'"));
-      EXPECT_TRUE(s.Step());
-      EXPECT_EQ(cur_version, s.ColumnInt(0));
-    }
     {
       // The downloads table should have the by_ext_id column unmodified,
       // and should have the new by_web_app_id column initialized to empty
