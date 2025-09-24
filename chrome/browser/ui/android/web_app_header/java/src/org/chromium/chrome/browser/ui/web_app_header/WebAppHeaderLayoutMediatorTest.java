@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.ReloadTyp
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -74,6 +76,7 @@ public class WebAppHeaderLayoutMediatorTest {
     @Mock public ScrimManager mScrimManager;
     @Mock public WebAppHeaderDelegate mHeaderDelegate;
     @Mock public Tab mTab;
+    @Mock public WebContents mWebContents;
     @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
     private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier;
     private @Nullable AppHeaderState mAppHeaderState;
@@ -88,7 +91,9 @@ public class WebAppHeaderLayoutMediatorTest {
         mScrimVisibilitySupplier = new ObservableSupplierImpl<>();
         when(mScrimManager.getScrimVisibilitySupplier()).thenReturn(mScrimVisibilitySupplier);
 
-        mTabSupplier = new ObservableSupplierImpl<>();
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        mTabSupplier = new ObservableSupplierImpl<>(mTab);
         mHeaderControlPositionSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
@@ -588,6 +593,7 @@ public class WebAppHeaderLayoutMediatorTest {
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         mMediator.setBrowserControlsVisible(true);
         verify(mSetHeaderAsOverlayCallback).onResult(false);
+        verify(mWebContents, times(2)).updateWindowControlsOverlay(new Rect());
         assertEquals(
                 "Bars should be hidden when browser controls are visible",
                 null,
@@ -613,6 +619,7 @@ public class WebAppHeaderLayoutMediatorTest {
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         mMediator.setBrowserControlsVisible(false);
         verify(mSetHeaderAsOverlayCallback).onResult(true);
+        verify(mWebContents, times(2)).updateWindowControlsOverlay(WIDEST_UNOCCLUDED_RECT);
         assertEquals(
                 "Bar widths should match padding",
                 new Pair<>((float) LEFT_INSET, (float) RIGHT_INSET),
@@ -621,6 +628,7 @@ public class WebAppHeaderLayoutMediatorTest {
 
     @Test
     public void testBackgroundBars_NoHeaderState() {
+        verify(mWebContents).updateWindowControlsOverlay(new Rect());
         assertEquals(
                 "Default value should be null",
                 null,
@@ -631,6 +639,7 @@ public class WebAppHeaderLayoutMediatorTest {
     public void testBackgroundBars_HeaderAsOverlayFalse() {
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        verify(mWebContents, times(2)).updateWindowControlsOverlay(new Rect());
         assertEquals(
                 "Value should be null when not an overlay",
                 null,

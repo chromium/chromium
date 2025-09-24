@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.ReloadTyp
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
@@ -62,6 +63,7 @@ class WebAppHeaderLayoutMediator
     private boolean mHeaderAsOverlay;
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
+    private final Callback<@Nullable Tab> mOnTabUpdate;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
@@ -101,6 +103,8 @@ class WebAppHeaderLayoutMediator
         mDisplayMode = displayMode;
         mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
         mHeaderAsOverlay = mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY;
+        mOnTabUpdate = this::onTabUpdate;
+        mTabSupplier.addObserver(mOnTabUpdate);
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -157,17 +161,34 @@ class WebAppHeaderLayoutMediator
         }
     }
 
+    private void onTabUpdate(@Nullable Tab tab) {
+        updateBackgroundBars();
+    }
+
     private void updateBackgroundBars() {
+        final Tab tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        final WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+
         if (mCurrentHeaderState == null || !mHeaderAsOverlay) {
             mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS, null);
+            webContents.updateWindowControlsOverlay(new Rect());
             return;
         }
 
-        final float leftPadding = mCurrentHeaderState.getLeftPadding();
-        final float rightPadding = mCurrentHeaderState.getRightPadding();
+        final int leftPadding = mCurrentHeaderState.getLeftPadding();
+        final int rightPadding = mCurrentHeaderState.getRightPadding();
+        webContents.updateWindowControlsOverlay(
+                new Rect(
+                        leftPadding,
+                        0,
+                        leftPadding + mCurrentHeaderState.getUnoccludedRectWidth(),
+                        mCurrentHeaderState.getAppHeaderHeight()));
         mModel.set(
                 WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS,
-                new Pair<Float, Float>(leftPadding, rightPadding));
+                new Pair<Float, Float>((float) leftPadding, (float) rightPadding));
     }
 
     @Override
@@ -341,6 +362,7 @@ class WebAppHeaderLayoutMediator
         mDesktopWindowStateManager.removeObserver(this);
         mThemeColorProvider.removeThemeColorObserver(this);
         mScrimManager.getScrimVisibilitySupplier().removeObserver(mScrimVisibilityObserver);
+        mTabSupplier.removeObserver(mOnTabUpdate);
     }
 
     @VisibleForTesting
