@@ -375,7 +375,8 @@ crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conform
 [ fuchsia web-engine-shell ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 [ fuchsia web-engine-shell ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 [ fuchsia web-engine-shell ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
-crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+# Comment below entry temporarily due to conflicts with crbug.com/443182226. Uncomment when crbug.com/443182226 is resolved
+# crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -423,6 +424,8 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/i
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/443182226 [ fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/443182226 [ fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
 
