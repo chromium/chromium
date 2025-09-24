@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -468,26 +469,23 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
                      base::StringPrintf(kBackgroundJs, url2.spec().c_str()));
 
   ResultCatcher result_catcher;
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 
   // Now, verify the browsers. There should be exactly two browser windows (the
   // original and the one created by the extension).
-  BrowserList* browser_list = BrowserList::GetInstance();
+  BrowserList* const browser_list = BrowserList::GetInstance();
   ASSERT_EQ(2u, browser_list->size());
   ASSERT_TRUE(base::Contains(*browser_list, browser()));
-  // Find the new browser. Be flexible in case BrowserList's internal sort
-  // changes.
-  Browser* new_browser = browser_list->get(0) == browser()
-                             ? browser_list->get(1)
-                             : browser_list->get(0);
   EXPECT_NE(new_browser, browser());
 
   // The new browser should have a tab pointed to `url2`; we use this mostly as
   // validation that setup went according to plan.
-  EXPECT_EQ(1, new_browser->tab_strip_model()->count());
-  EXPECT_EQ(url2, new_browser->tab_strip_model()
+  EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
+  EXPECT_EQ(url2, new_browser->GetTabStripModel()
                       ->GetActiveWebContents()
                       ->GetLastCommittedURL());
 
@@ -503,8 +501,8 @@ IN_PROC_BROWSER_TEST_F(TabsApiInteractiveTest,
   // https://crbug.com/1280332, where bubbles are drawn on the same window,
   // but that is yet to be confirmed.
   if (check_window_active_state) {
-    EXPECT_FALSE(new_browser->window()->IsActive());
-    EXPECT_TRUE(browser()->window()->IsActive());
+    EXPECT_FALSE(new_browser->GetWindow()->IsActive());
+    EXPECT_TRUE(browser()->GetWindow()->IsActive());
   }
 
   // The old browser (which retains focus) should be on top of the new browser.

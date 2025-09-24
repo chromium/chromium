@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
@@ -334,9 +335,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerWebAppBrowserTest,
   EXPECT_FALSE(result);
   EXPECT_EQ(2u, active_browser_list_->size());
 
-  Browser* browser = active_browser_list_->get(0);
   GURL current_url =
-      browser->tab_strip_model()->GetActiveWebContents()->GetURL();
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(GetAppURL(), current_url.spec());
 }
 
@@ -504,8 +504,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   entry->LockForceSigninProfile(true);
   EXPECT_TRUE(entry->IsSigninRequired());
   EXPECT_EQ(1u, active_browser_list()->size());
-  Browser* browser = active_browser_list()->get(0);
-  EXPECT_FALSE(browser->profile()->IsGuestSession());
+  EXPECT_FALSE(browser()->GetProfile()->IsGuestSession());
   // "About Chrome" is not available in the menu.
   NSMenu* chrome_submenu =
       [[NSApp.mainMenu itemWithTag:IDC_CHROME_MENU] submenu];
@@ -1356,9 +1355,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
 
   // Test that opening a new browser window updates the handoff URL.
   GURL test_url3 = embedded_test_server()->GetURL("/title3.html");
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(test_url3), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  Browser* const browser2 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, test_url3);
   EXPECT_EQ(g_handoff_title, u"Title Of More Awesomeness");
 
@@ -1367,22 +1369,22 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(2u, active_browser_list->size());
 
   // Close the second browser window (which only has 1 tab left).
-  Browser* browser2 = active_browser_list->get(1);
   CloseBrowserSynchronously(browser2);
   EXPECT_EQ(g_handoff_url, test_url2);
   EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 
   // The URLs of incognito windows should not be passed to Handoff.
   GURL test_url4 = embedded_test_server()->GetURL("/simple.html");
+  browser_created_observer.emplace();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(test_url4), WindowOpenDisposition::OFF_THE_RECORD,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  Browser* const browser3 = browser_created_observer->Wait();
   EXPECT_EQ(g_handoff_url, GURL());
   EXPECT_EQ(g_handoff_title, u"");
 
   // Open a new tab in the incognito window.
   EXPECT_EQ(2u, active_browser_list->size());
-  Browser* browser3 = active_browser_list->get(1);
   ui_test_utils::NavigateToURLWithDisposition(
       browser3, test_url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
@@ -1395,8 +1397,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(g_handoff_title, u"");
 
   // Activate the original browser window.
-  Browser* browser1 = active_browser_list->get(0);
-  browser1->window()->Show();
+  browser()->window()->Show();
   EXPECT_EQ(g_handoff_url, test_url2);
   EXPECT_EQ(g_handoff_title, u"Title Of Awesomeness");
 }

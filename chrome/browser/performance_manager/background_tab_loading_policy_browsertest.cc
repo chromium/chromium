@@ -50,15 +50,16 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
 
  protected:
   // Adds tabs to the given browser, all navigated to |url_|.
-  void AddNTabsToBrowser(Browser* browser, int number_of_tabs_to_add) {
-    int starting_tab_count = browser->tab_strip_model()->count();
+  void AddNTabsToBrowser(BrowserWindowInterface* browser,
+                         int number_of_tabs_to_add) {
+    int starting_tab_count = browser->GetTabStripModel()->count();
 
     for (int i = 0; i < number_of_tabs_to_add; ++i) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser, url_, WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
-    int tab_count = browser->tab_strip_model()->count();
+    int tab_count = browser->GetTabStripModel()->count();
     EXPECT_EQ(starting_tab_count + number_of_tabs_to_add, tab_count);
   }
 
@@ -160,43 +161,49 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   // Open a new browser window by starting a new navigation; waiting for the
   // new tab to complete loading so that it is eligible for restoration when
   // the browser is closed below.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  Browser* browser_to_restore = BrowserList::GetInstance()->get(1);
+  BrowserWindowInterface* const browser_to_restore =
+      browser_created_observer->Wait();
 
   // Add tabs and close browser.
   const int kDesiredNumberOfTabs =
       policies::BackgroundTabLoadingPolicy::kMaxTabsToLoad + 1;
   AddNTabsToBrowser(
       browser_to_restore,
-      kDesiredNumberOfTabs - browser_to_restore->tab_strip_model()->count());
+      kDesiredNumberOfTabs - browser_to_restore->GetTabStripModel()->count());
   EXPECT_EQ(kDesiredNumberOfTabs,
-            browser_to_restore->tab_strip_model()->count());
+            browser_to_restore->GetTabStripModel()->count());
   const int active_tab_index =
-      browser_to_restore->tab_strip_model()->active_index();
+      browser_to_restore->GetTabStripModel()->active_index();
   CloseBrowserSynchronously(browser_to_restore);
 
   // Restore recently closed window.
+  browser_created_observer.emplace();
   chrome::OpenWindowWithRestoredTabs(browser()->profile());
+  BrowserWindowInterface* const restored_browser =
+      browser_created_observer->Wait();
   ASSERT_EQ(2U, BrowserList::GetInstance()->size());
-  Browser* restored_browser = BrowserList::GetInstance()->get(1);
 
-  EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count());
+  EXPECT_EQ(kDesiredNumberOfTabs,
+            restored_browser->GetTabStripModel()->count());
   EXPECT_EQ(active_tab_index,
-            restored_browser->tab_strip_model()->active_index());
+            restored_browser->GetTabStripModel()->active_index());
 
   // These tabs should be loaded by BackgroundTabLoadingPolicy.
   EnsureTabFinishedRestoring(
-      restored_browser->tab_strip_model()->GetWebContentsAt(
+      restored_browser->GetTabStripModel()->GetWebContentsAt(
           kDesiredNumberOfTabs - 1));
   for (int i = 0; i < kDesiredNumberOfTabs - 2; i++) {
     EnsureTabFinishedRestoring(
-        restored_browser->tab_strip_model()->GetWebContentsAt(i));
+        restored_browser->GetTabStripModel()->GetWebContentsAt(i));
   }
 
   // This tab shouldn't want to be loaded.
-  auto* contents = restored_browser->tab_strip_model()->GetWebContentsAt(
+  auto* contents = restored_browser->GetTabStripModel()->GetWebContentsAt(
       kDesiredNumberOfTabs - 2);
   EXPECT_FALSE(contents->IsLoading());
   EXPECT_TRUE(contents->GetController().NeedsReload());

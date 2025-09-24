@@ -44,8 +44,8 @@ namespace extensions {
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-const GURL& GetActiveUrl(Browser* browser) {
-  return browser->tab_strip_model()
+const GURL& GetActiveUrl(BrowserWindowInterface* browser) {
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetLastCommittedURL();
 }
@@ -422,19 +422,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Start at the new tab page in incognito and open the extension options page.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(
       options_spanning_extension, profile()));
+  Browser* regular = browser_created_observer->Wait();
 
   // Opening the options page from an incognito window should open a new regular
   // profile window, which should have one tab open to the options page.
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* regular = !browser_list->get(0u)->profile()->IsOffTheRecord()
-                         ? browser_list->get(0u)
-                         : browser_list->get(1u);
   EXPECT_EQ(1, regular->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
       regular->tab_strip_model()->GetActiveWebContents()));
@@ -447,6 +446,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Right-clicking on an extension action icon in the toolbar and selecting
   // options should open the options page in a regular window. In this case, the
   // profile is an OTR profile instead of a non-OTR profile, as described above.
+  browser_created_observer.emplace();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            GURL(chrome::kChromeUINewTabURL)));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
@@ -455,12 +455,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // OpenOptionsPage() version that takes a Browser* is used.
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_spanning_extension, incognito));
+  regular = browser_created_observer->Wait();
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  browser_list = BrowserList::GetInstance();
-  regular = !browser_list->get(0u)->profile()->IsOffTheRecord()
-                ? browser_list->get(0u)
-                : browser_list->get(1u);
   // Ensure that the regular browser is the foreground browser.
   EXPECT_EQ(regular, GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_EQ(1, regular->tab_strip_model()->count());

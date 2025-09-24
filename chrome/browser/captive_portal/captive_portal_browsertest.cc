@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -1355,6 +1356,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
     ++expected_broken_tabs;
   }
 
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1376,9 +1378,9 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
       EXPECT_EQ(initial_tab_count - 1, tab_strip_model->active_index());
 
       // Check the new popup browser
-      login_browser = browser_list_->get(initial_browser_count);
+      login_browser = browser_created_observer.Wait();
       EXPECT_EQ(Browser::TYPE_POPUP, login_browser->type());
-      login_tab = login_browser->tab_strip_model()->GetWebContentsAt(0);
+      login_tab = login_browser->GetTabStripModel()->GetWebContentsAt(0);
       EXPECT_TRUE(
           captive_portal::CaptivePortalTabHelper::FromWebContents(login_tab)
               ->is_captive_portal_window());
@@ -1470,6 +1472,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
 
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
       browser, error_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
@@ -1482,6 +1485,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
     WebContents* login_tab;
 
     if (expect_new_login_browser) {
+      login_browser = browser_created_observer.Wait();
       ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
 
       // Check the original browser
@@ -1489,9 +1493,8 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
       EXPECT_EQ(initial_tab_count - 1, tab_strip_model->active_index());
 
       // Check the new popup browser
-      login_browser = browser_list_->get(initial_browser_count);
-      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->type());
-      login_tab = login_browser->tab_strip_model()->GetWebContentsAt(0);
+      EXPECT_EQ(Browser::TYPE_POPUP, login_browser->GetType());
+      login_tab = login_browser->GetTabStripModel()->GetWebContentsAt(0);
       EXPECT_TRUE(
           captive_portal::CaptivePortalTabHelper::FromWebContents(login_tab)
               ->is_captive_portal_window());

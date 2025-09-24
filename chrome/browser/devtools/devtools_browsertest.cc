@@ -1045,11 +1045,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   }
   // Try to close browser window.
   {
+    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
     chrome::CloseWindow(browser());
     AcceptModalDialog();
     CancelModalDialog();
     base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(browser(), BrowserList::GetInstance()->get(0));
+    EXPECT_EQ(1u, BrowserList::GetInstance()->size());
   }
   // Try to exit application.
   {

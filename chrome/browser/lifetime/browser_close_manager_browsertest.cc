@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -313,9 +315,9 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
     content::PrepContentsForBeforeUnloadTest(web_contents);
   }
 
-  void PrepareForDialog(Browser* browser) {
-    for (int i = 0; i < browser->tab_strip_model()->count(); i++) {
-      PrepareForDialog(browser->tab_strip_model()->GetWebContentsAt(i));
+  void PrepareForDialog(BrowserWindowInterface* browser) {
+    for (int i = 0; i < browser->GetTabStripModel()->count(); i++) {
+      PrepareForDialog(browser->GetTabStripModel()->GetWebContentsAt(i));
     }
   }
 
@@ -748,20 +750,20 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       browser(), embedded_test_server()->GetURL("/title1.html"))));
 
   // Open second window.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/beforeunload.html"),
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  BrowserWindowInterface* browser2 = browser_created_observer->Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-  auto* browser2 = BrowserList::GetInstance()->get(0) != browser()
-                       ? BrowserList::GetInstance()->get(0)
-                       : BrowserList::GetInstance()->get(1);
   EXPECT_TRUE(content::WaitForLoadStop(
-      browser2->tab_strip_model()->GetWebContentsAt(0)));
+      browser2->GetTabStripModel()->GetWebContentsAt(0)));
 
   // Let's work with second window only.
   // This page has beforeunload handler already.
-  EXPECT_TRUE(browser2->tab_strip_model()
+  EXPECT_TRUE(browser2->GetTabStripModel()
                   ->GetWebContentsAt(0)
                   ->NeedToFireBeforeUnloadOrUnloadEvents());
   // This page doesn't have beforeunload handler. Yet.
@@ -770,17 +772,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_TRUE(content::WaitForLoadStop(
-      browser2->tab_strip_model()->GetWebContentsAt(1)));
-  EXPECT_FALSE(browser2->tab_strip_model()
+      browser2->GetTabStripModel()->GetWebContentsAt(1)));
+  EXPECT_FALSE(browser2->GetTabStripModel()
                    ->GetWebContentsAt(1)
                    ->NeedToFireBeforeUnloadOrUnloadEvents());
-  EXPECT_EQ(2, browser2->tab_strip_model()->count());
+  EXPECT_EQ(2, browser2->GetTabStripModel()->count());
 
   PrepareForDialog(browser2);
 
   // The test.
 
-  TabRestoreServiceChangesObserver restore_observer(browser2->profile());
+  TabRestoreServiceChangesObserver restore_observer(browser2->GetProfile());
   chrome::CloseWindow(browser2);
   // Just to be sure CloseWindow doesn't have asynchronous tasks
   // that could have an impact.
@@ -791,10 +793,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   // Add beforeunload handler for the 2nd (title2.html) tab which haven't had it
   // yet.
   ASSERT_TRUE(
-      content::ExecJs(browser2->tab_strip_model()->GetWebContentsAt(1),
+      content::ExecJs(browser2->GetTabStripModel()->GetWebContentsAt(1),
                       "window.addEventListener('beforeunload', "
                       "function(event) { event.returnValue = 'Foo'; });"));
-  EXPECT_TRUE(browser2->tab_strip_model()
+  EXPECT_TRUE(browser2->GetTabStripModel()
                   ->GetWebContentsAt(1)
                   ->NeedToFireBeforeUnloadOrUnloadEvents());
   // Accept closing the first tab.
@@ -804,30 +806,32 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   content::RunAllPendingInMessageLoop();
   // It shouldn't close the whole window/browser.
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-  EXPECT_EQ(2, browser2->tab_strip_model()->count());
+  EXPECT_EQ(2, browser2->GetTabStripModel()->count());
   // Accept closing the second tab.
+  base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
+      browser_did_close_callback;
+  EXPECT_CALL(browser_did_close_callback, Run).Times(1);
+  base::CallbackListSubscription subscription =
+      browser2->RegisterBrowserDidClose(browser_did_close_callback.Get());
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ui_test_utils::WaitForBrowserToClose();
   // Now the second window/browser should be closed.
-  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->get(0));
   EXPECT_EQ(1u, restore_observer.changes_count());
 
   // Restore the closed browser.
-  chrome::OpenWindowWithRestoredTabs(browser()->profile());
+  browser_created_observer.emplace();
+  chrome::OpenWindowWithRestoredTabs(browser()->GetProfile());
+  browser2 = browser_created_observer->Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
-  browser2 = BrowserList::GetInstance()->get(0) != browser()
-                 ? BrowserList::GetInstance()->get(0)
-                 : BrowserList::GetInstance()->get(1);
 
   // Check the restored browser contents.
-  EXPECT_EQ(2, browser2->tab_strip_model()->count());
+  EXPECT_EQ(2, browser2->GetTabStripModel()->count());
   EXPECT_EQ(
       embedded_test_server()->GetURL("/beforeunload.html"),
-      browser2->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+      browser2->GetTabStripModel()->GetWebContentsAt(0)->GetLastCommittedURL());
   EXPECT_EQ(
       embedded_test_server()->GetURL("/title2.html"),
-      browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
+      browser2->GetTabStripModel()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
