@@ -1425,13 +1425,24 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
     // Previous owner no longer relevant to this child.
     // Also, remove |obj_id| from previous owner's owned child list:
     AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
-    const Vector<AXID>& owners_owned_children =
-        aria_owner_to_children_mapping_.at(owner_id);
-    for (wtf_size_t index = 0; index < owners_owned_children.size(); index++) {
-      if (owners_owned_children[index] == obj_id) {
-        aria_owner_to_children_mapping_.at(owner_id).EraseAt(index);
-        break;
+    if (aria_owner_to_children_mapping_.Contains(owner_id)) {
+      const Vector<AXID>& owners_owned_children =
+          aria_owner_to_children_mapping_.at(owner_id);
+      for (wtf_size_t index = 0; index < owners_owned_children.size();
+           index++) {
+        if (owners_owned_children[index] == obj_id) {
+          aria_owner_to_children_mapping_.at(owner_id).EraseAt(index);
+          break;
+        }
       }
+    } else {
+      // TODO(crbug.com/437579600) This is not a situation we expect, but it
+      // also shouldn't cause a renderer crash. Once we have fixed the
+      // underlying issue and verified that this dump does not exist in
+      // telemetry, we should upgrade this to a NOTREACHED or remove the
+      // `Contains(owner_id)` check above.
+      DUMP_WILL_BE_NOTREACHED() << "Inconsistent aria-owns mapping: owner "
+                                << owner_id << " not found";
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
       // The child is removed, so the owner needs to make sure its maps
