@@ -42,9 +42,6 @@ namespace {
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
 
-BASE_FEATURE(kReportUnderflowForBackgroundRendering,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 VideoRendererImpl::VideoRendererImpl(
@@ -239,15 +236,9 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   // frames have been decoded since the last Render() call.
   // HaveEnoughData_Locked() will abort the transition if any frames come in
   // after this current render.
-  bool skip_have_nothing_for_background_rendering = false;
-  if (base::FeatureList::IsEnabled(kReportUnderflowForBackgroundRendering)) {
-    skip_have_nothing_for_background_rendering =
-        background_rendering || (was_background_rendering_ &&
-                                 last_frame_ready_time_ >= last_render_time_);
-  } else {
-    skip_have_nothing_for_background_rendering =
-        background_rendering || was_background_rendering_;
-  }
+  const bool skip_have_nothing_for_background_rendering =
+      background_rendering || (was_background_rendering_ &&
+                               last_frame_ready_time_ >= last_render_time_);
 
   last_render_time_ = tick_clock_->NowTicks();
 
