@@ -18,6 +18,9 @@ NSString* const kInactiveTabsButtonAccessibilityIdentifier =
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 
+NSString* const kGridCellSnapshotIdentifierPrefix =
+    @"GridCellSnapshotIdentifierPrefix";
+
 // Accessibility identifier prefix of a grid cell.
 NSString* const kGroupGridCellIdentifierPrefix =
     @"GroupGridCellIdentifierPrefix";

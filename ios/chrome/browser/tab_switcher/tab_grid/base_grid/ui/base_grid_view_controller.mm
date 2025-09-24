@@ -79,12 +79,6 @@ NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
 
 CGFloat const kCellMaxHeightForEmptyThumbnailCenteredPortraitLayout = 275;
 
-// Returns the accessibility identifier to set on a GridCell when positioned at
-// the given index.
-NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
-  return [NSString stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, index];
-}
-
 // Returns the accessibility identifier to set on a GroupGridCell when
 // positioned at the given index.
 NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
@@ -1719,7 +1713,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.itemIdentifier = itemIdentifier;
   cell.title = item.title;
   cell.titleHidden = item.hidesTitle;
-  cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
+  [cell setAccessibilityIdentifiersWithIndex:index];
   if (IsTabGridEmptyThumbnailUIEnabled()) {
     cell.layoutType =
         [self layoutTypeForContainerSize:self.collectionView.bounds.size
@@ -1889,7 +1883,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       continue;
     }
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
-    cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(itemIndex);
+    GridCell* gridCell = base::apple::ObjCCast<GridCell>(cell);
+    [gridCell setAccessibilityIdentifiersWithIndex:itemIndex];
   }
 }
 

@@ -26,6 +26,9 @@ extern NSString* const kInactiveTabsButtonAccessibilityIdentifier;
 // index].
 extern NSString* const kGridCellIdentifierPrefix;
 
+// Accessibility identifier prefix of a grid cell's snapshot.
+extern NSString* const kGridCellSnapshotIdentifierPrefix;
+
 // Accessibility identifier prefix of a group grid cell. To reference a specific
 // cell, concatenate `kGroupGridCellIdentifierPrefix` with the index of the
 // cell. For example, [NSString stringWithFormat:@"%@%d",

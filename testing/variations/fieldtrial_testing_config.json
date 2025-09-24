@@ -24688,6 +24688,21 @@
             ]
         }
     ],
+    "TabGridEmptyThumbnail": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGridEmptyThumbnail"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabGridNewTransitions": [
         {
             "platforms": [

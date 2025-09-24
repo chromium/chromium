@@ -60,6 +60,19 @@ void PositionView(UIView* view, CGPoint point) {
   view.frame = frame;
 }
 
+// Returns the accessibility identifier to set on a GridCell when positioned at
+// the given index.
+NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString stringWithFormat:@"%@%lu", kGridCellIdentifierPrefix, index];
+}
+
+// Returns the accessibility identifier to set on the snapshot view when
+// positioned at the given index.
+NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%lu", kGridCellSnapshotIdentifierPrefix, index];
+}
+
 }  // namespace
 
 @interface GridCell ()
@@ -389,6 +402,12 @@ void PositionView(UIView* view, CGPoint point) {
   CHECK(IsTabGridEmptyThumbnailUIEnabled());
   _layoutType = layoutType;
   _emptyView.layoutType = layoutType;
+}
+
+- (void)setAccessibilityIdentifiersWithIndex:(NSUInteger)index {
+  self.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
+  self.snapshotView.accessibilityIdentifier =
+      GridCellSnapshotAccessibilityIdentifier(index);
 }
 
 #pragma mark - Private

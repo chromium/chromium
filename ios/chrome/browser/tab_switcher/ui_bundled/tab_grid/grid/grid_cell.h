@@ -73,6 +73,10 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 // Returns the snapshot view's frame in window coordinates.
 - (CGRect)snapshotFrame;
 
+// Sets the accessibility identifiers within this cell based on its current
+// `index`.
+- (void)setAccessibilityIdentifiersWithIndex:(NSUInteger)index;
+
 @end
 
 @interface GridTransitionCell : GridCell <LegacyGridToTabTransitionView>

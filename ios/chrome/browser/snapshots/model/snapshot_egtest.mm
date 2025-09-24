@@ -8,6 +8,7 @@
 #endif
 
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -71,6 +72,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return nullptr;
 }
 
+// Returns a matcher for the cell's snapshot at `index` in the tab grid.
+id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
+  return grey_allOf(
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@%u", kGridCellSnapshotIdentifierPrefix, index]),
+      grey_sufficientlyVisible(), nil);
+}
+
 }  // namespace
 
 @interface SnapshotTestCase : ChromeTestCase
@@ -94,7 +103,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
       [[EDORemoteVariable alloc] init];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+  [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
       performAction:grey_snapshot(tabGridSnapshot)];
   UIImage* image = tabGridSnapshot.object;
 
@@ -139,7 +148,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
       [[EDORemoteVariable alloc] init];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+  [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
       performAction:grey_snapshot(tabGridSnapshot)];
   UIImage* image = tabGridSnapshot.object;
 
@@ -202,7 +211,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     [ChromeEarlGreyUI openTabGrid];
     EDORemoteVariable<UIImage*>* tabGridSnapshot =
         [[EDORemoteVariable alloc] init];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+    [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
@@ -210,11 +219,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     // can be different. CGImage is used in `-getColorAtPoint:`.
     const NSUInteger width = CGImageGetWidth(image.CGImage);
     const NSUInteger height = CGImageGetHeight(image.CGImage);
-    const CGPoint center = CGPointMake(width / 2, height / 2);
+    // Get a point just above the center to validate the green color.
+    const CGPoint justAboveCenter = CGPointMake(width / 2, height / 2 - 10);
 
-    // Check a color of the center position in the image.
+    // Check a color of the just above center position in the image.
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-    [self getColorAtPoint:center
+    [self getColorAtPoint:justAboveCenter
                     image:image
                       red:&red
                     green:&green
@@ -250,7 +260,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   {
     EDORemoteVariable<UIImage*>* tabGridSnapshot =
         [[EDORemoteVariable alloc] init];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+    [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
