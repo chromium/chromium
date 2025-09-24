@@ -198,6 +198,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Returns a list of sites blocked by users for the Password Manager.
   std::vector<CredentialUIEntry> GetBlockedSites();
 
+  // Revokes actor login permission for all credentials matching the site.
+  void RevokeActorLoginPermission(const ActorLoginPermission& site);
+
   // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(
       const CredentialUIEntry& credential) const;

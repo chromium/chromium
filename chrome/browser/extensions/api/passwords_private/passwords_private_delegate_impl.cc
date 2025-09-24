@@ -72,6 +72,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/passwords_provider.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -417,8 +418,8 @@ PasswordsPrivateDelegateImpl::GetDeviceAuthenticator(
 }
 #endif
 
-password_manager::PasswordsProvider*
-PasswordsPrivateDelegateImpl::GetPasswordsProvider() {
+password_manager::SavedPasswordsPresenter*
+PasswordsPrivateDelegateImpl::GetSavedPasswordsPresenter() {
   return &saved_passwords_presenter_;
 }
 

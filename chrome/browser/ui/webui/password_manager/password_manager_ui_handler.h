@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_PASSWORD_MANAGER_PASSWORD_MANAGER_UI_HANDLER_H_
 
+#include "chrome/browser/ui/webui/password_manager/password_manager.mojom-forward.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -46,7 +48,12 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   void GetActorLoginPermissions(
       GetActorLoginPermissionsCallback callback) override;
 
+  void RevokeActorLoginPermission(
+      password_manager::mojom::ActorLoginPermissionPtr site) override;
+
  private:
+  password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
+
   raw_ptr<content::WebContents> web_contents_;
   scoped_refptr<extensions::PasswordsPrivateDelegate>
       passwords_private_delegate_;

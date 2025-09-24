@@ -68,7 +68,8 @@ class PasswordsPrivateDelegateImpl
       delete;
 
   // PasswordsPrivateDelegate implementation.
-  password_manager::PasswordsProvider* GetPasswordsProvider() override;
+  password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter()
+      override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;

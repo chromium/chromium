@@ -449,6 +449,19 @@ SavedPasswordsPresenter::GetActorLoginPermissions() const {
   return base::flat_set<ActorLoginPermission>(std::move(permissions));
 }
 
+void SavedPasswordsPresenter::RevokeActorLoginPermission(
+    const ActorLoginPermission& site) {
+  for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
+    for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+      if (form.url == site.url && form.username_value == site.username) {
+        PasswordForm updated_form = form;
+        updated_form.actor_login_approved = false;
+        GetStoreFor(updated_form).UpdateLogin(updated_form);
+      }
+    }
+  }
+}
+
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
     const CredentialUIEntry& credential) const {

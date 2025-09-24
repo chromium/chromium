@@ -406,8 +406,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private onRemoveActorLoginPermission_() {
-    // TODO(crbug.com/443241067): implement once the backend is ready.
-    console.info(this.removeActorLoginPermissionSite_!.url);
+    assert(this.removeActorLoginPermissionSite_);
+    PasswordManagerImpl.getInstance().revokeActorLoginPermission(
+        this.removeActorLoginPermissionSite_);
     this.removeActorLoginPermissionSite_ = undefined;
   }
 

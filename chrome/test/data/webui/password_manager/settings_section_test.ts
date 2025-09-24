@@ -612,6 +612,32 @@ suite('SettingsSectionTest', function() {
     assertTrue(!!dialog);
   });
 
+  test('actor login permission can be deleted', async function() {
+    loadTimeData.overrideValues({enableActorLoginPermissions: true});
+    const site = createActorLoginPermission('test.com', 'testuser');
+    passwordManager.data.actorLoginPermissions = [site];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getActorLoginPermissions');
+
+    const list = settings.shadowRoot!.querySelector('#actorLoginPermissions');
+    assertTrue(!!list);
+
+    list.querySelector<HTMLElement>(
+            '#removeActorLoginPermissionValueButton')!.click();
+    await flushTasks();
+
+    // Check that the removal dialog is now open.
+    const dialog = settings.shadowRoot!.querySelector(
+        'remove-actor-login-permission-dialog');
+    assertTrue(!!dialog);
+
+    dialog.shadowRoot!.querySelector<HTMLElement>('#disconnect')!.click();
+    await passwordManager.whenCalled('revokeActorLoginPermission');
+    assertEquals(passwordManager.data.actorLoginPermissions.length, 0);
+  });
+
   test('actor login permissions updated on password change', async function() {
     loadTimeData.overrideValues({enableActorLoginPermissions: true});
     const sites = [
@@ -629,8 +655,8 @@ suite('SettingsSectionTest', function() {
     assertEquals(2, list.querySelectorAll<HTMLElement>('.site-content').length);
 
     passwordManager.data.actorLoginPermissions.pop();
-    // The listener for saved passwords also triggers a refresh of allowed
-    // actor login sites.
+    // The listener for saved passwords also triggers a refresh of actor login
+    // permissions.
     passwordManager.listeners.savedPasswordListChangedListener!
         (passwordManager.data.passwords);
     await flushTasks();

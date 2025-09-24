@@ -99,6 +99,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'resetImporter',
+      'revokeActorLoginPermission',
       'sharePassword',
       'showAddShortcutDialog',
       'showExportedFileInShell',
@@ -473,5 +474,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   getActorLoginPermissions() {
     this.methodCalled('getActorLoginPermissions');
     return Promise.resolve(this.data.actorLoginPermissions.slice());
+  }
+
+  revokeActorLoginPermission(site: ActorLoginPermission) {
+    this.methodCalled('revokeActorLoginPermission', site);
+    this.data.actorLoginPermissions = this.data.actorLoginPermissions.filter(
+        s => !(s.url.link === site.url.link && s.username === site.username));
   }
 }

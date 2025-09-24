@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
-#include "components/password_manager/core/browser/ui/passwords_provider.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
@@ -65,9 +65,9 @@ TestPasswordsPrivateDelegate::TestPasswordsPrivateDelegate()
 }
 TestPasswordsPrivateDelegate::~TestPasswordsPrivateDelegate() = default;
 
-password_manager::PasswordsProvider*
-TestPasswordsPrivateDelegate::GetPasswordsProvider() {
-  return passwords_provider_.get();
+password_manager::SavedPasswordsPresenter*
+TestPasswordsPrivateDelegate::GetSavedPasswordsPresenter() {
+  return saved_passwords_presenter_.get();
 }
 
 void TestPasswordsPrivateDelegate::GetSavedPasswordsList(
@@ -412,9 +412,9 @@ void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {
   insecure_credentials_.push_back(std::move(cred));
 }
 
-void TestPasswordsPrivateDelegate::SetPasswordsProvider(
-    std::unique_ptr<password_manager::PasswordsProvider> provider) {
-  passwords_provider_ = std::move(provider);
+void TestPasswordsPrivateDelegate::SetSavedPasswordsPresenter(
+    std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter) {
+  saved_passwords_presenter_ = std::move(presenter);
 }
 
 void TestPasswordsPrivateDelegate::SendSavedPasswordsList() {

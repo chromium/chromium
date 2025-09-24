@@ -1972,6 +1972,44 @@ TEST_F(SavedPasswordsPresenterTest,
                   ActorLoginPermission{.url = form2.url,
                                        .username = form2.username_value}));
 }
+
+TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form.actor_login_approved = true;
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  presenter().RevokeActorLoginPermission(
+      {.url = form.url, .username = form.username_value});
+  RunUntilIdle();
+
+  form.actor_login_approved = false;
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
+}
+
+TEST_F(SavedPasswordsPresenterTest,
+       RevokeActorLoginPermissionHandlesDuplicates) {
+  PasswordForm form1 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  form1.actor_login_approved = true;
+  form1.password_element = u"pwd1";
+  PasswordForm form2 = form1;
+  form2.password_element = u"pwd2";
+  store().AddLogin(form1);
+  store().AddLogin(form2);
+  RunUntilIdle();
+
+  presenter().RevokeActorLoginPermission(
+      {.url = form1.url, .username = form1.username_value});
+  RunUntilIdle();
+
+  form1.actor_login_approved = false;
+  form2.actor_login_approved = false;
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form1.signon_realm, ElementsAre(form1, form2))));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Prefixes like [m, mobile, www] are considered as "same-site".
