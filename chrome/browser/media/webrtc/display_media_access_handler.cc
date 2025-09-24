@@ -68,6 +68,8 @@ BASE_FEATURE(kDisplayMediaRejectLongDomains, base::FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
+using ::content::GlobalRenderFrameHostId;
+using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::content::WebContentsMediaCaptureId;
 
@@ -190,6 +192,15 @@ void DisplayMediaAccessHandler::HandleRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
+  RenderFrameHost* const rfh = RenderFrameHost::FromID(
+      request.render_process_id, request.render_frame_id);
+  if (!rfh || !rfh->IsActive()) {
+    std::move(callback).Run(blink::mojom::StreamDevicesSet(),
+                            MediaStreamRequestResult::INVALID_STATE,
+                            /*ui=*/nullptr);
+    return;
+  }
+
   if (capture_policy::GetAllowedCaptureLevel(request.security_origin,
                                              web_contents) ==
       AllowedScreenCaptureLevel::kDisallowed) {
@@ -251,16 +262,6 @@ void DisplayMediaAccessHandler::HandleRequest(
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
       request.video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET) {
-    // Repeat the permission test from the render process.
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-        request.render_process_id, request.render_frame_id);
-    if (!rfh) {
-      std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                              MediaStreamRequestResult::INVALID_STATE,
-                              /*ui=*/nullptr);
-      return;
-    }
-
     // If the display-capture permissions-policy disallows capture, the render
     // process was not supposed to send this message.
     if (!rfh->IsFeatureEnabled(
