@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -218,6 +219,8 @@ std::unique_ptr<views::Label> AccountChooserView::CreateTitleLabel(
       views::style::STYLE_HEADLINE_4);
   title_label->SetEnabledColor(ui::kColorSysOnSurface);
   SetLabelProperties(title_label.get());
+  title_label->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ACCOUNT_CHOOSER_HEADER_ACCESSIBILITY_LABEL));
   return title_label;
 }
 
@@ -250,6 +253,9 @@ std::unique_ptr<views::View> AccountChooserView::CreateTitleView(
     const std::vector<AccountInfo>& accounts) {
   auto title_view = std::make_unique<views::FlexLayoutView>();
   title_view->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  title_view->GetViewAccessibility().SetRole(ax::mojom::Role::kRegion);
+  title_view->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ACCOUNT_CHOOSER_HEADER_ACCESSIBILITY_LABEL));
 
   auto title_container = std::make_unique<views::FlexLayoutView>();
   title_container->SetProperty(

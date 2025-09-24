@@ -19352,6 +19352,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT" desc="Text for the button to add an account.">
       Use a different account
     </message>
+    <message name="IDS_ACCOUNT_CHOOSER_RADIO_GROUP_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Text for account chooser radio group's accessibility label.">
+      Account selection
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_HEADER_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Text for the account chooser header's accessibility label.  'Drive' is a product name, please translate accordingly.">
+      Choose Drive account
+    </message>
 
     <!-- Tips Notifications-->
     <message name="IDS_TIPS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT" desc="Text for the helpful button found on tips notifications.">
