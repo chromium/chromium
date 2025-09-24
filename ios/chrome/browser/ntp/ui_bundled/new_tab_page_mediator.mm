@@ -445,13 +445,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   std::optional<HomeCustomBackground> customBackground =
       _backgroundCustomizationService->GetCurrentCustomBackground();
-  [traitAccessor
-      setBoolForNewTabPageImageBackgroundTrait:customBackground.has_value()];
-  if (customBackground) {
-    // Clear background so old state doesn't show. It will be set to the new
-    // background later.
-    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
 
+  if (customBackground) {
     if (std::holds_alternative<sync_pb::NtpCustomBackground>(
             customBackground.value())) {
       sync_pb::NtpCustomBackground background =
@@ -470,6 +465,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                            const image_fetcher::RequestMetadata& metadata) {
             if (!image.IsEmpty()) {
               [weakSelf handleBackgroundImageFetch:image];
+              [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
+              [traitAccessor
+                  setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
             }
           }),
           image_fetcher::ImageFetcherParams(kTrafficAnnotation,
@@ -487,8 +485,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           base::BindOnce(^(UIImage* image) {
             [weakSelf handleUserUploadedImage:image
                            framingCoordinates:framingCoordinates];
+            [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
+            [traitAccessor
+                setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
           }));
     }
+    return;
   } else {
     [self.consumer setBackgroundImage:nil framingCoordinates:nil];
   }
@@ -504,12 +506,14 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
 
     [traitAccessor setObjectForNewTabPageTrait:colorPalette];
+    [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
     return;
   }
 
   // Clears the color palette associated with the New Tab Page trait,
   // reverting to the default colors defined by the trait.
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+  [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
 }
 
 #pragma mark - BrowserViewVisibilityObserving
