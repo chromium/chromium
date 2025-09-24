@@ -2124,13 +2124,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     GTEST_SKIP();
   }
 
-  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate:
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
-       {kCsdCreditCardFormSampleRate.name, "1.0"}});
+  SetFeatures({}, {kClientSideDetectionCreditCardForm});
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
@@ -2151,22 +2146,20 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       FeatureDisabledDoesNotTriggerPreclassificationChecks) {
+       ESBDisabledDoesNotTriggerPreclassificationChecks) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
-  // CSD pings for credit card forms are not enabled. (ESB is.)
-  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-
+  SetFeatures({}, {kClientSideDetectionCreditCardForm});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), false);
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
   NavigateAndCommit(url);
 
-  // This won't actually register for Autofill events since the
-  // feature is disabled.
+  // This should not actually register since ESB is disabled.
   csd_host_->RegisterAutofillManager();
 
   TestFuture<ClientSideDetectionType> future;
@@ -2182,18 +2175,15 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       ESBDisabledDoesNotTriggerPreclassificationChecks) {
+       EventDoesNotTriggerPreclassificationChecksWhenESBDisabled) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
-  // Feature enabled, 100% HC allowlist acceptance, 100% sample rate,
-  // but ESB is not enabled.
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kClientSideDetectionCreditCardForm,
-      {{kCsdCreditCardFormHCAcceptanceRate.name, "1.0"},
-       {kCsdCreditCardFormSampleRate.name, "1.0"}});
-  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), false);
+  // Feature enabled, 100% HC allowlist acceptance, 0% sample rate
+  // (default params):
+  feature_list_.InitAndEnableFeature(kClientSideDetectionCreditCardForm);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
   base::HistogramTester histogram_tester;
 
@@ -2201,8 +2191,17 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
   NavigateAndCommit(url);
 
-  // This won't actually register for Autofill events since ESB is disabled.
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", 0);
+
+  // This registers to listen for Autofill events since ESB is enabled.
   csd_host_->RegisterAutofillManager();
+
+  // Now disable ESB to test whether preclassification gates on it.
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), false);
 
   TestFuture<ClientSideDetectionType> future;
   csd_host_->set_preclassification_started_callback_for_testing(

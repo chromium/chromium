@@ -620,10 +620,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       case CLIPBOARD_COPY_API:
         return base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get();
       case CREDIT_CARD_FORM:
-        if (base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
-          return base::RandDouble() >= kCsdCreditCardFormSampleRate.Get();
-        }
-        break;
+        return base::RandDouble() >= kCsdCreditCardFormSampleRate.Get();
       default:
         break;
     }
@@ -654,10 +651,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       case ClientSideDetectionType::CLIPBOARD_COPY_API:
         return base::RandDouble() < kCsdClipboardCopyApiHCAcceptanceRate.Get();
       case ClientSideDetectionType::CREDIT_CARD_FORM:
-        if (base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
-          return base::RandDouble() < kCsdCreditCardFormHCAcceptanceRate.Get();
-        }
-        break;
+        return base::RandDouble() < kCsdCreditCardFormHCAcceptanceRate.Get();
       default:
         break;
     }
@@ -789,9 +783,6 @@ void ClientSideDetectionHost::RegisterAutofillManager() {
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(kClientSideDetectionCreditCardForm)) {
-    return;
-  }
   autofill_managers_observation_.Observe(
       autofill::ContentAutofillClient::FromWebContents(web_contents()),
       autofill::ScopedAutofillManagersObservation::InitializationPolicy::
@@ -909,6 +900,11 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId formId,
     autofill::AutofillManager::Observer::FieldTypeSource source) {
+  // Early exit if ESB is not enabled.
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
   // Early exit if preclassification has already been done for
   // CREDIT_CARD_FORM and this URL.
   auto csd_type = ClientSideDetectionType::CREDIT_CARD_FORM;
