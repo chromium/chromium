@@ -531,16 +531,6 @@ void ProxyMain::NotifyImageDecodeRequestFinished(int request_id,
   layer_tree_host_->NotifyImageDecodeFinished(request_id, decode_succeeded);
 }
 
-bool ProxyMain::SpeculativeDecodeRequestInFlight() const {
-  CHECK(proxy_impl_);
-  return proxy_impl_->SpeculativeDecodeRequestInFlight();
-}
-
-void ProxyMain::SetSpeculativeDecodeRequestInFlight(bool value) {
-  CHECK(proxy_impl_);
-  proxy_impl_->SetSpeculativeDecodeRequestInFlight(value);
-}
-
 void ProxyMain::NotifyTransitionRequestFinished(
     uint32_t sequence_id,
     const viz::ViewTransitionElementResourceRects& rects) {
@@ -808,10 +798,6 @@ void ProxyMain::Stop() {
 void ProxyMain::QueueImageDecode(int request_id,
                                  const DrawImage& image,
                                  bool speculative) {
-  CHECK(!speculative || !SpeculativeDecodeRequestInFlight());
-  if (speculative) {
-    SetSpeculativeDecodeRequestInFlight(true);
-  }
   TRACE_EVENT1("cc", "ProxyMain::QueueImageDecode", "request_id", request_id);
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE,

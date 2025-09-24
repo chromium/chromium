@@ -85,7 +85,6 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void RequestDecode(const cc::DrawImage&,
                              base::OnceCallback<void(bool)>,
                              bool speculative) = 0;
-  virtual bool SpeculativeDecodeRequestInFlight() const = 0;
 
   // Forwards to `WebFrameWidget::NotifyPresentationTime()`.
   // `presentation_callback` will be fired when the corresponding renderer frame

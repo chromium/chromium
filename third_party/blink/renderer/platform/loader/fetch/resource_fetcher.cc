@@ -405,40 +405,6 @@ void RecordDeferUnusedPreloadHistograms(const Resource* resource) {
   }
 }
 
-int CompareResourcePriorities(const ResourcePriority& a,
-                              const ResourcePriority& b) {
-  if (a.visibility != b.visibility) {
-    return a.visibility == ResourcePriority::kVisible ? 1 : -1;
-  }
-  // TODO(https://crbug.com/378623805): We may be able to use `is_lcp_resource`
-  // as a signal here, but there is an active experiment modifying how this
-  // works, so we are not checking it here to avoid experiment crosstalk.
-  // if (a.is_lcp_resource != b.is_lcp_resource) {
-  //   return a.is_lcp_resource ? 1 : -1;
-  // }
-  return a.intra_priority_value - b.intra_priority_value;
-}
-
-Resource* PopHighestPriorityDecodableResource(
-    HeapHashSet<WeakMember<Resource>>& resources) {
-  Resource* result = nullptr;
-  for (Resource* resource : resources) {
-    const ResourcePriority& priority = resource->PriorityFromObservers().first;
-    if (priority.visibility != ResourcePriority::kVisible ||
-        !resource->IsAboveSpeculativeDecodeSizeThreshold()) {
-      continue;
-    }
-    if (!result || CompareResourcePriorities(
-                       priority, result->PriorityFromObservers().first) > 0) {
-      result = resource;
-    }
-  }
-  if (result) {
-    resources.erase(result);
-  }
-  return result;
-}
-
 }  // namespace
 
 // Used to ensure a ResourceRequest is correctly configured. Specifically
@@ -1531,7 +1497,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           resource->GetContentStatus() == ResourceStatus::kCached &&
           base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
         speculative_decode_candidate_images_.insert(resource);
-        MaybeStartSpeculativeImageDecode();
+        StartSpeculativeImageDecodes();
       }
       break;
   }
@@ -2565,7 +2531,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
         resource->GetContentStatus() == ResourceStatus::kCached &&
         base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
       speculative_decode_candidate_images_.insert(resource);
-      MaybeStartSpeculativeImageDecode();
+      StartSpeculativeImageDecodes();
     }
 
     // Since this resource came from the network stack we only schedule a stale
@@ -2863,7 +2829,7 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
                    ResourcePriority::kNotVisible ||
                !resource->IsAboveSpeculativeDecodeSizeThreshold();
       });
-  MaybeStartSpeculativeImageDecode();
+  StartSpeculativeImageDecodes();
 
   HeapVector<Member<Resource>> to_be_removed;
   for (Resource* resource : not_loaded_image_resources_) {
@@ -3267,32 +3233,20 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
   }
 }
 
-void ResourceFetcher::MaybeStartSpeculativeImageDecode() {
-  CHECK(base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) ||
-        !Context().SpeculativeDecodeRequestInFlight());
+void ResourceFetcher::StartSpeculativeImageDecodes() {
   CHECK(base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) ||
         speculative_decode_candidate_images_.empty());
-  if (Context().SpeculativeDecodeRequestInFlight()) {
-    return;
-  }
-  // Find the highest priority image to decode.
-  while (true) {
-    Resource* image_to_decode = PopHighestPriorityDecodableResource(
-        speculative_decode_candidate_images_);
-    if (!image_to_decode) {
-      break;
+  HeapVector<Member<Resource>> candidate_vector(
+      speculative_decode_candidate_images_);
+  for (Resource* resource : candidate_vector) {
+    const ResourcePriority& priority = resource->PriorityFromObservers().first;
+    if (priority.visibility != ResourcePriority::kVisible ||
+        !resource->IsAboveSpeculativeDecodeSizeThreshold()) {
+      continue;
     }
-    if (Context().StartSpeculativeImageDecode(
-            image_to_decode,
-            BindOnce(&ResourceFetcher::SpeculativeImageDecodeFinished,
-                     WrapWeakPersistent(this)))) {
-      break;
-    }
+    Context().StartSpeculativeImageDecode(resource);
+    speculative_decode_candidate_images_.erase(resource);
   }
-}
-
-void ResourceFetcher::SpeculativeImageDecodeFinished() {
-  MaybeStartSpeculativeImageDecode();
 }
 
 void ResourceFetcher::OnMemoryPressure(

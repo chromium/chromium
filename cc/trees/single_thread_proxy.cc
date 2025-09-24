@@ -468,10 +468,6 @@ void SingleThreadProxy::QueueImageDecode(int request_id,
                                          const DrawImage& image,
                                          bool speculative) {
   DCHECK(task_runner_provider_->IsMainThread());
-  if (speculative) {
-    CHECK(!speculative_decode_request_in_flight_);
-    speculative_decode_request_in_flight_ = true;
-  }
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->QueueImageDecode(request_id, image, speculative);
 }
@@ -652,18 +648,10 @@ void SingleThreadProxy::SetNeedsImplSideInvalidation(
   }
 }
 
-bool SingleThreadProxy::SpeculativeDecodeRequestInFlight() const {
-  return speculative_decode_request_in_flight_;
-}
-
 void SingleThreadProxy::NotifyImageDecodeRequestFinished(
     int request_id,
     bool speculative,
     bool decode_succeeded) {
-  if (speculative) {
-    CHECK(speculative_decode_request_in_flight_);
-    speculative_decode_request_in_flight_ = false;
-  }
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   if (base::FeatureList::IsEnabled(

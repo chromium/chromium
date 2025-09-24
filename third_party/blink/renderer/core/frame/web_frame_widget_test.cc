@@ -849,6 +849,36 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {
   url_test_helpers::ServeAsynchronousRequests();
 }
 
+TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMultiple) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kSpeculativeImageDecodes,
+       ::features::kSendExplicitDecodeRequestsImmediately},
+      /*disabled_features=*/{});
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest doc_request("https://example.com/test.html", "text/html");
+  SimRequest image_a_request("https://example.com/a.png", "image/png");
+  SimRequest image_b_request("https://example.com/b.png", "image/png");
+  LoadURL("https://example.com/test.html");
+  {
+    EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, _)).Times(0);
+    doc_request.Complete(
+        R"HTML(
+<!DOCTYPE html>
+<img id="img_a" width=500 height=500 src="a.png">
+<img id="img_b" width=3000 height=1000 src="b.png">
+      )HTML");
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+  }
+  EXPECT_CALL(*MockMainFrameWidget(), RequestDecode(_, _, true)).Times(2);
+  image_a_request.Complete(
+      *test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png")));
+  image_b_request.Complete(*test::ReadFromFile(
+      test::CoreTestDataPath("notifications/3000x1000.png")));
+}
+
 #if BUILDFLAG(IS_WIN)
 struct ProximateBoundsCollectionArgs final {
   base::RepeatingCallback<gfx::Rect(const Document&)>

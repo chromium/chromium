@@ -618,7 +618,7 @@ void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
     // dispatched.
     if (new_image_content) {
       new_image_content->AddObserver(this);
-      document.Fetcher()->MaybeStartSpeculativeImageDecode();
+      document.Fetcher()->StartSpeculativeImageDecodes();
     }
     if (old_image_content) {
       old_image_content->RemoveObserver(this);

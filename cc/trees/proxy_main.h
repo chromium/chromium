@@ -73,7 +73,6 @@ class CC_EXPORT ProxyMain : public Proxy {
   void DidObserveFirstScrollDelay(int source_frame_number,
                                   base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
-  void SetSpeculativeDecodeRequestInFlight(bool value);
   void NotifyImageDecodeRequestFinished(int request_id, bool decode_succeeded);
   void NotifyTransitionRequestFinished(
       uint32_t sequence_id,
@@ -118,7 +117,6 @@ class CC_EXPORT ProxyMain : public Proxy {
   void QueueImageDecode(int request_id,
                         const DrawImage& image,
                         bool speculative) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;

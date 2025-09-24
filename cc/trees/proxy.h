@@ -99,7 +99,6 @@ class CC_EXPORT Proxy {
   virtual void QueueImageDecode(int request_id,
                                 const DrawImage& image,
                                 bool speculative) = 0;
-  virtual bool SpeculativeDecodeRequestInFlight() const = 0;
   virtual void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
   virtual void SetPaintWorkletLayerPainter(

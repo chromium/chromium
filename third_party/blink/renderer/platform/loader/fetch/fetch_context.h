@@ -199,9 +199,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       ResourceRequest&,
       const ResourceLoaderOptions&);
 
-  virtual bool StartSpeculativeImageDecode(Resource* resource,
-                                           base::OnceClosure callback);
-  virtual bool SpeculativeDecodeRequestInFlight() const;
+  virtual bool StartSpeculativeImageDecode(Resource* resource);
 
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations

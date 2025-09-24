@@ -118,9 +118,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
 
-  bool StartSpeculativeImageDecode(Resource* resource,
-                                   base::OnceClosure callback) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
+  bool StartSpeculativeImageDecode(Resource* resource) override;
 
   bool IsPrerendering() const override;
 

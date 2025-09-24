@@ -1569,13 +1569,6 @@ void WebFrameWidgetImpl::RequestDecode(const cc::DrawImage& image,
   }
 }
 
-bool WebFrameWidgetImpl::SpeculativeDecodeRequestInFlight() const {
-  if (auto* layer_tree_host = widget_base_->LayerTreeHost()) {
-    return layer_tree_host->SpeculativeDecodeRequestInFlight();
-  }
-  return false;
-}
-
 void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(local_root_);
   visitor->Trace(current_drag_data_);

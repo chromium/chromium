@@ -577,9 +577,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                              bool speculative) {
     std::move(callback).Run(false);
   }
-  virtual bool SpeculativeDecodeRequestInFlight(LocalFrame* frame) const {
-    return false;
-  }
 
   // The `callback` will be fired when the corresponding renderer frame for the
   // `frame` is presented in the display compositor. If there is no update in

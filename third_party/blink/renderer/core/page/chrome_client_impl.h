@@ -306,8 +306,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                      base::OnceCallback<void(bool)>,
                      bool speculative) override;
 
-  bool SpeculativeDecodeRequestInFlight(LocalFrame*) const override;
-
   void NotifyPresentationTime(LocalFrame& frame,
                               ReportTimeCallback callback) override;
 

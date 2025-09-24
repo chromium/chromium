@@ -2387,8 +2387,12 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     return;
   }
 
-  TRACE_EVENT2("cc,benchmark", "GpuImageDecodeCache::DecodeImage",
-               "speculative", image_data->IsSpeculativeDecode(),
+  if (image_data->IsSpeculativeDecode()) {
+    TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
+                         "SpeculativeImageDecodeRun", TRACE_EVENT_SCOPE_THREAD,
+                         "image_id", image_data->paint_image_id);
+  }
+  TRACE_EVENT1("cc,benchmark", "GpuImageDecodeCache::DecodeImage",
                "paint_image_id", image_data->paint_image_id);
 
   image_data->decode.ResetData();
