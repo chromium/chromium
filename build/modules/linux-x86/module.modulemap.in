@@ -39,14 +39,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/i386-linux-gnu/asm/ioctls.h"
     export *
   }
-  module asm_unistd_h {
-    header "$sysroot/i386-linux-gnu/asm/unistd.h"
-    export *
-  }
-  module asm_unistd_32_h {
-    header "$sysroot/i386-linux-gnu/asm/unistd_32.h"
-    export *
-  }
   module endian_h {
     header "$sysroot/endian.h"
     export *
@@ -128,10 +120,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/i386-linux-gnu/sys/select.h"
     export *
   }
-  module sys_syscall_h {
-    header "$sysroot/i386-linux-gnu/sys/syscall.h"
-    export *
-  }
   module sys_ttydefaults_h {
     header "$sysroot/i386-linux-gnu/sys/ttydefaults.h"
     export *
@@ -142,10 +130,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module sys_ucontext_h {
     header "$sysroot/i386-linux-gnu/sys/ucontext.h"
-    export *
-  }
-  module syscall_h {
-    header "$sysroot/syscall.h"
     export *
   }
   module threads_h {

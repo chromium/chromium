@@ -240,14 +240,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/sys/ioctl.h"
     export *
   }
-  module sys_syscall_h {
-    header "$sysroot/sys/syscall.h"
-    export *
-  }
-  module syscall_h {
-    header "$sysroot/syscall.h"
-    export *
-  }
   module xlocale_h {
     header "$sysroot/xlocale.h"
     export *

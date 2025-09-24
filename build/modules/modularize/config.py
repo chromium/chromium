@@ -45,7 +45,6 @@ SYSROOT_PRECOMPILED_HEADERS = [
     'fcntl.h',
     'getopt.h',
     'sys/ioctl.h',
-    'syscall.h',
 ]
 
 
@@ -138,19 +137,9 @@ def fix_graph(graph: dict[str, Header],
     graph['asm-generic/posix_types.h'].textual = True
     graph['asm/posix_types.h'].textual = True
 
-    # sys/syscall.h includes asm/unistd.h, which includes
-    # asm/unistd_<platform>.h, which defines some macros.
-    # It then includes bits/glibc-syscalls.h which uses said macros, so both
-    # must be non-textual.
-    for k in graph:
-      if k.startswith('asm/unistd'):
-        graph[k].textual = True
-    graph['bits/glibc-syscalls.h'].textual = True
-
   elif compiler.os == Os.Linux:
     # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
-    # if linux/limits.h is non-textual, then limits.h undefs the limits.h
-    # defined in the linux/limits.h module.
+    # if linux/limits.h is non-textual, then limits.h undefs the limits.h defined in the linux/limits.h module.
     # Thus, limits.h exports an undef.
     # if it's textual, limits.h undefs something it defined itself.
     graph['linux/limits.h'].textual = True
