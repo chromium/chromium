@@ -60,9 +60,10 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       same_site,
       // When iOS begins to support the 'Priority' attribute, pass it through
       // here.
-      net::COOKIE_PRIORITY_DEFAULT, std::nullopt /* partition_key */,
+      net::COOKIE_PRIORITY_DEFAULT, /*partition_key=*/std::nullopt,
       net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED,
-      net::CookieSourceType::kOther);
+      net::CookieSourceType::kOther,
+      net::CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil);
 }
 
 // Converts net::CanonicalCookie to NSHTTPCookie.

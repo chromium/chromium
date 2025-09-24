@@ -173,7 +173,9 @@ std::unique_ptr<net::CanonicalCookie> FromSyncProto(
           std::move(partition_key.value()),                                //
           CookieSourceSchemeFromProtoEnum(proto.source_scheme()),          //
           proto.source_port(),                                             //
-          CookieSourceTypeFromProtoEnum(proto.source_type()));             //
+          CookieSourceTypeFromProtoEnum(proto.source_type()),              //
+          net::CanonicalCookieFromStorageCallSite::
+              kChromeOsCookieSyncConversions);
 
   return cookie;
 }

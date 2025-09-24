@@ -1083,7 +1083,8 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         /*source_port=*/statement.ColumnInt(16),                            //
         /*source_type=*/
         DBCookieSourceTypeToCookieSourceType(
-            static_cast<DBCookieSourceType>(statement.ColumnInt(18))));  //
+            static_cast<DBCookieSourceType>(statement.ColumnInt(18))),      //
+        CanonicalCookieFromStorageCallSite::kSqlitePersistentCookieStore);  //
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << "CreationDate too recent";

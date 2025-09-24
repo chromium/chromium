@@ -216,7 +216,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
             /*partition_key=*/std::nullopt, net::CookieSourceScheme::kUnset,
-            url::PORT_UNSPECIFIED, net::CookieSourceType::kOther);
+            url::PORT_UNSPECIFIED, net::CookieSourceType::kOther,
+            net::CanonicalCookieFromStorageCallSite::kOauthMultiloginResult);
     // If the unique_ptr is null, it means the cookie was not canonical.
     // FromStorage() also uses a less strict version of IsCanonical(), we need
     // to check the stricter version as well here.

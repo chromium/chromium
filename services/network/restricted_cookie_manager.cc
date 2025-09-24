@@ -862,7 +862,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie.ExpiryDate(), now, now, cookie.SecureAttribute(),
           cookie.IsHttpOnly(), cookie.SameSite(), cookie.Priority(),
           cookie_partition_key, source_scheme, origin_.port(),
-          cookie.SourceType());
+          cookie.SourceType(),
+          net::CanonicalCookieFromStorageCallSite::kRestrictedCookieManager);
   DCHECK(sanitized_cookie);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here.

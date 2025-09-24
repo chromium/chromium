@@ -488,14 +488,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
-    expires_after="2026-03-15">
+<histogram name="Cookie.FromStorageWithValidLength.{CallSite}.Subsampled"
+    enum="BooleanValid" expires_after="2026-03-18">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
-    If a canonical cookie has a valid name+value length. Logged whenever a
-    cookie is created FromStorage and if this cookie IsCanonical.
+    If a canonical cookie created via the given caller has a valid name+value
+    length. Logged whenever a cookie is created FromStorage and if this cookie
+    IsCanonical.
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
   </summary>
+<!-- LINT.IfChange(CanonicalCookieFromStorageCallSite) -->
+
+  <token key="CallSite">
+    <variant name="AndroidCookiesFetcherRestoreUtil"/>
+    <variant name="ChromeOsCookieSyncConversions"/>
+    <variant name="CookieManager"/>
+    <variant name="CookieManagerMojomTraits"/>
+    <variant name="OauthMultiloginResult"/>
+    <variant name="RestrictedCookieManager"/>
+<!-- Intentionally omitting IosSystemCookieUtil -->
+
+    <variant name="SqlitePersistentCookieStore"/>
+    <variant name="Tests"/>
+  </token>
+<!-- LINT.ThenChange(/net/cookies/canonical_cookie.h:CanonicalCookieFromStorageCallSite) -->
+
 </histogram>
 
 <histogram name="Cookie.GetCookieListWithOptions.Duration.Subsampled"
