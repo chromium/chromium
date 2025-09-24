@@ -91,6 +91,21 @@ bssl::UniquePtr<EVP_PKEY> EVP_PKEYFromEcPoint(const EC_GROUP* group,
   return pkey;
 }
 
+std::vector<uint8_t> EvpToUncompressedEcForm(EVP_PKEY* key) {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  std::vector<uint8_t> ec_buffer(255);
+  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key);
+  size_t len = EC_POINT_point2oct(
+      EC_KEY_get0_group(ec_key), EC_KEY_get0_public_key(ec_key),
+      POINT_CONVERSION_UNCOMPRESSED, ec_buffer.data(), ec_buffer.size(),
+      /*ctx=*/nullptr);
+  CHECK(len);
+  ec_buffer.resize(len);
+
+  return ec_buffer;
+}
+
 }  // namespace
 
 PrivateKey::PrivateKey(bssl::UniquePtr<EVP_PKEY> key, crypto::SubtlePassKey)
@@ -207,17 +222,7 @@ std::vector<uint8_t> PrivateKey::ToSubjectPublicKeyInfo() const {
 }
 
 std::vector<uint8_t> PrivateKey::ToUncompressedForm() const {
-  OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  std::vector<uint8_t> buf(255);
-  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key_.get());
-  size_t len = EC_POINT_point2oct(
-      EC_KEY_get0_group(ec_key), EC_KEY_get0_public_key(ec_key),
-      POINT_CONVERSION_UNCOMPRESSED, buf.data(), buf.size(), /*ctx=*/nullptr);
-  CHECK(len);
-  buf.resize(len);
-
-  return buf;
+  return EvpToUncompressedEcForm(key_.get());
 }
 
 std::array<uint8_t, 32> PrivateKey::ToEd25519PublicKey() const {
@@ -358,6 +363,10 @@ PublicKey PublicKey::FromEd25519PublicKey(base::span<const uint8_t, 32> key) {
 
 std::vector<uint8_t> PublicKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
+}
+
+std::vector<uint8_t> PublicKey::ToUncompressedForm() const {
+  return EvpToUncompressedEcForm(key_.get());
 }
 
 bool PublicKey::IsRsa() const {

@@ -156,6 +156,10 @@ class CRYPTO_EXPORT PublicKey {
   // Exports a PublicKey as an X.509 SubjectPublicKeyInfo.
   std::vector<uint8_t> ToSubjectPublicKeyInfo() const;
 
+  // Exports an EC public key in X9.62 uncompressed form. It is illegal to call
+  // this on a non-EC PublicKey.
+  std::vector<uint8_t> ToUncompressedForm() const;
+
   EVP_PKEY* key() { return key_.get(); }
   const EVP_PKEY* key() const { return key_.get(); }
 

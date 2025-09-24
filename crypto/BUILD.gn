@@ -24,6 +24,8 @@ component("crypto") {
     "aes_cbc.h",
     "aes_ctr.cc",
     "aes_ctr.h",
+    "cose.cc",
+    "cose.h",
     "crypto_export.h",
     "evp.cc",
     "evp.h",
@@ -73,7 +75,7 @@ component("crypto") {
     "user_verifying_key.h",
   ]
 
-  deps = []
+  deps = [ "//components/cbor" ]
 
   public_deps = [
     ":buildflags",
@@ -176,6 +178,7 @@ test("crypto_unittests") {
     "aead_unittest.cc",
     "aes_cbc_unittest.cc",
     "aes_ctr_unittest.cc",
+    "cose_unittest.cc",
     "evp_unittest.cc",
     "hash_unittest.cc",
     "hmac_unittest.cc",
@@ -199,6 +202,7 @@ test("crypto_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/cbor",
     "//testing/gmock",
     "//testing/gtest",
   ]

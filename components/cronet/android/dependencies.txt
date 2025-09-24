@@ -24,6 +24,7 @@
 //buildtools/third_party/libc++
 //buildtools/third_party/libc++abi
 //buildtools/third_party/libunwind
+//components/cbor
 //components/cronet
 //components/cronet/android
 //components/cronet/native

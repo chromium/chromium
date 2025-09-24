@@ -16,10 +16,15 @@ using crypto::keypair::PublicKey;
 // private keys for use in tests. Tests should prefer these keys over freshly
 // generating keys whenever practical, since they are much cheaper.
 PrivateKey FixedRsa2048PrivateKeyForTesting();
-PrivateKey FixedRsa4096PrivateKeyForTesting();
-
 PublicKey FixedRsa2048PublicKeyForTesting();
+const base::span<const uint8_t> FixedRsa2048PublicKeyAsCoseForTesting();
+
+PrivateKey FixedRsa4096PrivateKeyForTesting();
 PublicKey FixedRsa4096PublicKeyForTesting();
+
+PrivateKey FixedEcP256PrivateKeyForTesting();
+PublicKey FixedEcP256PublicKeyForTesting();
+const base::span<const uint8_t> FixedEcP256PublicKeyAsCoseForTesting();
 
 }  // namespace crypto::test
 
