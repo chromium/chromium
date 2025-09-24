@@ -191,10 +191,20 @@ void AppendSuggestionIfMatching(
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = Suggestion::Icon::kGlobe;
     suggestions->emplace_back(std::move(suggestion));
-    if (credential.backup_password_value &&
+
+#if BUILDFLAG(IS_ANDROID)
+    // Backup password is displayed every time on Android.
+    bool show_recovery_password =
+        base::FeatureList::IsEnabled(features::kFillRecoveryPassword);
+#else
+    // Backup password is displayed only after the first attempt to login on
+    // Desktop.
+    bool show_recovery_password =
         undo_password_change_controller.GetState(credential.username_value) ==
             PasswordRecoveryState::kIncludeBackup &&
-        base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
+        base::FeatureList::IsEnabled(features::kShowRecoveryPassword);
+#endif
+    if (credential.backup_password_value && show_recovery_password) {
       AppendBackupSuggestion(credential, suggestions);
     }
   }

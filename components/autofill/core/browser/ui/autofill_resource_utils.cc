@@ -61,6 +61,7 @@ constexpr auto kOldDataResources = base::MakeFixedFlatMap<Suggestion::Icon,
     {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
     {Suggestion::Icon::kWork, IDR_ANDROID_AUTOFILL_WORK},
     {Suggestion::Icon::kAndroidMessages, IDR_ANDROID_AUTOFILL_ANDROID_MESSAGES},
+    {Suggestion::Icon::kRecoveryPassword, IDR_ANDROID_PASSWORD_HISTORY},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
@@ -91,6 +92,7 @@ constexpr auto kDataResources = base::MakeFixedFlatMap<Suggestion::Icon, int>({
     {Suggestion::Icon::kPlusAddress, IDR_AUTOFILL_PLUS_ADDRESS},
     {Suggestion::Icon::kWork, IDR_ANDROID_AUTOFILL_WORK},
     {Suggestion::Icon::kAndroidMessages, IDR_ANDROID_AUTOFILL_ANDROID_MESSAGES},
+    {Suggestion::Icon::kRecoveryPassword, IDR_ANDROID_PASSWORD_HISTORY},
 #endif  // BUILDFLAG(IS_ANDROID)
 });
 
