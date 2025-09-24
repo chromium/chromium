@@ -76,7 +76,8 @@ function renderAboutInfo() {
 
 function shouldHighlightDetail(
     detailsIndex: number, dataIndex: number): boolean {
-  if (previousAboutInfo.details.length <= detailsIndex) {
+  if (previousAboutInfo.details.length <= detailsIndex ||
+      previousAboutInfo.details[detailsIndex]!.data.length <= dataIndex) {
     return false;
   }
 
@@ -274,17 +275,16 @@ function initStatusDumpButton() {
         return !el.is_sensitive;
       });
     }
+    const dataToDump = {
+      aboutInfo: aboutInfoCopy,
+      protocolEvents: protocolEvents,
+    };
     let data = '';
     data += new Date().toString() + '\n';
     data += '======\n';
     data += 'Status\n';
     data += '======\n';
-    data += JSON.stringify(aboutInfoCopy, null, 2) + '\n';
-    data += '\n';
-    data += '===\n';
-    data += 'Log\n';
-    data += '===\n';
-    data += JSON.stringify(protocolEvents, null, 2);
+    data += JSON.stringify(dataToDump, null, 2);
 
     const statusText =
         document.querySelector<HTMLTextAreaElement>('#status-text');
@@ -306,7 +306,7 @@ function initStatusDumpButton() {
         document.querySelector<HTMLTextAreaElement>('#status-text');
     assert(statusText);
     if (statusText.value.length === 0) {
-      statusText.value = 'Paste sync status dump here then click import.';
+      statusText.placeholder = 'Paste sync status dump here then click import.';
       return;
     }
 
@@ -330,7 +330,14 @@ function initStatusDumpButton() {
       entityCountsUpdatedListener = null;
     }
 
-    const aboutInfo = JSON.parse(data);
+    // Handle both the old format (just the aboutInfo object) and the new
+    // format (an object containing both aboutInfo and protocolEvents).
+    const dump = JSON.parse(data);
+    const aboutInfo = dump.aboutInfo || dump;
+    const newProtocolEvents = dump.protocolEvents || [];
+
+    // Clear existing protocol events and add the new ones.
+    protocolEvents.splice(0, protocolEvents.length, ...newProtocolEvents);
     refreshAboutInfo(aboutInfo);
   });
 }
