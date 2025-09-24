@@ -442,9 +442,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Sets the upload data.
   void set_upload(std::unique_ptr<UploadDataStream> upload);
 
-  // Gets the upload data.
-  const UploadDataStream* get_upload_for_testing() const;
-
   // Returns true if the request has a non-empty message body to upload.
   bool has_upload() const;
 

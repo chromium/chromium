@@ -66,7 +66,6 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   }
 
   // UploadElementReader overrides:
-  const UploadFileElementReader* AsFileReader() const override;
   int Init(CompletionOnceCallback callback) override;
   uint64_t GetContentLength() const override;
   uint64_t BytesRemaining() const override;

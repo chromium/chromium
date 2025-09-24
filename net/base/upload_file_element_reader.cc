@@ -57,10 +57,6 @@ UploadFileElementReader::UploadFileElementReader(
 
 UploadFileElementReader::~UploadFileElementReader() = default;
 
-const UploadFileElementReader* UploadFileElementReader::AsFileReader() const {
-  return this;
-}
-
 int UploadFileElementReader::Init(CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
 

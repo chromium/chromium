@@ -31,7 +31,6 @@ class NET_EXPORT UploadBytesElementReader : public UploadElementReader {
   base::span<const uint8_t> bytes() const { return bytes_; }
 
   // UploadElementReader overrides:
-  const UploadBytesElementReader* AsBytesReader() const override;
   int Init(CompletionOnceCallback callback) override;
   uint64_t GetContentLength() const override;
   uint64_t BytesRemaining() const override;

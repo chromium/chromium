@@ -234,10 +234,6 @@ void URLRequest::set_upload(std::unique_ptr<UploadDataStream> upload) {
   upload_data_stream_ = std::move(upload);
 }
 
-const UploadDataStream* URLRequest::get_upload_for_testing() const {
-  return upload_data_stream_.get();
-}
-
 bool URLRequest::has_upload() const {
   return upload_data_stream_.get() != nullptr;
 }
