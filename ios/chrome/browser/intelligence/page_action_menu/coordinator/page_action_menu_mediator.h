@@ -15,6 +15,8 @@ class PrefService;
 class ReaderModeTabHelper;
 class TemplateURLService;
 
+@protocol PageActionMenuCommands;
+
 namespace web {
 class WebState;
 }
@@ -41,6 +43,9 @@ class WebState;
 
 // Consumer for the Page Action Menu mediator.
 @property(nonatomic, weak) id<PageActionMenuConsumer> consumer;
+
+// The handler for sending page action menu commands.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 
 @end
 
