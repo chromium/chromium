@@ -67,7 +67,7 @@ public class ExtensionActionContextMenuBridge implements Destroyable {
     }
 
     @NativeMethods
-    interface Native {
+    public interface Native {
         long init(
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String actionId,

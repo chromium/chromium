@@ -245,6 +245,7 @@ android_library("java") {
     sources += [
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionContextMenuUtils.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionIconUtil.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListContainer.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",

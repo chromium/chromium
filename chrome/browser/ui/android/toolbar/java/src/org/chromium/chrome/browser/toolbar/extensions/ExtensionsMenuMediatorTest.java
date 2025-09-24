@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Bitmap;
@@ -16,6 +21,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Looper;
+import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -24,6 +30,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -33,14 +41,20 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -52,6 +66,7 @@ public class ExtensionsMenuMediatorTest {
     // be a public class.
     private static final int TAB1_ID = 111;
     private static final int TAB2_ID = 222;
+    private static final long ACTION_CONTEXT_MENU_BRIDGE_POINTER = 10000L;
 
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
     private static final Bitmap ICON_BLUE = createSimpleIcon(Color.BLUE);
@@ -67,6 +82,10 @@ public class ExtensionsMenuMediatorTest {
     @Mock private Runnable mDataReadyCallback;
     @Mock private Callback<Boolean> mOnExtensionsSupportedCallback;
     @Mock private WebContents mWebContents;
+    @Mock private ExtensionActionContextMenuBridge.Native mActionContextMenuBridgeJniMock;
+    @Mock private MenuModelBridge mMenuModelBridge;
+
+    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
     @Rule
     public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
@@ -90,6 +109,14 @@ public class ExtensionsMenuMediatorTest {
         mProfileModel.putAction(
                 "b", new ActionData.Builder().setTitle("title of b").setIcon(ICON_GREEN).build());
 
+        // Mock {@link ExtensionActionContextMenuBridge}.
+        ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
+        when(mActionContextMenuBridgeJniMock.init(any(), any(), any(), anyInt()))
+                .thenReturn(ACTION_CONTEXT_MENU_BRIDGE_POINTER);
+        when(mActionContextMenuBridgeJniMock.getMenuModelBridge(anyLong()))
+                .thenReturn(mMenuModelBridge);
+        when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
+
         // Initialize common objects.
         mTab1 = new MockTab(TAB1_ID, mProfile);
         mTab2 = new MockTab(TAB2_ID, mProfile);
@@ -106,7 +133,8 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mModels,
                         mDataReadyCallback,
-                        mOnExtensionsSupportedCallback);
+                        mOnExtensionsSupportedCallback,
+                        null);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();
@@ -237,6 +265,38 @@ public class ExtensionsMenuMediatorTest {
         assertEquals(2, mModels.size());
         assertItemAt(0, "a for tab2", ICON_CYAN);
         assertItemAt(1, "b for tab2", ICON_MAGENTA);
+    }
+
+    @Test
+    public void testContextClick_showMenu() {
+        // Set the profile and the tab.
+        mProfileSupplier.set(mProfile);
+        mCurrentTabSupplier.set(mTab1);
+
+        ListItem item = mModels.get(0);
+        View.OnClickListener listener = item.model.get(ExtensionsMenuItemProperties.CLICK_LISTENER);
+
+        // Stub helper calls on the mock button.
+        ListMenuButton mockButton = mock(ListMenuButton.class);
+        when(mockButton.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mockButton.getHost()).thenReturn(mock(ListMenuHost.class));
+        when(mockButton.getRootView())
+                .thenReturn(new View(ApplicationProvider.getApplicationContext()));
+        when(mockButton.getResources())
+                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
+
+        listener.onClick(mockButton);
+
+        verify(mActionContextMenuBridgeJniMock)
+                .init(eq(mProfile), eq("a"), eq(mWebContents), eq(ContextMenuSource.MENU_ITEM));
+
+        verify(mockButton).showMenu();
+
+        // Manually capture and fire the dismiss listener. This is required to
+        // trigger bridge.destroy() and pass the test framework's leak check.
+        verify(mockButton).addPopupListener(mPopupListenerCaptor.capture());
+        mPopupListenerCaptor.getValue().onPopupMenuDismissed();
+        verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
     }
 
     private static Bitmap createSimpleIcon(int color) {

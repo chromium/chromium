@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -25,21 +23,13 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
-import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.listmenu.ListMenuFlyoutController;
-import org.chromium.ui.listmenu.ListMenuHost;
-import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.RectProvider;
 
 @NullMarked
 class ExtensionActionListMediator implements Destroyable {
@@ -142,82 +132,12 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
 
-        ExtensionActionContextMenuBridge extensionActionContextMenuBridge =
+        ExtensionActionContextMenuBridge bridge =
                 new ExtensionActionContextMenuBridge(
                         profile, actionId, webContents, ContextMenuSource.TOOLBAR_ACTION);
-        ModelList modelList = extensionActionContextMenuBridge.getModelList();
 
-        ListMenu.Delegate buttonDelegate =
-                new ListMenu.Delegate() {
-                    @Override
-                    public void onItemSelected(PropertyModel model) {
-                        View.OnClickListener listener = model.get(CLICK_LISTENER);
-
-                        if (listener != null) {
-                            listener.onClick(null);
-                        }
-                    }
-                };
-
-        BasicListMenu basicListMenu =
-                BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, buttonDelegate);
-
-        basicListMenu.setupCallbacksRecursively(
-                () -> {
-                    buttonView.dismiss();
-                },
-                /* drillDownOverrideValue= */ null,
-                new ListMenuFlyoutController(buttonView.getHost()));
-
-        ListMenu listMenu =
-                new ListMenu() {
-                    @Override
-                    public View getContentView() {
-                        return basicListMenu.getContentView();
-                    }
-
-                    @Override
-                    public void addContentViewClickRunnable(Runnable runnable) {}
-
-                    @Override
-                    public int getMaxItemWidth() {
-                        return basicListMenu.getMaxItemWidth();
-                    }
-                };
-
-        ListMenuDelegate listDelegate =
-                new ListMenuDelegate() {
-                    @Override
-                    public ListMenu getListMenu() {
-                        return listMenu;
-                    }
-
-                    @Override
-                    public ListMenu getListMenuFromParentListItem(ListItem item) {
-                        return BrowserUiListMenuUtils.getBasicListMenu(
-                                mContext, ListMenuUtils.getModelListSubtree(item), buttonDelegate);
-                    }
-
-                    @Override
-                    public RectProvider getRectProvider(View listMenuHostingView) {
-                        return MenuBuilderHelper.getRectProvider(buttonView);
-                    }
-                };
-        buttonView.setDelegate(listDelegate, false);
-
-        buttonView.addPopupListener(
-                new ListMenuHost.PopupMenuShownListener() {
-                    @Override
-                    public void onPopupMenuShown() {}
-
-                    @Override
-                    public void onPopupMenuDismissed() {
-                        extensionActionContextMenuBridge.destroy();
-                        buttonView.removePopupListener(this);
-                    }
-                });
-
-        buttonView.showMenu();
+        ExtensionActionContextMenuUtils.showContextMenu(
+                mContext, buttonView, bridge, MenuBuilderHelper.getRectProvider(buttonView), null);
     }
 
     private void closePopup() {

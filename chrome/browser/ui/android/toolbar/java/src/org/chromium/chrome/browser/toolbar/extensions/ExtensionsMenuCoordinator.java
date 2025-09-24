@@ -155,7 +155,8 @@ public class ExtensionsMenuCoordinator implements Destroyable {
                             int visibility = extensionsSupported ? View.VISIBLE : View.GONE;
                             mExtensionsMenuButton.setVisibility(visibility);
                             mExtensionsMenuTabSwitcherDivider.setVisibility(visibility);
-                        });
+                        },
+                        mExtensionsMenuButton.getRootView());
     }
 
     private void openUrlFromMenu(String url) {
