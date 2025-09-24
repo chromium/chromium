@@ -1051,7 +1051,7 @@
     {
       name: "CompositeBGColorAnimation",
       public: true,
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
     },
     {

@@ -6851,33 +6851,6 @@
             ]
         }
     ],
-    "CompositeBackgroundColorAnimation": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "frames": "4"
-                    },
-                    "enable_features": [
-                        "CompositeBGColorAnimation",
-                        "DeferImplInvalidation"
-                    ]
-                }
-            ]
-        }
-    ],
     "CompositeClipPathAnimation": [
         {
             "platforms": [
