@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_options.h"
 
 @class DriveFilePickerItem;
 
@@ -71,9 +72,9 @@
 // Sets whether the filter menu is enabled.
 - (void)setFilterMenuEnabled:(BOOL)enabled;
 
-// Sets which sorting criteria and direction appear as enabled.
-- (void)setSortingCriteria:(DriveItemsSortingType)criteria
-                 direction:(DriveItemsSortingOrder)direction;
+// Sets which sorting criterion and direction appear as enabled.
+- (void)setSortingCriterion:(DriveFilePickerSortingCriterion)criterion
+                  direction:(DriveFilePickerSortingDirection)direction;
 
 // Sets whether the sorting menu is enabled.
 - (void)setSortingMenuEnabled:(BOOL)enabled;

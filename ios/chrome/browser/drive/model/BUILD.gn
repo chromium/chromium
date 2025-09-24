@@ -97,6 +97,7 @@ source_set("drive_list") {
     "drive_list.h",
     "drive_list.mm",
   ]
+  deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
   public_deps = [ "//base" ]
 }
 

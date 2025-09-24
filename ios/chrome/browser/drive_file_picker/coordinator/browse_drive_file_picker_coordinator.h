@@ -7,10 +7,13 @@
 
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_options.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+class DriveFilePickerCollection;
 @protocol BrowseDriveFilePickerCoordinatorDelegate;
 @class DriveFilePickerMetricsHelper;
+class DriveFilePickerImageFetcher;
 @protocol SystemIdentity;
 
 namespace web {
@@ -30,19 +33,12 @@ class WebState;
         (UINavigationController*)baseNavigationController
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
-                                   title:(NSString*)title
-                           imagesPending:(NSMutableSet<NSString*>*)imagesPending
-                              imageCache:
-                                  (NSCache<NSString*, UIImage*>*)imageCache
-                          collectionType:
-                              (DriveFilePickerCollectionType)collectionType
-                        folderIdentifier:(NSString*)folderIdentifier
-                                  filter:(DriveFilePickerFilter)filter
-                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                        sortingDirection:
-                            (DriveItemsSortingOrder)sortingDirection
-                                identity:(id<SystemIdentity>)identity
+                              collection:
+                                  (std::unique_ptr<DriveFilePickerCollection>)
+                                      collection
+                            imageFetcher:
+                                (DriveFilePickerImageFetcher*)imageFetcher
+                                 options:(DriveFilePickerOptions)options
                            metricsHelper:
                                (DriveFilePickerMetricsHelper*)metricsHelper
     NS_DESIGNATED_INITIALIZER;

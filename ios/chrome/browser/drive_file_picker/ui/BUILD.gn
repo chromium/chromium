@@ -21,6 +21,7 @@ source_set("ui") {
   deps = [
     ":alert_utils",
     ":constants",
+    ":options",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
@@ -34,6 +35,13 @@ source_set("ui") {
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/font:font_api",
+  ]
+}
+
+source_set("options") {
+  sources = [
+    "drive_file_picker_options.h",
+    "drive_file_picker_options.mm",
   ]
 }
 
