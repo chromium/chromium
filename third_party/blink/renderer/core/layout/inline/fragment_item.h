@@ -30,12 +30,6 @@ struct FitTextScale;
 struct LogicalLineItem;
 struct TextFragmentPaintInfo;
 
-// Purpose of `SvgFragmentData::length_adjust_scale`.
-//   kLengthAdjust: The SvgFragmentData is for SVG text.
-//   kFitText: The SvgFragmentData is for `scale` or `font-size` method
-//   kFitTextInline: The SvgFragmentData is for `scale-inline` method.
-enum class TextScaleType : uint8_t { kLengthAdjust, kFitText, kFitTextInline };
-
 // Data for SVG text in addition to FragmentItem.
 // Each text items for SVG <text> has this instance.
 //
@@ -45,7 +39,6 @@ enum class TextScaleType : uint8_t { kLengthAdjust, kFitText, kFitTextInline };
 struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
  public:
   void Trace(Visitor* visitor) const { visitor->Trace(scaled_font); }
-  bool IsSvg() const { return scale_type == TextScaleType::kLengthAdjust; }
 
   gfx::RectF rect;
   float length_adjust_scale;
@@ -54,7 +47,10 @@ struct SvgFragmentData : public GarbageCollected<SvgFragmentData> {
   // `scaled_font` is not used for SVG text.
   Member<Font> scaled_font;
   bool in_text_path;
-  TextScaleType scale_type;
+  // A flag whether SVG or not
+  bool is_svg;
+  // A flag whether FitTextInline or not
+  bool is_fit_text_inline;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -155,7 +151,7 @@ class CORE_EXPORT FragmentItem final {
   bool IsListMarker() const;
 
   bool IsSvgText() const {
-    return Type() == kText && text_.svg_data && text_.svg_data->IsSvg();
+    return Type() == kText && text_.svg_data && text_.svg_data->is_svg;
   }
 
   void SetSvgFragmentData(const SvgFragmentData* data,
@@ -518,7 +514,7 @@ class CORE_EXPORT FragmentItem final {
       return nullptr;
     }
     const auto* svg_data = text_.svg_data.Get();
-    return svg_data && svg_data->IsSvg() ? svg_data : nullptr;
+    return svg_data && svg_data->is_svg ? svg_data : nullptr;
   }
   // Returns true if BuildSvgTransformForPaint() returns non-identity transform.
   bool HasSvgTransformForPaint() const;

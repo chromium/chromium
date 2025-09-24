@@ -782,9 +782,8 @@ void FragmentItem::SetFitTextScale(const FitTextScale* scale) {
     return;
   }
   auto* data = MakeGarbageCollected<SvgFragmentData>();
-  data->scale_type = scale->is_scaled_inline_only
-                         ? TextScaleType::kFitTextInline
-                         : TextScaleType::kFitText;
+  data->is_fit_text_inline = scale->is_scaled_inline_only;
+  data->is_svg = false;
   data->length_adjust_scale = scale->scale;
   data->scaled_font = scale->font;
   if (Type() == kText) {
@@ -801,17 +800,14 @@ void FragmentItem::SetFitTextScale(const FitTextScale* scale) {
 std::pair<float, bool> FragmentItem::GetFitTextScale() const {
   if (Type() == kText) {
     if (const auto* data = text_.svg_data.Get()) {
-      auto type = data->scale_type;
-      if (type != TextScaleType::kLengthAdjust) {
-        return {data->length_adjust_scale,
-                type == TextScaleType::kFitTextInline};
+      if (!data->is_svg) {
+        return {data->length_adjust_scale, data->is_fit_text_inline};
       }
     }
   } else if (Type() == kGeneratedText) {
     if (const auto* data = generated_text_.extra_data.Get()) {
-      auto type = data->scale_type;
-      DCHECK(!data->IsSvg());
-      return {data->length_adjust_scale, type == TextScaleType::kFitTextInline};
+      DCHECK(!data->is_svg);
+      return {data->length_adjust_scale, data->is_fit_text_inline};
     }
   }
   return {1.0f, false};
