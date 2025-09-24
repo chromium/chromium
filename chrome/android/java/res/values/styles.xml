@@ -100,6 +100,7 @@ found in the LICENSE file.
         <item name="autoCompleteTextViewStyle">@style/Widget.Chromium.Settings.AutoCompleteTextView.OutlinedBox</item>
         <item name="android:navigationBarColor">@macro/settings_bg_color</item>
         <item name="android:statusBarColor">@macro/settings_bg_color</item>
+        <item name="android:colorAccent">@macro/preference_category_text_color</item>
     </style>
 
     <style name="Theme.Chromium.Settings.ManageSpace">
