@@ -10,14 +10,14 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -51,6 +51,50 @@ void ReaderModeBrowserAgent::SetWebStateDelegate(
 ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
   web_state_list_scoped_observation_.Observe(browser->GetWebStateList());
+}
+
+web::WebState* ReaderModeBrowserAgent::GetActiveWebState() {
+  return browser_->GetWebStateList()->GetActiveWebState();
+}
+
+void ReaderModeBrowserAgent::AttachWebState(web::WebState* web_state) {
+  if (web_state->IsRealized()) {
+    AttachReaderModeTabHelper(ReaderModeTabHelper::FromWebState(web_state));
+  } else {
+    web_state_scoped_observation_.AddObservation(web_state);
+  }
+}
+
+void ReaderModeBrowserAgent::DetachWebState(web::WebState* web_state) {
+  if (web_state->IsRealized()) {
+    DetachReaderModeTabHelper(ReaderModeTabHelper::FromWebState(web_state));
+  } else {
+    web_state_scoped_observation_.RemoveObservation(web_state);
+  }
+}
+
+ReaderModeTabHelper* ReaderModeBrowserAgent::GetActiveReaderModeTabHelper() {
+  return ReaderModeTabHelper::FromWebState(GetActiveWebState());
+}
+
+void ReaderModeBrowserAgent::AttachReaderModeTabHelper(
+    ReaderModeTabHelper* tab_helper) {
+  reader_mode_tab_helper_scoped_observation_.AddObservation(tab_helper);
+  if (tab_helper->GetReaderModeWebState()) {
+    [web_state_delegate_
+         readerModeBrowserAgent:this
+        didCreateReaderWebState:tab_helper->GetReaderModeWebState()];
+  }
+}
+
+void ReaderModeBrowserAgent::DetachReaderModeTabHelper(
+    ReaderModeTabHelper* tab_helper) {
+  if (tab_helper->GetReaderModeWebState()) {
+    [web_state_delegate_
+           readerModeBrowserAgent:this
+        willDestroyReaderWebState:tab_helper->GetReaderModeWebState()];
+  }
+  reader_mode_tab_helper_scoped_observation_.RemoveObservation(tab_helper);
 }
 
 void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
@@ -100,6 +144,38 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
     WebStateList* web_state_list,
     const WebStateListChange& change,
     const WebStateListStatus& status) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kStatusOnly:
+      // Change in active WebState is handled after switch.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      DetachWebState(detach_change.detached_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kMove:
+      break;
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replace_change =
+          change.As<WebStateListChangeReplace>();
+      DetachWebState(replace_change.replaced_web_state());
+      AttachWebState(replace_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insert_change =
+          change.As<WebStateListChangeInsert>();
+      AttachWebState(insert_change.inserted_web_state());
+      break;
+    }
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
+    case WebStateListChange::Type::kGroupDelete:
+      break;
+  }
+
   if (!status.active_web_state_change()) {
     // If there is no change in active WebState, do nothing.
     return;
@@ -113,25 +189,6 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
       status.new_active_web_state
           ? ReaderModeTabHelper::FromWebState(status.new_active_web_state)
           : nullptr;
-
-  if (old_tab_helper) {
-    // If there was an active WebState, remove ourself as observer.
-    old_tab_helper->RemoveObserver(this);
-  }
-  if (new_tab_helper) {
-    // If there is a new active WebState, start observing it.
-    new_tab_helper->AddObserver(this);
-  }
-
-  // TODO(crbug.com/438125409): Remove this call to `SetFullscreenController`
-  // once dependency installation is handled correctly.
-  if (new_tab_helper && new_tab_helper->GetReaderModeWebState()) {
-    FindTabHelper* reader_mode_find_tab_helper =
-        FindTabHelper::FromWebState(new_tab_helper->GetReaderModeWebState());
-    FullscreenController* fullscreen_controller =
-        FullscreenController::FromBrowser(browser_);
-    reader_mode_find_tab_helper->SetFullscreenController(fullscreen_controller);
-  }
 
   // Show or hide the Reader mode UI if necessary.
   const bool old_reader_mode_web_state_available =
@@ -153,28 +210,43 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
   web_state_list_scoped_observation_.Reset();
 }
 
+#pragma mark - web::WebStateObserver
+
+void ReaderModeBrowserAgent::WebStateRealized(web::WebState* web_state) {
+  web_state_scoped_observation_.RemoveObservation(web_state);
+  AttachReaderModeTabHelper(ReaderModeTabHelper::FromWebState(web_state));
+}
+
+void ReaderModeBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
+  NOTREACHED();
+}
+
 #pragma mark - ReaderModeTabHelper::Observer
 
 void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state) {
-  // If Reader mode becomes active in the active WebState, show the Reader mode
-  // UI.
-  ShowReaderModeUI(/* animated= */ YES);
-
   [web_state_delegate_ readerModeBrowserAgent:this
                       didCreateReaderWebState:web_state];
+
+  if (tab_helper == GetActiveReaderModeTabHelper()) {
+    // If Reader mode becomes active in the active WebState, show the Reader
+    // mode UI.
+    ShowReaderModeUI(/* animated= */ YES);
+  }
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state,
     ReaderModeDeactivationReason reason) {
-  // If Reader mode becomes inactive in the active WebState, hide the Reader
-  // mode UI.
-  const bool animated =
-      reason == ReaderModeDeactivationReason::kUserDeactivated;
-  HideReaderModeUI(animated);
+  if (tab_helper == GetActiveReaderModeTabHelper()) {
+    // If Reader mode becomes inactive in the active WebState, hide the Reader
+    // mode UI.
+    const bool animated =
+        reason == ReaderModeDeactivationReason::kUserDeactivated;
+    HideReaderModeUI(animated);
+  }
 
   [web_state_delegate_ readerModeBrowserAgent:this
                     willDestroyReaderWebState:web_state];
@@ -195,5 +267,5 @@ void ReaderModeBrowserAgent::ReaderModeDistillationFailed(
 
 void ReaderModeBrowserAgent::ReaderModeTabHelperDestroyed(
     ReaderModeTabHelper* tab_helper) {
-  tab_helper->RemoveObserver(this);
+  NOTREACHED();
 }
