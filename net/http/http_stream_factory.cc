@@ -47,7 +47,6 @@ namespace net {
 
 namespace {
 const char kAlternativeServiceHeader[] = "Alt-Svc";
-
 }  // namespace
 
 // static
@@ -98,7 +97,7 @@ HttpStreamFactory::StreamRequestInfo::StreamRequestInfo() = default;
 
 HttpStreamFactory::StreamRequestInfo::StreamRequestInfo(
     const HttpRequestInfo& http_request_info)
-    : url(http_request_info.url),
+    : url(RemoveCredentialsFromUrl(http_request_info.url)),
       method(http_request_info.method),
       network_anonymization_key(http_request_info.network_anonymization_key),
       traffic_annotation(http_request_info.traffic_annotation),

@@ -83,7 +83,9 @@ class NET_EXPORT HttpStreamFactory {
     ~StreamRequestInfo();
 
     // At this layer and below, only PAC scripts need the full URL. Everything
-    // else wants, at most, the SchemeHostPort.
+    // else wants, at most, the SchemeHostPort. The URL has its
+    // username/password fields removed, to protect against leaking user
+    // information when logging.
     GURL url;
 
     std::string method;

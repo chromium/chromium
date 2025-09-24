@@ -50,6 +50,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
@@ -487,7 +488,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Returns a partial representation of the request's state as a value, for
   // debugging.
-  base::Value::Dict GetStateAsValue() const;
+  base::Value::Dict GetStateAsValue(NetLogCaptureMode capture_mode) const;
 
   // Logs information about what external object currently blocking the
   // request. LogUnblocked must be called before resuming the request. This

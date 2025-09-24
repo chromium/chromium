@@ -537,9 +537,15 @@ NET_EXPORT void CreateNetLogEntriesForActiveObjects(
 
   // Create fake events.
   for (auto* request : requests) {
+    // Use default capture mode for simplicity. Can't call capture_mode() on
+    // `observer` because this method is typically called just before it starts
+    // observing, so it would CHECK. The capture mode only affects inlined
+    // credentials in the URL, which are pretty rare, so simplest to always
+    // redact them here. Can change later if needed.
     NetLogEntry entry(NetLogEventType::REQUEST_ALIVE,
                       request->net_log().source(), NetLogEventPhase::BEGIN,
-                      request->creation_time(), request->GetStateAsValue());
+                      request->creation_time(),
+                      request->GetStateAsValue(NetLogCaptureMode::kDefault));
     observer->OnAddEntry(entry);
   }
 }

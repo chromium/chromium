@@ -33,7 +33,8 @@ class SiteForCookies;
 NET_EXPORT base::Value::Dict NetLogURLRequestConstructorParams(
     const GURL& url,
     RequestPriority priority,
-    NetworkTrafficAnnotationTag traffic_annotation);
+    NetworkTrafficAnnotationTag traffic_annotation,
+    NetLogCaptureMode capture_mode);
 
 // Returns a Value containing NetLog parameters for starting a URLRequest.
 NET_EXPORT base::Value::Dict NetLogURLRequestStartParams(
@@ -43,7 +44,8 @@ NET_EXPORT base::Value::Dict NetLogURLRequestStartParams(
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
     const std::optional<url::Origin>& initiator,
-    int64_t upload_id);
+    int64_t upload_id,
+    NetLogCaptureMode capture_mode);
 
 }  // namespace net
 

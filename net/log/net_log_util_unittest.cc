@@ -34,6 +34,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::HasSubstr;
+using ::testing::Not;
+
 namespace net {
 
 namespace {
@@ -193,6 +196,27 @@ TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsMultipleContexts) {
       EXPECT_EQ(entry_list[i].source.id, requests[i]->net_log().source().id);
     }
   }
+}
+
+// Make sure CreateNetLogEntriesForActiveObjects redacts credentials embedded in
+// URLs.
+TEST(NetLogUtil, CreateNetLogEntriesForActiveObjectsRedactsCredentials) {
+  base::test::TaskEnvironment task_environment;
+  const GURL url("https://a:b@c.test/d");
+
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  TestDelegate delegate;
+  std::vector<std::unique_ptr<URLRequest>> requests;
+  requests.push_back(context->CreateRequest(url, DEFAULT_PRIORITY, &delegate,
+                                            TRAFFIC_ANNOTATION_FOR_TESTS));
+  std::set<URLRequestContext*> contexts;
+  contexts.insert(context.get());
+  // The mode of the observer should be ignored.
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kEverything);
+  CreateNetLogEntriesForActiveObjects(contexts, &net_log_observer);
+  std::string json = net_log_observer.GetJson();
+  EXPECT_THAT(json, Not(HasSubstr(url.spec())));
+  EXPECT_THAT(json, HasSubstr("https://c.test/d (credentials redacted)"));
 }
 
 }  // namespace
