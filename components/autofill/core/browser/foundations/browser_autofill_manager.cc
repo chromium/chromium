@@ -498,12 +498,7 @@ bool ShouldOfferSingleFieldFill(const AutofillField* autofill_field,
   // due to an unrecognized autocomplete attribute. Note that in the context
   // of Autofill, the popup for credit card related fields is not getting
   // suppressed due to an unrecognized autocomplete attribute.
-  if (suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
-    return false;
-  }
-
-  // Finally, check that the scheme is secure.
-  return suppress_reason != SuppressReason::kInsecureForm;
+  return suppress_reason != SuppressReason::kAutocompleteUnrecognized;
 }
 
 // Returns whether suggestions should be suppressed for the given reason.
@@ -512,17 +507,10 @@ bool ShouldSuppressSuggestions(SuppressReason suppress_reason,
   switch (suppress_reason) {
     case SuppressReason::kNotSuppressed:
       return false;
-
     case SuppressReason::kAblation:
       LOG_AF(log_manager) << LoggingScope::kFilling
                           << LogMessage::kSuggestionSuppressed
                           << " Reason: Ablation experiment";
-      return true;
-
-    case SuppressReason::kInsecureForm:
-      LOG_AF(log_manager) << LoggingScope::kFilling
-                          << LogMessage::kSuggestionSuppressed
-                          << " Reason: Insecure form";
       return true;
     case SuppressReason::kAutocompleteUnrecognized:
       LOG_AF(log_manager) << LoggingScope::kFilling
@@ -1141,23 +1129,6 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     context.filling_product =
         GetPreferredSuggestionFillingProduct(autofill_field->Type());
   }
-
-  // If this is a mixed content form, we show a warning message and don't offer
-  // autofill. The warning is shown even if there are no autofill suggestions
-  // available.
-  if (IsFormMixedContent(client(), form) &&
-      client().GetPrefs()->FindPreference(
-          ::prefs::kMixedFormsWarningsEnabled) &&
-      client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
-    context.do_not_generate_autofill_suggestions = true;
-    // If the user begins typing, we interpret that as dismissing the warning.
-    // No suggestions are allowed, but the warning is no longer shown.
-    if (field.properties_mask() & kUserTyped) {
-      context.suppress_reason = SuppressReason::kInsecureForm;
-    } else {
-      context.should_show_mixed_content_warning = true;
-    }
-  }
   return context;
 }
 
@@ -1309,10 +1280,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
       form, form_structure, field, autofill_field, trigger_source);
   const bool field_is_relevant_for_plus_addresses =
       IsPlusAddressesManuallyTriggered(trigger_source) ||
-      (!context.should_show_mixed_content_warning &&
-       // TODO(crbug.com/409962888): Figure out if plus addresses should be
-       // conditioned on Address Autofill being enabled.
-       client().IsAutofillProfileEnabled() &&
+      // TODO(crbug.com/409962888): Figure out if plus addresses should be
+      // conditioned on Address Autofill being enabled.
+      (client().IsAutofillProfileEnabled() &&
        !context.do_not_generate_autofill_suggestions && autofill_field &&
        plus_address_delegate &&
        plus_address_delegate->IsFieldEligibleForPlusAddress(*autofill_field) &&
@@ -1384,6 +1354,26 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
                      weak_ptr_factory_.GetWeakPtr(), form.global_id(),
                      field.global_id(), trigger_source, context);
+
+  // If this is a mixed content form, we show a warning message and don't offer
+  // autofill. The warning is shown even if there are no autofill suggestions
+  // available.
+  if (IsFormMixedContent(client(), form) &&
+      client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
+    LOG_AF(log_manager()) << LoggingScope::kFilling
+                          << LogMessage::kSuggestionSuppressed
+                          << " Reason: Insecure form";
+    // If the user begins typing, we interpret that as dismissing the warning.
+    // No suggestions are allowed, but the warning is no longer shown.
+    std::vector<Suggestion> suggestions;
+    if (!(field.properties_mask() & kUserTyped)) {
+      suggestions.emplace_back(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+          SuggestionType::kMixedFormMessage);
+    }
+    std::move(callback).Run(/*show_suggestions=*/true, suggestions);
+    return;
+  }
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
@@ -3224,16 +3214,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     std::optional<std::string> plus_address_email_override,
     const std::vector<std::string>& one_time_passwords,
     SuggestionsContext& context) {
-  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
-    return {};
-  }
-
-  if (context.should_show_mixed_content_warning) {
-    return {
-        Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
-                   SuggestionType::kMixedFormMessage)};
-  }
-
   if (context.do_not_generate_autofill_suggestions) {
     return {};
   }
