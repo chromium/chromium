@@ -9,26 +9,31 @@
 
 namespace autofill {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BubbleType)
 enum class BubbleType {
   // Denotes the save/update address bubble.
-  kSaveUpdateAddress,
+  kSaveUpdateAddress = 0,
   // Denotes bubble for saving a new IBAN.
-  kSaveIban,
+  kSaveIban = 1,
   // Denotes bubble for saving/updating a credit card.
-  kSaveUpdateCard,
+  kSaveUpdateCard = 2,
   // Denotes bubble for saving/updating autofill ai data.
-  kSaveUpdateAutofillAi,
+  kSaveUpdateAutofillAi = 3,
   // Denotes bubble for virtual card enrollment confirmation.
-  kVirtualCardEnrollConfirmation,
+  kVirtualCardEnrollConfirmation = 4,
   // Denotes bubble for mandatory reauth types.
-  kMandatoryReauth,
+  kMandatoryReauth = 5,
   // Denotes bubble for offer notifications.
-  kOfferNotification,
+  kOfferNotification = 6,
   // Denotes bubble for filled card information.
-  kFilledCardInformation,
+  kFilledCardInformation = 7,
   // Denotes password related bubbles.
-  kPassword
+  kPassword = 8,
+  kMaxValue = kPassword
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillBubbleType)
 
 // This class serves as the base for all bubble controllers, which manage the
 // logic and state of an Autofill bubble.

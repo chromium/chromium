@@ -2129,6 +2129,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Issuer" variants="Autofill.BnplIssuer"/>
 </histogram>
 
+<histogram name="Autofill.Bubble.RequestShow" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This metric tracks the total volume of all bubble-show attempts per bubble
+    type. Logged when the bubble requests to be show.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Show.NoActiveBubble" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when the bubble requests to be shown but no other bubble is active,
+    leading to the bubble being shown immediately. This metric tracks the total
+    volume of bubbles that were directly shown per bubble type.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardholderNameFixFlowPrompt.Events"
     enum="AutofillCardholderNameFixFlowPromptEvent" expires_after="2026-06-01">
   <owner>osaul@google.com</owner>

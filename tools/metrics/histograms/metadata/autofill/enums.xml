@@ -226,6 +226,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Has suggestion, user selects it"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillBubbleType) -->
+
+<enum name="AutofillBubbleType">
+  <summary>
+    The different types of bubbles that can be shown by the Autofill bubble
+    manager.
+  </summary>
+  <int value="0" label="SaveUpdateAddress"/>
+  <int value="1" label="SaveIban"/>
+  <int value="2" label="SaveUpdateCard"/>
+  <int value="3" label="SaveUpdateAutofillAi"/>
+  <int value="4" label="VirtualCardEnrollConfirmation"/>
+  <int value="5" label="MandatoryReauth"/>
+  <int value="6" label="OfferNotification"/>
+  <int value="7" label="FilledCardInformation"/>
+  <int value="8" label="Password"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_controller_base.h:BubbleType) -->
+
 <enum name="AutofillCardholderNameFixFlowPromptEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Accepted"/>

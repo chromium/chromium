@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
@@ -96,6 +97,8 @@ BubbleManagerImpl::~BubbleManagerImpl() = default;
 void BubbleManagerImpl::RequestShowController(
     BubbleControllerBase& controller_to_show,
     bool force_show) {
+  base::UmaHistogramEnumeration("Autofill.Bubble.RequestShow",
+                                controller_to_show.GetBubbleType());
   base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
       controller_to_show.GetBubbleControllerBaseWeakPtr();
 
@@ -103,6 +106,8 @@ void BubbleManagerImpl::RequestShowController(
 
   if (!active_bubble_controller_) {
     // No active bubble, so this one can be shown immediately.
+    base::UmaHistogramEnumeration("Autofill.Bubble.Show.NoActiveBubble",
+                                  controller_to_show.GetBubbleType());
     ShowAndSetCurrentActive(controller_weak_ptr);
     return;
   }

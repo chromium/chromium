@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,6 +71,7 @@ class BubbleManagerImplTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   BubbleManagerImpl bubble_manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test that requesting a bubble when none is active shows it immediately.
@@ -81,6 +83,11 @@ TEST_F(BubbleManagerImplTest, RequestShow_NoActiveBubble_ShowsImmediately) {
   bubble_manager_.RequestShowController(*address_controller,
                                         /*force_show=*/false);
   EXPECT_TRUE(address_controller->IsShowingBubble());
+
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.RequestShow",
+                                       BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.NoActiveBubble",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that a higher-priority bubble preempts a lower-priority one.
@@ -104,6 +111,14 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
   bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
   EXPECT_FALSE(address_controller->IsShowingBubble());
   EXPECT_TRUE(card_controller->IsShowingBubble());
+
+  histogram_tester_.ExpectBucketCount("Autofill.Bubble.RequestShow",
+                                      BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectBucketCount("Autofill.Bubble.RequestShow",
+                                      BubbleType::kSaveUpdateCard, 1);
+  histogram_tester_.ExpectTotalCount("Autofill.Bubble.RequestShow", 2);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.NoActiveBubble",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that hiding the active bubble shows the next highest-priority one from
