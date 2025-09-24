@@ -113,11 +113,21 @@ HttpRequestHeaders& HttpRequestHeaders::operator=(
 HttpRequestHeaders& HttpRequestHeaders::operator=(HttpRequestHeaders&& other) =
     default;
 
+std::optional<std::string_view> HttpRequestHeaders::GetHeaderView(
+    std::string_view key) const {
+  auto it = FindHeader(key);
+  if (it == headers_.end()) {
+    return std::nullopt;
+  }
+  return std::string_view(it->value);
+}
+
 std::optional<std::string> HttpRequestHeaders::GetHeader(
     std::string_view key) const {
   auto it = FindHeader(key);
-  if (it == headers_.end())
+  if (it == headers_.end()) {
     return std::nullopt;
+  }
   return it->value;
 }
 

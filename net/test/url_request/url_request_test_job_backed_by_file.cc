@@ -106,8 +106,8 @@ bool URLRequestTestJobBackedByFile::GetMimeType(std::string* mime_type) const {
 
 void URLRequestTestJobBackedByFile::SetExtraRequestHeaders(
     const HttpRequestHeaders& headers) {
-  std::optional<std::string> range_header =
-      headers.GetHeader(HttpRequestHeaders::kRange);
+  std::optional<std::string_view> range_header =
+      headers.GetHeaderView(HttpRequestHeaders::kRange);
   if (range_header) {
     // This job only cares about the Range header. This method stashes the value
     // for later use in DidOpen(), which is responsible for some of the range

@@ -139,8 +139,8 @@ void ExternalFileResolver::ProcessHeaders(
     const net::HttpRequestHeaders& headers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Read the range header if present.
-  std::optional<std::string> range_header =
-      headers.GetHeader(net::HttpRequestHeaders::kRange);
+  std::optional<std::string_view> range_header =
+      headers.GetHeaderView(net::HttpRequestHeaders::kRange);
   if (range_header) {
     // Currently this job only cares about the Range header, and only supports
     // single range requests.

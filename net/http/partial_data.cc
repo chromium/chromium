@@ -36,8 +36,8 @@ PartialData::PartialData() = default;
 PartialData::~PartialData() = default;
 
 bool PartialData::Init(const HttpRequestHeaders& headers) {
-  std::optional<std::string> range_header =
-      headers.GetHeader(HttpRequestHeaders::kRange);
+  std::optional<std::string_view> range_header =
+      headers.GetHeaderView(HttpRequestHeaders::kRange);
   if (!range_header) {
     range_requested_ = false;
     return false;

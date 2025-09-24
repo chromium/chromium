@@ -119,8 +119,9 @@ class NET_EXPORT HttpRequestHeaders {
     return FindHeader(key) != headers_.end();
   }
 
-  // Gets the first header that matches |key|, if one exists. If none exist,
+  // Gets the first header that matches `key`, if one exists. If none exist,
   // returns std::nullopt.
+  std::optional<std::string_view> GetHeaderView(std::string_view key) const;
   std::optional<std::string> GetHeader(std::string_view key) const;
 
   // Clears all the headers.
