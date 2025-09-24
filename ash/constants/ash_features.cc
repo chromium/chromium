@@ -276,6 +276,12 @@ constexpr base::FeatureParam<int> kBocaMaxNumStudentsAllowed{
 // Enables or disables use of the courseWorkMaterials API in the Boca app.
 BASE_FEATURE(kBocaCourseWorkMaterialApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables sharing teacher's screen in the Boca app.
+BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables sharing student's screen in the Boca app.
+BASE_FEATURE(kBocaScreenSharingStudent, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -2565,6 +2571,14 @@ bool IsBocaConfigureMaxStudentsEnabled() {
 
 bool IsBocaCourseWorkMaterialApiEnabled() {
   return base::FeatureList::IsEnabled(kBocaCourseWorkMaterialApi);
+}
+
+bool IsBocaScreenSharingTeacherEnabled() {
+  return base::FeatureList::IsEnabled(kBocaScreenSharingTeacher);
+}
+
+bool IsBocaScreenSharingStudentEnabled() {
+  return base::FeatureList::IsEnabled(kBocaScreenSharingStudent);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

@@ -76,6 +76,10 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
       source->AddInteger("maxNumStudentsAllowed",
                          features::kBocaMaxNumStudentsAllowed.Get());
     }
+    source->AddBoolean("screenSharingTeacher",
+                       features::IsBocaScreenSharingTeacherEnabled());
+    source->AddBoolean("screenSharingStudent",
+                       features::IsBocaScreenSharingStudentEnabled());
   }
 
  private:
