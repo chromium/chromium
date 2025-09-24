@@ -108,8 +108,6 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   GURL trusted_vault_service_url_;
-
-  const bool enable_registration_state_security_domain_filtering_;
 };
 
 }  // namespace trusted_vault

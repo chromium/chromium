@@ -144,18 +144,16 @@ class LocalRecoveryFactorsFactoryImpl
         std::make_unique<PhysicalDeviceRecoveryFactor>(
             security_domain_id, storage, connection, primary_account));
 #if BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(kEnableICloudKeychainRecoveryFactor)) {
-      // Note: The iCloud Keychain recovery factor needs to come after the
-      // physical device recovery factor.
-      // Retrieval attempts are performed in order, and since retrieving using
-      // the iCloud Keychain is significantly more heavy weight than from the
-      // physical device recovery factor, we want to make sure that the latter
-      // is attempted first.
-      local_recovery_factors.emplace_back(
-          std::make_unique<ICloudKeychainRecoveryFactor>(
-              icloud_keychain_access_group_prefix_, security_domain_id, storage,
-              connection, primary_account));
-    }
+    // Note: The iCloud Keychain recovery factor needs to come after the
+    // physical device recovery factor.
+    // Retrieval attempts are performed in order, and since retrieving using the
+    // iCloud Keychain is significantly more heavy weight than from the physical
+    // device recovery factor, we want to make sure that the latter is attempted
+    // first.
+    local_recovery_factors.emplace_back(
+        std::make_unique<ICloudKeychainRecoveryFactor>(
+            icloud_keychain_access_group_prefix_, security_domain_id, storage,
+            connection, primary_account));
 #endif
 
     return local_recovery_factors;

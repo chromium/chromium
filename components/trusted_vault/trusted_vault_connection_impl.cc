@@ -590,10 +590,7 @@ TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
     : security_domain_(security_domain),
       pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       access_token_fetcher_(std::move(access_token_fetcher)),
-      trusted_vault_service_url_(trusted_vault_service_url),
-      enable_registration_state_security_domain_filtering_(
-          base::FeatureList::IsEnabled(
-              kEnableRegistrationStateSecurityDomainFiltering)) {
+      trusted_vault_service_url_(trusted_vault_service_url) {
   DCHECK(trusted_vault_service_url_.is_valid());
 }
 
@@ -691,22 +688,11 @@ std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
     const CoreAccountInfo& account_info,
     std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
-        recovery_factor_filter_param,
+        recovery_factor_filter,
     DownloadAuthenticationFactorsRegistrationStateCallback callback,
     base::RepeatingClosure keep_alive_callback) {
-  // Use empty filters (which disables server side filtering) unless the
-  // `kEnableRegistrationStateSecurityDomainFiltering` flag is enabled.
-  std::set<SecurityDomainId> security_domain_filter;
-  std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
-      recovery_factor_filter;
-  if (enable_registration_state_security_domain_filtering_) {
-    security_domain_filter.insert(security_domain_);
-    recovery_factor_filter = recovery_factor_filter_param;
-  }
-
-  GURL request_url = GetGetSecurityDomainMembersURL(trusted_vault_service_url_,
-                                                    security_domain_filter,
-                                                    recovery_factor_filter);
+  GURL request_url = GetGetSecurityDomainMembersURL(
+      trusted_vault_service_url_, {security_domain_}, recovery_factor_filter);
 
   return std::make_unique<
       DownloadAuthenticationFactorsRegistrationStateRequest>(
