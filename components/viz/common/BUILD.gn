@@ -31,7 +31,6 @@ viz_component("shared_image_format") {
   ]
   deps = [
     "//base",
-    "//cc/base",
     "//skia",
     "//third_party/angle:includes",
     "//ui/gfx:buffer_types",

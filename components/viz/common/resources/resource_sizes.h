@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/numerics/safe_math.h"
-#include "cc/base/math_util.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -71,6 +70,15 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) ResourceSizes {
 
   template <typename T>
   static bool MaybeRound(base::CheckedNumeric<T>* value, T mul);
+
+  template <typename T>
+  static constexpr T RoundUpInternal(T n, T mul) {
+    T remainder = n % mul;
+    if (remainder == 0) {
+      return n;
+    }
+    return (n > 0) ? n + mul - remainder : n - remainder;
+  }
 
   // Not instantiable.
   ResourceSizes() = delete;
@@ -188,10 +196,10 @@ T ResourceSizes::WidthInBytesInternal(int width,
                                       bool aligned) {
   T bytes = format.BitsPerPixel();
   bytes *= width;
-  bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 8);
+  bytes = RoundUpInternal<T>(bytes, 8);
   bytes /= 8;
   if (aligned)
-    bytes = cc::MathUtil::UncheckedRoundUp<T>(bytes, 4);
+    bytes = RoundUpInternal<T>(bytes, 4);
   return bytes;
 }
 
@@ -199,9 +207,14 @@ template <typename T>
 bool ResourceSizes::MaybeRound(base::CheckedNumeric<T>* value, T mul) {
   DCHECK(value->IsValid());
   T to_round = value->ValueOrDie();
-  if (!cc::MathUtil::VerifyRoundup<T>(to_round, mul))
+  bool can_round_up =
+      mul && (to_round <= (std::numeric_limits<T>::max() -
+                           (std::numeric_limits<T>::max() % mul)));
+  if (!can_round_up) {
     return false;
-  *value = cc::MathUtil::UncheckedRoundUp<T>(to_round, mul);
+  }
+
+  *value = RoundUpInternal<T>(to_round, mul);
   return true;
 }
 

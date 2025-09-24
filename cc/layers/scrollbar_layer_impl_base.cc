@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "cc/base/math_util.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
