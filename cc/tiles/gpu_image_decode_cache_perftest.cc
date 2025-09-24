@@ -41,11 +41,7 @@ SkM44 CreateMatrix(const SkSize& scale) {
   return SkM44::Scale(scale.width(), scale.height());
 }
 
-enum class TestMode { kGpu, kSw };
-
-class GpuImageDecodeCachePerfTest
-    : public testing::Test,
-      public testing::WithParamInterface<TestMode> {
+class GpuImageDecodeCachePerfTest : public testing::Test {
  public:
   GpuImageDecodeCachePerfTest()
       : timer_(kWarmupRuns,
@@ -53,7 +49,7 @@ class GpuImageDecodeCachePerfTest
                kTimeCheckInterval),
         context_provider_(
             base::MakeRefCounted<viz::TestInProcessContextProvider>(
-                ParamToTestContextType(GetParam()),
+                viz::TestContextType::kGpuRaster,
                 /*support_locking=*/false)) {}
 
   void SetUp() override {
@@ -62,56 +58,22 @@ class GpuImageDecodeCachePerfTest
         context_provider_->ContextCapabilities().max_texture_size;
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cache_ = std::make_unique<GpuImageDecodeCache>(
-        context_provider_.get(), UseTransferCache(), kRGBA_8888_SkColorType,
-        kCacheSize, MaxTextureSize(), nullptr);
+        context_provider_.get(), /*use_transfer_cache=*/true,
+        kRGBA_8888_SkColorType, kCacheSize, MaxTextureSize(), nullptr);
   }
 
  protected:
-  size_t MaxTextureSize() const {
-    switch (GetParam()) {
-      case TestMode::kGpu:
-        return 4096;
-      case TestMode::kSw:
-        return 0;
-    }
-  }
-
-  bool UseTransferCache() const { return GetParam() == TestMode::kGpu; }
-
-  const char* ParamName() const {
-    switch (GetParam()) {
-      case TestMode::kGpu:
-        return "GPU";
-      case TestMode::kSw:
-        return "SW";
-    }
-  }
+  size_t MaxTextureSize() const { return 4096; }
 
   // Returns dimensions for an image that will fit in GPU memory.
   gfx::Size GetNormalImageSize() const {
-    TestMode mode = GetParam();
     int dimension = std::min(100, max_texture_size_ - 1);
-    switch (mode) {
-      case TestMode::kGpu:
-        return gfx::Size(dimension, dimension);
-      case TestMode::kSw:
-        return gfx::Size(1, max_texture_size_ + 1);
-    }
-  }
-
-  viz::TestContextType ParamToTestContextType(TestMode mode) {
-    switch (mode) {
-      case TestMode::kGpu:
-        return viz::TestContextType::kGpuRaster;
-      case TestMode::kSw:
-        return viz::TestContextType::kSoftwareRaster;
-    }
+    return gfx::Size(dimension, dimension);
   }
 
   perf_test::PerfResultReporter SetUpReporter(
       const std::string& metric_suffix) {
-    perf_test::PerfResultReporter reporter("gpu_image_decode_cache",
-                                           ParamName());
+    perf_test::PerfResultReporter reporter("gpu_image_decode_cache", "GPU");
     reporter.RegisterImportantMetric(metric_suffix, "runs/s");
     return reporter;
   }
@@ -122,11 +84,7 @@ class GpuImageDecodeCachePerfTest
   int max_texture_size_ = 0;
 };
 
-INSTANTIATE_TEST_SUITE_P(P,
-                         GpuImageDecodeCachePerfTest,
-                         testing::Values(TestMode::kGpu, TestMode::kSw));
-
-TEST_P(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
+TEST_F(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
   timer_.Reset();
   auto gfx_size = GetNormalImageSize();
   do {
@@ -151,12 +109,7 @@ TEST_P(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
   reporter.AddResult("_with_color_conversion", timer_.LapsPerSecond());
 }
 
-using GpuImageDecodeCachePerfTestNoSw = GpuImageDecodeCachePerfTest;
-INSTANTIATE_TEST_SUITE_P(P,
-                         GpuImageDecodeCachePerfTestNoSw,
-                         testing::Values(TestMode::kGpu));
-
-TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
+TEST_F(GpuImageDecodeCachePerfTest, DecodeWithMips) {
   auto gfx_size = GetNormalImageSize();
   timer_.Reset();
   do {
@@ -180,7 +133,7 @@ TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
   reporter.AddResult("_with_mips", timer_.LapsPerSecond());
 }
 
-TEST_P(GpuImageDecodeCachePerfTest, AcquireExistingImages) {
+TEST_F(GpuImageDecodeCachePerfTest, AcquireExistingImages) {
   timer_.Reset();
   auto gfx_size = GetNormalImageSize();
   DrawImage image(
