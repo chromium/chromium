@@ -26,6 +26,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      */
     private static final int WIDE_HEADER_SCREEN_WIDTH_DP = 1200;
 
+    /** Caches the current header panel width in px. */
+    private int mHeaderPanelWidthPx;
+
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
         // Main menu, which is the first page in one column mode (i.e. window is
@@ -78,7 +81,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      *
      * @param view The header view instance.
      */
-    private static void updateHeaderLayout(View view) {
+    private void updateHeaderLayout(View view) {
         var resources = view.getResources();
         int screenWidthDp = resources.getConfiguration().screenWidthDp;
         int headerWidth =
@@ -92,6 +95,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         if (headerWidth != params.width) {
             params.width = headerWidth;
             view.setLayoutParams(params);
+            mHeaderPanelWidthPx = headerWidth;
         }
+    }
+
+    int getHeaderPanelWidthPx() {
+        return mHeaderPanelWidthPx;
     }
 }

@@ -219,6 +219,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_NEW_LABEL" desc="The label displayed next to the title of newly added preferences.">
         <ph name="PREF_TITLE">%1$s</ph>  <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_HINT" desc='Hint text in search in settings widget. [CHAR_LIMIT=32]'>
+        Search settings
+      </message>
 
       <!-- Notification channels -->
       <message name="IDS_NOTIFICATION_CATEGORY_GROUP_GENERAL" desc='Subheading for "General" section of a list of notification categories. [CHAR_LIMIT=32]'>

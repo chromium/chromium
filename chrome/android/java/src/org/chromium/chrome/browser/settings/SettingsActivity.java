@@ -11,13 +11,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -27,6 +32,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -150,6 +156,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private final Map<Fragment, SettingsItemBackgroundDecoration> mItemDecorations =
             new HashMap<>();
 
+    // True if multiple-column Fragment is activated. Both the window width and the feature flag
+    // condition should be met.
+    private boolean mUseMultiColumn;
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -235,6 +245,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         Toolbar actionBar = findViewById(R.id.action_bar);
         setSupportActionBar(actionBar);
         assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        if (ChromeFeatureList.sSearchInSettings.isEnabled()) initializeSearchUi();
 
         mIsNewlyCreated = savedInstanceState == null;
 
@@ -271,6 +282,121 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             findViewById(R.id.content).setBackgroundColor(backgroundColor);
             findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
         }
+    }
+
+    private void initializeSearchUi() {
+        // TODO(jinsukkim): Factor out to its own MVC when the code size grows.
+        mUseMultiColumn = getUseMultiColumn();
+        Toolbar actionBar = findViewById(R.id.action_bar);
+        ViewGroup appBar = findViewById(R.id.app_bar_layout);
+        ViewGroup searchBoxParent = mUseMultiColumn ? actionBar : appBar;
+        LayoutInflater.from(this).inflate(R.layout.settings_search_box, searchBoxParent, true);
+        LayoutInflater.from(this).inflate(R.layout.settings_search_query, actionBar, true);
+        View searchBox = findViewById(R.id.search_box);
+        View queryContainer = findViewById(R.id.search_query_container);
+        if (mUseMultiColumn) {
+            // Adjust the view width after the Fragment layout is completed.
+            new Handler().post(this::updateDetailPanelWidth);
+        }
+        searchBox.setOnClickListener(
+                v -> {
+                    searchBox.setVisibility(View.GONE);
+                    queryContainer.setVisibility(View.VISIBLE);
+                    if (!mUseMultiColumn) {
+                        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+                    }
+                    // TODO(jinsukkim): Initialize search query widget.
+                });
+        View backToSettings = findViewById(R.id.back_arrow_icon);
+        backToSettings.setOnClickListener(
+                v -> {
+                    queryContainer.setVisibility(View.GONE);
+                    searchBox.setVisibility(View.VISIBLE);
+                    if (!mUseMultiColumn) {
+                        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+                    }
+                    getSettingsFragmentManager().popBackStack();
+                    // TODO(jinsukkim): Complete back action.
+                });
+        actionBar.setOverflowIcon(null);
+    }
+
+    private FragmentManager getSettingsFragmentManager() {
+        if (mUseMultiColumn) {
+            return assumeNonNull(mMultiColumnSettings).getChildFragmentManager();
+        } else {
+            return getSupportFragmentManager();
+        }
+    }
+
+    private void updateDetailPanelWidth() {
+        assert mUseMultiColumn : "Should be called in multi-column mode only.";
+
+        var windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this);
+        int endPaddingPx =
+                getResources().getDimensionPixelSize(R.dimen.settings_detail_panel_end_padding);
+        int headerWidthPx = assumeNonNull(mMultiColumnSettings).getHeaderPanelWidthPx();
+        int detailViewWidthPx = windowMetrics.getBounds().width() - headerWidthPx - endPaddingPx;
+        View searchBox = findViewById(R.id.search_box);
+        var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
+        lp.width = detailViewWidthPx;
+        lp.gravity = Gravity.END;
+        searchBox.setLayoutParams(lp);
+        View queryContainer = findViewById(R.id.search_query_container);
+        LayoutParams qlp = queryContainer.getLayoutParams();
+        qlp.width = detailViewWidthPx;
+        queryContainer.setLayoutParams(qlp);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!ChromeFeatureList.sSearchInSettings.isEnabled()) return;
+
+        boolean useMultiColumn = getUseMultiColumn();
+        if (useMultiColumn == mUseMultiColumn) {
+            if (mUseMultiColumn) new Handler().post(this::updateDetailPanelWidth);
+            return;
+        }
+
+        mUseMultiColumn = useMultiColumn;
+        View searchBox = findViewById(R.id.search_box);
+        ViewGroup searchBoxParent =
+                findViewById(useMultiColumn ? R.id.app_bar_layout : R.id.action_bar);
+        searchBoxParent.removeView(searchBox);
+        new Handler().post(() -> switchSearchUiLayout(searchBox));
+    }
+
+    private void switchSearchUiLayout(View searchBox) {
+        if (mUseMultiColumn) {
+            ViewGroup actionBar = findViewById(R.id.action_bar);
+            actionBar.addView(searchBox);
+            updateDetailPanelWidth();
+        } else {
+            ViewGroup appBarLayout = findViewById(R.id.app_bar_layout);
+            appBarLayout.addView(searchBox);
+            View queryContainer = findViewById(R.id.search_query_container);
+            LayoutParams lp = searchBox.getLayoutParams();
+            lp.width = LayoutParams.MATCH_PARENT;
+            searchBox.setLayoutParams(lp);
+            lp = queryContainer.getLayoutParams();
+            lp.width = LayoutParams.MATCH_PARENT;
+            queryContainer.setLayoutParams(lp);
+        }
+    }
+
+    /**
+     * Returns true if multi-column mode will be displayed. This happens when the flag
+     * #settings-multicolumn is enabled and the screen width is broad enough to activate the
+     * multi-column mode.
+     */
+    private boolean getUseMultiColumn() {
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) return false;
+
+        var windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this);
+        return windowMetrics.getBounds().width()
+                >= getResources()
+                        .getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
     }
 
     @Override
@@ -518,6 +644,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            return false;
+        }
         // By default, every screen in Settings shows a "Help & feedback" menu item.
         MenuItem help =
                 menu.add(
@@ -533,6 +662,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (ChromeFeatureList.sSearchInSettings.isEnabled()) {
+            return false;
+        }
         if (menu.size() == 1) {
             MenuItem item = menu.getItem(0);
             if (item.getIcon() != null) item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
