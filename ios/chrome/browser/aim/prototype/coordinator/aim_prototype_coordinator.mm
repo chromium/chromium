@@ -140,7 +140,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                    omniboxClient:std::move(omniboxClient)
              presentationContext:OmniboxPresentationContext::kAIMPrototype];
   // TODO(crbug.com/355179721): Add omnibox focus delegate.
-  _omniboxCoordinator.presenterDelegate = _viewController;
+  _omniboxCoordinator.presenterDelegate = self.omniboxPopupPresenterDelegate;
   [_omniboxCoordinator start];
 
   [_omniboxCoordinator.managedViewController
@@ -178,13 +178,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 #pragma mark - AIMPrototypeViewControllerDelegate
-
-- (void)aimPrototypeViewControllerDidTapCloseButton:
-    (AIMPrototypeViewController*)viewController {
-  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [commands hideAIMPrototype];
-}
 
 - (void)aimPrototypeViewControllerDidTapMicButton:
     (AIMPrototypeViewController*)viewController {

@@ -9,8 +9,12 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_container_view_controller.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_dismiss_animator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_present_animator.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface AIMPrototypeContainerCoordinator () <
+    AIMPrototypeContainerViewControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
 @end
@@ -42,12 +46,14 @@
   _viewController = [[AIMPrototypeContainerViewController alloc] init];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
+  _viewController.delegate = self;
 
   _aimCoordinator = [[AIMPrototypeCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       entrypoint:_entrypoint
                            query:_query];
+  _aimCoordinator.omniboxPopupPresenterDelegate = _viewController;
   [_aimCoordinator start];
 
   [_viewController addInputViewController:_aimCoordinator.inputViewController];
@@ -82,6 +88,15 @@
     animationControllerForDismissedController:(UIViewController*)dismissed {
   return [[AIMPrototypeDismissAnimator alloc]
       initWithContextProvider:_aimCoordinator.contextProvider];
+}
+
+#pragma mark - AIMPrototypeContainerViewControllerDelegate
+
+- (void)aimPrototypeContainerViewControllerDidTapCloseButton:
+    (AIMPrototypeViewController*)viewController {
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [commands hideAIMPrototype];
 }
 
 @end

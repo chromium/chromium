@@ -43,6 +43,7 @@ const NSTimeInterval kSlideInDuration = 0.1;
   // Force a layout pass to ensure `inputPlateView` has its final frame.
   toView.frame =
       [transitionContext finalFrameForViewController:toViewController];
+  // This is needed to ensure that the input is correctly sized and positioned.
   [toView layoutIfNeeded];
 
   UIView* inputPlateView = [_contextProvider inputPlateViewForAnimation];

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
-#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 
 @protocol AIMPrototypeMutator;
 @class AIMPrototypeViewController;
@@ -18,8 +17,6 @@
 
 // Delegate for the AIM prototype view controller.
 @protocol AIMPrototypeViewControllerDelegate
-- (void)aimPrototypeViewControllerDidTapCloseButton:
-    (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerDidTapGalleryButton:
     (AIMPrototypeViewController*)viewController;
 - (void)aimPrototypeViewControllerDidTapMicButton:
@@ -35,8 +32,7 @@
 // View controller for the AIM prototype.
 @interface AIMPrototypeViewController
     : UIViewController <AIMPrototypeAnimationContextProvider,
-                        AIMPrototypeConsumer,
-                        OmniboxPopupPresenterDelegate>
+                        AIMPrototypeConsumer>
 
 @property(nonatomic, weak) id<AIMPrototypeViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<AIMPrototypeMutator> mutator;

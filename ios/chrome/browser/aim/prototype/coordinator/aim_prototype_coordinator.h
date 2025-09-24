@@ -14,6 +14,7 @@
 @protocol AIMPrototypeAnimationContextProvider;
 enum class AIMPrototypeEntrypoint;
 class Browser;
+@protocol OmniboxPopupPresenterDelegate;
 
 /// AIMPrototypeCoordinator presents AIM with an omnibox.
 @interface AIMPrototypeCoordinator : ChromeCoordinator
@@ -24,6 +25,10 @@ class Browser;
 
 // The view controller managed by this coordinator.
 @property(nonatomic, readonly) UIViewController* inputViewController;
+
+// Delegate for positioning the omnibox popup.
+@property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
+    omniboxPopupPresenterDelegate;
 
 /// Init the AIM Prototype opened from `entrypoint` with an optional `query` in
 /// the omnibox.

@@ -43,10 +43,6 @@ const CGFloat kAIMButtonWidth = 94.0f;
 const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 16.0f;
-/// The padding for the close button.
-const CGFloat kCloseButtonPadding = 16.0f;
-/// The horizontal and bottom padding for the input plate container.
-const CGFloat kInputPlatePadding = 10.0f;
 /// The vertical padding for the input plate stack view.
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
@@ -72,10 +68,6 @@ const CGFloat kMicButtonTopPadding = 2.0f;
 /// The trailing padding between the omnibox container and the mic button.
 const CGFloat kMicButtonTrailingPadding = 5.0f;
 
-/// The size for the close button.
-const CGFloat kCloseButtonSize = 30.0f;
-/// The alpha for the close button.
-const CGFloat kCloseButtonAlpha = 0.6f;
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
 /// The duration for the AIM button animation.
@@ -126,8 +118,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   BOOL _canAttachCurrentTab;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
-  /// Container for the omnibox popup.
-  UIView* _omniboxPopupContainer;
   /// A spacer view used in the stack view.
   UIView* _spacerView;
 }
@@ -139,7 +129,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   self = [super init];
   if (self) {
     _omniboxContainer = [[UIView alloc] init];
-    _omniboxPopupContainer = [[UIView alloc] init];
   }
   return self;
 }
@@ -147,43 +136,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // Close button
-  UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kCloseButtonSize
-                          weight:UIImageSymbolWeightRegular
-                           scale:UIImageSymbolScaleMedium];
-  UIImage* buttonImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration),
-                        @[
-                          [[UIColor tertiaryLabelColor]
-                              colorWithAlphaComponent:kCloseButtonAlpha],
-                          [UIColor tertiarySystemFillColor]
-                        ]);
-  [closeButton setImage:buttonImage forState:UIControlStateNormal];
-
-  [closeButton addTarget:self
-                  action:@selector(closeButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
-  [self.view addSubview:closeButton];
-
-  // Omnibox popup container.
-  _omniboxPopupContainer.hidden = YES;
-  _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_omniboxPopupContainer];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_omniboxPopupContainer.topAnchor
-        constraintEqualToAnchor:closeButton.bottomAnchor],
-    [_omniboxPopupContainer.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_omniboxPopupContainer.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_omniboxPopupContainer.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
-  ]];
 
   // --- Bottom Input Area ---
 
@@ -399,29 +351,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
   [_inputPlateContainerView addSubview:_inputPlateStackView];
 
+  AddSameConstraints(_inputPlateContainerView, self.view);
+
   // Layout.
   [NSLayoutConstraint activateConstraints:@[
-    // Close button.
-    [closeButton.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:kCloseButtonPadding],
-    [closeButton.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kCloseButtonPadding],
-    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
-    [closeButton.widthAnchor constraintEqualToAnchor:closeButton.heightAnchor],
-
-    // Input Plate.
-    [_inputPlateContainerView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kInputPlatePadding],
-    [_inputPlateContainerView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kInputPlatePadding],
-    [_inputPlateContainerView.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                       constant:-kInputPlatePadding],
-
     // Main Stack View in Plate.
     [_inputPlateStackView.topAnchor
         constraintEqualToAnchor:_inputPlateContainerView.topAnchor
@@ -455,33 +388,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
   [_omniboxContainer addSubview:editView];
   AddSameConstraints(_editView, _omniboxContainer);
-}
-
-#pragma mark - OmniboxPopupPresenterDelegate
-
-- (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {
-  return _omniboxPopupContainer;
-}
-
-- (UIViewController*)popupParentViewControllerForPresenter:
-    (OmniboxPopupPresenter*)presenter {
-  return self;
-}
-
-- (UIColor*)popupBackgroundColorForPresenter:(OmniboxPopupPresenter*)presenter {
-  return [UIColor colorNamed:kPrimaryBackgroundColor];
-}
-
-- (GuideName*)omniboxGuideNameForPresenter:(OmniboxPopupPresenter*)presenter {
-  return nil;
-}
-
-- (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
-  _omniboxPopupContainer.hidden = NO;
-}
-
-- (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
-  _omniboxPopupContainer.hidden = YES;
 }
 
 #pragma mark - AIMInputItemCellDelegate
@@ -541,10 +447,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 }
 
 #pragma mark - Actions
-
-- (void)closeButtonTapped {
-  [self.delegate aimPrototypeViewControllerDidTapCloseButton:self];
-}
 
 - (void)galleryButtonTapped {
   [self.delegate aimPrototypeViewControllerDidTapGalleryButton:self];
