@@ -433,6 +433,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // TODO(crbug.com/418936295): Update location preference.
+    }
+
     public void setHideNonPermissionPreferences(boolean hide) {
         mHideNonPermissionPreferences = hide;
     }
@@ -647,7 +654,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     private Preference getPermissionPreference(@ContentSettingsType.EnumType int type) {
         boolean isOneTime = isOneTime(type);
         if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS && !isOneTime) {
-            return new TwoActionSwitchPreference(getStyledContext());
+            return createTwoActionLocationSwitchPreference();
         }
 
         return (isOneTime
@@ -655,6 +662,26 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION))
                 ? new ChromeImageViewPreference(getStyledContext())
                 : new ChromeSwitchPreference(getStyledContext());
+    }
+
+    private TwoActionSwitchPreference createTwoActionLocationSwitchPreference() {
+        TwoActionSwitchPreference preference = new TwoActionSwitchPreference(getStyledContext());
+        preference.setPrimaryButtonClickListener(
+                (v) -> {
+                    // TODO(crbug.com/418936295): Launch subpage for page info.
+                    if (getSettingsNavigation() != null) {
+                        Bundle fragmentArgs = new Bundle();
+                        fragmentArgs.putSerializable(EXTRA_SITE, mSite);
+                        getSettingsNavigation()
+                                .startSettings(
+                                        getActivity(),
+                                        LocationPermissionSubpageSettings.class,
+                                        fragmentArgs);
+                    } else {
+                        assert false : "Not reached.";
+                    }
+                });
+        return preference;
     }
 
     @RequiresNonNull({"mSite"})

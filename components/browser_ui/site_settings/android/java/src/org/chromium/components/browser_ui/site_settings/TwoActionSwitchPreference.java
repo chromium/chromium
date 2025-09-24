@@ -17,6 +17,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 /** A 2-action switch Preference used for location permission in SiteSettings. */
 @NullMarked
 public class TwoActionSwitchPreference extends ChromeSwitchPreference {
+    private View.@Nullable OnClickListener mPrimaryButtonClickListener;
 
     public TwoActionSwitchPreference(Context context) {
         this(context, null);
@@ -34,7 +35,7 @@ public class TwoActionSwitchPreference extends ChromeSwitchPreference {
         super.onBindViewHolder(holder);
 
         // Override the default ChromeSwitchPreference click listener.
-        holder.itemView.setOnClickListener(v -> onPrimaryActionClick());
+        holder.itemView.setOnClickListener(mPrimaryButtonClickListener);
 
         View switchContainer = holder.itemView.findViewById(R.id.switch_container);
         assert switchContainer != null;
@@ -45,7 +46,10 @@ public class TwoActionSwitchPreference extends ChromeSwitchPreference {
         this.onClick();
     }
 
-    private void onPrimaryActionClick() {
-        // TODO(crbug.com/418936295): Navigate to subpage.
+    public void setPrimaryButtonClickListener(View.@Nullable OnClickListener clickListener) {
+        if (mPrimaryButtonClickListener != clickListener) {
+            mPrimaryButtonClickListener = clickListener;
+            this.notifyChanged();
+        }
     }
 }

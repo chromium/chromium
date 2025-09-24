@@ -287,6 +287,9 @@
       other {Expires in # days}
     }
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_DESCRIPTION" desc="The description of the settings page to edit geolocation access options for a website.">
+    Sites usually use your location for relevant features or info, like local news or nearby shops
+  </message>
 
   <!-- Site settings Add Exception dialog -->
 
