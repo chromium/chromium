@@ -27,7 +27,7 @@ import {AnnotationMode} from './constants.js';
 <if expr="enable_pdf_save_to_drive">
     .pdfSaveToDriveEnabled="${this.pdfSaveToDriveEnabled_}"
     .saveToDriveProgress="${this.getSaveToDriveProgress_()}"
-    .saveToDriveUploading="${this.isSaveToDriveUploading_()}"
+    .saveToDriveState="${this.saveToDriveState_}"
 </if>
     @change-page="${this.onChangePage_}"
     @display-annotations-changed="${this.onDisplayAnnotationsChanged_}"

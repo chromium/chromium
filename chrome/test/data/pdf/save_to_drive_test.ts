@@ -101,6 +101,11 @@ function assertBubbleAndProgressBar(
   chrome.test.assertEq(max, progressBar.max);
 }
 
+function closeBubble(bubble: ViewerSaveToDriveBubbleElement): void {
+  bubble.$.dialog.close();
+  chrome.test.assertFalse(bubble.$.dialog.open);
+}
+
 function setUpTestPrivateProxy(): TestPdfViewerPrivateProxy {
   const privateProxy = new TestPdfViewerPrivateProxy();
   privateProxy.setStreamUrl(viewer.getStreamUrlForTesting());
@@ -134,9 +139,9 @@ const tests = [
 
     const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
     chrome.test.assertTrue(bubble.$.dialog.open);
-    bubble.$.dialog.close();
-    await microtasksFinished();
-    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
 
     chrome.test.succeed();
   },
@@ -201,9 +206,7 @@ const tests = [
     chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
 
     // Reset the bubble open state for the next test.
-    bubble.$.dialog.close();
-    await microtasksFinished();
-    chrome.test.assertFalse(bubble.$.dialog.open);
+    closeBubble(bubble);
 
     chrome.test.succeed();
   },
@@ -385,6 +388,7 @@ const tests = [
 
     // Click on the save button to initiate an upload.
     privateProxy.sendUninitializedState();
+    await microtasksFinished();
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
     controls.$.save.click();
@@ -407,6 +411,9 @@ const tests = [
     chrome.test.assertEq('ORIGINAL', args[0]);
     chrome.test.assertEq('ORIGINAL', args[1]);
 
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
+
     chrome.test.succeed();
   },
 
@@ -416,6 +423,7 @@ const tests = [
 
     // Click on the save button to initiate an edited upload.
     privateProxy.sendUninitializedState();
+    await microtasksFinished();
     const controls =
         getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
     controls.hasEdits = true;
@@ -424,7 +432,6 @@ const tests = [
     const buttons = controls.shadowRoot.querySelectorAll('button');
     buttons[0]!.click();
     await privateProxy.whenCalled('saveToDrive');
-    controls.hasEdits = false;
 
     // Set the save to Drive state to session timeout error state and open the
     // bubble.
@@ -442,6 +449,10 @@ const tests = [
     chrome.test.assertEq(2, args.length);
     chrome.test.assertEq('EDITED', args[0]);
     chrome.test.assertEq('EDITED', args[1]);
+
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
+    controls.hasEdits = false;
 
     chrome.test.succeed();
   },
@@ -505,9 +516,8 @@ const tests = [
 
     mockTimer.uninstall();
 
-    bubble.$.dialog.close();
-    await microtasksFinished();
-    chrome.test.assertFalse(bubble.$.dialog.open);
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
 
     chrome.test.succeed();
   },

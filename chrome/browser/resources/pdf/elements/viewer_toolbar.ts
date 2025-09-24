@@ -15,8 +15,10 @@ import './shared_vars.css.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-// <if expr="enable_pdf_ink2">
+// <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
 import {assert} from 'chrome://resources/js/assert.js';
+// </if>
+// <if expr="enable_pdf_ink2">
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -28,6 +30,9 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {AnnotationMode} from '../constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from '../constants.js';
+// <if expr="enable_pdf_save_to_drive">
+import {SaveToDriveState} from '../constants.js';
+// </if>
 // <if expr="enable_pdf_ink2">
 import {PluginController, PluginControllerEventType} from '../controller.js';
 // </if>
@@ -119,7 +124,7 @@ export class ViewerToolbarElement extends CrLitElement {
       // <if expr="enable_pdf_save_to_drive">
       pdfSaveToDriveEnabled: {type: Boolean},
       saveToDriveProgress: {type: Number},
-      saveToDriveUploading: {type: Boolean},
+      saveToDriveState: {type: String},
       // </if> enable_pdf_save_to_drive
     };
   }
@@ -148,7 +153,7 @@ export class ViewerToolbarElement extends CrLitElement {
   // <if expr="enable_pdf_save_to_drive">
   accessor pdfSaveToDriveEnabled: boolean = false;
   accessor saveToDriveProgress: number = 0;
-  accessor saveToDriveUploading: boolean = false;
+  accessor saveToDriveState: SaveToDriveState = SaveToDriveState.UNINITIALIZED;
   // </if> enable_pdf_save_to_drive
 
   // <if expr="enable_pdf_ink2">
