@@ -76,6 +76,11 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen-llvm', 'common_prim_int_ptr.rs'),
     # Temporarily disabled due to https://crbug.com/433249564
     os.path.join('tests', 'codegen-llvm', 'enum', 'enum-discriminant-eq.rs'),
+    # Temporarily disabled due to https://crbug.com/446928953
+    os.path.join('tests', 'codegen-llvm', 'issues',
+                 'issue-122600-ptr-discriminant-update.rs'),
+    os.path.join('tests', 'codegen-llvm', 'vec_pop_push_noop.rs'),
+    os.path.join('tests', 'codegen-llvm', 'vecdeque_pop_push.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
