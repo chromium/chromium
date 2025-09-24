@@ -3031,7 +3031,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
-    enum="SiteFamiliarityHeuristicName" expires_after="2025-09-28">
+    enum="SiteFamiliarityHeuristicName" expires_after="2026-02-01">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
@@ -3056,7 +3056,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic.OffTheRecord"
-    enum="SiteFamiliarityHeuristicName" expires_after="2025-09-28">
+    enum="SiteFamiliarityHeuristicName" expires_after="2026-02-01">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
@@ -3096,7 +3096,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityMetricDataFetchStart"
-    enum="BooleanHit" expires_after="2025-09-28">
+    enum="BooleanHit" expires_after="2026-02-01">
   <owner>pkotwicz@chromium.org</owner>
   <owner>chrome-counter-abuse-core@google.com</owner>
   <summary>
