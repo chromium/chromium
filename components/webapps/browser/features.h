@@ -25,7 +25,6 @@ inline constexpr int kMinimumFaviconSize = 48;
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 BASE_DECLARE_FEATURE(kAndroidMinimalUiLargeScreen);
-BASE_DECLARE_FEATURE(kAndroidWindowControlsOverlay);
 BASE_DECLARE_FEATURE(kAndroidWebAppMenuButton);
 #endif  // BUILDFLAG(IS_ANDROID)
 

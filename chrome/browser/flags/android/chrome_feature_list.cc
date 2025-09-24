@@ -118,6 +118,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kBackForwardTransitions,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,
+    &blink::features::kAndroidWindowControlsOverlay,
     &browsing_data::features::kBrowsingDataModel,
     &commerce::kCommerceMerchantViewer,
     &commerce::kEnableDiscountInfoApi,
@@ -507,7 +508,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAndroidMinimalUiLargeScreen,
-    &webapps::features::kAndroidWindowControlsOverlay,
     &webapps::features::kAndroidWebAppMenuButton,
     &base::features::kPostGetMyMemoryStateToBackground,
 };
