@@ -24948,6 +24948,24 @@
             ]
         }
     ],
+    "TaiyakiFreOnly": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "choice_screen_surface": "fre_only"
+                    },
+                    "enable_features": [
+                        "Taiyaki"
+                    ]
+                }
+            ]
+        }
+    ],
     "TaskManagerDesktopRefresh": [
         {
             "platforms": [
@@ -24961,24 +24979,6 @@
                     "name": "TaskManagerDesktopRefresh",
                     "enable_features": [
                         "TaskManagerDesktopRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TayiakiInFreOnly": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "choice_screen_surface": "fre_only"
-                    },
-                    "enable_features": [
-                        "Taiyaki"
                     ]
                 }
             ]
