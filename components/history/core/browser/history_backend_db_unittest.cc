@@ -1446,6 +1446,9 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 25);
+
   std::vector<std::unique_ptr<PageUsageData>> results =
       db_->QuerySegmentUsage(/*max_result_count=*/10, base::NullCallback());
   ASSERT_EQ(1u, results.size());
@@ -1594,6 +1597,9 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 38);
+
   std::vector<std::unique_ptr<PageUsageData>> results = db_->QuerySegmentUsage(
       /*max_result_count=*/10, base::NullCallback());
   ASSERT_EQ(1u, results.size());
@@ -1694,6 +1700,9 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutIncrementedOmniboxTypedScore) {
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 40);
+
   VisitRow visit_row1;
   db_->GetRowForVisit(visit_id1, &visit_row1);
   EXPECT_FALSE(visit_row1.incremented_omnibox_typed_score);
@@ -1743,6 +1752,9 @@ TEST_F(HistoryBackendDBTest,
 
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 40);
 
   // Field should be false since the migration won't update it from the default
   // due to the invalid state of the row.
@@ -2334,6 +2346,9 @@ TEST_F(HistoryBackendDBTest,
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 55);
+
   // After the migration, the originator columns should return default values.
   {
     VisitRow visit;
@@ -2373,6 +2388,9 @@ TEST_F(HistoryBackendDBTest,
 
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 56);
 
   // The previously-added visit should still exist, with the new columns being
   // empty (equal to 0).
@@ -2612,6 +2630,9 @@ TEST_F(HistoryBackendDBTest,
 
   // Re-open the db, triggering migration.
   ASSERT_TRUE(CreateBackendAndDatabase());
+
+  // The version should have been updated.
+  ASSERT_GE(GetDatabaseVersion(), 61);
 
   // After the migration, the originator columns should return default values.
   {
