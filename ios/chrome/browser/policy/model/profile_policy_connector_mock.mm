@@ -9,9 +9,11 @@
 
 ProfilePolicyConnectorMock::ProfilePolicyConnectorMock(
     std::unique_ptr<policy::PolicyService> policy_service,
-    policy::SchemaRegistry* schema_registry) {
+    policy::SchemaRegistry* schema_registry,
+    policy::CloudPolicyStore* policy_store) {
   policy_service_ = std::move(policy_service);
   schema_registry_ = schema_registry;
+  policy_store_ = policy_store;
 }
 
 ProfilePolicyConnectorMock::~ProfilePolicyConnectorMock() = default;

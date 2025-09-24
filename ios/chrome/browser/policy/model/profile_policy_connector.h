@@ -6,10 +6,12 @@
 #define IOS_CHROME_BROWSER_POLICY_MODEL_PROFILE_POLICY_CONNECTOR_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#include "components/policy/core/common/local_test_policy_provider.h"
+#import "components/policy/core/common/local_test_policy_provider.h"
 
 class BrowserPolicyConnectorIOS;
 
@@ -64,6 +66,10 @@ class ProfilePolicyConnector {
 
   // Returns the SchemaRegistry associated with this connector.
   policy::SchemaRegistry* GetSchemaRegistry() const { return schema_registry_; }
+
+  // Returns affiliation IDs contained in the PolicyData corresponding to the
+  // profile.
+  base::flat_set<std::string> GetUserAffiliationIds() const;
 
  private:
   friend class ProfilePolicyConnectorMock;

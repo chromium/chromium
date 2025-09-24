@@ -58,6 +58,8 @@ source_set("model") {
     "reporting/report_scheduler_ios.mm",
     "reporting/reporting_delegate_factory_ios.h",
     "reporting/reporting_delegate_factory_ios.mm",
+    "reporting/reporting_util.h",
+    "reporting/reporting_util.mm",
     "restrict_accounts_policy_handler.cc",
     "restrict_accounts_policy_handler.h",
     "schema_registry_factory.h",

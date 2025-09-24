@@ -11,15 +11,26 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/report_type.h"
+#import "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#import "components/policy/core/common/cloud/cloud_policy_service.h"
+#import "components/policy/core/common/cloud/cloud_policy_store.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
+#import "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
@@ -35,6 +46,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -44,7 +56,12 @@ namespace enterprise_reporting {
 
 namespace {
 
-constexpr char kFakeProfileId[] = "fake-profile-id";
+constexpr char kFakeEnrollmentToken[] = "enrollment-token";
+constexpr char kFakeBrowserClientId[] = "client-id";
+constexpr char kFakeAffiliationId[] = "affiliation-id";
+constexpr char kFakeProfileId[] = "profile-id";
+constexpr char kFakeBrowserDmToken[] = "browser_dm_token";
+constexpr char kFakeMachineDomain[] = "example.com";
 
 std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS* profile) {
   return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
@@ -52,15 +69,26 @@ std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS* profile) {
 
 }  // namespace
 
+enum class Affiliation {
+  kAffiliated,
+  kNotAffiliated,
+};
+
 class ProfileReportGeneratorIOSTest : public PlatformTest,
                                       public testing::WithParamInterface<bool> {
  public:
   ProfileReportGeneratorIOSTest() : generator_(&delegate_factory_) {}
 
-  void SetUp() override {
+  void Init(Affiliation affiliation) {
     if (IsProfileReportingEnabled()) {
       feature_list_.InitAndEnableFeature(
           enterprise_reporting::kCloudProfileReporting);
+    }
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableChromeBrowserCloudManagement);
+
+    if (affiliation == Affiliation::kAffiliated) {
+      InitDeviceAffiliation();
     }
 
     InitPolicyMap();
@@ -73,8 +101,11 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     builder.AddTestingFactory(
         enterprise::ProfileIdServiceFactoryIOS::GetInstance(),
         base::BindRepeating(&CreateProfileIdService));
+    if (affiliation == Affiliation::kAffiliated) {
+      InitProfileAffiliation();
+    }
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
-        CreateMockPolicyService(), &schema_registry_));
+        CreateMockPolicyService(), &schema_registry_, policy_store_.get()));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     authentication_service_ =
@@ -108,6 +139,58 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     policy_map_.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                     base::Value(true), nullptr);
+  }
+
+  void InitDeviceAffiliation() {
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_managed_by(kFakeMachineDomain);
+    policy_data->add_device_affiliation_ids(kFakeAffiliationId);
+    policy_data->set_state(em::PolicyData::ACTIVE);
+
+    browser_dm_token_storage_ =
+        std::make_unique<policy::FakeBrowserDMTokenStorage>();
+    browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
+    browser_dm_token_storage_->SetClientId(kFakeBrowserClientId);
+    browser_dm_token_storage_->EnableStorage(true);
+    browser_dm_token_storage_->SetDMToken(kFakeBrowserDmToken);
+    policy::BrowserDMTokenStorage::SetForTesting(
+        browser_dm_token_storage_.get());
+
+    auto machine_store =
+        std::make_unique<policy::MachineLevelUserCloudPolicyStore>(
+            policy::DMToken::CreateValidToken(kFakeBrowserDmToken),
+            std::string(), base::FilePath(), base::FilePath(), base::FilePath(),
+            base::FilePath(), scoped_refptr<base::SequencedTaskRunner>());
+    machine_store->set_policy_data_for_testing(std::move(policy_data));
+
+    machine_policy_manager_ =
+        std::make_unique<policy::MachineLevelUserCloudPolicyManager>(
+            std::move(machine_store), /*external_data_manager=*/nullptr,
+            /*policy_dir=*/base::FilePath(),
+            scoped_refptr<base::SequencedTaskRunner>(),
+            network::TestNetworkConnectionTracker::CreateGetter());
+
+    auto client = std::make_unique<policy::CloudPolicyClient>(
+        /*service=*/nullptr, /*url_laoder_factory=*/nullptr,
+        policy::CloudPolicyClient::DeviceDMTokenCallback());
+    client->SetupRegistration(kFakeBrowserDmToken, "client-id",
+                              {kFakeAffiliationId});
+    machine_policy_manager_->core()->ConnectForTesting(
+        /*service=*/nullptr, std::move(client));
+
+    GetApplicationContext()
+        ->GetBrowserPolicyConnector()
+        ->SetMachineLevelUserCloudPolicyManagerForTesting(
+            machine_policy_manager_.get());
+  }
+
+  void InitProfileAffiliation() {
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->add_user_affiliation_ids(kFakeAffiliationId);
+    policy_data->set_state(em::PolicyData::ACTIVE);
+
+    policy_store_ = std::make_unique<policy::MockCloudPolicyStore>();
+    policy_store_->SetPolicy(std::move(policy_data));
   }
 
   FakeSystemIdentity* SignIn() {
@@ -149,9 +232,11 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine command_line_;
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<policy::MockCloudPolicyStore> policy_store_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
 
@@ -159,15 +244,20 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
   policy::PolicyMap policy_map_;
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
+  std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
+  std::unique_ptr<policy::MachineLevelUserCloudPolicyManager>
+      machine_policy_manager_;
 };
 
 TEST_P(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
+  Init(Affiliation::kNotAffiliated);
   auto report = GenerateReport();
   ASSERT_TRUE(report);
   EXPECT_FALSE(report->has_chrome_signed_in_user());
 }
 
 TEST_P(ProfileReportGeneratorIOSTest, SignedInProfile) {
+  Init(Affiliation::kNotAffiliated);
   FakeSystemIdentity* fake_identity = SignIn();
   auto report = GenerateReport();
   ASSERT_TRUE(report);
@@ -179,6 +269,7 @@ TEST_P(ProfileReportGeneratorIOSTest, SignedInProfile) {
 }
 
 TEST_P(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
+  Init(Affiliation::kNotAffiliated);
   // Policies are reported by default.
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
   ASSERT_TRUE(report);
@@ -200,6 +291,7 @@ TEST_P(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
 }
 
 TEST_P(ProfileReportGeneratorIOSTest, ProfileId) {
+  Init(Affiliation::kNotAffiliated);
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
   if (IsProfileReportingEnabled()) {
     EXPECT_EQ(kFakeProfileId, report->profile_id());
@@ -208,10 +300,31 @@ TEST_P(ProfileReportGeneratorIOSTest, ProfileId) {
   }
 }
 
-TEST_P(ProfileReportGeneratorIOSTest, IsAffiliated) {
+TEST_P(ProfileReportGeneratorIOSTest, NotAffiliated) {
+  Init(Affiliation::kNotAffiliated);
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
-  // TODO(crbug.com/6777441): Update after affiliation is implemented.
-  EXPECT_FALSE(report->has_affiliation());
+  if (IsProfileReportingEnabled()) {
+    EXPECT_TRUE(report->has_affiliation());
+    EXPECT_FALSE(report->affiliation().is_affiliated());
+    EXPECT_EQ(em::AffiliationState_UnaffiliationReason_USER_UNMANAGED,
+              report->affiliation().unaffiliation_reason());
+  } else {
+    EXPECT_FALSE(report->has_affiliation());
+  }
+}
+
+TEST_P(ProfileReportGeneratorIOSTest, Affiliated) {
+  Init(Affiliation::kAffiliated);
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  if (IsProfileReportingEnabled()) {
+    EXPECT_TRUE(report->has_affiliation());
+    EXPECT_TRUE(report->affiliation().is_affiliated());
+    EXPECT_FALSE(report->affiliation().has_unaffiliation_reason());
+    EXPECT_EQ(em::AffiliationState_UnaffiliationReason_UNKNOWN,
+              report->affiliation().unaffiliation_reason());
+  } else {
+    EXPECT_FALSE(report->has_affiliation());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -91,3 +91,12 @@ bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
 }
 
 void ProfilePolicyConnector::Shutdown() {}
+
+base::flat_set<std::string> ProfilePolicyConnector::GetUserAffiliationIds()
+    const {
+  if (!policy_store_ || !policy_store_->has_policy()) {
+    return {};
+  }
+  const auto& ids = policy_store_->policy()->user_affiliation_ids();
+  return {ids.begin(), ids.end()};
+}
