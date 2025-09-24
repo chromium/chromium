@@ -324,9 +324,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   }
 
   virtual bool HasUnusedResourcesForTesting() const { return false; }
-  virtual bool unused_resources_reclaim_timer_is_running_for_testing() const {
-    return false;
-  }
   virtual int NumInflightResourcesForTesting() const { return 0; }
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
@@ -504,7 +501,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
   bool UseOopRasterization() final { return IsAccelerated(); }
-  bool unused_resources_reclaim_timer_is_running_for_testing() const override {
+  bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
   }
   int NumInflightResourcesForTesting() const override {

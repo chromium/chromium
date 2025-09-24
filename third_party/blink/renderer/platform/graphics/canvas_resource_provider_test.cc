@@ -265,7 +265,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-std::unique_ptr<CanvasResourceProvider> MakeCanvasResourceProvider(
+std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
     RasterMode raster_mode,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
@@ -398,7 +398,7 @@ TEST_F(CanvasResourceProviderTest,
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
-  std::unique_ptr<CanvasResourceProvider> provider =
+  auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
@@ -428,7 +428,7 @@ TEST_F(CanvasResourceProviderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kCanvas2DReclaimUnusedResources);
 
-  std::unique_ptr<CanvasResourceProvider> provider =
+  auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
@@ -449,7 +449,7 @@ TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderUnusedResourcesAreNotCollectedWhenYoung) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 
-  std::unique_ptr<CanvasResourceProvider> provider =
+  auto provider =
       MakeCanvasResourceProvider(RasterMode::kGPU, context_provider_wrapper_);
 
   auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
