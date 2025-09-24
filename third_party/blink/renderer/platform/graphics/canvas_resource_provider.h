@@ -323,7 +323,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  virtual bool HasUnusedResourcesForTesting() const { return false; }
   virtual int NumInflightResourcesForTesting() const { return 0; }
 
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
@@ -512,7 +511,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       FlushReason reason) override;
   bool IsValid() const override;
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
-  bool HasUnusedResourcesForTesting() const override;
+  bool HasUnusedResourcesForTesting() const;
 
   // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
   // exists, after flushing the resource and signaling that an external write
