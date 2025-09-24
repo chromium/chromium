@@ -297,14 +297,17 @@ void DWriteFontProxyImpl::GetFontFileHandles(
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFontFiles");
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<base::File>());
-  if (!collection_)
+  if (!collection_) {
     return;
+  }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   mswr::ComPtr<IDWriteFontFamily> family;
   HRESULT hr = collection_->GetFontFamily(family_index, &family);
   if (FAILED(hr)) {
+    base::UmaHistogramSparse(
+        "Chrome.DWriteFontProxy.GetFontFamilyFailedHResult", hr);
     return;
   }
 
@@ -318,6 +321,8 @@ void DWriteFontProxyImpl::GetFontFileHandles(
     mswr::ComPtr<IDWriteFont> font;
     hr = family->GetFont(font_index, &font);
     if (FAILED(hr)) {
+      base::UmaHistogramSparse("Chrome.DWriteFontProxy.GetFontFailedHResult",
+                               hr);
       return;
     }
 
