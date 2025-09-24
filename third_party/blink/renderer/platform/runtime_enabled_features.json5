@@ -4632,6 +4632,11 @@
       origin_trial_allows_third_party: true,
     },
     {
+      name: "SideRelativeBackgroundPosition",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "SignatureBasedInlineIntegrity",
       status: "experimental",
     },

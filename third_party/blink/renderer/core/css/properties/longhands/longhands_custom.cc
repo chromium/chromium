@@ -1194,8 +1194,8 @@ const CSSValue* BackgroundPositionX::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kLeft,
-                                                 CSSValueID::kRight>,
+      css_parsing_utils::ConsumeBackgroundPositionLonghand<CSSValueID::kLeft,
+                                                           CSSValueID::kRight>,
       stream, context);
 }
 
@@ -1214,8 +1214,8 @@ const CSSValue* BackgroundPositionY::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kTop,
-                                                 CSSValueID::kBottom>,
+      css_parsing_utils::ConsumeBackgroundPositionLonghand<CSSValueID::kTop,
+                                                           CSSValueID::kBottom>,
       stream, context);
 }
 
@@ -11312,8 +11312,8 @@ const CSSValue* WebkitMaskPositionX::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kLeft,
-                                                 CSSValueID::kRight>,
+      css_parsing_utils::ConsumeBackgroundPositionLonghand<CSSValueID::kLeft,
+                                                           CSSValueID::kRight>,
       Stream, context);
 }
 
@@ -11337,8 +11337,8 @@ const CSSValue* WebkitMaskPositionY::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePositionLonghand<CSSValueID::kTop,
-                                                 CSSValueID::kBottom>,
+      css_parsing_utils::ConsumeBackgroundPositionLonghand<CSSValueID::kTop,
+                                                           CSSValueID::kBottom>,
       stream, context);
 }
 

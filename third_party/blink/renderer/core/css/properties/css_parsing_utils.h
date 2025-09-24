@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -812,6 +813,28 @@ CSSValue* ConsumePositionLonghand(CSSParserTokenStream& stream,
   }
   return ConsumeLengthOrPercent(stream, context,
                                 CSSPrimitiveValue::ValueRange::kAll);
+}
+
+template <CSSValueID start, CSSValueID end>
+CSSValue* ConsumeBackgroundPositionLonghand(CSSParserTokenStream& stream,
+                                            const CSSParserContext& context) {
+  if (!RuntimeEnabledFeatures::SideRelativeBackgroundPositionEnabled()) {
+    return ConsumePositionLonghand<start, end>(stream, context);
+  }
+
+  CSSIdentifierValue* origin =
+      css_parsing_utils::ConsumeIdent<start, end, CSSValueID::kCenter>(stream);
+  if (origin && origin->GetValueID() == CSSValueID::kCenter) {
+    return origin;
+  }
+  CSSValue* offset = css_parsing_utils::ConsumeLengthOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kAll);
+  if (origin && offset) {
+    // When both origin and offset are specified, convert to a pair.
+    return MakeGarbageCollected<CSSValuePair>(
+        origin, offset, CSSValuePair::kDropIdenticalValues);
+  }
+  return origin ? origin : offset;
 }
 
 inline bool AtIdent(const CSSParserToken& token, const char* ident) {

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Non-standard CSS Masking: parsing background-position-y with invalid values</title>
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds-4/#propdef-background-position-x">
+<meta name="assert" content="background-position-y supports only the grammar '[ center | [ top | bottom | y-start | y-end ]? <length-percentage>? ]#'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("-webkit-mask-position-y", "left");
+test_invalid_value("-webkit-mask-position-y", "right");
+test_invalid_value("-webkit-mask-position-y", "x-start");
+test_invalid_value("-webkit-mask-position-y", "x-end");
+test_invalid_value("-webkit-mask-position-y", "center 10px");
+test_invalid_value("-webkit-mask-position-y", "20% top");
+test_invalid_value("-webkit-mask-position-y", "bottom top");
+test_invalid_value("-webkit-mask-position-y", "y-start center");
+test_invalid_value("-webkit-mask-position-y", "top, center bottom");
+</script>
+</body>
+</html>
