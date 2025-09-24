@@ -834,6 +834,7 @@ Status Transaction::BlobWriteComplete(
 
 Status Transaction::DoPendingCommit() {
   TRACE_EVENT1("IndexedDB", "Transaction::DoPendingCommit", "txn.id", id());
+  CHECK(is_commit_pending_, base::NotFatalUntil::M145);
 
   ResetTimeoutTimer();
 
@@ -844,8 +845,6 @@ Status Transaction::DoPendingCommit() {
     return Status::OK();
   }
   DCHECK_NE(state_, COMMITTING);
-
-  is_commit_pending_ = true;
 
   // Front-end has requested a commit, but this transaction is blocked by
   // other transactions. The commit will be initiated when the transaction
