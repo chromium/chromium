@@ -107,7 +107,10 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
     @Override
     public void onTaskFocusChanged(boolean hasFocus) {
-        // TODO(crbug.com/424857039): relay the "focus changed" event to extension internals.
+        if (mNativeExtensionWindowControllerBridge != 0) {
+            ExtensionWindowControllerBridgeImplJni.get()
+                    .onTaskFocusChanged(mNativeExtensionWindowControllerBridge, hasFocus);
+        }
     }
 
     long getNativePtrForTesting() {
@@ -141,6 +144,9 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
 
         /** Called when the window (Task) bounds have changed. */
         void onTaskBoundsChanged(long nativeExtensionWindowControllerBridge);
+
+        /** Called when the window (Task) focus has changed. */
+        void onTaskFocusChanged(long nativeExtensionWindowControllerBridge, boolean hasFocus);
 
         /**
          * Returns the extension internal window ID for the given {@param

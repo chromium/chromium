@@ -43,6 +43,8 @@ class WindowControllerListObserverForTesting final
       extensions::WindowController* window_controller) override;
   void OnWindowBoundsChanged(
       extensions::WindowController* window_controller) override;
+  void OnWindowFocusChanged(extensions::WindowController* window_controller,
+                            bool has_focus) override;
 };
 
 // Events to be relayed by |WindowControllerListObserverForTesting| so that
@@ -53,6 +55,8 @@ class WindowControllerListObserverForTesting final
 enum class ExtensionInternalWindowEventForTesting {
   UNKNOWN,
   BOUNDS_CHANGED,
+  FOCUS_OBTAINED,
+  FOCUS_LOST,
   CREATED,
   REMOVED
 };

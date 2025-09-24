@@ -85,6 +85,11 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_);
   }
 
+  void InvokeJavaOnTaskFocusChanged(bool has_focus) const {
+    Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeOnTaskFocusChanged(
+        AttachCurrentThread(), java_test_support_, has_focus);
+  }
+
   ExtensionWindowControllerBridge* InvokeJavaGetNativePtrForTesting() const {
     return reinterpret_cast<ExtensionWindowControllerBridge*>(
         Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_invokeGetNativePtrForTesting(
@@ -188,6 +193,41 @@ TEST_F(ExtensionWindowControllerBridgeUnitTest,
 
   // Act.
   InvokeJavaOnTaskBoundsChanged();
+
+  // Cleanup
+  extensions::WindowControllerList::GetInstance()->RemoveObserver(
+      &mock_window_list_observer);
+}
+
+TEST_F(ExtensionWindowControllerBridgeUnitTest,
+       JavaOnTaskFocusChangedNotifiesExtensionWindowController) {
+  // Arrange: add a mock WindowControllerListObserver for setting up
+  // expectations.
+  auto mock_window_list_observer =
+      extensions::MockWindowControllerListObserver();
+  extensions::WindowControllerList::GetInstance()->AddObserver(
+      &mock_window_list_observer);
+
+  // Arrange: create ExtensionWindowControllerBridge (Java + native).
+  InvokeJavaOnAddedToTask();
+  ExtensionWindowControllerBridge* extension_window_controller_bridge =
+      InvokeJavaGetNativePtrForTesting();
+  const extensions::BrowserExtensionWindowController&
+      browser_extension_window_controller =
+          extension_window_controller_bridge
+              ->GetExtensionWindowControllerForTesting();
+
+  // Arrange: set up expectations.
+  extensions::WindowController& window_controller =
+      const_cast<extensions::BrowserExtensionWindowController&>(
+          browser_extension_window_controller);
+  EXPECT_CALL(mock_window_list_observer,
+              OnWindowFocusChanged(&window_controller, /*has_focus=*/true))
+      .Times(1)
+      .WillRepeatedly(Return());
+
+  // Act.
+  InvokeJavaOnTaskFocusChanged(/*has_focus=*/true);
 
   // Cleanup
   extensions::WindowControllerList::GetInstance()->RemoveObserver(

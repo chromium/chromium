@@ -68,6 +68,11 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     }
 
     @CalledByNative
+    private void invokeOnTaskFocusChanged(boolean hasFocus) {
+        mExtensionWindowControllerBridge.onTaskFocusChanged(hasFocus);
+    }
+
+    @CalledByNative
     private long invokeGetNativePtrForTesting() {
         return mExtensionWindowControllerBridge.getNativePtrForTesting();
     }

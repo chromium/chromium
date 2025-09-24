@@ -87,6 +87,11 @@ void ExtensionWindowControllerBridge::OnTaskBoundsChanged(JNIEnv* env) {
   extension_window_controller_.NotifyWindowBoundsChanged();
 }
 
+void ExtensionWindowControllerBridge::OnTaskFocusChanged(JNIEnv* env,
+                                                         bool has_focus) {
+  extension_window_controller_.NotifyWindowFocusChanged(has_focus);
+}
+
 int ExtensionWindowControllerBridge::GetExtensionWindowIdForTesting(
     JNIEnv* env) {
   return extension_window_controller_.GetWindowId();

@@ -39,6 +39,10 @@ class ExtensionWindowControllerBridge final {
   // |ExtensionWindowControllerBridgeImpl.Natives#onTaskBoundsChanged|.
   void OnTaskBoundsChanged(JNIEnv* env);
 
+  // Implements Java
+  // |ExtensionWindowControllerBridgeImpl.Natives#onTaskFocusChanged|.
+  void OnTaskFocusChanged(JNIEnv* env, bool has_focus);
+
   // Implements the Java |getExtensionWindowIdForTesting| method in
   // |ExtensionWindowControllerBridgeImpl.Natives|.
   int GetExtensionWindowIdForTesting(JNIEnv* env);

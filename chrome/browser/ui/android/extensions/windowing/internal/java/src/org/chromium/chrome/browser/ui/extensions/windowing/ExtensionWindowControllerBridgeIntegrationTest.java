@@ -34,6 +34,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -131,6 +132,62 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
         assertTrue(
                 extensionInternalEvents.contains(
                         ExtensionInternalWindowEventForTesting.BOUNDS_CHANGED));
+
+        // Cleanup.
+        ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();
+        ntpStation.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
+    public void startChromeTabbedActivity_triggerTaskFocusChange_notifyExtensionWindowController() {
+        // Arrange:
+        // (1) Launch ChromeTabbedActivity (the first window).
+        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
+        // events.
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var firstExtensionWindowControllerBridge = getExtensionWindowControllerBridge(firstTaskId);
+        assertNotNull(firstExtensionWindowControllerBridge);
+        int firstExtensionWindowId =
+                firstExtensionWindowControllerBridge.getExtensionWindowIdForTesting();
+        ExtensionWindowControllerBridgeImpl.addWindowControllerListObserverForTesting();
+
+        // Act: Open a new window.
+        // This will cause the first window to lose focus and the second window to gain focus.
+        // Both focus change events should be captured.
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(secondChromeAndroidTask);
+        CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
+        var secondExtensionWindowControllerBridge =
+                getExtensionWindowControllerBridge(secondTaskId);
+        assertNotNull(secondExtensionWindowControllerBridge);
+        var secondExtensionWindowId =
+                secondExtensionWindowControllerBridge.getExtensionWindowIdForTesting();
+
+        // Assert.
+        var extensionInternalEventsForFirstWindow =
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(firstExtensionWindowId);
+        assertNotNull(extensionInternalEventsForFirstWindow);
+        var extensionInternalEventsForSecondWindow =
+                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
+                        .get(secondExtensionWindowId);
+        assertNotNull(extensionInternalEventsForSecondWindow);
+        assertEquals(
+                1,
+                Collections.frequency(
+                        extensionInternalEventsForFirstWindow,
+                        ExtensionInternalWindowEventForTesting.FOCUS_LOST));
+        assertEquals(
+                1,
+                Collections.frequency(
+                        extensionInternalEventsForSecondWindow,
+                        ExtensionInternalWindowEventForTesting.FOCUS_OBTAINED));
 
         // Cleanup.
         ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();

@@ -36,3 +36,13 @@ void WindowControllerListObserverForTesting::OnWindowBoundsChanged(
           window_controller,
           ExtensionInternalWindowEventForTesting::BOUNDS_CHANGED);
 }
+
+void WindowControllerListObserverForTesting::OnWindowFocusChanged(
+    extensions::WindowController* window_controller,
+    bool has_focus) {
+  ExtensionWindowControllerBridge::
+      RecordExtensionInternalEventForTesting(  // IN-TEST
+          window_controller,
+          has_focus ? ExtensionInternalWindowEventForTesting::FOCUS_OBTAINED
+                    : ExtensionInternalWindowEventForTesting::FOCUS_LOST);
+}
