@@ -436,7 +436,10 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       // If no instance is found for the conversation, create a new one.
       // The web client is expected to call RegisterConversation on this new
       // instance.
-      target_instance = CreateGlicInstance();
+      target_instance = current_instance->conversation_id()
+                            ? CreateGlicInstance()
+                            : current_instance;
+      target_instance->RegisterConversation(std::move(info), /*callback=*/{});
     }
   }
 
