@@ -49,6 +49,7 @@ public final class Http2TestServer {
 
     private static ReportingCollector sReportingCollector;
 
+    private static final String SERVER_CA_PEM;
     public static final String SERVER_CERT_PEM;
     private static final String SERVER_KEY_PKCS8_PEM;
     // Used to start http2 test server.
@@ -59,9 +60,11 @@ public final class Http2TestServer {
         // Currently, MockCertVerifier uses different certificates, so make the server also use
         // those.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            SERVER_CA_PEM = "quic-root.pem";
             SERVER_CERT_PEM = "quic-chain.pem";
             SERVER_KEY_PKCS8_PEM = "quic-leaf-cert.key.pkcs8.pem";
         } else {
+            SERVER_CA_PEM = "cronet-quic-root.pem";
             SERVER_CERT_PEM = "cronet-quic-chain.pem";
             SERVER_KEY_PKCS8_PEM = "cronet-quic-leaf-cert.key.pkcs8.pem";
         }
@@ -72,6 +75,10 @@ public final class Http2TestServer {
             sServerChannel.close().sync();
             sServerChannel = null;
             sReportingCollector = null;
+            // TODO: this will clear all test root certificates, not just ours. This may lead to
+            // somewhat confusing behavior if other test root certificates are used at the same
+            // time, e.g. from EmbeddedTestServer. Ideally we should only clear our own certificate.
+            X509Util.clearTestRootCertificates();
             return true;
         }
         return false;
@@ -144,18 +151,20 @@ public final class Http2TestServer {
 
     public static boolean startHttp2TestServer(Context context) throws Exception {
         TestFilesInstaller.installIfNeeded(context);
-        return startHttp2TestServer(context, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, null);
+        return startHttp2TestServer(
+                context, SERVER_CA_PEM, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, null);
     }
 
     public static boolean startHttp2TestServer(Context context, CountDownLatch hangingUrlLatch)
             throws Exception {
         TestFilesInstaller.installIfNeeded(context);
         return startHttp2TestServer(
-                context, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, hangingUrlLatch);
+                context, SERVER_CA_PEM, SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM, hangingUrlLatch);
     }
 
     private static boolean startHttp2TestServer(
             Context context,
+            String caFileName,
             String certFileName,
             String keyFileName,
             CountDownLatch hangingUrlLatch)
@@ -170,7 +179,17 @@ public final class Http2TestServer {
         // started the test-server, if the test-server has failed to start then
         // the caller should assert on the value returned to make sure that the test
         // fails if the server has failed to start up.
-        return EXECUTOR.submit(http2TestServerRunnable).get();
+        if (!EXECUTOR.submit(http2TestServerRunnable).get()) return false;
+        // Make the server certificate globally trusted for Chromium //net code, so that connections
+        // to the test server do not hit "CA not trusted" errors.
+        // Note: this can only talk to the X509Util class that is reachable from this classloader.
+        // When testing against HttpEngine (i.e. AOSP_PLATFORM), the X509Util class that Cronet uses
+        // is not reachable, so this approach doesn't work for this case. To work around this we
+        // also use custom trust anchors in
+        // components/cronet/android/test/res/xml/network_security_config.xml.
+        X509Util.addTestRootCertificate(
+                CertTestUtil.pemToDer(CertTestUtil.CERTS_DIRECTORY + caFileName));
+        return true;
     }
 
     private Http2TestServer() {}

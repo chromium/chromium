@@ -55,7 +55,9 @@ public class MockCertVerifierTest {
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.mError).isNotNull();
-        assertThat(callback.mError).hasMessageThat().contains("ERR_CERT_AUTHORITY_INVALID");
+        // ERR_CERT_COMMON_NAME_INVALID because we are trying to connect to localhost, but the test
+        // server is presenting a certificate for test.example.com.
+        assertThat(callback.mError).hasMessageThat().contains("ERR_CERT_COMMON_NAME_INVALID");
     }
 
     @Test

@@ -1261,6 +1261,7 @@ android_library("cronet_test_apk_java") {
     ":cronet_all_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/google-truth:google_truth_java",
@@ -1974,11 +1975,13 @@ copy("cronet_package_copy_test_files") {
     "//net/data/ssl/certificates/cronet-quic-chain.pem",
     "//net/data/ssl/certificates/cronet-quic-leaf-cert.key",
     "//net/data/ssl/certificates/cronet-quic-leaf-cert.key.pkcs8.pem",
+    "//net/data/ssl/certificates/cronet-quic-root.pem",
     "//net/data/ssl/certificates/expired_cert.pem",
     "//net/data/ssl/certificates/ok_cert.pem",
     "//net/data/ssl/certificates/quic-chain.pem",
     "//net/data/ssl/certificates/quic-leaf-cert.key",
     "//net/data/ssl/certificates/quic-leaf-cert.key.pkcs8.pem",
+    "//net/data/ssl/certificates/quic-root.pem",
     "//net/data/ssl/certificates/root_ca_cert.pem",
   ]
   outputs = [ "$_test_package_dir/assets/test_files/net/data/ssl/certificates/{{source_file_part}}" ]
