@@ -23,10 +23,7 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
                                  GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), tab_(tab), delegate_(delegate) {
-  if (tab_) {
-    coordinator_observation_.Observe(
-        tab_->GetTabFeatures()->glic_side_panel_coordinator());
-  }
+  panel_state_.kind = mojom::PanelState_Kind::kAttached;
 }
 
 GlicSidePanelUi::~GlicSidePanelUi() = default;
@@ -71,7 +68,7 @@ bool GlicSidePanelUi::IsShowing() const {
   if (!tab_) {
     return false;
   }
-  return panel_state_.kind == mojom::PanelState_Kind::kAttached;
+  return true;
 }
 
 void GlicSidePanelUi::SwitchConversation(
@@ -79,16 +76,6 @@ void GlicSidePanelUi::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   delegate_->SwitchConversation(tab_.get(), std::move(info),
                                 std::move(callback));
-}
-
-// TODO(crbug.com/444293841): Support closing multi instance.
-void GlicSidePanelUi::VisibilityChanged(bool visible) {
-  // Showing only happens through glic entrypoint, hiding can also be triggered
-  // by side panel coordinator when replacing glic with another entry.
-  if (!visible) {
-    panel_state_.kind = mojom::PanelState_Kind::kHidden;
-    // TODO(crbug.com/444293841): Support closing multi instance.
-  }
 }
 
 void GlicSidePanelUi::Show() {

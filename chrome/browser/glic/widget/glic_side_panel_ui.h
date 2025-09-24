@@ -21,9 +21,7 @@ class TabInterface;
 namespace glic {
 
 // Implementation of GlicUiEmbedder for side panel UIs.
-class GlicSidePanelUi : public GlicUiEmbedder,
-                        public Host::Delegate,
-                        public GlicSidePanelCoordinator::StateObserver {
+class GlicSidePanelUi : public GlicUiEmbedder, public Host::Delegate {
  public:
   GlicSidePanelUi(Profile* profile,
                   base::WeakPtr<tabs::TabInterface> tab,
@@ -53,13 +51,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
-  // GlicSidePanelCoordinator::StateObserver
-  void VisibilityChanged(bool visible) override;
-
  private:
-  base::ScopedObservation<GlicSidePanelCoordinator,
-                          GlicSidePanelCoordinator::StateObserver>
-      coordinator_observation_{this};
   mojom::PanelState panel_state_;
 
   raw_ptr<Profile> profile_;
