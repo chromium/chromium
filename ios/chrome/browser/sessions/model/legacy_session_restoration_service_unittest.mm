@@ -182,19 +182,19 @@ using ScopedTestSessionRestorationObserver =
 using ScopedTestWebStateObserver =
     ScopedObserver<web::WebState, TestWebStateObserver>;
 
-// Class that can be used to detect files that are modified.
+// Class that can be used to detect session files that are modified.
 class FileModificationTracker {
  public:
-  FileModificationTracker() = default;
+  FileModificationTracker(const base::FilePath& root) : root_(root) { Reset(); }
 
   // Records all existing files below `root` and their timestamp. Used to
-  // detect created or updated files later in `ModifiedFiles(...)`.
-  void Start(const base::FilePath& path) { snapshot_ = EnumerateFiles(path); }
+  // detect created or updated files later in `ModifiedFiles()`.
+  void Reset() { snapshot_ = EnumerateFiles(); }
 
-  // Reports all created or updated files in `path` since call to `Start(...)`.
-  FilePathSet ModifiedFiles(const base::FilePath& path) const {
+  // Reports all created or updated session files since call to `Reset()`.
+  FilePathSet ModifiedFiles() const {
     FilePathSet result;
-    for (const auto& [name, time] : EnumerateFiles(path)) {
+    for (const auto& [name, time] : EnumerateFiles()) {
       auto iterator = snapshot_.find(name);
       if (iterator == snapshot_.end() || iterator->second != time) {
         result.insert(name);
@@ -203,10 +203,10 @@ class FileModificationTracker {
     return result;
   }
 
-  // Reports all deleted files in `path` since call to `Start(...)`.
-  FilePathSet DeletedFiles(const base::FilePath& path) const {
+  // Reports all deleted session files in since call to `Reset()`.
+  FilePathSet DeletedFiles() const {
     FilePathSet result;
-    PathToTimeMap state = EnumerateFiles(path);
+    PathToTimeMap state = EnumerateFiles();
     for (const auto& [name, _] : snapshot_) {
       if (!base::Contains(state, name)) {
         result.insert(name);
@@ -218,11 +218,18 @@ class FileModificationTracker {
  private:
   using PathToTimeMap = std::map<base::FilePath, base::Time>;
 
-  // Returns a mapping of files to their last modified time below `path`.
-  PathToTimeMap EnumerateFiles(const base::FilePath& path) const {
+  // Returns a mapping of session files.
+  PathToTimeMap EnumerateFiles() const {
     PathToTimeMap result;
+    EnumerateFilesInDirectory(result, root_.Append(kLegacySessionsDirname));
+    EnumerateFilesInDirectory(result, root_.Append(kLegacyWebSessionsDirname));
+    EnumerateFilesInDirectory(result, root_.Append(kSessionRestorationDirname));
+    return result;
+  }
 
-    base::FileEnumerator e(path, true, base::FileEnumerator::FileType::FILES);
+  // Returns a mapping of files to their last modified time in `dir`.
+  void EnumerateFilesInDirectory(PathToTimeMap& map, base::FilePath dir) const {
+    base::FileEnumerator e(dir, true, base::FileEnumerator::FileType::FILES);
     for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
       // Workaround for the fact that base::FileEnumerator::FileInfo drops the
       // sub-second precision when using GetLastModifiedTime() even when the
@@ -230,12 +237,11 @@ class FileModificationTracker {
       base::File::Info info;
       info.FromStat(e.GetInfo().stat());
 
-      result.insert(std::make_pair(name, info.last_modified));
+      map.insert(std::make_pair(name, info.last_modified));
     }
-
-    return result;
   }
 
+  const base::FilePath root_;
   PathToTimeMap snapshot_;
 };
 
@@ -378,7 +384,8 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     // Create a test ProfileIOS and an object to track the files
     // that are created by the session restoration service operations.
     profile_ = TestProfileIOS::Builder().Build();
-    file_tracker_.Start(profile_->GetStatePath());
+    file_tracker_ =
+        std::make_unique<FileModificationTracker>(profile_->GetStatePath());
 
     SessionServiceIOS* session_service_ios = [[SessionServiceIOS alloc]
         initWithSaveDelay:kSaveDelay
@@ -455,27 +462,23 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
   }
 
   // Take a snapshot of the existing files.
-  void SnapshotFiles() { file_tracker_.Start(profile_->GetStatePath()); }
+  void SnapshotFiles() { file_tracker_->Reset(); }
 
   // Returns the list of modified files.
-  FilePathSet ModifiedFiles() const {
-    return file_tracker_.ModifiedFiles(profile_->GetStatePath());
-  }
+  FilePathSet ModifiedFiles() const { return file_tracker_->ModifiedFiles(); }
 
   // Returns the list of deleted files.
-  FilePathSet DeletedFiles() const {
-    return file_tracker_.DeletedFiles(profile_->GetStatePath());
-  }
+  FilePathSet DeletedFiles() const { return file_tracker_->DeletedFiles(); }
 
  private:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  FileModificationTracker file_tracker_;
 
   std::unique_ptr<web::ScopedTestingWebClient> scoped_web_client_;
   std::unique_ptr<web::WebTaskEnvironment> web_task_environment_;
 
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<FileModificationTracker> file_tracker_;
   std::unique_ptr<LegacySessionRestorationService> service_;
 };
 
