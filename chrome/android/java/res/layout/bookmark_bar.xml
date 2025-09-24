@@ -49,6 +49,7 @@ found in the LICENSE file.
             app:tint="@color/default_icon_color_tint_list" />
 
         <View
+            android:id="@+id/bookmark_bar_divider"
             android:layout_width="@dimen/bookmark_bar_divider_width"
             android:layout_height="@dimen/bookmark_bar_divider_height"
             android:layout_marginHorizontal="@dimen/bookmark_bar_spacing"

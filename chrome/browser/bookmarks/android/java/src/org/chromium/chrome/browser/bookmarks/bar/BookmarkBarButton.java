@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
@@ -118,6 +119,15 @@ class BookmarkBarButton extends LinearLayout {
      */
     public void setTitle(@Nullable String title) {
         mTitle.setText(title);
+    }
+
+    /**
+     * Sets the text appearance of the title.
+     *
+     * @param resId The style resource identifier.
+     */
+    public void setTitleTextAppearance(@StyleRes int resId) {
+        mTitle.setTextAppearance(resId);
     }
 
     /**

@@ -11,6 +11,7 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFoc
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +53,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -90,7 +93,8 @@ public class BookmarkBarCoordinator
     private boolean mIsResourceRegistered;
     private final CurrentTabObserver mCurrentTabObserver;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
-
+    /** The PropertyModel for the main BookmarkBar view. */
+    private final PropertyModel mModel;
     // Tracks whether or not the bookmark bar should be shown at all. We keep this state in addition
     // to setting visibility directly on |mView| because we need to differentiate the Android
     // widgets from the bookmark bar in general.
@@ -221,6 +225,7 @@ public class BookmarkBarCoordinator
 
         // Bind view/model for bookmark bar and instantiate mediator.
         final var model = new PropertyModel.Builder(BookmarkBarProperties.ALL_KEYS).build();
+        mModel = model;
         mMediator =
                 new BookmarkBarMediator(
                         activity,
@@ -228,7 +233,7 @@ public class BookmarkBarCoordinator
                         controlsHeightSupplier,
                         itemsModel,
                         mBookmarkBarItemsLayoutManager,
-                        model,
+                        mModel,
                         profileSupplier,
                         currentTab,
                         bookmarkOpener,
@@ -591,9 +596,33 @@ public class BookmarkBarCoordinator
         mView.setBackgroundColor(color);
         mViewResourceFrameLayout.setBackgroundColor(color);
         mBookmarkBarSceneLayerModel.set(BookmarkBarSceneLayerProperties.BACKGROUND_COLOR, color);
+
+        boolean isIncognito = tab.isIncognito();
+
+        @ColorInt
+        int hairlineColor =
+                isIncognito
+                        ? ContextCompat.getColor(mContext, R.color.divider_line_bg_color_light)
+                        : ThemeUtils.getToolbarHairlineColor(mContext, color, false);
+
         mBookmarkBarSceneLayerModel.set(
-                BookmarkBarSceneLayerProperties.HAIRLINE_BACKGROUND_COLOR,
-                ThemeUtils.getToolbarHairlineColor(mContext, color, tab.isIncognito()));
+                BookmarkBarSceneLayerProperties.HAIRLINE_BACKGROUND_COLOR, hairlineColor);
+
+        // Match the hairline color with the divider color.
+        mModel.set(BookmarkBarProperties.DIVIDER_COLOR, hairlineColor);
+        mModel.set(BookmarkBarProperties.HAIRLINE_COLOR, hairlineColor);
+
+        @BrandedColorScheme
+        int brandedColorScheme = ThemeUtils.getBrandedColorScheme(mContext, color, isIncognito);
+
+        // Notify the Mediator to update all its models (text and folder icons).
+        mMediator.onThemeChanged(isIncognito, brandedColorScheme);
+
+        // Update the overflow button.
+        final ColorStateList iconTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mContext, brandedColorScheme, /* isActivityFocused= */ true);
+        mModel.set(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST, iconTint);
         handleBookmarkBarChange();
     }
 

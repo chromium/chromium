@@ -41,6 +41,11 @@ class BookmarkBarButtonViewBinder {
             if (contentDescription != null && !contentDescription.isEmpty()) {
                 view.setContentDescription(contentDescription);
             }
+        } else if (key == BookmarkBarButtonProperties.TEXT_APPEARANCE_ID) {
+            int resId = model.get(BookmarkBarButtonProperties.TEXT_APPEARANCE_ID);
+            view.setTitleTextAppearance(resId);
+        } else if (key == BookmarkBarButtonProperties.BOOKMARK_ITEM) {
+            // No-op.
         }
     }
 }

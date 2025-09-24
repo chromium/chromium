@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
@@ -52,6 +55,13 @@ class BookmarkBarButtonProperties {
     public static final WritableObjectPropertyKey<String> FOLDER_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
+    /** The style resource identifier for the title's text appearance. */
+    public static final WritableIntPropertyKey TEXT_APPEARANCE_ID = new WritableIntPropertyKey();
+
+    /** The {@link BookmarkItem} associated with this button. */
+    public static final ReadableObjectPropertyKey<BookmarkItem> BOOKMARK_ITEM =
+            new ReadableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CLICK_CALLBACK,
@@ -59,6 +69,8 @@ class BookmarkBarButtonProperties {
                 ICON_SUPPLIER,
                 ICON_TINT_LIST_ID,
                 TITLE,
-                FOLDER_CONTENT_DESCRIPTION
+                FOLDER_CONTENT_DESCRIPTION,
+                TEXT_APPEARANCE_ID,
+                BOOKMARK_ITEM
             };
 }
