@@ -53,9 +53,6 @@
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_keyed_service.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -520,14 +517,47 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
+#include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
+#include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
+#include "chrome/browser/media/unified_autoplay_config.h"
+#include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
+#include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/webauthn/authenticator_request_scheduler.h"
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -549,40 +579,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
-#include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
-#include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
-#include "chrome/browser/ui/webui/webui_util_desktop.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/webauthn/authenticator_request_scheduler.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
-#include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
-#include "components/commerce/core/commerce_feature_list.h"
-#include "components/password_manager/content/common/web_ui_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
-#endif  //  !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"
@@ -710,11 +706,6 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "components/enterprise/common/files_scan_data.h"
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

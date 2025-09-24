@@ -79,7 +79,7 @@ class FakeChromeContentBrowserClient : public ChromeContentBrowserClient {
   }
 
  private:
-  std::optional<bool> external_protocol_result_ = std::nullopt;
+  std::optional<bool> external_protocol_result_;
 };
 
 class ExecutionEngineBrowserTest : public InProcessBrowserTest {
