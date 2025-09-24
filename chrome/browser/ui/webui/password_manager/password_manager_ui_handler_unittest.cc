@@ -112,6 +112,14 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_TRUE(test_delegate().get_delete_all_password_manager_data_called());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, ExtendAuthValidity_CallsDelegate) {
+  EXPECT_FALSE(test_delegate().get_authenticator_interaction_status());
+
+  handler().ExtendAuthValidity();
+
+  EXPECT_TRUE(test_delegate().get_authenticator_interaction_status());
+}
+
 TEST_F(PasswordManagerUIHandlerUnitTest,
        CopyPlaintextBackupPassword_CallsDelegate) {
   base::test::TestFuture<bool> future;
@@ -138,7 +146,9 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   sites.insert({.url = GURL("https://test.com"), .username = u"testuser"});
   EXPECT_CALL(presenter(), GetActorLoginPermissions)
       .WillOnce(Return(std::move(sites)));
+
   handler().GetActorLoginPermissions(future.GetCallback());
+
   EXPECT_EQ(future.Get().size(), 1u);
 }
 

@@ -27,6 +27,10 @@ PasswordManagerUIHandler::PasswordManagerUIHandler(
 
 PasswordManagerUIHandler::~PasswordManagerUIHandler() = default;
 
+void PasswordManagerUIHandler::ExtendAuthValidity() {
+  passwords_private_delegate_->RestartAuthTimer();
+}
+
 void PasswordManagerUIHandler::DeleteAllPasswordManagerData(
     DeleteAllPasswordManagerDataCallback callback) {
   // TODO(crbug.com/432409279): don't use the delegate, but instead use the

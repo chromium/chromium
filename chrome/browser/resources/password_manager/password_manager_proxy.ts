@@ -655,7 +655,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   extendAuthValidity() {
-    chrome.passwordsPrivate.extendAuthValidity();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      chrome.passwordsPrivate.extendAuthValidity();
+      return;
+    }
+    this.handler.extendAuthValidity();
   }
 
   addAccountStorageEnabledStateListener(

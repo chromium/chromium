@@ -32,6 +32,8 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   ~PasswordManagerUIHandler() override;
 
   // password_manager::mojom::PageHandler:
+  void ExtendAuthValidity() override;
+
   void DeleteAllPasswordManagerData(
       DeleteAllPasswordManagerDataCallback callback) override;
 
