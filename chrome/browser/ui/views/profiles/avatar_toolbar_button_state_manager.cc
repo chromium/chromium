@@ -84,9 +84,9 @@ class SigninDetectionService : public KeyedService {
  public:
   ~SigninDetectionService() override = default;
 
-  // Returns true if the user has signed before any browser window was created
-  // (for the current profile).
-  virtual bool HasSignedInBeforeBrowserCreated() const = 0;
+  // Returns true if the user has signed in the current session (for the current
+  // profile).
+  virtual bool HasSignedInInCurrentSession() const = 0;
 };
 
 namespace {
@@ -423,12 +423,8 @@ class OnSigninCoordinator : public signin::IdentityManager::Observer,
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
-    // `state_changed_callbacks_` is empty if there is no browser.
-    //
-    // NOTE: Consider relying on `signin_metrics::AccessPoint` (from `event`)
-    // instead if more granular control is needed (e.g. to restrict triggering
-    // to specific access points).
-    has_signed_in_before_browser_created_ = state_changed_callbacks_.empty();
+
+    has_signed_in_in_current_session_ = true;
     Trigger();
   }
 
@@ -464,8 +460,8 @@ class OnSigninCoordinator : public signin::IdentityManager::Observer,
   }
 
   // SigninDetectionService:
-  bool HasSignedInBeforeBrowserCreated() const override {
-    return has_signed_in_before_browser_created_;
+  bool HasSignedInInCurrentSession() const override {
+    return has_signed_in_in_current_session_;
   }
 
  private:
@@ -483,7 +479,7 @@ class OnSigninCoordinator : public signin::IdentityManager::Observer,
   // changes.
   base::RepeatingCallbackList<void()> state_changed_callbacks_;
 
-  bool has_signed_in_before_browser_created_ = false;
+  bool has_signed_in_in_current_session_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -533,14 +529,13 @@ class OnSigninStateProvider : public StateProvider {
     coordinator_->Collapse();
   }
 
+  const raw_ref<Browser> browser_;
+  const raw_ref<OnSigninCoordinator> coordinator_;
+
   // On signin coordinator state change callback subscription.
   // The callbacks are used to notify the state provider(s) when the on signin
   // state changes.
   base::CallbackListSubscription state_changed_callback_subscription_;
-
-  const raw_ref<Browser> browser_;
-
-  const raw_ref<OnSigninCoordinator> coordinator_;
 };
 
 class ShowIdentityNameStateProvider : public StateProvider,
@@ -632,7 +627,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
       const SigninDetectionService* signin_detection_service =
           SigninDetectionServiceFactory::GetForProfile(&profile());
       CHECK(signin_detection_service);
-      if (signin_detection_service->HasSignedInBeforeBrowserCreated()) {
+      if (signin_detection_service->HasSignedInInCurrentSession()) {
         return;
       }
     }

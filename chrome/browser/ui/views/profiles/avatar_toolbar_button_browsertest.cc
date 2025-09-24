@@ -2928,14 +2928,52 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(avatar_toolbar_button, nullptr);
   // Normal state.
   ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
-  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
   EXPECT_EQ(avatar_toolbar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
   avatar_toolbar_button->ClearActiveStateForTesting();
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+
+  // A new browser within the same session should not show any text as well.
+  // Specifically not showing the greeting.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  EXPECT_TRUE(GetAvatarToolbarButton(second_browser)->GetText().empty());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSigninThenClick \
+  DISABLED_ShowMakingChromeYoursOnSigninThenClick
+#else
+#define MAYBE_ShowMakingChromeYoursOnSigninThenClick \
+  ShowMakingChromeYoursOnSigninThenClick
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSigninThenClick) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  // A new browser should also show the message.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* second_avatar_toolbar_button =
+      GetAvatarToolbarButton(second_browser);
+  EXPECT_EQ(second_avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  // Clicking on either avatar buttons should clear both messages.
+  Click(avatar_toolbar_button);
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+  EXPECT_TRUE(second_avatar_toolbar_button->GetText().empty());
+}
+
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow \
