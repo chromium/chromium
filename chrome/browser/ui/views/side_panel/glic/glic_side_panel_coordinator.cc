@@ -85,12 +85,12 @@ void GlicSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_observers_.Notify(&StateObserver::VisibilityChanged, tab_, false);
+  state_observers_.Notify(&StateObserver::VisibilityChanged, false);
 }
 
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_observers_.Notify(&StateObserver::VisibilityChanged, tab_, true);
+  state_observers_.Notify(&StateObserver::VisibilityChanged, true);
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
@@ -137,4 +137,5 @@ void GlicSidePanelCoordinator::AddObserver(StateObserver* observer) {
 void GlicSidePanelCoordinator::RemoveObserver(StateObserver* observer) {
   state_observers_.RemoveObserver(observer);
 }
+
 }  // namespace glic

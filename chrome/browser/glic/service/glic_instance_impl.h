@@ -18,7 +18,6 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -44,8 +43,7 @@ class GlicInstanceImpl : public GlicInstance,
 
                          public Host::InstanceDelegate,
                          public GlicSharingManagerProvider,
-                         public GlicUiEmbedder::Delegate,
-                         public GlicSidePanelCoordinator::StateObserver {
+                         public GlicUiEmbedder::Delegate {
  public:
   enum class EmbedderType {
     kSidePanel,
@@ -142,13 +140,7 @@ class GlicInstanceImpl : public GlicInstance,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
-  // GlicSidePanelCoordinator::StateObserver
-  void VisibilityChanged(tabs::TabInterface* tab, bool visible) override;
-
  private:
-  base::ScopedObservation<GlicSidePanelCoordinator,
-                          GlicSidePanelCoordinator::StateObserver>
-      side_panel_observation_{this};
   // A tag type to represent the floating embedder key.
   struct FloatingEmbedderKey {
     auto operator<=>(const FloatingEmbedderKey&) const = default;
@@ -185,7 +177,6 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
           callback,
       std::vector<std::string> returned_suggestions);
-  void MaybeDeactivateEmbedderAndCloseHostUI(EmbedderKey key);
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

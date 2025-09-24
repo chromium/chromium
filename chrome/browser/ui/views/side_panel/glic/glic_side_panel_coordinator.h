@@ -34,8 +34,7 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
 
   class StateObserver : public base::CheckedObserver {
    public:
-    // Called when side panel state changes for this tab
-    virtual void VisibilityChanged(tabs::TabInterface* tab, bool isVisible) = 0;
+    virtual void VisibilityChanged(bool isVisible) = 0;
   };
 
   GlicSidePanelCoordinator(tabs::TabInterface* tab,

@@ -23,7 +23,6 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -87,10 +86,6 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   active_embedder_key_ = new_key;
 
   MaybeShowHostUi(embedder_to_show);
-  if (type == EmbedderType::kSidePanel) {
-    side_panel_observation_.Observe(
-        tab->GetTabFeatures()->glic_side_panel_coordinator());
-  }
   embedder_to_show->Show();
 }
 
@@ -100,7 +95,9 @@ void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
   if (embedder) {
     embedder->Close();
   }
-  MaybeDeactivateEmbedderAndCloseHostUI(key);
+  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
+    DeactivateCurrentEmbedder();
+  }
 }
 
 void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
@@ -388,26 +385,6 @@ void GlicInstanceImpl::SwitchConversation(
                                              std::move(callback));
   } else {
     std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
-  }
-}
-
-void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUI(EmbedderKey key) {
-  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
-    // TODO - Figure out what else should go into host_.PanelWasClosed() and
-    // call it
-    DeactivateCurrentEmbedder();
-  }
-}
-
-/**
-Showing Glic Side Panel can only be triggered with Glic code, but Glic entry
-can be hidden by `SidePanelCoordinator` when replacing it with another entry,
-eg. bookmarks. */
-void GlicInstanceImpl::VisibilityChanged(tabs::TabInterface* tab,
-                                         bool visible) {
-  if (!visible) {
-    side_panel_observation_.Reset();
-    MaybeDeactivateEmbedderAndCloseHostUI(EmbedderKey(tab));
   }
 }
 
