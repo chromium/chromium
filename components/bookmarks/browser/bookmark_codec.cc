@@ -67,6 +67,28 @@ base::Value EncodeSyncMetadata(std::string sync_metadata_str) {
   return base::Value(base::Base64Encode(sync_metadata_str));
 }
 
+// Helper function to convert Time to microseconds since Windows epoch.
+int64_t ToMicrosecondsSinceWindowsEpoch(Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
+// Helper function to parse date from dictionary, returns nullopt if not found.
+std::optional<Time> FindMicrosecondsSinceWindowsEpoch(
+    const base::Value::Dict& dict,
+    std::string_view key) {
+  const std::string* string_value = dict.FindString(key);
+  if (!string_value) {
+    return std::nullopt;
+  }
+
+  int64_t microseconds = 0;
+  if (!base::StringToInt64(*string_value, &microseconds)) {
+    return std::nullopt;
+  }
+
+  return Time::FromDeltaSinceWindowsEpoch(base::Microseconds(microseconds));
+}
+
 }  // namespace
 
 BookmarkCodec::BookmarkCodec() = default;
@@ -179,11 +201,10 @@ base::Value::Dict BookmarkCodec::EncodeNode(const BookmarkNode* node) {
   value.Set(kNameKey, title);
   const std::string& uuid = node->uuid().AsLowercaseString();
   value.Set(kGuidKey, uuid);
-  // TODO(crbug.com/40479288): Avoid ToInternalValue().
-  value.Set(kDateAddedKey,
-            base::NumberToString(node->date_added().ToInternalValue()));
-  value.Set(kDateLastUsed,
-            base::NumberToString(node->date_last_used().ToInternalValue()));
+  value.Set(kDateAddedKey, base::NumberToString(ToMicrosecondsSinceWindowsEpoch(
+                               node->date_added())));
+  value.Set(kDateLastUsed, base::NumberToString(ToMicrosecondsSinceWindowsEpoch(
+                               node->date_last_used())));
   if (node->is_url()) {
     value.Set(kTypeKey, kTypeURL);
     std::string url = node->url().possibly_invalid_spec();
@@ -191,9 +212,9 @@ base::Value::Dict BookmarkCodec::EncodeNode(const BookmarkNode* node) {
     UpdateChecksumWithUrlNode(id, title, url);
   } else {
     value.Set(kTypeKey, kTypeFolder);
-    value.Set(
-        kDateModifiedKey,
-        base::NumberToString(node->date_folder_modified().ToInternalValue()));
+    value.Set(kDateModifiedKey,
+              base::NumberToString(ToMicrosecondsSinceWindowsEpoch(
+                  node->date_folder_modified())));
     UpdateChecksumWithFolderNode(id, title);
 
     base::Value::List child_values;
@@ -360,24 +381,6 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
     uuids_.insert(uuid);
   }
 
-  std::string date_added_string;
-  string_value = value.FindString(kDateAddedKey);
-  if (string_value)
-    date_added_string = *string_value;
-  else
-    date_added_string = base::NumberToString(Time::Now().ToInternalValue());
-  int64_t date_added_time;
-  base::StringToInt64(date_added_string, &date_added_time);
-
-  std::string date_last_used_string;
-  string_value = value.FindString(kDateLastUsed);
-  if (string_value)
-    date_last_used_string = *string_value;
-  else
-    date_last_used_string = base::NumberToString(0);
-  int64_t date_last_used;
-  base::StringToInt64(date_last_used_string, &date_last_used);
-
   const std::string* type_string = value.FindString(kTypeKey);
   if (!type_string)
     return false;
@@ -402,13 +405,6 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
       parent->Add(base::WrapUnique(node));
     UpdateChecksumWithUrlNode(id_string, title, *url_string);
   } else {
-    std::string last_modified_date;
-    string_value = value.FindString(kDateModifiedKey);
-    if (string_value)
-      last_modified_date = *string_value;
-    else
-      last_modified_date = base::NumberToString(Time::Now().ToInternalValue());
-
     const base::Value::List* child_values = value.FindList(kChildrenKey);
     if (!child_values)
       return false;
@@ -421,9 +417,9 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
       node->set_id(id);
     }
 
-    int64_t internal_time;
-    base::StringToInt64(last_modified_date, &internal_time);
-    node->set_date_folder_modified(Time::FromInternalValue(internal_time));
+    node->set_date_folder_modified(
+        FindMicrosecondsSinceWindowsEpoch(value, kDateModifiedKey)
+            .value_or(Time::Now()));
 
     if (parent)
       parent->Add(base::WrapUnique(node));
@@ -435,8 +431,10 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
   }
 
   node->SetTitle(title);
-  node->set_date_added(Time::FromInternalValue(date_added_time));
-  node->set_date_last_used(Time::FromInternalValue(date_last_used));
+  node->set_date_added(FindMicrosecondsSinceWindowsEpoch(value, kDateAddedKey)
+                           .value_or(Time::Now()));
+  node->set_date_last_used(
+      FindMicrosecondsSinceWindowsEpoch(value, kDateLastUsed).value_or(Time()));
 
   BookmarkNode::MetaInfoMap meta_info_map;
   if (!DecodeMetaInfo(value, &meta_info_map))
