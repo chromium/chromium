@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["stylewithcss","true"],["insertlinebreak",""]] "<p>[foo<span style=color:#aBcDeF>bar]</span>baz" queryCommandState("stylewithcss") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span>baz]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br><br></span></p>" but got "<p>foo<br><font color=\\"#abcdef\\"><br></font></p>"
+[FAIL] [["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>{bar</span>baz}" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br><br></span></p>" but got "<p>foo<br><font color=\\"#abcdef\\"><br></font></p>"
+[FAIL] [["stylewithcss","false"],["insertlinebreak",""]] "<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<span style=\\"color:rgb(171, 205, 239)\\"><br></span>quz</p>" but got "<p>foo<font color=\\"#abcdef\\"><br></font>quz</p>"
+[FAIL] [["insertlinebreak",""]] "<div>abc [] </div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>abc<br><br></div>" but got "<div>abc  <br><br></div>"
+[FAIL] [["insertlinebreak",""]] "<div>abc[]  </div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div>abc<br><br></div>" but got "<div>abc  <br><br></div>"
+[FAIL] [["insertlinebreak",""]] "<div>[] abc</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><br>&nbsp;abc</div>" not in array ["<div><br>abc</div>", "<div><br> abc</div>"]
+[FAIL] [["insertlinebreak",""]] "<div>[]  abc</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><br>&nbsp; abc</div>" not in array ["<div><br>abc</div>", "<div><br>  abc</div>"]
+[FAIL] [["insertlinebreak",""]] "<div> [] abc</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><br>&nbsp; abc</div>" not in array ["<div><br>abc</div>", "<div><br> abc</div>"]
+[FAIL] [["insertlinebreak",""]] "<div>  []abc</div>" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div><br>&nbsp; abc</div>" not in array ["<div><br>abc</div>", "<div><br>  abc</div>"]
+[FAIL] [["insertlinebreak",""]] "<div style=display:flex;white-space:pre><span>abc[]</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:flex;white-space:pre\\"><span>abc\\n<br></span></div>" but got "<div style=\\"display:flex;white-space:pre\\"><span>abc\\n\\n</span></div>"
+[FAIL] [["insertlinebreak",""]] "<div style=display:inline-flex;white-space:pre><span>abc[]</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:inline-flex;white-space:pre\\"><span>abc\\n<br></span></div>" but got "<div style=\\"display:inline-flex;white-space:pre\\"><span>abc\\n\\n</span></div>"
+[FAIL] [["insertlinebreak",""]] "<div style=display:grid;white-space:pre><span>abc[]</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:grid;white-space:pre\\"><span>abc\\n<br></span></div>" but got "<div style=\\"display:grid;white-space:pre\\"><span>abc\\n\\n</span></div>"
+[FAIL] [["insertlinebreak",""]] "<div style=display:inline-grid;white-space:pre><span>abc[]</span></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"display:inline-grid;white-space:pre\\"><span>abc\\n<br></span></div>" but got "<div style=\\"display:inline-grid;white-space:pre\\"><span>abc\\n\\n</span></div>"
+Harness: the test ran to completion.
+

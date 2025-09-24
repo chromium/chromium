@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] initial position
+  assert_equals: expected -250 but got 250
+[FAIL] scroll to 100
+  assert_equals: expected -250 but got 250
+[FAIL] scroll to 101
+  assert_equals: expected -250 but got 250
+[FAIL] scroll back to 100
+  assert_equals: expected -250 but got 250
+[FAIL] redisplay at 100
+  assert_equals: expected -250 but got 250
+[FAIL] scroll to 299
+  assert_equals: expected -250 but got 250
+Harness: the test ran to completion.
+

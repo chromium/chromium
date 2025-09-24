@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1009 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("a‌b") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("A‌B") C1
@@ -1320,8 +1320,8 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3j78f.xn--mkb20b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--20-9802c.xn--0w5a.xn--1-eg4e.") V7; A4_2 (ignored)
-  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𲤱20.音.ꡦ1.") A4_2 (ignored)
+  Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--dth6033bzbvx.xn--tsh9439b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("Ⴕ。۰≮ß݅")
@@ -1394,11 +1394,13 @@ Found 1008 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0-z6jy93b.xn--8lh28773l") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.ss") V7
+[FAIL] ToASCII("𲮚9ꍩ៓.ss")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("𲮚9ꍩ៓.SS")
+  Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--ss-l1t") C2; V7
-  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2; V7
+[FAIL] ToASCII("xn--9-i0j5967eg3qz.xn--zca770n") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("9.xn----ogo..xn----xj54d1s69k") V7; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw

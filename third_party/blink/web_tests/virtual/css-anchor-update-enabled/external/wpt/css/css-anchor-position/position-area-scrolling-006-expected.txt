@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Scroll to 194
+  assert_equals: anchored y expected 194 but got 1200
+Harness: the test ran to completion.
+

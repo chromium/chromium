@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Should use the third fallback position with enough space right
+  assert_equals: Anchored element should be at the right of anchor expected 650 but got 450
+[FAIL] Should use the second fallback position with enough space below
+  assert_equals: Anchored element should be at the bottom of anchor expected 450 but got 250
+Harness: the test ran to completion.
+

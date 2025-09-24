@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Scroll to 100,150
+  assert_equals: anchored x expected 150 but got 100
+[FAIL] Scroll to 0,0
+  assert_equals: anchored x expected 150 but got 100
+[FAIL] Scroll to 750,100
+  assert_equals: anchored y expected 150 but got 100
+[FAIL] Scroll to 750,196
+  assert_equals: anchored width expected 500 but got 875
+[FAIL] Scroll to 195,196
+  assert_equals: anchored width expected 500 but got 875
+[FAIL] Scroll to 194,195
+  assert_equals: anchored x expected 194 but got 250
+[FAIL] Scroll to 194,194
+  assert_equals: anchored x expected 194 but got 250
+[FAIL] Redisplay at 194,194
+  assert_equals: anchored x expected 194 but got 250
+Harness: the test ran to completion.
+

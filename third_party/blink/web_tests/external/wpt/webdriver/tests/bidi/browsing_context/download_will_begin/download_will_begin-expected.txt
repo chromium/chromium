@@ -1,7 +1,0 @@
-This is a wdspec test.
-[FAIL] test_content_disposition_header
-  asyncio.exceptions.CancelledError
-[FAIL] test_redirect_to_content_disposition_header
-  asyncio.exceptions.CancelledError
-Harness: the test ran to completion.
-

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] document.caretRangeFromPoint(0, 0)
+  assert_equals: expected Element node <textarea id="textarea">AAAAAAAAAAAAAAAAAAAAA</textarea> but got Element node <body><textarea id="textarea">AAAAAAAAAAAAAAAAAAAAA</text...
+[FAIL] document.caretRangeFromPoint(10, 10)
+  assert_equals: expected Element node <textarea id="textarea">AAAAAAAAAAAAAAAAAAAAA</textarea> but got Element node <body><textarea id="textarea">AAAAAAAAAAAAAAAAAAAAA</text...
+Harness: the test ran to completion.
+

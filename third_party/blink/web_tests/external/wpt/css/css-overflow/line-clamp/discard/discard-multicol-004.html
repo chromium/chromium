@@ -3,8 +3,9 @@
 <title>CSS Overflow: continue:discard on multicol</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net">
 <link rel="help" href="https://drafts.csswg.org/css-overflow-4/#continue">
+<link rel="help" href="https://drafts.csswg.org/css-overflow-4/#max-lines">
 <link rel="match" href="reference/discard-multicol-004-ref.html">
-<meta name="assert" content="continue: discard together with max-lines counts lines across the columns of a multicol.">
+<meta name="assert" content="max-lines does not take effect across the columns of a multicol, because «Only line boxes in the same block formatting context are counted: the contents of descendants that establish independent formatting contexts are skipped over while counting line boxes.».">
 <style>
 div {
   font-family: monospace;
@@ -38,4 +39,5 @@ Line 2
 Line 3
 Line 4
 Line 5
+Line 6
 </div>

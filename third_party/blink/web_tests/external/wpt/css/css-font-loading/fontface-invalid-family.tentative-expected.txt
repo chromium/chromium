@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] family: content:Segoe UI
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name content:Segoe UI expected "\\"content:Segoe UI\\"" but got "content:Segoe UI"
+[FAIL] family: sans-serif
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name sans-serif expected "\\"sans-serif\\"" but got "sans-serif"
+[FAIL] family: A, B
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name A, B expected "\\"A, B\\"" but got "A, B"
+[FAIL] family: inherit
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name inherit expected "\\"inherit\\"" but got "inherit"
+[FAIL] family: a 1
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name a 1 expected "\\"a 1\\"" but got "a 1"
+[FAIL] family: 
+  assert_equals: FontFace.family should be the quoted string after construction with invalid family name  expected "\\"\\"" but got ""
+Harness: the test ran to completion.
+

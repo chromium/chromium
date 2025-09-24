@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Should use the second position option with enough space right
+  assert_equals: Anchored element should be at the top of anchor expected 450 but got 650
+[FAIL] Should still use the second position option as long as it fits
+  assert_equals: Anchored element should be at the top of anchor expected 350 but got 550
+[FAIL] Should use the first position option with enough space below and right
+  assert_equals: Anchored element should be at the right of anchor expected 650 but got 450
+Harness: the test ran to completion.
+

@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] Focusing elements inside a popover with a details element inside, using commandfor
-  assert_equals: tab press should move to active element 1 expected (string) "1" but got (object) null
+  assert_equals: tab press should move to close popover button expected "close" but got "after"
 [FAIL] Focusing elements inside a popover with a details element inside, and the after button adjacent to invoker, using commandfor
   assert_equals: tab press should move to close popover button expected "close" but got "after"
 [FAIL] Focusing elements inside a popover with a custom-element with delegatesfocus inside, using commandfor

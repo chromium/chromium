@@ -1,0 +1,57 @@
+This is a wdspec test.
+[FAIL] test_params_download_behavior_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_invalid_type[value2]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_invalid_type[foo]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_type[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_type_invalid_value
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_allowed_destination_folder_invalid_value[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_allowed_destination_folder_invalid_value[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_allowed_destination_folder_invalid_value[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_allowed_destination_folder_invalid_value[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_download_behavior_allowed_destination_folder_invalid_value[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_invalid_type[foo]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_empty_list
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_invalid_type[42]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_invalid_type[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_invalid_type[None]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_invalid_type[value3]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_invalid_type[value4]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_params_user_contexts_value_unknown_user_context
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+Harness: the test ran to completion.
+

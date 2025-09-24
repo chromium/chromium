@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_set_and_reset_globally[True]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_set_and_reset_globally[False]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_set_and_reset_globally_and_per_user_context[True-new]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_set_and_reset_globally_and_per_user_context[True-default]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_set_and_reset_globally_and_per_user_context[False-new]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+[FAIL] test_set_and_reset_globally_and_per_user_context[False-default]
+  webdriver.bidi.error.UnknownCommandException: unknown command (Unknown command 'browser.setDownloadBehavior'.)
+Harness: the test ran to completion.
+
