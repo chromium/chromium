@@ -94,20 +94,4 @@ std::unique_ptr<SecureHash> SecureHash::Create(Algorithm algorithm) {
   }
 }
 
-void SecureHash::Update(const void* input, size_t len) {
-  // SAFETY: This API is deprecated & being migrated away from. It can't be
-  // safely implemented at the moment.
-  // TODO(https://crbug.com/364687923): Remove this.
-  return Update(UNSAFE_BUFFERS(
-      base::span<const uint8_t>(static_cast<const uint8_t*>(input), len)));
-}
-
-void SecureHash::Finish(void* output, size_t len) {
-  // SAFETY: This API is deprecated & being migrated away from. It can't be
-  // safely implemented at the moment.
-  // TODO(https://crbug.com/364687923): Remove this.
-  return Finish(
-      UNSAFE_BUFFERS(base::span<uint8_t>(static_cast<uint8_t*>(output), len)));
-}
-
 }  // namespace crypto

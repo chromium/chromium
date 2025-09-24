@@ -41,12 +41,6 @@ class CRYPTO_EXPORT SecureHash {
 
   virtual size_t GetHashLength() const = 0;
 
-  // Deprecated non-span APIs - do not add new uses of them, and please remove
-  // existing uses.
-  // TODO(https://crbug.com/364687923): Delete these.
-  void Update(const void* input, size_t len);
-  void Finish(void* output, size_t len);
-
   // Create a clone of this SecureHash. The returned clone and this both
   // represent the same hash state. But from this point on, calling
   // Update()/Finish() on either doesn't affect the state of the other.
