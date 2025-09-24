@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_io_surface.h"
 #endif
 
 namespace viz {

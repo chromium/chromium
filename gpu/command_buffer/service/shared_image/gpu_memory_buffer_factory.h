@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_H_
-#define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_H_
 
 #include <memory>
 #include <vector>
@@ -11,8 +11,8 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -23,7 +23,7 @@ class VulkanContextProvider;
 
 namespace gpu {
 
-class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
+class GPU_GLES2_EXPORT GpuMemoryBufferFactory {
  public:
   GpuMemoryBufferFactory() = default;
   GpuMemoryBufferFactory(const GpuMemoryBufferFactory&) = delete;
@@ -58,4 +58,4 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_H_

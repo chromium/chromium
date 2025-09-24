@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/service/gpu_memory_buffer_factory_native_pixmap.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_native_pixmap.h"
 
 #include "build/build_config.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory_test_template.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_test_template.h"
 
 namespace gpu {
 namespace {

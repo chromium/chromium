@@ -35,8 +35,6 @@ component("service") {
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",
-    "gpu_memory_buffer_factory.cc",
-    "gpu_memory_buffer_factory.h",
     "gpu_watchdog_thread.cc",
     "gpu_watchdog_thread.h",
     "image_decode_accelerator_stub.cc",
@@ -96,8 +94,6 @@ component("service") {
     sources += [
       "dcomp_texture_win.cc",
       "dcomp_texture_win.h",
-      "gpu_memory_buffer_factory_dxgi.cc",
-      "gpu_memory_buffer_factory_dxgi.h",
       "image_transport_surface_win.cc",
     ]
     libs += [
@@ -108,8 +104,6 @@ component("service") {
   }
   if (is_apple) {
     sources += [
-      "gpu_memory_buffer_factory_io_surface.cc",
-      "gpu_memory_buffer_factory_io_surface.h",
       "image_transport_surface_overlay_mac.h",
       "image_transport_surface_overlay_mac.mm",
     ]
@@ -148,11 +142,6 @@ component("service") {
     deps += [ "//chromeos/ash/experiences/arc:arc_features" ]
   }
   if (use_ozone) {
-    sources += [
-      "gpu_memory_buffer_factory_native_pixmap.cc",
-      "gpu_memory_buffer_factory_native_pixmap.h",
-    ]
-
     deps += [ "//ui/ozone" ]
   }
   if (is_fuchsia) {
@@ -171,22 +160,4 @@ component("service") {
   if (skia_use_dawn) {
     deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [ "gpu_memory_buffer_factory_test_template.h" ]
-  public_deps = [
-    ":service",
-    "//testing/gtest",
-  ]
-  deps = [
-    "//base/test:test_support",
-    "//gpu/ipc/common",
-    "//ui/gl:test_support",
-  ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

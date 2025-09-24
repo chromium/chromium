@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
-#define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
 
-#include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
+#include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/native_pixmap.h"
 
 namespace gpu {
 
-class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
+class GPU_GLES2_EXPORT GpuMemoryBufferFactoryNativePixmap
     : public GpuMemoryBufferFactory {
  public:
   GpuMemoryBufferFactoryNativePixmap();
@@ -37,4 +37,4 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_NATIVE_PIXMAP_H_

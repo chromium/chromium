@@ -89,13 +89,13 @@ static_library("test_support") {
     "command_buffer/service/gles2_cmd_decoder_mock.h",
     "command_buffer/service/mocks.cc",
     "command_buffer/service/mocks.h",
+    "command_buffer/service/shared_image/gpu_memory_buffer_factory_test_template.h",
     "command_buffer/service/shared_image/test_image_backing.cc",
     "command_buffer/service/shared_image/test_image_backing.h",
     "command_buffer/service/test_helper.cc",
     "command_buffer/service/test_helper.h",
     "ipc/raster_in_process_context.cc",
     "ipc/raster_in_process_context.h",
-    "ipc/service/gpu_memory_buffer_factory_test_template.h",
     "ipc/webgpu_in_process_context.cc",
     "ipc/webgpu_in_process_context.h",
   ]
@@ -555,7 +555,7 @@ test("gpu_unittests") {
   if (is_mac) {
     sources += [
       "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
+      "command_buffer/service/shared_image/gpu_memory_buffer_factory_io_surface_unittest.cc",
     ]
   }
 
@@ -570,14 +570,14 @@ test("gpu_unittests") {
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
       "command_buffer/client/internal/mappable_buffer_native_pixmap_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
+      "command_buffer/service/shared_image/gpu_memory_buffer_factory_native_pixmap_unittest.cc",
     ]
   }
 
   if (is_win) {
     sources += [
       "command_buffer/client/internal/mappable_buffer_dxgi_unittest.cc",
-      "ipc/service/gpu_memory_buffer_factory_dxgi_unittest.cc",
+      "command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi_unittest.cc",
     ]
   }
 

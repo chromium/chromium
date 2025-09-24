@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_image/cpu_readback_upload_copy_strategy.h"
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
@@ -37,12 +38,6 @@
 #include "gpu/command_buffer/service/shared_image/wrapped_sk_image_backing_factory.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
-
-// There is a circular GN dependency that is tricky to resolve. As the two GN
-// targets here are always built together in production and test contexts,
-// just allow this until we eliminate GpuMemoryBufferFactory entirely.
-// TODO(crbug.com/404905709): Eliminate GpuMemoryBufferFactory.
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"  // nogncheck
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"

@@ -14,14 +14,9 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/gpu_gles2_export.h"
-
-// There is a circular GN dependency that is tricky to resolve. As the two GN
-// targets here are always built together in production and test contexts,
-// just allow this until we eliminate GpuMemoryBufferFactory entirely.
-// TODO(crbug.com/404905709): Eliminate GpuMemoryBufferFactory.
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"  // nogncheck
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

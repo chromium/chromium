@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
 
 #include <memory>
 
@@ -11,15 +11,15 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 
 #if BUILDFLAG(IS_APPLE)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_io_surface.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_native_pixmap.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_native_pixmap.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_dxgi.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_dxgi.h"
 #endif
 
 namespace gpu {

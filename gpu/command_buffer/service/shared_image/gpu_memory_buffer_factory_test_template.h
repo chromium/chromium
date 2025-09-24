@@ -5,15 +5,15 @@
 // This file defines tests that implementations of GpuMemoryBufferFactory should
 // pass in order to be conformant.
 
-#ifndef GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
-#define GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_display.h"
@@ -90,4 +90,4 @@ REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer);
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SERVICE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GPU_MEMORY_BUFFER_FACTORY_TEST_TEMPLATE_H_

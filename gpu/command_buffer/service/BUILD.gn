@@ -263,6 +263,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/gl_texture_image_backing_factory.h",
     "shared_image/gl_texture_passthrough_fallback_image_representation.cc",
     "shared_image/gl_texture_passthrough_fallback_image_representation.h",
+    "shared_image/gpu_memory_buffer_factory.cc",
+    "shared_image/gpu_memory_buffer_factory.h",
     "shared_image/raw_draw_image_backing.cc",
     "shared_image/raw_draw_image_backing.h",
     "shared_image/raw_draw_image_backing_factory.cc",
@@ -423,6 +425,8 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "shared_image/gl_ozone_image_representation.cc",
       "shared_image/gl_ozone_image_representation.h",
+      "shared_image/gpu_memory_buffer_factory_native_pixmap.cc",
+      "shared_image/gpu_memory_buffer_factory_native_pixmap.h",
       "shared_image/ozone_image_backing.cc",
       "shared_image/ozone_image_backing.h",
       "shared_image/ozone_image_backing_factory.cc",
@@ -520,6 +524,8 @@ target(link_target_type, "gles2_sources") {
 
   if (is_apple) {
     sources += [
+      "shared_image/gpu_memory_buffer_factory_io_surface.cc",
+      "shared_image/gpu_memory_buffer_factory_io_surface.h",
       "shared_image/iosurface_image_backing.h",
       "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
@@ -656,8 +662,11 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_backing.h",
       "shared_image/dxgi_swap_chain_image_representation.cc",
       "shared_image/dxgi_swap_chain_image_representation.h",
+      "shared_image/gpu_memory_buffer_factory_dxgi.cc",
+      "shared_image/gpu_memory_buffer_factory_dxgi.h",
     ]
     libs = [
+      "d3d11.lib",
       "d3d12.lib",
       "dxguid.lib",
       "onecore.lib",
