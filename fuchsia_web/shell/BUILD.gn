@@ -6,11 +6,16 @@ assert(is_fuchsia)
 
 import("//build/config/cast.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
+import("//fuchsia_web/common/swiftshader_exclude.gni")
 import("//third_party/fuchsia-gn-sdk/src/component.gni")
 import("//third_party/fuchsia-gn-sdk/src/package.gni")
 
 # Nothing else should depend on these targets except the final component.
 visibility = [ ":*" ]
+
+# TODO(crbug.com/42050042): SwiftShader is used only in tests. It should
+# not be included in the web_shell package.
+_web_shell_excluded_files = swiftshader_files_to_exclude
 
 group("shell") {
   testonly = true
@@ -73,6 +78,7 @@ fuchsia_package("web_engine_shell_pkg") {
     ":web_engine_shell_component",
     ":web_engine_shell_for_web_instance_host_component",
   ]
+  excluded_files = _web_shell_excluded_files
 }
 
 fuchsia_package_installer("web_engine_shell") {
@@ -152,6 +158,7 @@ if (enable_cast_receiver) {
       ":cast_streaming_shell_component",
       ":cast_streaming_shell_for_web_instance_host_component",
     ]
+    excluded_files = _web_shell_excluded_files
   }
 
   fuchsia_package_installer("cast_streaming_shell") {

@@ -762,7 +762,9 @@ def _MaybeAddThirdPartyPath(root, dirpath, third_party_dirs):
     _MaybeAddThirdPartyPath(root, subpath, third_party_dirs)
 
 
-def FindThirdPartyDirs(root, extra_third_party_dirs=None):
+def FindThirdPartyDirs(root,
+                       exclude_dirs: Optional[List[str]] = None,
+                       extra_third_party_dirs: Optional[List[str]] = None):
   """Find all third_party directories underneath the source root."""
   third_party_dirs = set()
   for path, dirs, files in os.walk(root):
@@ -784,6 +786,12 @@ def FindThirdPartyDirs(root, extra_third_party_dirs=None):
     for skip in PRUNE_DIRS:
       if skip in dirs:
         dirs.remove(skip)
+
+    # If `exclude_dirs` are specified then prune them as well.
+    if exclude_dirs:
+      for skip in exclude_dirs:
+        if skip in dirs:
+          dirs.remove(skip)
 
     if os.path.basename(path) == 'third_party':
       # Add all subdirectories that are not marked for skipping.
@@ -828,7 +836,7 @@ def LogParseDirErrors(errors):
 
 def GetThirdPartyDepsFromGNDepsOutput(
     gn_deps: str,
-    target_os: str,
+    exclude_dirs: Optional[List[str]] = None,
     extra_allowed_dirs: Optional[List[str]] = None):
   """Returns third_party/foo directories given the output of "gn desc deps".
 
@@ -872,18 +880,16 @@ def GetThirdPartyDepsFromGNDepsOutput(
     third_party_path = m.group(1)
     if any(third_party_path.startswith(p + os.sep) for p in PRUNE_PATHS):
       continue
-    if (target_os == 'ios' and any(
-        third_party_path.startswith(p + os.sep)
-        for p in KNOWN_NON_IOS_LIBRARIES)):
-      # Skip over files that are known not to be used on iOS.
-      continue
+    if exclude_dirs:
+      if any(third_party_path.startswith(p + os.sep) for p in exclude_dirs):
+        continue
     third_party_deps.add(third_party_path[:-1])
   return third_party_deps
 
 
 def FindThirdPartyDeps(gn_out_dir: str,
                        gn_target: str,
-                       target_os: str,
+                       exclude_dirs: Optional[List[str]] = None,
                        extra_third_party_dirs: Optional[List[str]] = None,
                        extra_allowed_dirs: Optional[List[str]] = None):
   if not gn_out_dir:
@@ -910,7 +916,7 @@ def FindThirdPartyDeps(gn_out_dir: str,
     if isinstance(gn_deps, bytes):
       gn_deps = gn_deps.decode("utf-8")
 
-  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, target_os,
+  third_party_deps = GetThirdPartyDepsFromGNDepsOutput(gn_deps, exclude_dirs,
                                                        extra_allowed_dirs)
   if extra_third_party_dirs:
     third_party_deps.update(extra_third_party_dirs)
@@ -940,9 +946,9 @@ def GenerateCredits(file_template_file,
                     entry_template_file,
                     reciprocal_template_file,
                     output_file,
-                    target_os,
                     gn_out_dir,
                     gn_target,
+                    exclude_dirs,
                     extra_third_party_dirs=None,
                     depfile=None,
                     enable_warnings=False):
@@ -976,7 +982,7 @@ def GenerateCredits(file_template_file,
     }
 
   if gn_target:
-    third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, target_os,
+    third_party_dirs = FindThirdPartyDeps(gn_out_dir, gn_target, exclude_dirs,
                                           extra_third_party_dirs)
 
     # Sanity-check to raise a build error if invalid gn_... settings are
@@ -984,7 +990,7 @@ def GenerateCredits(file_template_file,
     if not third_party_dirs:
       raise RuntimeError("No deps found.")
   else:
-    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT,
+    third_party_dirs = FindThirdPartyDirs(_REPOSITORY_ROOT, exclude_dirs,
                                           extra_third_party_dirs)
 
   if not file_template_file:
@@ -1031,14 +1037,6 @@ def GenerateCredits(file_template_file,
     for dep_metadata in directory_metadata:
       if dep_metadata['Shipped'] == NO:
         continue
-      if target_os == 'ios' and not gn_target:
-        # Skip over files that are known not to be used on iOS. But
-        # skipping is unnecessary if GN was used to query the actual
-        # dependencies.
-        # TODO(lambroslambrou): Remove this step once the iOS build is
-        # updated to provide --gn-target to this script.
-        if path in KNOWN_NON_IOS_LIBRARIES:
-          continue
 
       new_entry = MetadataToTemplateEntry(dep_metadata, entry_template)
       # Skip entries that we've already seen (it exists in multiple
@@ -1168,7 +1166,7 @@ def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
 
   if args.gn_target is not None:
     third_party_dirs = FindThirdPartyDeps(args.gn_out_dir, args.gn_target,
-                                          args.target_os,
+                                          args.exclude_dirs,
                                           extra_third_party_dirs,
                                           args.extra_allowed_dirs)
 
@@ -1178,7 +1176,8 @@ def GenerateLicenseFile(args: argparse.Namespace, root_dir=_REPOSITORY_ROOT):
       raise RuntimeError("No deps found.")
 
   else:
-    third_party_dirs = FindThirdPartyDirs(root_dir, extra_third_party_dirs)
+    third_party_dirs = FindThirdPartyDirs(root_dir, args.exclude_dirs,
+                                          extra_third_party_dirs)
 
   metadatas = {}
   for d in third_party_dirs:
@@ -1418,8 +1417,12 @@ def main():
       help='Gn list of additional third_party dirs to look through.')
   parser.add_argument(
       '--extra-allowed-dirs',
-      help=('List of extra allowed paths to look for '
+      help=('Gn list of extra allowed paths to look for '
             '(deps that will be picked up automatically) besides third_party'),
+  )
+  parser.add_argument(
+      '--exclude-dirs',
+      help='Gn list of directories that should be excluded from the output.',
   )
   parser.add_argument('--target-os', help='OS that this build is targeting.')
   parser.add_argument('--gn-out-dir',
@@ -1457,6 +1460,9 @@ def main():
       args.extra_third_party_dirs)
   args.extra_allowed_dirs = action_helpers.parse_gn_list(
       args.extra_allowed_dirs)
+  args.exclude_dirs = action_helpers.parse_gn_list(args.exclude_dirs)
+  if (not args.exclude_dirs) and args.target_os == 'ios':
+    args.exclude_dirs = list(KNOWN_NON_IOS_LIBRARIES)
 
   if args.command == 'scan':
     if not ScanThirdPartyDirs():
@@ -1464,7 +1470,7 @@ def main():
   elif args.command == 'credits':
     if not GenerateCredits(
         args.file_template, args.entry_template, args.reciprocal_template,
-        args.output_file, args.target_os, args.gn_out_dir, args.gn_target,
+        args.output_file, args.gn_out_dir, args.gn_target, args.exclude_dirs,
         args.extra_third_party_dirs, args.depfile, args.enable_warnings):
       return 1
   elif args.command == 'license_file':

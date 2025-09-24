@@ -8,6 +8,7 @@ import("//build/config/cast.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
 import("//build/config/locales.gni")
+import("//fuchsia_web/common/swiftshader_exclude.gni")
 import("//testing/test.gni")
 import("//third_party/fuchsia-gn-sdk/src/component.gni")
 import("//third_party/fuchsia-gn-sdk/src/package.gni")
@@ -447,14 +448,9 @@ source_set("webui_resources") {
   deps = [ "//ui/webui/resources:resources_grit" ]
 }
 
-_web_engine_excluded_files = [
-  # TODO(crbug.com/42050042): SwiftShader is used only in tests. It should
-  # not be included in the WebEngine package.
-  # Whenever this list is updated the exclusions in the cast_runner package
-  # should be updated as well (see fuchsia_web/runners/BUILD.gn).
-  "lib/libvk_swiftshader.so",
-  "vk_swiftshader_icd.json",
-]
+# TODO(crbug.com/42050042): SwiftShader is used only in tests. It should
+# not be included in the WebEngine package.
+_web_engine_excluded_files = swiftshader_files_to_exclude
 
 # Definitions for the main web_engine package. The package contains the
 # context_provider component definition, and its dependencies.  An installer

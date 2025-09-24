@@ -537,7 +537,9 @@ class LicensesTest(unittest.TestCase):
                               gn_target=None,
                               enable_warnings=True,
                               output_file=None,
-                              depfile=None)
+                              depfile=None,
+                              exclude_dirs=None,
+                              target_os=None)
 
     # Warnings enabled
     args.extra_third_party_dirs = ["test_dir_invalid_metadata"]

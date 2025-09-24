@@ -43,6 +43,11 @@ _host_tools_directory = "host_tools"
 
 _archive_suffix = "_archive"
 
+# List of directories that are excluded from the generated LICENSE file.
+# SwiftShader is excluded here because SwiftShader libraries are excluded
+# from the WebEngine package, see `fuchsia_web/common/swiftshader_exclude.gni`.
+_license_exclude_list = [ "third_party/swiftshader" ]
+
 # Extracts the numeric Chrome version and writes it to a file in the output
 # directory.
 #
@@ -114,6 +119,8 @@ template("cipd_archive") {
       _license_target,
       "--gn-out-dir",
       ".",
+      "--exclude-dirs",
+      "$_license_exclude_list",
     ]
   }
 
@@ -135,6 +142,8 @@ template("cipd_archive") {
       "spdx",
       "--spdx-doc-name",
       "${invoker.target_name}",
+      "--exclude-dirs",
+      "$_license_exclude_list",
     ]
   }
 
