@@ -122,10 +122,13 @@ CGFloat const kSheetCornerRadius = 30;
         UserUploadedImageManagerFactory::GetForProfile(self.profile);
     image_fetcher::ImageFetcherService* imageFetcherService =
         ImageFetcherServiceFactory::GetForProfile(self.profile);
+    image_fetcher::ImageFetcher* imageFetcher =
+        imageFetcherService->GetImageFetcher(
+            image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
     _backgroundConfigurationMediator =
         [[HomeCustomizationBackgroundConfigurationMediator alloc]
             initWithBackgroundCustomizationService:_backgroundService
-                               imageFetcherService:imageFetcherService
+                                      imageFetcher:imageFetcher
                         homeBackgroundImageService:nil
                           userUploadedImageManager:userUploadedImageManager];
   }

@@ -4,16 +4,23 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
 
+#import <variant>
+
 #import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/image_fetcher/core/image_fetcher.h"
+#import "components/image_fetcher/core/mock_image_fetcher.h"
+#import "components/image_fetcher/core/request_metadata.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/themes/ntp_background_data.h"
 #import "components/themes/ntp_background_service.h"
 #import "components/themes/pref_names.h"
+#import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/fake_home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
@@ -26,6 +33,7 @@
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_consumer.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
@@ -36,6 +44,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 
@@ -50,6 +59,15 @@ std::unique_ptr<KeyedService> CreateUserUploadedImageManager(
     ProfileIOS* profile) {
   return std::make_unique<UserUploadedImageManager>(
       path, base::SequencedTaskRunner::GetCurrentDefault());
+}
+
+// Post reply to image fetch. `p0` represents the image to return. `p1`
+// represents the HTTP response code.
+ACTION_P(PostFetchReply, image, http_response_code) {
+  image_fetcher::RequestMetadata metadata;
+  metadata.http_response_code = http_response_code;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(*arg2), image, metadata));
 }
 
 }  // namespace
@@ -97,11 +115,11 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
         base::BindRepeating(&CreateBackgroundImageService));
     profile_ = std::move(test_profile_builder).Build();
 
+    mock_image_fetcher_ = std::make_unique<image_fetcher::MockImageFetcher>();
+
     HomeBackgroundCustomizationService* background_service =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(
             profile_.get());
-    image_fetcher::ImageFetcherService* image_fetcher =
-        ImageFetcherServiceFactory::GetForProfile(profile_.get());
     HomeBackgroundImageService* home_background_image_service =
         HomeBackgroundImageServiceFactory::GetForProfile(profile_.get());
     UserUploadedImageManager* user_image_manager =
@@ -109,7 +127,7 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
 
     mediator_ = [[HomeCustomizationBackgroundConfigurationMediator alloc]
         initWithBackgroundCustomizationService:background_service
-                           imageFetcherService:image_fetcher
+                                  imageFetcher:mock_image_fetcher_.get()
                     homeBackgroundImageService:home_background_image_service
                       userUploadedImageManager:user_image_manager];
 
@@ -137,6 +155,11 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
         HomeBackgroundImageServiceFactory::GetForProfile(profile_.get()));
   }
 
+  HomeBackgroundCustomizationService* CustomizationService() {
+    return HomeBackgroundCustomizationServiceFactory::GetForProfile(
+        profile_.get());
+  }
+
   CollectionImage CreateImage(int asset_id, std::string collection_id) {
     CollectionImage image;
     image.collection_id = collection_id;
@@ -162,6 +185,8 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
   base::ScopedTempDir image_dir_;
 
   std::unique_ptr<TestProfileIOS> profile_;
+
+  std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
 
   // Mediator being tested by these tests.
   HomeCustomizationBackgroundConfigurationMediator* mediator_;
@@ -192,9 +217,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   image_service->SetCollectionData(collection_images);
 
   // Set image 1 from collection 1 as the current background.
-  HomeBackgroundCustomizationService* background_service =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
-  background_service->SetCurrentBackground(
+  CustomizationService()->SetCurrentBackground(
       collection1[0].image_url, collection1[0].thumbnail_image_url,
       collection1[0].attribution[0], collection1[0].attribution[1],
       collection1[0].attribution_action_url, collection1[0].collection_id);
@@ -286,9 +309,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        LoadColorBackgroundConfigurationsSelectedColor) {
   // Set a color as selected.
   int selected_color = 2;
-  HomeBackgroundCustomizationService* background_service =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
-  background_service->SetBackgroundColor(
+  CustomizationService()->SetBackgroundColor(
       kSeedColors[selected_color].color,
       SchemeVariantToProtoEnum(kSeedColors[selected_color].variant));
 
@@ -303,28 +324,25 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 // Tests loading the recently used backgrounds.
 TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        LoadRecentlyUsedBackgroundConfigurations) {
-  HomeBackgroundCustomizationService* background_service =
-      HomeBackgroundCustomizationServiceFactory::GetForProfile(profile_.get());
-
   // Set one color, one gallery image, and one user-uploaded image as recently
   // used items.
   SeedColor color = kSeedColors[0];
-  background_service->SetBackgroundColor(
+  CustomizationService()->SetBackgroundColor(
       color.color, SchemeVariantToProtoEnum(color.variant));
-  background_service->StoreCurrentTheme();
+  CustomizationService()->StoreCurrentTheme();
 
   CollectionImage image = CreateImage(1, "Default");
-  background_service->SetCurrentBackground(
+  CustomizationService()->SetCurrentBackground(
       image.image_url, image.thumbnail_image_url, image.attribution[0],
       image.attribution[1], image.attribution_action_url, image.collection_id);
-  background_service->StoreCurrentTheme();
+  CustomizationService()->StoreCurrentTheme();
 
   HomeUserUploadedBackground user_image;
   user_image.image_path = "image.jpg";
   user_image.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
-  background_service->SetCurrentUserUploadedBackground(
+  CustomizationService()->SetCurrentUserUploadedBackground(
       user_image.image_path, user_image.framing_coordinates);
-  background_service->StoreCurrentTheme();
+  CustomizationService()->StoreCurrentTheme();
 
   [mediator_ loadRecentlyUsedBackgroundConfigurations];
   ASSERT_EQ(1u, configuration_consumer_.configurations.count);
@@ -380,4 +398,328 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   // Index 1, the user-uploaded image, should be the selected one.
   EXPECT_EQ(collection.configurationOrder[1],
             configuration_consumer_.selectedBackgroundId);
+}
+
+// Tests that applying a background configuration based off of a
+// `CollectionImage` applies correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       ApplyBackgroundConfiguration_CollectionImage) {
+  // Generate data.
+  CollectionImage image = CreateImage(1, "Default");
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithCollectionImage:image
+                accessibilityName:@""
+               accessibilityValue:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  std::optional<HomeCustomBackground> actual =
+      CustomizationService()->GetCurrentCustomBackground();
+  ASSERT_TRUE(actual);
+  ASSERT_TRUE(
+      std::holds_alternative<sync_pb::NtpCustomBackground>(actual.value()));
+  sync_pb::NtpCustomBackground actual_background =
+      std::get<sync_pb::NtpCustomBackground>(actual.value());
+  EXPECT_EQ(image.image_url, actual_background.url());
+}
+
+// Tests that applying a background configuration based off of a
+// `sync_pb::NtpCustomBackground` applies correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       ApplyBackgroundConfiguration_NtpCustomBackground) {
+  // Generate data.
+  sync_pb::NtpCustomBackground custom_background;
+  custom_background.set_url("http://www.google.com/image1");
+  custom_background.set_attribution_line_1("Drawn by");
+  custom_background.set_attribution_line_2("Chrome on iOS");
+  custom_background.set_attribution_action_url(
+      "http://www.google.com/attribution1");
+  custom_background.set_collection_id("Default");
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithNtpCustomBackground:custom_background
+                    accessibilityName:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  std::optional<HomeCustomBackground> actual =
+      CustomizationService()->GetCurrentCustomBackground();
+  ASSERT_TRUE(actual);
+  ASSERT_TRUE(
+      std::holds_alternative<sync_pb::NtpCustomBackground>(actual.value()));
+  EXPECT_EQ(custom_background,
+            std::get<sync_pb::NtpCustomBackground>(actual.value()));
+}
+
+// Tests that applying a background configuration based off of a color applies
+// correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       ApplyBackgroundConfiguration_Color) {
+  // Generate data.
+  SeedColor color = kSeedColors[0];
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithBackgroundColor:skia::UIColorFromSkColor(color.color)
+                     colorVariant:color.variant
+                accessibilityName:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  std::optional<sync_pb::UserColorTheme> actual =
+      CustomizationService()->GetCurrentColorTheme();
+  ASSERT_TRUE(actual);
+  EXPECT_EQ(color.color, actual->color());
+  EXPECT_EQ(color.variant,
+            ProtoEnumToSchemeVariant(actual->browser_color_variant()));
+}
+
+// Tests that applying a background configuration based off of a user image
+// applies correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       ApplyBackgroundConfiguration_UserImage) {
+  // Generate data.
+  HomeUserUploadedBackground user_background;
+  user_background.image_path = "image.jpg";
+  user_background.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithUserUploadedImagePath:base::SysUTF8ToNSString(
+                                            user_background.image_path)
+                     framingCoordinates:user_background.framing_coordinates
+                      accessibilityName:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  std::optional<HomeCustomBackground> actual =
+      CustomizationService()->GetCurrentCustomBackground();
+  ASSERT_TRUE(actual);
+  ASSERT_TRUE(
+      std::holds_alternative<HomeUserUploadedBackground>(actual.value()));
+  EXPECT_EQ(user_background,
+            std::get<HomeUserUploadedBackground>(actual.value()));
+}
+
+// Tests that applying the default background configuration applies correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       ApplyBackgroundConfiguration_Default) {
+  // First, set the background in the service to something else.
+  SeedColor color = kSeedColors[0];
+  CustomizationService()->SetBackgroundColor(
+      color.color, SchemeVariantToProtoEnum(color.variant));
+  EXPECT_TRUE(CustomizationService()->GetCurrentColorTheme());
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc] initWithNoBackground];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  EXPECT_FALSE(CustomizationService()->GetCurrentColorTheme());
+}
+
+// Tests that saving the current theme via the mediator after setting a theme
+// saves correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest, SaveCurrentTheme) {
+  // Generate data.
+  CollectionImage image = CreateImage(1, "Default");
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithCollectionImage:image
+                accessibilityName:@""
+               accessibilityValue:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+
+  // Save the current theme, which should then persist the theme in the service.
+  [mediator_ saveCurrentTheme];
+
+  EXPECT_FALSE(mediator_.themeHasChanged);
+
+  // Now, even after resetting the theme via the service, the current background
+  // should still be the set one.
+  CustomizationService()->RestoreCurrentTheme();
+
+  std::optional<HomeCustomBackground> actual =
+      CustomizationService()->GetCurrentCustomBackground();
+  ASSERT_TRUE(actual);
+  ASSERT_TRUE(
+      std::holds_alternative<sync_pb::NtpCustomBackground>(actual.value()));
+  sync_pb::NtpCustomBackground actual_background =
+      std::get<sync_pb::NtpCustomBackground>(actual.value());
+  EXPECT_EQ(image.image_url, actual_background.url());
+}
+
+// Tests that cancelling the current set theme before saving cancels correctly
+// and reverts back to the original theme.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       CancelThemeSelection) {
+  // At first, there should be no background.
+  EXPECT_FALSE(CustomizationService()->GetCurrentCustomBackground());
+
+  // Generate data.
+  HomeUserUploadedBackground user_background;
+  user_background.image_path = "image.jpg";
+  user_background.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
+
+  BackgroundCustomizationConfigurationItem* configuration =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithUserUploadedImagePath:base::SysUTF8ToNSString(
+                                            user_background.image_path)
+                     framingCoordinates:user_background.framing_coordinates
+                      accessibilityName:@""];
+
+  // Ask mediator to apply background.
+  [mediator_ applyBackgroundForConfiguration:configuration];
+
+  // Verify that background has been applied and that the mediator is tracking
+  // this.
+  EXPECT_TRUE(mediator_.themeHasChanged);
+  EXPECT_TRUE(CustomizationService()->GetCurrentCustomBackground());
+
+  // Now, cancel the change in the mediator.
+  [mediator_ cancelThemeSelection];
+
+  // Background in service should be back to the color.
+  EXPECT_FALSE(mediator_.themeHasChanged);
+  EXPECT_FALSE(CustomizationService()->GetCurrentCustomBackground());
+}
+
+// Tests that the mediator will correctly delete recently backgrounds.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       DeleteBackgroundFromRecentlyUsed) {
+  // First, add one recently used background to the list.
+  SeedColor color = kSeedColors[0];
+  CustomizationService()->SetBackgroundColor(
+      color.color, SchemeVariantToProtoEnum(color.variant));
+  CustomizationService()->StoreCurrentTheme();
+
+  CustomizationService()->ClearCurrentBackground();
+  CustomizationService()->StoreCurrentTheme();
+
+  ASSERT_EQ(1u, CustomizationService()->GetRecentlyUsedBackgrounds().size());
+
+  // Get the background configuration from the mediator.
+  [mediator_ loadRecentlyUsedBackgroundConfigurations];
+
+  // The color option is index 1 in configurationOrder as index 0 is the default
+  // background.
+  NSString* configuration_id =
+      configuration_consumer_.configurations[0].configurationOrder[1];
+  id<BackgroundCustomizationConfiguration> configuration =
+      configuration_consumer_.configurations[0]
+          .configurations[configuration_id];
+
+  [mediator_ deleteBackgroundFromRecentlyUsed:configuration];
+
+  ASSERT_EQ(0u, CustomizationService()->GetRecentlyUsedBackgrounds().size());
+}
+
+// Tests that fetching a thumbnail image where the image fetch is a success
+// works correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       FetchThumbnailImage_Success) {
+  // Set up call.
+  GURL url("https://www.google.com/image");
+  gfx::Image expected_image = gfx::test::CreateImage(20, 20);
+
+  EXPECT_CALL(*mock_image_fetcher_.get(),
+              FetchImageAndData_(url, testing::_, testing::_, testing::_))
+      .WillOnce(PostFetchReply(expected_image, 200));
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  __block UIImage* actual_image;
+  __block NSError* actual_error;
+  base::HistogramTester histogram_tester;
+
+  [mediator_ fetchBackgroundCustomizationThumbnailURLImage:url
+                                                completion:^(UIImage* image,
+                                                             NSError* error) {
+                                                  actual_image = image;
+                                                  actual_error = error;
+                                                  run_loop_ptr->Quit();
+                                                }];
+
+  run_loop.Run();
+
+  EXPECT_NE(nil, actual_image);
+  EXPECT_EQ(nil, actual_error);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.HomeCustomization.Background.Gallery.ImageDownloadSuccessful", true,
+      1);
+}
+
+// Tests that fetching a thumbnail image where the image fetch is a failure
+// works correctly.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       FetchThumbnailImage_Failure) {
+  // Set up call with empty image to indicate failure.
+  GURL url("https://www.google.com/image");
+  gfx::Image empty_image;
+
+  EXPECT_CALL(*mock_image_fetcher_.get(),
+              FetchImageAndData_(url, testing::_, testing::_, testing::_))
+      .WillOnce(PostFetchReply(empty_image, 404));
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  __block UIImage* actual_image;
+  __block NSError* actual_error;
+  base::HistogramTester histogram_tester;
+
+  [mediator_ fetchBackgroundCustomizationThumbnailURLImage:url
+                                                completion:^(UIImage* image,
+                                                             NSError* error) {
+                                                  actual_image = image;
+                                                  actual_error = error;
+                                                  run_loop_ptr->Quit();
+                                                }];
+
+  run_loop.Run();
+
+  EXPECT_EQ(nil, actual_image);
+  EXPECT_NE(nil, actual_error);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.HomeCustomization.Background.Gallery.ImageDownloadSuccessful", false,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.HomeCustomization.Background.Gallery.ImageDownloadErrorCode", 404,
+      1);
 }

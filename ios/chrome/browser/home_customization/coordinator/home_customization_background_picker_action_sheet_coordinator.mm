@@ -84,6 +84,9 @@ CGFloat const kSheetCornerRadius = 30;
   __weak __typeof(self) weakSelf = self;
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(self.profile);
+  image_fetcher::ImageFetcher* imageFetcher =
+      imageFetcherService->GetImageFetcher(
+          image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
   HomeBackgroundImageService* homeBackgroundImageService =
       HomeBackgroundImageServiceFactory::GetForProfile(self.profile);
   HomeBackgroundCustomizationService* homeBackgroundCustomizationService =
@@ -93,7 +96,7 @@ CGFloat const kSheetCornerRadius = 30;
       [[HomeCustomizationBackgroundConfigurationMediator alloc]
           initWithBackgroundCustomizationService:
               homeBackgroundCustomizationService
-                             imageFetcherService:imageFetcherService
+                                    imageFetcher:imageFetcher
                       homeBackgroundImageService:homeBackgroundImageService
                         userUploadedImageManager:nil];
   _backgroundConfigurationMediator.delegate = self.presentationDelegate;

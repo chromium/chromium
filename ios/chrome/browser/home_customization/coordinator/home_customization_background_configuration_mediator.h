@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
 namespace image_fetcher {
-class ImageFetcherService;
+class ImageFetcher;
 }
 
 class HomeBackgroundImageService;
@@ -27,15 +27,15 @@ class UserUploadedImageManager;
     : NSObject <HomeCustomizationBackgroundConfigurationMutator>
 
 // Initializes a new instance of the background configuration mediator with the
-// provided services. `backgroundCustomizationService` and `imageFetcherService`
-// are required. `homeBackgroundImageService` can be null if loading gallery
-// images is not required. `userUploadedImageManager` can be null if this
-// mediator will not have to deal with user uploaded images.
+// provided services. `backgroundCustomizationService` and `imageFetcher` are
+// required. `homeBackgroundImageService` can be null if loading gallery images
+// is not required. `userUploadedImageManager` can be null if this mediator will
+// not have to deal with user uploaded images.
 - (instancetype)
     initWithBackgroundCustomizationService:
         (HomeBackgroundCustomizationService*)backgroundCustomizationService
-                       imageFetcherService:(image_fetcher::ImageFetcherService*)
-                                               imageFetcherService
+                              imageFetcher:
+                                  (image_fetcher::ImageFetcher*)imageFetcher
                 homeBackgroundImageService:
                     (HomeBackgroundImageService*)homeBackgroundImageService
                   userUploadedImageManager:

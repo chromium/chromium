@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/application_locale_storage",
+    "//components/image_fetcher/core:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences",
@@ -102,5 +103,6 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//services/network:test_support",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }
