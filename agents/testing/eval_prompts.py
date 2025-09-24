@@ -11,6 +11,7 @@ import functools
 import logging
 import os
 import pathlib
+import queue
 import shutil
 import subprocess
 import sys
@@ -19,9 +20,6 @@ import time
 
 import constants
 import results
-
-sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
-from lib.results import result_sink
 
 EXTENSIONS_TO_INSTALL = [
     'build_information',
@@ -32,6 +30,8 @@ EXTENSIONS_TO_INSTALL = [
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
 _TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
+
+_ALL_TESTS_RUN_POLLING_SLEEP_DURATION = 0.5
 
 
 class PromptfooInstallation(abc.ABC):
@@ -511,11 +511,19 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.sandbox and not _fetch_sandbox_image():
         return 1
 
-    returncode = 0
+    finished_test_queue = queue.Queue()
+    failed_test_queue = queue.Queue()
+    tests_run = results.AtomicCounter()
+    result_thread = results.ResultThread(
+        input_queue=finished_test_queue,
+        failed_result_queue=failed_test_queue,
+        tests_run=tests_run,
+        print_output_on_success=args.print_output_on_success)
+    result_thread.start()
+
     console_width = shutil.get_terminal_size().columns
     root_path = _get_gclient_root()
     is_btrfs = _check_btrfs(root_path)
-    result_sink_client = result_sink.TryInitClient()
     for config in configs_to_run:
         with WorkDir('workdir', root_path, not args.no_clean, args.verbose,
                      args.force, is_btrfs) as workdir:
@@ -542,24 +550,36 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
             proc = promptfoo.run(command, cwd=workdir.path / 'src')
             duration = time.time() - start_time
 
-            rc = proc.returncode
-            returncode = returncode or rc
-            success = not rc
-            if not success or args.print_output_on_success:
-                sys.stdout.write(proc.stdout)
-            if success:
-                logging.info('Test passed in %.2f seconds: %s', duration,
-                             str(config))
-            else:
-                logging.warning('Test failed in %.2f seconds: %s', duration,
-                                str(config))
-            if result_sink_client:
-                r = results.TestResult(test_file=config,
-                                       success=success,
-                                       duration=duration,
-                                       test_log=proc.stdout)
-                results.report_result(result_sink_client=result_sink_client,
-                                      test_result=r)
+            r = results.TestResult(test_file=config,
+                                   success=not proc.returncode,
+                                   duration=duration,
+                                   test_log=proc.stdout)
+            finished_test_queue.put(r)
+
+    # Wait for all results to be reported.
+    failed_test_results = []
+    while tests_run.get() != len(configs_to_run):
+        result_thread.maybe_reraise_fatal_exception()
+        time.sleep(_ALL_TESTS_RUN_POLLING_SLEEP_DURATION)
+
+    # Drain the queue and shut down the result thread.
+    while not failed_test_queue.empty():
+        failed_test_results.append(failed_test_queue.get())
+    failed_test_results.sort()
+    result_thread.shutdown()
+    result_thread.join()
+
+    returncode = 0
+    if failed_test_results:
+        returncode = 1
+        logging.warning('%d tests ran successfully and %d failed',
+                        len(configs_to_run) - len(failed_test_results),
+                        len(failed_test_results))
+        logging.warning('Failed tests:')
+        for ftr in failed_test_results:
+            logging.warning('  %s', ftr.test_file)
+    else:
+        logging.info('Successfully ran %d tests', len(configs_to_run))
 
     return returncode
 
