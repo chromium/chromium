@@ -71,6 +71,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/icon_util.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/path_win.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/gfx/win/rendering_window_manager.h"

@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"

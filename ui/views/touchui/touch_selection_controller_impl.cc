@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/touch_selection/vector_icons/vector_icons.h"

@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 

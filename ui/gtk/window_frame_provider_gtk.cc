@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"

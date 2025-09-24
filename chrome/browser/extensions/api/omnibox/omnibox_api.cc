@@ -40,6 +40,7 @@
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace extensions {
 

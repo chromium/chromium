@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace aura {

@@ -29,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 

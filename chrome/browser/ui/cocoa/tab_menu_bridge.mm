@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;

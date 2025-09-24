@@ -13,6 +13,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
 
 namespace ash {

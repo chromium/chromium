@@ -19,6 +19,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

@@ -9,6 +9,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 

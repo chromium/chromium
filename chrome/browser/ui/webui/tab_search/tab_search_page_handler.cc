@@ -73,6 +73,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay = base::Milliseconds(50);

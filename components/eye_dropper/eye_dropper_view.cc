@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 

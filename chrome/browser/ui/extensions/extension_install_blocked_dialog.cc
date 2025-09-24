@@ -12,6 +12,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace extensions {

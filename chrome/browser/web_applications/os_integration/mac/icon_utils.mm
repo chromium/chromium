@@ -21,6 +21,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
 
 namespace {

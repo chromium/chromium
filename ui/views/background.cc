@@ -18,6 +18,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 

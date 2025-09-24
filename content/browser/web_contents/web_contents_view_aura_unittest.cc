@@ -35,6 +35,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)

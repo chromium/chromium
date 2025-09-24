@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
 
 namespace gfx {

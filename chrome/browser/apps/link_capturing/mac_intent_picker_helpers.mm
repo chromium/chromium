@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/apple/url_conversions.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 namespace apps {

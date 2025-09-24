@@ -41,6 +41,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/linux/device_scale_factor_observer.h"
