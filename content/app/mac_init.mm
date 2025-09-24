@@ -27,6 +27,9 @@ void InitializeMac() {
     // Chrome is unusable for a long period after returning from sleep.
     // https://crbug.com/871235.
     @"NSAppSleepDisabled" : @YES,
+
+    // TODO(crbug.com/446481994): Suspect cause of scroll jank seen on macOS 26.
+    @"NSAutoFillHeuristicControllerEnabled" : @"NO",
   }];
 
   SetSystemPolicyCrashKeys();
