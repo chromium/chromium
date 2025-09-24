@@ -18,6 +18,10 @@
 #include <map>
 #include <sstream>
 
+#if BUILDFLAG(IS_LINUX)
+#include <drm_fourcc.h>
+#endif
+
 #include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -45,6 +49,10 @@
 
 #define MAKE_V4L2_CODEC_PAIR(codec, suffix) \
   std::make_pair(codec##_##suffix, codec)
+
+#ifndef DRM_FORMAT_MOD_MTK_16L_32S_TILE
+#define DRM_FORMAT_MOD_MTK_16L_32S_TILE 0x0b00000000000001
+#endif
 
 namespace {
 int HandledIoctl(int fd, int request, void* arg) {
@@ -235,6 +243,12 @@ std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
     return std::nullopt;
   }
   const VideoPixelFormat video_format = video_fourcc->ToVideoPixelFormat();
+  uint64_t modifiers = gfx::NativePixmapHandle::kNoModifier;
+#if BUILDFLAG(IS_LINUX)
+  if (video_fourcc == Fourcc(Fourcc::MM21)) {
+    modifiers = DRM_FORMAT_MOD_MTK_16L_32S_TILE;
+  }
+#endif
   const size_t num_buffers = pix_mp.num_planes;
   const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
   if (num_color_planes == 0) {
@@ -305,11 +319,11 @@ std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
   if (num_buffers == 1) {
     return VideoFrameLayout::CreateWithPlanes(
         video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
+        buffer_alignment, modifiers);
   } else {
     return VideoFrameLayout::CreateMultiPlanar(
         video_format, gfx::Size(pix_mp.width, pix_mp.height), std::move(planes),
-        buffer_alignment);
+        buffer_alignment, modifiers);
   }
 }
 
