@@ -390,11 +390,11 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   // for it.
   should_request_name_from_user_ = false;
 
-  // If `USER_PROVIDED_NAME` is present, cardholder name is conflicting/missing
-  // and user didn't have Google Payments account. On iOS, `USER_PROVIDED_NAME`
-  // is present if valid cardholder name was not provided even if the user
-  // has a Google Payments account.
-  if (upload_request_.detected_values & DetectedValue::USER_PROVIDED_NAME) {
+  // If `USER_MUST_PROVIDE_NAME` is present, cardholder name is
+  // conflicting/missing and user didn't have Google Payments account. On iOS,
+  // `USER_MUST_PROVIDE_NAME` is present if valid cardholder name was not
+  // provided even if the user has a Google Payments account.
+  if (upload_request_.detected_values & DetectedValue::USER_MUST_PROVIDE_NAME) {
     upload_decision_metrics_ |=
         autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME;
     should_request_name_from_user_ = true;
@@ -405,7 +405,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   // knows to ask for it.
   should_request_expiration_date_from_user_ = false;
   if (upload_request_.detected_values &
-      DetectedValue::USER_PROVIDED_EXPIRATION_DATE) {
+      DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE) {
     upload_decision_metrics_ |=
         autofill_metrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
     LogSaveCardRequestExpirationDateReasonMetric();
@@ -1184,7 +1184,7 @@ int CreditCardSaveManager::GetDetectedValues() const {
     detected_values |= DetectedValue::CARD_EXPIRATION_YEAR;
   }
 
-  // Set |USER_PROVIDED_EXPIRATION_DATE| if expiration date is detected as
+  // Set |USER_MUST_PROVIDE_EXPIRATION_DATE| if expiration date is detected as
   // expired or missing.
   if (detected_values & DetectedValue::CARD_EXPIRATION_MONTH &&
       detected_values & DetectedValue::CARD_EXPIRATION_YEAR) {
@@ -1200,10 +1200,10 @@ int CreditCardSaveManager::GetDetectedValues() const {
     DCHECK(parsable);
     if (!IsValidCreditCardExpirationDate(year_value, month_value,
                                          AutofillClock::Now())) {
-      detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
+      detected_values |= DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE;
     }
   } else {
-    detected_values |= DetectedValue::USER_PROVIDED_EXPIRATION_DATE;
+    detected_values |= DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE;
   }
 
   // If cardholder name is conflicting/missing and the user does NOT have a
@@ -1212,14 +1212,14 @@ int CreditCardSaveManager::GetDetectedValues() const {
   if (!(detected_values & DetectedValue::CARDHOLDER_NAME) &&
       !(detected_values & DetectedValue::ADDRESS_NAME) &&
       !(detected_values & DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT)) {
-    detected_values |= DetectedValue::USER_PROVIDED_NAME;
+    detected_values |= DetectedValue::USER_MUST_PROVIDE_NAME;
   }
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, a valid cardholder name is required and should be requested if
   // missing, even if the user already has a Google Payments account.
   if (!(detected_values & DetectedValue::CARDHOLDER_NAME)) {
-    detected_values |= DetectedValue::USER_PROVIDED_NAME;
+    detected_values |= DetectedValue::USER_MUST_PROVIDE_NAME;
   }
 #endif  // BUILDFLAG(IS_IOS)
 

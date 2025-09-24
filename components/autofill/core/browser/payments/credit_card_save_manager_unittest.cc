@@ -2897,7 +2897,7 @@ TEST_F(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
-              CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+              CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_TRUE(credit_card_save_manager().should_request_name_from_user());
 
   // Verify the cardholder name in `UploadRequest` matches the one in
@@ -2956,7 +2956,7 @@ TEST_F(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
-              CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+              CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_TRUE(credit_card_save_manager().should_request_name_from_user());
 
   // Verify the cardholder name in `UploadRequest` matches the one in
@@ -3077,7 +3077,7 @@ TEST_F(
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_FALSE(credit_card_save_manager().should_request_name_from_user());
 }
 
@@ -3132,7 +3132,7 @@ TEST_F(
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_FALSE(credit_card_save_manager().should_request_name_from_user());
 }
 
@@ -3184,7 +3184,7 @@ TEST_F(
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_FALSE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_FALSE(credit_card_save_manager().should_request_name_from_user());
 }
 
@@ -3311,7 +3311,7 @@ TEST_F(
       histogram_tester,
       autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME);
   EXPECT_TRUE(payments_network_interface().detected_values_in_upload_details() &
-              CreditCardSaveManager::DetectedValue::USER_PROVIDED_NAME);
+              CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_NAME);
   EXPECT_TRUE(credit_card_save_manager().should_request_name_from_user());
 
   // Verify the card details in `UploadRequest` matches the one in
@@ -3650,7 +3650,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE);
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
 
@@ -3712,7 +3712,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE);
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
 
@@ -3776,7 +3776,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE);
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
 
@@ -3838,7 +3838,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE);
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
 
@@ -3904,7 +3904,7 @@ TEST_F(
   EXPECT_TRUE(credit_card_save_manager().CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
-      CreditCardSaveManager::DetectedValue::USER_PROVIDED_EXPIRATION_DATE);
+      CreditCardSaveManager::DetectedValue::USER_MUST_PROVIDE_EXPIRATION_DATE);
   EXPECT_TRUE(
       credit_card_save_manager().should_request_expiration_date_from_user());
 
