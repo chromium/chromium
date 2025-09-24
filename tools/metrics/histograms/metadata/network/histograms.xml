@@ -5413,6 +5413,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NetworkService.IpProtection.TokenBatchGenerationTime.{BlindSignAuthPhase}"
+    units="ms" expires_after="2026-01-07">
+  <owner>jtoohill@google.com</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time taken for the {BlindSignAuthPhase} step of generating auth
+    tokens. This only measures the time across a single attempt (not across
+    retries, which may be delayed by a variable backoff).
+
+    Note that if multiple token caches exist (one for each proxy layer), the
+    attempts in each token cache are timed independently, but they will all feed
+    into the same histogram.
+
+    This histogram will be emitted during a GetTokens call into the BSA library,
+    which is only called if the MaskedDomainList and EnableIpPrivacyProxy
+    features are enabled. Some kind of platform-dependent signin is also
+    required.
+  </summary>
+<!-- LINT.IfChange(BlindSignAuthPhase) -->
+
+  <token key="BlindSignAuthPhase">
+    <variant name="AuthAndSign"/>
+    <variant name="GenerateBlindedTokenRequests"/>
+    <variant name="GetInitialData"/>
+    <variant name="UnblindTokens"/>
+  </token>
+<!-- LINT.ThenChange(/components/ip_protection/common/ip_protection_telemetry.h:BlindSignAuthPhase) -->
+
+</histogram>
+
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
     expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>

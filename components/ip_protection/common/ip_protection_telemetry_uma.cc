@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -71,6 +72,21 @@ std::string TokenCountEventToString(IpProtectionTokenCountEvent event) {
       return "Recycled";
   }
   NOTREACHED();
+}
+
+// Converts a BlindSignAuthPhase enum value to its corresponding string
+// representation for histogram naming.
+std::string_view BlindSignAuthPhaseToString(BlindSignAuthPhase phase) {
+  switch (phase) {
+    case BlindSignAuthPhase::kGetInitialData:
+      return "GetInitialData";
+    case BlindSignAuthPhase::kGenerateBlindedTokenRequests:
+      return "GenerateBlindedTokenRequests";
+    case BlindSignAuthPhase::kAuthAndSign:
+      return "AuthAndSign";
+    case BlindSignAuthPhase::kUnblindTokens:
+      return "UnblindTokens";
+  }
 }
 
 }  // namespace
@@ -139,6 +155,15 @@ void IpProtectionTelemetryUma::TokenBatchGenerationComplete(
     base::TimeDelta duration) {
   base::UmaHistogramMediumTimes(
       "NetworkService.IpProtection.TokenBatchGenerationTime", duration);
+}
+
+void IpProtectionTelemetryUma::TokenBatchGenerationPhaseTime(
+    BlindSignAuthPhase phase,
+    base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      base::StrCat({"NetworkService.IpProtection.TokenBatchGenerationTime.",
+                    BlindSignAuthPhaseToString(phase)}),
+      duration);
 }
 
 void IpProtectionTelemetryUma::TryGetAuthTokensError(uint32_t hash) {

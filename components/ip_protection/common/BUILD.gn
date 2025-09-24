@@ -442,7 +442,11 @@ source_set("ip_protection_performance_hooks") {
     "ip_protection_performance_hooks.cc",
     "ip_protection_performance_hooks.h",
   ]
-  public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  public_deps = [
+    "//base",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+  deps = [ ":ip_protection_telemetry" ]
 }
 
 source_set("ip_protection_performance_hooks_unittest") {

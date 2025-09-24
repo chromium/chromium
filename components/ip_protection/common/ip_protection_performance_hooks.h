@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PERFORMANCE_HOOKS_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PERFORMANCE_HOOKS_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_tracing_hooks.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ip_protection {
 
 // An implementation of `BlindSignTracingHooks` that emits Perfetto trace
-// events.
+// events and UMA histograms.
 class IpProtectionPerformanceHooks : public quiche::BlindSignTracingHooks {
  public:
   explicit IpProtectionPerformanceHooks(perfetto::Track track)
@@ -29,6 +30,7 @@ class IpProtectionPerformanceHooks : public quiche::BlindSignTracingHooks {
 
  private:
   perfetto::Track track_;
+  base::ElapsedTimer current_phase_timer_;
 };
 
 }  // namespace ip_protection

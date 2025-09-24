@@ -95,6 +95,16 @@ enum class IpProtectionTokenCountEvent {
   kMaxValue = kRecycled,
 };
 
+// An enumeration of the phases of BSA.
+// LINT.IfChange(BlindSignAuthPhase)
+enum class BlindSignAuthPhase {
+  kGetInitialData,
+  kGenerateBlindedTokenRequests,
+  kAuthAndSign,
+  kUnblindTokens,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/network/histograms.xml:BlindSignAuthPhase)
+
 // An abstract interface for all of the telemetry associated with IP Protection.
 //
 // This is implemented by each telemetry platform, and a singleton made
@@ -149,6 +159,10 @@ class IpProtectionTelemetry {
   // `IpProtectionTokenManagerImpl`'s perspective, from just before calling
   // `IpProtectionConfigGetter::TryGetAuthTokens` until `OnGotAuthTokens`.
   virtual void TokenBatchGenerationComplete(base::TimeDelta duration) = 0;
+
+  // Records the time taken for a given step of generating auth tokens.
+  virtual void TokenBatchGenerationPhaseTime(BlindSignAuthPhase phase,
+                                             base::TimeDelta duration) = 0;
 
   // Record the `base::PersistentHash` of an error string that resulted from a
   // TryGetAuthTokens call.
