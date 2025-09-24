@@ -4,6 +4,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -159,8 +160,16 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
+// TODO(crbug.com/447000769): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
+  DISABLED_DragAndReleaseTool_CrossOriginSubframe
+#else
+#define MAYBE_DragAndReleaseTool_CrossOriginSubframe \
+  DragAndReleaseTool_CrossOriginSubframe
+#endif
 IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
-                       DragAndReleaseTool_CrossOriginSubframe) {
+                       MAYBE_DragAndReleaseTool_CrossOriginSubframe) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
