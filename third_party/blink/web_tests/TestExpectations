@@ -367,6 +367,18 @@ crbug.com/309675 compositing/gestures/gesture-tapHighlight-simple-longPress.html
 crbug.com/845267 [ Mac ] http/tests/inspector-protocol/page/page-lifecycleEvents.js [ Failure Pass ]
 crbug.com/333842054 http/tests/inspector-protocol/page/page-events-associated-isolation.js [ Failure Pass ]
 
+# These tests will fail due to changes made in
+# https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/6978689
+# They will be fixed in a separate CL.
+crbug.com/447099743 http/tests/devtools/console-xhr-logging-async.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/console/console-clear.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/console/console-eval-scoped.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/console/console-eval-throw.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/console/console-last-result.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/console/console-link-to-snippet.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Failure Pass ]
+crbug.com/447099743 http/tests/devtools/sources/snippet-module.js [ Failure Pass ]
+
 # Counters failures to be fixed with new implementation
 crbug.com/990657 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]
 
@@ -7706,7 +7718,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/base-render-style-body-crash.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/preload/preload-dynamic-csp.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/runtime/runtime-es6-setSymbolPropertyValue.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/IndexedDB/idb-partitioned-coverage.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/network-initiator.js [ Failure ]
 [ Debug Mac13 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/inflight-fetch-1.html [ Failure ]
@@ -7738,7 +7749,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/indexeddb/database-refresh-view.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded/fast/idle-callback/idle_periods.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/console/console-eval-scoped.js [ Skip Timeout ]
 [ Debug Mac13 ] animations/events/animation-iteration-event.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/composition/y-composition.html [ Skip Timeout ]
 [ Debug Mac13 ] animations/interpolation/svg-cy-interpolation.html [ Skip Timeout ]
