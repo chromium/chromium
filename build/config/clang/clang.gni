@@ -42,7 +42,7 @@ linux_supported_cpus = [
 clang_modules_platform_supported =
     (is_linux && filter_include(linux_supported_cpus, [ current_cpu ]) != []) ||
     (is_android && current_cpu == "x64") ||
-    (is_android && current_cpu == "arm64") || is_mac || is_ios || is_fuchsia
+    (is_android && current_cpu == "arm64") || is_apple || is_fuchsia
 
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
