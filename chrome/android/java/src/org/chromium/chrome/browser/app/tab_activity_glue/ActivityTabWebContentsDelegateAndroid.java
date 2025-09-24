@@ -19,8 +19,6 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.collection.ArrayMap;
-
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -89,8 +87,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndroid {
     private static final String TAG = "ActivityTabWCDA";
-
-    private final ArrayMap<WebContents, GURL> mWebContentsUrlMapping = new ArrayMap<>();
 
     private final Tab mTab;
 
@@ -174,19 +170,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public void webContentsCreated(
-            WebContents sourceWebContents,
-            long openerRenderProcessId,
-            long openerRenderFrameId,
-            String frameName,
-            GURL targetUrl,
-            WebContents newWebContents) {
-        // The URL can't be taken from the WebContents if it's paused.  Save it for later.
-        assert !mWebContentsUrlMapping.containsKey(newWebContents);
-        mWebContentsUrlMapping.put(newWebContents, targetUrl);
-    }
-
-    @Override
     public boolean isFullscreenForTabOrPending() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
             // It may happen that the tab does not have valid WebContents object. In Android
@@ -255,17 +238,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     protected boolean addNewContents(
             WebContents sourceWebContents,
             WebContents webContents,
+            GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
             boolean userGesture) {
-        assert mWebContentsUrlMapping.containsKey(webContents);
-
         TabCreator tabCreator = mTabCreatorManager.getTabCreator(mTab.isIncognito());
         assert tabCreator != null;
-
-        // Grab the URL, which might not be available via the Tab.
-        GURL url = mWebContentsUrlMapping.remove(webContents);
-        if (url == null) return false;
 
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
@@ -293,7 +271,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 navigationTabHelper != null
                         && navigationTabHelper
                                 .getInterceptNavigationDelegate()
-                                .shouldReparentTab(url);
+                                .shouldReparentTab(targetUrl);
 
         Tab tab =
                 tabCreator.createTabWithWebContents(
@@ -301,7 +279,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         /* shouldPin= */ false,
                         webContents,
                         TabLaunchType.FROM_LONGPRESS_FOREGROUND,
-                        url,
+                        targetUrl,
                         !openingPopup && !willReparentTab);
         if (tab == null) return false;
 
@@ -318,7 +296,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 auditor.notifyAuditEvent(
                         ContextUtils.getApplicationContext(),
                         AuditEvent.OPEN_POPUP_URL_SUCCESS,
-                        url.getSpec(),
+                        targetUrl.getSpec(),
                         "");
             }
         }

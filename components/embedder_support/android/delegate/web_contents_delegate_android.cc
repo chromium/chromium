@@ -217,34 +217,6 @@ bool WebContentsDelegateAndroid::IsWebContentsCreationOverridden(
                                                                   java_gurl);
 }
 
-void WebContentsDelegateAndroid::WebContentsCreated(
-    WebContents* source_contents,
-    int opener_render_process_id,
-    int opener_render_frame_id,
-    const std::string& frame_name,
-    const GURL& target_url,
-    WebContents* new_contents) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return;
-
-  ScopedJavaLocalRef<jobject> jsource_contents;
-  if (source_contents)
-    jsource_contents = source_contents->GetJavaWebContents();
-  ScopedJavaLocalRef<jobject> jnew_contents;
-  if (new_contents)
-    jnew_contents = new_contents->GetJavaWebContents();
-
-  ScopedJavaLocalRef<jobject> java_gurl =
-      url::GURLAndroid::FromNativeGURL(env, target_url);
-  Java_WebContentsDelegateAndroid_webContentsCreated(
-      env, obj, jsource_contents, opener_render_process_id,
-      opener_render_frame_id,
-      base::android::ConvertUTF8ToJavaString(env, frame_name), java_gurl,
-      jnew_contents);
-}
-
 void WebContentsDelegateAndroid::CloseContents(WebContents* source) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);

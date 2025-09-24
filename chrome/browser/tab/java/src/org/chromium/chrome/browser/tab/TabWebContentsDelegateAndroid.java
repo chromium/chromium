@@ -30,6 +30,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      *
      * @param sourceWebContents Source WebContents from which the new one is created.
      * @param webContents Newly created WebContents object.
+     * @param targetUrl URL that was used to create the new WebContents object.
      * @param disposition WindowOpenDisposition indicating how the tab should be created.
      * @param windowFeatures Initial window features to be used for the new tab.
      * @param userGesture {@code true} if opened by user gesture.
@@ -38,6 +39,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
     protected abstract boolean addNewContents(
             WebContents sourceWebContents,
             WebContents webContents,
+            GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
             boolean userGesture);

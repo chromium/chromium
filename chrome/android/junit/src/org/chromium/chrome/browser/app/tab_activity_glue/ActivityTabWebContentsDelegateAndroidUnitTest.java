@@ -257,11 +257,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 Map.of(mWebContents, mock(Tab.class), newWebContents, mock(Tab.class));
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
-        mTabWebContentsDelegateAndroid.webContentsCreated(
-                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
         mTabWebContentsDelegateAndroid.addNewContents(
                 mWebContents,
                 newWebContents,
+                new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                 new WindowFeatures(),
                 false);
@@ -284,11 +283,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);
         mTabWebContentsDelegateAndroid.setTabMap(tabMap);
 
-        mTabWebContentsDelegateAndroid.webContentsCreated(
-                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
         mTabWebContentsDelegateAndroid.addNewContents(
                 mWebContents,
                 newWebContents,
+                new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                 new WindowFeatures(),
                 false);
@@ -307,11 +305,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 .createTabWithWebContents(
                         any(), anyBoolean(), any(), anyInt(), any(), anyBoolean());
 
-        mTabWebContentsDelegateAndroid.webContentsCreated(
-                mWebContents, 0, 0, "testFrame", new GURL("https://foo.com"), newWebContents);
         mTabWebContentsDelegateAndroid.addNewContents(
                 mWebContents,
                 newWebContents,
+                new GURL("https://foo.com"),
                 WindowOpenDisposition.NEW_POPUP,
                 new WindowFeatures(),
                 true);
