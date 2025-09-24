@@ -59,6 +59,10 @@ constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 constexpr char kHomeAndWorkProfileUpdateHistogram[] =
     "Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision";
+constexpr char kNameEmailProfileSupersetHistogram[] =
+    "Autofill.ProfileImport.NameEmailSupersetProfileDecision";
+constexpr char kHomeOrWorkAndNameEmailMergeHistogram[] =
+    "Autofill.ProfileImport.HomeOrWorkAndNameEmailMergeDecision";
 
 // Test that two AutofillProfiles have the same `record_type() and `Compare()`
 // equal.
@@ -423,15 +427,22 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       kProfileMigrationDecisionHistogram, kProfileMigrationEditsHistogram};
   constexpr ImportHistogramNames update_home_and_work_profile_histograms = {
       kHomeAndWorkProfileUpdateHistogram};
-
+  constexpr ImportHistogramNames name_email_profile_superset_histogram = {
+      kNameEmailProfileSupersetHistogram};
+  constexpr ImportHistogramNames home_or_work_name_email_merge_histogram = {
+      kHomeOrWorkAndNameEmailMergeHistogram};
   // If the import was not a new profile, confirmable merge or migration, test
   // that the corresponding histograms are unchanged.
   if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario) &&
-      !IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario)) {
+      !IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario) &&
+      !IsNameEmailSuperset(test_scenario) &&
+      !IsHomeWorkNameEmailMerge(test_scenario)) {
     new_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_profile_histograms.ExpectAllEmpty(histogram_tester);
     migrate_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_home_and_work_profile_histograms.ExpectAllEmpty(histogram_tester);
+    name_email_profile_superset_histogram.ExpectAllEmpty(histogram_tester);
+    home_or_work_name_email_merge_histogram.ExpectAllEmpty(histogram_tester);
     return;
   }
   // The import can only be one of {new, updated, migrated} profile at once.
@@ -439,7 +450,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       std::ranges::count(
           std::vector<bool>{
               IsNewProfile(test_scenario), IsConfirmableMerge(test_scenario),
-              IsMigration(test_scenario), IsHomeAndWorkSuperset(test_scenario)},
+              IsMigration(test_scenario), IsHomeAndWorkSuperset(test_scenario),
+              IsNameEmailSuperset(test_scenario),
+              IsHomeWorkNameEmailMerge(test_scenario)},
           true),
       1);
 
@@ -448,6 +461,10 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       : IsConfirmableMerge(test_scenario) ? update_profile_histograms
       : IsHomeAndWorkSuperset(test_scenario)
           ? update_home_and_work_profile_histograms
+      : IsNameEmailSuperset(test_scenario)
+          ? name_email_profile_superset_histogram
+      : IsHomeWorkNameEmailMerge(test_scenario)
+          ? home_or_work_name_email_merge_histogram
           : migrate_profile_histograms;
   // Expect records in the affected histograms.
   histogram_tester.ExpectUniqueSample(affected_histograms.decision,
@@ -463,8 +480,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   // Expect no records in all unaffected histograms.
   for (const ImportHistogramNames* histograms :
        {&new_profile_histograms, &update_profile_histograms,
-        &migrate_profile_histograms,
-        &update_home_and_work_profile_histograms}) {
+        &migrate_profile_histograms, &update_home_and_work_profile_histograms,
+        &name_email_profile_superset_histogram,
+        &home_or_work_name_email_merge_histogram}) {
     if (histograms != &affected_histograms) {
       histograms->ExpectAllEmpty(histogram_tester);
     }

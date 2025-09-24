@@ -177,6 +177,11 @@ void LogNewProfileImportDecision(
     const AutofillProfile& import_candidate,
     std::string_view app_locale);
 
+// Logs the user decision for importing a new profile created as a merge of
+// `kAccountNameEmail` with either `kAccountHome` or `kAccountWork` profile.
+void LogHomeWorkNameEmailMergeImportDecision(
+    AutofillClient::AddressPromptUserDecision decision);
+
 // Logs the user decision for updating an exiting profile with variants for
 // users who have a quasi-duplicate profile stored (that is not
 // `import_candidate`), and also in a separate histogram for all users
@@ -185,6 +190,10 @@ void LogProfileUpdateImportDecision(
     const std::vector<const AutofillProfile*>& existing_profiles,
     const AutofillProfile& import_candidate,
     std::string_view app_locale);
+
+// Logs the user decision for saving a name email profile superset.
+void LogNameEmailSupersetImportDecision(
+    AutofillClient::AddressPromptUserDecision decision);
 
 // Logs the user decision for saving a home/work profile superset.
 void LogHomeAndWorkSupersetImportDecision(

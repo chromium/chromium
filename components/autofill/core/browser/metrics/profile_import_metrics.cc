@@ -238,6 +238,12 @@ void LogNewProfileImportDecision(
   }
 }
 
+void LogHomeWorkNameEmailMergeImportDecision(
+    AutofillClient::AddressPromptUserDecision decision) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.HomeOrWorkAndNameEmailMergeDecision", decision);
+}
+
 void LogNewProfileStorageLocation(const AutofillProfile& import_candidate) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
@@ -262,6 +268,12 @@ void LogProfileUpdateImportDecision(
     base::UmaHistogramEnumeration(
         base::StrCat({kNameBase, "UserHasQuasiDuplicateProfile"}), decision);
   }
+}
+
+void LogNameEmailSupersetImportDecision(
+    AutofillClient::AddressPromptUserDecision decision) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.NameEmailSupersetProfileDecision", decision);
 }
 
 void LogHomeAndWorkSupersetImportDecision(
