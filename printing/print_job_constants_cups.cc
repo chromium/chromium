@@ -17,6 +17,7 @@ const char kCUPSBrotherMonoColor[] = "BRMonoColor";
 const char kCUPSBrotherPrintQuality[] = "BRPrintQuality";
 const char kCUPSCanonCNColorMode[] = "CNColorMode";
 const char kCUPSCanonCNIJGrayScale[] = "CNIJGrayScale";
+const char kCUPSEpsonEPIJInk[] = "EPIJ_Ink_";
 const char kCUPSEpsonInk[] = "Ink";
 const char kCUPSHpColorMode[] = "HPColorMode";
 const char kCUPSHpPjlColorAsGray[] = "HPPJLColorAsGray";
@@ -76,6 +77,7 @@ base::span<const PpdColorSetting> GetKnownPpdColorSettings() {
       {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
       {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
       {kCUPSColorModel, kGray, kColor},                      // Generic
+      {kCUPSEpsonEPIJInk, kZero, kOne},                      // Epson
       {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
       {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
       {kCUPSHpPjlColorAsGray, kHpPjlColorAsGrayYes, kHpPjlColorAsGrayNo},  // HP
