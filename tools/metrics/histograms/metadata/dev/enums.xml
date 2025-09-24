@@ -840,6 +840,10 @@ Called by update_protocol_commands_enum.py.-->
       label="Performance Insight agent opened from Insights sidebar"/>
   <int value="183" label="AI Assistance - Opened from Performance full button"/>
   <int value="184" label="AI Code Completion - Response served from cache"/>
+  <int value="185" label="AI Code Completion - Request triggered"/>
+  <int value="186" label="AI Code Completion - Suggestion displayed"/>
+  <int value="187" label="AI Code Completion - Suggestion accepted"/>
+  <int value="188" label="AI Code Completion - Error"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
