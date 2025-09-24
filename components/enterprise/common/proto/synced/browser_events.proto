@@ -273,6 +273,8 @@ message RiskInfo {
     DATA_LOSS = 4;
     // Violates URL filtering rules.
     URL_FILTERING = 5;
+    // Brand abuse detected by customer submitted screenshots.
+    ENTERPRISE_BRAND_ABUSE = 6;
   }
   ThreatType threat_type = 1;
 
