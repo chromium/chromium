@@ -24,7 +24,7 @@ VerticalTabStripStateController::VerticalTabStripStateController(
 
 VerticalTabStripStateController::~VerticalTabStripStateController() = default;
 
-bool VerticalTabStripStateController::IsVerticalTabsEnabled() const {
+bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
   return pref_service_->GetBoolean(prefs::kVerticalTabsEnabled);
 }
 

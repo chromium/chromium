@@ -264,7 +264,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-    if (tabs::AreVerticalTabsEnabled()) {
+    if (tabs::IsVerticalTabsFeatureEnabled()) {
       vertical_tab_strip_state_controller_ =
           std::make_unique<tabs::VerticalTabStripStateController>(
               profile->GetPrefs());

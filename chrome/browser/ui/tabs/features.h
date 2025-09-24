@@ -36,7 +36,7 @@ BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
 bool CanShowTabSearchPositionSetting();
 bool AreTabGroupShortcutsEnabled();
-bool AreVerticalTabsEnabled();
+bool IsVerticalTabsFeatureEnabled();
 
 }  // namespace tabs
 

@@ -144,7 +144,7 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Returns the current pref for vertical tabs by accessing the vertical
   // tab strip state controller
-  bool IsVerticalTabsEnabled() const;
+  bool ShouldDisplayVerticalTabs() const;
 
   bool IsImmersiveModeEnabledWithoutToolbar() const;
 
