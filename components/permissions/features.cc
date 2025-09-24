@@ -74,10 +74,6 @@ BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
 BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for the mitigation for https://crbug.com/1462709
-BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, site settings pages use radio button groups other than toggles.
