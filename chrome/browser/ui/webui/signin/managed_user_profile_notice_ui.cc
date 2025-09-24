@@ -325,7 +325,7 @@ void ManagedUserProfileNoticeUI::Initialize(
           l10n_util::GetStringUTF16(
               create_param->profile_creation_required_by_policy
                   ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
-                  : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT));
+                  : IDS_CANCEL));
     }
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
