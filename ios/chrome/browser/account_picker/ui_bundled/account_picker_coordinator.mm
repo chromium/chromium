@@ -53,23 +53,21 @@
 @implementation AccountPickerCoordinator {
   SigninCoordinator* _addAccountSigninCoordinator;
   // Coordinator to show a reauth screen.
-  __strong SigninReauthCoordinator* _reauthCoordinator;
+  SigninReauthCoordinator* _reauthCoordinator;
   signin_metrics::AccessPoint _accessPoint;
 
   // Navigation controller for the account picker.
-  __strong AccountPickerScreenNavigationController* _navigationController;
+  AccountPickerScreenNavigationController* _navigationController;
 
-  // Coordinator to display modal alerts to the user.
-  __strong AlertCoordinator* _alertCoordinator;
   // Coordinator for the first screen.
-  __strong AccountPickerConfirmationScreenCoordinator*
+  AccountPickerConfirmationScreenCoordinator*
       _accountPickerConfirmationScreenCoordinator;
   // Coordinator to select another identity.
-  __strong AccountPickerSelectionScreenCoordinator*
+  AccountPickerSelectionScreenCoordinator*
       _accountPickerSelectionScreenCoordinator;
 
   // The configuration for the account picker.
-  __strong AccountPickerConfiguration* _configuration;
+  AccountPickerConfiguration* _configuration;
 
   // Whether the identity button has been hidden.
   BOOL _identityButtonHidden;
@@ -104,8 +102,6 @@
   _navigationController.transitioningDelegate = nil;
   _navigationController = nil;
 
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
   [_accountPickerSelectionScreenCoordinator stop];
   _accountPickerSelectionScreenCoordinator = nil;
   [_accountPickerConfirmationScreenCoordinator stop];
@@ -420,11 +416,9 @@
 - (NSString*)description {
   return [NSString
       stringWithFormat:@"<%@: %p, accountPickerConfirmationScreenCoordinator: "
-                       @"%p, alertCoordinator: %p, "
-                       @"accountPickerSelectionScreenCoordinator %p>",
+                       @"%p, accountPickerSelectionScreenCoordinator %p>",
                        self.class.description, self,
                        _accountPickerConfirmationScreenCoordinator,
-                       _alertCoordinator,
                        _accountPickerSelectionScreenCoordinator];
 }
 
