@@ -231,8 +231,9 @@ TEST_F(ManifestSilentUpdateCommandTest, InvalidStartUrlAppNotUpdated) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->has_valid_specified_start_url = false;
+  auto& page_state = web_contents_manager().GetOrCreatePageState(app_url());
+  page_state.error_code =
+      webapps::InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kInvalidManifest);

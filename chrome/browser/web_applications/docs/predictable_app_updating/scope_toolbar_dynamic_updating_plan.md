@@ -167,15 +167,22 @@ delivering an end-to-end testable piece of functionality.
     *   **Build target:** `browser_tests`
     *   **Tests to run:** `browser_tests --gtest_filter=WebAppBrowserControllerBrowserTest.*`
 
+
 ### Phase 3: Final Test Coverage
 
-*   [ ] **Task 4.1:** Add scope extension update browser test.
-    *   In `web_app_scope_extensions_browsertest.cc`, add a test that installs
-        an app without scope extensions, navigates to the extended scope,
-        triggers update to apply extensions, and verifies the toolbar is
-        removed. Also there should be a test that shows it is added.
+*   [x] **Task 4.1:** Add scope extension update browser test for registry
+    observer.
     *   **Build target:** `browser_tests`
-    *   **Tests to run:** `browser_tests --gtest_filter=WebAppScopeExtensionsBrowserTest.*`
+    *   **Tests to run:** `browser_tests
+        --gtest_filter=WebAppScopeExtensionsBrowserTest.*`
+*   [x] **Task 4.2:** Write re-installation browser test that adds the bar back.
+    *   Add the test to WebAppBrowserControllerBrowserTest, which tests the
+        opposite of what is already tested there for reinstall - the original
+        install should be at the wider scope, and the reinstall should narrow
+        the scope. the toolbar should disappear.
+    *   **Build target:** `browser_tests`
+    *   **Tests to run:** `browser_tests
+        --gtest_filter=WebAppBrowserControllerBrowserTest.*`
 
 ### Unresolved Issues
 *(Log of failed tasks and blocking issues)*

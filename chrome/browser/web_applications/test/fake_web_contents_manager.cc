@@ -275,7 +275,8 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
         << "No url has been loaded on this web contents. " << url.spec();
     auto page_it = manager_->page_state_.find(url);
     if (page_it == manager_->page_state_.end()) {
-      DLOG(WARNING) << "No page state at url: " << url.spec();
+      DLOG(WARNING) << "No page state at url: " << url.spec()
+                    << ", did you forget to call SetUrlLoaded?";
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback), blink::mojom::ManifestPtr(),
@@ -297,9 +298,13 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     manifest->manifest_url = page.manifest_url;
     if (manifest->start_url.is_empty()) {
       manifest->start_url = url;
+    } else {
+      manifest->has_valid_specified_start_url = true;
     }
     if (manifest->id.is_empty()) {
       manifest->id = manifest->start_url.GetWithoutRef();
+    } else {
+      manifest->has_custom_id = true;
     }
     if (manifest->scope.is_empty()) {
       manifest->scope = manifest->start_url.GetWithoutFilename();
@@ -428,6 +433,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
   install_page_state.manifest_before_default_processing->start_url = start_url;
   install_page_state.manifest_before_default_processing->display =
       blink::mojom::DisplayMode::kStandalone;
+  install_page_state.manifest_before_default_processing->name = name;
   install_page_state.manifest_before_default_processing->short_name = name;
 
   return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);

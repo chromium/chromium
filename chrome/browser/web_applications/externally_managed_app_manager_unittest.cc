@@ -975,6 +975,8 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install policy app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
+    install_page_state.manifest_before_default_processing->name =
+        u"Test policy app";
     install_page_state.manifest_before_default_processing->short_name =
         u"Test policy app";
 

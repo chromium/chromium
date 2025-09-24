@@ -177,6 +177,8 @@ class ManifestSilentUpdateCommand
   base::WeakPtrFactory<ManifestSilentUpdateCommand> weak_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream& os,
+                         ManifestSilentUpdateCheckResult stage);
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_MANIFEST_SILENT_UPDATE_COMMAND_H_

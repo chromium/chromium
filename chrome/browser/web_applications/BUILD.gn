@@ -938,6 +938,7 @@ source_set("web_applications_unit_tests") {
     "web_app_pref_guardrails_unittest.cc",
     "web_app_proto_utils_unittest.cc",
     "web_app_registrar_unittest.cc",
+    "web_app_scope_extensions_unittest.cc",
     "web_app_scope_unittest.cc",
     "web_app_sync_bridge_unittest.cc",
     "web_app_translation_manager_unittest.cc",

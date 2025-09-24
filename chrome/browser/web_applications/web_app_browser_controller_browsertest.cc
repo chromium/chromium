@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
@@ -103,6 +104,67 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
 
   // 4. Verify the toolbar is now hidden.
   EXPECT_FALSE(controller->ShouldShowCustomTabBar());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
+                       ToolbarAppearsOnReinstallNarrowing) {
+  webapps::ManifestId manifest_id =
+      embedded_test_server()->GetURL("/web_apps/scope_updating/");
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/scope_updating/page.html");
+  GURL out_of_scope_url = embedded_test_server()->GetURL(
+      "/web_apps/scope_updating/out-of-scope.html");
+  GURL updating_url = embedded_test_server()->GetURL(
+      "/web_apps/scope_updating/page_update.html");
+
+  // 1. App should be preinstalled.
+  const WebApp* web_app = provider().registrar_unsafe().GetAppById(
+      GenerateAppIdFromManifestId(manifest_id));
+  ASSERT_TRUE(web_app);
+  webapps::AppId app_id = web_app->app_id();
+
+  // 2. Launch the app to a page that will update it's scope..
+  UpdateAwaiter update_awaiter(provider().install_manager());
+  Browser* app_browser =
+      web_app::LaunchWebAppToURL(profile(), app_id, updating_url);
+  ASSERT_TRUE(app_browser);
+  update_awaiter.AwaitUpdate();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // 3. Check that the scope changed
+  WebAppScope effective_scope =
+      *provider().registrar_unsafe().GetEffectiveScope(app_id);
+  EXPECT_TRUE(effective_scope.IsInScope(out_of_scope_url));
+
+  // 4. Navigate to the otherwise out of scope url, but with the updated scope
+  // the app should now be in scope.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
+  WebAppBrowserController* controller =
+      app_browser->app_controller()->AsWebAppBrowserController();
+  EXPECT_FALSE(controller->ShouldShowCustomTabBar());
+
+  // 4. "User" installs the app with a narrower scope.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  GURL update_url =
+      embedded_test_server()->GetURL("/web_apps/scope_updating/page.html");
+  auto install_info =
+      std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
+  install_info->scope =
+      embedded_test_server()->GetURL("/web_apps/scope_updating/page.html");
+  install_info->title = u"New Title";
+  provider().scheduler().InstallFromInfoWithParams(
+      std::move(install_info),
+      /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), WebAppInstallParams());
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::AppId>(), app_id);
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  // 4. Verify the toolbar is now shown.
+  EXPECT_TRUE(controller->ShouldShowCustomTabBar());
 }
 
 }  // namespace web_app
