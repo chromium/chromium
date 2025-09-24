@@ -26,7 +26,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_ui_types.h"
