@@ -26,6 +26,7 @@
 
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -154,7 +155,9 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
 int UDPSocketPosix::ConfigureOpenedSocket() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // https://crbug.com/41271555: Guard against a file descriptor being closed
-  // out from underneath the socket.
+  // out from underneath the socket. The change_fdguard_np() and related APIs
+  // are undocumented, except for comments in the Darwin kernel source code:
+  // http://fxr.watson.org/fxr/source/bsd/kern/kern_guarded.c?v=xnu-8792;im=10#L451
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &guardid,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
@@ -210,6 +213,8 @@ void UDPSocketPosix::Close() {
   // https://crbug.com/41271555: Guard against a file descriptor being closed
   // out from underneath the socket.
   guardid_t guardid = reinterpret_cast<guardid_t>(this);
+  // See the comment in ConfigureOpenedSocket(), above, for information about
+  // guarded_close_np().
   if (IGNORE_EINTR(guarded_close_np(socket_, &guardid)) != 0) {
     // There is a bug in the Mac OS kernel that it can return an ENOTCONN or
     // EPROTOTYPE error. In this case we don't know whether the file descriptor
@@ -217,11 +222,24 @@ void UDPSocketPosix::Close() {
     // because it may have been reused by another thread in the meantime. We may
     // leak file handles here and cause a crash indirectly later. See
     // https://crbug.com/40732798.
-    if (errno != ENOTCONN && errno != EPROTOTYPE) {
-      // TODO(crbug.com/437414746): Remove this once the new crash has been
-      // diagnosed.
-      SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "guarded_close_np_errno",
-                              errno);
+
+    // Temporary workaround to investigate EINVAL return values.
+    // TODO(https://crbug.com/437414746): Remove this or update it once we have
+    // information.
+    if (errno == EINVAL) {
+      int fdflags = 0;
+      // This call should be a successful no-op. If it fails, we know the state
+      // of the filehandle is not what we're expecting.
+      const int retval = HANDLE_EINTR(
+          change_fdguard_np(socket_, &guardid, GUARD_CLOSE | GUARD_DUP,
+                            &guardid, GUARD_CLOSE | GUARD_DUP, &fdflags));
+      SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_retval",
+                              retval);
+      SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_errno", errno);
+      SCOPED_CRASH_KEY_NUMBER("UdpSocketPosix", "change_fdguard_fdflags",
+                              fdflags);
+      base::debug::DumpWithoutCrashing();
+    } else if (errno != ENOTCONN && errno != EPROTOTYPE) {
       PLOG(FATAL) << "Unexpected errno from guarded_close_np";
     }
   }
