@@ -42,9 +42,14 @@ error[E0277]: the trait bound `DerefBool: __private::not::Bool` is not satisfied
 33 |     ensure!(db);
    |     --------^^-
    |     |       |
-   |     |       the trait `__private::not::Bool` is not implemented for `DerefBool`
+   |     |       unsatisfied trait bound
    |     required by a bound introduced by this call
    |
+help: the trait `__private::not::Bool` is not implemented for `DerefBool`
+  --> tests/ui/ensure-nonbool.rs:6:1
+   |
+ 6 | struct DerefBool(bool);
+   | ^^^^^^^^^^^^^^^^
 note: required by a bound in `anyhow::__private::not`
   --> src/lib.rs
    |
@@ -80,9 +85,14 @@ error[E0277]: the trait bound `NotBool: __private::not::Bool` is not satisfied
 37 |     ensure!(nb);
    |     --------^^-
    |     |       |
-   |     |       the trait `__private::not::Bool` is not implemented for `NotBool`
+   |     |       unsatisfied trait bound
    |     required by a bound introduced by this call
    |
+help: the trait `__private::not::Bool` is not implemented for `NotBool`
+  --> tests/ui/ensure-nonbool.rs:8:1
+   |
+ 8 | struct NotBool(bool);
+   | ^^^^^^^^^^^^^^
    = help: the following other types implement trait `__private::not::Bool`:
              &bool
              bool

@@ -70,6 +70,7 @@ fn main() {
     if rustc >= 80 {
         println!("cargo:rustc-check-cfg=cfg(anyhow_build_probe)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_nightly_testing)");
+        println!("cargo:rustc-check-cfg=cfg(anyhow_no_clippy_format_args)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_error)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_unwind_safe)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_fmt_arguments_as_str)");
@@ -111,6 +112,12 @@ fn main() {
         // core::error::Error
         // https://blog.rust-lang.org/2024/09/05/Rust-1.81.0.html#coreerrorerror
         println!("cargo:rustc-cfg=anyhow_no_core_error");
+    }
+
+    if rustc < 85 {
+        // #[clippy::format_args]
+        // https://doc.rust-lang.org/1.85.1/clippy/attribs.html#clippyformat_args
+        println!("cargo:rustc-cfg=anyhow_no_clippy_format_args");
     }
 }
 
@@ -157,8 +164,8 @@ fn compile_probe(rustc_bootstrap: bool) -> bool {
         .arg("--edition=2018")
         .arg("--crate-name=anyhow")
         .arg("--crate-type=lib")
-        .arg("--emit=dep-info,metadata")
         .arg("--cap-lints=allow")
+        .arg("--emit=dep-info,metadata")
         .arg("--out-dir")
         .arg(&out_subdir)
         .arg(probefile);

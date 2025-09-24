@@ -22,8 +22,8 @@ note: the traits `Into` and `std::fmt::Display` must be implemented
   |
  ::: $RUST/core/src/convert/mod.rs
   |
-  | pub trait Into<T>: Sized {
-  | ^^^^^^^^^^^^^^^^^^^^^^^^
+  | pub const trait Into<T>: Sized {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   = help: items from traits can only be used if the trait is implemented and in scope
   = note: the following traits define an item `anyhow_kind`, perhaps you need to implement one of them:
           candidate #1: `anyhow::kind::AdhocKind`

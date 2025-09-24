@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.39"
 name = "anyhow"
-version = "1.0.99"
+version = "1.0.100"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false
@@ -39,6 +39,7 @@ repository = "https://github.com/dtolnay/anyhow"
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
@@ -127,5 +128,5 @@ features = ["full"]
 version = "2"
 
 [dev-dependencies.trybuild]
-version = "1.0.66"
+version = "1.0.108"
 features = ["diff"]

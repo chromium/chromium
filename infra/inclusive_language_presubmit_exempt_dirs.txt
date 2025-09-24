@@ -324,7 +324,6 @@ third_party/blink/public/devtools_protocol/domains
 third_party/blink/public/mojom/fenced_frame
 third_party/blink/public/mojom/frame
 third_party/blink/public/mojom/input
-third_party/blink/public/mojom/manifest
 third_party/blink/public/mojom/printing
 third_party/blink/public/mojom/service_worker
 third_party/blink/public/mojom/storage_key
@@ -376,7 +375,6 @@ third_party/blink/tools/blinkpy/style/checkers
 third_party/blink/tools/blinkpy/w3c
 third_party/blink/tools/blinkpy/web_tests
 third_party/blink/tools/blinkpy/web_tests/controllers
-third_party/blink/tools/blinkpy/web_tests/layout_package
 third_party/blink/tools/blinkpy/web_tests/port
 third_party/blink/tools/blinkpy/wpt_tests
 third_party/blink/web_tests/dom/domparsing
