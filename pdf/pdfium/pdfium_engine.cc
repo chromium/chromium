@@ -1938,8 +1938,12 @@ bool PDFiumEngine::ExtendSelection(const PointData& point_data) {
   CHECK_GE(point_data.char_index, 0);
 
   const uint32_t char_index = GetCharIndexBasedOnPointData(point_data);
-  return ExtendSelectionByChar(
-      {static_cast<uint32_t>(point_data.page_index), char_index});
+  PageCharacterIndex index{static_cast<uint32_t>(point_data.page_index),
+                           char_index};
+  if (caret_) {
+    caret_->SetChar(index);
+  }
+  return ExtendSelectionByChar(index);
 }
 
 bool PDFiumEngine::ExtendSelectionByChar(const PageCharacterIndex& index) {

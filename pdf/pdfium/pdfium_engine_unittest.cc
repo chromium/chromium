@@ -3077,7 +3077,7 @@ TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
       *engine, /*page_index=*/2, "multi_page_hello_world_caret_1.png");
 }
 
-TEST_P(PDFiumEngineCaretTest, TextSelect) {
+TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -3096,6 +3096,17 @@ TEST_P(PDFiumEngineCaretTest, TextSelect) {
   // Caret should not be visible when text selecting.
   DrawCaretAndCompareWithPlatformExpectations(
       *engine, /*page_index=*/0, "hello_world_caret_text_selection.png");
+
+  blink::WebKeyboardEvent key_down_event(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  key_down_event.windows_key_code = ui::KeyboardCode::VKEY_RIGHT;
+  EXPECT_TRUE(engine->HandleInputEvent(key_down_event));
+
+  // TODO(crbug.com/446944878): Caret should appear at the end of the text
+  // selection.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_end.png");
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());
