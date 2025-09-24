@@ -331,14 +331,22 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlotOrReadingFlowContainer) {
   auto* slot =
       To<HTMLSlotElement>(shadow_root.QuerySelector(AtomicString("slot")));
 
-  EXPECT_EQ(nullptr,
-            FocusController::FindScopeOwnerSlotOrReadingFlowContainer(*host));
-  EXPECT_EQ(nullptr,
-            FocusController::FindScopeOwnerSlotOrReadingFlowContainer(*slot));
-  EXPECT_EQ(slot,
-            FocusController::FindScopeOwnerSlotOrReadingFlowContainer(*inner1));
-  EXPECT_EQ(slot,
-            FocusController::FindScopeOwnerSlotOrReadingFlowContainer(*inner2));
+  EXPECT_EQ(
+      nullptr,
+      FocusController::FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
+          *host));
+  EXPECT_EQ(
+      nullptr,
+      FocusController::FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
+          *slot));
+  EXPECT_EQ(
+      slot,
+      FocusController::FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
+          *inner1));
+  EXPECT_EQ(
+      slot,
+      FocusController::FindScopeOwnerSlotOrScrollMarkerOrReadingFlowContainer(
+          *inner2));
 }
 
 // crbug.com/1508258
@@ -1173,34 +1181,50 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderInTabsMode) {
       after_scroller->GetPseudoElement(kPseudoIdScrollButtonBlockEnd);
 
   Element* after_first_child = after_scroller->firstElementChild();
-  Element* after_third_child = after_scroller->lastElementChild();
 
   Element* after_first_scroll_marker =
       after_first_child->GetPseudoElement(kPseudoIdScrollMarker);
 
-  std::array<Element*, 15> order = {pre_input,
-                                    before_first_scroll_marker,
-                                    before_block_start_button,
-                                    before_inline_start_button,
-                                    before_inline_end_button,
-                                    before_block_end_button,
-                                    before_first_child,
-                                    before_second_child,
-                                    after_first_scroll_marker,
-                                    after_block_start_button,
-                                    after_inline_start_button,
-                                    after_inline_end_button,
-                                    after_block_end_button,
-                                    after_third_child,
-                                    post_input};
+  std::array<Element*, 15> forward_order = {pre_input,
+                                            before_first_scroll_marker,
+                                            before_first_child,
+                                            before_block_start_button,
+                                            before_inline_start_button,
+                                            before_inline_end_button,
+                                            before_block_end_button,
+                                            before_scroller,
+                                            after_first_scroll_marker,
+                                            after_block_start_button,
+                                            after_inline_start_button,
+                                            after_inline_end_button,
+                                            after_block_end_button,
+                                            after_scroller,
+                                            post_input};
 
-  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i + 1], FindFocusableElementAfter(
-                                *order[i], mojom::blink::FocusType::kForward));
+  std::array<Element*, 14> backward_order = {pre_input,
+                                             before_first_scroll_marker,
+                                             before_block_start_button,
+                                             before_inline_start_button,
+                                             before_inline_end_button,
+                                             before_block_end_button,
+                                             before_scroller,
+                                             after_first_scroll_marker,
+                                             after_block_start_button,
+                                             after_inline_start_button,
+                                             after_inline_end_button,
+                                             after_block_end_button,
+                                             after_scroller,
+                                             post_input};
+
+  for (std::size_t i = 0u; i < forward_order.size() - 1; ++i) {
+    EXPECT_EQ(forward_order[i + 1],
+              FindFocusableElementAfter(*forward_order[i],
+                                        mojom::blink::FocusType::kForward));
   }
-  for (std::size_t i = 0u; i < order.size() - 1; ++i) {
-    EXPECT_EQ(order[i], FindFocusableElementAfter(
-                            *order[i + 1], mojom::blink::FocusType::kBackward));
+  for (std::size_t i = 0u; i < backward_order.size() - 1; ++i) {
+    EXPECT_EQ(backward_order[i],
+              FindFocusableElementAfter(*backward_order[i + 1],
+                                        mojom::blink::FocusType::kBackward));
   }
 
   GetFocusController().SetActive(true);
@@ -1211,8 +1235,9 @@ TEST_F(FocusControllerTest, FullCarouselFocusOrderInTabsMode) {
   const auto* style = before_second_scroll_marker->GetComputedStyle();
   EXPECT_TRUE(before_second_scroll_marker->IsFocused());
   EXPECT_EQ(0.5, style->Opacity());
-  // And the next in focus order we go to the first of scroll buttons.
-  EXPECT_EQ(before_block_start_button,
+  // And the next in focus order we go to the ultimate originating element of
+  // selected scroll marker.
+  EXPECT_EQ(before_second_child,
             FindFocusableElementAfter(*before_second_scroll_marker,
                                       mojom::blink::FocusType::kForward));
 }
