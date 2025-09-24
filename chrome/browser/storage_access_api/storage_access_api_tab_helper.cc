@@ -15,15 +15,6 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 
-namespace {
-
-void RecordRenewalDeltaSample(base::TimeDelta delta) {
-  base::UmaHistogramCounts1000(
-      "API.StorageAccess.PermissionRenewedDeltaToExpiration", delta.InHours());
-}
-
-}  // namespace
-
 StorageAccessAPITabHelper::~StorageAccessAPITabHelper() = default;
 
 void StorageAccessAPITabHelper::FrameReceivedUserActivation(
@@ -47,14 +38,9 @@ void StorageAccessAPITabHelper::FrameReceivedUserActivation(
     return;
   }
 
-  std::optional<base::TimeDelta> delta_to_expiration =
-      service_->RenewPermissionGrant(
-          rfh->GetLastCommittedOrigin(),
-          rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());
-
-  if (delta_to_expiration.has_value()) {
-    RecordRenewalDeltaSample(delta_to_expiration.value());
-  }
+  service_->RenewPermissionGrant(
+      rfh->GetLastCommittedOrigin(),
+      rfh->GetParentOrOuterDocument()->GetLastCommittedOrigin());
 }
 
 StorageAccessAPITabHelper::StorageAccessAPITabHelper(

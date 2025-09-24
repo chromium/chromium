@@ -124,18 +124,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="API.StorageAccess.PermissionRenewedDeltaToExpiration"
-    units="hours" expires_after="2025-11-02">
-  <owner>cfredric@chromium.org</owner>
-  <owner>johannhof@chromium.org</owner>
-  <summary>
-    Records the delta between the time at which a storage-access permission
-    grant was renewed, and permission grant's old expiration time.
-
-    Recorded once each time any storage-access permission grant is renewed.
-  </summary>
-</histogram>
-
 <histogram name="API.StorageAccess.RequestOutcome"
     enum="StorageAccessAPIRequestOutcome" expires_after="2026-03-22">
   <owner>cfredric@chromium.org</owner>
