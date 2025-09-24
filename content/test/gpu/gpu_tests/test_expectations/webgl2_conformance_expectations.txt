@@ -765,7 +765,6 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/i
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/video/tex-2d* [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/video/tex-3d* [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/webgl_canvas/tex-3d* [ Failure ]
-crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
 crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 
 # WebGL: INVALID_ENUM: getShaderParameter
