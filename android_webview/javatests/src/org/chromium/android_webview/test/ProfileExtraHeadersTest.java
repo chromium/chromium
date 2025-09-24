@@ -329,7 +329,7 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
         addOriginMatchedHeaderOnUiThread("X-OtherHeader", "HeaderValue4", originRules);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mAwBrowserContext.clearOriginMatchedHeader("X-ExtraHeader"));
+                () -> mAwBrowserContext.clearOriginMatchedHeader("X-ExtraHeader", null));
 
         List<AwOriginMatchedHeader> remainingHeaders =
                 findOriginMatchedHeadersOnUiThread(null, null);
@@ -478,7 +478,7 @@ public class ProfileExtraHeadersTest extends AwParameterizedTest {
             Assert.assertEquals("active", lastRequest.headerValue("X-ExtraHeader"));
 
             ThreadUtils.runOnUiThreadBlocking(
-                    () -> mAwBrowserContext.clearOriginMatchedHeader("X-ExtraHeader"));
+                    () -> mAwBrowserContext.clearOriginMatchedHeader("X-ExtraHeader", null));
             Assert.assertFalse(
                     ThreadUtils.runOnUiThreadBlocking(
                             () -> mAwBrowserContext.hasOriginMatchedHeader("X-ExtraHeader")));

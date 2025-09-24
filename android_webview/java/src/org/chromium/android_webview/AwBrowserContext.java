@@ -416,13 +416,7 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .hasOriginMatchedHeader(mNativeAwBrowserContext, headerName);
     }
 
-    public void clearOriginMatchedHeader(@NonNull String headerName) {
-        ThreadUtils.assertOnUiThread();
-        AwBrowserContextJni.get()
-                .clearOriginMatchedHeader(mNativeAwBrowserContext, headerName, null);
-    }
-
-    public void clearOriginMatchedHeader(@NonNull String headerName, @NonNull String headerValue) {
+    public void clearOriginMatchedHeader(@NonNull String headerName, @Nullable String headerValue) {
         ThreadUtils.assertOnUiThread();
         AwBrowserContextJni.get()
                 .clearOriginMatchedHeader(mNativeAwBrowserContext, headerName, headerValue);

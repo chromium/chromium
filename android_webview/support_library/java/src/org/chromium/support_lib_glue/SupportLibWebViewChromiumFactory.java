@@ -122,6 +122,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
                 Features.PAGE_IS_PRERENDERING,
+                Features.CUSTOM_REQUEST_HEADERS + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
@@ -293,6 +294,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.PRECONNECT,
         ApiCall.SET_HYPERLINK_CONTEXT_MENU_ITEMS,
         ApiCall.PAGE_IS_PRERENDERING,
+        ApiCall.ADD_ORIGIN_MATCHED_HEADER,
+        ApiCall.GET_ORIGIN_MATCHED_HEADERS,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -463,9 +466,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int PRECONNECT = 159;
         int SET_HYPERLINK_CONTEXT_MENU_ITEMS = 160;
         int PAGE_IS_PRERENDERING = 161;
+        int ADD_ORIGIN_MATCHED_HEADER = 162;
+        int GET_ORIGIN_MATCHED_HEADERS = 163;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 162;
+        int COUNT = 164;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

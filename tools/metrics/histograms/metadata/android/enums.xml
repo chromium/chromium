@@ -688,9 +688,9 @@ chromium-metrics-reviews@google.com.
       label="ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept"/>
   <int value="150" label="Profile.warmUpRendererProcess"/>
   <int value="151" label="Profile.setOriginMatchedHeader"/>
-  <int value="152" label="Profile.hasOriginMatchedHeader"/>
-  <int value="153" label="Profile.clearOriginMatchedHeader"/>
-  <int value="154" label="Profile.clearAllOriginMatchedHeaders"/>
+  <int value="152" label="Profile.hasCustomHeader"/>
+  <int value="153" label="Profile.clearCustomHeader"/>
+  <int value="154" label="Profile.clearAllCustomHeaders"/>
   <int value="155" label="WebSettingsCompat.setBackForwardCacheSettings"/>
   <int value="156" label="WebSettingsCompat.getBackForwardCacheSettings"/>
   <int value="157" label="BackForwardCacheSettings.getTimeoutInSeconds"/>
@@ -698,6 +698,8 @@ chromium-metrics-reviews@google.com.
   <int value="159" label="Profile.preconnect"/>
   <int value="160" label="WebSettingsCompat.setHyperlinkContextMenuItems"/>
   <int value="161" label="Page.isPrerendering"/>
+  <int value="162" label="Profile.addCustomHeader"/>
+  <int value="163" label="Profile.getCustomHeaders"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

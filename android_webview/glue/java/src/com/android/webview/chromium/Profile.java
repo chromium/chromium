@@ -15,11 +15,13 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwOriginMatchedHeader;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -189,13 +191,25 @@ public class Profile {
     }
 
     @UiThread
+    public void addOriginMatchedHeader(
+            String headerName, String headerValue, Set<String> originRules) {
+        mBrowserContext.addOriginMatchedHeader(headerName, headerValue, originRules);
+    }
+
+    @UiThread
     public boolean hasOriginMatchedHeader(String headerName) {
         return mBrowserContext.hasOriginMatchedHeader(headerName);
     }
 
     @UiThread
-    public void clearOriginMatchedHeader(String headerName) {
-        mBrowserContext.clearOriginMatchedHeader(headerName);
+    public List<AwOriginMatchedHeader> findOriginMatchedHeaders(
+            @Nullable String headerName, @Nullable String headerValue) {
+        return mBrowserContext.findOriginMatchedHeaders(headerName, headerValue);
+    }
+
+    @UiThread
+    public void clearOriginMatchedHeader(String headerName, @Nullable String headerValue) {
+        mBrowserContext.clearOriginMatchedHeader(headerName, headerValue);
     }
 
     @UiThread
