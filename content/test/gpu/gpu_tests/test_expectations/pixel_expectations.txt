@@ -509,7 +509,7 @@ crbug.com/415830130 [ android android-chromium ] Pixel_Video_MP4_TreesInViz [ Fa
 crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_ViewTransitionsCapture_TreesInViz [ RetryOnFailure ]
 crbug.com/446950282 [ mac intel-0x3e9b ] Pixel_ViewTransitionsCapture_TreesInViz [ Failure ]
-crbug.com/415830130 [ android android-chromium ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ RetryOnFailure ]
+crbug.com/415830130 [ android-chromium android-pixel-2 android-q angle-disabled graphite-disabled mobile no-clang-coverage no-passthrough qualcomm renderer-skia-gl ] Pixel_WebGLGreenTriangle_AA_Alpha_TreesInViz [ RetryOnFailure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
@@ -517,7 +517,7 @@ crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/415830130 [ linux ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/415830130 [ chromeos chromeos-board-amd64-generic ] Pixel_RenderPasses_TreesInViz [ Failure ]
 crbug.com/431824747 [ win ] Pixel_RenderPasses_TreesInViz [ Failure ]
-crbug.com/431824747 [ android android-chromium ] Pixel_RenderPasses_TreesInViz [ Failure ]
+crbug.com/431824747 [ android android-chromium no-clang-coverage ] Pixel_RenderPasses_TreesInViz [ Failure ]
 
 # brya/Android Desktop
 crbug.com/437973213 [ android android-brya ] Pixel_Video_BackdropFilter [ Failure ]
