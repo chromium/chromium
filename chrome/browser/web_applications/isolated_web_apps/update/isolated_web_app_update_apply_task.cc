@@ -88,7 +88,8 @@ base::Value IsolatedWebAppUpdateApplyTask::AsDebugValue() const {
   return base::Value(debug_log_.Clone());
 }
 
-void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(CompletionStatus result) {
+void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(
+    IsolatedWebAppApplyUpdateCommandResult result) {
   debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", result
                                .transform_error([](const auto& error) {

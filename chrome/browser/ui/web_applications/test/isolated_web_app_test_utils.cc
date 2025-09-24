@@ -159,7 +159,7 @@ UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;
 // IsolatedWebAppUpdateManager::Observer:
 void UpdateApplyTaskResultWaiter::OnUpdateApplyTaskCompleted(
     const webapps::AppId& app_id,
-    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+    IsolatedWebAppApplyUpdateCommandResult status) {
   if (app_id != expected_app_id_) {
     return;
   }

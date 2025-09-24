@@ -201,7 +201,7 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
 
   void OnUpdateApplyTaskCompleted(
       const webapps::AppId& app_id,
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status) override {
+      IsolatedWebAppApplyUpdateCommandResult status) override {
     ASSIGN_OR_RETURN(auto callback, ConsumeUpdateRequest(app_id), [](auto) {});
 
     ASSIGN_OR_RETURN(

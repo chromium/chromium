@@ -144,11 +144,8 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     base::WriteFile(installed_path, "");
   }
 
-  base::expected<void, IsolatedWebAppApplyUpdateCommandError>
-  ApplyPendingUpdate() {
-    base::test::TestFuture<
-        base::expected<void, IsolatedWebAppApplyUpdateCommandError>>
-        future;
+  IsolatedWebAppApplyUpdateCommandResult ApplyPendingUpdate() {
+    base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
     fake_provider().scheduler().ApplyPendingIsolatedWebAppUpdate(
         url_info_, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());

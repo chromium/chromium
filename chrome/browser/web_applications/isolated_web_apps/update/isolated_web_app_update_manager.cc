@@ -394,22 +394,19 @@ bool IsolatedWebAppUpdateManager::IsUpdateBeingApplied(
 
 void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWait(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
-        callback) {
+    base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback) {
   PrioritizeUpdateAndWaitImpl(app_id, std::move(callback));
 }
 
 void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWaitImpl(
     const webapps::AppId& app_id,
-    base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
-        callback) {
+    base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback) {
   bool task_has_started =
       task_queue_.EnsureQueuedUpdateApplyTaskHasStarted(app_id);
   if (task_has_started) {
     on_update_finished_callbacks_
-        .try_emplace(app_id,
-                     std::make_unique<base::OnceCallbackList<void(
-                         IsolatedWebAppUpdateApplyTask::CompletionStatus)>>())
+        .try_emplace(app_id, std::make_unique<base::OnceCallbackList<void(
+                                 IsolatedWebAppApplyUpdateCommandResult)>>())
         .first->second->AddUnsafe(std::move(callback));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -715,7 +712,7 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
     std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
-    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+    IsolatedWebAppApplyUpdateCommandResult status) {
   TrackResultOfUpdateApplyTask(status);
 
   for (auto& observer : task_observers_) {
@@ -735,7 +732,7 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
 }
 
 void IsolatedWebAppUpdateManager::TrackResultOfUpdateApplyTask(
-    IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
+    IsolatedWebAppApplyUpdateCommandResult status) const {
   if (status.has_value()) {
     web_app::UmaLogExpectedStatus<IsolatedWebAppUpdateError>(
         "WebApp.Isolated.Update", base::ok());
@@ -776,15 +773,14 @@ void IsolatedWebAppUpdateManager::OnLocalUpdateApplyTaskCreated(
     IwaVersion update_version,
     base::OnceCallback<void(base::expected<IwaVersion, std::string>)>
         callback) {
-  auto transform_status =
-      [](IwaVersion update_version,
-         IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
-        return status.transform([&]() { return update_version; })
-            .transform_error(
-                [](const IsolatedWebAppApplyUpdateCommandError& error) {
-                  return error.message;
-                });
-      };
+  auto transform_status = [](IwaVersion update_version,
+                             IsolatedWebAppApplyUpdateCommandResult status) {
+    return status.transform([&]() { return update_version; })
+        .transform_error(
+            [](const IsolatedWebAppApplyUpdateCommandError& error) {
+              return error.message;
+            });
+  };
 
   PrioritizeUpdateAndWaitImpl(
       url_info.app_id(),
@@ -999,7 +995,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateDiscoveryTaskCompleted(
 
 void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
     IsolatedWebAppUpdateApplyTask* task_ptr,
-    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+    IsolatedWebAppApplyUpdateCommandResult status) {
   auto task_it = std::ranges::find_if(update_apply_tasks_,
                                       base::MatchesUniquePtr(task_ptr));
   CHECK(task_it != update_apply_tasks_.end());

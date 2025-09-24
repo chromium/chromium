@@ -50,14 +50,15 @@ struct IsolatedWebAppApplyUpdateCommandError {
 std::ostream& operator<<(std::ostream& os,
                          const IsolatedWebAppApplyUpdateCommandError& error);
 
+using IsolatedWebAppApplyUpdateCommandResult =
+    base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
+
 // This command applies a pending update of an Isolated Web App. Information
 // about the pending update is read from
 // `IsolationData::pending_update_info`. Both on success, and on
 // failure, the pending update info is removed from the Web App database.
 class IsolatedWebAppApplyUpdateCommand
-    : public WebAppCommand<
-          AppLock,
-          base::expected<void, IsolatedWebAppApplyUpdateCommandError>> {
+    : public WebAppCommand<AppLock, IsolatedWebAppApplyUpdateCommandResult> {
  public:
   // This command is safe to run even if the IWA is not installed or already
   // updated, in which case it will gracefully fail.
@@ -66,9 +67,7 @@ class IsolatedWebAppApplyUpdateCommand
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::OnceCallback<
-          void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
-          callback,
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
       std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper);
 
   IsolatedWebAppApplyUpdateCommand(const IsolatedWebAppApplyUpdateCommand&) =

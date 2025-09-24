@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -24,16 +25,14 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
-struct IsolatedWebAppApplyUpdateCommandError;
 class WebAppCommandScheduler;
 
 // This task is responsible for applying a pending Isolated Web App update by
 // calling `WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate`.
 class IsolatedWebAppUpdateApplyTask {
  public:
-  using CompletionStatus =
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
-  using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
+  using CompletionCallback =
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult status)>;
 
   IsolatedWebAppUpdateApplyTask(
       IsolatedWebAppUrlInfo url_info,
@@ -61,7 +60,7 @@ class IsolatedWebAppUpdateApplyTask {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-  void OnUpdateApplied(CompletionStatus result);
+  void OnUpdateApplied(IsolatedWebAppApplyUpdateCommandResult result);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void CopyUpdatedBundleToCache();

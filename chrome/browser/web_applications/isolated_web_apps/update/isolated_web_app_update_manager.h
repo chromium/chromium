@@ -115,7 +115,7 @@ class IsolatedWebAppUpdateManager
     // `kUpdateFoundAndSavedInDatabase`.
     virtual void OnUpdateApplyTaskCompleted(
         const webapps::AppId& app_id,
-        IsolatedWebAppUpdateApplyTask::CompletionStatus status) {}
+        IsolatedWebAppApplyUpdateCommandResult status) {}
   };
 
   explicit IsolatedWebAppUpdateManager(
@@ -149,7 +149,7 @@ class IsolatedWebAppUpdateManager
   // finishes.
   void PrioritizeUpdateAndWait(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)>
           callback);
 
   bool AreAutomaticUpdatesEnabled() const { return automatic_updates_enabled_; }
@@ -206,7 +206,7 @@ class IsolatedWebAppUpdateManager
   }
 
   void TrackResultOfUpdateApplyTaskForTesting(
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status) const {
+      IsolatedWebAppApplyUpdateCommandResult status) const {
     TrackResultOfUpdateApplyTask(status);
   }
 
@@ -272,7 +272,7 @@ class IsolatedWebAppUpdateManager
 
     void OnUpdateApplyTaskCompleted(
         IsolatedWebAppUpdateApplyTask* task_ptr,
-        IsolatedWebAppUpdateApplyTask::CompletionStatus status);
+        IsolatedWebAppApplyUpdateCommandResult status);
 
     base::raw_ref<IsolatedWebAppUpdateManager> update_manager_;
 
@@ -320,7 +320,7 @@ class IsolatedWebAppUpdateManager
 
   void PrioritizeUpdateAndWaitImpl(
       const webapps::AppId& app_id,
-      base::OnceCallback<void(IsolatedWebAppUpdateApplyTask::CompletionStatus)>
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)>
           callback);
 
   void OnUpdateDiscoveryTaskCompleted(
@@ -335,7 +335,7 @@ class IsolatedWebAppUpdateManager
 
   void OnUpdateApplyTaskCompleted(
       std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status);
+      IsolatedWebAppApplyUpdateCommandResult status);
 
   void OnLocalUpdateDiscovered(
       IsolatedWebAppUrlInfo url_info,
@@ -389,7 +389,7 @@ class IsolatedWebAppUpdateManager
   // finished (successfully or unsuccessfully).
   base::flat_map<webapps::AppId,
                  std::unique_ptr<base::OnceCallbackList<void(
-                     IsolatedWebAppUpdateApplyTask::CompletionStatus)>>>
+                     IsolatedWebAppApplyUpdateCommandResult)>>>
       on_update_finished_callbacks_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
@@ -417,7 +417,7 @@ class IsolatedWebAppUpdateManager
       IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) const;
 
   void TrackResultOfUpdateApplyTask(
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status) const;
+      IsolatedWebAppApplyUpdateCommandResult status) const;
 };
 
 }  // namespace web_app

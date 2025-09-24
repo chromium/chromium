@@ -139,10 +139,9 @@ WaitForTestAppUpdateDiscovery() {
   return update_discovery_future.Take();
 }
 
-web_app::IsolatedWebAppUpdateApplyTask::CompletionStatus
-WaitForTestAppUpdateApply() {
-  using UpdateApplyTaskFuture = base::test::TestFuture<
-      web_app::IsolatedWebAppUpdateApplyTask::CompletionStatus>;
+web_app::IsolatedWebAppApplyUpdateCommandResult WaitForTestAppUpdateApply() {
+  using UpdateApplyTaskFuture =
+      base::test::TestFuture<web_app::IsolatedWebAppApplyUpdateCommandResult>;
 
   UpdateApplyTaskFuture update_apply_future;
   web_app::UpdateApplyTaskResultWaiter update_apply_waiter(

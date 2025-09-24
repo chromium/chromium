@@ -106,8 +106,8 @@ class UpdateDiscoveryTaskResultWaiter
 
 class UpdateApplyTaskResultWaiter
     : public IsolatedWebAppUpdateManager::Observer {
-  using TaskResultCallback = base::OnceCallback<void(
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status)>;
+  using TaskResultCallback =
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult status)>;
 
  public:
   UpdateApplyTaskResultWaiter(WebAppProvider& provider,
@@ -118,7 +118,7 @@ class UpdateApplyTaskResultWaiter
   // IsolatedWebAppUpdateManager::Observer:
   void OnUpdateApplyTaskCompleted(
       const webapps::AppId& app_id,
-      IsolatedWebAppUpdateApplyTask::CompletionStatus status) override;
+      IsolatedWebAppApplyUpdateCommandResult status) override;
 
  private:
   const webapps::AppId expected_app_id_;

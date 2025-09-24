@@ -58,8 +58,6 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
                                        InstallIsolatedWebAppCommandError>;
   using PrepareAndStoreUpdateResult =
       IsolatedWebAppUpdatePrepareAndStoreCommandResult;
-  using ApplyUpdateResult =
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
 
   IsolatedWebAppInstallSource GetInstallSource(
       const base::FilePath& bundle_path) const {
@@ -106,9 +104,9 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
     return future.Take();
   }
 
-  ApplyUpdateResult ApplyUpdate(
+  IsolatedWebAppApplyUpdateCommandResult ApplyUpdate(
       const web_package::SignedWebBundleId& web_bundle_id) {
-    base::test::TestFuture<ApplyUpdateResult> future;
+    base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
     provider()->scheduler().ApplyPendingIsolatedWebAppUpdate(
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
         /*optional_keep_alive=*/nullptr,

@@ -132,8 +132,7 @@ class MockCommandScheduler : public WebAppCommandScheduler {
       (const IsolatedWebAppUrlInfo& url_info,
        std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
        std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-       base::OnceCallback<
-           void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
+       base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)>
            callback,
        const base::Location& call_location),
       (override));
@@ -1283,7 +1282,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskSuccess) {
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskFails) {
   base::HistogramTester histogram_tester;
-  IsolatedWebAppUpdateApplyTask::CompletionStatus status =
+  IsolatedWebAppApplyUpdateCommandResult status =
       base::unexpected<IsolatedWebAppApplyUpdateCommandError>(
           {"error message"});
 

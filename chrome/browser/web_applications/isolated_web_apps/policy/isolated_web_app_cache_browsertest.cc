@@ -78,7 +78,8 @@ using web_package::SignedWebBundleId;
 using DiscoveryTask = IsolatedWebAppUpdateDiscoveryTask;
 using ApplyTask = IsolatedWebAppUpdateApplyTask;
 using UpdateDiscoveryTaskFuture = TestFuture<DiscoveryTask::CompletionStatus>;
-using UpdateApplyTaskFuture = TestFuture<ApplyTask::CompletionStatus>;
+using UpdateApplyTaskFuture =
+    TestFuture<IsolatedWebAppApplyUpdateCommandResult>;
 
 using ash::KioskMixin;
 using ash::LoginManagerMixin;

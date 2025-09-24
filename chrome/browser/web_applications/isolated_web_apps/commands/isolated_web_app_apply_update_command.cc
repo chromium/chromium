@@ -66,12 +66,9 @@ IsolatedWebAppApplyUpdateCommand::IsolatedWebAppApplyUpdateCommand(
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    base::OnceCallback<void(
-        base::expected<void, IsolatedWebAppApplyUpdateCommandError>)> callback,
+    base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
     std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
-    : WebAppCommand<
-          AppLock,
-          base::expected<void, IsolatedWebAppApplyUpdateCommandError>>(
+    : WebAppCommand<AppLock, IsolatedWebAppApplyUpdateCommandResult>(
           "IsolatedWebAppApplyUpdateCommand",
           AppLockDescription(url_info.app_id()),
           std::move(callback), /*args_for_shutdown=*/
