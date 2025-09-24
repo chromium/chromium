@@ -18,7 +18,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -680,11 +680,12 @@ CreateAndValidateSharedImageRepresentations::
   // GL.
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE;
-  if (!is_thread_safe)
+  if (!is_thread_safe) {
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
+  }
   if (upload_initial_data) {
-    std::vector<uint8_t> initial_data(
-        viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
+    size_t required_size = format.MaybeEstimatedSizeInBytes(size_).value();
+    std::vector<uint8_t> initial_data(required_size);
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
         "TestLabel", /*is_thread_safe=*/true, initial_data);

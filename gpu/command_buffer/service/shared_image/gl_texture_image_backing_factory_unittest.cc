@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -646,8 +645,8 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
-  std::vector<uint8_t> initial_data(
-      viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size, format));
+  size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
+  std::vector<uint8_t> initial_data(required_size);
 
   bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
@@ -702,8 +701,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
   // Note: The specific usage doesn't matter here as long as it's supported by
   // GLTextureImageBacking.
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
-  size_t required_size =
-      viz::ResourceSizes::CheckedSizeInBytes<size_t>(size, format);
+  size_t required_size = format.MaybeEstimatedSizeInBytes(size).value();
   std::vector<uint8_t> initial_data_small(required_size / 2);
   std::vector<uint8_t> initial_data_large(required_size * 2);
   bool supported = backing_factory_->CanCreateSharedImage(
