@@ -15,6 +15,7 @@
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
@@ -22,6 +23,8 @@
 namespace base {
 
 namespace {
+
+BASE_FEATURE(kHeapProfilerMultiKeyHashSet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::base::allocator::dispatcher::ReentryGuard;
 
@@ -209,7 +212,8 @@ constinit std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
   Init();
-  auto* sampled_addresses = new LockFreeAddressHashSet(64, mutex_);
+  auto* sampled_addresses = new LockFreeAddressHashSet(
+      64, mutex_, base::FeatureList::IsEnabled(kHeapProfilerMultiKeyHashSet));
   g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
 }
 
@@ -403,7 +407,8 @@ void PoissonAllocationSampler::BalanceAddressesHashSet() {
     return;
   }
   auto new_set = std::make_unique<LockFreeAddressHashSet>(
-      current_set.buckets_count() * 2, mutex_);
+      current_set.buckets_count() * 2, mutex_,
+      base::FeatureList::IsEnabled(kHeapProfilerMultiKeyHashSet));
   new_set->Copy(current_set);
   // Atomically switch all the new readers to the new set.
   g_sampled_addresses_set.store(new_set.release(), std::memory_order_release);
