@@ -44,12 +44,12 @@ class PageContentExtractionService : public KeyedService {
   std::optional<ExtractedPageContentResult>
   GetExtractedPageContentAndEligibilityForPage(content::Page& page);
 
- private:
+ protected:
   friend class AnnotatedPageContentRequest;
 
   // Invoked when `page_content` is extracted for `page`, to notify the
   // observers.
-  void OnPageContentExtracted(
+  virtual void OnPageContentExtracted(
       content::Page& page,
       const optimization_guide::proto::AnnotatedPageContent& page_content);
 

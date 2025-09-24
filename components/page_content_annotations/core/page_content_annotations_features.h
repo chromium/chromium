@@ -149,6 +149,17 @@ bool ShouldAnnotatedPageContentStudyIncludeInnerText();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 std::string AnnotatedPageContentMode();
 
+// The triggering mode for page content extraction.
+enum class PageContentExtractionTriggeringMode {
+  kOnLoad,
+  kOnHidden,
+  kOnLoadAndHidden,
+};
+
+// Returns the triggering mode for page content extraction.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode();
+
 }  // namespace page_content_annotations::features
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_FEATURES_H_

@@ -135,6 +135,9 @@ const base::FeatureParam<bool> kAnnotatedPageContentOnCriticalPath{
 const base::FeatureParam<std::string> kAnnotatedPageContentMode{
     &kAnnotatedPageContentExtraction, "mode", "default"};
 
+const base::FeatureParam<std::string> kPageContentExtractionTriggeringMode{
+    &kAnnotatedPageContentExtraction, "triggering_mode", "on_load"};
+
 }  // namespace
 
 // Enables page content to be annotated.
@@ -307,6 +310,17 @@ bool ShouldAnnotatedPageContentStudyIncludeInnerText() {
 
 std::string AnnotatedPageContentMode() {
   return kAnnotatedPageContentMode.Get();
+}
+
+PageContentExtractionTriggeringMode GetPageContentExtractionTriggeringMode() {
+  std::string mode_str = kPageContentExtractionTriggeringMode.Get();
+  if (mode_str == "on_hidden") {
+    return PageContentExtractionTriggeringMode::kOnHidden;
+  }
+  if (mode_str == "on_load_and_hidden") {
+    return PageContentExtractionTriggeringMode::kOnLoadAndHidden;
+  }
+  return PageContentExtractionTriggeringMode::kOnLoad;
 }
 
 }  // namespace page_content_annotations::features
