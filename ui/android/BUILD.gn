@@ -930,6 +930,7 @@ android_library("ui_unit_device_javatests") {
     "javatests/src/org/chromium/ui/animation/RenderTestAnimationUtils.java",
     "javatests/src/org/chromium/ui/animation/ViewCurvedMotionAnimatorFactoryRenderTest.java",
     "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
+    "javatests/src/org/chromium/ui/base/EventForwarderDeviceTest.java",
     "javatests/src/org/chromium/ui/insets/WindowInsetsUtilsJavaUnitTest.java",
     "javatests/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
     "javatests/src/org/chromium/ui/widget/OutlineOverlayHelperJavaUnitTest.java",
@@ -957,6 +958,7 @@ android_library("ui_unit_device_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

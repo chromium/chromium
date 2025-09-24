@@ -12,6 +12,7 @@ import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -46,6 +47,9 @@ public class EventForwarder {
 
     private final MotionEvent.PointerCoords mTmpPointerCoords = new MotionEvent.PointerCoords();
 
+    private final boolean mIsAtLeastU =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+
     // The mime type for a URL.
     private static final String URL_MIME_TYPE = "text/x-moz-url";
 
@@ -62,6 +66,21 @@ public class EventForwarder {
 
     // Track the last tool type of touch sequence.
     private int mLastToolType;
+
+    // Tracks the starting position of the last trackpad scroll.
+    // Only used when isTrackpadScrollEventFromAtLeastU() is true.
+    private float mLastTrackpadScrollStartX;
+    private float mLastTrackpadScrollStartY;
+    private float mLastTrackpadScrollStartRawX;
+    private float mLastTrackpadScrollStartRawY;
+    // Tracks the position of the last trackpad scroll event including move (updates).
+    // Used to compute the delta in X, Y manually.
+    private float mLastTrackpadScrollX;
+    private float mLastTrackpadScrollY;
+
+    private final VelocityTracker mVelocityTracker;
+    private static final float MAX_FLING_VELOCITY = 8000;
+    private static final float MIN_FLING_VELOCITY = 50;
 
     // Delegate to call WebContents functionality.
     private @Nullable StylusWritingDelegate mStylusWritingDelegate;
@@ -117,6 +136,7 @@ public class EventForwarder {
         mIsDragDropEnabled = isDragDropEnabled;
         mConvertTrackpadEventsToMouse = convertTrackpadEventsToMouse;
         mUseBufferedInput = useBufferedInput;
+        mVelocityTracker = VelocityTracker.obtain();
     }
 
     @CalledByNative
@@ -202,6 +222,16 @@ public class EventForwarder {
         } else if (isTrackpadToMouseEventConversionEnabled()
                 && isTrackpadToMouseConversionEvent(event)) {
             return onMouseEvent(event);
+        } else if (isTrackpadToMouseEventConversionEnabled()
+                && isTrackpadScrollEventFromAtLeastU(event)) {
+            // At API level 34+, trackpad scroll events carry
+            // AXIS_GESTURE_SCROLL_{X,Y}_DISTANCE information. Send such events
+            // separately, which are converted to mouse wheel events later.
+            //
+            // Trackpad scroll events prior to API level 34 will be handled in
+            // the same way as touchscreen swipe.
+            onTrackpadScrollEvent(event);
+            return true;
         } else if (event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE) {
             // TODO(mustaq): Should we include MotionEvent.TOOL_TYPE_STYLUS here?
             // crbug.com/592082
@@ -398,6 +428,14 @@ public class EventForwarder {
                 }
                 mLastMouseButtonState = 0;
             }
+            // If trackpad scrolls are converted to mousewheel scrolls, so do touchpad flings, and
+            // trackpad movements to stop fling need to be handled here too.
+            if (isTrackpadToMouseEventConversionEnabled()
+                    && event.isFromSource(InputDevice.SOURCE_MOUSE)
+                    && event.getToolType(0) == MotionEvent.TOOL_TYPE_FINGER
+                    && eventAction == MotionEvent.ACTION_HOVER_MOVE) {
+                cancelFling(event.getEventTime(), true);
+            }
             return sendNativeMouseEvent(event);
         } finally {
             if (didOffsetEvent) event.recycle();
@@ -469,6 +507,50 @@ public class EventForwarder {
         return true;
     }
 
+    private void onTrackpadScrollEvent(MotionEvent event) {
+        float deltaX = 0;
+        float deltaY = 0;
+        // Convert trackpad scroll to mouse wheel event.
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            mLastTrackpadScrollStartX = event.getX();
+            mLastTrackpadScrollStartY = event.getY() + mCurrentTouchOffsetY;
+            mLastTrackpadScrollStartRawX = event.getRawX();
+            mLastTrackpadScrollStartRawY = event.getRawY() + mCurrentTouchOffsetY;
+        } else {
+            deltaX = event.getX() - mLastTrackpadScrollX;
+            deltaY = event.getY() + mCurrentTouchOffsetY - mLastTrackpadScrollY;
+        }
+        mLastTrackpadScrollX = event.getX();
+        mLastTrackpadScrollY = event.getY() + mCurrentTouchOffsetY;
+
+        // Fling detection. Start fling at the end of scroll if the accumulated velocity is higher
+        // than the threshold. If this happens, return early and do not send the UP event which will
+        // be converted to a scroll end event since fling will end the scroll sequence.
+        mVelocityTracker.addMovement(event);
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            mVelocityTracker.computeCurrentVelocity(/* units= */ 1000, MAX_FLING_VELOCITY);
+            float velocityX = mVelocityTracker.getXVelocity();
+            float velocityY = mVelocityTracker.getYVelocity();
+            if (Math.abs(velocityX) > MIN_FLING_VELOCITY
+                    || Math.abs(velocityY) > MIN_FLING_VELOCITY) {
+                startFling(event.getEventTime(), velocityX, velocityY, false, false, true);
+                return;
+            }
+        }
+
+        EventForwarderJni.get()
+                .onMouseWheelEvent(
+                        mNativeEventForwarder,
+                        event,
+                        MotionEventUtils.getEventTimeNanos(event),
+                        mLastTrackpadScrollStartX,
+                        mLastTrackpadScrollStartY,
+                        mLastTrackpadScrollStartRawX,
+                        mLastTrackpadScrollStartRawY,
+                        deltaX,
+                        deltaY);
+    }
+
     /**
      * Manages internal state to work around a device-specific issue. Needs to be called per every
      * mouse event to update the state.
@@ -510,6 +592,16 @@ public class EventForwarder {
         }
 
         return false;
+    }
+
+    /** Only supports API level 34+. */
+    public boolean isTrackpadScrollEventFromAtLeastU(MotionEvent event) {
+        return mIsAtLeastU
+                && event.getClassification() == MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE
+                && (event.getActionMasked() == MotionEvent.ACTION_DOWN
+                        || event.getActionMasked() == MotionEvent.ACTION_MOVE
+                        || event.getActionMasked() == MotionEvent.ACTION_UP
+                        || event.getActionMasked() == MotionEvent.ACTION_CANCEL);
     }
 
     /**
@@ -851,6 +943,17 @@ public class EventForwarder {
 
         boolean onGenericMotionEvent(
                 long nativeEventForwarder, MotionEvent event, long timeNs, long downTimeMs);
+
+        void onMouseWheelEvent(
+                long nativeEventForwarder,
+                MotionEvent event,
+                long timeNs,
+                float x,
+                float y,
+                float rawX,
+                float rawY,
+                float deltaX,
+                float deltaY);
 
         boolean onKeyUp(long nativeEventForwarder, @JniType("ui::KeyEventAndroid") KeyEvent event);
 

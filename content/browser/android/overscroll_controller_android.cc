@@ -12,6 +12,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/edge_effect.h"
@@ -23,6 +24,7 @@
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/blink/did_overscroll_params.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 using ui::DidOverscrollParams;
 using ui::EdgeEffect;
@@ -131,6 +133,19 @@ void OverscrollControllerAndroid::OnGestureEvent(
       refresh_effect_->OnScrollBegin(
           gfx::ScalePoint(event.PositionInWidget(), dpi_scale_));
       break;
+    case blink::WebInputEvent::Type::kGestureScrollUpdate: {
+      if (event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
+        gfx::Vector2dF scroll_delta(event.data.scroll_update.delta_x,
+                                    event.data.scroll_update.delta_y);
+        refresh_effect_->WillHandleScrollUpdate(scroll_delta);
+      }
+    } break;
+    case blink::WebInputEvent::Type::kGestureScrollEnd: {
+      if (event.SourceDevice() == blink::WebGestureDevice::kTouchpad) {
+        refresh_effect_->OnScrollEnd(gfx::Vector2dF());
+      }
+      break;
+    }
 
     case blink::WebInputEvent::Type::kGestureFlingStart: {
       if (refresh_effect_->IsActive()) {
