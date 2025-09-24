@@ -1249,9 +1249,6 @@ BASE_FEATURE(kIppClientInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 // Used in finch experiment.
 BASE_FEATURE(kIppFirstSetupForUsbPrinters, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables correct handling of the function key row in Japanese.
-BASE_FEATURE(kJapaneseFunctionRow, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables OS Settings page for japanese.
 BASE_FEATURE(kJapaneseOSSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 

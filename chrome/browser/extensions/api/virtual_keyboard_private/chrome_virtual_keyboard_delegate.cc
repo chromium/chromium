@@ -517,9 +517,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
   features.Append(GenerateFeatureFlag("jelly", true));
-  features.Append(GenerateFeatureFlag(
-      "japanesefunctionrow",
-      base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow)));
+  features.Append(GenerateFeatureFlag("japanesefunctionrow", false));
 
   results.Set("features", std::move(features));
 
