@@ -30,6 +30,7 @@
   --color-searchbox-results-url-selected: var(--color-omnibox-results-url-selected);
   --color-searchbox-results-url: var(--color-omnibox-results-url);
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
+  --cr-searchbox-match-padding: 4px;
 }
 
 /**
