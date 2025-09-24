@@ -25,7 +25,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -39,55 +38,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
-    public void testThemeAndOmniboxColors_flagEnabled() {
-        @ColorInt
-        int themeColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurfaceContainerHigh(mContext), themeColor);
-
-        @ColorInt
-        int omniboxColor =
-                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurface(mContext), omniboxColor);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE})
-    public void testThemeAndOmniboxColors_flagDisabled() {
-        @ColorInt
-        int themeColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
-        assertEquals(
-                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false), themeColor);
-
-        @ColorInt
-        int omniboxColor =
-                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.toolbar_text_box_bg_color), omniboxColor);
-    }
-
-    @Test
-    public void testThemeAndOmniboxColors_Incognito() {
-        @ColorInt
-        int themeColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ true);
-        assertEquals(
-                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ true), themeColor);
-
-        @ColorInt
-        int omniboxColor =
-                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                        mContext, /* isIncognito= */ true);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.toolbar_text_box_background_incognito),
-                omniboxColor);
     }
 
     @Test

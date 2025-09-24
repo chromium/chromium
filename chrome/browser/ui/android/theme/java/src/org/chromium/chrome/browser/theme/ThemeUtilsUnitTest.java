@@ -10,6 +10,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 
+import androidx.core.content.ContextCompat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,9 +91,7 @@ public class ThemeUtilsUnitTest {
 
     @Test
     public void getTextBoxColorForToolbarBackgroundInNonNativePage_anyDefault() {
-        int expectedColor =
-                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                        mContext, /* isIncognito= */ false);
+        int expectedColor = ContextCompat.getColor(mContext, R.color.toolbar_text_box_bg_color);
 
         int themeColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(

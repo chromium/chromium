@@ -48,21 +48,6 @@ public class SurfaceColorUpdateUtils {
     }
 
     /**
-     * Returns the background color for the Omnibox based on the enabled flag.
-     *
-     * @param context {@link Context} used to retrieve colors.
-     * @return The background color.
-     */
-    public static @ColorInt int getOmniboxBackgroundColor(Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return ContextCompat.getColor(context, R.color.toolbar_text_box_background_incognito);
-        }
-        return useNewToolbarSurfaceColor()
-                ? SemanticColorUtils.getColorSurface(context)
-                : ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color);
-    }
-
-    /**
      * Returns the background color for the toolbar based on the enabled flag and other parameters.
      *
      * @param context {@link Context} used to retrieve colors.

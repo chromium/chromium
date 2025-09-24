@@ -438,8 +438,7 @@ public class ToolbarPhone extends ToolbarLayout
                                         R.dimen.modern_toolbar_background_corner_radius),
                         /* strokePx= */ 5);
         drawable.setBackgroundColor(
-                SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
-                        context, /* isIncognito= */ false));
+                ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
         return drawable;
     }
 
