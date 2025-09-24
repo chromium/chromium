@@ -832,6 +832,7 @@ if (!is_android) {
       sources += [ "glic_actor_task_icon_manager_unittest.cc" ]
 
       deps += [
+        "//chrome/browser/actor",
         "//chrome/browser/actor:test_support",
         "//chrome/browser/glic",
         "//chrome/browser/glic/test_support",

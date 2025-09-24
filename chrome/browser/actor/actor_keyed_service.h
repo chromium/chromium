@@ -13,15 +13,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
-#include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/image/image.h"
@@ -38,6 +36,7 @@ namespace ui {
 class ActorUiStateManagerInterface;
 }
 
+class ActorTask;
 class ToolRequest;
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/test_support/mock_glic_window_controller.h"
 #include "chrome/test/base/testing_profile.h"
