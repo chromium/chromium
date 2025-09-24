@@ -283,9 +283,9 @@ bool CanAddForeignVisitToSegments(
 // invalid, we DO NOT add this navigation to the VisitedLinkDatabase. We
 // do not add ephemeral keys because, by definition, their state shouldn't be
 // persisted across browsing sessions.
-bool AddToVisitedLinkDatabase(std::optional<GURL> top_level_url,
-                              std::optional<GURL> frame_url,
-                              bool is_ephemeral) {
+bool ShouldAddToVisitedLinkDatabase(std::optional<GURL> top_level_url,
+                                    std::optional<GURL> frame_url,
+                                    bool is_ephemeral) {
   // If our navigation comes from an ephemeral context or does not provide
   // enough information to construct our triple partition key, do not add it to
   // the database.
@@ -1444,9 +1444,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   VisitedLinkRow visited_link_info;
   if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
-    // Determine whether or not the current row should be added to the
-    // VisitedLinkDatabase.
-    if (AddToVisitedLinkDatabase(top_level_url, frame_url, is_ephemeral)) {
+    if (ShouldAddToVisitedLinkDatabase(top_level_url, frame_url,
+                                       is_ephemeral)) {
       // Determine if the visited link is already in the database.
       VisitedLinkID existing_row_id = db_->GetRowForVisitedLink(
           url_id, *top_level_url, *frame_url, visited_link_info);
