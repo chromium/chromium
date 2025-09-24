@@ -64,86 +64,10 @@ using testing::StrictMock;
 namespace cc {
 namespace {
 
-class FakeDiscardableManager {
- public:
-  void SetGLES2Interface(viz::TestGLES2Interface* gl) { gl_ = gl; }
-  void Initialize(GLuint texture_id) {
-    EXPECT_TRUE(!base::Contains(textures_, texture_id));
-    textures_[texture_id] = kHandleLockedStart;
-    live_textures_count_++;
-  }
-  void Unlock(GLuint texture_id) {
-    EXPECT_TRUE(base::Contains(textures_, texture_id));
-    ExpectLocked(texture_id);
-    textures_[texture_id]--;
-  }
-  bool Lock(GLuint texture_id) {
-    EnforceLimit();
-
-    EXPECT_TRUE(base::Contains(textures_, texture_id));
-    if (textures_[texture_id] >= kHandleUnlocked) {
-      textures_[texture_id]++;
-      return true;
-    }
-    return false;
-  }
-
-  void DeleteTexture(GLuint texture_id) {
-    if (!base::Contains(textures_, texture_id)) {
-      return;
-    }
-
-    ExpectLocked(texture_id);
-    textures_[texture_id] = kHandleDeleted;
-    live_textures_count_--;
-  }
-
-  void set_cached_textures_limit(size_t limit) {
-    cached_textures_limit_ = limit;
-  }
-
-  size_t live_textures_count() const { return live_textures_count_; }
-
-  void ExpectLocked(GLuint texture_id) {
-    EXPECT_TRUE(base::Contains(textures_, texture_id));
-
-    // Any value > kHandleLockedStart represents a locked texture. As we
-    // increment this value with each lock, we need the entire range and can't
-    // add additional values > kHandleLockedStart in the future.
-    EXPECT_GE(textures_[texture_id], kHandleLockedStart);
-    EXPECT_LE(textures_[texture_id], kHandleLockedEnd);
-  }
-
- private:
-  void EnforceLimit() {
-    for (auto it = textures_.begin(); it != textures_.end(); ++it) {
-      if (live_textures_count_ <= cached_textures_limit_)
-        return;
-      if (it->second != kHandleUnlocked)
-        continue;
-
-      it->second = kHandleDeleted;
-      gl_->TestGLES2Interface::DeleteTextures(1, &it->first);
-      live_textures_count_--;
-    }
-  }
-
-  const int32_t kHandleDeleted = 0;
-  const int32_t kHandleUnlocked = 1;
-  const int32_t kHandleLockedStart = 2;
-  const int32_t kHandleLockedEnd = std::numeric_limits<int32_t>::max();
-
-  std::map<GLuint, int32_t> textures_;
-  size_t live_textures_count_ = 0;
-  size_t cached_textures_limit_ = std::numeric_limits<size_t>::max();
-  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
-};
-
 class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
                                              public viz::TestContextSupport {
  public:
   explicit FakeGPUImageDecodeTestGLES2Interface(
-      FakeDiscardableManager* discardable_manager,
       TransferCacheTestHelper* transfer_cache_helper,
       bool advertise_accelerated_decoding)
       : extension_string_(
@@ -151,7 +75,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
             "GL_OES_texture_npot GL_EXT_texture_rg "
             "GL_OES_texture_half_float GL_OES_texture_half_float_linear "
             "GL_EXT_texture_norm16"),
-        discardable_manager_(discardable_manager),
         transfer_cache_helper_(transfer_cache_helper),
         advertise_accelerated_decoding_(advertise_accelerated_decoding) {}
 
@@ -161,22 +84,6 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
     EXPECT_EQ(0u, NumFramebuffers());
     EXPECT_EQ(0u, NumRenderbuffers());
   }
-
-  void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) override {
-    discardable_manager_->Initialize(texture_id);
-  }
-  void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) override {
-    discardable_manager_->Unlock(texture_id);
-  }
-  bool LockDiscardableTextureCHROMIUM(GLuint texture_id) override {
-    return discardable_manager_->Lock(texture_id);
-  }
-
-  bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override {
-    return discardable_manager_->Lock(texture_id);
-  }
-  void CompleteLockDiscardableTexureOnContextThread(
-      uint32_t texture_id) override {}
 
   base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_entry_size_ = serialized_size;
@@ -269,16 +176,9 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
     }
     TestGLES2Interface::GetIntegerv(name, params);
   }
-  void DeleteTextures(GLsizei n, const GLuint* textures) override {
-    for (GLsizei i = 0; i < n; i++) {
-      discardable_manager_->DeleteTexture(UNSAFE_TODO(textures[i]));
-    }
-    TestGLES2Interface::DeleteTextures(n, textures);
-  }
 
  private:
   const std::string extension_string_;
-  raw_ptr<FakeDiscardableManager> discardable_manager_;
   raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
@@ -323,15 +223,12 @@ class MockRasterImplementation : public gpu::raster::RasterImplementationGLES {
 class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
  public:
   static scoped_refptr<GPUImageDecodeTestMockContextProvider> Create(
-      FakeDiscardableManager* discardable_manager,
       TransferCacheTestHelper* transfer_cache_helper,
       bool advertise_accelerated_decoding) {
     auto support = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
-        discardable_manager, transfer_cache_helper,
-        advertise_accelerated_decoding);
+        transfer_cache_helper, advertise_accelerated_decoding);
     auto gl = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
-        discardable_manager, transfer_cache_helper,
-        false /* advertise_accelerated_decoding */);
+        transfer_cache_helper, false /* advertise_accelerated_decoding */);
     auto raster = std::make_unique<StrictMock<MockRasterImplementation>>(
         gl.get(), support.get());
     return new GPUImageDecodeTestMockContextProvider(
@@ -421,10 +318,7 @@ class GpuImageDecodeCacheTest
       command_line->AppendSwitch(switches::kEnableClippedImageScaling);
     }
     context_provider_ = GPUImageDecodeTestMockContextProvider::Create(
-        &discardable_manager_, &transfer_cache_helper_,
-        advertise_accelerated_decoding_);
-    discardable_manager_.SetGLES2Interface(
-        context_provider_->UnboundTestContextGL());
+        &transfer_cache_helper_, advertise_accelerated_decoding_);
     context_provider_->BindToCurrentSequence();
     {
       viz::RasterContextProvider::ScopedRasterContextLock context_lock(
@@ -441,9 +335,8 @@ class GpuImageDecodeCacheTest
     // Clear raw_ptrs in helpers that reference context_provider_ internals
     // before context_provider_ is destroyed, to avoid dangling pointers. We
     // can't just reorder the member variables because context_provider_
-    // references discardable_manager_ and transfer_cache_helper_.
+    // references transfer_cache_helper_.
     transfer_cache_helper_.SetGrContext(nullptr);
-    discardable_manager_.SetGLES2Interface(nullptr);
   }
 
   std::unique_ptr<GpuImageDecodeCache> CreateCache(
@@ -622,7 +515,6 @@ class GpuImageDecodeCacheTest
   }
 
   void SetCachedTexturesLimit(size_t limit) {
-    discardable_manager_.set_cached_textures_limit(limit);
     transfer_cache_helper_.SetCachedItemsLimit(limit);
   }
 
@@ -718,8 +610,7 @@ class GpuImageDecodeCacheTest
   base::test::ScopedFeatureList feature_list_;
 
   // The order of these members is important because |context_provider_| depends
-  // on |discardable_manager_| and |transfer_cache_helper_|.
-  FakeDiscardableManager discardable_manager_;
+  // on |transfer_cache_helper_|.
   TransferCacheTestHelper transfer_cache_helper_;
   scoped_refptr<GPUImageDecodeTestMockContextProvider> context_provider_;
 
@@ -1047,7 +938,6 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSameImageDifferentClients) {
     EXPECT_EQ(generator->frames_decoded().count(PaintImage::kDefaultFrameIndex),
               1u);
 
-    EXPECT_EQ(discardable_manager_.live_textures_count(), 0u);
     EXPECT_EQ(transfer_cache_helper_.num_of_entries(), 1u);
 
     EXPECT_TRUE(cache->IsInInUseCacheForTesting(draw_image));
