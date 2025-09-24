@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1152,26 +1153,22 @@ void Transaction::NotifyOfIdbInternalsRelevantChange() {
 }
 
 void Transaction::TimeoutFired() {
+  // The timeout timer should only be running when these conditions are met:
+  CHECK(used_, base::NotFatalUntil::M145);
+  CHECK(!diagnostics_.mojo_receiver_disconnected, base::NotFatalUntil::M145);
+  CHECK(task_queue_.empty(), base::NotFatalUntil::M145);
+  CHECK(preemptive_task_queue_.empty(), base::NotFatalUntil::M145);
+  const bool has_connection = (connection_.get() != nullptr);
+  CHECK(has_connection, base::NotFatalUntil::M145);
+
   // Histograms to diagnose memory leak crbug.com/381086791.
   // TODO(crbug.com/381086791): Remove after the leak is fixed.
   base::UmaHistogramEnumeration("IndexedDB.TransactionTimeout.Mode", mode_);
-  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.Used", used_);
-  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.MojoDisconnected",
-                            diagnostics_.mojo_receiver_disconnected);
   base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.CommitPending",
                             is_commit_pending_);
-  base::UmaHistogramCounts100("IndexedDB.TransactionTimeout.NumPendingTasks",
-                              task_queue_.size());
-  base::UmaHistogramCounts100(
-      "IndexedDB.TransactionTimeout.NumPendingPreemptiveTasks",
-      preemptive_task_queue_.size());
   base::UmaHistogramCounts10000(
       "IndexedDB.TransactionTimeout.NumTransactionsInDB",
       database_->GetNumTransactionsAcrossAllConnections());
-
-  const bool has_connection = (connection_.get() != nullptr);
-  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.HasConnection",
-                            has_connection);
   if (has_connection) {
     base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.IsConnected",
                               connection_->IsConnected());

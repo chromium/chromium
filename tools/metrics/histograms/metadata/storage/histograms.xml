@@ -583,17 +583,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.HasConnection" enum="Boolean"
-    expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether an IndexedDB transaction is associated with an existing connection.
-    Recorded every time the 20 seconds inactivity timeout is hit for a
-    transaction. Will be used to diagnose crbug.com/381086791.
-  </summary>
-</histogram>
-
 <histogram name="IndexedDB.TransactionTimeout.IsConnected" enum="Boolean"
     expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
@@ -614,43 +603,6 @@ chromium-metrics-reviews@google.com.
     The mode of an IndexedDB transaction. Recorded every time the 20 seconds
     inactivity timeout is hit for a transaction. Will be used to diagnose
     crbug.com/381086791.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.TransactionTimeout.MojoDisconnected" enum="Boolean"
-    expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether the Mojo receiver of an IndexedDB transaction is disconnected.
-    Recorded every time the 20 seconds inactivity timeout is hit for a
-    transaction. Will be used to diagnose crbug.com/381086791.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.TransactionTimeout.NumPendingPreemptiveTasks"
-    units="tasks" expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Number of pending preemptive tasks for an IndexedDB transaction. Recorded
-    every time the 20 seconds inactivity timeout is hit for a transaction. Will
-    be used to diagnose crbug.com/381086791. In theory, this should be 0,
-    otherwise the timeout timer wouldn't be running. It would be valuable
-    information to detect that it can be non-zero.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.TransactionTimeout.NumPendingTasks" units="tasks"
-    expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Number of pending non-preemptive tasks for an IndexedDB transaction.
-    Recorded every time the 20 seconds inactivity timeout is hit for a
-    transaction. Will be used to diagnose crbug.com/381086791. In theory, this
-    should be 0, otherwise the timeout timer wouldn't be running. It would be
-    valuable information to detect that it can be non-zero.
   </summary>
 </histogram>
 
@@ -675,17 +627,6 @@ chromium-metrics-reviews@google.com.
     transaction. Recorded every time the 20 seconds inactivity timeout is hit
     for a transaction. Will be used to diagnose crbug.com/381086791. We suspect
     that this can be very high.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.TransactionTimeout.Used" enum="Boolean"
-    expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether a task was ever scheduled for an IndexedDB transaction. Recorded
-    every time the 20 seconds inactivity timeout is hit for a transaction. Will
-    be used to diagnose crbug.com/381086791.
   </summary>
 </histogram>
 
