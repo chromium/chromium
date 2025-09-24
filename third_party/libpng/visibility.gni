@@ -8,8 +8,6 @@ visibility = [
   "//third_party/angle/src/tests/*",
   "//third_party/angle/third_party/glmark2:*",
   "//third_party/angle/util:*",
-  "//third_party/blink/renderer/core:*",
-  "//third_party/blink/renderer/platform/*",
   "//third_party/freetype:*",
   "//third_party/libpng/*",
   "//third_party/libwebp:*",
