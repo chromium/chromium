@@ -928,6 +928,52 @@ void GPMEnclaveController::SetAccountState(AccountState account_state) {
   }
 }
 
+void GPMEnclaveController::PromptForPin() {
+  if (GetFailedPINAttemptCount() >= device::enclave::kMaxFailedPINAttempts) {
+    model_->SetStep(Step::kGPMLockedPin);
+  } else {
+    model_->SetStep(pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
+                                      : Step::kGPMEnterPin);
+  }
+}
+
+void GPMEnclaveController::OnGpmPinChanged(bool success) {
+  changing_gpm_pin_ = false;
+
+  if (!success) {
+    model_->SetStep(Step::kGPMError);
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kFailed);
+    return;
+  }
+
+  SetFailedPINAttemptCount(0);
+  model_->gpm_pin_remaining_attempts_ = std::nullopt;
+  // Changing GPM Pin required reauth, hence we can just proceed with the
+  // get/create passkey transaction.
+  StartTransaction();
+  ChangePinControllerImpl::RecordHistogram(
+      ChangePinEvent::kCompletedSuccessfully);
+}
+
+void GPMEnclaveController::OnGpmSelectedWhileLoading() {
+  CHECK(waiting_for_account_state_);
+  if (model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    model_->DisableUiOrShowLoadingDialog();
+    return;
+  }
+  loading_timeout_.Start(FROM_HERE, kLoadingTimeout,
+                         base::BindOnce(&GPMEnclaveController::OnLoadingTimeout,
+                                        weak_ptr_factory_.GetWeakPtr()));
+  return;
+}
+
+void GPMEnclaveController::OnLoadingTimeout() {
+  device::enclave::RecordEvent(device::enclave::Event::kLoadingTimeout);
+  waiting_for_account_state_.Reset();
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+}
+
+
 void GPMEnclaveController::OnGPMSelected() {
   // Reset after each GPM selection to ensure correct metric emission.
   model_->in_onboarding_flow = false;
@@ -1078,51 +1124,6 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       model_->SetStep(Step::kGPMError);
       break;
   }
-}
-
-void GPMEnclaveController::PromptForPin() {
-  if (GetFailedPINAttemptCount() >= device::enclave::kMaxFailedPINAttempts) {
-    model_->SetStep(Step::kGPMLockedPin);
-  } else {
-    model_->SetStep(pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
-                                      : Step::kGPMEnterPin);
-  }
-}
-
-void GPMEnclaveController::OnGpmPinChanged(bool success) {
-  changing_gpm_pin_ = false;
-
-  if (!success) {
-    model_->SetStep(Step::kGPMError);
-    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kFailed);
-    return;
-  }
-
-  SetFailedPINAttemptCount(0);
-  model_->gpm_pin_remaining_attempts_ = std::nullopt;
-  // Changing GPM Pin required reauth, hence we can just proceed with the
-  // get/create passkey transaction.
-  StartTransaction();
-  ChangePinControllerImpl::RecordHistogram(
-      ChangePinEvent::kCompletedSuccessfully);
-}
-
-void GPMEnclaveController::OnGpmSelectedWhileLoading() {
-  CHECK(waiting_for_account_state_);
-  if (model_->step() != AuthenticatorRequestDialogModel::Step::kNotStarted) {
-    model_->DisableUiOrShowLoadingDialog();
-    return;
-  }
-  loading_timeout_.Start(FROM_HERE, kLoadingTimeout,
-                         base::BindOnce(&GPMEnclaveController::OnLoadingTimeout,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  return;
-}
-
-void GPMEnclaveController::OnLoadingTimeout() {
-  device::enclave::RecordEvent(device::enclave::Event::kLoadingTimeout);
-  waiting_for_account_state_.Reset();
-  model_->SetStep(AuthenticatorRequestDialogModel::Step::kMechanismSelection);
 }
 
 void GPMEnclaveController::OnTrustThisComputer() {

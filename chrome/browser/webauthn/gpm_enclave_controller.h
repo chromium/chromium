@@ -224,9 +224,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // service.
   void DownloadAccountState();
 
-  // Called when fetching the account state took too long.
-  void OnAccountStateTimeOut();
-
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
       GaiaId gaia_id,
@@ -277,13 +274,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // and progresses the flow if waiting.
   void SetAccountState(AccountState account_state);
 
-  // Called when the user selects Google Password Manager from the list of
-  // mechanisms. (Or when it's the priority mechanism.)
-  void OnGPMSelected() override;
-
-  // Called when a GPM passkey is selected from a list of credentials.
-  void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override;
-
   // Sets the UI to the correct PIN prompt for the type of PIN configured.
   void PromptForPin();
 
@@ -299,6 +289,8 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   void OnLoadingTimeout();
 
   // AuthenticatorRequestDialogModel::Observer:
+  void OnGPMSelected() override;
+  void OnGPMPasskeySelected(std::vector<uint8_t> credential_id) override;
   void OnTrustThisComputer() override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
   void OnGPMCreatePasskey() override;
