@@ -147,17 +147,6 @@ constexpr char kTestEmail[] = "foo@example.com";
 class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
  public:
   MOCK_METHOD(void,
-              ShowTurnSyncOnUI,
-              (Profile*,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const CoreAccountId&,
-               TurnSyncOnHelper::SigninAbortedMode,
-               bool,
-               bool),
-              (override));
-
-  MOCK_METHOD(void,
               ShowSigninUI,
               (Profile*,
                bool,
@@ -171,6 +160,20 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
                bool,
                signin_metrics::AccessPoint,
                signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowTurnSyncOnUI,
+              (Profile*,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction,
+               const CoreAccountId&,
+               TurnSyncOnHelper::SigninAbortedMode,
+               bool,
+               bool),
+              (override));
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinUI,
+              (Profile*, const CoreAccountId&),
               (override));
 };
 
@@ -290,6 +293,11 @@ class ProfileMenuViewTestBase {
 
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> target_browser_ = nullptr;
+  // TODO(crbug.com/444617761): Avoid overriding this feature for all tests here
+  // and instead fork affected tests to tests the behavior in both cases, with
+  // and without the feature enabled.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 class ProfileMenuViewBrowserTest : public ProfileMenuViewTestBase,
@@ -852,14 +860,23 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   base::HistogramTester histogram_tester;
   const signin_metrics::AccessPoint expected_access_point =
       signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
-  EXPECT_CALL(
-      mock_signin_ui_delegate,
-      ShowTurnSyncOnUI(browser()->profile(), expected_access_point,
-                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                       account_info_.account_id,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       /*is_sync_promo=*/true,
-                       /*user_already_signed_in=*/false));
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_CALL(
+        mock_signin_ui_delegate,
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+  } else {
+    EXPECT_CALL(
+        mock_signin_ui_delegate,
+        ShowTurnSyncOnUI(browser()->profile(), expected_access_point,
+                         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                         account_info_.account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                         /*is_sync_promo=*/true,
+                         /*user_already_signed_in=*/false));
+  }
+
   ClickSigninButton();
   EXPECT_EQ(IdentityManagerFactory::GetForProfile(browser()->profile())
                 ->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
@@ -1269,7 +1286,6 @@ constexpr std::array kActionableItems_WebOnly = {
     ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1398,7 +1414,6 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
 constexpr std::array kActionableItems_SigninDisallowed = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1429,7 +1444,6 @@ constexpr std::array kActionableItems_SigninPatternDisallowed = {
     ProfileMenuViewBase::ActionableItem::kSigninButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1485,7 +1499,6 @@ constexpr std::array kActionableItems_SigninPatternDisallowedSecondaryAllowed =
         ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
@@ -1552,7 +1565,7 @@ constexpr std::array kActionableItems_WithUnconsentedPrimaryAccount = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
     ProfileMenuViewBase::ActionableItem::kSignoutButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
@@ -1626,7 +1639,7 @@ constexpr std::array kActionableItems_WithPendingAccount = {
     ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
     ProfileMenuViewBase::ActionableItem::kSignoutButton,
     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
@@ -1674,7 +1687,7 @@ constexpr std::array
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kAccountSettingsButton,
         ProfileMenuViewBase::ActionableItem::kSignoutButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         // The kGuestProfileButton entry is not present.
@@ -2236,14 +2249,21 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
                                       default_access_point,
                                       /*expected_bucket_count=*/0);
-  EXPECT_CALL(
-      mock_signin_ui_delegate_,
-      ShowTurnSyncOnUI(browser()->profile(), default_access_point,
-                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                       account_info_.account_id,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       /*is_sync_promo=*/false,
-                       /*user_already_signed_in=*/true));
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_CALL(
+        mock_signin_ui_delegate_,
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+  } else {
+    EXPECT_CALL(
+        mock_signin_ui_delegate_,
+        ShowTurnSyncOnUI(browser()->profile(), default_access_point,
+                         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                         account_info_.account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                         /*is_sync_promo=*/false,
+                         /*user_already_signed_in=*/true));
+  }
   ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
   const ProfileMenuViewBase::ActionableItem actionable_item =
       ProfileMenuViewBase::ActionableItem::kSigninAccountButton;
@@ -2259,27 +2279,47 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
   ASSERT_NO_FATAL_FAILURE(
       OpenProfileMenuFromCoordinator(explicit_access_point));
-  // `Signin.SyncOptIn.Offered` should be recorded if the sync opt-in is
-  // offered from the profile menu.
-  histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
-                                      explicit_access_point,
-                                      /*expected_bucket_count=*/1);
   // `Signin.SignIn.Offered` should NOT be recorded if the sign-in is not
   // directly offered from the profile menu.
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
                                       explicit_access_point,
                                       /*expected_bucket_count=*/0);
-  EXPECT_CALL(
-      mock_signin_ui_delegate_,
-      ShowTurnSyncOnUI(browser()->profile(), explicit_access_point,
-                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                       account_info_.account_id,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       /*is_sync_promo=*/false,
-                       /*user_already_signed_in=*/true));
-  ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
-  histogram_tester.ExpectUniqueSample(
-      "Profile.Menu.ClickedActionableItem",
-      ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-      /*expected_bucket_count=*/1);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // `Signin.SyncOptIn.Offered` is still recorded if
+    // `kReplaceSyncPromosWithSignInPromos` is enabled.
+    // TODO(crbug.com/418145883): This should not be recorded.
+    histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                        explicit_access_point,
+                                        /*expected_bucket_count=*/1);
+    EXPECT_CALL(
+        mock_signin_ui_delegate_,
+        ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id));
+    ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        /*expected_bucket_count=*/1);
+  } else {
+    // `Signin.SyncOptIn.Offered` should be recorded if the sync opt-in is
+    // offered from the profile menu.
+    histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
+                                        explicit_access_point,
+                                        /*expected_bucket_count=*/1);
+
+    EXPECT_CALL(
+        mock_signin_ui_delegate_,
+        ShowTurnSyncOnUI(browser()->profile(), explicit_access_point,
+                         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                         account_info_.account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                         /*is_sync_promo=*/false,
+                         /*user_already_signed_in=*/true));
+    ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
+    histogram_tester.ExpectUniqueSample(
+        "Profile.Menu.ClickedActionableItem",
+        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+        /*expected_bucket_count=*/1);
+  }
 }

@@ -465,15 +465,14 @@ void ProfileMenuView::OnOtherProfileSelected(
     // associated non-webapp browser.
     profiles::SwitchToProfile(
         profile_path, /*always_create=*/false,
-        base::BindOnce(
-            [](Browser* browser) {
-              if (!browser) {
-                return;
-              }
-              signin::LaunchSigninHatsSurveyForProfile(
-                  kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-                  browser->GetProfile());
-            }));
+        base::BindOnce([](Browser* browser) {
+          if (!browser) {
+            return;
+          }
+          signin::LaunchSigninHatsSurveyForProfile(
+              kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+              browser->GetProfile());
+        }));
   } else {
     // Open the same web app for another profile.
     // On non-macOS the only allowlisted case is PasswordManager WebApp, which
@@ -1041,12 +1040,16 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
 
 void ProfileMenuView::BuildFeatureButtons() {
   CHECK(!profile().IsGuestSession());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile());
   // May add the button asynchronously, order is not be guaranteed.
   MaybeBuildBatchUploadButton();
   BuildAutofillSettingsButton();
   MaybeBuildManageGoogleAccountButton();
   BuildCustomizeProfileButton();
-  base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+  (base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos) &&
+   (!identity_manager ||
+    !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)))
       ? MaybeBuildChromeAccountSettingsButton()
       : MaybeBuildChromeAccountSettingsButtonWithSync();
   MaybeBuildCloseBrowsersButton();
