@@ -140,7 +140,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",

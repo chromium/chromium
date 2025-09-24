@@ -36,8 +36,8 @@ specific_include_rules = {
   ],
   "first_run_test_case_base\.mm": [
     "+ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h",
-    "+ios/chrome/browser/authentication/ui_bundled/signin_matchers.h",
-    "+ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h",
+    "+ios/chrome/browser/authentication/test/signin_matchers.h",
+    "+ios/chrome/browser/authentication/test/signin_earl_grey.h",
   ],
   "default_browser_screen_coordinator\.mm": [
     "+ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"

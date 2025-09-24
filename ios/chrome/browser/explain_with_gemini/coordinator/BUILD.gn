@@ -40,7 +40,7 @@ source_set("eg2_tests") {
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:capabilities",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/browser_container/ui_bundled:eg_matchers",
     "//ios/chrome/browser/browser_container/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/intelligence/features",

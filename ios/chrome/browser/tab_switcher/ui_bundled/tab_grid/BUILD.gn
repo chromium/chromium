@@ -298,7 +298,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",

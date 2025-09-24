@@ -151,7 +151,7 @@ source_set("eg2_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",

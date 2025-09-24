@@ -4,8 +4,8 @@
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

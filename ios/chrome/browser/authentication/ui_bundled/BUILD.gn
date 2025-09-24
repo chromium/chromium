@@ -183,21 +183,6 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_test_support+eg2") {
-  configs += [ "//build/config/ios:xctest_config" ]
-  testonly = true
-  sources = [
-    "expected_signin_histograms.h",
-    "separate_profiles_util.h",
-    "signin_earl_grey.h",
-    "signin_earl_grey_app_interface.h",
-    "signin_earl_grey_ui_test_util.h",
-    "signin_matchers.h",
-  ]
-  public_deps =
-      [ "//ios/chrome/browser/authentication/test:eg_test_support+eg2" ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -206,13 +191,13 @@ source_set("eg2_tests") {
     "separate_profiles_migration_egtest.mm",
   ]
   deps = [
-    ":eg_test_support+eg2",
     "//base/test:test_support",
     "//components/policy/core/browser",
     "//components/signin/public/base:signin_switches",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/public",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:pref_names",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/first_run/ui_bundled:constants",

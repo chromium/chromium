@@ -162,7 +162,7 @@ source_set("eg2_tests") {
     "//components/strings:components_strings_grit",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/elements:constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",

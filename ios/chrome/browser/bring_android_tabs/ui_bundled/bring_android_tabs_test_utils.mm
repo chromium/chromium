@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_app_interface.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"

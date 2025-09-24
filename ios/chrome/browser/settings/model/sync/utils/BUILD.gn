@@ -83,7 +83,7 @@ source_set("eg2_tests") {
     "//components/browser_sync:switches",
     "//components/sync/base",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",

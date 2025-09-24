@@ -57,7 +57,7 @@ source_set("eg2_tests") {
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/shared/model/application_context",

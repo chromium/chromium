@@ -150,7 +150,7 @@ source_set("eg2_tests") {
     ":password_checkup_constants",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",

@@ -7,7 +7,7 @@
 #import "components/collaboration/public/features.h"
 #import "components/collaboration/public/pref_names.h"
 #import "components/data_sharing/public/features.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

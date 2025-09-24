@@ -191,7 +191,7 @@ source_set("eg2_tests") {
     "//components/sync/base",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/menu/ui_bundled:menu_action_type",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",

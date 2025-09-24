@@ -348,7 +348,7 @@ source_set("eg2_tests") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/badges/model:features",
     "//ios/chrome/browser/badges/ui_bundled:public",

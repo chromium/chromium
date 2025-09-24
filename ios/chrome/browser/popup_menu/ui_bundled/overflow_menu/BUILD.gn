@@ -276,7 +276,7 @@ source_set("eg2_tests") {
     "//components/signin/internal/identity_manager:capabilities",
     "//components/sync/base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",

@@ -10,7 +10,7 @@
 #import "components/dom_distiller/core/pref_names.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/translate/core/browser/translate_pref_names.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"

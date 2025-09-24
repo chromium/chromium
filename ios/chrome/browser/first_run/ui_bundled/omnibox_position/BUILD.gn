@@ -89,7 +89,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/search_engines:search_engines_switches",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
