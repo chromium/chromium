@@ -35,22 +35,24 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         if (type == TabLaunchType.FROM_BROWSER_ACTIONS || type == TabLaunchType.FROM_RECENT_TABS) {
             return TabList.INVALID_TAB_INDEX;
         }
-
-        // Skip for reparenting pinned tabs, because the parent tab is often null for a reparenting
-        // tab, and running this block would overwrite the user-selected drop index with
-        // TabList.INVALID_TAB_INDEX, which later resolves to the last pinned position. Skip it to
-        // preserve the chosen index.
-        if (newTab.getIsPinned() && type != TabLaunchType.FROM_REPARENTING) {
+        if (newTab.getIsPinned()) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
-            @TabId int parentId = newTab.getParentId();
-            @Nullable Tab parentTab = tabModel.getTabById(parentId);
-            int index = tabModel.indexOf(parentTab);
 
-            if (type == TabLaunchType.FROM_TAB_LIST_INTERFACE
-                    && parentTab != null
+            if (type == TabLaunchType.FROM_TAB_LIST_INTERFACE) {
+                @TabId int parentId = newTab.getParentId();
+                @Nullable Tab parentTab = tabModel.getTabById(parentId);
+                int index = tabModel.indexOf(parentTab);
+                if (parentTab != null
                     && index != TabList.INVALID_TAB_INDEX
-                    && parentTab.getIsPinned()) {
+                    && parentTab.getIsPinned())
                 return index + 1;
+            }
+
+            // Use the `position` when its in valid range; otherwise defer to TabModel
+            // implementation, which will place it at the first unpinned position.
+            int firstNonPinnedTabIndex = tabModel.findFirstNonPinnedTabIndex();
+            if (position <= firstNonPinnedTabIndex) {
+                return position;
             }
 
             // TabModel will handle the index.
