@@ -723,9 +723,8 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     if (chrome_exit_code == CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
         chrome_exit_code == content::RESULT_CODE_NORMAL_EXIT) {
       return Status(kSessionNotCreated,
-                    "probably user data directory is already in use, "
-                    "please specify a unique value for --user-data-dir "
-                    "argument, or don't use --user-data-dir");
+                    "Chrome instance exited. "
+                    "Examine ChromeDriver verbose log to determine the cause.");
     }
     std::string termination_reason =
         internal::GetTerminationReason(chrome_status);

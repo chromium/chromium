@@ -7582,8 +7582,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
     # the http client in the CommandExecutor has a relatively small timeout for
     # HTTP requests.
     # S/A: //chrome/teest/chromedriver/client/command_executor.py
-    self.assertIn('probably user data directory is already in use',
-                  str(exception))
+    self.assertIn('Chrome instance exited', str(exception))
 
   def testHelpfulErrorMessage_NormalExitIfTimedOut(self):
     """If Chrome times out to start, we should provide a useful error message.
