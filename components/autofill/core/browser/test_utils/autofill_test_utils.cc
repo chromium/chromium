@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1532,6 +1533,46 @@ CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id) {
   *bnpl_option->add_eligible_price_range() = eligible_price_range;
 
   return payment_instrument_creation_option;
+}
+
+namespace {
+
+// Verifies that the histogram `histogram_name` has a single sample with the
+// value `expectation.value()` if `expectation` has a value, or no samples
+// otherwise.
+void VerifySingleBooleanSampleOrEmpty(
+    const base::HistogramTester& histogram_tester,
+    const std::string& histogram_name,
+    std::optional<bool> expectation) {
+  if (expectation.has_value()) {
+    histogram_tester.ExpectUniqueSample(histogram_name, expectation.value(), 1);
+  } else {
+    histogram_tester.ExpectTotalCount(histogram_name, 0);
+  }
+}
+
+}  // namespace
+
+void VerifySingleSubmissionKeyMetricExpectations(
+    const base::HistogramTester& histogram_tester,
+    absl::string_view form_type_name,
+    const SingleSubmissionKeyMetricExpectations& expectations) {
+  VerifySingleBooleanSampleOrEmpty(
+      histogram_tester,
+      base::StrCat({"Autofill.KeyMetrics.FillingReadiness.", form_type_name}),
+      expectations.readiness);
+  VerifySingleBooleanSampleOrEmpty(
+      histogram_tester,
+      base::StrCat({"Autofill.KeyMetrics.FillingAcceptance.", form_type_name}),
+      expectations.acceptance);
+  VerifySingleBooleanSampleOrEmpty(
+      histogram_tester,
+      base::StrCat({"Autofill.KeyMetrics.FillingAssistance.", form_type_name}),
+      expectations.assistance);
+  VerifySingleBooleanSampleOrEmpty(
+      histogram_tester,
+      base::StrCat({"Autofill.KeyMetrics.FillingCorrectness.", form_type_name}),
+      expectations.correctness);
 }
 
 }  // namespace test

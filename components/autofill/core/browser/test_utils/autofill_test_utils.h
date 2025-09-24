@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -610,6 +611,21 @@ BnplIssuer GetTestUnlinkedBnplIssuer();
 // fake data using `id` as the `PaymentInstrumentCreationOption.id`.
 sync_pb::PaymentInstrumentCreationOption
 CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id);
+
+// For the key metrics as used for different data types, this struct allows to
+// define expectations. The values are marked optional. `std::nullopt` means
+// that no value was recorded to the histogram.
+struct SingleSubmissionKeyMetricExpectations {
+  std::optional<bool> readiness;
+  std::optional<bool> acceptance;
+  std::optional<bool> assistance;
+  std::optional<bool> correctness;
+};
+
+void VerifySingleSubmissionKeyMetricExpectations(
+    const base::HistogramTester& histogram_tester,
+    absl::string_view form_type_name,
+    const SingleSubmissionKeyMetricExpectations& expectations);
 
 }  // namespace test
 }  // namespace autofill
