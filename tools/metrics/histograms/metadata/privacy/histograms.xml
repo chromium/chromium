@@ -931,8 +931,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -974,8 +973,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.SendAttemptTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1014,8 +1012,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1026,7 +1023,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
-    units="ms" expires_after="2025-11-01">
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1038,8 +1035,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.Error"
-    enum="SqliteLoggedResultCode" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    enum="SqliteLoggedResultCode" expires_after="2026-05-01">
+  <owner>alexmt@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <summary>
     Records SQLite database errors encountered by the aggregation service's
@@ -1051,7 +1048,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2025-11-01">
+    expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1062,8 +1059,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.RequestDelayFromUpdatedReportTime2"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1081,7 +1077,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoredRequestsPerReportingOrigin"
-    units="requests" expires_after="2025-10-26">
+    units="requests" expires_after="2026-04-26">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1093,7 +1089,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
-    enum="Boolean" expires_after="2025-10-26">
+    enum="Boolean" expires_after="2026-04-26">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1105,8 +1101,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.UnscheduledRequests.AssemblyTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1121,8 +1116,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.UnscheduledRequests.DelayFromOriginalReportTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1138,8 +1132,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.UnscheduledRequests.SendAttemptTime"
-    units="ms" expires_after="2025-11-01">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
