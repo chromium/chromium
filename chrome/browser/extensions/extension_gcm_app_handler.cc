@@ -20,8 +20,11 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

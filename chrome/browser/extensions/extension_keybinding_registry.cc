@@ -17,6 +17,7 @@
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
@@ -26,6 +27,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

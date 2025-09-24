@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/extension_management_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::schema_constants {
 
 // Some values below are used by the policy component to filter out policy

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_DISABLED_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_DISABLED_UI_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
 
 namespace extensions {
