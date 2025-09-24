@@ -168,23 +168,11 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   // to the end of the tracks, then looping around from the first track to the
   // auto-placement cursor. This gives priority to openings right after the
   // auto-placement cursor.
-  GridSpan item_span = GridSpan::TranslatedDefiniteGridSpan(
-      auto_placement_cursor_, auto_placement_cursor_ + span_size);
+  GridSpan item_span = masonry_item.is_auto_placed
+                           ? GridSpan::TranslatedDefiniteGridSpan(0, span_size)
+                           : initial_span;
 
-  // TODO(celestepan): Start iterating through tracks starting from the
-  // beginning of the track collection instead of after the auto-placement
-  // cursor.
-  //
-  // `max_iterations` is the maximum number of iterations we should need to
-  // perform to check all possible track spans of size `span_size`.
-  wtf_size_t iterations = 0;
-  wtf_size_t max_iterations = running_positions_.size() - span_size + 1;
-  do {
-    ++iterations;
-    if (item_span.EndLine() > running_positions_.size()) {
-      item_span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
-    }
-
+  while (item_span.EndLine() <= running_positions_.size()) {
     // If the used track size of the item doesn't match the total track size of
     // the span OR if the item we are attempting to place has a user-specified
     // position that doesn't match the current span, move onto the next span.
@@ -232,7 +220,7 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
     }
 
     ++item_span;
-  } while (iterations <= max_iterations);
+  }
 
   // TODO(celestepan): Determine if we need a faster data structure for
   // erasing items.

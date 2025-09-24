@@ -4,7 +4,7 @@
 .grid {
     display: grid;
     grid-template-rows: 10px 10px 20px 15px 5px;
-    grid-auto-flow: dense;
+    grid-auto-flow: column;
 }
 .flex {
     display: flex;
@@ -15,8 +15,8 @@
   <p>Ensure that dense-packing with multi-span items are placed into tracks with the same used size and the same number of tracks, and priority is given to tracks closest after the auto-placement cursor.</p>
   <div class="grid">
     <div class="flex">
-      <div style="background: lightskyblue; width: 20px; height: 20px; transform: translateY(20px);" >
-        1
+      <div style="background: yellow; width: 20px; height: 20px;" >
+        4
       </div>
       <div style="background: lightblue; width: 20px; height: 60px;" >
         2
@@ -25,8 +25,8 @@
         3
       </div>
     </div>
-    <div style="background: yellow; width: 20px; height: 20px; transform: translateY(30px);" >
-      4
+    <div style="background: lightskyblue; width: 20px; height: 20px; transform: translateY(10px);" >
+      1
     </div>
   </div>
 </body>
