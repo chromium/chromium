@@ -43,6 +43,10 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/types.h"
     export *
   }
+  module asm_generic_unistd_h {
+    header "$sysroot/asm-generic/unistd.h"
+    export *
+  }
   module asm_bitsperlong_h {
     header "$sysroot/aarch64-linux-gnu/asm/bitsperlong.h"
     export *
@@ -73,6 +77,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module asm_types_h {
     header "$sysroot/aarch64-linux-gnu/asm/types.h"
+    export *
+  }
+  module asm_unistd_h {
+    header "$sysroot/aarch64-linux-gnu/asm/unistd.h"
     export *
   }
   module endian_h {
@@ -172,6 +180,10 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/aarch64-linux-gnu/sys/select.h"
     export *
   }
+  module sys_syscall_h {
+    header "$sysroot/aarch64-linux-gnu/sys/syscall.h"
+    export *
+  }
   module sys_time_h {
     header "$sysroot/aarch64-linux-gnu/sys/time.h"
     export *
@@ -190,6 +202,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module sys_user_h {
     header "$sysroot/aarch64-linux-gnu/sys/user.h"
+    export *
+  }
+  module syscall_h {
+    header "$sysroot/syscall.h"
     export *
   }
   module threads_h {
