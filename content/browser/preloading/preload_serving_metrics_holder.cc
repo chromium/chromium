@@ -45,17 +45,15 @@ void PreloadServingMetricsHolder::AddPrefetchMatchMetrics(
 
   // Do nothing if `PreloadServingMetrics` is already taken.
   //
+  // This happens if a prerender that is potentially matching to a prefetch
+  // while the prefetch is blocking the prerender.
+  // `PrerenderHost::OnWillBeCancelled()` took the `PreloadServingMetrics`, and
+  // this path is reached when something of the prefetch is updated and unblocks
+  // the prerender.
+  //
   // For more details, see
   // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
   if (!preload_serving_metrics_) {
-    // Determine which caller of `Take()` is causing this case.
-    //
-    // TODO(crbug.com/444634885): Remove this once we check the callers.
-    CHECK(caller_of_take_.has_value());
-    SCOPED_CRASH_KEY_NUMBER("PreloadServingMetrics", "AddPMMAfterTake",
-                            static_cast<int>(caller_of_take_.value()));
-    base::debug::DumpWithoutCrashing();
-
     return;
   }
 
@@ -73,12 +71,9 @@ void PreloadServingMetricsHolder::SetPrerenderInitialPreloadServingMetrics(
       std::move(prerender_initial_preload_serving_metrics);
 }
 
-std::unique_ptr<PreloadServingMetrics> PreloadServingMetricsHolder::Take(
-    CallerOfTake caller) {
+std::unique_ptr<PreloadServingMetrics> PreloadServingMetricsHolder::Take() {
   // Ensures not to take it twice.
   CHECK(preload_serving_metrics_);
-
-  caller_of_take_ = caller;
 
   return std::move(preload_serving_metrics_);
 }

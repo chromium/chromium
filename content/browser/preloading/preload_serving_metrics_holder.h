@@ -20,14 +20,6 @@ namespace content {
 class CONTENT_EXPORT PreloadServingMetricsHolder final
     : public NavigationHandleUserData<PreloadServingMetricsHolder> {
  public:
-  // This is used for debugging purpose. For more details, see
-  // https://crbug.com/444634885
-  enum class CallerOfTake {
-    kPreloadServingMetricsCapsule = 0,
-    kPrerenderHostDidFinishNavigation = 1,
-    kPrerenderHostOnWillBeCancelled = 2,
-  };
-
   // The callback is called when `PreloadServingMetricsHolder` is destroyed,
   // with the argument of the underlying `PreloadServingMetrics` at that time
   // (which can be nullptr).
@@ -66,7 +58,7 @@ class CONTENT_EXPORT PreloadServingMetricsHolder final
   //
   // For more details, see
   // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#life-of-PreloadServingMetrics
-  std::unique_ptr<PreloadServingMetrics> Take(CallerOfTake caller);
+  std::unique_ptr<PreloadServingMetrics> Take();
 
  private:
   friend NavigationHandleUserData;
@@ -75,8 +67,6 @@ class CONTENT_EXPORT PreloadServingMetricsHolder final
 
   // Non null until `Take()` is called.
   std::unique_ptr<PreloadServingMetrics> preload_serving_metrics_;
-
-  std::optional<CallerOfTake> caller_of_take_ = std::nullopt;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };

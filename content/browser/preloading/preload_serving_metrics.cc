@@ -264,8 +264,7 @@ PreloadServingMetricsCapsuleImpl::TakeFromNavigationHandle(
   return base::WrapUnique(new PreloadServingMetricsCapsuleImpl(
       PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
           navigation_handle)
-          ->Take(PreloadServingMetricsHolder::CallerOfTake::
-                     kPreloadServingMetricsCapsule)));
+          ->Take()));
 }
 
 PreloadServingMetricsCapsuleImpl::PreloadServingMetricsCapsuleImpl(
