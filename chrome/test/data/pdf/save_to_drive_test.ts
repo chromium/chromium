@@ -521,6 +521,31 @@ const tests = [
 
     chrome.test.succeed();
   },
+
+  async function testStateResetsAfterAccountChooserCanceled() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+
+    privateProxy.sendUploadInProgress(0, 100);
+    await microtasksFinished();
+    privateProxy.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.UPLOAD_FAILED,
+      errorType: SaveToDriveErrorType.ACCOUNT_CHOOSER_CANCELED,
+    });
+    await microtasksFinished();
+    chrome.test.assertFalse(bubble.$.dialog.open);
+
+    // Click on the save button again and make sure it initiates a new upload
+    // and the bubble is not open.
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+    controls.$.save.click();
+    await privateProxy.whenCalled('saveToDrive');
+    chrome.test.assertFalse(bubble.$.dialog.open);
+    chrome.test.assertEq(1, privateProxy.getCallCount('saveToDrive'));
+
+    chrome.test.succeed();
+  },
 ];
 
 chrome.test.runTests(tests);

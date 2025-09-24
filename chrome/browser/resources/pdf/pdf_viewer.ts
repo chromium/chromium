@@ -195,6 +195,7 @@ function convertSaveToDriveProgressToSaveToDriveState(
     case SaveToDriveErrorType.OAUTH_ERROR:
       return SaveToDriveState.SESSION_TIMEOUT_ERROR;
     case SaveToDriveErrorType.ACCOUNT_CHOOSER_CANCELED:
+      return SaveToDriveState.UNINITIALIZED;
     case SaveToDriveErrorType.PARENT_FOLDER_SELECTION_FAILED:
       return SaveToDriveState.UNKNOWN_ERROR;
     default:
