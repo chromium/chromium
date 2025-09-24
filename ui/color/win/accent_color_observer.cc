@@ -72,6 +72,27 @@ base::CallbackListSubscription AccentColorObserver::Subscribe(
   return callbacks_.Add(std::move(callback));
 }
 
+bool AccentColorObserver::ShouldUseAccentColorForWindowFrame() const {
+  if (should_use_accent_color_for_window_frame_for_testing_.has_value()) {
+    return should_use_accent_color_for_window_frame_for_testing_.value();
+  }
+
+  if (!dwm_key_) {
+    return false;
+  }
+
+  DWORD color_prevalence = 0;
+  return dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
+             ERROR_SUCCESS &&
+         color_prevalence == 1;
+}
+
+void AccentColorObserver::SetShouldUseAccentColorForWindowFrameForTesting(
+    bool use_accent_color) {
+  should_use_accent_color_for_window_frame_for_testing_ = use_accent_color;
+  callbacks_.Notify();
+}
+
 void AccentColorObserver::SetAccentColorForTesting(
     std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
@@ -97,16 +118,9 @@ void AccentColorObserver::OnDwmKeyUpdated() {
 }
 
 void AccentColorObserver::UpdateAccentColors() {
-  // Ignore accent colors unless color prevalence is enabled.
   accent_color_.reset();
   accent_color_inactive_.reset();
   accent_border_color_.reset();
-  if (DWORD color_prevalence = 0;
-      dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) !=
-          ERROR_SUCCESS ||
-      color_prevalence != 1) {
-    return;
-  }
 
   // Windows will set unsupported accent color values in the registry, while
   // coercing the value to another color. Use the UISettings API to ensure we

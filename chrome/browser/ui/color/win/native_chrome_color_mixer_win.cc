@@ -72,17 +72,20 @@ FrameTransforms GetSystemFrameTransforms(const ui::ColorProviderKey& key) {
   if (ShouldDefaultThemeUseMicaTitlebar()) {
     frame_transforms = GetMicaFrameTransforms(key);
   }
-  const auto* const accent_color_observer = ui::AccentColorObserver::Get();
-  if (const std::optional<SkColor> dwm_frame_color =
-          accent_color_observer->accent_color()) {
-    frame_transforms.active = {dwm_frame_color.value()};
-    const std::optional<SkColor> dwm_inactive_frame_color =
-        accent_color_observer->accent_color_inactive();
-    frame_transforms.inactive =
-        dwm_inactive_frame_color.has_value()
-            ? ui::ColorTransform(dwm_inactive_frame_color.value())
-            : ui::HSLShift({dwm_frame_color.value()},
-                           GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
+  if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
+      accent_color_observer->ShouldUseAccentColorForWindowFrame()) {
+    if (const std::optional<SkColor> dwm_frame_color =
+            accent_color_observer->accent_color()) {
+      frame_transforms.active = {dwm_frame_color.value()};
+      const std::optional<SkColor> dwm_inactive_frame_color =
+          accent_color_observer->accent_color_inactive();
+      frame_transforms.inactive =
+          dwm_inactive_frame_color.has_value()
+              ? ui::ColorTransform(dwm_inactive_frame_color.value())
+              : ui::HSLShift(
+                    {dwm_frame_color.value()},
+                    GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
+    }
   }
   return frame_transforms;
 }
@@ -110,9 +113,12 @@ void EnsureColorProviderCacheWillBeResetWhenAccentColorStateChanges() {
 }
 
 SkColor GetAccentBorderColor() {
-  if (const std::optional<SkColor> accent_border_color =
-          ui::AccentColorObserver::Get()->accent_border_color()) {
-    return accent_border_color.value();
+  if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
+      accent_color_observer->ShouldUseAccentColorForWindowFrame()) {
+    if (const std::optional<SkColor> accent_border_color =
+            accent_color_observer->accent_border_color()) {
+      return accent_border_color.value();
+    }
   }
 
   // Windows 10 pre-version 1809 native active borders default to white, while

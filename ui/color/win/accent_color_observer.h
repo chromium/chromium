@@ -40,7 +40,13 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
     return accent_border_color_;
   }
 
+  // Returns whether accent colors should be used for window frames.
+  // Even when false, a non-null accent color may be used to theme secondary UI
+  // or supplied to web content.
+  bool ShouldUseAccentColorForWindowFrame() const;
+
   void SetAccentColorForTesting(std::optional<SkColor> accent_color);
+  void SetShouldUseAccentColorForWindowFrameForTesting(bool use_accent_color);
 
  private:
   void OnDwmKeyUpdated();
@@ -54,6 +60,8 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   std::optional<SkColor> accent_color_;
   std::optional<SkColor> accent_color_inactive_;
   std::optional<SkColor> accent_border_color_;
+
+  std::optional<bool> should_use_accent_color_for_window_frame_for_testing_;
 };
 
 }  // namespace ui

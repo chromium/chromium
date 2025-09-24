@@ -14,8 +14,13 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/win/accent_color_observer.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 using NativeChromeColorMixerWinBrowserTest = InProcessBrowserTest;
+
+namespace {
+constexpr SkColor kAccentColor = SK_ColorMAGENTA;
+}  // namespace
 
 // Tests that windows header colors track the accent color when configured to
 // use DWM frame colors.
@@ -28,17 +33,17 @@ IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
   auto* const theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   theme_service->UseDeviceTheme(false);
-  const auto get_header_color = [&]() {
+  const auto get_header_color = [&] {
     return browser()->window()->GetColorProvider()->GetColor(
         ui::kColorSysHeader);
   };
-  const auto initial_header_color = get_header_color();
+  const SkColor initial_header_color = get_header_color();
 
   // Configure the observer to use a specific accent color. The header color
   // should be unaffected as the theme service has not been set to follow the
   // device theme.
-  constexpr SkColor kAccentColor = SK_ColorMAGENTA;
   accent_color_observer->SetAccentColorForTesting(kAccentColor);
+  accent_color_observer->SetShouldUseAccentColorForWindowFrameForTesting(true);
   EXPECT_EQ(initial_header_color, get_header_color());
 
   // Configure the theme service to follow the device theme. The header color
@@ -51,4 +56,39 @@ IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
   // following the device theme.
   accent_color_observer->SetAccentColorForTesting(std::nullopt);
   EXPECT_EQ(initial_header_color, get_header_color());
+}
+
+IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
+                       AccentColorAvailableWithFrameColorDisabled) {
+  // Test that accent colors are present in Chrome UI even when DWM frame colors
+  // are disabled, but not used for titlebar/frame colors.
+  ui::MockOsSettingsProvider mock_provider;
+  mock_provider.SetAccentColor(kAccentColor);
+
+  auto* const accent_color_observer = ui::AccentColorObserver::Get();
+  // Disable DWM frame colors (simulates registry with ColorPrevalence=0)
+  accent_color_observer->SetShouldUseAccentColorForWindowFrameForTesting(false);
+
+  auto* const theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->profile());
+  theme_service->UseDeviceTheme(true);
+
+  // Accent color should be available for internal Chrome UI and web content
+  // with DWM frame colors disabled.
+  EXPECT_EQ(kAccentColor,
+            ui::NativeTheme::GetInstanceForNativeUi()->user_color());
+  EXPECT_EQ(kAccentColor, ui::NativeTheme::GetInstanceForWeb()->user_color());
+
+  const auto get_header_color = [&] {
+    return browser()->window()->GetColorProvider()->GetColor(
+        ui::kColorSysHeader);
+  };
+  const SkColor header_color_without_prevalence = get_header_color();
+  accent_color_observer->SetShouldUseAccentColorForWindowFrameForTesting(true);
+  const SkColor header_color_with_prevalence = get_header_color();
+
+  // When DWM frame colors are disabled, the header color uses the default
+  // value. When enabled, the header color is computed from the accent color.
+  // The two header colors should be different.
+  EXPECT_NE(header_color_without_prevalence, header_color_with_prevalence);
 }
