@@ -74,9 +74,6 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -122,6 +119,12 @@
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace {
@@ -2712,6 +2715,7 @@ BackForwardCacheImpl& NavigationControllerImpl::GetBackForwardCache() {
   return back_forward_cache_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
 NavigationEntryScreenshotCache*
 NavigationControllerImpl::GetNavigationEntryScreenshotCache() {
   CHECK(frame_tree_->is_primary());
@@ -2726,6 +2730,7 @@ NavigationControllerImpl::GetNavigationEntryScreenshotCache() {
   }
   return nav_entry_screenshot_cache_.get();
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // It is not safe to call DiscardPendingEntry while NavigateToEntry is in
@@ -4502,10 +4507,12 @@ void NavigationControllerImpl::SetActive(bool is_active) {
   if (is_active && needs_reload_)
     LoadIfNecessary();
 
+#if BUILDFLAG(IS_ANDROID)
   if (frame_tree_->is_primary();
       auto* cache = GetNavigationEntryScreenshotCache()) {
     cache->SetVisible(is_active);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void NavigationControllerImpl::LoadIfNecessary() {

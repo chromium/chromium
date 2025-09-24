@@ -17,7 +17,11 @@ namespace content {
 
 // static
 bool BackForwardTransitionAnimationManager::AreBackForwardTransitionsEnabled() {
+#if BUILDFLAG(IS_ANDROID)
   return NavigationTransitionConfig::AreBackForwardTransitionsEnabled();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

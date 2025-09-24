@@ -518,6 +518,7 @@ void Navigator::DidNavigate(
     was_within_same_document = false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
   // This is the last point where the browser still embeds the `viz::Surface` of
   // the old page. The next `WebContentsImpl::DidNavigateMainFramePreCommit()`
   // will hide the old View, and the
@@ -528,6 +529,7 @@ void Navigator::DidNavigate(
         CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
             *navigation_request, /*did_receive_commit_ack=*/true);
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     // Run tasks that must execute just before the commit.
