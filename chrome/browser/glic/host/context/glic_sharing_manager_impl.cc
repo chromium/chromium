@@ -267,6 +267,10 @@ void GlicSharingManagerImpl::SubscribeToPinCandidates(
                                                 std::move(observer));
 }
 
+base::WeakPtr<GlicSharingManager> GlicSharingManagerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void GlicSharingManagerImpl::GetContextFromTabImpl(
     tabs::TabInterface* tab,
     const mojom::GetTabContextOptions& options,

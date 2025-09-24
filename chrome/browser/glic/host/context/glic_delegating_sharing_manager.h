@@ -71,6 +71,7 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
   GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
+  base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
   // Sets the sharing manager delegate. Notifies all subscribers for all
   // callback list subscriptions.
@@ -121,6 +122,8 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   base::CallbackListSubscription tab_pinning_status_changed_callback_;
   base::CallbackListSubscription pinned_tabs_changed_callback_;
   base::CallbackListSubscription pinned_tab_data_changed_callback_;
+
+  base::WeakPtrFactory<GlicDelegatingSharingManager> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

@@ -8,6 +8,7 @@
 
 namespace glic {
 
+GlicDelegatingSharingManager::GlicDelegatingSharingManager() = default;
 GlicDelegatingSharingManager::~GlicDelegatingSharingManager() = default;
 
 base::CallbackListSubscription
@@ -154,6 +155,10 @@ void GlicDelegatingSharingManager::SubscribeToPinCandidates(
   // TODO(b:444463509): support dynamic subscription streaming for handling
   // per-instance sharing manager delegation (e.g. attach/detach).
   NOTREACHED();
+}
+
+base::WeakPtr<GlicSharingManager> GlicDelegatingSharingManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GlicDelegatingSharingManager::SetDelegate(

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_CONTEXT_GLIC_SHARING_MANAGER_H_
 
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -133,6 +134,8 @@ class GlicSharingManager {
   virtual void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) = 0;
+
+  virtual base::WeakPtr<GlicSharingManager> GetWeakPtr() = 0;
 };
 
 }  // namespace glic

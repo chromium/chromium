@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARING_MANAGER_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
@@ -103,6 +104,8 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
 
+  base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
+
  private:
   void GetContextFromTabImpl(
       tabs::TabInterface* tab,
@@ -118,6 +121,8 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   // Enables providing sharing-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
+
+  base::WeakPtrFactory<GlicSharingManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
