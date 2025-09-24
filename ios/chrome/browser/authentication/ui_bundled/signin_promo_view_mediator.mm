@@ -947,7 +947,7 @@ id<SystemIdentity> GetDisplayedIdentity(
            base::NotFatalUntil::M144)
       << base::SysNSStringToUTF8([self description]);
   CHECK_NE(self.signinInProgress, signin::Tribool::kFalse,
-           base::NotFatalUntil::M144)
+           base::NotFatalUntil::M146)
       << base::SysNSStringToUTF8([self description]);
   self.signinInProgress = signin::Tribool::kFalse;
 }
