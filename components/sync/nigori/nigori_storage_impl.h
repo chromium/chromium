@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_NIGORI_NIGORI_STORAGE_IMPL_H_
 #define COMPONENTS_SYNC_NIGORI_NIGORI_STORAGE_IMPL_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "components/sync/nigori/nigori_storage.h"
@@ -35,7 +37,7 @@ class NigoriStorageImpl : public NigoriStorage {
 
  private:
   base::FilePath path_;
-  std::unique_ptr<::os_crypt_async::Encryptor> encryptor_;
+  const std::unique_ptr<::os_crypt_async::Encryptor> encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

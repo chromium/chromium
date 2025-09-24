@@ -84,8 +84,10 @@ TEST_F(NigoriStorageImplTest, ShouldBeAbleToRestoreAfterWriteWithSync) {
   NigoriStorageImpl reader_storage(GetFilePath(), /*encryptor=*/nullptr);
   std::optional<sync_pb::NigoriLocalData> read_data =
       reader_storage.RestoreData();
+
   EXPECT_NE(read_data, std::nullopt);
   EXPECT_EQ(read_data->SerializeAsString(), write_data.SerializeAsString());
+
   OSCryptMocker::TearDown();
 }
 

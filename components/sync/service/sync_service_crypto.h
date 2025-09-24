@@ -22,6 +22,10 @@
 #include "components/sync/service/data_type_encryption_handler.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace syncer {
 
 // This class functions as mostly independent component of SyncService that
@@ -80,6 +84,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // null and must outlive the `this` or the Reset() call. Should not be called
   // second time, unless Reset() is called first.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
+
+  // Must be called once an encryptor is available, before any method that
+  // encrypts/decrypts is called. May be called with nullptr.
+  void SetEncryptor(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Creates a proxy observer object that will post calls to this thread.
   std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
@@ -164,10 +172,22 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // successful attempt.
   void MaybeSetDecryptionKeyFromBootstrapToken();
 
+  // Reads Nigori from bootstrap token. Returns nullptr if bootstrap token empty
+  // or corrupted.
+  std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
+      const std::string& bootstrap_token) const;
+
+  // Serializes `nigori` as bootstrap token. Returns empty string in case of
+  // crypto/serialization failures.
+  std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori);
+
   const raw_ptr<Delegate> delegate_;
 
   // Never null and guaranteed to outlive us.
   const raw_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
+
+  // May be null if OSCryptAsync is not used.
+  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   // All the mutable state is wrapped in a struct so that it can be easily
   // reset to its default values.

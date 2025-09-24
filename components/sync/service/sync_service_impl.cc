@@ -545,27 +545,30 @@ void SyncServiceImpl::TryStart() {
     // runs (e.g. if the user signs out and back in again). This is safe, as
     // OSCryptAsync will just queue the callbacks and run them once the
     // encryptor is available. The first call to TryStartImpl() that succeeds
-    // will create the engine, and subsequent ones will be no-ops.
-    os_crypt_async_->GetInstance(
-        base::BindOnce(&SyncServiceImpl::OnEncryptorGottenForTryStart,
-                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+    // will create the engine, and subsequent ones will be no-ops. Two
+    // instances of Encryptor are needed, one for SyncServiceImpl and one for
+    // SyncEngine.
+    auto on_encryptors_gotten =
+        base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now());
+
+    auto barrier = base::BarrierCallback<os_crypt_async::Encryptor>(
+        2, std::move(on_encryptors_gotten));
+
+    os_crypt_async_->GetInstance(barrier);
+    os_crypt_async_->GetInstance(barrier);
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&SyncServiceImpl::TryStartImpl,
-                                  weak_factory_.GetWeakPtr(),
-                                  base::TimeTicks::Now(), std::nullopt));
+        FROM_HERE,
+        base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                       std::vector<os_crypt_async::Encryptor>()));
   }
-}
-
-void SyncServiceImpl::OnEncryptorGottenForTryStart(
-    base::TimeTicks try_start_time,
-    os_crypt_async::Encryptor encryptor) {
-  TryStartImpl(try_start_time, std::move(encryptor));
 }
 
 void SyncServiceImpl::TryStartImpl(
     base::TimeTicks try_start_time,
-    std::optional<os_crypt_async::Encryptor> encryptor) {
+    std::vector<os_crypt_async::Encryptor> encryptors) {
   base::Time deferral_time;
   std::swap(deferring_first_start_since_, deferral_time);
 
@@ -573,12 +576,17 @@ void SyncServiceImpl::TryStartImpl(
     return;
   }
 
-  std::unique_ptr<os_crypt_async::Encryptor> encryptor_ptr;
-  if (encryptor) {
+  std::unique_ptr<os_crypt_async::Encryptor> engine_encryptor;
+  if (!encryptors.empty()) {
+    CHECK_EQ(encryptors.size(), 2u);
     base::UmaHistogramTimes("Sync.EncryptorReceivedTime",
                             base::TimeTicks::Now() - try_start_time);
-    encryptor_ptr =
-        std::make_unique<os_crypt_async::Encryptor>(std::move(*encryptor));
+    crypto_.SetEncryptor(std::make_unique<os_crypt_async::Encryptor>(
+        std::move(encryptors.at(0))));
+    engine_encryptor = std::make_unique<os_crypt_async::Encryptor>(
+        std::move(encryptors.at(1)));
+  } else {
+    crypto_.SetEncryptor(nullptr);
   }
 
   if (!deferral_time.is_null()) {
@@ -636,7 +644,7 @@ void SyncServiceImpl::TryStartImpl(
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
 
-  params.encryptor = std::move(encryptor_ptr);
+  params.encryptor = std::move(engine_encryptor);
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();

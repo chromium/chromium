@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
@@ -23,7 +26,6 @@
 namespace syncer {
 
 namespace {
-
 
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls
 // to another task runner.
@@ -112,53 +114,6 @@ bool CheckNigoriAgainstPendingKeys(const Nigori& nigori,
   return decrypt_result;
 }
 
-// Reads Nigori from bootstrap token. Returns nullptr if bootstrap token empty
-// or corrupted.
-std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
-    const std::string& bootstrap_token) {
-  if (bootstrap_token.empty()) {
-    return nullptr;
-  }
-
-  std::string decoded_key;
-  if (!base::Base64Decode(bootstrap_token, &decoded_key)) {
-    return nullptr;
-  }
-
-  std::string decrypted_key;
-  if (!OSCrypt::DecryptString(decoded_key, &decrypted_key)) {
-    return nullptr;
-  }
-
-  sync_pb::NigoriKey key;
-  if (!key.ParseFromString(decrypted_key)) {
-    return nullptr;
-  }
-
-  return Nigori::CreateByImport(key.deprecated_user_key(), key.encryption_key(),
-                                key.mac_key());
-}
-
-// Serializes `nigori` as bootstrap token. Returns empty string in case of
-// crypto/serialization failures.
-std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori) {
-  sync_pb::NigoriKey proto;
-  nigori.ExportKeys(proto.mutable_deprecated_user_key(),
-                    proto.mutable_encryption_key(), proto.mutable_mac_key());
-
-  const std::string serialized_key = proto.SerializeAsString();
-  if (serialized_key.empty()) {
-    return std::string();
-  }
-
-  std::string encrypted_key;
-  if (!OSCrypt::EncryptString(serialized_key, &encrypted_key)) {
-    return std::string();
-  }
-
-  return base::Base64Encode(encrypted_key);
-}
-
 }  // namespace
 
 SyncServiceCrypto::State::State() = default;
@@ -176,6 +131,12 @@ SyncServiceCrypto::SyncServiceCrypto(
 }
 
 SyncServiceCrypto::~SyncServiceCrypto() = default;
+
+void SyncServiceCrypto::SetEncryptor(
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  encryptor_ = std::move(encryptor);
+}
 
 void SyncServiceCrypto::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -841,6 +802,67 @@ void SyncServiceCrypto::MaybeSetDecryptionKeyFromBootstrapToken() {
   }
 
   SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
+}
+
+std::unique_ptr<Nigori> SyncServiceCrypto::ReadNigoriFromBootstrapToken(
+    const std::string& bootstrap_token) const {
+  if (bootstrap_token.empty()) {
+    return nullptr;
+  }
+
+  std::string decoded_key;
+  if (!base::Base64Decode(bootstrap_token, &decoded_key)) {
+    return nullptr;
+  }
+
+  std::string decrypted_key;
+  bool decryption_result;
+  if (base::FeatureList::IsEnabled(kSyncUseOsCryptAsync)) {
+    // If the feature is enabled, the encryptor must be available.
+    CHECK(encryptor_);
+    decryption_result = encryptor_->DecryptString(decoded_key, &decrypted_key);
+  } else {
+    decryption_result = OSCrypt::DecryptString(decoded_key, &decrypted_key);
+  }
+  if (!decryption_result) {
+    return nullptr;
+  }
+
+  sync_pb::NigoriKey key;
+  if (!key.ParseFromString(decrypted_key)) {
+    return nullptr;
+  }
+
+  return Nigori::CreateByImport(key.deprecated_user_key(), key.encryption_key(),
+                                key.mac_key());
+}
+
+std::string SyncServiceCrypto::SerializeNigoriAsBootstrapToken(
+    const Nigori& nigori) {
+  sync_pb::NigoriKey proto;
+  nigori.ExportKeys(proto.mutable_deprecated_user_key(),
+                    proto.mutable_encryption_key(), proto.mutable_mac_key());
+
+  const std::string serialized_key = proto.SerializeAsString();
+  if (serialized_key.empty()) {
+    return std::string();
+  }
+
+  std::string encrypted_key;
+  bool encryption_result;
+  if (base::FeatureList::IsEnabled(kSyncUseOsCryptAsync)) {
+    // If the feature is enabled, the encryptor must be available.
+    CHECK(encryptor_);
+    encryption_result =
+        encryptor_->EncryptString(serialized_key, &encrypted_key);
+  } else {
+    encryption_result = OSCrypt::EncryptString(serialized_key, &encrypted_key);
+  }
+  if (!encryption_result) {
+    return std::string();
+  }
+
+  return base::Base64Encode(encrypted_key);
 }
 
 }  // namespace syncer

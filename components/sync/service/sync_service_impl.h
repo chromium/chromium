@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/configure_reason.h"
@@ -54,7 +55,6 @@ class SharedURLLoaderFactory;
 
 namespace os_crypt_async {
 class OSCryptAsync;
-class Encryptor;
 }  // namespace os_crypt_async
 
 namespace syncer {
@@ -358,14 +358,9 @@ class SyncServiceImpl : public SyncService,
   // necessary before the engine starts.
   void TryStart();
 
-  // The `try_start_time` is used for metrics and is the time when `TryStart()`
-  // was called.
-  void OnEncryptorGottenForTryStart(base::TimeTicks try_start_time,
-                                    os_crypt_async::Encryptor encryptor);
-
   // The actual synchronous implementation of TryStart().
   void TryStartImpl(base::TimeTicks try_start_time,
-                    std::optional<os_crypt_async::Encryptor> encryptor);
+                    std::vector<os_crypt_async::Encryptor> encryptors);
 
   // Whether sync has been authenticated with an account ID.
   bool IsSignedIn() const;
