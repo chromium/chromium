@@ -494,7 +494,8 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyConditionalMediationUkm) {
   context.DomWindow().document()->View()->ResetUkmAggregatorForTesting();
 
   auto* request_options = CredentialRequestOptions::Create();
-  request_options->setMediation("conditional");
+  request_options->setMediation(
+      V8CredentialMediationRequirement::Enum::kConditional);
   auto* public_key_request_options =
       PublicKeyCredentialRequestOptions::Create();
   public_key_request_options->setTimeout(10000);
@@ -560,7 +561,7 @@ TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
   idp2->setClientId("clientId");
 
   identity->setProviders({idp1, idp2});
-  identity->setMode("active");
+  identity->setMode(V8IdentityCredentialRequestOptionsMode::Enum::kActive);
   options->setIdentity(identity);
 
   auto promise = AuthenticationCredentialsContainer::credentials(

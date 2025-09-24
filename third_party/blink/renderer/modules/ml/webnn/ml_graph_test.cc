@@ -2027,8 +2027,8 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
         BuildConstant(scope.GetScriptState(), builder, {1, 3, 1, 1},
                       V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* conv2d_options = MLConv2dOptions::Create();
-    conv2d_options->setInputLayout("nchw");
-    conv2d_options->setFilterLayout("oihw");
+    conv2d_options->setInputLayout(V8MLInputOperandLayout::Enum::kNchw);
+    conv2d_options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOihw);
     auto* conv2d =
         builder->conv2d(input, constant, conv2d_options, exception_state);
     ASSERT_THAT(conv2d, testing::NotNull());
@@ -2114,8 +2114,8 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
         BuildConstant(scope.GetScriptState(), builder, {1, 3, 1, 1},
                       V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* conv2d_options = MLConv2dOptions::Create();
-    conv2d_options->setInputLayout("nchw");
-    conv2d_options->setFilterLayout("oihw");
+    conv2d_options->setInputLayout(V8MLInputOperandLayout::Enum::kNchw);
+    conv2d_options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOihw);
     auto* conv2d =
         builder->conv2d(input, constant, conv2d_options, exception_state);
     ASSERT_THAT(conv2d, testing::NotNull());
@@ -2253,8 +2253,8 @@ TEST_F(MLGraphTest, MLQDQDetectionTest) {
     ASSERT_THAT(transpose1_output_operand, testing::NotNull());
 
     auto* conv2d_options = MLConv2dOptions::Create();
-    conv2d_options->setInputLayout("nhwc");
-    conv2d_options->setFilterLayout("ohwi");
+    conv2d_options->setInputLayout(V8MLInputOperandLayout::Enum::kNhwc);
+    conv2d_options->setFilterLayout(V8MLConv2dFilterOperandLayout::Enum::kOhwi);
 
     auto* conv2d_output_operand =
         builder->conv2d(transpose0_output_operand, transpose1_output_operand,

@@ -200,7 +200,7 @@ TEST_F(ResizeObserverUnitTest, TestBoxOverwrite) {
   main_resource.Finish();
 
   ResizeObserverOptions* border_box_option = ResizeObserverOptions::Create();
-  border_box_option->setBox("border-box");
+  border_box_option->setBox(V8ResizeObserverBoxOptions::Enum::kBorderBox);
 
   ResizeObserver::Delegate* delegate =
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
@@ -231,7 +231,7 @@ TEST_F(ResizeObserverUnitTest, TestNonBoxTarget) {
   main_resource.Finish();
 
   ResizeObserverOptions* border_box_option = ResizeObserverOptions::Create();
-  border_box_option->setBox("border-box");
+  border_box_option->setBox(V8ResizeObserverBoxOptions::Enum::kBorderBox);
 
   Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
 

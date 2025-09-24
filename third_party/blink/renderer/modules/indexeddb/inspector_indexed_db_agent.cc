@@ -413,7 +413,7 @@ IDBTransaction* TransactionForDatabase(
       MakeGarbageCollected<V8UnionStringOrStringSequence>(object_store_name);
   IDBTransactionOptions* options =
       MakeGarbageCollected<IDBTransactionOptions>();
-  options->setDurability("relaxed");
+  options->setDurability(V8IDBTransactionDurability::Enum::kRelaxed);
   auto v8_mode = V8IDBTransactionMode::Create(mode);
   if (!v8_mode) {
     return nullptr;

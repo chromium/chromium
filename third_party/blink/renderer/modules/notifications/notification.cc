@@ -370,10 +370,10 @@ v8::LocalVector<v8::Value> Notification::actions(
 
     switch (actions[i]->type) {
       case mojom::blink::NotificationActionType::BUTTON:
-        action->setType("button");
+        action->setType(V8NotificationActionType::Enum::kButton);
         break;
       case mojom::blink::NotificationActionType::TEXT:
-        action->setType("text");
+        action->setType(V8NotificationActionType::Enum::kText);
         break;
       default:
         NOTREACHED() << "Unknown action type: " << actions[i]->type;

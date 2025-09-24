@@ -572,7 +572,7 @@ ReadableStreamBYOBReader* ReadableStream::GetBYOBReaderForTesting(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   auto* options = ReadableStreamGetReaderOptions::Create();
-  options->setMode("byob");
+  options->setMode(V8ReadableStreamReaderMode::Enum::kByob);
   auto* result = getReader(script_state, options, exception_state);
   if (!result)
     return nullptr;

@@ -294,7 +294,7 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
   EXPECT_FALSE(stream->IsDisturbed());
 
   auto* options = ReadableStreamGetReaderOptions::Create();
-  options->setMode("byob");
+  options->setMode(V8ReadableStreamReaderMode::Enum::kByob);
 
   ReadableStreamBYOBReader* reader = nullptr;
   if (const auto* result =
@@ -337,7 +337,7 @@ TEST_F(ReadableStreamTest, BYOBReaderWithMinOption) {
   ASSERT_TRUE(stream);
 
   auto* options = ReadableStreamGetReaderOptions::Create();
-  options->setMode("byob");
+  options->setMode(V8ReadableStreamReaderMode::Enum::kByob);
 
   ReadableStreamBYOBReader* reader = nullptr;
   if (const auto* result =
@@ -390,7 +390,7 @@ TEST_F(ReadableStreamTest, BYOBReadMinOptionIgnoredWhenFeatureDisabled) {
   ASSERT_TRUE(stream);
 
   auto* options = ReadableStreamGetReaderOptions::Create();
-  options->setMode("byob");
+  options->setMode(V8ReadableStreamReaderMode::Enum::kByob);
 
   ReadableStreamBYOBReader* reader = nullptr;
   if (const auto* result =

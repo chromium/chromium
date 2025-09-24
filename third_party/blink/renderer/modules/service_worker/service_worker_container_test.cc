@@ -395,7 +395,7 @@ TEST_F(ServiceWorkerContainerTest,
   {
     ScriptState::Scope script_scope(GetScriptState());
     RegistrationOptions* options = RegistrationOptions::Create();
-    options->setUpdateViaCache("none");
+    options->setUpdateViaCache(V8ServiceWorkerUpdateViaCache::Enum::kNone);
     container->registerServiceWorkerWithoutTrustedTypes(
         GetScriptState(), "/x/y/worker.js", options);
 
@@ -421,7 +421,7 @@ TEST_F(ServiceWorkerContainerTest, Register_TypeOptionDelegatesToProvider) {
   {
     ScriptState::Scope script_scope(GetScriptState());
     RegistrationOptions* options = RegistrationOptions::Create();
-    options->setType("module");
+    options->setType(V8WorkerType::Enum::kModule);
     container->registerServiceWorkerWithoutTrustedTypes(
         GetScriptState(), "/x/y/worker.js", options);
 
