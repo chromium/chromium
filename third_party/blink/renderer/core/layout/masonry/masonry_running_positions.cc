@@ -157,16 +157,13 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   DCHECK(is_dense_packing_);
 
   const auto grid_axis_direction = track_collection.Direction();
-  const wtf_size_t span_size =
-      masonry_item.resolved_position.Span(grid_axis_direction).SpanSize();
-  const LayoutUnit used_track_size = CalculateUsedTrackSize(
-      masonry_item.resolved_position.Span(grid_axis_direction));
+  const GridSpan& initial_span =
+      masonry_item.resolved_position.Span(grid_axis_direction);
+  const wtf_size_t span_size = initial_span.SpanSize();
+  const LayoutUnit used_track_size = CalculateUsedTrackSize(initial_span);
 
   EligibleTrackOpeningPath highest_eligible_track_opening_result;
 
-  // TODO(celestepan): If the item has a specified track, only check the
-  // openings within that track.
-  //
   // Find the highest eligible opening iterating from the auto-placement cursor
   // to the end of the tracks, then looping around from the first track to the
   // auto-placement cursor. This gives priority to openings right after the
@@ -174,6 +171,10 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   GridSpan item_span = GridSpan::TranslatedDefiniteGridSpan(
       auto_placement_cursor_, auto_placement_cursor_ + span_size);
 
+  // TODO(celestepan): Start iterating through tracks starting from the
+  // beginning of the track collection instead of after the auto-placement
+  // cursor.
+  //
   // `max_iterations` is the maximum number of iterations we should need to
   // perform to check all possible track spans of size `span_size`.
   wtf_size_t iterations = 0;
@@ -183,7 +184,12 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
     if (item_span.EndLine() > running_positions_.size()) {
       item_span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
     }
-    if (CalculateUsedTrackSize(item_span) != used_track_size) {
+
+    // If the used track size of the item doesn't match the total track size of
+    // the span OR if the item we are attempting to place has a user-specified
+    // position that doesn't match the current span, move onto the next span.
+    if (CalculateUsedTrackSize(item_span) != used_track_size ||
+        (!masonry_item.is_auto_placed && item_span != initial_span)) {
       ++item_span;
       continue;
     }

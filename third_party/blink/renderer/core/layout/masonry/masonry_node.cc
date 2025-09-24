@@ -19,6 +19,10 @@ void AdjustMasonryItemSpan(GridItemData& masonry_item,
   GridSpan item_span = line_resolver.ResolveGridPositionsFromStyle(
       masonry_item.node.Style(), grid_axis_direction);
 
+  if (item_span.IsIndefinite()) {
+    masonry_item.is_auto_placed = true;
+  }
+
   masonry_item.resolved_position.SetSpan(item_span, grid_axis_direction);
 }
 

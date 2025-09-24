@@ -253,6 +253,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 
   bool has_subgridded_columns : 1 {false};
   bool has_subgridded_rows : 1 {false};
+  bool is_auto_placed : 1 {false};
   bool is_considered_for_column_sizing : 1 {true};
   bool is_considered_for_row_sizing : 1 {true};
   bool is_opposite_direction_in_root_grid_columns : 1 {false};
