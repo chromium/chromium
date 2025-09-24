@@ -6,6 +6,8 @@
 import unittest
 from commit import Commit
 from datetime import datetime
+from test_data import FAKE_GIT_LOG
+from gitutils import split_log_into_commits
 
 
 class CommitTest(unittest.TestCase):
@@ -112,6 +114,13 @@ Date:   Tue Sep 2 15:30:00 2025 -0700
         # and should be selected.
         self.assertEqual(commit.modified_path, 'ios/chrome/browser')
 
+    def test_analyse_line_file_change_with_realistic_spacing(self):
+        """Tests a realistic git log line with varied spacing."""
+        line = ' ios/chrome/browser/ui/file1.mm    |   10 +++++-----'
+        self.commit.analyse_line(line)
+        self.assertEqual(self.commit.total_change, 10)
+        self.assertIn('ios/chrome/browser/ui', self.commit.files_stats)
+
     def test_extend_paths_aggregation(self):
         """Tests that extend_paths correctly aggregates changes up the tree."""
         self.commit.files_stats = {
@@ -151,6 +160,25 @@ Date:   Tue Sep 2 15:30:00 2025 -0700
         commit.analyse_line(line)
         self.assertEqual(commit.total_change, 10)
         self.assertIn('ios/chrome/browser/ui/test', commit.files_stats)
+
+    def test_analyse_line_unindented_reviewer_is_parsed(self):
+        """Tests that a reviewer line with no indentation is parsed."""
+        line = 'Reviewed-by: Reviewer One <reviewer.one@chromium.org>'
+        self.commit.analyse_line(line)
+        self.assertIn('reviewer.one', self.commit.reviewers)
+
+    def test_commit_parsing_with_fake_git_log(self):
+        """Tests the Commit class with a realistic commit message."""
+        # The first commit from our test corpus.
+        commits = split_log_into_commits(FAKE_GIT_LOG)
+        self.assertGreater(len(commits), 0, "FAKE_GIT_LOG was not split")
+        commit_text = commits[0]
+
+        commit = Commit(commit_text)
+        self.assertEqual(commit.author, 'user_a')
+        self.assertIn('user_b', commit.reviewers)
+        self.assertEqual(commit.total_change, 10)
+        self.assertIn('ios/chrome/browser/feature', commit.files_stats)
 
 
 if __name__ == '__main__':

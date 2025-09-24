@@ -15,7 +15,7 @@ from filters import avoid_commit
 # or like the following in case that stat=500 is not enough:
 # .../browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.mm    | 2 +
 FILE_CHANGE_REGEX = r"""
-    ^ \s                         # Start of the line with a space.
+    ^ \s*                        # Start of the line with one or more spaces.
     (ios|\.{3})                  # Root folder ('ios' or '...').
     \/                           # Path separator.
     (\w+\/)*                     # Zero or more directory segments.
@@ -144,7 +144,7 @@ class Commit:
         if line.startswith('Author:'):
             self.author = self.extract_username_from_line(line)
             return
-        if line.startswith('    Reviewed-by:'):
+        if 'Reviewed-by:' in line:
             username = self.extract_username_from_line(line)
             self.reviewers.append(username)
             return
