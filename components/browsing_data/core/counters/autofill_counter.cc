@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/pref_names.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -162,10 +161,7 @@ void AutofillCounter::ReportResultIfReady() {
   if (num_suggestions_.has_value()) {
     auto reported_result = std::make_unique<AutofillResult>(
         this, *num_suggestions_, num_credit_cards_, num_addresses_,
-        num_entities_,
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? false
-            : sync_tracker_.IsSyncActive());
+        num_entities_, sync_tracker_.IsSyncActive());
     ReportResult(std::move(reported_result));
   }
 }

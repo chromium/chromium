@@ -22,6 +22,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -359,7 +360,11 @@ std::u16string GetCounterTextFromResult(
       }
     }
 
-    bool synced = autofill_result->is_sync_enabled();
+    // TODO(crbug.com/40066949): Clean this up once Sync-the-feature is gone on
+    // all platforms.
+    bool synced = !base::FeatureList::IsEnabled(
+                      syncer::kReplaceSyncPromosWithSignInPromos) &&
+                  autofill_result->is_sync_enabled();
 
     // TODO(crbug.com/371539581): Exclude payment methods from this part,
     // because it can be attributed as "synced", while payment methods are
