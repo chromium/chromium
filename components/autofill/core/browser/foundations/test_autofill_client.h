@@ -63,6 +63,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -631,6 +632,19 @@ class TestAutofillClientTemplate : public T {
     return identity_test_env_;
   }
 
+  // Allows to return an injected SMS OTP backend which can be set using the
+  // `set_sms_otp_backend`. If no backend is injected, the test client will
+  // revert to the one provided by the real AutofillClient.
+  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const override {
+    return injected_sms_otp_backend_ ? injected_sms_otp_backend_.get()
+                                     : T::GetSmsOtpBackend();
+  }
+
+  void set_sms_otp_backend(
+      std::unique_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend) {
+    injected_sms_otp_backend_ = std::move(sms_otp_backend);
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -652,6 +666,7 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       device_authenticator_ = nullptr;
+  std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FieldClassificationModelHandler>

@@ -16,4 +16,6 @@ OtpFetchReply& OtpFetchReply::operator=(const OtpFetchReply&) = default;
 
 OtpFetchReply::~OtpFetchReply() = default;
 
+SmsOtpBackend::~SmsOtpBackend() = default;
+
 }  // namespace one_time_tokens

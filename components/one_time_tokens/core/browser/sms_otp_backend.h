@@ -33,6 +33,8 @@ struct OtpFetchReply {
 // Abstract interface for fetching OTPs sent via SMS.
 class SmsOtpBackend {
  public:
+  virtual ~SmsOtpBackend();
+
   // Queries the backend for recently received OTPs.
   virtual void RetrieveSmsOtp(
       base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
