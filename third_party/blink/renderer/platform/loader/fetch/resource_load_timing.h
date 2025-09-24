@@ -78,7 +78,7 @@ class PLATFORM_EXPORT ResourceLoadTiming
   base::TimeTicks WorkerRouterEvaluationStart() const {
     return worker_router_evaluation_start_;
   }
-  base::TimeTicks WorkerCacheLokupStart() const {
+  base::TimeTicks WorkerCacheLookupStart() const {
     return worker_cache_lookup_start_;
   }
   base::TimeTicks WorkerReady() const { return worker_ready_; }
