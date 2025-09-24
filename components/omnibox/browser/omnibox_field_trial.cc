@@ -27,6 +27,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/search.h"
@@ -680,6 +681,16 @@ bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service) {
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
       aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint);
+}
+
+bool IsAimStarterPackEnabled(
+    const AimEligibilityService* aim_eligibility_service) {
+  // AI starter pack should be available if any AI omnibox feature is available.
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+             aim_eligibility_service,
+             omnibox_feature_configs::Toolbelt::kOmniboxToolbelt) ||
+         AimEligibilityService::GenericKillSwitchFeatureCheck(
+             aim_eligibility_service, omnibox::kAiModeStartPack);
 }
 
 // Rich autocompletion.

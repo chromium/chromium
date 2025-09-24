@@ -410,11 +410,17 @@ bool IsOnFocusZeroSuggestEnabledInContext(
 bool IsHideSuggestionGroupHeadersEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
-// Returns whether the deterministic AIM shortcut action in typed state is enabled.
-bool IsDeterministicAimActionInTypedStateEnabled(AutocompleteProviderClient* client);
+// Returns whether the deterministic AIM shortcut action in typed state is
+// enabled.
+bool IsDeterministicAimActionInTypedStateEnabled(
+    AutocompleteProviderClient* client);
 
 // Returns whether AIM page action in Omnibox is enabled.
 bool IsAimOmniboxEntrypointEnabled(
+    const AimEligibilityService* aim_eligibility_service);
+
+// Returns whether AIM starter pack is enabled.
+bool IsAimStarterPackEnabled(
     const AimEligibilityService* aim_eligibility_service);
 
 // Rich autocompletion.
@@ -723,7 +729,6 @@ inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
 // Mobile Parity update -->
 inline constexpr base::FeatureParam<bool> kMobileParityRetrieveBuiltinFavicon{
     &omnibox::kOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false};
-
 
 inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
     &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};
