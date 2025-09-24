@@ -100,7 +100,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
-// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
 - (void)FormDatatestWildcardBlocklist {
   GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
                                 /*block_url=*/true),
@@ -115,7 +114,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
-// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
 - (void)FormDatatestNTPIsNotBlocked {
   GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
                                 /*block_url=*/true),
@@ -128,7 +126,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page is blocked when the URLBlocklist policy is set to block a
 // specific URL.
-// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
 - (void)FormDatatestExplicitBlocklist {
   GREYAssertTrue(
       SetPolicyValue(base::Value(base::Value::List().Append("*/echo")),
@@ -144,7 +141,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that pages are loaded when explicitly listed in the URLAllowlist.
-// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
 - (void)testAllowlist {
   // The URLBlocklistPolicyHandler will discard policy updates that occur while
   // it is already computing a new blocklist, so wait between calls to set new
