@@ -152,7 +152,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."fend-core:1.5.7"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."find-msvc-tools:0.1.1"]
+[policy."find-msvc-tools:0.1.2"]
 criteria = []
 
 [policy."fixed_decimal:0.7.0"]
