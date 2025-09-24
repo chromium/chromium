@@ -1173,7 +1173,7 @@ void Transaction::TimeoutFired() {
   base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.HasConnection",
                             has_connection);
   if (has_connection) {
-    base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.Connected",
+    base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.IsConnected",
                               connection_->IsConnected());
     base::UmaHistogramCounts10000(
         "IndexedDB.TransactionTimeout.NumTransactionsInConnection",
