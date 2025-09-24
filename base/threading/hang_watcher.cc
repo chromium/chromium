@@ -277,16 +277,16 @@ const char kGpuProcessCompositorThreadLogLevelParam[] =
 const char kGpuProcessThreadPoolLogLevelParam[] =
     "gpu_process_threadpool_log_level";
 constexpr base::FeatureParam<int> kGPUProcessIOThreadLogLevel{
-    &kEnableHangWatcher, kGpuProcessIoThreadLogLevelParam,
+    &kEnableHangWatcherOnGpuProcess, kGpuProcessIoThreadLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessMainThreadLogLevel{
-    &kEnableHangWatcher, kGpuProcessMainThreadLogLevelParam,
+    &kEnableHangWatcherOnGpuProcess, kGpuProcessMainThreadLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessCompositorThreadLogLevel{
-    &kEnableHangWatcher, kGpuProcessCompositorThreadLogLevelParam,
+    &kEnableHangWatcherOnGpuProcess, kGpuProcessCompositorThreadLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};
 constexpr base::FeatureParam<int> kGPUProcessThreadPoolLogLevel{
-    &kEnableHangWatcher, kGpuProcessThreadPoolLogLevelParam,
+    &kEnableHangWatcherOnGpuProcess, kGpuProcessThreadPoolLogLevelParam,
     static_cast<int>(LoggingLevel::kUmaOnly)};
 
 // Renderer process.
@@ -452,15 +452,10 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
   DCHECK(g_main_thread_log_level == LoggingLevel::kNone);
   DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
-  bool enable_hang_watcher = base::FeatureList::IsEnabled(kEnableHangWatcher);
-
-  // The issue related to invalid magic signature in the GPU WatchDog is fixed
-  // (https://crbug.com/1297760), we can now rollout HangWatcher on the GPU
-  // process.
-  if (process_type == ProcessType::kGPUProcess &&
-      !base::FeatureList::IsEnabled(kEnableHangWatcherOnGpuProcess)) {
-    enable_hang_watcher = false;
-  }
+  bool enable_hang_watcher =
+      (process_type == ProcessType::kGPUProcess
+           ? base::FeatureList::IsEnabled(kEnableHangWatcherOnGpuProcess)
+           : base::FeatureList::IsEnabled(kEnableHangWatcher));
 
   g_use_hang_watcher.store(enable_hang_watcher, std::memory_order_relaxed);
 

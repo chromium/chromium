@@ -32,7 +32,6 @@ void WaitForThreadRunnerToStart(VizCompositorThreadRunnerImpl& thread_runner) {
 }
 
 TEST(VizCompositorThreadRunnerImplTest, HangWatcherDisabledByDefault) {
-  ScopedFeatureList enable_hang_watcher(base::kEnableHangWatcher);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   VizCompositorThreadRunnerImpl thread_runner;
   WaitForThreadRunnerToStart(thread_runner);
@@ -40,7 +39,6 @@ TEST(VizCompositorThreadRunnerImplTest, HangWatcherDisabledByDefault) {
 }
 
 TEST(VizCompositorThreadRunnerImplTest, HangWatcherFeatureEnabled) {
-  ScopedFeatureList enable_hang_watcher(base::kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(base::kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   VizCompositorThreadRunnerImpl thread_runner;
@@ -50,7 +48,6 @@ TEST(VizCompositorThreadRunnerImplTest, HangWatcherFeatureEnabled) {
 
 TEST(VizCompositorThreadRunnerImplTest,
      HangWatcherStopsWatchingWhenCompositorThreadExists) {
-  ScopedFeatureList enable_hang_watcher(base::kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(base::kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
 
@@ -66,7 +63,6 @@ TEST(VizCompositorThreadRunnerImplTest,
 }
 
 TEST(VizCompositorThreadRunnerImplTest, HangWatcherWatchesCompositorThread) {
-  ScopedFeatureList enable_hang_watcher(base::kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(base::kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
 

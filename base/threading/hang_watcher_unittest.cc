@@ -39,6 +39,7 @@
 namespace base {
 namespace {
 
+using ::base::test::FeatureRefAndParams;
 using ::base::test::ManualHangWatcher;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
@@ -174,7 +175,6 @@ TEST(HangWatcherGpuEnabledTest, HangWatcherDisabledOnGpuProcessByDefault) {
 }
 
 TEST(HangWatcherGpuEnabledTest, HangWatcherEnabledOnGpuProcessViaFeature) {
-  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
   EXPECT_TRUE(hang_watcher.IsEnabled());
@@ -417,7 +417,6 @@ TEST_F(HangWatcherTest, HistogramsLoggedOnBrowserProcessHang) {
 }
 
 TEST_F(HangWatcherTest, HistogramsLoggedOnGpuProcessHang) {
-  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
   HistogramTester histogram_tester;
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
@@ -634,7 +633,7 @@ TEST_F(HangWatcherTest, HistogramsLoggedWithShutdownFlag) {
 struct HangWatcherLogLevelTestParam {
   std::string test_name;
   HangWatcher::ProcessType process_type;
-  FieldTrialParams feature_params;
+  std::vector<FeatureRefAndParams> enabled_features;
   bool emit_crashes = false;
   int expected_hang_count;
 };
@@ -646,98 +645,139 @@ INSTANTIATE_TEST_SUITE_P(
         // Browser process.
         {.test_name = "BrowserCrashReportsEnabledByDefaultIfEmitCrashTrue",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .enabled_features = {FeatureRefAndParams(kEnableHangWatcher, {})},
          .emit_crashes = true,
          .expected_hang_count = 1},
         {.test_name = "BrowserCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
+         .enabled_features = {FeatureRefAndParams(kEnableHangWatcher, {})},
          .expected_hang_count = 0},
         {.test_name = "BrowserCrashReportsDisabledAtLogLevel1",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
-         .feature_params = {{kBrowserProcessUiThreadLogLevelParam, "1"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kBrowserProcessUiThreadLogLevelParam, "1"}})},
          .expected_hang_count = 0},
         {.test_name = "BrowserCrashReportsEnabledForUiThread",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
-         .feature_params = {{kBrowserProcessUiThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kBrowserProcessUiThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "BrowserCrashReportsEnabledForIoThread",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
-         .feature_params = {{kBrowserProcessIoThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kBrowserProcessIoThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "BrowserCrashReportsAlwaysDisabledForThreadPoolThreads",
          .process_type = HangWatcher::ProcessType::kBrowserProcess,
-         .feature_params = {{kBrowserProcessThreadPoolLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kBrowserProcessThreadPoolLogLevelParam, "2"}})},
          .expected_hang_count = 1},
 
         // GPU process.
         {.test_name = "GpuCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
+         .enabled_features =
+             {FeatureRefAndParams(kEnableHangWatcherOnGpuProcess, {})},
          .expected_hang_count = 0},
         {.test_name = "GpuCrashReportsDisabledAtLogLevel1",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
-         .feature_params = {{kGpuProcessMainThreadLogLevelParam, "1"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcherOnGpuProcess,
+             {{kGpuProcessMainThreadLogLevelParam, "1"}})},
          .expected_hang_count = 0},
         {.test_name = "GpuCrashReportsEnabledForMainThread",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
-         .feature_params = {{kGpuProcessMainThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcherOnGpuProcess,
+             {{kGpuProcessMainThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "GpuCrashReportsEnabledForIoThread",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
-         .feature_params = {{kGpuProcessIoThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcherOnGpuProcess,
+             {{kGpuProcessIoThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "GpuCrashReportsEnabledForCompositorThread",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
-         .feature_params = {{kGpuProcessCompositorThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcherOnGpuProcess,
+             {{kGpuProcessCompositorThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "GpuCrashReportsEnabledForThreadPoolThreads",
          .process_type = HangWatcher::ProcessType::kGPUProcess,
-         .feature_params = {{kGpuProcessThreadPoolLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcherOnGpuProcess,
+             {{kGpuProcessThreadPoolLogLevelParam, "2"}})},
          .expected_hang_count = 1},
 
         // Renderer process.
         {.test_name = "RendererCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
+         .enabled_features = {FeatureRefAndParams(kEnableHangWatcher, {})},
          .expected_hang_count = 0},
         {.test_name = "RendererCrashReportsDisabledAtLogLevel1",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
-         .feature_params = {{kRendererProcessMainThreadLogLevelParam, "1"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kRendererProcessMainThreadLogLevelParam, "1"}})},
          .expected_hang_count = 0},
         {.test_name = "RendererCrashReportsEnabledForMainThread",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
-         .feature_params = {{kRendererProcessMainThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kRendererProcessMainThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "RendererCrashReportsEnabledForIoThread",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
-         .feature_params = {{kRendererProcessIoThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kRendererProcessIoThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "RendererCrashReportsEnabledForCompositorThread",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
-         .feature_params = {{kRendererProcessCompositorThreadLogLevelParam,
-                             "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kRendererProcessCompositorThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "RendererCrashReportsEnabledForThreadPoolThreads",
          .process_type = HangWatcher::ProcessType::kRendererProcess,
-         .feature_params = {{kRendererProcessThreadPoolLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kRendererProcessThreadPoolLogLevelParam, "2"}})},
          .expected_hang_count = 1},
 
         // Utility process.
         {.test_name = "UtilityCrashReportsDisabledByDefault",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
+         .enabled_features = {FeatureRefAndParams(kEnableHangWatcher, {})},
          .expected_hang_count = 0},
         {.test_name = "UtilityCrashReportsDisabledAtLogLevel1",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
-         .feature_params = {{kUtilityProcessMainThreadLogLevelParam, "1"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kUtilityProcessMainThreadLogLevelParam, "1"}})},
          .expected_hang_count = 0},
         {.test_name = "UtilityCrashReportsEnabledForMainThread",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
-         .feature_params = {{kUtilityProcessMainThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kUtilityProcessMainThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "UtilityCrashReportsEnabledForIoThread",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
-         .feature_params = {{kUtilityProcessIoThreadLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kUtilityProcessIoThreadLogLevelParam, "2"}})},
          .expected_hang_count = 1},
         {.test_name = "UtilityCrashReportsEnabledForThreadPoolThreads",
          .process_type = HangWatcher::ProcessType::kUtilityProcess,
-         .feature_params = {{kUtilityProcessThreadPoolLogLevelParam, "2"}},
+         .enabled_features = {FeatureRefAndParams(
+             kEnableHangWatcher,
+             {{kUtilityProcessThreadPoolLogLevelParam, "2"}})},
          .expected_hang_count = 1},
     }),
     [](const auto& info) { return info.param.test_name; });
@@ -746,10 +786,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(HangWatcherLogLevelTest, CrashLogLevels) {
   SingleThreadTaskEnvironment task_env(TaskEnvironment::TimeSource::MOCK_TIME);
   ScopedFeatureList enable_hang_watcher;
-  enable_hang_watcher.InitWithFeaturesAndParameters(
-      {{kEnableHangWatcher, GetParam().feature_params},
-       {kEnableHangWatcherOnGpuProcess, {}}},
-      {});
+  enable_hang_watcher.InitWithFeaturesAndParameters(GetParam().enabled_features,
+                                                    {});
   ManualHangWatcher hang_watcher(GetParam().process_type,
                                  GetParam().emit_crashes);
 
@@ -780,7 +818,6 @@ TEST_F(HangWatcherTest, Hang) {
 
 // Tests that hangs don't get recorded for the GPU process by default.
 TEST_F(HangWatcherTest, GpuProcessHangReportingDisabledByDefault) {
-  ScopedFeatureList enable_hang_watcher(kEnableHangWatcher);
   ScopedFeatureList enable_gpu_watcher(kEnableHangWatcherOnGpuProcess);
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
 
@@ -797,8 +834,8 @@ TEST_F(HangWatcherTest, GpuProcessHangReportingDisabledByDefault) {
 TEST_F(HangWatcherTest, GpuProcessHangReportingCanBeEnabled) {
   ScopedFeatureList enable_hang_watcher;
   enable_hang_watcher.InitWithFeaturesAndParameters(
-      {{kEnableHangWatcher, {{kGpuProcessMainThreadLogLevelParam, "2"}}},
-       {kEnableHangWatcherOnGpuProcess, {}}},
+      {{kEnableHangWatcherOnGpuProcess,
+        {{kGpuProcessMainThreadLogLevelParam, "2"}}}},
       {});
   ManualHangWatcher hang_watcher(HangWatcher::ProcessType::kGPUProcess);
 
