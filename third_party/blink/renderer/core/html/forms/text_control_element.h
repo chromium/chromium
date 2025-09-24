@@ -158,6 +158,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // without serializing the text. `offset_map` can be nullptr.
   std::pair<wtf_size_t, bool> AnalyzeInnerEditorValue(
       HeapHashMap<Member<const Text>, unsigned>* offset_map) const;
+  // Returns a selection index value for the specified position.
+  unsigned IndexForPosition(const Position& editor_position) const;
 
   Node* CreatePlaceholderBreakElement() const;
   // Returns true if the specified node was created by

@@ -534,6 +534,11 @@ unsigned TextControlElement::IndexForPosition(HTMLElement* inner_editor,
   return index;
 }
 
+unsigned TextControlElement::IndexForPosition(
+    const Position& editor_position) const {
+  return IndexForPosition(InnerEditorElement(), editor_position);
+}
+
 bool TextControlElement::ShouldApplySelectionCache() const {
   const auto& doc = GetDocument();
   return doc.FocusedElement() != this || doc.ShouldUpdateSelectionAfterLayout();

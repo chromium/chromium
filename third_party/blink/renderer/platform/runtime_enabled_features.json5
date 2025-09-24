@@ -941,6 +941,11 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // crbug.com/446475645
+      name: "CaretPositionFromPointTextareaFix",
+      status: "stable",
+    },
+    {
       // Changes the caret's affinity to upstream, preventing spaces
       // from appearing in the previous line when typing at the start
       // of a wrapped line. See https://crbug.com/40677155
