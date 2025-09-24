@@ -22,9 +22,6 @@ namespace {
 // Corner radius applied to the content view.
 const CGFloat kContentViewCornerRadius = 10.88;
 
-// Corner radius applied to the highlight border view.
-const CGFloat kHighlightCornerRadius = 16.0;
-
 // Top margin between contentView and borderWrapperView.
 const CGFloat kContentViewTopMargin = 12.0;
 
@@ -121,7 +118,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     self.borderWrapperView = [[UIView alloc] init];
     self.borderWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
     self.borderWrapperView.backgroundColor = UIColor.clearColor;
-    self.borderWrapperView.layer.cornerRadius = kHighlightCornerRadius;
+    self.borderWrapperView.layer.cornerRadius = 2 * kContentViewCornerRadius;
     self.borderWrapperView.layer.masksToBounds = YES;
     [self.contentView addSubview:self.borderWrapperView];
 
