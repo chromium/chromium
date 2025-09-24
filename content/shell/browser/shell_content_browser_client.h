@@ -245,9 +245,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   // For GetShellContentBrowserClientInstances().
   friend class ContentBrowserTestContentBrowserClient;
 
-  // Needed so that content_shell can use fieldtrial_testing_config.
-  void SetUpFieldTrials();
-
   // Returns the list of ShellContentBrowserClients ordered by time created.
   // If a test overrides ContentBrowserClient, this list will have more than
   // one item.

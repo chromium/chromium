@@ -41,6 +41,35 @@ if (is_ios) {
   import("//build/ios/extension_bundle_data.gni")
 }
 
+# Exposes a free function to enable the field trial testing config.
+# This allows testing new features enabled in the Dev/Beta/Stable channels.
+#
+# This is part of its own target. The goal is to isolate the internal
+# dependencies it requires, which are not part of the normal layering of
+# content. This avoids granting other sources access to these dependencies.
+#
+# The field trial testing config is enabled by default in unbranded builds.
+# It can be configured at runtime using:
+# --enable-field-trial-config
+# --disable-field-trial-config
+static_library("setup_field_trials") {
+  testonly = true
+
+  public = [ "../public/test/setup_field_trials.h" ]
+  public_deps = []  # No transitive dependencies.
+
+  sources = [ "setup_field_trials.cc" ]
+  deps = [
+    "//cc/base",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs",
+    "//components/variations:test_support",
+    "//components/variations/service",
+    "//content/public/common",
+  ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
@@ -537,6 +566,7 @@ static_library("test_support") {
   ]
 
   public_deps = [
+    ":setup_field_trials",
     ":test_interfaces",
     "//components/attribution_reporting:test_support",
     "//components/download/public/common:test_support",
