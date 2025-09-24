@@ -218,7 +218,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.Dialog.TabsAfterRemovalCount"
-    units="tabs" expires_after="2025-11-02">
+    units="tabs" expires_after="2026-03-01">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -270,7 +270,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.SuggestedTabShownCount"
-    units="count" expires_after="2025-11-02">
+    units="count" expires_after="2026-03-01">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
