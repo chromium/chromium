@@ -16,10 +16,12 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,6 +52,19 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
+class MockAutofillClient : public TestAutofillClient {
+ public:
+  MockAutofillClient() = default;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(
+      void,
+      GetAiPageContent,
+      (base::OnceCallback<void(
+           std::optional<optimization_guide::proto::AnnotatedPageContent>)>),
+      (override));
+};
+
 class MockAmountExtractionManager : public AmountExtractionManager {
  public:
   explicit MockAmountExtractionManager(BrowserAutofillManager* autofill_manager)
@@ -65,16 +80,17 @@ class MockAmountExtractionManager : public AmountExtractionManager {
 
 class AmountExtractionManagerTest
     : public Test,
-      public WithTestAutofillClientDriverManager<TestAutofillClient,
+      public WithTestAutofillClientDriverManager<MockAutofillClient,
                                                  MockAutofillDriver> {
  public:
   AmountExtractionManagerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
-                              features::kAutofillEnableBuyNowPayLaterSyncing,
-                              features::kAutofillEnableBuyNowPayLater},
-        /*disabled_features=*/{
-            features::kAutofillEnableAmountExtractionTesting});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kAutofillEnableAmountExtraction,
+        features::kAutofillEnableBuyNowPayLaterSyncing,
+        features::kAutofillEnableBuyNowPayLater};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kAutofillEnableAmountExtractionTesting};
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  protected:
@@ -112,7 +128,7 @@ class AmountExtractionManagerTest
   }
 
   void FakeAmountExtractionTimeout() {
-    amount_extraction_manager_->SetSearchRequestPendingForTesting(true);
+    test_api(*amount_extraction_manager_).SetSearchRequestPending(true);
     amount_extraction_manager_->OnTimeoutReached();
   }
 
@@ -194,8 +210,9 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
-  amount_extraction_manager_->SetSearchRequestPendingForTesting(
-      /*search_request_pending*/ true);
+  test_api(*amount_extraction_manager_)
+      .SetSearchRequestPending(
+          /*search_request_pending*/ true);
   EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(
                   /*is_autofill_payments_enabled=*/true,
                   /*should_suppress_suggestions=*/false,
@@ -633,7 +650,7 @@ TEST_F(AmountExtractionManagerTest, TimeoutExpiresBeforeResponse) {
   mock_amount_extraction_manager_ =
       std::make_unique<MockAmountExtractionManager>(&autofill_manager());
   EXPECT_FALSE(
-      mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
+      test_api(*mock_amount_extraction_manager_).GetSearchRequestPending());
   EXPECT_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillOnce(
           [this](const std::u16string&, const std::u16string&, uint32_t,
@@ -656,7 +673,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
   mock_amount_extraction_manager_ =
       std::make_unique<MockAmountExtractionManager>(&autofill_manager());
   EXPECT_FALSE(
-      mock_amount_extraction_manager_->GetSearchRequestPendingForTesting());
+      test_api(*mock_amount_extraction_manager_).GetSearchRequestPending());
   EXPECT_CALL(autofill_driver(), ExtractLabeledTextNodeValue)
       .WillOnce(
           [this](const std::u16string&, const std::u16string&, uint32_t,
@@ -706,6 +723,85 @@ TEST_F(AmountExtractionManagerTest,
 
   FakeAmountExtractionTimeout();
 }
+
+// This test checks AutofillClient::GetAiPageContent is called when no page
+// content is present and not currently fetching.
+TEST_F(AmountExtractionManagerTest, FetchAiPageContent_StartsFetching) {
+  EXPECT_FALSE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+  EXPECT_EQ(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent);
+  amount_extraction_manager_->FetchAiPageContent();
+
+  EXPECT_TRUE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+}
+
+// This test checks AutofillClient::GetAiPageContent is not called when a fetch
+// is already in progress.
+TEST_F(AmountExtractionManagerTest, FetchAiPageContent_AlreadyFetching) {
+  test_api(*amount_extraction_manager_).SetIsFetchingAiPageContent(true);
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent).Times(0);
+  amount_extraction_manager_->FetchAiPageContent();
+
+  EXPECT_TRUE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+}
+
+// This test checks AutofillClient::GetAiPageContent is called and the callback
+// receives a valid value.
+TEST_F(AmountExtractionManagerTest, OnAiPageContentReceived_ValidValue) {
+  optimization_guide::proto::AnnotatedPageContent test_proto;
+  test_proto.set_tab_id(1234);  // Example data
+  EXPECT_FALSE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce([&](base::OnceCallback<void(
+                        std::optional<
+                            optimization_guide::proto::AnnotatedPageContent>)>
+                        callback) {
+        EXPECT_TRUE(
+            test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+        std::move(callback).Run(std::make_optional(test_proto));
+      });
+
+  amount_extraction_manager_->FetchAiPageContent();
+
+  EXPECT_FALSE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+  EXPECT_NE(test_api(*amount_extraction_manager_).GetAiPageContent(), nullptr);
+  EXPECT_THAT(
+      test_api(*amount_extraction_manager_).GetAiPageContent()->tab_id(),
+      Eq(1234));
+}
+
+// This test checks AutofillClient::GetAiPageContent is called and the callback
+// receives nullptr.
+TEST_F(AmountExtractionManagerTest, OnAiPageContentReceived_NullOpt) {
+  EXPECT_FALSE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+
+  EXPECT_CALL(autofill_client(), GetAiPageContent)
+      .WillOnce([&](base::OnceCallback<void(
+                        std::optional<
+                            optimization_guide::proto::AnnotatedPageContent>)>
+                        callback) {
+        EXPECT_TRUE(
+            test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+        std::move(callback).Run(std::nullopt);
+      });
+
+  amount_extraction_manager_->FetchAiPageContent();
+
+  EXPECT_FALSE(
+      test_api(*amount_extraction_manager_).GetIsFetchingAiPageContent());
+  EXPECT_THAT(test_api(*amount_extraction_manager_).GetAiPageContent(),
+              nullptr);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

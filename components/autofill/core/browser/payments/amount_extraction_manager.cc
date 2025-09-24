@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
@@ -115,6 +116,27 @@ AmountExtractionManager::GetEligibleFeatures(bool is_autofill_payments_enabled,
   return {};
 }
 
+void AmountExtractionManager::FetchAiPageContent() {
+  if (is_fetching_ai_page_content_) {
+    return;
+  }
+  is_fetching_ai_page_content_ = true;
+  autofill_manager_->client().GetAiPageContent(
+      base::BindOnce(&AmountExtractionManager::OnAiPageContentReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AmountExtractionManager::OnAiPageContentReceived(
+    std::optional<optimization_guide::proto::AnnotatedPageContent> result) {
+  if (result) {
+    ai_page_content_ =
+        std::make_unique<optimization_guide::proto::AnnotatedPageContent>(
+            std::move(*result));
+  }
+  is_fetching_ai_page_content_ = false;
+  // TODO(crbug.com/444683986): Log ApcGenerationResult to UMA.
+}
+
 void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
   if (search_request_pending_) {
     return;
@@ -134,15 +156,6 @@ void AmountExtractionManager::TriggerCheckoutAmountExtraction() {
       base::BindOnce(&AmountExtractionManager::OnTimeoutReached,
                      weak_ptr_factory_.GetWeakPtr()),
       kAmountExtractionWaitTime);
-}
-
-void AmountExtractionManager::SetSearchRequestPendingForTesting(
-    bool search_request_pending) {
-  search_request_pending_ = search_request_pending;
-}
-
-bool AmountExtractionManager::GetSearchRequestPendingForTesting() {
-  return search_request_pending_;
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
