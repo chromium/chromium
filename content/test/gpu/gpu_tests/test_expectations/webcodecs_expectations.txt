@@ -125,7 +125,6 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/430338394 [ win11 nvidia ] WebCodecs_D3D12_EncodeColorSpace_av01.0.04M.08 [ Failure ]
 crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
 crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
 crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
@@ -307,7 +306,8 @@ crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia 
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ Failure ]
-crbug.com/417899571 [ mac intel-0x3e9b angle-metal ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ angle-metal asan intel-0x3e9b sonoma ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
+crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_avc1.42001E_prefer-* [ Failure ]
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
