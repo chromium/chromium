@@ -137,7 +137,11 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                          weak_factory_.GetWeakPtr(),
-                         tentative_resource_request),
+
+                         tentative_resource_request.url,
+                         ServiceWorkerMainResourceHandle::
+                             TopFrameOriginForInitializeForRequest(
+                                 tentative_resource_request)),
           std::move(redirect_serving_handle_));
       return;
     }
@@ -164,13 +168,17 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   }
 
   GetPrefetch(
-      tentative_resource_request,
+      tentative_resource_request.url,
       base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                     weak_factory_.GetWeakPtr(), tentative_resource_request));
+                     weak_factory_.GetWeakPtr(), tentative_resource_request.url,
+
+                     ServiceWorkerMainResourceHandle::
+                         TopFrameOriginForInitializeForRequest(
+                             tentative_resource_request)));
 }
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
-    const network::ResourceRequest& tentative_resource_request,
+    const GURL& url,
     base::OnceCallback<void(PrefetchServingHandle)> get_prefetch_callback)
     const {
   TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
@@ -188,12 +196,9 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     CHECK(!serving_page_metrics_container_);
   }
 
-  const GURL tentative_resource_request_url = tentative_resource_request.url;
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
-                                 tentative_resource_request_url,
-                                 std::move(get_prefetch_callback));
-  auto key =
-      PrefetchKey(initiator_document_token_, tentative_resource_request_url);
+                                 url, std::move(get_prefetch_callback));
+  auto key = PrefetchKey(initiator_document_token_, url);
   PrefetchMatchResolver::FindPrefetch(
       frame_tree_node_id_, *prefetch_service, std::move(key),
       expected_service_worker_state_, serving_page_metrics_container_,
@@ -201,7 +206,8 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
-    const network::ResourceRequest& tentative_resource_request,
+    const GURL& url,
+    const std::optional<url::Origin>& top_frame_origin,
     PrefetchServingHandle serving_handle) {
   TRACE_EVENT0("loading",
                "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
@@ -222,7 +228,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
       // Do not intercept the request.
       request_handler = PrefetchRequestHandler();
     } else if (!service_worker_handle_for_navigation_->InitializeForRequest(
-                   tentative_resource_request, client_for_prefetch.get())) {
+                   url, top_frame_origin, client_for_prefetch.get())) {
       // Make tests fail and report in production builds when
       // `InitializeForRequest()` should fail, i.e. when top frame origin or
       // storage key used for `client_for_prefetch` is wrong/mismatching.

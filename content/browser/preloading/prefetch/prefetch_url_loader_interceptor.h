@@ -59,17 +59,17 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
 
  private:
   // Gets the `PrefetchContainer` (if any) to be used for
-  // `tentative_resource_request`. The `PrefetchContainer` is first obtained
+  // `url`. The `PrefetchContainer` is first obtained
   // from `PrefetchService` and then goes through other checks in
   // `PrefetchUrlLoaderHelper`.
   // The |get_prefetch_callback| is called with this associated prefetch.
-  void GetPrefetch(const network::ResourceRequest& tentative_resource_request,
+  void GetPrefetch(const GURL& url,
                    base::OnceCallback<void(PrefetchServingHandle)>
                        get_prefetch_callback) const;
 
-  void OnGetPrefetchComplete(
-      const network::ResourceRequest& tentative_resource_request,
-      PrefetchServingHandle serving_handle);
+  void OnGetPrefetchComplete(const GURL& url,
+                             const std::optional<url::Origin>& top_frame_origin,
+                             PrefetchServingHandle serving_handle);
 
   // Matches prefetches only if its final PrefetchServiceWorkerState is
   // `expected_service_worker_state_`, either `kControlled` or `kDisallowed`.

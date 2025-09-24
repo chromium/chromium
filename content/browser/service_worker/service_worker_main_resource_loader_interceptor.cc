@@ -224,8 +224,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     }
   }
 
-  CHECK(handle_->InitializeForRequest(tentative_resource_request,
-                                      /*client_for_prefetch=*/nullptr));
+  CHECK(handle_->InitializeForRequest(
+      tentative_resource_request.url,
+      ServiceWorkerMainResourceHandle::TopFrameOriginForInitializeForRequest(
+          tentative_resource_request),
+      /*client_for_prefetch=*/nullptr));
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
