@@ -9,7 +9,6 @@ import {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/
 import type {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createAutocompleteMatch} from './searchbox_test_utils.js';
@@ -19,7 +18,7 @@ suite('CrComponentsRealboxMatchTest', () => {
   let matchEl: SearchboxMatchElement;
   let testProxy: TestSearchboxBrowserProxy;
 
-  setup(async () => {
+  setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -28,8 +27,6 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = createAutocompleteMatch();
     matchEl.matchIndex = 0;
     document.body.appendChild(matchEl);
-
-    await flushTasks();
   });
 
   test('MousedownEventsAreSentToHandler', async () => {

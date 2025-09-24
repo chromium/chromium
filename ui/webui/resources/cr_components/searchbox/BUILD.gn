@@ -23,6 +23,7 @@ build_webui("build") {
     "utils.ts",
   ]
   css_files = [
+    "searchbox.css",
     "searchbox_action.css",
     "searchbox_compose_button.css",
     "searchbox_dropdown.css",

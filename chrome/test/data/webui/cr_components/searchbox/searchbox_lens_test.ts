@@ -12,7 +12,6 @@ import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
@@ -57,7 +56,6 @@ suite('Lens search', () => {
 
   async function areMatchesShowing(): Promise<boolean> {
     await testProxy.callbackRouterRemote.$.flushForTesting();
-    await waitAfterNextRender(realbox);
     await microtasksFinished();
     return window.getComputedStyle(realbox.$.matches).display !== 'none';
   }
@@ -99,7 +97,7 @@ suite('Lens search', () => {
 
     // Assert
     const lensButton =
-        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+        realbox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
     assertTrue(!!lensButton);
   });
 
@@ -113,7 +111,7 @@ suite('Lens search', () => {
 
     // Assert
     const lensButton =
-        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+        realbox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
     assertFalse(!!lensButton);
 
     // Restore
@@ -142,7 +140,7 @@ suite('Lens search', () => {
 
     // Act.
     const lensButton =
-        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+        realbox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
     assertTrue(!!lensButton);
     lensButton.click();
 
@@ -160,7 +158,7 @@ suite('Lens search', () => {
 
     // Act.
     const lensButton =
-        realbox.shadowRoot!.querySelector<HTMLElement>('#lensSearchButton');
+        realbox.shadowRoot.querySelector<HTMLElement>('#lensSearchButton');
     assertTrue(!!lensButton);
     lensButton.click();
 

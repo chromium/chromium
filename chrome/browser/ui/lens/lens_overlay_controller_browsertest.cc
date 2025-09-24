@@ -242,16 +242,21 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "  === $1; return iframeSrcLoaded && stickPresent && "
     "  searchboxInputLoaded;})();";
 
-constexpr char kCheckSidePanelThumbnailShownScript[] =
-    "(function() {const appRoot = "
-    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
-    "const searchboxRoot = appRoot.getElementById('searchbox').shadowRoot;"
-    "const thumbContainer = searchboxRoot.getElementById('thumbnailContainer');"
-    "const thumbnailRoot = "
-    "searchboxRoot.getElementById('thumbnail').shadowRoot;"
-    "const imageSrc = thumbnailRoot.getElementById('image').src;"
-    "return window.getComputedStyle(thumbContainer).display !== 'none' && "
-    "       imageSrc.startsWith('data:image/jpeg');})();";
+constexpr char kCheckSidePanelThumbnailShownScript[] = R"(
+  (function() {
+    const app = document.body.querySelector('lens-side-panel-app');
+    const searchbox = app.shadowRoot.querySelector('#searchbox');
+    const thumbnailContainer =
+        searchbox.shadowRoot.querySelector('#thumbnailContainer');
+    if (!thumbnailContainer) {
+      return false;
+    }
+
+    const thumbnail = searchbox.shadowRoot.querySelector('#thumbnail');
+    const imageSrc = thumbnail.shadowRoot.querySelector('#image').src;
+    return window.getComputedStyle(thumbnailContainer).display !== 'none' &&
+        imageSrc.startsWith('data:image/jpeg');
+  })();)";
 
 constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "

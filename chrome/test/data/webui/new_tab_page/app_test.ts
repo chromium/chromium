@@ -111,7 +111,7 @@ suite('NewTabPageAppTest', () => {
   function getComposeButton(): HTMLElement|null {
     const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
     assertTrue(!!searchboxContainer);
-    return searchboxContainer.shadowRoot!.querySelector<HTMLElement>(
+    return searchboxContainer.shadowRoot.querySelector<HTMLElement>(
         '#composeButton');
   }
 
@@ -1085,7 +1085,7 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot!
+            searchboxContainer!.shadowRoot
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
             // Dispatch the 'compose-click' event directly, which cr-searchbox
@@ -1160,7 +1160,7 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot!
+            searchboxContainer!.shadowRoot
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
             // Dispatch the 'compose-click' event directly, which cr-searchbox
@@ -1275,7 +1275,7 @@ suite('NewTabPageAppTest', () => {
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
-          searchboxContainer!.shadowRoot!
+          searchboxContainer!.shadowRoot
               .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
           // Simulate entrypoint click with text present.
@@ -1306,7 +1306,7 @@ suite('NewTabPageAppTest', () => {
 
       assertEquals(
           'hello',
-          searchboxContainer!.shadowRoot!
+          searchboxContainer!.shadowRoot
               .querySelector<HTMLInputElement>('#input')!.value);
     });
     suite('Close options disabled', () => {
