@@ -42,6 +42,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/performance_manager/public/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
@@ -444,12 +445,8 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  while (model->size() != expected_size) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return model->size() == expected_size; }));
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
@@ -502,7 +499,12 @@ class BrowsingDataModelBrowserTest
         // Need to disable kCompressionDictionaryTransportRequireKnownRootCert
         // because EmbeddedTestServer's certificate is not rooted at a standard
         // CA root.
-        net::features::kCompressionDictionaryTransportRequireKnownRootCert};
+        net::features::kCompressionDictionaryTransportRequireKnownRootCert,
+
+        // Model update success is sensitive to how quickly some best effort
+        // tasks are run so the test is not compatible with delaying
+        // them through EnableBestEffortTaskInhibitingPolicy.
+        performance_manager::features::kEnableBestEffortTaskInhibitingPolicy};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
