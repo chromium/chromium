@@ -56,7 +56,7 @@ scoped_refptr<StaticBitmapImage> CreateBitmap(
   auto client_si = gpu::ClientSharedImage::CreateForTesting(usage);
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      std::move(client_si), GenTestSyncToken(100), 0, kPremul_SkAlphaType,
+      std::move(client_si), GenTestSyncToken(100), kPremul_SkAlphaType,
       SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
       base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());

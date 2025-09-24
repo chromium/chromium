@@ -475,9 +475,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
 
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, sync_token(), /*shared_image_texture_id=*/0,
-      GetAlphaType(), context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      client_shared_image, sync_token(), GetAlphaType(),
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback));
 
   DCHECK(image);
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());
@@ -669,9 +669,9 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          client_si_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-          GetAlphaType(), context_provider_wrapper_, owning_thread_ref_,
-          owning_thread_task_runner_, std::move(release_callback));
+          client_si_, GetSyncToken(), GetAlphaType(), context_provider_wrapper_,
+          owning_thread_ref_, owning_thread_task_runner_,
+          std::move(release_callback));
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());
   return image;
 }
@@ -786,8 +786,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   scoped_refptr<StaticBitmapImage> image =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          back_buffer_shared_image_, GetSyncToken(),
-          /*shared_image_texture_id=*/0, GetAlphaType(),
+          back_buffer_shared_image_, GetSyncToken(), GetAlphaType(),
           context_provider_wrapper_, owning_thread_ref_,
           owning_thread_task_runner_, std::move(release_callback));
   image->SetHighEntropyCanvasOpTypes(HighEntropyCanvasOpTypes());

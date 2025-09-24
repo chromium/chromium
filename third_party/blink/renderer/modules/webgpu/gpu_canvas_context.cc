@@ -370,8 +370,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
 
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          std::move(client_si), sk_image_sync_token,
-          /*shared_image_texture_id=*/0, kPremul_SkAlphaType,
+          std::move(client_si), sk_image_sync_token, kPremul_SkAlphaType,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback)));

@@ -62,17 +62,16 @@ scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
-    GLuint shared_image_texture_id,
     SkAlphaType alpha_type,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
     viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      std::move(shared_image), sync_token, shared_image_texture_id, alpha_type,
-      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
-      context_thread_ref, std::move(context_task_runner),
-      std::move(release_callback)));
+      std::move(shared_image), sync_token, /*shared_image_texture_id=*/0u,
+      alpha_type, ImageOrientationEnum::kDefault,
+      std::move(context_provider_wrapper), context_thread_ref,
+      std::move(context_task_runner), std::move(release_callback)));
 }
 
 // static
