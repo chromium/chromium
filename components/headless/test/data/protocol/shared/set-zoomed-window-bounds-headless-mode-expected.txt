@@ -1,0 +1,21 @@
+Tests maximized/fullscreen window setWindowBounds() result.
+Setting 'maximized' state
+0,0 1600x1200 maximized
+Setting bounds: {
+    height : 500
+    left : 10
+    top : 10
+    width : 700
+    windowState : normal
+}
+10,10 1050x1180 normal
+Setting 'fullscreen' state
+0,0 1600x1200 fullscreen
+Setting bounds: {
+    height : 500
+    left : 10
+    top : 10
+    width : 700
+    windowState : normal
+}
+10,10 1050x1180 normal
