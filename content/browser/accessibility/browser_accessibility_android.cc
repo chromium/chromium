@@ -1070,11 +1070,9 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
 
   // If we're returning the value as the main text, the name needs to be
   // part of the hint.
-  if (ShouldExposeValueAsName(GetValueForControl())) {
-    std::u16string name = (ComputeAndroidNameTo() == AndroidNameTo::kText)
-                              ? GetNameAsString16()
-                              : u"";
-    if (!name.empty()) {
+  if (ShouldExposeValueAsName(GetValueForControl()) &&
+      ComputeAndroidNameTo() == AndroidNameTo::kText) {
+    if (std::u16string name = GetNameAsString16(); !name.empty()) {
       strings.push_back(name);
     }
   }
