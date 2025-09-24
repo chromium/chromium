@@ -937,6 +937,7 @@ fyi_ios_builder(
             "mac",
             "arm64",
             "minimal_symbols",
+            "gpu_tests",
         ],
     ),
     targets = targets.bundle(
