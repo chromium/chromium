@@ -77,7 +77,8 @@ class CharacterPropertyValues {
   constexpr static UChar32 kMaxCodepoint = 0x10FFFF;
   constexpr static UChar32 kSize = kMaxCodepoint + 1;
 
-  CharacterPropertyValues() : values_(new CharacterProperty[kSize]) {
+  CharacterPropertyValues()
+      : values_(base::HeapArray<CharacterProperty>::WithSize(kSize)) {
     Initialize();
   }
 
@@ -85,25 +86,23 @@ class CharacterPropertyValues {
 
  private:
   void Initialize() {
-    UNSAFE_TODO(memset(values_.get(), 0, sizeof(CharacterProperty) * kSize));
-
     SetIsCJKIdeographOrSymbolForEmoji();
 
-#define SET(name, field_name)                                               \
-  const auto field_name##_setter = [](CharacterProperty& property) {        \
-    property.field_name = true;                                             \
-  };                                                                        \
-  SetForRanges(name##Ranges, std::size(name##Ranges), field_name##_setter); \
-  SetForValues(name##Array, std::size(name##Array), field_name##_setter);
+#define SET(name, field_name)                                        \
+  const auto field_name##_setter = [](CharacterProperty& property) { \
+    property.field_name = true;                                      \
+  };                                                                 \
+  SetForRanges(name##Ranges, field_name##_setter);                   \
+  SetForValues(name##Array, field_name##_setter);
 
     SET(kIsCJKIdeographOrSymbol, is_cjk_ideograph_or_symbol);
     SET(kIsPotentialCustomElementNameChar,
         is_potential_custom_element_name_char);
     SET(kIsBidiControl, is_bidi_control);
 #undef SET
-    SetForRanges(
-        kIsHangulRanges, std::size(kIsHangulRanges),
-        [](CharacterProperty& property) { property.is_hangul = true; });
+    SetForRanges(kIsHangulRanges, [](CharacterProperty& property) {
+      property.is_hangul = true;
+    });
     SetHanKerning();
     SetEastAsianSpacing();
   }
@@ -282,24 +281,23 @@ class CharacterPropertyValues {
   }
 
   template <typename Setter>
-  void SetForRanges(const UChar32* ranges, size_t length, Setter set_value) {
+  void SetForRanges(base::span<const UChar32> ranges, Setter set_value) {
+    size_t length = ranges.size();
     CHECK_EQ(length % 2, 0u);
-    const UChar32* end = UNSAFE_TODO(ranges + length);
-    for (; ranges != end; UNSAFE_TODO(ranges += 2)) {
-      CHECK_LE(ranges[0], UNSAFE_TODO(ranges[1]));
-      CHECK_LE(UNSAFE_TODO(ranges[1]), kMaxCodepoint);
-      for (UChar32 c = ranges[0]; c <= UNSAFE_TODO(ranges[1]); c++) {
+    for (size_t i = 0; i < length; i += 2) {
+      CHECK_LE(ranges[i], ranges[i + 1]);
+      CHECK_LE(ranges[i + 1], kMaxCodepoint);
+      for (UChar32 c = ranges[i]; c <= ranges[i + 1]; ++c) {
         set_value(values_[c]);
       }
     }
   }
 
   template <typename Setter>
-  void SetForValues(const UChar32* begin, size_t length, Setter set_value) {
-    const UChar32* end = UNSAFE_TODO(begin + length);
-    for (; begin != end; UNSAFE_TODO(begin++)) {
-      CHECK_LE(*begin, kMaxCodepoint);
-      set_value(values_[*begin]);
+  void SetForValues(base::span<const UChar32> code_points, Setter set_value) {
+    for (UChar32 code_point : code_points) {
+      CHECK_LE(code_point, kMaxCodepoint);
+      set_value(values_[code_point]);
     }
   }
 
@@ -308,7 +306,7 @@ class CharacterPropertyValues {
     values_[ch].han_kerning = type;
   }
 
-  std::unique_ptr<CharacterProperty[]> values_;
+  base::HeapArray<CharacterProperty> values_;
 };
 
 static void GenerateUTrieSerialized(FILE* fp,

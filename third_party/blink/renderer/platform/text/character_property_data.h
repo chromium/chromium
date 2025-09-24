@@ -7,9 +7,12 @@
 
 #include <unicode/uobject.h>
 
+#include <array>
+
 namespace blink {
 
-static const UChar32 kIsCJKIdeographOrSymbolArray[] = {
+// clang-format off
+static constexpr auto kIsCJKIdeographOrSymbolArray = std::to_array<UChar32>({
     // 0x2C7 Caron, Mandarin Chinese 3rd Tone
     0x2C7,
     // 0x2CA Modifier Letter Acute Accent, Mandarin Chinese 2nd Tone
@@ -30,9 +33,10 @@ static const UChar32 kIsCJKIdeographOrSymbolArray[] = {
     0x2728, 0x273F, 0x2740, 0x274C, 0x274E, 0x27B0, 0x27BF, 0x2B1A, 0x2B1B,
     0x2B1C, 0x2B50, 0x2B55, 0xFE10, 0xFE11, 0xFE12, 0xFE19, 0xFF1D,
     // Emoji.
-    0x1F100, 0x1F004, 0x1F0CF, 0x1F18E};
+    0x1F100, 0x1F004, 0x1F0CF, 0x1F18E
+});
 
-static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
+static constexpr auto kIsCJKIdeographOrSymbolRanges = std::to_array<UChar32>({
     // STAFF OF AESCULAPIUS..SCALES for emoji sequences for doctor and judge
     // professions.
     0x2695, 0x2696,
@@ -141,29 +145,32 @@ static const UChar32 kIsCJKIdeographOrSymbolRanges[] = {
     // Emotion (FIGHT CLOUD)
     // Hand symbols
     0x1FAEF, 0x1FAF8,
-    };
+});
 
 // https://html.spec.whatwg.org/C/#prod-potentialcustomelementname
-static const UChar32 kIsPotentialCustomElementNameCharArray[] = {
-    '-', '.', '_', 0xB7,
-};
+static constexpr auto kIsPotentialCustomElementNameCharArray =
+    std::to_array<UChar32>({
+        '-', '.', '_', 0xB7,
+    });
 
-static const UChar32 kIsPotentialCustomElementNameCharRanges[] = {
-    '0',    '9',    'a',    'z',    0xC0,    0xD6,    0xD8,   0xF6,
-    0xF8,   0x2FF,  0x300,  0x37D,  0x37F,   0x1FFF,  0x200C, 0x200D,
-    0x203F, 0x2040, 0x2070, 0x218F, 0x2C00,  0x2FEF,  0x3001, 0xD7FF,
-    0xF900, 0xFDCF, 0xFDF0, 0xFFFD, 0x10000, 0xEFFFF,
-};
+static constexpr auto kIsPotentialCustomElementNameCharRanges =
+    std::to_array<UChar32>({
+        '0',    '9',    'a',    'z',    0xC0,    0xD6,    0xD8,   0xF6,
+        0xF8,   0x2FF,  0x300,  0x37D,  0x37F,   0x1FFF,  0x200C, 0x200D,
+        0x203F, 0x2040, 0x2070, 0x218F, 0x2C00,  0x2FEF,  0x3001, 0xD7FF,
+        0xF900, 0xFDCF, 0xFDF0, 0xFFFD, 0x10000, 0xEFFFF,
+    });
 
 // http://unicode.org/reports/tr9/#Directional_Formatting_Characters
-static const UChar32 kIsBidiControlArray[] = {0x061C, 0x200E, 0x200F};
+static constexpr auto kIsBidiControlArray =
+    std::to_array<UChar32>({0x061C, 0x200E, 0x200F});
 
-static const UChar32 kIsBidiControlRanges[] = {
+static constexpr auto kIsBidiControlRanges = std::to_array<UChar32>({
     0x202A, 0x202E, 0x2066, 0x2069,
-};
+});
 
 // https://unicode.org/Public/UNIDATA/Blocks.txt
-static const UChar32 kIsHangulRanges[] = {
+static constexpr auto kIsHangulRanges = std::to_array<UChar32>({
     // Hangul Jamo
     0x1100, 0x11FF,
     // Hangul Compatibility Jamo
@@ -177,7 +184,8 @@ static const UChar32 kIsHangulRanges[] = {
     // Halfwidth Hangul Jamo
     // https://www.unicode.org/charts/nameslist/c_FF00.html
     0xFFA0, 0xFFDC,
-};
+});
+// clang-format on
 
 // Freezed trie tree, see character_property_data_generator.cc.
 extern const int32_t kSerializedCharacterDataSize;
