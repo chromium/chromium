@@ -1,0 +1,278 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/startup/focus/focus_handler.h"
+
+#include <algorithm>
+#include <optional>
+#include <utility>
+
+#include "base/command_line.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/startup/focus/match_candidate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
+#include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
+
+namespace focus {
+
+FocusResult::FocusResult(FocusStatus status)
+    : status(status), error_type(Error::kNone) {}
+
+FocusResult::FocusResult(FocusStatus status,
+                         const std::string& matched_selector,
+                         const std::string& matched_url)
+    : status(status),
+      matched_selector(matched_selector),
+      matched_url(matched_url),
+      error_type(Error::kNone) {}
+
+FocusResult::FocusResult(FocusStatus status, Error error_type)
+    : status(status), error_type(error_type) {}
+
+FocusResult::FocusResult(const FocusResult& other) = default;
+
+FocusResult::FocusResult(FocusResult&& other) noexcept = default;
+
+FocusResult& FocusResult::operator=(const FocusResult& other) = default;
+
+FocusResult& FocusResult::operator=(FocusResult&& other) noexcept = default;
+
+FocusResult::~FocusResult() = default;
+
+bool FocusResult::IsSuccess() const {
+  return status == FocusStatus::kFocused;
+}
+
+bool FocusResult::HasMatch() const {
+  return matched_selector.has_value();
+}
+
+namespace {
+
+std::vector<MatchCandidate> CollectMatchingTabs(const Selector& selector,
+                                                Profile& profile) {
+  std::vector<MatchCandidate> candidates;
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window) {
+        if (browser_window->GetProfile() != &profile) {
+          return true;
+        }
+
+        TabStripModel* tab_strip = browser_window->GetTabStripModel();
+        if (!tab_strip) {
+          return true;
+        }
+
+        for (int i = 0; i < tab_strip->count(); i++) {
+          content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
+          if (!web_contents) {
+            continue;
+          }
+
+          std::optional<MatchCandidate> match =
+              MatchTab(selector, *browser_window, i, *web_contents);
+          if (match.has_value()) {
+            candidates.push_back(std::move(match.value()));
+          }
+        }
+        return true;
+      });
+
+  return candidates;
+}
+
+std::vector<MatchCandidate> CollectMatchingApps(const Selector& selector,
+                                                Profile& profile) {
+  std::vector<MatchCandidate> candidates;
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window) {
+        if (browser_window->GetProfile() != &profile) {
+          return true;
+        }
+
+        std::optional<MatchCandidate> match =
+            MatchApp(selector, *browser_window);
+        if (match.has_value()) {
+          candidates.push_back(std::move(match.value()));
+        }
+        return true;
+      });
+  return candidates;
+}
+
+void SortCandidatesByMRU(std::vector<MatchCandidate>& candidates) {
+  std::sort(candidates.begin(), candidates.end());
+}
+
+bool FocusCandidate(const MatchCandidate& candidate) {
+  if (candidate.app_id.has_value()) {
+    // App window.
+    candidate.browser_window->GetWindow()->Show();
+    candidate.browser_window->GetWindow()->Activate();
+    return true;
+  }
+
+  // Regular tab.
+  TabStripModel* tab_strip = candidate.browser_window->GetTabStripModel();
+  CHECK(tab_strip);
+
+  int actual_index =
+      tab_strip->GetIndexOfWebContents(&candidate.web_contents.get());
+  CHECK_NE(actual_index, TabStripModel::kNoTab);
+
+  tab_strip->ActivateTabAt(actual_index);
+  candidate.browser_window->GetWindow()->Show();
+  candidate.browser_window->GetWindow()->Activate();
+  return true;
+}
+
+bool FocusAppWindow(const Selector& selector,
+                    Profile& profile,
+                    std::string& focused_url) {
+  std::vector<MatchCandidate> candidates =
+      CollectMatchingApps(selector, profile);
+
+  if (candidates.empty()) {
+    return false;
+  }
+
+  SortCandidatesByMRU(candidates);
+  const MatchCandidate& best_candidate = candidates[0];
+
+  if (FocusCandidate(best_candidate)) {
+    focused_url = best_candidate.matched_url;
+    return true;
+  }
+
+  return false;
+}
+
+bool FocusTabByUrl(const Selector& selector,
+                   Profile& profile,
+                   std::string& focused_url) {
+  std::vector<MatchCandidate> candidates =
+      CollectMatchingTabs(selector, profile);
+
+  if (candidates.empty()) {
+    return false;
+  }
+
+  SortCandidatesByMRU(candidates);
+  const MatchCandidate& best_candidate = candidates[0];
+
+  if (FocusCandidate(best_candidate)) {
+    focused_url = best_candidate.matched_url;
+    return true;
+  }
+
+  return false;
+}
+
+std::optional<FocusResult> FocusBestMatch(
+    const std::vector<Selector>& selectors,
+    Profile& profile) {
+  for (const auto& selector : selectors) {
+    std::string matched_url;
+    std::string matched_selector = selector.ToString();
+
+    if (selector.type == SelectorType::kApp) {
+      if (FocusAppWindow(selector, profile, matched_url)) {
+        return FocusResult(FocusStatus::kFocused, matched_selector,
+                           matched_url);
+      }
+    } else {
+      if (FocusTabByUrl(selector, profile, matched_url)) {
+        return FocusResult(FocusStatus::kFocused, matched_selector,
+                           matched_url);
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
+FocusResult TryFocusExistingContent(const std::vector<Selector>& selectors,
+                                    Profile& profile) {
+  auto result = FocusBestMatch(selectors, profile);
+  return result.value_or(FocusResult(FocusStatus::kNoMatch));
+}
+
+FocusResult ProcessFocusRequestWithDetails(
+    const base::CommandLine& command_line,
+    Profile& profile) {
+  // If no focus flag is present, return no match (nothing to focus)
+  if (!command_line.HasSwitch(switches::kFocus)) {
+    return FocusResult(FocusStatus::kNoMatch);
+  }
+
+  // Get and validate selectors.
+  std::string selectors_string =
+      command_line.GetSwitchValueASCII(switches::kFocus);
+  if (selectors_string.empty()) {
+    return FocusResult(FocusStatus::kParseError,
+                       FocusResult::Error::kEmptySelector);
+  }
+
+  std::vector<Selector> selectors = ParseSelectors(selectors_string);
+  if (selectors.empty()) {
+    return FocusResult(FocusStatus::kParseError,
+                       FocusResult::Error::kInvalidFormat);
+  }
+
+  // Try to focus existing content.
+  FocusResult result = TryFocusExistingContent(selectors, profile);
+  if (result.status == FocusStatus::kFocused) {
+    return result;
+  }
+
+  // If no existing content found, return no match.
+  return FocusResult(FocusStatus::kNoMatch);
+}
+
+}  // namespace
+
+FocusResult ProcessFocusRequest(const base::CommandLine& command_line,
+                                Profile& profile) {
+  return ProcessFocusRequestWithDetails(command_line, profile);
+}
+
+int FocusResultToExitCode(const FocusResult& result) {
+  switch (result.status) {
+    case FocusStatus::kFocused:
+      return 0;
+    case FocusStatus::kNoMatch:
+      return 1;
+    case FocusStatus::kParseError:
+      return 2;
+  }
+  return 1;
+}
+
+std::string FocusResultToString(const FocusResult& result) {
+  switch (result.status) {
+    case FocusStatus::kFocused:
+      return "focused";
+    case FocusStatus::kNoMatch:
+      return "no_match";
+    case FocusStatus::kParseError:
+      switch (result.error_type) {
+        case FocusResult::Error::kEmptySelector:
+          return "parse_error: Empty selector string";
+        case FocusResult::Error::kInvalidFormat:
+          return "parse_error: Invalid selector format";
+        default:
+          return "parse_error";
+      }
+  }
+  return "unknown";
+}
+
+}  // namespace focus

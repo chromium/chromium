@@ -155,6 +155,7 @@ extern const char kNoServiceAutorun[];
 extern const char kNoStartupWindow[];
 extern const char kOnTheFlyMhtmlHashComputation[];
 extern const char kOpenInNewWindow[];
+extern const char kFocus[];
 extern const char kPackExtension[];
 extern const char kPackExtensionKey[];
 extern const char kPreCrashpadCrashTest[];
