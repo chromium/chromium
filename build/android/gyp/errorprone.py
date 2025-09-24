@@ -31,8 +31,8 @@ TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE = [
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     # High priority to enable in non-tests:
-    'ReturnValueIgnored',
     'StaticAssignmentInConstructor',
+    # CheckReturnValue: See note below about enabling via -Xep.
 
     # Still to look into:
     'AnnotationPosition',
@@ -313,10 +313,12 @@ def main():
                             for x in TESTONLY_ERRORPRONE_WARNINGS_TO_DISABLE)
     errorprone_flags += ['-XepCompilingTestOnlyCode']
 
-  # TODO(40661145): Enable stricter CheckReturnValue checks:
+  # To enable CheckReturnValue to be opt-out rather than opt-in:
   # packages = 'org.chromium,com.google,java.util.regex'
   # errorprone_flags += ['-XepOpt:CheckReturnValue:Packages=' + packages]
   # errorprone_flags += ['-XepOpt:CheckReturnValue:CheckAllConstructors=true']
+  # Might also need "-XepOpt:CheckReturnValue:ApiExclusionList=" with a
+  # "cirvlist.txt" that annotates android.* / java.* as @CanIgnoreReturnValue.
 
   if ERRORPRONE_CHECKS_TO_APPLY:
     to_apply = list(ERRORPRONE_CHECKS_TO_APPLY)
