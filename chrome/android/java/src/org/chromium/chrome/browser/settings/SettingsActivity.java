@@ -196,6 +196,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // In multi-column mode, the main settings fragment is a child of the
+            // MultiColumnSettings fragment, so the callbacks must be registered recursively.
+            boolean recursive = true;
             fragmentManager.registerFragmentLifecycleCallbacks(
                     new FragmentManager.FragmentLifecycleCallbacks() {
                         @Override
@@ -235,7 +238,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                             }
                         }
                     },
-                    false /* recursive */);
+                    recursive);
         }
 
         super.onCreate(savedInstanceState);
