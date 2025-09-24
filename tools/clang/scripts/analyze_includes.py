@@ -41,6 +41,7 @@ import sys
 import unittest
 from collections import defaultdict
 from datetime import datetime, timezone
+from itertools import islice
 
 
 def parse_build(build_log, root_filter=None):
