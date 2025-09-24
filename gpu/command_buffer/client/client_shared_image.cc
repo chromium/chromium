@@ -298,13 +298,10 @@ ClientSharedImage::CreateMappableBufferFromHandle(
     MappableBuffer::CopyNativeBufferToShMemCallback
         copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
-  auto buffer_format =
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          format);
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
-      return MappableBufferSharedMemory::CreateFromHandle(
-          std::move(handle), size, buffer_format, usage);
+      return MappableBufferSharedMemory::CreateFromHandle(std::move(handle),
+                                                          size, format, usage);
 #if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
@@ -316,6 +313,9 @@ ClientSharedImage::CreateMappableBufferFromHandle(
 #endif
 #if BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP: {
+      auto buffer_format =
+          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+              format);
       // NOTE: This is not used beyond the lifetime of CreateFromHandle().
       auto client_native_pixmap_factory =
           ui::CreateClientNativePixmapFactoryOzone();
@@ -816,10 +816,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
           info.meta.format),
       buffer_usage, &handle);
   auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
-      std::move(handle), info.meta.size,
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          info.meta.format),
-      buffer_usage);
+      std::move(handle), info.meta.size, info.meta.format, buffer_usage);
 
   // Since the |mappable_buffer| here is always a shared memory, clear the
   // external sampler prefs if it is already set by client.

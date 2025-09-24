@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -22,7 +23,7 @@ namespace gpu {
 
 MappableBufferSharedMemory::MappableBufferSharedMemory(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping,
@@ -55,40 +56,43 @@ void MappableBufferSharedMemory::AssertMapped() {
 std::unique_ptr<MappableBufferSharedMemory>
 MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
                                              const gfx::Size& size,
-                                             gfx::BufferFormat format,
+                                             viz::SharedImageFormat format,
                                              gfx::BufferUsage usage) {
   DCHECK(handle.region().IsValid());
+  CHECK(viz::HasEquivalentBufferFormat(format));
 
-  size_t minimum_stride = 0;
-  if (!gfx::RowSizeForBufferFormatChecked(size.width(), format, 0,
-                                          &minimum_stride)) {
+  std::optional<size_t> minimum_stride =
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, 0, size.width());
+  if (!minimum_stride) {
     return nullptr;
   }
 
   size_t min_buffer_size = 0;
 
-  if (gfx::NumberOfPlanesForLinearBufferFormat(format) == 1) {
-    if (handle.stride < minimum_stride) {
+  if (format.is_single_plane()) {
+    if (handle.stride < minimum_stride.value()) {
       return nullptr;
     }
 
     base::CheckedNumeric<size_t> checked_min_buffer_size = handle.stride;
     checked_min_buffer_size *= size.height() - 1;
-    checked_min_buffer_size += minimum_stride;
+    checked_min_buffer_size += minimum_stride.value();
     if (!checked_min_buffer_size.AssignIfValid(&min_buffer_size)) {
       return nullptr;
     }
   } else {
     // Custom layout (i.e. non-standard stride) is not allowed for multi-plane
     // formats.
-    if (handle.stride != minimum_stride) {
+    if (handle.stride != minimum_stride.value()) {
       return nullptr;
     }
 
-    if (!gfx::BufferSizeForBufferFormatChecked(size, format,
-                                               &min_buffer_size)) {
+    std::optional<size_t> buffer_size =
+        viz::SharedMemorySizeForSharedImageFormat(format, size);
+    if (!buffer_size) {
       return nullptr;
     }
+    min_buffer_size = buffer_size.value();
   }
 
   size_t min_buffer_size_with_offset = 0;
@@ -111,18 +115,20 @@ MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
 // static
 base::OnceClosure MappableBufferSharedMemory::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    gfx::BufferFormat buffer_format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
+  viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
   auto shared_memory_region = base::UnsafeSharedMemoryRegion::Create(
-      gfx::BufferSizeForBufferFormat(size, format));
+      viz::SharedMemorySizeForSharedImageFormat(format, size).value());
   CHECK(shared_memory_region.IsValid());
 
   *handle = gfx::GpuMemoryBufferHandle(std::move(shared_memory_region));
   handle->type = gfx::SHARED_MEMORY_BUFFER;
   handle->offset = 0;
   handle->stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), format, 0));
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, 0, size.width())
+          .value());
   return base::DoNothing();
 }
 
@@ -136,9 +142,12 @@ bool MappableBufferSharedMemory::Map() {
   // Map the buffer first time Map() is called then keep it mapped for the
   // lifetime of the buffer. This avoids mapping the buffer unless necessary.
   if (!shared_memory_mapping_.IsValid()) {
-    DCHECK_EQ(static_cast<size_t>(stride_),
-              gfx::RowSizeForBufferFormat(size_.width(), format_, 0));
-    size_t buffer_size = gfx::BufferSizeForBufferFormat(size_, format_);
+    DCHECK_EQ(
+        static_cast<size_t>(stride_),
+        viz::SharedMemoryRowSizeForSharedImageFormat(format_, 0, size_.width())
+            .value());
+    size_t buffer_size =
+        viz::SharedMemorySizeForSharedImageFormat(format_, size_).value();
     // Note: offset_ != 0 is not common use-case. To keep it simple we
     // map offset + buffer_size here but this can be avoided using MapAt().
     size_t map_size = offset_ + buffer_size;
@@ -152,10 +161,10 @@ bool MappableBufferSharedMemory::Map() {
 
 void* MappableBufferSharedMemory::memory(size_t plane) {
   AssertMapped();
-  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-  return UNSAFE_TODO(static_cast<uint8_t*>(shared_memory_mapping_.memory()) +
-                     offset_ +
-                     gfx::BufferOffsetForBufferFormat(size_, format_, plane));
+  DCHECK_LT(static_cast<int>(plane), format_.NumberOfPlanes());
+  return UNSAFE_TODO(
+      static_cast<uint8_t*>(shared_memory_mapping_.memory()) + offset_ +
+      viz::SharedMemoryOffsetForSharedImageFormat(format_, plane, size_));
 }
 
 void MappableBufferSharedMemory::Unmap() {
@@ -165,8 +174,11 @@ void MappableBufferSharedMemory::Unmap() {
 }
 
 int MappableBufferSharedMemory::stride(size_t plane) const {
-  DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-  return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
+  DCHECK_LT(static_cast<int>(plane), format_.NumberOfPlanes());
+  size_t stride = viz::SharedMemoryRowSizeForSharedImageFormat(format_, plane,
+                                                               size_.width())
+                      .value();
+  return base::checked_cast<int>(stride);
 }
 
 gfx::GpuMemoryBufferType MappableBufferSharedMemory::GetType() const {

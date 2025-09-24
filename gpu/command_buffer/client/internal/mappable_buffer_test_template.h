@@ -88,7 +88,7 @@ class MappableBufferTest : public testing::Test {
     switch (handle.type) {
       case gfx::SHARED_MEMORY_BUFFER:
         return MappableBufferSharedMemory::CreateFromHandleForTesting(
-            std::move(handle), size, format, usage);
+            std::move(handle), size, viz::GetSharedImageFormat(format), usage);
 #if BUILDFLAG(IS_MAC)
       case gfx::IO_SURFACE_BUFFER:
         return MappableBufferIOSurface::CreateFromHandleForTesting(
