@@ -79,9 +79,6 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   void OnWindowInitialized() override;
   void OnWindowDestroying(gfx::NativeWindow window) override;
 
-  // Overridden from BrowserNativeWidget:
-  int GetMinimizeButtonOffset() const override;
-
   // Overridden from CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;
 

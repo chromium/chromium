@@ -29,8 +29,6 @@ class BrowserDesktopWindowTreeHost {
 
   virtual views::DesktopWindowTreeHost* AsDesktopWindowTreeHost() = 0;
 
-  virtual int GetMinimizeButtonOffset() const = 0;
-
   // Returns true if the OS takes care of showing the system menu. Returning
   // false means BrowserWidget handles showing the system menu.
   virtual bool UsesNativeSystemMenu() const = 0;

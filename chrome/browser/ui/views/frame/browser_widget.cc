@@ -226,12 +226,6 @@ void BrowserWidget::InitBrowserWidget() {
   }
 }
 
-int BrowserWidget::GetMinimizeButtonOffset() const {
-  return browser_native_widget_
-             ? browser_native_widget_->GetMinimizeButtonOffset()
-             : 0;
-}
-
 void BrowserWidget::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {

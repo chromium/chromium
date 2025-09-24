@@ -92,10 +92,6 @@ bool BrowserNativeWidgetAura::UsesNativeSystemMenu() const {
   return browser_desktop_window_tree_host_->UsesNativeSystemMenu();
 }
 
-int BrowserNativeWidgetAura::GetMinimizeButtonOffset() const {
-  return browser_desktop_window_tree_host_->GetMinimizeButtonOffset();
-}
-
 bool BrowserNativeWidgetAura::ShouldSaveWindowPlacement() const {
   // The placement can always be stored.
   return true;

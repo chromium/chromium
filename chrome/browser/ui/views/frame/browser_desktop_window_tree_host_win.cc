@@ -259,10 +259,6 @@ BrowserDesktopWindowTreeHostWin::AsDesktopWindowTreeHost() {
   return this;
 }
 
-int BrowserDesktopWindowTreeHostWin::GetMinimizeButtonOffset() const {
-  return minimize_button_metrics_.GetMinimizeButtonOffsetX();
-}
-
 bool BrowserDesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
   return true;
 }
@@ -415,22 +411,11 @@ void BrowserDesktopWindowTreeHostWin::HandleDestroying() {
   DesktopWindowTreeHostWin::HandleDestroying();
 }
 
-void BrowserDesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
-    float window_scale_factor) {
-  DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(window_scale_factor);
-  minimize_button_metrics_.OnDpiChanged();
-}
-
 bool BrowserDesktopWindowTreeHostWin::PreHandleMSG(UINT message,
                                                    WPARAM w_param,
                                                    LPARAM l_param,
                                                    LRESULT* result) {
   switch (message) {
-    case WM_ACTIVATE:
-      if (LOWORD(w_param) != WA_INACTIVE) {
-        minimize_button_metrics_.OnHWNDActivated();
-      }
-      return false;
     case WM_ENDSESSION:
       chrome::SessionEnding();
       return true;
@@ -454,9 +439,6 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
       UpdateWorkspace();
       break;
     }
-    case WM_CREATE:
-      minimize_button_metrics_.Init(GetHWND());
-      break;
     case WM_WINDOWPOSCHANGED: {
       // Windows lies to us about the position of the minimize button before a
       // window is visible. We use this position to place the incognito avatar

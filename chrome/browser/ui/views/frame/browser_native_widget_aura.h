@@ -55,7 +55,6 @@ class BrowserNativeWidgetAura : public views::DesktopNativeWidgetAura,
       views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
   bool UsesNativeSystemMenu() const override;
-  int GetMinimizeButtonOffset() const override;
   bool ShouldSaveWindowPlacement() const override;
   void GetWindowPlacement(
       gfx::Rect* bounds,

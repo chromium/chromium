@@ -118,10 +118,6 @@ BrowserDesktopWindowTreeHostLinux::AsDesktopWindowTreeHost() {
   return this;
 }
 
-int BrowserDesktopWindowTreeHostLinux::GetMinimizeButtonOffset() const {
-  return 0;
-}
-
 bool BrowserDesktopWindowTreeHostLinux::UsesNativeSystemMenu() const {
   return false;
 }

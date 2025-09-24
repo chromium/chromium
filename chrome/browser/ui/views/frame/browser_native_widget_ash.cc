@@ -236,10 +236,6 @@ bool BrowserNativeWidgetAsh::UsesNativeSystemMenu() const {
   return false;
 }
 
-int BrowserNativeWidgetAsh::GetMinimizeButtonOffset() const {
-  return 0;
-}
-
 bool BrowserNativeWidgetAsh::ShouldRestorePreviousBrowserWidgetState() const {
   CHECK(browser_view_);
   // If there is no window info from full restore, maybe use the session

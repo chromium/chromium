@@ -82,11 +82,6 @@ class BrowserNativeWidget {
 
  protected:
   friend class BrowserWidget;
-
-  // BrowserWidget pass-thrus
-  // --------------------------------------------------- See browser_widget.h
-  // for documentation:
-  virtual int GetMinimizeButtonOffset() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_H_

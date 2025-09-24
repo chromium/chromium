@@ -75,10 +75,6 @@ class BrowserWidget : public views::Widget,
   // Initialize the frame (creates the underlying native window).
   void InitBrowserWidget();
 
-  // Determine the distance of the left edge of the minimize button from the
-  // left edge of the window. Used in our Non-Client View's Layout.
-  int GetMinimizeButtonOffset() const;
-
   // Lays out the window title for a web app within the given available space.
   // Unlike the above GetBounds methods this is not just a method to return the
   // bounds the title should occupy, since different implementations might also

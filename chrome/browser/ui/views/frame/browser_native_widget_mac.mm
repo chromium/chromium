@@ -451,11 +451,6 @@ void BrowserNativeWidgetMac::OnWindowDestroying(
   [ns_window setWindowTouchBarDelegate:nil];
 }
 
-int BrowserNativeWidgetMac::GetMinimizeButtonOffset() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 void BrowserNativeWidgetMac::EnabledStateChangedForCommand(int id,
                                                            bool enabled) {
   switch (id) {
