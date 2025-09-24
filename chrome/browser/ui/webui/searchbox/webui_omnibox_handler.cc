@@ -90,28 +90,6 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
 
-void WebuiOmniboxHandler::AddObserver(
-    OmniboxWebuiPopupChangeObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void WebuiOmniboxHandler::RemoveObserver(
-    OmniboxWebuiPopupChangeObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-bool WebuiOmniboxHandler::HasObserver(
-    const OmniboxWebuiPopupChangeObserver* observer) const {
-  return observers_.HasObserver(observer);
-}
-
-void WebuiOmniboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
-  webui_size_ = size;
-  for (OmniboxWebuiPopupChangeObserver& observer : observers_) {
-    observer.OnPopupElementSizeChanged(size);
-  }
-}
-
 void WebuiOmniboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
                                           OmniboxPopupSelection selection) {
   page_->UpdateSelection(

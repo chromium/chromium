@@ -93,5 +93,3 @@ RealboxHandler::RealboxHandler(
 }
 
 RealboxHandler::~RealboxHandler() = default;
-
-void RealboxHandler::PopupElementSizeChanged(const gfx::Size& size) {}

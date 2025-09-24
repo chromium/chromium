@@ -38,19 +38,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
-namespace {
-
-class TestObserver : public OmniboxWebuiPopupChangeObserver {
- public:
-  void OnPopupElementSizeChanged(gfx::Size size) override { called_ = true; }
-  bool called() const { return called_; }
-
- private:
-  bool called_ = false;
-};
-
-}  // namespace
-
 class SearchboxHandlerTest : public ::testing::Test {
  public:
   SearchboxHandlerTest() = default;

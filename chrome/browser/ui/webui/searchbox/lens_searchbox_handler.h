@@ -42,7 +42,6 @@ class LensSearchboxHandler : public SearchboxHandler {
                      bool ctrl_key,
                      bool meta_key,
                      bool shift_key) override {}
-  void PopupElementSizeChanged(const gfx::Size& size) override {}
   void OnThumbnailRemoved() override;
 
   // Invoked by LensSearchboxController.

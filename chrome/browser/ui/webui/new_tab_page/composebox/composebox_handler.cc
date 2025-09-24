@@ -294,10 +294,6 @@ void ComposeboxHandler::ExecuteAction(uint8_t line,
   NOTREACHED();
 }
 
-void ComposeboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
-  NOTREACHED();
-}
-
 void ComposeboxHandler::OnThumbnailRemoved() {
   NOTREACHED();
 }

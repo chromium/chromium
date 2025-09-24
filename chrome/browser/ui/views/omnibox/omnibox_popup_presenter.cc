@@ -73,10 +73,6 @@ void OmniboxPopupPresenter::Show() {
     // the webview is hidden and will not calculate its preferred size.
     SetWidgetContentHeight(1);
   }
-  WebuiOmniboxHandler* handler = GetHandler();
-  if (handler && !handler->HasObserver(this)) {
-    handler->AddObserver(this);
-  }
 }
 
 void OmniboxPopupPresenter::Hide() {
@@ -109,10 +105,6 @@ void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   if (widget == widget_) {
     widget_ = nullptr;
   }
-}
-
-void OmniboxPopupPresenter::OnPopupElementSizeChanged(gfx::Size size) {
-  NOTREACHED();
 }
 
 void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
@@ -161,10 +153,6 @@ bool OmniboxPopupPresenter::IsHandlerReady() {
 }
 
 void OmniboxPopupPresenter::ReleaseWidget(bool close) {
-  WebuiOmniboxHandler* handler = GetHandler();
-  if (handler && handler->HasObserver(this)) {
-    handler->RemoveObserver(this);
-  }
   if (widget_) {
     // Avoid possibility of dangling raw_ptr by nulling before cleanup.
     views::Widget* widget = widget_;

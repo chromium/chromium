@@ -27,7 +27,6 @@ class OmniboxController;
 // code, work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver,
-                              public OmniboxWebuiPopupChangeObserver,
                               public views::ViewObserver {
   METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
 
@@ -51,9 +50,6 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
-
-  // OmniboxWebuiPopupChangeObserver:
-  void OnPopupElementSizeChanged(gfx::Size size) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;

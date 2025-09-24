@@ -35,7 +35,6 @@ class RealboxHandler : public SearchboxHandler {
 
   ~RealboxHandler() override;
 
-  void PopupElementSizeChanged(const gfx::Size& size) override;
   void OnThumbnailRemoved() override {}
 
   void UpdateSelection(OmniboxPopupSelection old_selection,

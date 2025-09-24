@@ -126,10 +126,6 @@ void LensComposeboxHandler::ExecuteAction(
   NOTREACHED();
 }
 
-void LensComposeboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
-  NOTREACHED();
-}
-
 void LensComposeboxHandler::OnThumbnailRemoved() {
   NOTREACHED();
 }

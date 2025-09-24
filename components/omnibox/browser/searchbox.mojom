@@ -201,9 +201,6 @@ interface PageHandler {
                 bool meta_key,
                 bool shift_key);
 
-  // Called when the popup results view element size is changed.
-  PopupElementSizeChanged(gfx.mojom.Size size);
-
   // Notifies browser that thumbnail has been removed.
   OnThumbnailRemoved();
 
