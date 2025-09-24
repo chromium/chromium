@@ -419,8 +419,6 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
 
   switch (type_) {
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
-    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
-      // TODO(crbug.com/445712889): Specify the exact UI for the picker case.
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(
@@ -448,6 +446,7 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_APP_CONTINUE));
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
