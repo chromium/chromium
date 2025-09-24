@@ -194,6 +194,16 @@ TextOffsetMapping::InlineContents CreateInlineContentsFromBlockFlow(
       last = first;
       break;
     }
+    // Exclude out-of-flow objects (float/absolute/fixed) that are DOM
+    // descendants of `target`, since they don’t participate in the inline
+    // formatting context. See http://crbug.com/443752821.
+    if (RuntimeEnabledFeatures::CreateInlineContentsExcludeOutOfFlowEnabled() &&
+        layout_object->IsFloatingOrOutOfFlowPositioned() &&
+        layout_object->GetNode() &&
+        layout_object->GetNode()->IsDescendantOf(target.GetNode())) {
+      last = first;
+      break;
+    }
     if (layout_object->IsBlockInInline()) {
       if (target.IsDescendantOf(layout_object)) {
         // Note: We reach here when `target` is `position:absolute` or

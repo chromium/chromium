@@ -641,6 +641,30 @@ TEST_F(VisibleUnitsWordTest, NextWordEmojiSequence) {
             DoNextWord("<p> abc &#x1F602;&#x1F602; |def</p>"));
 }
 
+// http://crbug.com/443752821
+TEST_F(VisibleUnitsWordTest, NextWordCrossingOutOfFlow) {
+  const Position absolute_pos = SetCaretTextToBody(R"HTML(
+    <div contenteditable="true">Test|</div>
+    <div><span style="position: absolute;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>)HTML");
+  EXPECT_TRUE(NextWordPosition(absolute_pos).IsNull());
+
+  const Position fixed_pos = SetCaretTextToBody(R"HTML(
+    <div contenteditable="true">Test|</div>
+    <div><span style="position: fixed;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>)HTML");
+  EXPECT_TRUE(NextWordPosition(fixed_pos).IsNull());
+
+  const Position float_pos = SetCaretTextToBody(R"HTML(
+    <div contenteditable="true">Test|</div>
+    <div><span style="float: left;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>)HTML");
+  EXPECT_TRUE(NextWordPosition(float_pos).IsNull());
+}
+
 //----
 
 TEST_F(VisibleUnitsWordTest, PreviousWordBasic) {
@@ -793,6 +817,33 @@ TEST_F(VisibleUnitsWordTest, PreviousWordSkipTextControl) {
             DoPreviousWord("foo<input value=\"bla\">ba|r"));
   EXPECT_EQ("foo<input value=\"bla\">|bar",
             DoPreviousWord("foo<input value=\"bla\">bar|"));
+}
+
+// http://crbug.com/443752821
+TEST_F(VisibleUnitsWordTest, PreviousWordCrossingOutOfFlow) {
+  const Position absolute_pos = SetCaretTextToBody(R"HTML(
+    <div><span style="position: absolute;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>
+    <div contenteditable="true">|Test</div>
+  )HTML");
+  EXPECT_TRUE(PreviousWordPosition(absolute_pos).IsNull());
+
+  const Position fixed_pos = SetCaretTextToBody(R"HTML(
+    <div><span style="position: fixed;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>
+    <div contenteditable="true">|Test</div>
+  )HTML");
+  EXPECT_TRUE(PreviousWordPosition(fixed_pos).IsNull());
+
+  const Position float_pos = SetCaretTextToBody(R"HTML(
+    <div><span style="float: left;"></span>
+      <span><span style="display: block"> </span></span>
+    </div>
+    <div contenteditable="true">|Test</div>
+  )HTML");
+  EXPECT_TRUE(PreviousWordPosition(float_pos).IsNull());
 }
 
 TEST_F(VisibleUnitsWordTest, MiddleOfWord) {
