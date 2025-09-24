@@ -433,9 +433,9 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       }
     }
     if (!target_instance) {
-      // If no instance is found for the conversation, create a new one.
-      // The web client is expected to call RegisterConversation on this new
-      // instance.
+      // No instance exists for this conversation. If the current instance
+      // already has a conversation, create a new instance. Otherwise, reuse
+      // the current instance.
       target_instance = current_instance->conversation_id()
                             ? CreateGlicInstance()
                             : current_instance;
