@@ -101,7 +101,7 @@ export class TabStripController {
   private async loadTabStripModel_() {
     const tabSnapshot = await this.tabStripService_.getTabs();
     // TODO(crbug.com/439844342): add type signature.
-    this.tabStripObservation_.bind((tabSnapshot.stream as any).handle);
+    this.tabStripObservation_.bind(tabSnapshot.stream.handle);
 
     const tabStrip = tabSnapshot.tabStrip;
     const processContainer = (container: Container) => {

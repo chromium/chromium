@@ -4,7 +4,7 @@
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 
-import type {TabsEvent, TabsObserverInterface} from './tab_strip_api.mojom-webui.js';
+import type {TabsEvent, TabsObserverInterface, TabsObserverPendingReceiverEndpoint} from './tab_strip_api.mojom-webui.js';
 import {TabsEventFieldTags, TabsObserverReceiver, whichTabsEvent} from './tab_strip_api.mojom-webui.js';
 import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from './tab_strip_api_events.mojom-webui.js';
 
@@ -64,7 +64,7 @@ export class TabStripObservation implements TabsObserverInterface {
     this.receiver_ = new TabsObserverReceiver(this);
   }
 
-  bind(handle: any) {
+  bind(handle: TabsObserverPendingReceiverEndpoint) {
     // TODO(crbug.com/439639253): throw error if already bound. This will
     // already throw, but the msg is probably not very helpful.
     this.receiver_.$.bindHandle(handle);

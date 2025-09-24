@@ -402,13 +402,11 @@ class Generator(generator.Generator):
         return name
       if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
         return name + "Remote"
-      if mojom.IsPendingReceiverKind(kind):
+      if mojom.IsPendingReceiverKind(
+          kind) or mojom.IsPendingAssociatedReceiverKind(kind):
         return name + "PendingReceiver"
-      # TODO(calamity): Support associated interfaces properly.
-      if mojom.IsPendingAssociatedRemoteKind(kind):
-        return "object"
       # TODO(calamity): Support associated interface requests properly.
-      if mojom.IsPendingAssociatedReceiverKind(kind):
+      if mojom.IsPendingAssociatedRemoteKind(kind):
         return "object"
 
       raise Exception("Type is not supported yet.")

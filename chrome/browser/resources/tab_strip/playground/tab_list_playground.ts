@@ -270,12 +270,8 @@ export class TabListPlaygroundElement extends CustomElement {
   private fetchAndUpdateTabs_() {
     this.tabStripService_.getTabs().then((tabsSnapshot: TabsSnapshot) => {
       // Bind the observer stream from the snapshot to the callback router
-      if (tabsSnapshot.stream && (tabsSnapshot.stream as any).handle) {
-        this.tabStripObservation_.bind((tabsSnapshot.stream as any).handle);
-        console.info('Bound TabsObserver stream to callback router.');
-      } else {
-        console.error('Can not bind');
-      }
+      this.tabStripObservation_.bind(tabsSnapshot.stream.handle);
+      console.info('Bound TabsObserver stream to callback router.');
 
       this.clearChildren_(this.pinnedTabsElement_);
       this.clearChildren_(this.unpinnedTabsElement_);

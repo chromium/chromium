@@ -18,11 +18,14 @@ import { Converter } from './converter.js';
 
 
 
-export class IFaceWithTypemapPendingReceiver implements
-    mojo.internal.interfaceSupport.PendingReceiver {
+export type IFaceWithTypemapPendingReceiverEndpoint =
+  mojo.internal.interfaceSupport.Endpoint<IFaceWithTypemapPendingReceiver>;
 
-  handle: mojo.internal.interfaceSupport.Endpoint;
-  constructor(handle: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+export class IFaceWithTypemapPendingReceiver implements
+    mojo.internal.interfaceSupport.PendingReceiver<IFaceWithTypemap> {
+
+  handle: mojo.internal.interfaceSupport.Endpoint<IFaceWithTypemapPendingReceiver>;
+  constructor(handle: MojoHandle|IFaceWithTypemapPendingReceiverEndpoint) {
     this.handle = mojo.internal.interfaceSupport.getEndpointForReceiver(handle);
   }
 
@@ -45,7 +48,7 @@ export class IFaceWithTypemapRemote implements IFaceWithTypemapInterface {
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor(
-      handle?: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+      handle?: MojoHandle|IFaceWithTypemapPendingReceiverEndpoint) {
     this.proxy =
         new mojo.internal.interfaceSupport.InterfaceRemoteBase(
           IFaceWithTypemapPendingReceiver, handle);
@@ -75,9 +78,11 @@ export class IFaceWithTypemapRemote implements IFaceWithTypemapInterface {
  * interface.
  */
 export class IFaceWithTypemapReceiver {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<IFaceWithTypemapRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    IFaceWithTypemapRemote, IFaceWithTypemapPendingReceiver>;
 
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<IFaceWithTypemapRemote>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    IFaceWithTypemapRemote, IFaceWithTypemapPendingReceiver>;
 
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
@@ -124,8 +129,10 @@ export class IFaceWithTypemap {
  * receiver can have any number of listeners added to it.
  */
 export class IFaceWithTypemapCallbackRouter {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<IFaceWithTypemapRemote>;
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<IFaceWithTypemapRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    IFaceWithTypemapRemote, IFaceWithTypemapPendingReceiver>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    IFaceWithTypemapRemote, IFaceWithTypemapPendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
   echo: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
