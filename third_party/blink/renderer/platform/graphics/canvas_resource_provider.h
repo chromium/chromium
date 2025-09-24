@@ -376,7 +376,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   friend class FlushForImageListener;
 
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
-  virtual bool UseOopRasterization() { return false; }
   // Notifies before any drawing will be done on the resource used by this
   // provider.
   virtual void WillDraw() {}
@@ -499,7 +498,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
   bool IsAccelerated() const final { return is_accelerated_; }
   bool SupportsDirectCompositing() const override { return true; }
-  bool UseOopRasterization() final { return IsAccelerated(); }
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
   }

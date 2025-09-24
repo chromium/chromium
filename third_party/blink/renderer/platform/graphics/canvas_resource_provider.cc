@@ -1060,8 +1060,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     initial_needs_clear_ = false;
   }
 
-  bool UseOopRasterization() final { return true; }
-
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
@@ -1650,9 +1648,7 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 
     // Adjust the raster mode if we will be able to use an accelerated cache.
     if (use_accelerated_cache) {
-      raster_mode = UseOopRasterization()
-                        ? cc::PlaybackImageProvider::RasterMode::kOop
-                        : cc::PlaybackImageProvider::RasterMode::kGpu;
+      raster_mode = cc::PlaybackImageProvider::RasterMode::kOop;
     }
     cc::ImageDecodeCache* cache_rgba8 =
         use_accelerated_cache
