@@ -9,9 +9,12 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
@@ -23,6 +26,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::RunUntil;
+using base::test::TaskEnvironment;
+using base::test::TestFuture;
 using testing::AllOf;
 using testing::Eq;
 using testing::Mock;
@@ -33,10 +39,7 @@ namespace policy {
 
 namespace {
 
-void RunUntilIdle() {
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-}
+const base::TimeDelta kShortDelay = base::Seconds(15);
 
 bool WriteStringToFile(const base::FilePath path, const std::string& data) {
   if (!base::CreateDirectory(path.DirName())) {
@@ -58,7 +61,8 @@ class UserCloudPolicyStoreTest : public testing::Test {
  public:
   UserCloudPolicyStoreTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            TaskEnvironment::TimeSource::MOCK_TIME) {}
   UserCloudPolicyStoreTest(const UserCloudPolicyStoreTest&) = delete;
   UserCloudPolicyStoreTest& operator=(const UserCloudPolicyStoreTest&) = delete;
 
@@ -96,7 +100,8 @@ class UserCloudPolicyStoreTest : public testing::Test {
     store_->RemoveObserver(&observer_);
     external_data_manager_.reset();
     store_.reset();
-    RunUntilIdle();
+    const base::TimeDelta kLongDelay = base::Seconds(60);
+    task_environment_.FastForwardBy(kLongDelay);
   }
 
   void InitPolicyPayload(enterprise_management::CloudPolicySettings* payload) {
@@ -123,24 +128,33 @@ class UserCloudPolicyStoreTest : public testing::Test {
     ASSERT_TRUE(store->policy_map().Get(key::kURLBlocklist));
   }
 
-  // Install an expectation on |observer_| for an error code.
-  void ExpectError(CloudPolicyStore* store, CloudPolicyStore::Status error) {
+  // Install an expectation on |observer_| for an error code. Return a
+  // TestFuture that can wait until the error arrives.
+  [[nodiscard]] TestFuture<void> ExpectError(CloudPolicyStore* store,
+                                             CloudPolicyStore::Status error) {
+    base::test::TestFuture<void> error_observed;
     EXPECT_CALL(observer_,
-                OnStoreError(AllOf(Eq(store),
-                                   Property(&CloudPolicyStore::status,
-                                            Eq(error)))));
+                OnStoreError(AllOf(
+                    Eq(store), Property(&CloudPolicyStore::status, Eq(error)))))
+        .WillOnce(base::test::RunOnceClosure(error_observed.GetCallback()));
+    return error_observed;
   }
 
   void StorePolicyAndEnsureLoaded(
       const enterprise_management::PolicyFetchResponse& policy) {
+    base::test::TestFuture<void> future;
     Sequence s;
     EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
-    EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s);
+    EXPECT_CALL(observer_, OnStoreLoaded(store_.get()))
+        .InSequence(s)
+        .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
     store_->Store(policy);
-    RunUntilIdle();
+    EXPECT_TRUE(future.Wait());
     Mock::VerifyAndClearExpectations(external_data_manager_.get());
     Mock::VerifyAndClearExpectations(&observer_);
     ASSERT_TRUE(store_->policy());
+    // Wait for the policy to be written into a file.
+    task_environment_.FastForwardBy(kShortDelay);
   }
 
   UserPolicyBuilder policy_;
@@ -157,12 +171,15 @@ TEST_F(UserCloudPolicyStoreTest, LoadWithNoFile) {
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
+  base::test::TestFuture<void> future;
   Sequence s;
   EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
-  EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s);
+  EXPECT_CALL(observer_, OnStoreLoaded(store_.get()))
+      .InSequence(s)
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   store_->Load();
-  RunUntilIdle();
 
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 }
@@ -176,9 +193,10 @@ TEST_F(UserCloudPolicyStoreTest, LoadWithInvalidFile) {
   std::string bogus_data = "bogus_data";
   ASSERT_TRUE(base::WriteFile(policy_file(), bogus_data));
 
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
   store_->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
 
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
@@ -206,7 +224,8 @@ TEST_F(UserCloudPolicyStoreTest, LoadImmediatelyWithInvalidFile) {
   std::string bogus_data = "bogus_data";
   ASSERT_TRUE(base::WriteFile(policy_file(), bogus_data));
 
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_LOAD_ERROR);
   store_->LoadImmediately();  // Should load without running the message loop.
 
   EXPECT_FALSE(store_->policy());
@@ -229,7 +248,8 @@ TEST_F(UserCloudPolicyStoreTest, ShouldFailToLoadUnsignedPolicy) {
   ASSERT_TRUE(base::WriteFile(policy_file(), data));
 
   // Now make sure the data generates a validation error.
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store_->LoadImmediately();  // Should load without running the message loop.
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -269,11 +289,16 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenClear) {
   // Policy file should exist.
   ASSERT_TRUE(base::PathExists(policy_file()));
 
-  Sequence s2;
-  EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s2);
-  EXPECT_CALL(observer_, OnStoreLoaded(store_.get())).InSequence(s2);
+  base::test::TestFuture<void> future;
+  Sequence s;
+  EXPECT_CALL(*external_data_manager_, OnPolicyStoreLoaded()).InSequence(s);
+  EXPECT_CALL(observer_, OnStoreLoaded(store_.get()))
+      .InSequence(s)
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   store_->Clear();
-  RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
+  // Wait for the file to be cleared.
+  task_environment_.FastForwardBy(kShortDelay);
 
   // Policy file should not exist.
   ASSERT_TRUE(!base::PathExists(policy_file()));
@@ -321,9 +346,10 @@ TEST_F(UserCloudPolicyStoreTest, ProvisionKeyTwice) {
   policy_.Build();
   EXPECT_FALSE(policy_.policy().has_new_public_key_signature());
 
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store_->Store(policy_.policy());
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
 }
 
 TEST_F(UserCloudPolicyStoreTest, StoreTwoTimes) {
@@ -365,9 +391,11 @@ TEST_F(UserCloudPolicyStoreTest, StoreThenLoad) {
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
-  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
+  base::test::TestFuture<void> error_observed;
+  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()))
+      .WillOnce(base::test::RunOnceClosure(error_observed.GetCallback()));
   store2->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
 
   ASSERT_TRUE(store2->policy());
   EXPECT_EQ(policy_.policy_data().SerializeAsString(),
@@ -408,9 +436,10 @@ TEST_F(UserCloudPolicyStoreTest, StoreValidationError) {
   policy_.Build();
 
   // Store policy.
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store_->Store(policy_.policy());
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
   ASSERT_FALSE(store_->policy());
 }
 
@@ -419,9 +448,10 @@ TEST_F(UserCloudPolicyStoreTest, StoreUnsigned) {
   policy_.policy().mutable_policy_data_signature()->clear();
 
   // Store policy.
-  ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store_.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store_->Store(policy_.policy());
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
   ASSERT_FALSE(store_->policy());
 }
 
@@ -438,9 +468,10 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(other_account_id);
   store2->AddObserver(&observer_);
-  ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error2_observed =
+      ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store2->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(error2_observed.Wait());
 
   ASSERT_FALSE(store2->policy());
   store2->RemoveObserver(&observer_);
@@ -451,9 +482,11 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
       policy_file(), key_file(),
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store3->AddObserver(&observer_);
-  EXPECT_CALL(observer_, OnStoreLoaded(store3.get()));
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(observer_, OnStoreLoaded(store3.get()))
+      .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
   store3->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(future.Wait());
 
   ASSERT_TRUE(store3->policy());
   store3->RemoveObserver(&observer_);
@@ -464,9 +497,10 @@ TEST_F(UserCloudPolicyStoreTest, LoadValidationError) {
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store4->SetSigninAccountId(other_account_id);
   store4->AddObserver(&observer_);
-  ExpectError(store4.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error4_observed =
+      ExpectError(store4.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store4->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(error4_observed.Wait());
 
   ASSERT_FALSE(store4->policy());
   store4->RemoveObserver(&observer_);
@@ -493,9 +527,11 @@ TEST_F(UserCloudPolicyStoreTest, KeyRotation) {
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
-  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()));
+  base::test::TestFuture<void> store2_loaded;
+  EXPECT_CALL(observer_, OnStoreLoaded(store2.get()))
+      .WillOnce(base::test::RunOnceClosure(store2_loaded.GetCallback()));
   store2->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(store2_loaded.Wait());
   ASSERT_TRUE(store2->policy());
   ASSERT_FALSE(store2->policy()->has_public_key_version());
   store2->RemoveObserver(&observer_);
@@ -520,9 +556,10 @@ TEST_F(UserCloudPolicyStoreTest, InvalidCachedVerificationSignature) {
       base::SingleThreadTaskRunner::GetCurrentDefault()));
   store2->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
   store2->AddObserver(&observer_);
-  ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
+  TestFuture<void> error_observed =
+      ExpectError(store2.get(), CloudPolicyStore::STATUS_VALIDATION_ERROR);
   store2->Load();
-  RunUntilIdle();
+  EXPECT_TRUE(error_observed.Wait());
   store2->RemoveObserver(&observer_);
 }
 
