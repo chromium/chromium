@@ -281,15 +281,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            int x,
                            int y);
 
-  // Signals that an external write has completed, passing the token that should
-  // be waited on to ensure that the service-side operations of the external
-  // write have completed. Ensures that the next read of this resource (whether
-  // via raster or the compositor) waits on this token.
-  virtual void EndExternalWrite(
-      const gpu::SyncToken& external_write_sync_token) {
-    NOTREACHED();
-  }
-
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED();
   }
@@ -542,8 +533,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       gpu::SharedImageUsageSet required_shared_image_usages,
       gpu::SyncToken& internal_access_sync_token,
       bool* was_copy_performed = nullptr);
-  void EndExternalWrite(
-      const gpu::SyncToken& external_write_sync_token) override;
+
+  // Signals that an external write has completed, passing the token that should
+  // be waited on to ensure that the service-side operations of the external
+  // write have completed. Ensures that the next read of this resource (whether
+  // via raster or the compositor) waits on this token.
+  void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;

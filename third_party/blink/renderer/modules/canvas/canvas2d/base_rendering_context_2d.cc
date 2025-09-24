@@ -1620,7 +1620,7 @@ void BaseRenderingContext2D::transferBackFromGPUTexture(
 
   // Restore the canvas' resource provider back onto the canvas host,
   // surrendering our temporary ownership of the provider.
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       resource_provider_from_webgpu_access_.get();
   ReplaceResourceProviderForCanvas2D(
       std::move(resource_provider_from_webgpu_access_));
