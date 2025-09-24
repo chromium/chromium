@@ -425,19 +425,6 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     if (ShouldOpenPopupForKeyPressEvent(*key_event))
       return HandlePopupOpenKeyboardEvent();
 
-    // TODO(crbug.com/1511354): Reconsider making appearance:base-select affect
-    // keyboard behavior after a resolution here:
-    // https://github.com/openui/open-ui/issues/1087
-    if (IsAppearanceBase() && key_code == '\r') {
-      // TODO(crbug.com/1511354): Consider making form->SubmitImplicitly work
-      // here instead of PrepareForSubmission and combine with the subsequent
-      // code.
-      if (HTMLFormElement* form = select_->Form()) {
-        form->PrepareForSubmission(&event, select_);
-        return true;
-      }
-    }
-
     if (!LayoutTheme::GetTheme().PopsMenuByReturnKey() && key_code == '\r') {
       if (HTMLFormElement* form = select_->Form())
         form->SubmitImplicitly(event, false);
