@@ -119,8 +119,6 @@ source_set("app_service") {
       "chrome_app_deprecation/chrome_app_deprecation.h",
       "file_utils.cc",
       "file_utils.h",
-      "instance_registry_updater.cc",
-      "instance_registry_updater.h",
       "media_requests.cc",
       "media_requests.h",
       "menu_item_constants.h",

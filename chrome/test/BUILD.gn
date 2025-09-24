@@ -5449,8 +5449,6 @@ if (!is_android) {
         "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
         "//chrome/browser/apps/app_preload_service:browser_tests",
         "//chrome/browser/apps/app_service/app_install:browser_tests",
-        "//chrome/browser/apps/browser_instance",
-        "//chrome/browser/apps/browser_instance:browser_tests",
         "//chrome/browser/apps/link_capturing",
         "//chrome/browser/ash:browser_tests",
         "//chrome/browser/ash/app_list/search/test:browser_test_support",

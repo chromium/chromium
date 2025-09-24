@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"

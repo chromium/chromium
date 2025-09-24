@@ -51,14 +51,6 @@ component("app_types") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_chromeos) {
-    sources += [
-      "browser_app_instance_update.cc",
-      "browser_app_instance_update.h",
-      "browser_window_instance_update.h",
-    ]
-  }
 }
 
 # This target is separate from //components/services/app_service because not all

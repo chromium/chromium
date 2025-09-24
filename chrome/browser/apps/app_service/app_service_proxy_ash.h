@@ -50,9 +50,6 @@ namespace apps {
 class AppInstallService;
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
-class InstanceRegistryUpdater;
-class BrowserAppInstanceRegistry;
-class BrowserAppInstanceTracker;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
@@ -87,11 +84,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::InstanceRegistry& InstanceRegistry();
   apps::AppPlatformMetrics* AppPlatformMetrics();
   apps::AppPlatformMetricsService* AppPlatformMetricsService();
-
-  // TODO(373972275): Remove BrowserAppInstanceTracker,
-  // BrowserAppInstanceRegistry and InstanceRegistryUpdater.
-  apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
-  apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
 
   // Sets the publisher for `app_type` is unavailable, to allow
   // AppService to remove apps for `app_type`, and clean up launch requests,

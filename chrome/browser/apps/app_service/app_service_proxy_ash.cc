@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
-#include "chrome/browser/apps/app_service/instance_registry_updater.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -27,8 +26,6 @@
 #include "chrome/browser/apps/app_service/publisher.h"
 #include "chrome/browser/apps/app_service/publisher_host_factory.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
@@ -174,16 +171,6 @@ apps::AppPlatformMetricsService*
 AppServiceProxyAsh::AppPlatformMetricsService() {
   return app_platform_metrics_service_ ? app_platform_metrics_service_.get()
                                        : nullptr;
-}
-
-apps::BrowserAppInstanceTracker*
-AppServiceProxyAsh::BrowserAppInstanceTracker() {
-  return nullptr;
-}
-
-apps::BrowserAppInstanceRegistry*
-AppServiceProxyAsh::BrowserAppInstanceRegistry() {
-  return nullptr;
 }
 
 apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
