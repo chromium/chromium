@@ -25,6 +25,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kFailedToOverwriteIconsFromPendingIcons";
     case ApplyPendingManifestUpdateResult::kNoPendingUpdate:
       return os << "kNoPendingUpdate";
+    case ApplyPendingManifestUpdateResult::kFailedToRemovePendingIconsFromDisk:
+      return os << "kFailedToRemovePendingIconsFromDisk";
   }
 }
 
@@ -63,12 +65,13 @@ void ApplyPendingManifestUpdateCommand::StartWithLock(
         ApplyPendingManifestUpdateResult::kNoPendingUpdate);
     return;
   }
-  pending_update_info_ = web_app->pending_update_info().value();
+  const proto::PendingUpdateInfo& pending_update =
+      web_app->pending_update_info().value();
 
   // TODO(crbug.com/444497489): Update the web app for app name changes.
 
-  if (pending_update_info_.trusted_icons().empty() &&
-      pending_update_info_.manifest_icons().empty()) {
+  if (pending_update.trusted_icons().empty() &&
+      pending_update.manifest_icons().empty()) {
     // TODO(crbug.com/444497489): Move on to synchronize and skip the
     // overwriting icons process.
     CompleteCommandAndSelfDestruct(
@@ -91,9 +94,20 @@ void ApplyPendingManifestUpdateCommand::ApplyPendingIconToWebApp(bool success) {
     return;
   }
 
-  // TODO(crbug.com/444497489): Remove pending icon directories.
-  CompleteCommandAndSelfDestruct(
-      ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully);
+  // Deletion of pending manifest and pending trusted icon directories should
+  // only happen after the web app has been updated and OS integration is
+  // completed.
+  lock_->icon_manager().DeletePendingIconData(
+      app_id_, PassKey(),
+      base::BindOnce([](bool success) {
+        return success ? ApplyPendingManifestUpdateResult::
+                             kIconChangeAppliedSuccessfully
+                       : ApplyPendingManifestUpdateResult::
+                             kFailedToRemovePendingIconsFromDisk;
+      })
+          .Then(base::BindOnce(&ApplyPendingManifestUpdateCommand::
+                                   CompleteCommandAndSelfDestruct,
+                               AsWeakPtr())));
 }
 
 void ApplyPendingManifestUpdateCommand::CompleteCommandAndSelfDestruct(
@@ -107,6 +121,7 @@ void ApplyPendingManifestUpdateCommand::CompleteCommandAndSelfDestruct(
     case ApplyPendingManifestUpdateResult::
         kFailedToOverwriteIconsFromPendingIcons:
     case ApplyPendingManifestUpdateResult::kNoPendingUpdate:
+    case ApplyPendingManifestUpdateResult::kFailedToRemovePendingIconsFromDisk:
       command_result = CommandResult::kSuccess;
       break;
     case ApplyPendingManifestUpdateResult::kSystemShutdown:

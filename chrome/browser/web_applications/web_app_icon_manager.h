@@ -252,6 +252,11 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       base::PassKey<ApplyPendingManifestUpdateCommand>,
       OverwriteAppIconsFromPendingIconsCallback callback);
 
+  using DeletePendingIconDataCallback = base::OnceCallback<void(bool success)>;
+  void DeletePendingIconData(const webapps::AppId& app_id,
+                             base::PassKey<ApplyPendingManifestUpdateCommand>,
+                             DeletePendingIconDataCallback callback);
+
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
   SkBitmap GetFavicon(const webapps::AppId& app_id) const;
@@ -300,6 +305,16 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   base::FilePath GetIconFilePathForTesting(const webapps::AppId& app_id,
                                            IconPurpose purpose,
                                            SquareSizePx size);
+
+  // Returns the pending trusted icon file path that exists on the disk for
+  // testing.
+  base::FilePath GetAppPendingTrustedIconDirForTesting(
+      const webapps::AppId& app_id);
+
+  // Returns the pending trusted icon file path that exists on the disk for
+  // testing.
+  base::FilePath GetAppPendingManifestIconDirForTesting(
+      const webapps::AppId& app_id);
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals

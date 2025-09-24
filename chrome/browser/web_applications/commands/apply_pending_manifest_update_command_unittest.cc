@@ -137,30 +137,6 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         .has_value();
   }
 
-  base::FilePath GetAppManifestIconsDir(Profile* profile,
-                                        const webapps::AppId& app_id) {
-    base::FilePath web_apps_root_directory = GetWebAppsRootDirectory(profile);
-    return GetManifestResourcesDirectoryForApp(web_apps_root_directory, app_id);
-  }
-
-  base::FilePath GetAppPendingTrustedIconsDir(Profile* profile,
-                                              const webapps::AppId& app_id) {
-    base::FilePath app_dir = GetAppManifestIconsDir(profile, app_id);
-    return app_dir.AppendASCII("Pending Trusted Icons");
-  }
-
-  base::FilePath GetAppPendingManifestIconsDir(Profile* profile,
-                                               const webapps::AppId& app_id) {
-    base::FilePath app_dir = GetAppManifestIconsDir(profile, app_id);
-    return app_dir.AppendASCII("Pending Manifest Icons");
-  }
-
-  base::FilePath GetAppTrustedIconsDir(Profile* profile,
-                                       const webapps::AppId& app_id) {
-    base::FilePath app_dir = GetAppManifestIconsDir(profile, app_id);
-    return app_dir.AppendASCII("Trusted Icons");
-  }
-
   SkBitmap LoadTestPNGAsBitmap(const base::FilePath& path) {
     std::string png_data;
     base::ReadFileToString(path, &png_data);
@@ -254,8 +230,12 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
           ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully,
           /*count=*/1)));
 
-  // TODO(crbug.com/445702843): Verify that the pending update info has been
-  // deleted.
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingTrustedIconDirForTesting(app_id)));
+
+  EXPECT_FALSE(file_utils().PathExists(
+      provider().icon_manager().GetAppPendingManifestIconDirForTesting(
+          app_id)));
 }
 
 }  // namespace web_app

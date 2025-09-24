@@ -28,6 +28,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -399,6 +400,18 @@ TypedResult<bool> OverwriteAppIconsFromPendingIconsBlocking(
     return trusted_result;
   }
 
+  return {.value = true};
+}
+
+// Performs blocking I/O. May be called on another thread.
+// Deletes a directory path and returns a result indicating success or failure
+// with the path included in the error log on failure.
+TypedResult<bool> DeleteDirectoryAndGetResultBlocking(
+    base::FilePath file_path) {
+  if (!base::DeletePathRecursively(file_path)) {
+    return {.error_log = {CreateError(
+                {"Failed to delete directory: ", file_path.AsUTF8Unsafe()})}};
+  }
   return {.value = true};
 }
 
@@ -1263,6 +1276,22 @@ uint64_t AccumulateIconsSizeForApp(std::vector<base::FilePath> icon_paths) {
   return total_size;
 }
 
+base::FilePath GetAppPendingTrustedIconsDir(
+    const base::FilePath& web_apps_directory,
+    const webapps::AppId& app_id) {
+  return web_app::GetManifestResourcesDirectoryForApp(web_apps_directory,
+                                                      app_id)
+      .Append(kPendingTrustedIconFolderName);
+}
+
+base::FilePath GetAppPendingManifestIconsDir(
+    const base::FilePath& web_apps_directory,
+    const webapps::AppId& app_id) {
+  return web_app::GetManifestResourcesDirectoryForApp(web_apps_directory,
+                                                      app_id)
+      .Append(kPendingManifestIconFolderName);
+}
+
 }  // namespace
 
 IconMetadataFromDisk::IconMetadataFromDisk() = default;
@@ -1782,6 +1811,55 @@ void WebAppIconManager::OverwriteAppIconsFromPendingIcons(
                      std::move(callback)));
 }
 
+void WebAppIconManager::DeletePendingIconData(
+    const webapps::AppId& app_id,
+    base::PassKey<ApplyPendingManifestUpdateCommand>,
+    DeletePendingIconDataCallback callback) {
+  TRACE_EVENT0("ui", "WebAppIconManager::DeletePendingIconData");
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!provider_->registrar_unsafe().IsInRegistrar(app_id)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const base::FilePath pending_manifest_dir =
+      GetAppPendingManifestIconsDir(web_apps_directory_, app_id);
+  const base::FilePath pending_trusted_dir =
+      GetAppPendingTrustedIconsDir(web_apps_directory_, app_id);
+
+  std::vector<base::FilePath> directories_to_delete;
+  directories_to_delete.push_back(pending_manifest_dir);
+  directories_to_delete.push_back(pending_trusted_dir);
+
+  base::ConcurrentCallbacks<TypedResult<bool>> deletion_callbacks;
+
+  for (const auto& directory : directories_to_delete) {
+    icon_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&DeleteDirectoryAndGetResultBlocking, directory),
+        deletion_callbacks.CreateCallback());
+  }
+
+  std::move(deletion_callbacks)
+      .Done(base::BindOnce([](std::vector<TypedResult<bool>> results)
+                               -> web_app::TypedResult<bool> {
+              web_app::TypedResult<bool> final_result;
+              for (const auto& result : results) {
+                if (result.HasErrors()) {
+                  final_result.error_log.push_back(result.error_log[0]);
+                }
+              }
+
+              if (final_result.HasErrors()) {
+                return final_result;
+              }
+
+              return {.value = true};
+            })
+                .Then(base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
+                                     std::move(callback))));
+}
+
 SkBitmap WebAppIconManager::GetFavicon(const webapps::AppId& app_id) const {
   auto iter = favicon_cache_.find(app_id);
   if (iter == favicon_cache_.end())
@@ -1955,6 +2033,16 @@ base::FilePath WebAppIconManager::GetIconFilePathForTesting(
   }
 
   return GetIconFileName(web_apps_directory_, icon_id);
+}
+
+base::FilePath WebAppIconManager::GetAppPendingTrustedIconDirForTesting(
+    const webapps::AppId& app_id) {
+  return GetAppPendingTrustedIconsDir(web_apps_directory_, app_id);
+}
+
+base::FilePath WebAppIconManager::GetAppPendingManifestIconDirForTesting(
+    const webapps::AppId& app_id) {
+  return GetAppPendingManifestIconsDir(web_apps_directory_, app_id);
 }
 
 base::WeakPtr<const WebAppIconManager> WebAppIconManager::GetWeakPtr() const {

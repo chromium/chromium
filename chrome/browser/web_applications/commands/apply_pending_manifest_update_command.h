@@ -19,7 +19,8 @@ enum class ApplyPendingManifestUpdateResult {
   kIconChangeAppliedSuccessfully = 2,
   kFailedToOverwriteIconsFromPendingIcons = 3,
   kNoPendingUpdate = 4,
-  kMaxValue = kNoPendingUpdate
+  kFailedToRemovePendingIconsFromDisk = 5,
+  kMaxValue = kFailedToRemovePendingIconsFromDisk
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -44,6 +45,10 @@ class ApplyPendingManifestUpdateCommand
   // app.
   void ApplyPendingIconToWebApp(bool success);
 
+  // Deletes pending trusted icons and pending manifest icons directory from the
+  // disk.
+  void DeletePendingIconsFromDisk(bool success);
+
   void CompleteCommandAndSelfDestruct(
       ApplyPendingManifestUpdateResult check_result);
 
@@ -53,7 +58,6 @@ class ApplyPendingManifestUpdateCommand
 
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId app_id_;
-  proto::PendingUpdateInfo pending_update_info_;
   base::WeakPtrFactory<ApplyPendingManifestUpdateCommand> weak_factory_{this};
 };
 
