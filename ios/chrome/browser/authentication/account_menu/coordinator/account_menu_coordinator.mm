@@ -162,14 +162,28 @@ void maybeShowSettingsIPH(Browser* browser) {
 }
 
 - (void)start {
+  ProfileIOS* profile = self.profile;
+  _identityManager = IdentityManagerFactory::GetForProfile(profile);
+  BOOL has_primary_identity =
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  if (!has_primary_identity) {
+    // The owner of this coordinator is supposed to have checked that there is a
+    // primary identity. If not, the coordinator will request to be stopped
+    // immediately. This is not a security issue, so we don’t want to CHECK.
+    // However, this is not the optimal user experience, so we DUMP in order for
+    // the owner of this coordinator to be edited so that it choses what to do
+    // instead.
+    DUMP_WILL_BE_NOTREACHED();
+    [self.delegate accountMenuCoordinatorWantsToBeStopped:self];
+    return;
+  }
+
   [super start];
 
-  ProfileIOS* profile = self.profile;
   _syncService = SyncServiceFactory::GetForProfile(profile);
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  _identityManager = IdentityManagerFactory::GetForProfile(profile);
 
   _viewController = [[AccountMenuViewController alloc]
       initWithHideEllipsisMenu:_accessPoint == AccountMenuAccessPoint::kWeb];
