@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -35,6 +36,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
@@ -46,6 +48,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
+constexpr char kContextualInputsParameterKey[] = "cinpts";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
@@ -77,6 +80,8 @@ using FileUploadStatusTuple = std::tuple<base::UnguessableToken,
                                          lens::MimeType,
                                          FileUploadStatus,
                                          std::optional<FileUploadErrorType>>;
+
+using base::test::EqualsProto;
 
 class ComposeboxQueryControllerTest
     : public testing::Test,
@@ -269,6 +274,21 @@ class ComposeboxQueryControllerTest
     EXPECT_TRUE(
         net::GetValueForKeyInQuery(url, kRequestIdParameterKey, &vsrid_param));
     return DecodeRequestIdFromVsrid(vsrid_param);
+  }
+
+  lens::LensOverlayContextualInputs GetContextualInputsFromUrl(
+      std::string url_string) {
+    GURL url = GURL(url_string);
+    std::string contextual_inputs_param;
+    EXPECT_TRUE(net::GetValueForKeyInQuery(url, kContextualInputsParameterKey,
+                                           &contextual_inputs_param));
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        contextual_inputs_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+    lens::LensOverlayContextualInputs proto;
+    EXPECT_TRUE(proto.ParseFromString(serialized_proto));
+    return proto;
   }
 
  protected:
@@ -1830,4 +1850,60 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_context()
                 .request_id()
                 .uuid());
+  // Act: Create the destination URL for the query.
+  GURL aim_url = controller().CreateAimUrl("hello", kTestQueryStartTime);
+
+  // Assert: Lens request id is NOT added to queries using multi-context flow.
+  std::string vsrid_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kRequestIdParameterKey,
+                                          &vsrid_value));
+
+  // Assert: Visual input type is NOT set for queries using multi-context flow.
+  std::string vit_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(aim_url, kVisualInputTypeParameterKey,
+                                          &vit_value));
+
+  // Assert: Gsession id is added to multimodal queries.
+  std::string gsession_id_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
+                                         &gsession_id_value));
+  EXPECT_EQ(kTestSearchSessionId, gsession_id_value);
+
+  // Check that the timestamps are attached to the url.
+  std::string qsubts_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kQuerySubmissionTimeQueryParameter, &qsubts_value));
+
+  std::string cud_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the contextual inputs param contains the request ids.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(aim_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+
+  // The files may be in any order, so find the corresponding request ids.
+  bool first_contextual_input_is_first_file =
+      contextual_inputs.inputs(0).request_id().uuid() ==
+      controller()
+          .GetFileInfo(first_file_token)
+          ->GetRequestIdForTesting()
+          ->uuid();
+  auto first_file_request_id =
+      *controller()
+           .GetFileInfo(first_contextual_input_is_first_file
+                            ? first_file_token
+                            : second_file_token)
+           ->GetRequestIdForTesting();
+  auto second_file_request_id =
+      *controller()
+           .GetFileInfo(first_contextual_input_is_first_file ? second_file_token
+                                                             : first_file_token)
+           ->GetRequestIdForTesting();
+
+  EXPECT_THAT(contextual_inputs.inputs(0).request_id(),
+              EqualsProto(first_file_request_id));
+  EXPECT_THAT(contextual_inputs.inputs(1).request_id(),
+              EqualsProto(second_file_request_id));
 }

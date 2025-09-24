@@ -34,10 +34,12 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "net/base/url_util.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
 namespace {
 
+constexpr char kContextualInputsParameterKey[] = "cinpts";
 constexpr char kSearchSessionIdParameterKey[] = "gsessionid";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
 constexpr char kVisualRequestIdQueryParameter[] = "vsrid";
@@ -674,6 +676,32 @@ GURL GetUrlForMultimodalAim(
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kVisualInputTypeQueryParameter,
       GetMimeTypeParamValue(mime_type));
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kSearchSessionIdParameterKey, search_session_id);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kLnsSurfaceParameterKey, lns_surface);
+  return result_url;
+}
+
+GURL GetUrlForMultimodalAim(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::string& search_session_id,
+    const std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs,
+    const std::string& lns_surface,
+    const std::u16string& query_text,
+    std::map<std::string, std::string> additional_params) {
+  GURL result_url = GetUrlForAim(turl_service, aim_entrypoint, query_start_time,
+                                 query_text, additional_params);
+  std::string serialized_contextual_inputs;
+  CHECK(contextual_inputs->SerializeToString(&serialized_contextual_inputs));
+  std::string encoded_contextual_inputs;
+  base::Base64UrlEncode(serialized_contextual_inputs,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_contextual_inputs);
+  result_url = net::AppendOrReplaceQueryParameter(
+      result_url, kContextualInputsParameterKey, encoded_contextual_inputs);
   result_url = net::AppendOrReplaceQueryParameter(
       result_url, kSearchSessionIdParameterKey, search_session_id);
   result_url = net::AppendOrReplaceQueryParameter(

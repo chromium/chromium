@@ -39,6 +39,7 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_payload.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_platform.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
@@ -266,25 +267,46 @@ GURL ComposeboxQueryController::CreateAimUrl(
     std::map<std::string, std::string> additional_params) {
   num_files_in_request_ = 0;
   if (!active_files_.empty() && cluster_info_.has_value()) {
-    // Since multiple file upload isn't supported right now, use the last file
-    // uploaded to determine `vit` param.
-    // TODO(crbug.com/445777721): Support multiple file upload.
-    const std::unique_ptr<FileInfo>& last_file = active_files_.rbegin()->second;
-    // TODO(crbug.com/445777721): Update `num_files_in_request_` when more than
-    // 1 file is supported.
-    num_files_in_request_ = 1;
-    if (IsValidFileUploadStatusForMultimodalRequest(
-            last_file->upload_status_)) {
+    if (enable_multi_context_input_flow_) {
+      std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
+          std::make_unique<lens::LensOverlayContextualInputs>();
+      for (const auto& [file_token, file_info] : active_files_) {
+        if (IsValidFileUploadStatusForMultimodalRequest(
+                file_info->upload_status_)) {
+          num_files_in_request_++;
+          auto* contextual_input = contextual_inputs->add_inputs();
+          contextual_input->mutable_request_id()->CopyFrom(
+              *file_info->request_id_);
+        }
+      }
       return GetUrlForMultimodalAim(
           template_url_service_,
           omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
-          cluster_info_->search_session_id(),
-          GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
-                           last_file->mime_type_,
-                           last_file->request_id_->media_type()),
-          last_file->mime_type_,
+          cluster_info_->search_session_id(), std::move(contextual_inputs),
           send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
           base::UTF8ToUTF16(query_text), additional_params);
+    } else {
+      // When multi-context input flow is not enabled, only one file is
+      // supported.
+      // Use the last file uploaded to determine `vit` param.
+      // TODO(crbug.com/446972028): Remove this once multi-context input flow is
+      // fully supported.
+      const std::unique_ptr<FileInfo>& last_file =
+          active_files_.rbegin()->second;
+      if (IsValidFileUploadStatusForMultimodalRequest(
+              last_file->upload_status_)) {
+        num_files_in_request_ = 1;
+        return GetUrlForMultimodalAim(
+            template_url_service_,
+            omnibox::DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT, query_start_time,
+            cluster_info_->search_session_id(),
+            GetNextRequestId(lens::RequestIdUpdateMode::kSearchUrl,
+                             last_file->mime_type_,
+                             last_file->request_id_->media_type()),
+            last_file->mime_type_,
+            send_lns_surface_ ? kLnsSurfaceParameterValue : std::string(),
+            base::UTF8ToUTF16(query_text), additional_params);
+      }
     }
   }
   // Treat queries in which the cluster info has expired, or the last file is
@@ -381,7 +403,7 @@ void ComposeboxQueryController::ClearSuggestInputs() {
   // inputs should instead be updated to reflect this file being deleted.
   // Suggest inputs must be cleared so when autocomplete is queried again
   // in the UI, contextual suggestions do not appear.
-    suggest_inputs_.Clear();
+  suggest_inputs_.Clear();
 }
 
 bool ComposeboxQueryController::DeleteFile(

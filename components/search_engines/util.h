@@ -24,6 +24,7 @@ class PrefService;
 class TemplateURL;
 
 namespace lens {
+class LensOverlayContextualInputs;
 class LensOverlayRequestId;
 }  // namespace lens
 
@@ -240,6 +241,8 @@ GURL GetUrlForAim(TemplateURLService* turl_service,
 // `mime_type` (vit) is the type of the file that has been uploaded.
 // TODO(crbug.com/430070871): Make `lns_surface` a required parameter when
 // the server supports it.
+// TODO(crbug.com/446972028): Remove this method in favor of the one below that
+// takes `contextual_inputs` once the server fully supports it.
 GURL GetUrlForMultimodalAim(
     TemplateURLService* turl_service,
     omnibox::ChromeAimEntryPoint aim_entrypoint,
@@ -247,6 +250,25 @@ GURL GetUrlForMultimodalAim(
     const std::string& search_session_id,
     const std::unique_ptr<lens::LensOverlayRequestId> request_id,
     const lens::MimeType mime_type,
+    const std::string& lns_surface = std::string(),
+    const std::u16string& query_text = std::u16string(),
+    std::map<std::string, std::string> additional_params = {});
+
+// Retrieves the URL for the AIM web page if file(s) were uploaded as part
+// of the input.
+// `aim_entrypoint` (aep) is the source of the request.
+// `search_session_id` (gsessionid) is the search session id from the cluster
+// info.
+// `contextual_inputs` (cinpts) are the visual search request ids used by lens
+// to obtain the uploaded context.
+// TODO(crbug.com/430070871): Make `lns_surface` a required parameter when
+// the server supports it.
+GURL GetUrlForMultimodalAim(
+    TemplateURLService* turl_service,
+    omnibox::ChromeAimEntryPoint aim_entrypoint,
+    const base::Time& query_start_time,
+    const std::string& search_session_id,
+    const std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs,
     const std::string& lns_surface = std::string(),
     const std::u16string& query_text = std::u16string(),
     std::map<std::string, std::string> additional_params = {});
