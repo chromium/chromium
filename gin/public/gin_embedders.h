@@ -22,6 +22,19 @@ enum GinEmbedder : uint16_t {
   kEmbedderFuchsia,
 };
 
+enum EmbedderDataTag : uint16_t {
+  kBlinkScriptState,
+  kGinPerContextData,
+  // kDeprecatedData is used for data that is already not used anymore but still
+  // exists for legacy reasons, e.g. in the implementation of
+  // gin::DeprecatedWrappable.
+  kDeprecatedData,
+  kPdfiumFXJSEClassDescriptor,
+  kPdfiumFXJSEHostObjectTag,
+  kPdfiumCFXJSEHostObject,
+  kPdfiumCFXJSPerObjectData,
+};
+
 }  // namespace gin
 
 #endif  // GIN_PUBLIC_GIN_EMBEDDERS_H_

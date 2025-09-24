@@ -36,7 +36,8 @@ ScriptState::ScriptState(v8::Local<v8::Context> context,
       per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
-  context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this);
+  context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this,
+                                           gin::kBlinkScriptState);
   RendererResourceCoordinator::Get()->OnScriptStateCreated(this,
                                                            execution_context);
 }
@@ -78,8 +79,8 @@ void ScriptState::DissociateContext() {
 
   v8::HandleScope scope(GetIsolate());
   // Cut the reference from V8 context to ScriptState.
-  GetContext()->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex,
-                                                nullptr);
+  GetContext()->SetAlignedPointerInEmbedderData(
+      kV8ContextPerContextDataIndex, nullptr, gin::kBlinkScriptState);
   reference_from_v8_context_.Clear();
 
   // Cut the reference from ScriptState to V8 context.

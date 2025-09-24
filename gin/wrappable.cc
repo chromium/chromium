@@ -62,9 +62,10 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
 
   // TODO(345640553): Delete the internal fields once DeprecatedWrappable does
   // not exist anymore.
-  int indices[] = {kWrapperInfoIndex, kEncodedValueIndex};
-  void* values[] = {nullptr, nullptr};
-  wrapper->SetAlignedPointerInInternalFields(2, indices, values);
+  wrapper->SetAlignedPointerInInternalField(kWrapperInfoIndex, nullptr,
+                                            kDeprecatedData);
+  wrapper->SetAlignedPointerInInternalField(kEncodedValueIndex, nullptr,
+                                            kDeprecatedData);
 
   AssociateWithWrapper(isolate, wrapper);
   return wrapper;
@@ -135,9 +136,10 @@ v8::MaybeLocal<v8::Object> DeprecatedWrappableBase::GetWrapperImpl(
     return v8::MaybeLocal<v8::Object>(wrapper);
   }
 
-  int indices[] = {kWrapperInfoIndex, kEncodedValueIndex};
-  void* values[] = {info, this};
-  wrapper->SetAlignedPointerInInternalFields(2, indices, values);
+  wrapper->SetAlignedPointerInInternalField(kWrapperInfoIndex, info,
+                                            kDeprecatedData);
+  wrapper->SetAlignedPointerInInternalField(kEncodedValueIndex, this,
+                                            kDeprecatedData);
   wrapper_.Reset(isolate, wrapper);
   wrapper_.SetWeak(this, FirstWeakCallback, v8::WeakCallbackType::kParameter);
   return v8::MaybeLocal<v8::Object>(wrapper);
@@ -167,7 +169,8 @@ void* FromV8Impl(v8::Isolate* isolate,
     return nullptr;
   }
 
-  return obj->GetAlignedPointerFromInternalField(kEncodedValueIndex);
+  return obj->GetAlignedPointerFromInternalField(kEncodedValueIndex,
+                                                 kDeprecatedData);
 }
 
 }  // namespace internal

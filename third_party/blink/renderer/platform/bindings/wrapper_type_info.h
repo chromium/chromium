@@ -159,7 +159,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final
 
   static bool HasLegacyInternalFieldsSet(v8::Local<v8::Object> object) {
     for (int i = 0, n = object->InternalFieldCount(); i < n; ++i) {
-      if (object->GetAlignedPointerFromInternalField(i)) {
+      if (object->GetAlignedPointerFromInternalField(i, gin::kDeprecatedData)) {
         return true;
       }
     }
