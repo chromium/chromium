@@ -77,10 +77,17 @@ class PageHandler : public mojom::PageHandler,
                          int source_line,
                          const std::string& message) override;
 
-  // Called when device performance info is received. Creates and fully
-  // populates a `PageData` to be returned via `callback`.
+  // Called when model info is received. Populates `page_data` with the model
+  // info and starts gathering DevicePerformanceInfo.
+  void OnReceivedModelInfoForPageData(GetPageDataCallback callback,
+                                      mojom::PageDataPtr page_data,
+                                      mojom::BaseModelInfoPtr model_info);
+
+  // Called when device performance info is received. Populates `page_data` with
+  // the performance info and passes it off to `callback`.
   void OnReceivedPerformanceInfoForPageData(
       GetPageDataCallback callback,
+      mojom::PageDataPtr page_data,
       on_device_model::mojom::DevicePerformanceInfoPtr perf_info,
       on_device_model::mojom::DeviceInfoPtr device_info);
 

@@ -478,6 +478,8 @@ OnDeviceModelComponentState::OnDeviceModelComponentState(
     : install_dir_(install_dir),
       component_version_(component_version),
       model_spec_(model_spec) {}
+OnDeviceModelComponentState::OnDeviceModelComponentState(
+    const OnDeviceModelComponentState&) = default;
 OnDeviceModelComponentState::~OnDeviceModelComponentState() = default;
 
 }  // namespace optimization_guide
