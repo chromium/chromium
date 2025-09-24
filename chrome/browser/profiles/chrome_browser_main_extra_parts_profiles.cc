@@ -1334,7 +1334,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   SharingServiceFactory::GetInstance();
   ShortcutsBackendFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  SigninDetectionServiceFactory::GetInstance();
+  SigninDetectionServiceFactoryEnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SigninManagerAndroidFactory::GetInstance();

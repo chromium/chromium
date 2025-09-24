@@ -77,18 +77,6 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-// Profile-scoped service that detects if the user has signed in before any
-// browser window was created. Used by `StateProvider`(s) to catch potentially
-// missed on sign-in events.
-class SigninDetectionService : public KeyedService {
- public:
-  ~SigninDetectionService() override = default;
-
-  // Returns true if the user has signed in the current session (for the current
-  // profile).
-  virtual bool HasSignedInInCurrentSession() const = 0;
-};
-
 namespace {
 
 using ButtonState = ::AvatarToolbarButtonStateManager::ButtonState;
@@ -368,6 +356,55 @@ class ExplicitStateProvider : public StateProvider {
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
 
+// Profile-scoped service that detects if the user has signed in before any
+// browser window was created. Used by `StateProvider`(s) to catch potentially
+// missed on sign-in events.
+class SigninDetectionService : public KeyedService {
+ public:
+  ~SigninDetectionService() override = default;
+
+  // Returns true if the user has signed in the current session (for the current
+  // profile).
+  virtual bool HasSignedInInCurrentSession() const = 0;
+};
+
+// Singleton that manages the `SigninDetectionService` per `Profile`.
+class SigninDetectionServiceFactory : public ProfileKeyedServiceFactory {
+ public:
+  static SigninDetectionService* GetForProfile(Profile* profile) {
+    return static_cast<SigninDetectionService*>(
+        GetInstance()->GetServiceForBrowserContext(profile, true));
+  }
+
+  // Returns an instance of the `SigninDetectionServiceFactory` singleton.
+  static SigninDetectionServiceFactory* GetInstance() {
+    static base::NoDestructor<SigninDetectionServiceFactory> instance;
+    return instance.get();
+  }
+
+  SigninDetectionServiceFactory(const SigninDetectionServiceFactory&) = delete;
+  SigninDetectionServiceFactory& operator=(
+      const SigninDetectionServiceFactory&) = delete;
+
+ private:
+  friend base::NoDestructor<SigninDetectionServiceFactory>;
+
+  SigninDetectionServiceFactory()
+      : ProfileKeyedServiceFactory(
+            "SigninDetection",
+            ProfileSelections::BuildForRegularProfile()) {
+    DependsOn(IdentityManagerFactory::GetInstance());
+  }
+
+  ~SigninDetectionServiceFactory() override = default;
+
+  // BrowserContextKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override;
+
+  bool ServiceIsCreatedWithBrowserContext() const override { return true; }
+};
+
 // Helper class used to compute the `OnSigninStateProvider::IsActive()`.
 // It becomes active at a signin event and remains active for some duration.
 // There is one instance of this class per profile, so that the pill state is
@@ -485,6 +522,15 @@ class OnSigninCoordinator : public signin::IdentityManager::Observer,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 };
+
+// BrowserContextKeyedServiceFactory:
+std::unique_ptr<KeyedService>
+SigninDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  return std::make_unique<OnSigninCoordinator>(
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
+}
 
 class OnSigninStateProvider : public StateProvider {
  public:
@@ -1594,39 +1640,6 @@ class NormalStateProvider : public StateProvider {
 
 }  // namespace
 
-SigninDetectionServiceFactory::SigninDetectionServiceFactory()
-    : ProfileKeyedServiceFactory("SigninDetection",
-                                 ProfileSelections::BuildForRegularProfile()) {
-  DependsOn(IdentityManagerFactory::GetInstance());
-}
-
-SigninDetectionServiceFactory::~SigninDetectionServiceFactory() = default;
-
-// static
-SigninDetectionService* SigninDetectionServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<SigninDetectionService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-// static
-SigninDetectionServiceFactory* SigninDetectionServiceFactory::GetInstance() {
-  static base::NoDestructor<SigninDetectionServiceFactory> instance;
-  return instance.get();
-}
-
-std::unique_ptr<KeyedService>
-SigninDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  return std::make_unique<OnSigninCoordinator>(
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
-}
-
-bool SigninDetectionServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
 StateProvider::StateProvider(Profile* profile, StateObserver* state_observer)
     : profile_(*profile), state_observer_(*state_observer) {}
 
@@ -1995,3 +2008,7 @@ AvatarToolbarButtonStateManager::
       &g_show_signin_pending_text_delay_for_testing, base::Seconds(0));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+void SigninDetectionServiceFactoryEnsureFactoryBuilt() {
+  SigninDetectionServiceFactory::GetInstance();
+}
