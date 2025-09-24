@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/mac/mac_util.h"
 #include "content/common/mac/system_policy.h"
 
 namespace content {
@@ -27,10 +28,20 @@ void InitializeMac() {
     // Chrome is unusable for a long period after returning from sleep.
     // https://crbug.com/871235.
     @"NSAppSleepDisabled" : @YES,
-
-    // TODO(crbug.com/446481994): Suspect cause of scroll jank seen on macOS 26.
-    @"NSAutoFillHeuristicControllerEnabled" : @"NO",
   }];
+
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    [NSUserDefaults.standardUserDefaults registerDefaults:@{
+      // Disable NSAutoFillHeuristicController on macOS 26. On macOS 26, the
+      // browser process sends synchronized IPC messages to the renderer process
+      // on pages with <input> tags. At this point, if the renderer process
+      // sends a synchronized IPC message to the browser process, it will cause
+      // a deadlock.
+      // https://crbug.com/446070423
+      // https://crbug.com/446481994
+      @"NSAutoFillHeuristicControllerEnabled" : @NO,
+    }];
+  }
 
   SetSystemPolicyCrashKeys();
 }
