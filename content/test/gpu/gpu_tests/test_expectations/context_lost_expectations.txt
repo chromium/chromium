@@ -203,8 +203,11 @@ crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure 
 crbug.com/329145823 [ win release intel ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/329145823 [ angle-metal graphite-enabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
+crbug.com/329145823 [ angle-metal apple-angle-metal-renderer:-apple-m1 arch-arm64 graphite-enabled memory_ge_16gb no-asan no-clang-coverage release sequoia ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-metal apple-angle-metal-renderer:-apple-m2 arch-arm64 graphite-enabled memory_ge_16gb no-asan no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ angle-metal apple-angle-metal-renderer:-apple-m1 arch-arm64 graphite-enabled memory_ge_16gb no-asan no-clang-coverage release sequoia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
+crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ graphite-disabled mac release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b arch-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
@@ -216,7 +219,6 @@ crbug.com/354748640 [ mac amd no-asan graphite-disabled release ] GpuCrash_InfoF
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
-crbug.com/338574390 [ angle-metal asan graphite-disabled intel mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 
 # Windows debug causes render process hangs due to slow gpu process restart.
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
@@ -236,7 +238,6 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] ContextLost_WebGLContextLostOverlyLargeUniform [ RetryOnFailure ]
 crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
 
 #######################################################################
