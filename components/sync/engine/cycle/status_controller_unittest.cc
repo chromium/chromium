@@ -30,13 +30,13 @@ TEST_F(StatusControllerTest, ReadYourWrites) {
   EXPECT_EQ(14, status.model_neutral_state().num_successful_commits);
 }
 
-// Test TotalNumConflictingItems
-TEST_F(StatusControllerTest, TotalNumConflictingItems) {
+// Test num_server_conflicts.
+TEST_F(StatusControllerTest, NumServerConflicts) {
   StatusController status;
-  EXPECT_EQ(0, status.TotalNumConflictingItems());
+  EXPECT_EQ(0, status.num_server_conflicts());
 
   status.increment_num_server_conflicts();
-  EXPECT_EQ(1, status.TotalNumConflictingItems());
+  EXPECT_EQ(1, status.num_server_conflicts());
 }
 
 }  // namespace syncer

@@ -39,8 +39,6 @@ class StatusController {
   // Various conflict counters.
   int num_server_conflicts() const;
 
-  // Aggregate sum of all conflicting items over all conflict types.
-  int TotalNumConflictingItems() const;
 
   // The time at which we started the most recent sync cycle.
   base::Time sync_start_time() const { return sync_start_time_; }
