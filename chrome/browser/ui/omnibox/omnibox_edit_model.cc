@@ -267,8 +267,9 @@ OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
   std::u16string user_text;
   if (user_input_in_progress_) {
     const std::u16string display_text = GetText();
-    if (!MaybePrependKeyword(display_text).empty())
+    if (!MaybePrependKeyword(display_text).empty()) {
       user_text = display_text;
+    }
     // Else case is user deleted all the text. The expectation (which matches
     // other browsers) is when the user restores the state a revert happens as
     // well as a select all. The revert shouldn't be done here, as at the time
@@ -408,8 +409,9 @@ void OmniboxEditModel::SetUserText(const std::u16string& text) {
 
 bool OmniboxEditModel::Unelide() {
   // Unelision should not occur if the user has already inputted text.
-  if (user_input_in_progress())
+  if (user_input_in_progress()) {
     return false;
+  }
 
   // No need to unelide if we are already displaying the full URL.
   if (GetText() == controller_->client()->GetFormattedFullURL()) {
@@ -487,8 +489,9 @@ bool OmniboxEditModel::ShouldShowCurrentPageIcon() const {
   }
 
   // If user input is not in progress, always show the current page's icon.
-  if (!user_input_in_progress())
+  if (!user_input_in_progress()) {
     return true;
+  }
 
   // If user input is in progress, keep showing the current page's icon so long
   // as the text matches the current page's URL, elided or unelided.
@@ -535,8 +538,9 @@ void OmniboxEditModel::UpdateInput(bool has_selected_text,
                                    bool prevent_inline_autocomplete) {
   bool changed_to_user_input_in_progress = SetInputInProgressNoNotify(true);
   if (!has_focus()) {
-    if (changed_to_user_input_in_progress)
+    if (changed_to_user_input_in_progress) {
       NotifyObserversInputInProgress(true);
+    }
     return;
   }
 
@@ -559,13 +563,15 @@ void OmniboxEditModel::UpdateInput(bool has_selected_text,
     StartAutocomplete(has_selected_text, prevent_inline_autocomplete);
   }
 
-  if (changed_to_user_input_in_progress)
+  if (changed_to_user_input_in_progress) {
     NotifyObserversInputInProgress(true);
+  }
 }
 
 void OmniboxEditModel::SetInputInProgress(bool in_progress) {
-  if (SetInputInProgressNoNotify(in_progress))
+  if (SetInputInProgressNoNotify(in_progress)) {
     NotifyObserversInputInProgress(in_progress);
+  }
 }
 
 void OmniboxEditModel::Revert() {
@@ -872,8 +878,9 @@ void OmniboxEditModel::AcceptTemporaryTextAsUserText() {
   InternalSetUserText(GetText());
   has_temporary_text_ = false;
 
-  if (user_input_in_progress_ || !in_revert_)
+  if (user_input_in_progress_ || !in_revert_) {
     controller_->client()->OnInputStateChanged();
+  }
 }
 
 void OmniboxEditModel::ClearKeyword() {
@@ -967,10 +974,12 @@ void OmniboxEditModel::ClearKeyword() {
     // keyword.  Instead, restore the question mark iff the user originally
     // typed one.
     std::u16string prefix;
-    if (keyword_mode_entry_method_ == OmniboxEventProto::QUESTION_MARK)
+    if (keyword_mode_entry_method_ == OmniboxEventProto::QUESTION_MARK) {
       prefix = u"?";
-    else if (keyword_mode_entry_method_ != OmniboxEventProto::KEYBOARD_SHORTCUT)
+    } else if (keyword_mode_entry_method_ !=
+               OmniboxEventProto::KEYBOARD_SHORTCUT) {
       prefix = keyword_ + u" ";
+    }
 
     keyword_.clear();
     keyword_placeholder_.clear();
@@ -1009,8 +1018,9 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
   // example, if the user presses ctrl-l to focus the omnibox.
   control_key_state_ = control_down ? DOWN_AND_CONSUMED : UP;
 
-  if (user_input_in_progress_ || !in_revert_)
+  if (user_input_in_progress_ || !in_revert_) {
     controller_->client()->OnInputStateChanged();
+  }
 
   if (omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::
           Get()
@@ -1035,8 +1045,9 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   }
 
   // Early exit if the user already has a navigation or search query in mind.
-  if (user_input_in_progress_ && !user_clobbered_permanent_text)
+  if (user_input_in_progress_ && !user_clobbered_permanent_text) {
     return;
+  }
 
   TRACE_EVENT0("omnibox", "OmniboxEditModel::StartZeroSuggestRequest");
 
@@ -1069,13 +1080,15 @@ void OmniboxEditModel::SetCaretVisibility(bool visible) {
 }
 
 void OmniboxEditModel::ConsumeCtrlKey() {
-  if (control_key_state_ == DOWN)
+  if (control_key_state_ == DOWN) {
     control_key_state_ = DOWN_AND_CONSUMED;
+  }
 }
 
 void OmniboxEditModel::OnWillKillFocus() {
-  if (user_input_in_progress_ || !in_revert_)
+  if (user_input_in_progress_ || !in_revert_) {
     controller_->client()->OnInputStateChanged();
+  }
 }
 
 void OmniboxEditModel::OnKillFocus() {
@@ -1159,8 +1172,9 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
 }
 
 void OmniboxEditModel::OnControlKeyChanged(bool pressed) {
-  if (pressed == (control_key_state_ == UP))
+  if (pressed == (control_key_state_ == UP)) {
     control_key_state_ = pressed ? DOWN : UP;
+  }
 }
 
 void OmniboxEditModel::OnPaste() {
@@ -1431,8 +1445,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
 
   if (!state_changes.text_differs || !allow_keyword_ui_change ||
       (state_changes.just_deleted_text && no_selection) ||
-      is_keyword_selected() || (paste_state_ != NONE))
+      is_keyword_selected() || (paste_state_ != NONE)) {
     return true;
+  }
 
   // If the user input a "?" at the beginning of the text, put them into
   // keyword mode for their default search provider.
@@ -1800,9 +1815,9 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   }
 
   const AutocompleteMatch& match =
-      popup_selection_.line == OmniboxPopupSelection::kNoMatch ?
-          AutocompleteMatch() :
-          autocomplete_controller()->result().match_at(popup_selection_.line);
+      popup_selection_.line == OmniboxPopupSelection::kNoMatch
+          ? AutocompleteMatch()
+          : autocomplete_controller()->result().match_at(popup_selection_.line);
 
   DCHECK((popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE) ||
          match.associated_keyword.get());
@@ -1983,8 +1998,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }
-      if (available_actions_count > 1)
+      if (available_actions_count > 1) {
         additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
+      }
 
       break;
     }
@@ -2231,8 +2247,9 @@ bool OmniboxEditModel::MaybeStartQueryForPopup() {
   // Note: This does not force the popup to open immediately.
   // TODO(pkasting): We should, in fact, force this particular query to open
   //   the popup immediately.
-  if (!user_input_in_progress_)
+  if (!user_input_in_progress_) {
     InternalSetUserText(url_for_editing_);
+  }
   if (view_) {
     view_->UpdatePopup();
   }
@@ -2247,8 +2264,9 @@ void OmniboxEditModel::StepPopupSelection(
 
   // The popup could be working on a query but is not open. In that case, force
   // it to open immediately.
-  if (MaybeStartQueryForPopup() || !PopupIsOpen())
+  if (MaybeStartQueryForPopup() || !PopupIsOpen()) {
     return;
+  }
 
   // The popup is open, so the user should be able to interact with it normally.
 
@@ -2767,8 +2785,9 @@ bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
     const std::u16string& new_text) {
-  if (!AllowKeywordSpaceTriggering())
+  if (!AllowKeywordSpaceTriggering()) {
     return false;
+  }
 
   size_t keyword_length = new_text.length() - 1;
   return is_keyword_hint_ && (keyword_.length() == keyword_length) &&
@@ -2786,8 +2805,9 @@ bool OmniboxEditModel::CreatedKeywordSearchByInsertingSpaceInMiddle(
   // Check simple conditions first.
   if ((paste_state_ != NONE) || (caret_position < 2) ||
       (old_text.length() < caret_position) ||
-      (new_text.length() == caret_position))
+      (new_text.length() == caret_position)) {
     return false;
+  }
   size_t space_position = caret_position - 1;
   if (!IsSpaceCharForAcceptingKeyword(new_text[space_position]) ||
       base::IsUnicodeWhitespace(new_text[space_position - 1]) ||
@@ -2830,8 +2850,9 @@ void OmniboxEditModel::ClassifyString(const std::u16string& text,
 }
 
 bool OmniboxEditModel::SetInputInProgressNoNotify(bool in_progress) {
-  if (user_input_in_progress_ == in_progress)
+  if (user_input_in_progress_ == in_progress) {
     return false;
+  }
 
   user_input_in_progress_ = in_progress;
   if (user_input_in_progress_) {
@@ -2845,14 +2866,16 @@ bool OmniboxEditModel::SetInputInProgressNoNotify(bool in_progress) {
 void OmniboxEditModel::NotifyObserversInputInProgress(bool in_progress) {
   controller_->client()->OnInputInProgress(in_progress);
 
-  if (user_input_in_progress_ || !in_revert_)
+  if (user_input_in_progress_ || !in_revert_) {
     controller_->client()->OnInputStateChanged();
+  }
 }
 
 void OmniboxEditModel::SetFocusState(OmniboxFocusState state,
                                      OmniboxFocusChangeReason reason) {
-  if (state == focus_state_)
+  if (state == focus_state_) {
     return;
+  }
 
   // Update state and notify view if the omnibox caret visibility changed.
   const bool was_caret_visible = is_caret_visible();
