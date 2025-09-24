@@ -19,24 +19,7 @@ bool IsAIMAvailable(ProfileIOS* profile) {
     return false;
   }
 
-  AimEligibilityService* service =
-      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
-
-  if (!service) {
-    return false;
-  }
-
-  // If the server eligibility is enabled, check overall eligibility alone.
-  if (service->IsServerEligibilityEnabled()) {
-    return service->IsAimEligible();
-  }
-
-  // Check feature, DSE and Policy.
-  if (!service->IsAimLocallyEligible()) {
-    return false;
-  }
-
-  // Check locale availability, this will be handled by IsAimEligible once
-  // IsServerEligibilityEnabled launches.
-  return service->IsCountry("us") && service->IsLanguage("en");
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile),
+      kNTPMIAEntrypointAllLocales, kNTPMIAEntrypoint);
 }

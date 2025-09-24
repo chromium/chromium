@@ -307,8 +307,11 @@ extern const char kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox[];
 extern const char kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito[];
 extern const char kNTPMIAEntrypointParamAIMInQuickActions[];
 
-// Feature flag to change the MIA entrypoint in NTP.
+// Feature flag to change the MIA entrypoint in NTP. Applies to en-US locales
+// only.
 BASE_DECLARE_FEATURE(kNTPMIAEntrypoint);
+// Like above, but applies regardless of client's locale.
+BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 
 // When enabled the AIM ZPS entrypoint will open the AIM prototype which
 // contains temporary UI exploration for AIM.
