@@ -1,0 +1,53 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_coordinator.h"
+
+#import "base/check_op.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/tracking_protections/tracking_protections_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+
+@interface TrackingProtectionsCoordinator () <
+    TrackingProtectionsViewControllerPresentationDelegate>
+
+@end
+
+@implementation TrackingProtectionsCoordinator {
+  // View controller presented by this coordinator.
+  TrackingProtectionsViewController* _viewController;
+}
+
+@synthesize baseNavigationController = _baseNavigationController;
+
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser {
+  self = [super initWithBaseViewController:navigationController
+                                   browser:browser];
+  if (self) {
+    _baseNavigationController = navigationController;
+  }
+  return self;
+}
+
+- (void)start {
+  _viewController = [[TrackingProtectionsViewController alloc]
+      initWithStyle:ChromeTableViewStyle()];
+  _viewController.presentationDelegate = self;
+  [self.baseNavigationController pushViewController:_viewController
+                                           animated:YES];
+}
+
+- (void)stop {
+  _viewController = nil;
+}
+
+#pragma mark - IncognitoLockViewControllerPresentationDelegate
+
+- (void)trackingProtectionsViewControllerDidRemove:
+    (TrackingProtectionsViewController*)controller {
+  [self.delegate trackingProtectionsCoordinatorDidRemove:self];
+}
+
+@end

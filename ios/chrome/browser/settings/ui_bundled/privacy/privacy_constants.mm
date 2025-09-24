@@ -33,3 +33,6 @@ NSString* const kSettingsIncognitoLockHideWithSoftLockCellId =
 
 NSString* const kSettingsIncognitoLockHideWithReauthCellId =
     @"kSettingsIncognitoLockHideWithReauthCellId";
+
+NSString* const kSettingsTrackingProtectionsCellId =
+    @"kSettingsTrackingProtectionsCellId";

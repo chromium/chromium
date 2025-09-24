@@ -26,6 +26,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/strings/grit/privacy_sandbox_strings.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -86,6 +87,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLockdownMode,
   SectionIdentifierPrivacyGuide,
   SectionIdentifierIncognito,
+  SectionIdentifierTrackingProtections,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -104,6 +106,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLockdownMode,
   ItemTypePrivacyGuide,
   ItemTypeIncognitoHeader,
+  ItemTypeTrackingProtections,
 };
 
 // Used to open the Sync and Google Services settings.
@@ -338,8 +341,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   SectionIdentifier incognitoInterstitialSection =
       SectionIdentifierIncognitoInterstitial;
   SectionIdentifier sectionWithPrivacyFooter = SectionIdentifierLockdownMode;
-  // Incognito section header item.
   if (_showIncognitoTrackingProtections) {
+    // Incognito section header item.
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc]
             initWithType:ItemTypeIncognitoHeader];
@@ -347,6 +350,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
         l10n_util::GetNSString(IDS_IOS_INCOGNITO_SETTINGS_SECTION_HEADER);
     [model setHeader:headerItem
         forSectionWithIdentifier:SectionIdentifierIncognito];
+    // Tracking protections item.
+    [model addItem:[self trackingProtectionsItem]
+        toSectionWithIdentifier:SectionIdentifierIncognito];
+
     incognitoAuthSection = SectionIdentifierIncognito;
     incognitoInterstitialSection = SectionIdentifierIncognito;
     sectionWithPrivacyFooter = SectionIdentifierIncognito;
@@ -575,6 +582,19 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   return itemDisabled;
 }
 
+- (TableViewItem*)trackingProtectionsItem {
+  TableViewDetailIconItem* item = [self
+           detailItemWithType:ItemTypeTrackingProtections
+                      titleId:IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_LABEL
+                   detailText:
+                       l10n_util::GetNSString(
+                           IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_SUBLABEL)
+      accessibilityIdentifier:kSettingsTrackingProtectionsCellId];
+  item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  item.detailTextNumberOfLines = 0;  // Unlimited
+  return item;
+}
+
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
                                        titleId:(NSInteger)titleId
                                     detailText:(NSString*)detailText
@@ -647,6 +667,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       break;
     case ItemTypePrivacyGuide:
       [self.handler showPrivacyGuide];
+      break;
+    case ItemTypeTrackingProtections:
+      [self.handler showTrackingProtections];
       break;
     default:
       break;

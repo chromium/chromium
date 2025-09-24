@@ -24,6 +24,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/strings/grit/privacy_sandbox_strings.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -224,25 +225,33 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_TITLE),
       l10n_util::GetNSString(IDS_IOS_SETTING_OFF), currentSection, 0);
 
-  int sectionItems = 2;
+  int sectionItem = 0;
   if (FingerprintingProtectionUxEnabled()) {
     currentSection++;
+    EXPECT_EQ(3, NumberOfItemsInSection(currentSection));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(
+            IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_LABEL),
+        l10n_util::GetNSString(
+            IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_SUBLABEL),
+        currentSection, sectionItem);
+    sectionItem++;
   } else {
-    sectionItems = 1;
     currentSection -= 2;
+    EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
   }
-  EXPECT_EQ(sectionItems, NumberOfItemsInSection(currentSection));
   if (IsIOSSoftLockEnabled()) {
     // IncognitoLock section.
     if (IsIncognitoModeDisabled(prefService)) {
       // Disabled version of Incognito lock item is expected in this case.
       CheckInfoButtonCellStatusWithIdAndTextWithId(
           IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_LOCK_SETTING_NAME,
-          currentSection, 0);
+          currentSection, sectionItem);
     } else {
       CheckTextCellTextAndDetailText(
           l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_SETTING_NAME),
-          l10n_util::GetNSString(IDS_IOS_SETTING_ON), currentSection, 0);
+          l10n_util::GetNSString(IDS_IOS_SETTING_ON), currentSection,
+          sectionItem);
     }
   } else {
     // IncognitoAuth section.
@@ -251,15 +260,18 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
       // Disabled version of Incognito auth item is expected in this case.
       CheckInfoButtonCellStatusWithIdAndTextWithId(
           IDS_IOS_SETTING_OFF, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
-          currentSection, 0);
+          currentSection, sectionItem);
     } else {
-      CheckSwitchCellStateAndTextWithId(
-          NO, IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME, currentSection, 0);
+      CheckSwitchCellStateAndTextWithId(NO,
+                                        IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME,
+                                        currentSection, sectionItem);
     }
   }
 
   // IncognitoInterstitial section.
-  if (!FingerprintingProtectionUxEnabled()) {
+  if (FingerprintingProtectionUxEnabled()) {
+    sectionItem++;
+  } else {
     currentSection++;
     EXPECT_EQ(1, NumberOfItemsInSection(currentSection));
   }
@@ -269,11 +281,11 @@ TEST_P(PrivacyTableViewControllerTest, TestModel) {
     // case.
     CheckInfoButtonCellStatusWithIdAndTextWithId(
         IDS_IOS_SETTING_OFF, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL,
-        currentSection, sectionItems - 1);
+        currentSection, sectionItem);
   } else {
     CheckSwitchCellStateAndTextWithId(
         NO, IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL, currentSection,
-        sectionItems - 1);
+        sectionItem);
   }
 
   // Testing section index and text of the privacy footer.

@@ -40,4 +40,7 @@ extern NSString* const kSettingsIncognitoLockHideWithSoftLockCellId;
 // The accessibility identifier of the Incognito lock Hide with Reauth cell.
 extern NSString* const kSettingsIncognitoLockHideWithReauthCellId;
 
+// The accessibility identifier of the tracking protections cell.
+extern NSString* const kSettingsTrackingProtectionsCellId;
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_PRIVACY_CONSTANTS_H_

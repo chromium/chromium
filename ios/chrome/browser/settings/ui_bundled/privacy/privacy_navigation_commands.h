@@ -27,6 +27,9 @@
 // Show Privacy Guide screen.
 - (void)showPrivacyGuide;
 
+// Show tracking protections screen.
+- (void)showTrackingProtections;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_PRIVACY_NAVIGATION_COMMANDS_H_
