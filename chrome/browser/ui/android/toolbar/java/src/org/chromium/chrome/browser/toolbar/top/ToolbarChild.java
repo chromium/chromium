@@ -14,11 +14,11 @@ import android.view.View;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarWidthConsumer;
 
 import java.util.Collection;
 

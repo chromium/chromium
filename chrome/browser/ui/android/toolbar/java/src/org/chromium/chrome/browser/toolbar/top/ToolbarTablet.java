@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -57,7 +58,6 @@ import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
-import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
