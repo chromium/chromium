@@ -100,6 +100,8 @@ class AutofillMetricsBaseTest
   AutofillMetricsBaseTest();
   virtual ~AutofillMetricsBaseTest();
 
+  void InitAutofillClient() override;
+
  protected:
   void SetUpHelper();
 

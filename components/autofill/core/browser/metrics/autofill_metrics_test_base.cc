@@ -108,6 +108,13 @@ AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
+void AutofillMetricsBaseTest::InitAutofillClient() {
+  WithTestAutofillClientDriverManager::InitAutofillClient();
+  autofill_client().SetPrefs(test::PrefServiceForTesting());
+  autofill_client().set_payments_autofill_client(
+      std::make_unique<MockPaymentsAutofillClient>(&autofill_client()));
+}
+
 void AutofillMetricsBaseTest::SetUpHelper() {
   // Advance the mock clock to a fixed, arbitrary, somewhat recent date.
   base::Time year2020;
@@ -115,9 +122,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   task_environment_.FastForwardBy(year2020 - base::Time::Now());
 
   InitAutofillClient();
-  autofill_client().SetPrefs(test::PrefServiceForTesting());
-  autofill_client().set_payments_autofill_client(
-      std::make_unique<MockPaymentsAutofillClient>(&autofill_client()));
 
   test_api(personal_data().address_data_manager())
       .set_auto_accept_address_imports(true);

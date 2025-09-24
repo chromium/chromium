@@ -76,7 +76,12 @@ class WithTestAutofillClientDriverManager {
   // function.
   //
   // Usually called in the test fixture's constructor or SetUp().
-  void InitAutofillClient() {
+  // 
+  // This method is virtual to allow tests to customize the client after it was
+  // initialized but before it is used to construct AutofillDrivers and
+  // AutofillManagers. Subclasses overwriting this method should always call the
+  // method of the base class.
+  virtual void InitAutofillClient() {
     CHECK(!client_) << "AutofillClient has already been initialized.";
     client_.emplace();
   }
