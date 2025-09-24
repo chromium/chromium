@@ -370,8 +370,9 @@ public class Shell extends LinearLayout {
                     int groupId,
                     int id,
                     @Nullable Intent intent,
-                    @Nullable OnClickListener clickListener) {
-                return helper.onDropdownItemClicked(groupId, id, intent, clickListener);
+                    @Nullable OnClickListener clickListener,
+                    boolean closeMenu) {
+                return helper.onDropdownItemClicked(groupId, id, intent, clickListener, closeMenu);
             }
 
             @Override

@@ -19,16 +19,19 @@ import org.chromium.build.annotations.Nullable;
 public abstract class ActionModeCallback extends ActionMode.Callback2 {
     /**
      * Callback for handling drop-down menu item clicks.
+     *
      * @param groupId the id of the group that the item belongs to.
      * @param id the id of item that was clicked.
      * @param intent the intent of the item that was clicked.
      * @param clickListener the custom click listener for the item that was clicked.
+     * @param closeMenu whether the menu should be closed after clicking the item.
      * @return true if this callback handled the event, false if the standard handling should
-     *         continue.
+     *     continue.
      */
     public abstract boolean onDropdownItemClicked(
             int groupId,
             int id,
             @Nullable Intent intent,
-            View.@Nullable OnClickListener clickListener);
+            View.@Nullable OnClickListener clickListener,
+            boolean closeMenu);
 }

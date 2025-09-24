@@ -54,8 +54,12 @@ public class PaymentHandlerActionModeCallback extends ActionModeCallback {
 
     @Override
     public boolean onDropdownItemClicked(
-            int groupId, int id, @Nullable Intent intent, @Nullable OnClickListener clickListener) {
-        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+            int groupId,
+            int id,
+            @Nullable Intent intent,
+            @Nullable OnClickListener clickListener,
+            boolean closeMenu) {
+        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener, closeMenu);
     }
 
     @Override

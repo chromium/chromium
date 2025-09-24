@@ -72,7 +72,8 @@ public abstract class ActionModeCallbackHelper {
                 int groupId,
                 int id,
                 @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener) {
+                View.@Nullable OnClickListener clickListener,
+                boolean closeMenu) {
             return false;
         }
     }
@@ -144,7 +145,8 @@ public abstract class ActionModeCallbackHelper {
             int groupId,
             int id,
             @Nullable Intent intent,
-            View.@Nullable OnClickListener clickListener);
+            View.@Nullable OnClickListener clickListener,
+            boolean closeMenu);
 
     /**
      * @see {@link ActionMode.Callback#onDestroyActionMode(ActionMode)}

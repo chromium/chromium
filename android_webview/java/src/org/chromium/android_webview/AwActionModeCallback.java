@@ -112,13 +112,14 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
             int groupId,
             int id,
             @Nullable Intent intent,
-            @Nullable View.OnClickListener clickListener) {
+            @Nullable View.OnClickListener clickListener,
+            boolean closeMenu) {
         if (isProcessTextMenuItem(groupId)) {
             assert intent != null : "Text processing item must have an intent associated with it";
             processText(intent);
             return true;
         }
-        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener, closeMenu);
     }
 
     private boolean isProcessTextMenuItem(final int groupId) {

@@ -65,6 +65,7 @@ import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -77,6 +78,7 @@ import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDe
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -112,6 +114,7 @@ public class SelectionPopupControllerTest {
     private PopupController mPopupController;
     private GestureListenerManagerImpl mGestureStateListenerManager;
     private RenderFrameHost mRenderFrameHost;
+    private ActionModeCallback mActionModeCallback;
 
     private static final String MOUNTAIN_FULL = "585 Franklin Street, Mountain View, CA 94041";
     private static final String MOUNTAIN = "Mountain";
@@ -188,6 +191,7 @@ public class SelectionPopupControllerTest {
         mPopupController = Mockito.mock(PopupController.class);
         mGestureStateListenerManager = Mockito.mock(GestureListenerManagerImpl.class);
         mMenuModelBridge = Mockito.mock(MenuModelBridge.class);
+        mActionModeCallback = Mockito.mock(ActionModeCallback.class);
 
         setDropdownMenuFeatureEnabled(false);
 
@@ -989,6 +993,57 @@ public class SelectionPopupControllerTest {
                 "Expected extra item to have title " + EXTRA_MENU_ITEM_TITLE,
                 EXTRA_MENU_ITEM_TITLE,
                 lastItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("ExtensionContextMenuItems")
+    public void testSubMenuInDropdownMenu() {
+        setDropdownMenuFeatureEnabled(true);
+
+        // Create submenu items
+        List<ListItem> submenuItems = new ArrayList<>();
+        PropertyModel submenuItem1 =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TITLE, "Submenu Item 1")
+                        .build();
+        submenuItems.add(new ListItem(MENU_ITEM, submenuItem1));
+
+        // Create main menu item with submenu
+        PropertyModel mainMenuItem =
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TITLE, "Main Menu Item with Submenu")
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, submenuItems)
+                        .build();
+        ListItem mainListItem = new ListItem(MENU_ITEM, mainMenuItem);
+
+        List<ListItem> items = List.of(mainListItem);
+
+        when(mMenuModelBridge.getListItems()).thenReturn(items);
+        SelectionPopupControllerImpl spyController = Mockito.spy(mController);
+        spyController.setActionModeCallback(mActionModeCallback);
+        SelectionDropdownMenuDelegate dropdownMenuDelegate =
+                Mockito.spy(new TestSelectionDropdownMenuDelegate());
+        spyController.setDropdownMenuDelegate(dropdownMenuDelegate);
+        showSelectionMenu(
+                spyController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.MOUSE);
+        ArgumentCaptor<SelectionDropdownMenuDelegate.ItemClickListener> clickListenerCaptor =
+                ArgumentCaptor.forClass(SelectionDropdownMenuDelegate.ItemClickListener.class);
+        Mockito.verify(dropdownMenuDelegate, times(1))
+                .show(any(), any(), any(), clickListenerCaptor.capture(), anyInt(), anyInt());
+        SelectionDropdownMenuDelegate.ItemClickListener listener = clickListenerCaptor.getValue();
+
+        // Click on the main menu item with submenu, menu should not be dismissed.
+        listener.onItemClick(mainListItem.model);
+        Mockito.verify(mActionModeCallback, times(1))
+                .onDropdownItemClicked(anyInt(), anyInt(), any(), any(), eq(false));
+
+        // Click on the submenu item, menu should be dismissed.
+        listener.onItemClick(submenuItems.get(0).model);
+        Mockito.verify(mActionModeCallback, times(1))
+                .onDropdownItemClicked(anyInt(), anyInt(), any(), any(), eq(true));
     }
 
     private void showSelectionMenu(

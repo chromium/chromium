@@ -249,12 +249,13 @@ public class ChromeActionModeHandler {
                 int groupId,
                 int id,
                 @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener) {
+                View.@Nullable OnClickListener clickListener,
+                boolean closeMenu) {
             boolean res =
                     handleItemClick(id)
-                            || mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
-            // We will always dismiss the drop-down menu here.
-            mHelper.dismissMenu();
+                            || mHelper.onDropdownItemClicked(
+                                    groupId, id, intent, clickListener, closeMenu);
+            if (closeMenu) mHelper.dismissMenu();
             return res;
         }
 
