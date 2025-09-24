@@ -29,6 +29,15 @@ namespace dbus_utils {
 
 namespace internal {
 
+// Convert a std::tuple<Ts...> to std::tuple<std::optional<Ts>...>
+template <typename T>
+struct TupleToOpts;
+
+template <typename... Ts>
+struct TupleToOpts<std::tuple<Ts...>> {
+  using type = std::tuple<std::optional<Ts>...>;
+};
+
 template <typename... Ts>
 std::tuple<Ts...> Unwrap(std::tuple<std::optional<Ts>...> input) {
   return std::apply(
@@ -72,15 +81,14 @@ using CallMethodResultSig =
 
 namespace internal {
 
-template <typename ArgsTuple, typename... Rets, std::size_t... Is>
-void CallMethodImpl(
-    dbus::ObjectProxy* proxy,
-    const std::string& interface,
-    const std::string& method,
-    base::TimeDelta timeout,
-    base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
-    std::index_sequence<Is...>,
-    const std::tuple_element_t<Is, ArgsTuple>&... args) {
+template <typename ArgsTuple, typename Result, std::size_t... Is>
+void CallMethodImpl(dbus::ObjectProxy* proxy,
+                    const std::string& interface,
+                    const std::string& method,
+                    base::TimeDelta timeout,
+                    base::OnceCallback<void(Result)> callback,
+                    std::index_sequence<Is...>,
+                    const std::tuple_element_t<Is, ArgsTuple>&... args) {
   dbus::MethodCall dbus_call(interface, method);
   dbus::MessageWriter writer(&dbus_call);
   (WriteValue<std::tuple_element_t<Is, ArgsTuple>>(writer, args), ...);
@@ -89,10 +97,10 @@ void CallMethodImpl(
   proxy->CallMethodWithErrorResponse(
       &dbus_call, timeout_ms,
       base::BindOnce(
-          [](base::OnceCallback<void(CallMethodResult<Rets...>)> cb,
-             dbus::Response* response, dbus::ErrorResponse* error_response) {
+          [](base::OnceCallback<void(Result)> cb, dbus::Response* response,
+             dbus::ErrorResponse* error_response) {
             if (response) {
-              std::tuple<std::optional<Rets>...> rets;
+              typename TupleToOpts<typename Result::value_type>::type rets;
               dbus::MessageReader reader(response);
               const bool success = std::apply(
                   [&](auto&... value) {
@@ -142,39 +150,29 @@ void CallMethodImpl(
 // required: `ArgsSignature` and `RetsSignature`, which are C string literals
 // that must match the D-Bus signature of the method arguments and reply.
 template <internal::StringLiteral ArgsSignature,
-          internal::StringLiteral RetsSignature,
-          typename... Rets>
-void CallMethod(dbus::ObjectProxy* proxy,
-                const std::string& interface,
-                const std::string& method,
-                base::TimeDelta timeout,
-                base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
-                const auto&... args)
-  requires((internal::IsSupportedDBusType<Rets> && ...) &&
-           (internal::StrJoin(
-                (internal::DBusSignature<std::decay_t<Rets>>::kValue)...) ==
-            RetsSignature.value))
-{
+          internal::StringLiteral RetsSignature>
+void CallMethod(
+    dbus::ObjectProxy* proxy,
+    const std::string& interface,
+    const std::string& method,
+    base::TimeDelta timeout,
+    base::OnceCallback<void(CallMethodResultSig<RetsSignature>)> callback,
+    const auto&... args) {
   using ArgsTupleType = internal::ParseDBusSignaturePack<ArgsSignature>;
-  internal::CallMethodImpl<ArgsTupleType, Rets...>(
+  internal::CallMethodImpl<ArgsTupleType, CallMethodResultSig<RetsSignature>>(
       proxy, interface, method, timeout, std::move(callback),
       std::make_index_sequence<std::tuple_size_v<ArgsTupleType>>{}, args...);
 }
 
 // This is a convenience overload of CallMethod that uses the default timeout.
 template <internal::StringLiteral ArgsSignature,
-          internal::StringLiteral RetsSignature,
-          typename... Rets>
-void CallMethod(dbus::ObjectProxy* proxy,
-                const std::string& interface,
-                const std::string& method,
-                base::OnceCallback<void(CallMethodResult<Rets...>)> callback,
-                const auto&... args)
-  requires((internal::IsSupportedDBusType<Rets> && ...) &&
-           (internal::StrJoin(
-                (internal::DBusSignature<std::decay_t<Rets>>::kValue)...) ==
-            RetsSignature.value))
-{
+          internal::StringLiteral RetsSignature>
+void CallMethod(
+    dbus::ObjectProxy* proxy,
+    const std::string& interface,
+    const std::string& method,
+    base::OnceCallback<void(CallMethodResultSig<RetsSignature>)> callback,
+    const auto&... args) {
   CallMethod<ArgsSignature, RetsSignature>(
       proxy, interface, method, kTimeoutDefault, std::move(callback), args...);
 }

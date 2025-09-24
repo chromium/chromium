@@ -372,5 +372,23 @@ TEST_F(CallMethodTest, ArgsConvertsTypes) {
   EXPECT_TRUE(success);
 }
 
+TEST_F(CallMethodTest, AllowBaseDoNothingComplies) {
+  ExpectCallMethodWithErrorResponse(kTestMethodSuccess);
+
+  CallMethod<"", "">(mock_proxy_.get(), kTestInterface, kTestMethodSuccess,
+                     base::DoNothing());
+
+  SimulateSuccessResponse([](dbus::MessageWriter* writer) {});
+}
+
+TEST_F(CallMethodTest, AllowBaseDoNothingCompliesWithArgs) {
+  ExpectCallMethodWithErrorResponse(kTestMethodSuccess);
+
+  CallMethod<"is", "si">(mock_proxy_.get(), kTestInterface, kTestMethodSuccess,
+                         base::DoNothing(), 123, "test");
+
+  SimulateSuccessResponse([](dbus::MessageWriter* writer) {});
+}
+
 }  // namespace
 }  // namespace dbus_utils

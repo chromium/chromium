@@ -819,15 +819,13 @@ void FreedesktopSecretKeyProvider::RecordInitStatus(InitStatus status,
 void FreedesktopSecretKeyProvider::CloseSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (session_opened_) {
-    dbus_utils::CallMethod<"", "">(
-        session_proxy_, kSecretSessionInterface, kMethodClose,
-        base::BindOnce([](dbus_utils::CallMethodResult<>) {}));
+    dbus_utils::CallMethod<"", "">(session_proxy_, kSecretSessionInterface,
+                                   kMethodClose, base::DoNothing());
   }
   if (kwallet_handle_ != kKWalletInvalidHandle) {
-    dbus_utils::CallMethod<"ibs", "i">(
-        kwallet_proxy_, kKWalletInterface, kKWalletMethodClose,
-        base::BindOnce([](dbus_utils::CallMethodResultSig<"i">) {}),
-        kwallet_handle_, false, product_name_);
+    dbus_utils::CallMethod<"ibs", "i">(kwallet_proxy_, kKWalletInterface,
+                                       kKWalletMethodClose, base::DoNothing(),
+                                       kwallet_handle_, false, product_name_);
     kwallet_handle_ = kKWalletInvalidHandle;
   }
 }
