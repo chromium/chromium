@@ -91,7 +91,6 @@ export const BluetoothCommandSchema = z.lazy(() =>
     Bluetooth.SimulateCharacteristicResponseSchema,
     Bluetooth.SimulateDescriptorSchema,
     Bluetooth.SimulateDescriptorResponseSchema,
-    z.object({}),
   ]),
 );
 export namespace Bluetooth {
