@@ -614,9 +614,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       Promise<{}> {
     const {errorReason} =
         await this.handler.switchConversation(request.info ?? null);
-    if (errorReason !== undefined) {
+    if (errorReason !== null) {
       throw new ErrorWithReasonImpl(
-          'switchConversation', errorReason as number);
+          'switchConversation', errorReason.valueOf());
     }
     return {};
   }
@@ -624,9 +624,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserRegisterConversation(request: {info: ConversationInfo}):
       Promise<{}> {
     const {errorReason} = await this.handler.registerConversation(request.info);
-    if (errorReason !== undefined) {
+    if (errorReason !== null) {
       throw new ErrorWithReasonImpl(
-          'registerConversation', errorReason as number);
+          'registerConversation', errorReason.valueOf());
     }
     return {};
   }
