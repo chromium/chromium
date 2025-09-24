@@ -8,7 +8,7 @@ mojom("mojo_bindings") {
   sources = [ "composebox_query.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  webui_module_path = "/"
+  webui_module_path = "chrome://resources/mojo/components/omnibox/composebox"
 }
 
 source_set("composebox") {

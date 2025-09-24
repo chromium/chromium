@@ -44,6 +44,7 @@
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -178,6 +179,11 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   void SetInputText(const std::string& input_text) override {}
   void SetThumbnail(const std::string& thumbnail_url,
                     bool is_deletable) override {}
+  void OnContextualInputStatusChanged(
+      const base::UnguessableToken& token,
+      composebox_query::mojom::FileUploadStatus status,
+      std::optional<composebox_query::mojom::FileUploadErrorType> error_type)
+      override {}
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
   }

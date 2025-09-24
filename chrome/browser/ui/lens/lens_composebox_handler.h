@@ -46,8 +46,6 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
       std::map<std::string, std::string> additional_params) override;
 
   // composebox::mojom::PageHandler:
-  void NotifySessionStarted() override;
-  void NotifySessionAbandoned() override;
   void SubmitQuery(const std::string& query_text,
                    uint8_t mouse_button,
                    bool alt_key,
@@ -55,12 +53,6 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
                    bool meta_key,
                    bool shift_key) override;
   void FocusChanged(bool focused) override;
-  void AddFileContext(composebox::mojom::SelectedFileInfoPtr file_info,
-                      mojo_base::BigBuffer file_bytes,
-                      AddFileContextCallback callback) override;
-  void AddTabContext(int32_t tab_id, AddTabContextCallback callback) override;
-  void DeleteContext(const base::UnguessableToken& file_token) override;
-  void ClearFiles() override;
 
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;

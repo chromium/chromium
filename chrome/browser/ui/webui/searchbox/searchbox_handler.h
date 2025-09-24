@@ -82,6 +82,14 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                      bool shift_key) override;
   void GetPlaceholderConfig(GetPlaceholderConfigCallback callback) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
+  void NotifySessionStarted() override {}
+  void NotifySessionAbandoned() override {}
+  void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,
+                      mojo_base::BigBuffer file_bytes,
+                      AddFileContextCallback callback) override {}
+  void AddTabContext(int32_t tab_id, AddTabContextCallback) override {}
+  void DeleteContext(const base::UnguessableToken& file_token) override {}
+  void ClearFiles() override {}
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, AutocompleteController_Start);

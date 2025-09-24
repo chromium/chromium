@@ -5,7 +5,6 @@
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import type {PageRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {FileUploadErrorType, FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -37,7 +36,6 @@ suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
-  let callbackRouterRemote: PageRemote;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let metrics: MetricsTracker;
 
@@ -48,8 +46,6 @@ suite('NewTabPageComposeboxTest', () => {
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
-    callbackRouterRemote = ComposeboxProxyImpl.getInstance()
-                               .callbackRouter.$.bindNewPipeAndPassRemote();
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
@@ -68,7 +64,7 @@ suite('NewTabPageComposeboxTest', () => {
     const startTime = Date.now();
     return new Promise((resolve, reject) => {
       const checkCount = () => {
-        const currentCount = handler.getCallCount(ADD_FILE_CONTEXT_FN);
+        const currentCount = searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN);
         if (currentCount === expectedCount) {
           resolve();
           return;
@@ -171,7 +167,8 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert no files.
     assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
 
-    handler.setResultFor(ADD_FILE_CONTEXT_FN, Promise.resolve({token: token}));
+    searchboxHandler.setResultFor(ADD_FILE_CONTEXT_FN,
+                                  Promise.resolve({token: token}));
 
     // Act.
     const dataTransfer = new DataTransfer();
@@ -181,10 +178,10 @@ suite('NewTabPageComposeboxTest', () => {
     input.files = dataTransfer.files;
     input.dispatchEvent(getMockFileChangeEventForType(file.type));
 
-    await handler.whenCalled(ADD_FILE_CONTEXT_FN);
+    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
-    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+    assertEquals(searchboxHandler.getCallCount('notifySessionStarted'), 1);
     await verifyFileUpload(file);
   }
 
@@ -197,19 +194,19 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(files[0]!.name, file.name);
 
     // Assert file is uploaded.
-    assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 1);
+    assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 1);
 
     const fileBuffer = await file.arrayBuffer();
     const fileArray = Array.from(new Uint8Array(fileBuffer));
 
-    const [[fileInfo, fileData]] = handler.getArgs(ADD_FILE_CONTEXT_FN);
+    const [[fileInfo, fileData]] = searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
     assertEquals(fileInfo.fileName, file.name);
     assertDeepEquals(fileData.bytes, fileArray);
   }
 
   test('clear functionality', async () => {
     createComposeboxElement();
-    handler.setResultFor(
+    searchboxHandler.setResultFor(
         ADD_FILE_CONTEXT_FN,
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
@@ -224,7 +221,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.fileInput.files = dataTransfer.files;
     composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
 
-    await handler.whenCalled(ADD_FILE_CONTEXT_FN);
+    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Check submit button enabled and file uploaded.
@@ -236,7 +233,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert
-    assertEquals(handler.getCallCount('clearFiles'), 1);
+    assertEquals(searchboxHandler.getCallCount('clearFiles'), 1);
 
     // Check submit button disabled and files empty.
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
@@ -268,7 +265,7 @@ suite('NewTabPageComposeboxTest', () => {
     const id = generateZeroId();
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
-    callbackRouterRemote.onContextualInputStatusChanged(
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kProcessing, null);
     await microtasksFinished();
 
@@ -279,7 +276,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // The suggest request should be triggered before the file has finished
     // uploading.
-    callbackRouterRemote.onContextualInputStatusChanged(
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kUploadSuccessful, null);
 
     // Delete the uploaded file.
@@ -311,7 +308,7 @@ suite('NewTabPageComposeboxTest', () => {
     const id = generateZeroId();
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    callbackRouterRemote.onContextualInputStatusChanged(
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kProcessing, null);
     await microtasksFinished();
 
@@ -331,7 +328,7 @@ suite('NewTabPageComposeboxTest', () => {
     const id = generateZeroId();
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    callbackRouterRemote.onContextualInputStatusChanged(
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kProcessing, null);
     await microtasksFinished();
 
@@ -366,9 +363,9 @@ suite('NewTabPageComposeboxTest', () => {
               assertTrue(!!announcement);
               assertEquals(announcement.detail.messages.length, 1);
 
-              callbackRouterRemote.onContextualInputStatusChanged(
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
                   id, FileUploadStatus.kUploadSuccessful, null);
-              await callbackRouterRemote.$.flushForTesting();
+              await searchboxCallbackRouterRemote.$.flushForTesting();
 
               announcementPromise = eventToPromise(
                   'cr-a11y-announcer-messages-sent', document.body);
@@ -401,7 +398,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert no files uploaded or rendered on the carousel
-    assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
+    assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
     assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
     assertEquals(
         1,
@@ -427,7 +424,7 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     // Assert no files uploaded or rendered on the carousel
-    assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
+    assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
     assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
     assertEquals(
         1,
@@ -456,10 +453,10 @@ suite('NewTabPageComposeboxTest', () => {
           const file = new File(['foo'], 'foo.jpg', {type: 'image/jpeg'});
           await uploadFileAndVerify(id, file);
 
-          callbackRouterRemote.onContextualInputStatusChanged(
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
               id, fileUploadStatus as FileUploadStatus,
               fileUploadErrorType as FileUploadErrorType | null);
-          await callbackRouterRemote.$.flushForTesting();
+          await searchboxCallbackRouterRemote.$.flushForTesting();
 
           // Assert no files in the carousel.
           assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
@@ -468,7 +465,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('upload pdf', async () => {
     createComposeboxElement();
-    handler.setResultFor(
+    searchboxHandler.setResultFor(
         ADD_FILE_CONTEXT_FN,
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
@@ -482,7 +479,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.fileInput.files = dataTransfer.files;
     composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
 
-    await handler.whenCalled(ADD_FILE_CONTEXT_FN);
+    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Assert one pdf file.
@@ -492,14 +489,14 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(files[0]!.name, 'foo.pdf');
     assertFalse(!!files[0]!.objectUrl);
 
-    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+    assertEquals(searchboxHandler.getCallCount('notifySessionStarted'), 1);
 
     const fileBuffer = await file.arrayBuffer();
     const fileArray = Array.from(new Uint8Array(fileBuffer));
 
     // Assert file is uploaded.
-    assertEquals(handler.getCallCount(ADD_FILE_CONTEXT_FN), 1);
-    const [[fileInfo, fileData]] = handler.getArgs(ADD_FILE_CONTEXT_FN);
+    assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 1);
+    const [[fileInfo, fileData]] = searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
     assertEquals(fileInfo.fileName, 'foo.pdf');
     assertDeepEquals(fileData.bytes, fileArray);
   });
@@ -507,7 +504,7 @@ suite('NewTabPageComposeboxTest', () => {
   test('delete file', async () => {
     createComposeboxElement();
     let i = 0;
-    handler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
+    searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
       i += 1;
       return Promise.resolve(
           {token: {low: BigInt(i + 1), high: BigInt(i + 2)}});
@@ -552,19 +549,19 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert.
     assertEquals(composeboxElement.$.carousel.files.length, 1);
-    assertEquals(handler.getCallCount('deleteContext'), 1);
-    const [idArg] = handler.getArgs('deleteContext');
+    assertEquals(searchboxHandler.getCallCount('deleteContext'), 1);
+    const [idArg] = searchboxHandler.getArgs('deleteContext');
     assertEquals(idArg, deletedId);
   });
 
   test('NotifySessionStarted called on composebox created', () => {
     // Assert call has not occurred.
-    assertEquals(handler.getCallCount('notifySessionStarted'), 0);
+    assertEquals(searchboxHandler.getCallCount('notifySessionStarted'), 0);
 
     createComposeboxElement();
 
     // Assert call occurs.
-    assertEquals(handler.getCallCount('notifySessionStarted'), 1);
+    assertEquals(searchboxHandler.getCallCount('notifySessionStarted'), 1);
   });
 
   test('image upload button clicks file input', async () => {
@@ -608,7 +605,7 @@ suite('NewTabPageComposeboxTest', () => {
     loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
     loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
     createComposeboxElement();
-    handler.setResultFor(
+    searchboxHandler.setResultFor(
         ADD_FILE_CONTEXT_FN,
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
@@ -623,7 +620,7 @@ suite('NewTabPageComposeboxTest', () => {
     composeboxElement.$.fileInput.files = dataTransfer.files;
     composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
 
-    await handler.whenCalled(ADD_FILE_CONTEXT_FN);
+    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Assert.
@@ -1116,7 +1113,7 @@ suite('NewTabPageComposeboxTest', () => {
     await uploadFileAndVerify(
         id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
 
-    callbackRouterRemote.onContextualInputStatusChanged(
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         id, FileUploadStatus.kUploadSuccessful, null);
 
     // Matches should not show when image is present.
@@ -1232,7 +1229,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     test('add tab context', async () => {
       createComposeboxElement();
-      handler.setResultFor(
+      searchboxHandler.setResultFor(
           ADD_TAB_CONTEXT_FN,
           Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
@@ -1248,7 +1245,7 @@ suite('NewTabPageComposeboxTest', () => {
         composed: true,
       }));
 
-      await handler.whenCalled(ADD_TAB_CONTEXT_FN);
+      await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
       await microtasksFinished();
       const files = composeboxElement.$.carousel.files;
       assertEquals(files.length, 1);

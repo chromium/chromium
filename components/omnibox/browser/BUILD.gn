@@ -1040,6 +1040,7 @@ mojom("mojo_bindings") {
     "//mojo/public/mojom/base",
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
+    "//components/omnibox/composebox:mojo_bindings",
   ]
 
   if (!is_android && !is_ios) {

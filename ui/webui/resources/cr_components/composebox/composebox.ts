@@ -26,7 +26,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
-import type {PageCallbackRouter, PageHandlerRemote} from './composebox.mojom-webui.js';
+import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
@@ -200,12 +200,10 @@ export class ComposeboxElement extends I18nMixinLit
       loadTimeData.getInteger('composeboxFileMaxSize');
   private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
-  private callbackRouter_: PageCallbackRouter;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
-  private listenerIds: number[] = [];
   private searchboxListenerIds: number[] = [];
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
@@ -215,7 +213,6 @@ export class ComposeboxElement extends I18nMixinLit
 
   constructor() {
     super();
-    this.callbackRouter_ = ComposeboxProxyImpl.getInstance().callbackRouter;
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
@@ -228,8 +225,10 @@ export class ComposeboxElement extends I18nMixinLit
     // Set the initial expanded state based on the inputted property.
     this.expanded_ = !this.isCollapsible;
 
-    this.listenerIds = [
-      this.callbackRouter_.onContextualInputStatusChanged.addListener(
+    this.searchboxListenerIds = [
+      this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
+          this.onAutocompleteResultChanged_.bind(this)),
+      this.searchboxCallbackRouter_.onContextualInputStatusChanged.addListener(
           (token: UnguessableToken, status: FileUploadStatus,
            errorType: FileUploadErrorType) => {
             let file = this.files_.get(token);
@@ -287,11 +286,6 @@ export class ComposeboxElement extends I18nMixinLit
           }),
     ];
 
-    this.searchboxListenerIds = [
-      this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
-          this.onAutocompleteResultChanged_.bind(this)),
-    ];
-
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
@@ -301,20 +295,17 @@ export class ComposeboxElement extends I18nMixinLit
           stringToMojoString16(this.$.input.value), false);
     }
 
-    this.pageHandler_.notifySessionStarted();
+    this.searchboxHandler_.notifySessionStarted();
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    this.pageHandler_.notifySessionAbandoned();
+    this.searchboxHandler_.notifySessionAbandoned();
 
-    this.listenerIds.forEach(
-        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.searchboxListenerIds.forEach(
         id => assert(
             this.browserProxy.searchboxCallbackRouter.removeListener(id)));
-    this.listenerIds = [];
     this.searchboxListenerIds = [];
 
     this.eventTracker_.removeAll();
@@ -437,7 +428,7 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.files_ = new Map([...this.files_.entries()].filter(
         ([uuid, _]) => uuid !== e.detail.uuid));
-    this.pageHandler_.deleteContext(e.detail.uuid);
+    this.searchboxHandler_.deleteContext(e.detail.uuid);
     this.$.input.focus();
     this.clearAutocompleteMatches_();
     this.lastQueriedInput_ = this.$.input.value;
@@ -481,7 +472,7 @@ export class ComposeboxElement extends I18nMixinLit
 
         const bigBuffer:
             BigBuffer = {bytes: Array.from(new Uint8Array(fileBuffer))};
-        const {token} = await this.pageHandler_.addFileContext(
+        const {token} = await this.searchboxHandler_.addFileContext(
             {
               fileName: file.name,
               mimeType: file.type,
@@ -512,7 +503,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected async addTabContext_(
       e: CustomEvent<{id: number, title: string, url: Url}>) {
-    const {token} = await this.pageHandler_.addTabContext(e.detail.id);
+    const {token} = await this.searchboxHandler_.addTabContext(e.detail.id);
 
     const attachment: ComposeboxFile = {
       uuid: token,
@@ -549,7 +540,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.files_ = new Map();
       this.smartComposeInlineHint_ = '';
       this.submitEnabled_ = false;
-      this.pageHandler_.clearFiles();
+      this.searchboxHandler_.clearFiles();
       this.$.input.focus();
       this.$.matches.unselect();
       this.clearAutocompleteMatches_();

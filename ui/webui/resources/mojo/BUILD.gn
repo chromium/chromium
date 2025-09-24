@@ -58,7 +58,10 @@ if (is_ios) {
 }
 
 if (!is_android && !is_ios) {
-  mojo_ts_files += [ "components/omnibox/browser/searchbox.mojom-webui.ts" ]
+  mojo_ts_files += [
+    "components/omnibox/browser/searchbox.mojom-webui.ts",
+    "components/omnibox/composebox/composebox_query.mojom-webui.ts",
+  ]
 }
 
 if (is_chromeos) {
@@ -101,6 +104,7 @@ preprocess_if_expr("copy_mojo_ts") {
   in_files = mojo_ts_files
   deps = [
     "//components/omnibox/browser:mojo_bindings_ts__generator",
+    "//components/omnibox/composebox:mojo_bindings_ts__generator",
     "//mojo/public/mojom/base:base_ts__copy_converters",
     "//mojo/public/mojom/base:base_ts__generator",
     "//mojo/public/mojom/base:protobuf_support_ts__generator",

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import type {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {PageHandlerInterface, PageRemote, PlaceholderConfig} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote, PlaceholderConfig, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -113,6 +115,32 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getRecentTabs() {
     this.methodCalled('getRecentTabs');
     return Promise.resolve({tabs: []});
+  }
+
+  notifySessionStarted() {
+    this.methodCalled('notifySessionStarted');
+  }
+
+  notifySessionAbandoned() {
+    this.methodCalled('notifySessionAbandoned');
+  }
+
+  addFileContext(fileInfo: SelectedFileInfo, fileBytes: BigBuffer) {
+    this.methodCalled('addFileContext', {fileInfo, fileBytes});
+    return Promise.resolve({token: ''});
+  }
+
+  addTabContext(tabId: number) {
+    this.methodCalled('addTabContext', {tabId});
+    return Promise.resolve({token: ''});
+  }
+
+  deleteContext(fileToken: UnguessableToken) {
+    this.methodCalled('deleteContext', {fileToken});
+  }
+
+  clearFiles() {
+    this.methodCalled('clearFiles');
   }
 }
 

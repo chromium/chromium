@@ -5,8 +5,11 @@
 module searchbox.mojom;
 
 import "components/omnibox/browser/omnibox.mojom";
+import "components/omnibox/composebox/composebox_query.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -91,6 +94,16 @@ struct TabInfo {
   url.mojom.Url url;
   // The time the tab was last active.
   mojo_base.mojom.TimeTicks last_active;
+};
+
+// Information about a file selected by the user in the WebUI.
+struct SelectedFileInfo {
+  // Name of the file.
+  string file_name;
+  // Mime type of the file.
+  string mime_type;
+  // Time that the file was selected at.
+  mojo_base.mojom.JSTime selection_time;
 };
 
 // Indicates whether a suggestion group is in the primary or the secondary
@@ -210,6 +223,36 @@ interface PageHandler {
 
   // Returns information about recent tabs.
   GetRecentTabs() => (array<TabInfo> tabs);
+
+  // Called when a user has started a contextual searchbox session.
+  NotifySessionStarted();
+
+  // Called when a user has started a contextual searchbox session.
+  NotifySessionAbandoned();
+
+  // File management.
+  // Upload a file to the server and add it to the query's context. Handler will
+  // create a token for identifying and return it via callback. The
+  // UnguessableToken is associated with a file via this method and only with
+  // an UnguessableToken created by the browser-process at this step. The
+  // controller that houses the association is specific to the WebUI's handler
+  // instance.
+  // What the WebUI can do with the UnguessableToken:
+  //   1. Delete a file from browser-process cache.
+  //   2. Listen for status changes from browser-process.
+  AddFileContext(SelectedFileInfo file_info,
+                 mojo_base.mojom.BigBuffer file_bytes) =>
+      (mojo_base.mojom.UnguessableToken token);
+
+  // Attach a tab to the query context.
+  AddTabContext(int32 tab_id) => (mojo_base.mojom.UnguessableToken token);
+
+  // Notify handler of context deletion. This removes the context data (e.g.
+  // File, or tab page content) from the browser-side cache.
+  DeleteContext(mojo_base.mojom.UnguessableToken token);
+
+  // Clears all files from cache.
+  ClearFiles();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -227,4 +270,13 @@ interface Page {
 
   // Sets searchbox thumbnail.
   SetThumbnail(string thumbnail_url, bool is_deletable);
+
+  // Used to update the user on the status of a query context (i.e. File, tab)
+  // upload operation. Each context upload operation is associated with a unique
+  // token, and the browser process uses these tokens to provide context upload
+  // updates to the WebUI.
+  OnContextualInputStatusChanged(
+      mojo_base.mojom.UnguessableToken token,
+      composebox_query.mojom.FileUploadStatus status,
+      composebox_query.mojom.FileUploadErrorType? error_type);
 };

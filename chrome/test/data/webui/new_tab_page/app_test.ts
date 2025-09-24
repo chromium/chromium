@@ -32,7 +32,6 @@ suite('NewTabPageAppTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
-  let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
   let customizeButtonsHandler: TestMock<CustomizeButtonsHandlerRemote>;
   let customizeButtonsCallbackRouterRemote: CustomizeButtonsDocumentRemote;
   let metrics: MetricsTracker;
@@ -85,13 +84,15 @@ suite('NewTabPageAppTest', () => {
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
 
-    searchboxHandler = installMock(SearchboxPageHandlerRemote, () => {});
-    composeboxHandler = installMock(
+    installMock(
         ComposeboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new ComposeboxPageCallbackRouter(),
-            searchboxHandler as unknown as SearchboxPageHandlerRemote,
+            new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
+    searchboxHandler = installMock(
+        SearchboxPageHandlerRemote,
+        mock =>  ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -1222,9 +1223,9 @@ suite('NewTabPageAppTest', () => {
     test(
         'Clicking the searchbox composebox button notifies composebox handler',
         async () => {
-          composeboxHandler.reset();
+          searchboxHandler.reset();
           assertEquals(
-              composeboxHandler.getCallCount('notifySessionStarted'), 0);
+              searchboxHandler.getCallCount('notifySessionStarted'), 0);
           assertEquals(
               0,
               metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
@@ -1242,7 +1243,7 @@ suite('NewTabPageAppTest', () => {
           const composebox = app.shadowRoot.querySelector('ntp-composebox');
           assertTrue(!!composebox);
           assertEquals(
-              composeboxHandler.getCallCount('notifySessionStarted'), 1);
+              searchboxHandler.getCallCount('notifySessionStarted'), 1);
           assertEquals(
               1,
               metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
@@ -1250,7 +1251,7 @@ suite('NewTabPageAppTest', () => {
     test(
         'Clicking the searchbox composebox button displays the composebox',
         async () => {
-          composeboxHandler.reset();
+          searchboxHandler.reset();
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
@@ -1263,12 +1264,12 @@ suite('NewTabPageAppTest', () => {
           const composebox = app.shadowRoot.querySelector('ntp-composebox');
           assertTrue(!!composebox);
           assertEquals(
-              composeboxHandler.getCallCount('notifySessionStarted'), 1);
+              searchboxHandler.getCallCount('notifySessionStarted'), 1);
         });
     test(
         'Clicking the searchbox composebox button with text navigates',
         async () => {
-          composeboxHandler.reset();
+          searchboxHandler.reset();
 
           const searchboxContainer =
               app.shadowRoot.querySelector('cr-searchbox');
@@ -1290,7 +1291,7 @@ suite('NewTabPageAppTest', () => {
         });
 
     test('Propagate composebox text when closed', async () => {
-      composeboxHandler.reset();
+      searchboxHandler.reset();
       $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
       await microtasksFinished();
       const ntpComposebox = app.shadowRoot.querySelector('ntp-composebox');
@@ -1318,9 +1319,9 @@ suite('NewTabPageAppTest', () => {
       });
 
       test('Close by escape is disabled', async () => {
-        composeboxHandler.reset();
+        searchboxHandler.reset();
         assertEquals(
-            composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
         $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
         await microtasksFinished();
         const escapeKeyEvent = new KeyboardEvent('keydown', {
@@ -1335,13 +1336,13 @@ suite('NewTabPageAppTest', () => {
 
         // Assert.
         assertEquals(
-            composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
       });
 
       test('Exit by click outside is disabled', async () => {
-        composeboxHandler.reset();
+        searchboxHandler.reset();
         assertEquals(
-            composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
         $$(app, '#searchbox')!.dispatchEvent(new Event('open-composebox'));
         await microtasksFinished();
         const composeboxScrim =
@@ -1352,7 +1353,7 @@ suite('NewTabPageAppTest', () => {
 
         // Assert.
         assertEquals(
-            composeboxHandler.getCallCount('notifySessionAbandoned'), 0);
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
       });
     });
   });

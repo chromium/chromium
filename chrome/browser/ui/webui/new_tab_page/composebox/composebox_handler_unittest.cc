@@ -36,6 +36,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/tab_contextualization_controller.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/variations/variations_client.h"
@@ -78,12 +79,6 @@ class MockPage : public composebox::mojom::Page {
   }
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
-
-  MOCK_METHOD(void,
-              OnContextualInputStatusChanged,
-              (const base::UnguessableToken&,
-               composebox_query::mojom::FileUploadStatus,
-               std::optional<composebox_query::mojom::FileUploadErrorType>));
 
   mojo::Receiver<composebox::mojom::Page> receiver_{this};
 };
@@ -350,8 +345,8 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
-  composebox::mojom::SelectedFileInfoPtr file_info =
-      composebox::mojom::SelectedFileInfo::New();
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
   file_info->file_name = "test.pdf";
   file_info->selection_time = base::Time::Now();
   file_info->mime_type = "application/pdf";
@@ -373,8 +368,8 @@ TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Image) {
-  composebox::mojom::SelectedFileInfoPtr file_info =
-      composebox::mojom::SelectedFileInfo::New();
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
   file_info->file_name = "test.png";
   file_info->selection_time = base::Time::Now();
   file_info->mime_type = "application/image";
@@ -549,7 +544,7 @@ TEST_F(ComposeboxHandlerTabsTest, AddTabContext) {
   handler().AddTabContext(sample_tab_id, callback.Get());
 
   // Flush the mojo pipe to ensure the callback is run.
-  mock_page_.FlushForTesting();
+  mock_searchbox_page_.FlushForTesting();
 }
 
 TEST_F(ComposeboxHandlerTabsTest, TabContextAddedMetric) {
@@ -669,7 +664,7 @@ class ComposeboxHandlerFileUploadStatusTest
 
 TEST_P(ComposeboxHandlerFileUploadStatusTest, OnFileUploadStatusChanged) {
   composebox_query::mojom::FileUploadStatus status;
-  EXPECT_CALL(mock_page_, OnContextualInputStatusChanged)
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
       .Times(1)
       .WillOnce(
           [&status](
@@ -682,7 +677,7 @@ TEST_P(ComposeboxHandlerFileUploadStatusTest, OnFileUploadStatusChanged) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   handler().OnFileUploadStatusChanged(token, lens::MimeType::kPdf,
                                       expected_status, std::nullopt);
-  mock_page_.FlushForTesting();
+  mock_searchbox_page_.FlushForTesting();
 
   EXPECT_EQ(expected_status, status);
 }

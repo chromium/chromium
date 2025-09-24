@@ -1,0 +1,86 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
+
+#include <memory>
+#include <optional>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/omnibox/composebox/composebox_metrics_recorder.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+
+class MetricsReporter;
+class Profile;
+
+namespace lens {
+struct ContextualInputData;
+}
+
+namespace tabs {
+class TabInterface;
+}
+
+// Abstract class that extends the SearchboxHandler and implements all methods
+// shared between the composebox and realbox to support contextual search.
+class ContextualSearchboxHandler
+    : public ComposeboxQueryController::FileUploadStatusObserver,
+      public SearchboxHandler {
+ public:
+  explicit ContextualSearchboxHandler(
+     mojo::PendingReceiver<searchbox::mojom::PageHandler>
+        pending_searchbox_handler,
+     Profile* profile,
+     content::WebContents* web_contents,
+     MetricsReporter* metrics_reporter,
+     std::unique_ptr<ComposeboxQueryController> query_controller,
+     std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
+     std::unique_ptr<OmniboxController> controller);
+  ~ContextualSearchboxHandler() override;
+
+  // searchbox::mojom::PageHandler:
+  void NotifySessionStarted() override;
+  void NotifySessionAbandoned() override;
+  void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,
+                      mojo_base::BigBuffer file_bytes,
+                      AddFileContextCallback callback) override;
+  void AddTabContext(int32_t tab_id, AddTabContextCallback) override;
+  void DeleteContext(const base::UnguessableToken& file_token) override;
+  void ClearFiles() override;
+
+  // ComposeboxQueryController::FileUploadStatusObserver:
+  void OnFileUploadStatusChanged(
+      const base::UnguessableToken& file_token,
+      lens::MimeType mime_type,
+      composebox_query::mojom::FileUploadStatus file_upload_status,
+      const std::optional<FileUploadErrorType>& error_type) override;
+
+ protected:
+  std::set<base::UnguessableToken> deleted_context_tokens_;
+  std::unique_ptr<ComposeboxQueryController> query_controller_;
+  std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder_;
+
+ private:
+  void OnGetTabPageContext(
+      const base::UnguessableToken& context_token,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
+
+  void RecordTabClickedMetric(tabs::TabInterface* const tab);
+
+  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
+};
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_CONTEXTUAL_SEARCHBOX_HANDLER_H_
