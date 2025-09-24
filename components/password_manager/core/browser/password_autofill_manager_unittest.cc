@@ -2149,6 +2149,7 @@ TEST_F(PasswordAutofillManagerTest,
 
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, backup_password_, _));
+  base::HistogramTester histogram;
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           autofill::SuggestionType::kBackupPasswordEntry, test_username_,
@@ -2157,6 +2158,9 @@ TEST_F(PasswordAutofillManagerTest,
 
   EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(test_username_),
             PasswordRecoveryState::kTroubleSigningIn);
+  histogram.ExpectUniqueSample(
+      kDropdownSelectedHistogram,
+      metrics_util::PasswordDropdownSelectedOption::kBackupPassword, 1);
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -2193,6 +2197,7 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::SuggestionType::kBackupPasswordEntry, test_username_,
           payload),
       SuggestionPosition{.row = 0});
+  base::HistogramTester histogram;
   // Clicking on trouble signin in will update the popup.
   EXPECT_CALL(autofill_client, UpdateAutofillSuggestions);
   password_autofill_manager_->DidAcceptSuggestion(
@@ -2204,6 +2209,9 @@ TEST_F(PasswordAutofillManagerTest,
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
   EXPECT_EQ(client.GetUndoPasswordChangeController()->GetState(test_username_),
             PasswordRecoveryState::kIncludeBackup);
+  histogram.ExpectUniqueSample(
+      kDropdownSelectedHistogram,
+      metrics_util::PasswordDropdownSelectedOption::kTroubleSigningIn, 1);
 }
 
 TEST_F(PasswordAutofillManagerTest,

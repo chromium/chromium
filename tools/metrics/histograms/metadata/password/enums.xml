@@ -969,6 +969,8 @@ chromium-metrics-reviews@google.com.
       label="(obsolete) Re-Signin to unlock account-stored passwords"/>
   <int value="6" label="WebAuthn credential"/>
   <int value="7" label="Sign in with another WebAuthn device"/>
+  <int value="8" label="Backup password"/>
+  <int value="9" label="Trouble signing in"/>
 </enum>
 
 <enum name="PasswordDropdownState">

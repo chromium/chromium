@@ -341,6 +341,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       break;
     }
     case autofill::SuggestionType::kBackupPasswordEntry: {
+      metrics_util::LogPasswordDropdownItemSelected(
+          PasswordDropdownSelectedOption::kBackupPassword,
+          password_client_->IsOffTheRecord());
       // The payload is set during suggestion generation and contains the backup
       // password in its password field.
       auto payload =
@@ -352,6 +355,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       break;
     }
     case autofill::SuggestionType::kTroubleSigningInEntry: {
+      metrics_util::LogPasswordDropdownItemSelected(
+          PasswordDropdownSelectedOption::kTroubleSigningIn,
+          password_client_->IsOffTheRecord());
       auto payload =
           suggestion
               .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();

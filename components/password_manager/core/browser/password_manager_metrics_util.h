@@ -377,7 +377,12 @@ enum class PasswordDropdownSelectedOption {
   kWebAuthn = 6,
   // User selected the "Sign in with another device" button.
   kWebAuthnSignInWithAnotherDevice = 7,
-  kMaxValue = kWebAuthnSignInWithAnotherDevice
+  // Backup password saved during the APC flow.
+  kBackupPassword = 8,
+  // "Trouble signing in" disclaimer, displayed when trying to log in with APC
+  // password.
+  kTroubleSigningIn = 9,
+  kMaxValue = kTroubleSigningIn
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

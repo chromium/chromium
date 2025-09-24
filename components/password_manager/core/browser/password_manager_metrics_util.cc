@@ -339,6 +339,8 @@ void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
       break;
     case PasswordDropdownSelectedOption::kShowAll:
     case PasswordDropdownSelectedOption::kGenerate:
+    case PasswordDropdownSelectedOption::kBackupPassword:
+    case PasswordDropdownSelectedOption::kTroubleSigningIn:
     default:
       base::RecordAction(base::UserMetricsAction(
           "PasswordManager.PasswordDropdownSelected.Others"));
