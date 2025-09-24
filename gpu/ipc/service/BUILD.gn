@@ -145,6 +145,7 @@ component("service") {
       "arc_shared_image_interface.cc",
       "arc_shared_image_interface.h",
     ]
+    deps += [ "//chromeos/ash/experiences/arc:arc_features" ]
   }
   if (use_ozone) {
     sources += [
