@@ -27,7 +27,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -94,6 +93,7 @@
 #include "content/web_test/common/web_test_constants.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/common/web_test_switches.h"
+#include "crypto/obsolete/md5.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/cookies/cookie_util.h"
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
@@ -122,6 +122,11 @@
 #endif
 
 namespace content {
+
+std::string Md5OfPixelsAsHexForWebTests(base::span<const uint8_t> pixels) {
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::Hash(pixels)));
+}
 
 namespace {
 
@@ -740,7 +745,6 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   layout_dump_.reset();
   waiting_for_layout_dumps_ = 0;
   pixel_dump_.reset();
-  actual_pixel_hash_ = "";
   waiting_for_pixel_results_ = false;
   composite_all_frames_node_queue_ =
       std::queue<raw_ptr<Node, CtnExperimental>>();
@@ -1407,14 +1411,11 @@ void WebTestControlHost::ReportResults() {
     // can't track initializedness across processes, we must assure it that the
     // pixels are in fact initialized.
     MSAN_UNPOISON(pixel_dump_->getPixels(), pixel_dump_->computeByteSize());
-    base::MD5Digest digest;
     auto bytes = UNSAFE_TODO(
         base::span(static_cast<const uint8_t*>(pixel_dump_->getPixels()),
                    pixel_dump_->computeByteSize()));
-    base::MD5Sum(bytes, &digest);
-    actual_pixel_hash_ = base::MD5DigestToBase16(digest);
 
-    OnImageDump(actual_pixel_hash_, *pixel_dump_);
+    OnImageDump(Md5OfPixelsAsHexForWebTests(bytes), *pixel_dump_);
   } else if (!renderer_dump_result_->actual_pixel_hash.empty()) {
     OnImageDump(renderer_dump_result_->actual_pixel_hash,
                 renderer_dump_result_->pixels);
