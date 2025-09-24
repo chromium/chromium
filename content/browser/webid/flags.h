@@ -54,6 +54,12 @@ bool IsNonceInParamsEnabled();
 // Whether showing the non-string token is enabled.
 bool IsNonStringTokenEnabled();
 
+// Controls whether FedCM requires explicit accounts_endpoint and
+// login_url in well-known files when using client_metadata.
+bool IsWellKnownEndpointValidationEnabled();
+
+// Whether preserving ports for testing is enabled.
+bool IsPreservePortsForTestingEnabled();
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

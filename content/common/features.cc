@@ -181,6 +181,24 @@ BASE_FEATURE(kFedCmSameSiteLax, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables NonString Tokens
 BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether FedCM requires explicit endpoint declaration in well-known
+// files when client_metadata is used. When enabled, accounts_endpoint and
+// login_url must be present in .well-known/web-identity for privacy validation.
+BASE_FEATURE(kFedCmWellKnownEndpointValidation,
+             "FedCmWellKnownEndpointValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether FedCM preserves ports in well-known URLs during testing.
+// When enabled, well-known URLs retain the original port from the provider URL
+// instead of stripping it via eTLD+1 extraction. This is primarily used in
+// test environments where IdPs run on non-standard ports (e.g., localhost:8080)
+// and the well-known endpoint needs to be fetched from the same port.
+// Production FedCM strips ports for security reasons to ensure well-known
+// files are served from the canonical domain.
+BASE_FEATURE(kFedCmPreservePortsForTesting,
+             "FedCmPreservePortsForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables installed web app matching for getInstalledRelatedApps API.
 BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -28,6 +28,23 @@ static constexpr char kVcSdJwt[] = "vc+sd-jwt";
 bool IsFrameActive(RenderFrameHost* frame) {
   return frame && frame->IsActive();
 }
+
+bool ValidateWellKnownFormatForClientMetadata(
+    const IdpNetworkRequestManager::WellKnown& well_known,
+    bool has_client_metadata_endpoint) {
+  if (!has_client_metadata_endpoint) {
+    return true;
+  }
+
+  // client_metadata endpoint exists - require direct endpoints format
+  // Check if both accounts_endpoint and login_url are present (direct endpoints
+  // format)
+  if (well_known.accounts.is_empty() || well_known.login_url.is_empty()) {
+    return false;
+  }
+
+  return true;
+}
 }  // namespace
 
 AccountsFetcher::IdentityProviderGetInfo::IdentityProviderGetInfo(
@@ -185,6 +202,22 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
           std::move(idp_info), fetch_error.result, fetch_error.token_status,
           /*should_delay_callback=*/params_.rp_mode == RpMode::kPassive);
       continue;
+    }
+
+    if (IsWellKnownEndpointValidationEnabled()) {
+      // Check if this IDP has a client_metadata endpoint
+      bool has_client_metadata_endpoint =
+          !fetch_result.endpoints.client_metadata.is_empty();
+
+      if (!ValidateWellKnownFormatForClientMetadata(
+              fetch_result.wellknown, has_client_metadata_endpoint)) {
+        federated_auth_request_impl_->OnFetchDataForIdpFailed(
+            std::move(idp_info),
+            FederatedAuthRequestResult::kWellKnownInvalidResponse,
+            TokenStatus::kWellKnownInvalidResponse,
+            /*should_delay_callback=*/false);
+        continue;
+      }
     }
 
     if (IsIdPRegistrationEnabled()) {

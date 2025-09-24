@@ -1116,7 +1116,7 @@ IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 std::optional<GURL> IdpNetworkRequestManager::ComputeWellKnownUrl(
     const GURL& provider) {
   GURL well_known_url;
-  if (net::IsLocalhost(provider)) {
+  if (net::IsLocalhost(provider) || webid::IsPreservePortsForTestingEnabled()) {
     well_known_url = provider.GetWithEmptyPath();
   } else {
     std::string etld_plus_one = GetDomainAndRegistry(

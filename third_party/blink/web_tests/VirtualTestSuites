@@ -1001,6 +1001,27 @@
     "expires": "Aug 1, 2026"
   },
   {
+    "prefix": "fedcm-well-known-validation",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-well-known-validation/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
+    ],
+    "owners": [
+      "npm@chromium.org",
+      "cbiesinger@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
     "prefix": "fedcm-third-party-iframe",
     "platforms": [
       "Linux",
