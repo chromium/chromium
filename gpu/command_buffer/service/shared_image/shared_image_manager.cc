@@ -242,13 +242,16 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
 SharedImageManager::SharedImageManager(
     bool thread_safe,
     bool display_context_on_another_thread,
-    std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory)
+    viz::VulkanContextProvider* vulkan_context_provider,
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner)
     : display_context_on_another_thread_(display_context_on_another_thread),
 #if BUILDFLAG(IS_WIN)
       dxgi_shared_handle_manager_(
           base::MakeRefCounted<DXGISharedHandleManager>()),
 #endif
-      gpu_memory_buffer_factory_(std::move(gpu_memory_buffer_factory)) {
+      gpu_memory_buffer_factory_(
+          gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
+                                                        std::move(io_runner))) {
   DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe) {
     lock_.emplace();

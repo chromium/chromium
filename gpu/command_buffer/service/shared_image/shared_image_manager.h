@@ -40,10 +40,11 @@ class GPU_GLES2_EXPORT SharedImageManager
   // SharedImages that will be used in the display context have thread-safe
   // backings and therefore it is safe to create representations on the thread
   // that holds the display context.
-  explicit SharedImageManager(bool thread_safe = false,
-                              bool display_context_on_another_thread = false,
-                              std::unique_ptr<GpuMemoryBufferFactory>
-                                  gpu_memory_buffer_factory = nullptr);
+  explicit SharedImageManager(
+      bool thread_safe = false,
+      bool display_context_on_another_thread = false,
+      viz::VulkanContextProvider* vulkan_context_provider = nullptr,
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
 
   SharedImageManager(const SharedImageManager&) = delete;
   SharedImageManager& operator=(const SharedImageManager&) = delete;
