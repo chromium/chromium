@@ -520,6 +520,8 @@ class TouchToFillPaymentMethodMediator {
         mModel.set(CURRENT_SCREEN, BNPL_ISSUER_SELECTION_SCREEN);
         ModelList sheetItems = new ModelList();
 
+        sheetItems.add(buildHeaderForBnplSelectionProgress(/* isBackButtonEnabled= */ true));
+
         for (BnplIssuer issuer : mBnplIssuers) {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerModel(issuer)));
         }

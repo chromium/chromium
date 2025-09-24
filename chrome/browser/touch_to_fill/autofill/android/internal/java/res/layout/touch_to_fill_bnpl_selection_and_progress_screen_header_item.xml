@@ -9,7 +9,9 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/ttf_for_sheet_item_margin_horizontal"
+    android:layout_marginBottom="@dimen/bnpl_header_margin_bottom">
 
     <ImageButton
         android:id="@+id/bnpl_header_back_button"
