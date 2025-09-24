@@ -148,7 +148,6 @@ class CC_EXPORT GpuImageDecodeCache
       public base::trace_event::MemoryDumpProvider {
  public:
   explicit GpuImageDecodeCache(viz::RasterContextProvider* context,
-                               bool use_transfer_cache,
                                SkColorType color_type,
                                size_t max_working_set_bytes,
                                int max_texture_size,
@@ -931,7 +930,9 @@ class CC_EXPORT GpuImageDecodeCache
   }
 
   const SkColorType color_type_;
-  const bool use_transfer_cache_ = false;
+
+  // TODO(crbug.com/391648152): Eliminate this ivar, as it's now always true.
+  const bool use_transfer_cache_ = true;
   raw_ptr<viz::RasterContextProvider> context_;
   int max_texture_size_ = 0;
   const PaintImage::GeneratorClientId generator_client_id_;

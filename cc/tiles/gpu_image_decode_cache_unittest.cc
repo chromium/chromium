@@ -450,8 +450,8 @@ class GpuImageDecodeCacheTest
       size_t memory_limit_bytes = kGpuMemoryLimitBytes,
       RasterDarkModeFilter* const dark_mode_filter = nullptr) {
     return std::make_unique<GpuImageDecodeCache>(
-        context_provider_.get(), /*use_transfer_cache=*/true, color_type_,
-        memory_limit_bytes, max_texture_size_, dark_mode_filter);
+        context_provider_.get(), color_type_, memory_limit_bytes,
+        max_texture_size_, dark_mode_filter);
   }
 
   // Returns dimensions for an image that will not fit in GPU memory and hence

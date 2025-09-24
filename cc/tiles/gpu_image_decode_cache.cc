@@ -1141,13 +1141,11 @@ GrGLuint GpuImageDecodeCache::GlIdFromSkImage(const SkImage* image) {
 
 GpuImageDecodeCache::GpuImageDecodeCache(
     viz::RasterContextProvider* context,
-    bool use_transfer_cache,
     SkColorType color_type,
     size_t max_working_set_bytes,
     int max_texture_size,
     RasterDarkModeFilter* const dark_mode_filter)
     : color_type_(color_type),
-      use_transfer_cache_(use_transfer_cache),
       context_(context),
       max_texture_size_(max_texture_size),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
@@ -1170,11 +1168,11 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   // involving hardware decode acceleration only count users in that
   // population (both in the 'control' and the 'enabled' groups).
   allow_accelerated_jpeg_decodes_ =
-      use_transfer_cache &&
+      use_transfer_cache_ &&
       context_->ContextSupport()->IsJpegDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiJpegImageDecodeAcceleration);
   allow_accelerated_webp_decodes_ =
-      use_transfer_cache &&
+      use_transfer_cache_ &&
       context_->ContextSupport()->IsWebPDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiWebPImageDecodeAcceleration);
 

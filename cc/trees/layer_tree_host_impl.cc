@@ -256,8 +256,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
     if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(raster_caps.tile_format);
       image_decode_cache_ = std::make_unique<GpuImageDecodeCache>(
-          worker_context_provider.get(),
-          /*use_transfer_cache=*/true, color_type,
+          worker_context_provider.get(), color_type,
           decoded_image_working_set_budget_bytes, raster_caps.max_texture_size,
           dark_mode_filter);
     } else {

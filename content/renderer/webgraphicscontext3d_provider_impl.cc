@@ -176,8 +176,7 @@ cc::ImageDecodeCache* WebGraphicsContext3DProviderImpl::ImageDecodeCache(
   auto insertion_result = image_decode_cache_map_.emplace(
       color_type,
       std::make_unique<cc::GpuImageDecodeCache>(
-          provider_.get(), /*use_transfer_cache=*/true, color_type,
-          kMaxWorkingSetBytes,
+          provider_.get(), color_type, kMaxWorkingSetBytes,
           provider_->ContextCapabilities().max_texture_size, nullptr));
   DCHECK(insertion_result.second);
   cache_iterator = insertion_result.first;
