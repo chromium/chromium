@@ -11,4 +11,24 @@ group("freetype") {
   } else {
     public_deps = [ "//third_party/freetype" ]
   }
+
+  # This list tracks all current users of the `freetype` library.
+  #
+  # Eventually `freetype` should be replaced with Fontations libraries.
+  # Therefore no new entries should be added to this list.
+  visibility = [
+    "//chrome/test:*",
+    "//content/test:*",
+    "//skia",
+    "//third_party/fontconfig",
+
+    # The path/label of the PDFium target that depends on `freetype` is
+    # different when building PDFium during Chromium build and during
+    # standalone-PDFium-build:
+    "//:freetype_common",  # Building standalone PDFium
+    "//third_party/pdfium:freetype_common",  # Building Chromium
+
+    # Other dependencies that we think are PDFium-related:
+    "//components/services/font:font_service_unittests",
+  ]
 }

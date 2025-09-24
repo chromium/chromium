@@ -9,6 +9,8 @@ import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 assert(!use_system_freetype, "Not used when using system freetype.")
 
+visibility = [ ":*" ]
+
 config("freetype_component_config") {
   include_dirs = [
     "include",
@@ -67,6 +69,7 @@ config("freetype-warnings") {
 }
 
 component("freetype") {
+  visibility = []
   visibility = [ "//build/config/freetype" ]
 
   defines = []
