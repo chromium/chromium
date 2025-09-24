@@ -48,6 +48,10 @@ class UserUploadedImageManager : public KeyedService {
   void DeleteUnusedImages(std::set<base::FilePath> relative_file_paths_in_use,
                           base::OnceClosure completion = base::DoNothing());
 
+  // Returns the full, absolute path to an image file.
+  base::FilePath GetFullImagePath(
+      const base::FilePath& relative_image_file_path) const;
+
  private:
   // File path to store images at.
   const base::FilePath storage_directory_path_;

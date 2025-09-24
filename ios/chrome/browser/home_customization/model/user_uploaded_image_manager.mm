@@ -161,3 +161,8 @@ void UserUploadedImageManager::DeleteUnusedImages(
                                                    relative_file_paths_in_use)
                                         .Then(std::move(completion)));
 }
+
+base::FilePath UserUploadedImageManager::GetFullImagePath(
+    const base::FilePath& relative_image_file_path) const {
+  return storage_directory_path_.Append(relative_image_file_path);
+}
