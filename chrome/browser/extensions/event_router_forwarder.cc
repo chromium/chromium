@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/event_router_forwarder.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 
