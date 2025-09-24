@@ -64,8 +64,15 @@ AllSupportedQuicVersions() {
   return filtered_versions;
 }
 
-// When a connection is idle for 30 seconds it will be closed.
-inline constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
+// The idle connection timeout. Defaults to 30 seconds, but can be overridden
+// by a field trial.
+inline base::TimeDelta GetIdleConnectionTimeout() {
+  if (base::FeatureList::IsEnabled(
+          net::features::kQuicLongerIdleConnectionTimeout)) {
+    return base::Seconds(300);
+  }
+  return base::Seconds(30);
+}
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
@@ -144,7 +151,7 @@ struct NET_EXPORT QuicParams {
   // changes.
   bool goaway_sessions_on_ip_change = false;
   // Specifies QUIC idle connection state lifetime.
-  base::TimeDelta idle_connection_timeout = kIdleConnectionTimeout;
+  base::TimeDelta idle_connection_timeout = GetIdleConnectionTimeout();
   // Specifies the reduced ping timeout subsequent connections should use when
   // a connection was timed out with open streams.
   base::TimeDelta reduced_ping_timeout = base::Seconds(quic::kPingTimeoutSecs);

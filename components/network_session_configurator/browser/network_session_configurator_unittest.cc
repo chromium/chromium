@@ -76,7 +76,8 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.client_connection_options);
   EXPECT_FALSE(quic_params_.close_sessions_on_ip_change);
   EXPECT_FALSE(quic_params_.goaway_sessions_on_ip_change);
-  EXPECT_EQ(net::kIdleConnectionTimeout, quic_params_.idle_connection_timeout);
+  EXPECT_EQ(net::GetIdleConnectionTimeout(),
+            quic_params_.idle_connection_timeout);
   EXPECT_EQ(base::Seconds(quic::kPingTimeoutSecs),
             quic_params_.reduced_ping_timeout);
   EXPECT_EQ(base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs),
