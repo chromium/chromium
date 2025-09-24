@@ -201,8 +201,10 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   CHECK_EQ(source_browser->GetProfile(), destination_browser->GetProfile());
   auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
       source_browser->GetProfile());
-  auto lock = sync_service->CreateScopedLocalObserverPauser();
-
+  std::unique_ptr<ScopedLocalObservationPauser> lock;
+  if (sync_service) {
+    lock = sync_service->CreateScopedLocalObserverPauser();
+  }
   MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
                              destination_browser, destination_tab_group_index);
 }
