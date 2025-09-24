@@ -2678,90 +2678,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
               ElementsAre(IsUrlBookmark(kTitle2, kUrl2)));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Regression test for crbug.com/329278277: turning sync-the-feature on, then
-// off, and later signing in with account bookmarks enabled should lead to all
-// bookmarks being duplicated (local bookmarks and account bookmarks). The user
-// needs to take explicit action (e.g. exercise batch upload flow) to clean up
-// these duplicates (but this part is not covered in the test).
-IN_PROC_BROWSER_TEST_F(
-    SingleClientBookmarksWithAccountStorageSyncTest,
-    ShouldExposeDuplicatedBookmarksAfterTurningSyncOffAndSignIn) {
-  const std::u16string kTitle1 = u"Title 1";
-  const std::u16string kTitle2 = u"Title 2";
-
-  ASSERT_TRUE(SetupClients());
-
-  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
-
-  // Create two local folders while the user is signed out and sync is off.
-  AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
-            /*index=*/0, kTitle1);
-  AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
-            /*index=*/1, kTitle2);
-
-  ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  {{kTitle1, /*url=*/GURL()}, {kTitle2, /*url=*/GURL()}},
-                  /*cryptographer=*/nullptr)
-                  .Wait());
-  ASSERT_THAT(model->account_bookmark_bar_node(), IsNull());
-
-  // Turn Sync off by removing the primary account.
-  GetClient(0)->SignOutPrimaryAccount();
-
-  ASSERT_THAT(model->bookmark_bar_node()->children(),
-              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
-
-  // Sign in again, but don't actually enable Sync-the-feature (so that Sync
-  // will start in transport mode).
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
-  GetSyncService(kSingleProfileIndex)
-      ->GetUserSettings()
-      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
-                  ->GetUserSettings()
-                  ->GetSelectedTypes()
-                  .Has(syncer::UserSelectableType::kBookmarks));
-  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
-                  ->GetActiveDataTypes()
-                  .Has(syncer::BOOKMARKS));
-  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
-
-  // The folders should now be duplicated in local and account bookmarks.
-  EXPECT_THAT(model->bookmark_bar_node()->children(),
-              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
-  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
-              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
-
-  // Move one folder individually from local to account, involving a UUID
-  // collision.
-  ASSERT_EQ(2u, model->bookmark_bar_node()->children().size());
-  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
-            model->account_bookmark_bar_node()->children()[0]->uuid());
-  model->Move(model->bookmark_bar_node()->children()[0].get(),
-              /*new_parent=*/model->account_bookmark_bar_node(),
-              /*index=*/model->account_bookmark_bar_node()->children().size());
-  EXPECT_THAT(
-      model->account_bookmark_bar_node()->children(),
-      ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2), IsFolder(kTitle1)));
-
-  // Move one folder individually from account to local, involving a UUID
-  // collision.
-  ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
-  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
-            model->account_bookmark_bar_node()->children()[1]->uuid());
-  model->Move(model->account_bookmark_bar_node()->children()[1].get(),
-              /*new_parent=*/model->bookmark_bar_node(),
-              /*index=*/model->bookmark_bar_node()->children().size());
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
@@ -2964,6 +2880,103 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class
+    SingleClientBookmarksWithAccountStorageSyncTestSyncToSignInDisabledOnDesktop
+    : public SingleClientBookmarksWithAccountStorageSyncTest {
+ public:
+  SingleClientBookmarksWithAccountStorageSyncTestSyncToSignInDisabledOnDesktop() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    features_override_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
+// Regression test for crbug.com/329278277: turning sync-the-feature on, then
+// off, and later signing in with account bookmarks enabled should lead to all
+// bookmarks being duplicated (local bookmarks and account bookmarks). The user
+// needs to take explicit action (e.g. exercise batch upload flow) to clean up
+// these duplicates (but this part is not covered in the test).
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksWithAccountStorageSyncTestSyncToSignInDisabledOnDesktop,
+    ShouldExposeDuplicatedBookmarksAfterTurningSyncOffAndSignIn) {
+  const std::u16string kTitle1 = u"Title 1";
+  const std::u16string kTitle2 = u"Title 2";
+
+  ASSERT_TRUE(SetupClients());
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+
+  // Create two local folders while the user is signed out and sync is off.
+  AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
+            /*index=*/0, kTitle1);
+  AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
+            /*index=*/1, kTitle2);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  {{kTitle1, /*url=*/GURL()}, {kTitle2, /*url=*/GURL()}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
+  ASSERT_THAT(model->account_bookmark_bar_node(), IsNull());
+
+  // Turn Sync off by removing the primary account.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
+
+  // Sign in again, but don't actually enable Sync-the-feature (so that Sync
+  // will start in transport mode).
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  // Note: Depending on the state of feature flags (specifically
+  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
+  // selected by default.
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetActiveDataTypes()
+                  .Has(syncer::BOOKMARKS));
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
+
+  // The folders should now be duplicated in local and account bookmarks.
+  EXPECT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
+  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2)));
+
+  // Move one folder individually from local to account, involving a UUID
+  // collision.
+  ASSERT_EQ(2u, model->bookmark_bar_node()->children().size());
+  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
+            model->account_bookmark_bar_node()->children()[0]->uuid());
+  model->Move(model->bookmark_bar_node()->children()[0].get(),
+              /*new_parent=*/model->account_bookmark_bar_node(),
+              /*index=*/model->account_bookmark_bar_node()->children().size());
+  EXPECT_THAT(
+      model->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolder(kTitle1), IsFolder(kTitle2), IsFolder(kTitle1)));
+
+  // Move one folder individually from account to local, involving a UUID
+  // collision.
+  ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
+  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
+            model->account_bookmark_bar_node()->children()[1]->uuid());
+  model->Move(model->account_bookmark_bar_node()->children()[1].get(),
+              /*new_parent=*/model->bookmark_bar_node(),
+              /*index=*/model->bookmark_bar_node()->children().size());
+}
 
 // Android doesn't currently support PRE_ tests, see crbug.com/40200835 or
 // crbug.com/40145099.
