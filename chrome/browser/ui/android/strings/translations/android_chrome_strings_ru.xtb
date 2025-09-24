@@ -421,7 +421,7 @@
 <translation id="297771753501244313">По дате использования</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
-<translation id="2983398917942897288">Неактивны (<ph name="ITEM_COUNT" />)</translation>
+<translation id="2983398917942897288">Неактивные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Выйти из режима "Картинка в картинке"</translation>
 <translation id="2984978667043170458">Учитывать контекст в поиске Google</translation>
 <translation id="2988638966064514052">Повысьте надежность паролей</translation>
@@ -777,7 +777,7 @@
 <translation id="469286762610133730">Более интересный контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
-<translation id="4698757800236023795">Активны (<ph name="ITEM_COUNT" />)</translation>
+<translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
 <translation id="4718044610319080485">Вызывает ИИ-помощника</translation>

@@ -524,7 +524,7 @@
 <translation id="3507132249039706973">การปกป้องแบบมาตรฐานเปิดอยู่</translation>
 <translation id="3509330069915219067">ออฟไลน์ Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="3513019849832307207">เข้าร่วมและเปิด</translation>
-<translation id="3513704683820682405">Augmented Reality</translation>
+<translation id="3513704683820682405">เทคโนโลยีความจริงเสริม (AR)</translation>
 <translation id="3516053221628030540">ไปที่ Google Play</translation>
 <translation id="3518985090088779359">ยอมรับและทำต่อ</translation>
 <translation id="3519014757432845220">ช่วยปรับปรุงการป้องกันสแปมโดยแชร์เนื้อหาการแจ้งเตือนและ URL ของเว็บไซต์กับ Google เนื้อหาอาจได้รับการตรวจสอบโดยเจ้าหน้าที่</translation>
@@ -1408,7 +1408,7 @@
 <translation id="7388615499319468910">เว็บไซต์และผู้ลงโฆษณาจะรู้ได้ว่าโฆษณามีประสิทธิภาพเพียงใด การตั้งค่านี้ปิดอยู่</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{อีก 1 ไฟล์ในรายการ}other{อีก # ไฟล์ในรายการ}}</translation>
 <translation id="7400418766976504921">URL</translation>
-<translation id="7400424692675800399">หากต้องการเปิดหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างทั้งหมดทั้งหน้าต่างที่ใช้งานอยู่และหน้าต่างที่ไม่ได้ใช้งานเหลือ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการหรือน้อยกว่านั้น</translation>
+<translation id="7400424692675800399">หากต้องการเปิดหน้าต่างใหม่ ให้ลดจำนวนหน้าต่างทั้งหมด ทั้งหน้าต่างที่ใช้งานอยู่และหน้าต่างที่ไม่ได้ใช้งาน ให้เหลือไม่เกิน <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> รายการ</translation>
 <translation id="7403691278183511381">ประสบการณ์กับ First Run บน Chrome</translation>
 <translation id="7411224099004328643">ผู้ใช้บัญชี Google</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>

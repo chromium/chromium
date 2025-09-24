@@ -940,7 +940,7 @@
 <translation id="5394331612381306435">الخروج من وضع التصفّح المتخفي</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
 <translation id="539881862970320163">تم اقتراح كلمة مرور قوية. لوحة المفاتيح مخفية.</translation>
-<translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
+<translation id="5409881200985013443">هل المطلوب إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5410300144953132176">تلقّيت دعوة من "<ph name="OWNER_FULL_NAME" />" ‏(<ph name="OWNER_EMAIL" />) للانضمام إلى مجموعة علامات تبويب. يمكن لأيّ مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند الانضمام. وتنتهي صلاحية الرابط بعد 48 ساعة.</translation>
 <translation id="5412388166586147626">تعذَّر فتح المساعد المستند إلى الذكاء الاصطناعي. يُرجى إعادة المحاولة.</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
@@ -1381,7 +1381,7 @@
 <translation id="7248671827512403053">تطبيق</translation>
 <translation id="7253951228444156601">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="7260367682327802201">‏قد يتضمّن جهاز Android إعدادًا مشابهًا. في حال تفعيل الإعداد "قياس أداء الإعلانات" في Chrome وعلى جهاز Android، يمكن للشركات قياس مدى فعالية الإعلان المعروض على المواقع الإلكترونية التي تزورها والتطبيقات التي تستخدمها.</translation>
-<translation id="727288900855680735">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
+<translation id="727288900855680735">هل المطلوب إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="ORIGIN" />؟</translation>
 <translation id="7274013316676448362">تم حظر الموقع.</translation>
 <translation id="7276868533747677875">‏إذا سبق لك تصدير كلمات المرور، يمكنك البحث عن ملف CSV على جهازك واستيرادها إلى مدير كلمات المرور المفضّل لديك.</translation>
 <translation id="7289049772085228972">‏يوفِّر لك Chrome أعلى مستويات الأمان</translation>

@@ -989,7 +989,7 @@
 <translation id="5659593005791499971">ایمیل</translation>
 <translation id="5665379678064389456">ایجاد رویداد در <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
-<translation id="5683916195767086779">گروه برگه</translation>
+<translation id="5683916195767086779">گروه زبانه</translation>
 <translation id="5686790454216892815">نام فایل خیلی طولانی است</translation>
 <translation id="569536719314091526">با استفاده از دکمه «گزینه‌های بیشتر»، این صفحه را به زبان‌های دیگر ترجمه کنید</translation>
 <translation id="5696597120588531049">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های غیرایمن، و موارد دیگر کمک کند</translation>
@@ -1408,7 +1408,7 @@
 <translation id="7388615499319468910">سایت‌ها و تبلیغ‌کنندگان می‌توانند نحوه عملکرد آگهی‌ها را درک کنند. این تنظیم خاموش است.</translation>
 <translation id="7400003506822844357">{FILE_COUNT,plural, =1{۱ فایل دیگر در فهرست}one{# فایل دیگر در فهرست}other{# فایل دیگر در فهرست}}</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
-<translation id="7400424692675800399">برای باز کردن پنجره جدید، تعداد کل پنجره‌های فعال و غیرفعال را به <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا کمتر کاهش دهید.</translation>
+<translation id="7400424692675800399">برای باز کردن یک پنجره جدید، تعداد کل پنجره‌های فعال و غیرفعال را به <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> عدد یا کمتر کاهش دهید.</translation>
 <translation id="7403691278183511381">‏اولین تجربه اجرا Chrome</translation>
 <translation id="7411224099004328643">‏کاربر «حساب Google»</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>

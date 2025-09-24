@@ -3530,7 +3530,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="343578350365773421">Kein Papier mehr</translation>
 <translation id="3435896845095436175">Aktivieren</translation>
-<translation id="3436118221454753036">Modus „KI fragen“</translation>
+<translation id="3436118221454753036">Mit KI-Modus suchen</translation>
 <translation id="3437072258256045988">Aktivitäten in Gemini-Apps verwalten</translation>
 <translation id="3437397693214267762">Outlook-Kalender sowie SharePoint- und OneDrive-Dateien aufrufen</translation>
 <translation id="3438633801274389918">Ninja</translation>
@@ -9146,7 +9146,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7396017167185131589">Freigegebene Ordner erscheinen hier</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> wird beim Systemstart gestartet und auch dann weiter im Hintergrund ausgeführt, wenn du alle anderen <ph name="PRODUCT_NAME" />-Fenster geschlossen hast.</translation>
 <translation id="7399045143794278225">Synchronisierung anpassen</translation>
-<translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer bei Websites, bei denen du es zulässt</translation>
+<translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer für diejenigen, die du zulässt</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400059772197434086">wird daran gehindert, deine Informationen zu nutzen auf</translation>
 <translation id="7400418766976504921">URL</translation>

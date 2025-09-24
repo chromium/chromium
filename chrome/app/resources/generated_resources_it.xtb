@@ -307,7 +307,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="11947597112837849">indirizzo email</translation>
 <translation id="1195210374336998651">Vai alle impostazioni dell'app</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
-<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
+<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="11978075283960463">Dati archiviati nell'app: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Strumenti per persone ipovedenti</translation>
@@ -11710,7 +11710,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9115675100829699941">&amp;Preferiti</translation>
 <translation id="9116366756388192417">Scegli un argomento</translation>
 <translation id="9116799625073598554">App per creare note</translation>
-<translation id="9117030152748022724">Gestisci le tue applicazioni</translation>
+<translation id="9117030152748022724">Gestisci le tue app</translation>
 <translation id="9120362425083889527">Impossibile completare l'installazione. Riprova o chiudi questa finestra.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per un'esperienza ottimale, installa <ph name="DEVICE_OS" /> sul disco interno. Puoi anche installarlo in un secondo momento dalla schermata di accesso.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non vuoi installarlo ora, puoi eseguirlo da un'unità USB per provarlo. In questo modo manterrai il tuo attuale sistema operativo e i tuoi dati, ma potresti riscontrare limiti relativi allo spazio di archiviazione e alle prestazioni.<ph name="END_PARAGRAPH2" /></translation>

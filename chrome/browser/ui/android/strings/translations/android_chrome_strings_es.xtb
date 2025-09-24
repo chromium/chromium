@@ -505,7 +505,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3435465986463792564">¿Tienes demasiadas ventanas? Puedes gestionarlas desde aquí.</translation>
 <translation id="3435575784518354875">Para seguir teniendo acceso a tus contraseñas, expórtalas ahora, actualiza Servicios de Google Play y, a continuación, vuelve a importarlas en el Gestor de contraseñas de Google. <ph name="BEGIN_LINK" />Consulta las instrucciones completas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
-<translation id="3435914367318771664">Añadir pestaña al nuevo grupo</translation>
+<translation id="3435914367318771664">Añadir al nuevo grupo</translation>
 <translation id="3439276997620616816">Aquí verás tus pestañas recientes</translation>
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
 <translation id="3444179773590444986">¿Enviar comentarios sobre el tema oscuro para sitios?</translation>
@@ -1198,7 +1198,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6545017243486555795">Borrar todos los datos</translation>
 <translation id="6546511553472444032">Es posible que el archivo sea dañino</translation>
 <translation id="6550891580932862748">No te protege frente a descargas, extensiones ni sitios web peligrosos. La configuración de Navegación segura en otros productos de Google no se verá afectada.</translation>
-<translation id="6554822972009632311">El filtro de contenido está activado</translation>
+<translation id="6554822972009632311">Filtro de contenido activado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_ONE" /> más}other{Se cerrarán la pestaña <ph name="TAB_TITLE" /> y <ph name="TAB_COUNT_MANY" /> más}}</translation>
 <translation id="6560414384669816528">Realizar búsquedas con Sogou</translation>
 <translation id="656065428026159829">Ver más</translation>

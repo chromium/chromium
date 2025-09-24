@@ -113,7 +113,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1190491977647722791">Carta (pesante)</translation>
 <translation id="1194278116501666615">Aggiornamento avanzamento precaricamento ArcVm</translation>
 <translation id="1195073053842921378">Questo indirizzo verrà eliminato da questo dispositivo</translation>
-<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
+<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> ha rimosso la scheda "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -923,7 +923,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2505063700931618106">Dati della carta salvati</translation>
 <translation id="2505268675989099013">Proteggi account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (si applicano termini)</translation>
-<translation id="2512101340618156538">Non consentita (opzione predefinita)</translation>
+<translation id="2512101340618156538">Non consentiti (predefinito)</translation>
 <translation id="2512413427717747692">Imposta Chrome come pulsante del browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="2514548229949738417">Casa e giardino</translation>
 <translation id="2515629240566999685">Controllare il segnale nella tua area</translation>
@@ -2058,7 +2058,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4366943895537458493">Lastra</translation>
 <translation id="4369179505195332608">Modifica patente di guida</translation>
 <translation id="437040971055499437">Si verifica un evento di sicurezza</translation>
-<translation id="4371591986692297148">Non attivo</translation>
+<translation id="4371591986692297148">Inattivi</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>

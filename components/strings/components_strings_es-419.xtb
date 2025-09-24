@@ -2062,7 +2062,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4366943895537458493">Placa</translation>
 <translation id="4369179505195332608">Editar la licencia de conducir</translation>
 <translation id="437040971055499437">Se produjo un evento de seguridad</translation>
-<translation id="4371591986692297148">Inactivo</translation>
+<translation id="4371591986692297148">Inactivos</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Intentaste acceder a <ph name="DOMAIN" />, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.</translation>
