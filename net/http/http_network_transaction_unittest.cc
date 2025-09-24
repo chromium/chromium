@@ -1738,6 +1738,10 @@ TEST_P(HttpNetworkTransactionTest, ReuseConnection) {
     rv = ReadTransaction(&trans, &response_data);
     EXPECT_THAT(rv, IsOk());
     EXPECT_EQ(expected_response_data, response_data);
+
+    LoadTimingInternalInfo load_timing_internal;
+    trans.PopulateLoadTimingInternalInfo(&load_timing_internal);
+    EXPECT_EQ(load_timing_internal.session_source, std::nullopt);
   }
 }
 

@@ -4046,6 +4046,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.SessionSource.{Protocol}"
+    enum="NetworkSessionSource" expires_after="2025-12-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures whether a request used a new or an existing {Protocol} session.
+    Recorded in HttpNetworkTransaction::DoCreateStreamComplete when the stream
+    creation completes successfully. Note that this is only recorded for HTTP/2
+    and HTTP/3. There are similar histograms called
+    PageLoad.Clients.GoogleSearch.SessionSource.{Protocol} that are recorded
+    only for search navigation. These histograms are recorded per navigation,
+    whereas this histograms measures per request.
+  </summary>
+  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+</histogram>
+
 <histogram name="Net.NetworkTransaction.StreamAddressFamily"
     enum="AddressFamily" expires_after="2026-03-08">
   <owner>bashi@chromium.org</owner>

@@ -386,15 +386,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="previewed and promoted"/>
 </enum>
 
-<!-- LINT.IfChange(SessionSource) -->
-
-<enum name="SessionSource">
-  <int value="0" label="New"/>
-  <int value="1" label="Existing"/>
-</enum>
-
-<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:SessionSource) -->
-
 <enum name="ThirdPartyCookieAllowMechanism">
   <int value="0" label="kNone: No allow mechanism applied (Not recorded)."/>
   <int value="1"

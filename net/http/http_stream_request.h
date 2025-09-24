@@ -187,7 +187,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   // Details of the completion of this request. Should be called after one
   // of the delegate callback methods. Returns std::nullopt when this didn't
   // complete successfully.
-  std::optional<CompletionDetails> completion_details() const {
+  const std::optional<CompletionDetails>& completion_details() const {
     return completion_details_;
   }
 

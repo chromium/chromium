@@ -504,7 +504,7 @@ HttpStreamPool::JobController::MaybeCreateStreamFromExistingSession() {
                                            LoadTimingInfo::ConnectTiming());
     return std::optional<PendingStream>(std::in_place, std::move(http_stream),
                                         negotiated_protocol,
-                                        SessionSource::kExisting);
+                                        /*session_source=*/std::nullopt);
   }
 
   return std::nullopt;

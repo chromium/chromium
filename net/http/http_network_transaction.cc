@@ -2499,6 +2499,14 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
           base::TimeTicks::Now() -
               reset_connection_and_request_for_resend_start_time_);
     }
+
+    CHECK(stream_request_completion_details_.has_value());
+    if (stream_request_completion_details_->session_source.has_value()) {
+      base::UmaHistogramEnumeration(
+          base::StrCat(
+              {"Net.NetworkTransaction.SessionSource.", protocol_suffix}),
+          *stream_request_completion_details_->session_source);
+    }
   } else {
     base::UmaHistogramSparse("Net.NetworkTransaction.StreamRequestErrorCode2",
                              -result);
@@ -2535,7 +2543,7 @@ void HttpNetworkTransaction::AddTraceParamsForStreamRequestResult(
   negotiated_protocol_annotation->set_uint_value(
       static_cast<uint64_t>(stream_request_->negotiated_protocol()));
 
-  const std::optional<HttpStreamRequest::CompletionDetails> details =
+  const std::optional<HttpStreamRequest::CompletionDetails>& details =
       stream_request_->completion_details();
   CHECK(details.has_value());
 

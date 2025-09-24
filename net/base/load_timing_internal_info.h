@@ -26,7 +26,7 @@ enum class SessionSource {
   kExisting = 1,
   kMaxValue = kExisting,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:SessionSource)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enums.xml:NetworkSessionSource)
 
 // Structure containing internal load timing information. This is similar to
 // LoadTimingInfo, but contains extra information which shouldn't be exposed to
