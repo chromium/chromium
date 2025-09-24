@@ -84,6 +84,8 @@ cr-icon-button {
 #pdf-icon {
   width: 20px;
   height: 20px;
+  min-width: 20px;
+  min-height: 20px;
   fill: var(--google-red-500);
 
   @media (prefers-color-scheme: dark) {
