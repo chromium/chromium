@@ -28,6 +28,8 @@ namespace {
 using ::save_to_drive::testing::GetTestAccount;
 using ::save_to_drive::testing::GetTestAccounts;
 
+constexpr char kAvatarUrl[] = "https://avatar.com/avatar.png";
+
 AccountChosenCallback GetOnAccountChosenCallback(
     const AccountInfo& expected_account,
     content::WaiterHelper& waiter) {
@@ -126,9 +128,9 @@ class AccountChooserControllerInteractiveUiTest
     persisted_account.full_name = account.full_name;
     persisted_account.account_image = account.account_image;
     identity_test_env->UpdateAccountInfoForAccount(persisted_account);
-    signin::SimulateAccountImageFetch(
-        identity_test_env->identity_manager(), persisted_account.account_id,
-        "https://avatar.com/avatar.png", persisted_account.account_image);
+    signin::SimulateAccountImageFetch(identity_test_env->identity_manager(),
+                                      persisted_account.account_id, kAvatarUrl,
+                                      persisted_account.account_image);
     return persisted_account;
   }
 
@@ -168,8 +170,6 @@ class AccountChooserControllerInteractiveUiTest
     return Do([this, &account]() {
       AccountInfo persisted_account =
           MakeAccountAvailableInIdentityTestEnv(account);
-      account_chooser_controller_->OnExtendedAccountInfoUpdated(
-          persisted_account);
     });
   }
 
@@ -180,9 +180,49 @@ class AccountChooserControllerInteractiveUiTest
       signin::IdentityTestEnvironment* identity_test_env =
           identity_test_environment_adaptor_->identity_test_env();
       identity_test_env->RemoveRefreshTokenForAccount(account->account_id);
-      account_chooser_controller_->OnRefreshTokenRemovedForAccount(
-          account->account_id);
     });
+  }
+
+  auto MakePrimaryAccountAvailable(const AccountInfo& account,
+                                   AccountInfo* persisted_account) {
+    return Do([this, &account, persisted_account]() {
+      signin::IdentityTestEnvironment* identity_test_env =
+          identity_test_environment_adaptor_->identity_test_env();
+      *persisted_account = identity_test_env->MakePrimaryAccountAvailable(
+          account.email, signin::ConsentLevel::kSignin);
+      persisted_account->full_name = account.full_name;
+      persisted_account->account_image = account.account_image;
+      identity_test_env->UpdateAccountInfoForAccount(*persisted_account);
+      signin::SimulateAccountImageFetch(
+          identity_test_env->identity_manager(), persisted_account->account_id,
+          kAvatarUrl, persisted_account->account_image);
+    });
+  }
+
+  auto MakePrimaryAccountAvailableWithInvalidRefreshToken(
+      const AccountInfo& account,
+      AccountInfo* persisted_account) {
+    return Steps(MakePrimaryAccountAvailable(account, persisted_account),
+                 Do([this]() {
+                   signin::IdentityTestEnvironment* identity_test_env =
+                       identity_test_environment_adaptor_->identity_test_env();
+                   identity_test_env->SetInvalidRefreshTokenForPrimaryAccount();
+                 }));
+  }
+
+  auto SetRefreshTokenForPrimaryAccount() {
+    return Do([this]() {
+      signin::IdentityTestEnvironment* identity_test_env =
+          identity_test_environment_adaptor_->identity_test_env();
+      identity_test_env->SetRefreshTokenForPrimaryAccount();
+    });
+  }
+
+  auto MakePrimaryAccountAvailableWithValidRefreshToken(
+      const AccountInfo& account,
+      AccountInfo* persisted_account) {
+    return Steps(MakePrimaryAccountAvailable(account, persisted_account),
+                 SetRefreshTokenForPrimaryAccount());
   }
 
  protected:
@@ -350,6 +390,38 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
           // Arbitrarily remove the one account.
           &persisted_account),
       VerifyPopupOpened());
+}
+
+// Steps:
+// 1. Call GetAccount with a signed out primary account.
+// 2. Verify the popup window is shown.
+// 3. Sign into the primary account.
+// 4. Verify the account chooser is shown.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       SignedOutPrimaryAccount) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  AccountInfo persisted_primary_account;
+  RunTestSequence(CreateAccountChooserController(),
+                  MakePrimaryAccountAvailableWithInvalidRefreshToken(
+                      account, &persisted_primary_account),
+                  GetAccount(base::DoNothing()), VerifyPopupOpened(),
+                  SetRefreshTokenForPrimaryAccount(),
+                  WaitForShow(AccountChooserView::kTopViewId));
+}
+
+// Steps:
+// 1. Call GetAccount with no accounts.
+// 2. Sign into the primary account.
+// 3. Verify the account chooser is shown.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       SignIntoPrimaryAccount) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  AccountInfo persisted_primary_account;
+  RunTestSequence(CreateAccountChooserController(),
+                  GetAccount(base::DoNothing()), VerifyPopupOpened(),
+                  MakePrimaryAccountAvailableWithValidRefreshToken(
+                      account, &persisted_primary_account),
+                  WaitForShow(AccountChooserView::kTopViewId));
 }
 
 }  // namespace

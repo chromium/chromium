@@ -48,7 +48,14 @@ class AccountChooserController
   void GetAccount(AccountChosenCallback on_account_chosen_callback);
 
   // IdentityManager::Observer:
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
 
