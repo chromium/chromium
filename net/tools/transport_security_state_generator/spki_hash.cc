@@ -9,7 +9,7 @@
 
 #include "base/base64.h"
 #include "base/strings/string_util.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
+#include "third_party/boringssl/src/include/openssl/sha2.h"
 
 namespace net::transport_security_state {
 
@@ -40,7 +40,7 @@ bool SPKIHash::FromString(std::string_view hash_string) {
 }
 
 void SPKIHash::CalculateFromBytes(base::span<const uint8_t> bytes) {
-  data_ = crypto::hash::Sha256(bytes);
+  SHA256(bytes.data(), bytes.size(), data_.data());
 }
 
 }  // namespace net::transport_security_state
