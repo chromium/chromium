@@ -1,6 +1,6 @@
 Name: Crashpad
 Short Name: crashpad
-URL: https://crashpad.chromium.org/
+URL: https://chromium.googlesource.com/crashpad/crashpad
 Version: N/A
 Revision: 3472da65aa2b3f6ad178a90ec8aae56a72b9e022
 Update Mechanism: Manual
