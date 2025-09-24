@@ -1860,7 +1860,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   DeleteBackend();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 43);
+  ASSERT_GE(GetDatabaseVersion(), 43);
 
   {
     sql::Database db(sql::test::kTestTag);
@@ -1970,7 +1970,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   DeleteBackend();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 44);
+  ASSERT_GE(GetDatabaseVersion(), 44);
 
   {
     sql::Database db(sql::test::kTestTag);
@@ -2056,7 +2056,7 @@ TEST_F(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
   DeleteBackend();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 45);
+  ASSERT_GE(GetDatabaseVersion(), 45);
 
   {
     sql::Database db(sql::test::kTestTag);
@@ -2108,7 +2108,7 @@ TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 42);
+  ASSERT_GE(GetDatabaseVersion(), 42);
 
   history::KeywordSearchTermRow keyword_search_term_row;
   ASSERT_TRUE(db_->GetKeywordSearchTermRow(url_id, &keyword_search_term_row));
@@ -2149,7 +2149,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 47);
+  ASSERT_GE(GetDatabaseVersion(), 47);
 
   // After the migration, the entities should be empty.
   {
@@ -2195,7 +2195,7 @@ TEST_F(HistoryBackendDBTest,
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 48);
+  ASSERT_GE(GetDatabaseVersion(), 48);
 
   // After the migration, the related searches should be empty.
   {
@@ -2232,7 +2232,7 @@ TEST_F(HistoryBackendDBTest,
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 49);
+  ASSERT_GE(GetDatabaseVersion(), 49);
 
   // After the migration, the opener visit should be 0.
   {
@@ -2272,7 +2272,7 @@ TEST_F(HistoryBackendDBTest,
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 51);
+  ASSERT_GE(GetDatabaseVersion(), 51);
 
   // After the migration, the total foreground duration should have a default of
   // -1.
@@ -2318,7 +2318,7 @@ TEST_F(HistoryBackendDBTest,
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 53);
+  ASSERT_GE(GetDatabaseVersion(), 53);
 
   // After the migration, the search metadata should be empty.
   {
@@ -2365,7 +2365,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 54);
+  ASSERT_GE(GetDatabaseVersion(), 54);
 
   // After the migration, the page metadata should be empty.
   {
@@ -2498,7 +2498,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddColumns) {
   DeleteBackend();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 57);
+  ASSERT_GE(GetDatabaseVersion(), 57);
 
   {
     sql::Database db(sql::test::kTestTag);
@@ -2554,7 +2554,7 @@ TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 58);
+  ASSERT_GE(GetDatabaseVersion(), 58);
 
   DeleteBackend();
 
@@ -2592,7 +2592,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 59);
+  ASSERT_GE(GetDatabaseVersion(), 59);
 
   DeleteBackend();
 
@@ -2636,7 +2636,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 60);
+  ASSERT_GE(GetDatabaseVersion(), 60);
 
   // Open the db manually again and make sure the new columns exist.
   {
@@ -2728,7 +2728,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 62);
+  ASSERT_GE(GetDatabaseVersion(), 62);
 
   // After the migration, has_url_keyed_image should be false.
   {
@@ -2780,7 +2780,7 @@ TEST_F(HistoryBackendDBTest,
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 63);
+  ASSERT_GE(GetDatabaseVersion(), 63);
 
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);
@@ -2903,7 +2903,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAndVisitsAddInteractionState) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 65);
+  ASSERT_GE(GetDatabaseVersion(), 65);
 
   ClusterVisit visit_received = db_->GetClusterVisit(kTestVisitId);
   EXPECT_EQ(visit.score, visit_received.score);
@@ -2958,7 +2958,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddExternalReferrerUrlColumn) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 66);
+  ASSERT_GE(GetDatabaseVersion(), 66);
 
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);
@@ -3010,7 +3010,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddVisitedLinkIdColumn) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 67);
+  ASSERT_GE(GetDatabaseVersion(), 67);
 
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);
@@ -3042,7 +3042,7 @@ TEST_F(HistoryBackendDBTest, MigrateRemoveTypedUrlMetadataTable) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 68);
+  ASSERT_GE(GetDatabaseVersion(), 68);
 
   DeleteBackend();
 
@@ -3089,7 +3089,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddAppId) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 70);
+  ASSERT_GE(GetDatabaseVersion(), 70);
 
   VisitRow visit_row;
   db_->GetRowForVisit(visit_id, &visit_row);
