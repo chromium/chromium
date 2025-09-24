@@ -2024,12 +2024,12 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
     return HandleTabEvent(event.GetModifiers());
   }
 
-  if (!PageIndexInBounds(last_focused_page_)) {
-    return false;
-  }
-
   if (caret_ && caret_->OnKeyDown(event)) {
     return true;
+  }
+
+  if (!PageIndexInBounds(last_focused_page_)) {
+    return false;
   }
 
   bool rv = !!FORM_OnKeyDown(form(), pages_[last_focused_page_]->GetPage(),
