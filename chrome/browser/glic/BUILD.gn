@@ -119,6 +119,8 @@ source_set("impl") {
     "glic_user_status_request.cc",
     "glic_zero_state_suggestions_manager.cc",
     "host/auth_controller.cc",
+    "host/context/glic_active_browser_sharing_manager.cc",
+    "host/context/glic_active_browser_sharing_manager.h",
     "host/context/glic_delegating_sharing_manager.cc",
     "host/context/glic_delegating_sharing_manager.h",
     "host/context/glic_empty_focused_browser_manager.cc",
