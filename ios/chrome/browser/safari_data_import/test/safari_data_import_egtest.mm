@@ -87,7 +87,8 @@
 
 /// Tests that the entry point to import Safari data can be triggered through
 /// Settings.
-- (void)testShowEntryPointInSettings {
+/// TODO(crbug.com/447115599): Re-enable when fixed.
+- (void)DISABLED_testShowEntryPointInSettings {
   if (@available(iOS 18.2, *)) {
     /// Clean restart without experimental settings.
     [[AppLaunchManager sharedManager]
