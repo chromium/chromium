@@ -469,15 +469,6 @@ class BrowserAutofillManager : public AutofillManager {
   void AnalyzeJavaScriptChangedAutofilledValue(const FormStructure& form,
                                                AutofillField& field);
 
-  // Populates all the fields (except for ablation study related fields) in
-  // `SuggestionsContext` based on the given params.
-  SuggestionsContext BuildSuggestionsContext(
-      const FormData& form,
-      const FormStructure* form_structure,
-      const FormFieldData& field,
-      const AutofillField* autofill_field,
-      AutofillSuggestionTriggerSource trigger_source);
-
   // Evaluates the specifics of the ablation study, updates `context`, and
   // returns whether the study is enabled/disabled.
   bool EvaluateAblationStudy(

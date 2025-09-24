@@ -541,6 +541,51 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
 #endif
 }
 
+// Populates all the fields (except for ablation study related fields) in
+// `SuggestionsContext` based on the given params.
+SuggestionsContext BuildSuggestionsContext(
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& field,
+    const AutofillField* autofill_field,
+    AutofillSuggestionTriggerSource trigger_source) {
+  SuggestionsContext context;
+  context.trigger_source = trigger_source;
+
+  // When Compose suggestions or manual fallback for plus addresses are
+  // requested, there is no need to load Autofill suggestions.
+  if (IsTriggerSourceOnlyRelevantForCompose(trigger_source) ||
+      IsPlusAddressesManuallyTriggered(trigger_source)) {
+    context.do_not_generate_autofill_suggestions = true;
+  }
+
+  // Don't send suggestions or track forms that should not be parsed.
+  if (!form_structure || !autofill_field ||
+      !ShouldBeParsed(*form_structure, /*log_manager=*/nullptr)) {
+    return context;
+  }
+
+  context.filling_product =
+      GetPreferredSuggestionFillingProduct(autofill_field->Type());
+
+  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
+      autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    // If non-Autocomplete suggestions may be shown on some other field of the
+    // form, we want to suppress Autocomplete suggestions on this field.
+    // Setting `SuggestionsContext::suppress_reason` to
+    // `kAutocompleteUnrecognized` achieves that.
+    if (!std::ranges::all_of(
+            *form_structure, [](const std::unique_ptr<AutofillField>& field) {
+              return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+                     field->Type().GetTypes().contains(UNKNOWN_TYPE);
+            })) {
+      context.suppress_reason = SuppressReason::kAutocompleteUnrecognized;
+    }
+    context.do_not_generate_autofill_suggestions = true;
+  }
+  return context;
+}
+
 // Returns the plus address to be used as the email override on profile
 // suggestions matching the user's gaia email.
 std::optional<std::string> GetPlusAddressOverride(
@@ -1073,65 +1118,6 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormStructure& form) const {
   return IsFormOrClientNonSecure(client(), form);
 }
 
-SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
-    const FormData& form,
-    const FormStructure* form_structure,
-    const FormFieldData& field,
-    const AutofillField* autofill_field,
-    AutofillSuggestionTriggerSource trigger_source) {
-  SuggestionsContext context;
-  context.trigger_source = trigger_source;
-
-  // When Compose suggestions or manual fallback for plus addresses are
-  // requested, there is no need to load Autofill suggestions.
-  if (IsTriggerSourceOnlyRelevantForCompose(trigger_source) ||
-      IsPlusAddressesManuallyTriggered(trigger_source)) {
-    context.do_not_generate_autofill_suggestions = true;
-    return context;
-  }
-
-  UpdateLoggersReadinessData();
-
-  // Don't send suggestions or track forms that should not be parsed.
-  const bool got_autofillable_form =
-      form_structure &&
-      ShouldBeParsed(*form_structure, /*log_manager=*/nullptr) &&
-      autofill_field;
-
-  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
-      got_autofillable_form &&
-      autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-    // If non-Autocomplete suggestions may be shown on some other field of the
-    // form, we want to suppress Autocomplete suggestions on this field. Setting
-    // `SuggestionsContext::suppress_reason` to `kAutocompleteUnrecognized`
-    // achieves that.
-    if (!std::ranges::all_of(*form_structure, [](const auto& field) {
-          return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-                 field->Type().GetTypes().contains(UNKNOWN_TYPE);
-        })) {
-      context.suppress_reason = SuppressReason::kAutocompleteUnrecognized;
-    }
-    context.do_not_generate_autofill_suggestions = true;
-    return context;
-  }
-  if (got_autofillable_form) {
-    auto* logger = GetEventFormLogger(*autofill_field);
-    if (logger) {
-      if (logger == &metrics_->credit_card_form_event_logger) {
-        metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
-            metrics_->signin_state_for_metrics);
-      }
-      logger->OnDidInteractWithAutofillableForm(*form_structure);
-    }
-  }
-
-  if (got_autofillable_form) {
-    context.filling_product =
-        GetPreferredSuggestionFillingProduct(autofill_field->Type());
-  }
-  return context;
-}
-
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
@@ -1163,12 +1149,21 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   std::ignore = GetCachedFormAndField(form.global_id(), field_id,
                                       &form_structure, &autofill_field);
 
-  if (form_structure) {
+  UpdateLoggersReadinessData();
+
+  if (form_structure && autofill_field) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
         base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
-  }
+    if (autofill_metrics::FormEventLoggerBase* logger =
+            GetEventFormLogger(*autofill_field);
+        logger && ShouldBeParsed(*form_structure, /*log_manager=*/nullptr)) {
+      if (logger == &metrics_->credit_card_form_event_logger) {
+        metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
+            metrics_->signin_state_for_metrics);
+      }
+      logger->OnDidInteractWithAutofillableForm(*form_structure);
+    }
 
-  if (autofill_field) {
     // TODO(crbug.com/349982907): Until the linked bug is fixed, Chrome on iOS
     // does not forward focus events. The OnAskForValuesToFillImpl() call
     // indicates that a field was focused on iOS. On desktop it's not capturing
