@@ -362,7 +362,6 @@ bool IsAccessibilityInlineLineSeparatorsEnabled() {
 }
 
 BASE_FEATURE(kAccessibilityMagnificationFollowsInputFocus,
-             "AccessibilityMagnificationFollowsInputFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityMagnificationFollowsInputEnabled() {
   return base::FeatureList::IsEnabled(

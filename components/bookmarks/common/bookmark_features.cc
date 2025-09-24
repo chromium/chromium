@@ -17,8 +17,6 @@ BASE_FEATURE(kAllBookmarksBaselineFolderVisibility,
 // This feature enables/disables using a SHA256 checksum alongside an
 // md5 checksum. It is part of the MD5 deprecation efforts and is expected
 // to be removed.
-BASE_FEATURE(kEnableBookmarkCodecSHA256,
-             "EnableBookmarkCodecSHA256",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableBookmarkCodecSHA256, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace bookmarks

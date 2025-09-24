@@ -1719,7 +1719,6 @@ BASE_FEATURE_PARAM(double,
                    100.0);
 
 BASE_FEATURE(kMemoryCacheStrongReferenceExtensions,
-             "MemoryCacheStrongReferenceExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // --- High Priority ---

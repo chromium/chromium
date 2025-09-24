@@ -180,17 +180,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 // Use PerformanceScenario instead of UseCase to compute the current RAILMode.
 BASE_FEATURE(kComputeCurrentRailModeFromPerformanceScenario,
-             "ComputeCurrentRailModeFromPerformanceScenario",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Treat "input" as "loading when computing the current RAILMode.
-BASE_FEATURE(kRAILInputAsLoading,
-             "RAILInputAsLoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRAILInputAsLoading, base::FEATURE_DISABLED_BY_DEFAULT);
 // Do not call |SetIsLoading|. This is used for a holdback experiment to
 // determine the impact of |SetIsLoading|.
-BASE_FEATURE(kSetIsLoadingAblation,
-             "SetIsLoadingAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSetIsLoadingAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {

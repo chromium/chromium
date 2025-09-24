@@ -16,7 +16,6 @@ BASE_FEATURE(kUseAndroidBufferedInputDispatch,
 #endif
 
 BASE_FEATURE(kDispatchSingleEventIfNoPrediction,
-             "DispatchSingleEventIfNoPrediction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLogBubblingTouchscreenGesturesForDebug,
@@ -35,7 +34,6 @@ BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
 BASE_FEATURE(kScrollBubblingFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUpdateScrollPredictorInputMapping,
-             "UpdateScrollPredictorInputMapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kGenerateSyntheticScrollPrediction,
