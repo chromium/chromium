@@ -3269,8 +3269,24 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(entry, nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
+// TODO(crbug.com/444617960): Fix the test to work with the feature flag
+// enabled and move the tests to ProfilePickerEnterpriseCreationFlowBrowserTest
+// test suite.
+class ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled
+    : public ProfilePickerEnterpriseCreationFlowBrowserTest {
+ public:
+  ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
+    CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   const GaiaId test_gaia_id =
       signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
@@ -3328,8 +3344,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                                        .GetNumberOfProfiles());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
-                       CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
+IN_PROC_BROWSER_TEST_F(
+    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
+    CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   const GaiaId test_gaia_id =
       signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");

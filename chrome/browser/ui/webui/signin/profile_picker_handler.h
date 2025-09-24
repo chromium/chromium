@@ -88,10 +88,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerWithGlicParamBrowserTest,
                            GlicLearnMoreClicked);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerEnterpriseCreationFlowBrowserTest,
+      ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfilePickerEnterpriseCreationFlowBrowserTest,
+      ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
       CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
   void HandleMainViewInitialize(const base::Value::List& args);

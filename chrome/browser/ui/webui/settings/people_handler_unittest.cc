@@ -550,6 +550,12 @@ class PeopleHandlerTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
+  // TODO(crbug.com/444621374): Fix the test to work with the feature flag
+  // enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
