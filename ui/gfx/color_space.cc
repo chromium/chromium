@@ -1138,8 +1138,8 @@ bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
   if (matrix_ == gfx::ColorSpace::MatrixID::RGB) {
     [[maybe_unused]] static bool call_once = [&]() {
       SCOPED_CRASH_KEY_STRING256("ToSkYUVColorSpace", "ColorSpace", ToString());
-      CHECK(matrix_ != gfx::ColorSpace::MatrixID::RGB,
-            base::NotFatalUntil::M142);
+      DUMP_WILL_BE_CHECK(false)
+          << "ToSkYUVColorSpace called on RGB color space = " << ToString();
       return true;
     }();
   }
