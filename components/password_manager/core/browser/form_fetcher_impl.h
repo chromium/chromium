@@ -72,6 +72,10 @@ class FormFetcherImpl : public FormFetcher,
   }
 
  private:
+  // Used by `AddConsumer`, when the fetch has already completed to notify the
+  // consumer asynchronously.
+  void NotifyConsumer(FormFetcher::Consumer* consumer);
+
   // Actually finds best matches and notifies consumers.
   void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);
