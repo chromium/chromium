@@ -179,8 +179,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         }
     }
 
-    protected void duplicateTabForTesting(Tab tab) {
-        TabModelJniBridgeJni.get()
+    protected Tab duplicateTabForTesting(Tab tab) {
+        return TabModelJniBridgeJni.get()
                 .duplicateTabForTesting( // IN-TEST
                         mNativeTabModelJniBridge, tab);
     }
@@ -481,10 +481,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * @return The new tab, if the duplication succeeded.
      */
     @CalledByNative
-    public @JniType("TabAndroid*") @Nullable Tab duplicateTab(
+    protected @JniType("TabAndroid*") @Nullable Tab duplicateTab(
             @JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
-        // TODO(crbug.com/431997520): Insert tab next to parent instead of next to the other
-        // children tabs.
         return getTabCreator()
                 .createTabWithWebContents(
                         parentTab,
@@ -630,7 +628,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
                 boolean mute);
 
-        void duplicateTabForTesting( // IN-TEST
+        @JniType("TabAndroid*")
+        Tab duplicateTabForTesting( // IN-TEST
                 long nativeTabModelJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void moveTabToWindowForTesting( // IN-TEST
