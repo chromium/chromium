@@ -16,7 +16,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/memory.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -67,8 +67,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
     // The format can either be RGBA_8888 or RGBX_8888 but either way it's 4
     // bytes per pixel.
-    size_t size_in_bytes = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-        size, viz::SinglePlaneFormat::kRGBA_8888);
+    size_t size_in_bytes = viz::SharedMemorySizeForSharedImageFormat(
+                               viz::SinglePlaneFormat::kRGBA_8888, size)
+                               .value();
 
     base::UnsafeSharedMemoryRegion shm_region =
         base::UnsafeSharedMemoryRegion::Create(size_in_bytes);
