@@ -5,6 +5,7 @@
 
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -84,9 +85,16 @@ bool PlatformSensorAndroid::StartSensor(
   return true;
 }
 
+// TODO(crbug.com/444059028): Basically j_object_ must not be nullptr.
+// However, there are reports that a crash occurred because j_object_
+// was nullptr. Add a TODO to track the issue.
 void PlatformSensorAndroid::StopSensor() {
-  sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StopSensorBlocking, j_object_));
+  if (j_object_) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StopSensorBlocking, j_object_));
+  } else {
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 bool PlatformSensorAndroid::CheckSensorConfiguration(
