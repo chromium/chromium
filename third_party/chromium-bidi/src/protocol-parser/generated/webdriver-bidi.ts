@@ -578,7 +578,7 @@ export namespace Browser {
   export const DownloadBehaviorAllowedSchema = z.lazy(() =>
     z.object({
       type: z.literal('allowed'),
-      destinationFolder: z.string().optional(),
+      destinationFolder: z.string(),
     }),
   );
 }
@@ -2091,6 +2091,7 @@ export const ScriptResultSchema = z.lazy(() =>
     Script.AddPreloadScriptResultSchema,
     Script.EvaluateResultSchema,
     Script.GetRealmsResultSchema,
+    Script.CallFunctionResultSchema,
   ]),
 );
 export const ScriptEventSchema = z.lazy(() =>
@@ -2840,6 +2841,11 @@ export namespace Script {
       this: Script.LocalValueSchema.optional(),
       userActivation: z.boolean().default(false).optional(),
     }),
+  );
+}
+export namespace Script {
+  export const CallFunctionResultSchema = z.lazy(
+    () => Script.EvaluateResultSchema,
   );
 }
 export namespace Script {

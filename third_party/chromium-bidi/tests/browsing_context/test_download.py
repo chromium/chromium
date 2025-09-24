@@ -381,48 +381,6 @@ async def test_browsing_context_download_behavior_allowed_with_destination_folde
 
 
 @pytest.mark.asyncio
-async def test_browsing_context_download_behavior_allowed_no_destination_folder(
-        websocket, target_context_id, test_headless_mode,
-        target_user_context_id, assert_success_download_events):
-    command_future = execute_command(
-        websocket, {
-            'method': 'browser.setDownloadBehavior',
-            'params': {
-                'downloadBehavior': {
-                    'type': 'allowed',
-                },
-                'userContexts': [target_user_context_id]
-            }
-        })
-
-    if target_user_context_id != "default":
-        with pytest.raises(
-                Exception,
-                match=str({
-                    "error": "unsupported operation",
-                    "message": "Download in non-default user contexts requires `destinationFolder`"
-                })):
-            await command_future
-        return
-    elif test_headless_mode == "old":
-        pytest.xfail(
-            "https://github.com/GoogleChromeLabs/chromium-bidi/issues/3742")
-        with pytest.raises(
-                Exception,
-                match=str({
-                    "error": "unsupported operation",
-                    "message": "Download in old headless mode requires `destinationFolder`"
-                })):
-            await command_future
-        return
-    else:
-        await command_future
-
-    # In all other cases the download behavior should be applied.
-    await assert_success_download_events(target_context_id)
-
-
-@pytest.mark.asyncio
 async def test_browsing_context_download_behavior_allow_global(
         websocket, context_id, create_user_context, create_context, tmp_path,
         assert_success_download_events):

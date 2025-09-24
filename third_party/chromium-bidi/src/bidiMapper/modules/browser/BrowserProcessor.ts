@@ -208,18 +208,10 @@ export class BrowserProcessor {
       };
 
     if (downloadBehavior?.type === 'allowed') {
-      if (downloadBehavior.destinationFolder) {
-        // CDP behavior "allow" means "save downloaded files to the specific download path".
-        return {
-          behavior: 'allow',
-          downloadPath: downloadBehavior.destinationFolder,
-        };
-      }
-
-      // Allow download without a specific download path matches the "default" CDP
-      // behavior.
+      // CDP behavior "allow" means "save downloaded files to the specific download path".
       return {
-        behavior: 'default',
+        behavior: 'allow',
+        downloadPath: downloadBehavior.destinationFolder,
       };
     }
 
@@ -255,22 +247,6 @@ export class BrowserProcessor {
           params.userContexts,
         ),
       );
-    }
-
-    if (
-      params.userContexts === undefined ||
-      userContexts.filter((c) => c !== 'default').length > 0
-    ) {
-      // Download behavior is specified for non-default user contexts.
-      if (
-        params.downloadBehavior?.type === 'allowed' &&
-        params.downloadBehavior.destinationFolder === undefined
-      ) {
-        // Allowing download in custom user context requires specific `destinationFolder`.
-        throw new UnsupportedOperationException(
-          'Download in non-default user contexts requires `destinationFolder`',
-        );
-      }
     }
 
     if (params.userContexts === undefined) {
