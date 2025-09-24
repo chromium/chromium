@@ -10,8 +10,9 @@ import("//build/config/compiler/compiler.gni")
 # Android component builds are disabled due to https://crbug.com/976399
 # Android requires frame pointers for unwinding, unwind tables aren't shipped in
 # official builds.
+# iOS is disabled when !use_partition_alloc due to https://crbug.com/446856826
 supported_platform =
-    is_linux || is_chromeos || is_mac || is_ios ||
+    is_linux || is_chromeos || is_mac || (is_ios && use_partition_alloc) ||
     (is_win && (current_cpu == "x64" || current_cpu == "arm64")) ||
     (is_android && !is_component_build && enable_frame_pointers)
 
