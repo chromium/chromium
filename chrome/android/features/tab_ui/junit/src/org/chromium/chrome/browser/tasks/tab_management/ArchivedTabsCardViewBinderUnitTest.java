@@ -28,6 +28,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -78,6 +81,7 @@ public class ArchivedTabsCardViewBinderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     public void testSingular() {
         mModel.set(NUMBER_OF_ARCHIVED_TABS, 1);
         mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);
@@ -90,12 +94,39 @@ public class ArchivedTabsCardViewBinderUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     public void testPlural() throws TimeoutException {
         TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
         assertEquals("(10) inactive items", titleView.getText());
 
         TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
         assertEquals("Not used for 14 days or more", subtitleView.getText());
+
+        mArchivedTabsCardView.callOnClick();
+        mCallbackHelper.waitForOnly();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testSingularWithGroups() {
+        mModel.set(NUMBER_OF_ARCHIVED_TABS, 1);
+        mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);
+
+        TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
+        assertEquals("(1) inactive item", titleView.getText());
+
+        TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
+        assertEquals("Tabs and groups not used for 1 day or more", subtitleView.getText());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
+    public void testPluralWithGroups() throws TimeoutException {
+        TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
+        assertEquals("(10) inactive items", titleView.getText());
+
+        TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
+        assertEquals("Tabs and groups not used for 14 days or more", subtitleView.getText());
 
         mArchivedTabsCardView.callOnClick();
         mCallbackHelper.waitForOnly();

@@ -1013,21 +1013,6 @@
             ]
         }
     ],
-    "AndroidTabDeclutterArchiveTabGroups": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabDeclutterArchiveTabGroups"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidTabDeclutterAutoDeletePromo": [
         {
             "platforms": [

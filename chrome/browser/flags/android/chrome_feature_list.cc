@@ -600,7 +600,7 @@ BASE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterArchiveTabGroups,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterAutoDelete, base::FEATURE_DISABLED_BY_DEFAULT);
 

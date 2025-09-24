@@ -39,6 +39,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabArchiverImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -112,15 +113,18 @@ public class TabArchiverUnitTest {
 
     private void setupTabsForArchive() {
         doReturn(true).when(mTabArchiveSettings).getArchiveEnabled();
-        doReturn(0).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
+        // Set the tab to expire after 2 hour to simplify testing.
+        doReturn(2).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
 
-        // The clock should be one hour after epoch 0.
-        doReturn(0L).when(mClock).currentTimeMillis();
+        // Set the clock to 2 hour after 0.
+        doReturn(TimeUnit.HOURS.toMillis(2)).when(mClock).currentTimeMillis();
         TabList regularTabs =
                 mTabModelSelector.getModel(/* incognito= */ false).getComprehensiveModel();
         for (int i = 0; i < regularTabs.getCount(); i++) {
-            Tab tab = regularTabs.getTabAt(i);
+            TabImpl tab = (TabImpl) regularTabs.getTabAt(i);
             tab.setTimestampMillis(0L);
+            // Set the navigation timestamp for both tabs at 1 to pass user active check.
+            tab.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
             // Always return a tab state for each regular tab to unblock archiving.
             TabState tabState = new TabState();
             tabState.contentsState = mWebContentsState;

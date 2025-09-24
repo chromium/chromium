@@ -253,12 +253,17 @@ public class TabGroupListMediatorUnitTest {
         fooGroup.color = TabGroupColorId.BLUE;
         fooGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(2);
         fooGroup.creationTimeMs = 1;
+        fooGroup.savedTabs.get(0).updateTimeMs = 2;
+        fooGroup.savedTabs.get(1).updateTimeMs = 1;
 
         SavedTabGroup barGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID2);
         barGroup.title = "Bar";
         barGroup.color = TabGroupColorId.RED;
         barGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(3);
         barGroup.creationTimeMs = 2;
+        barGroup.savedTabs.get(0).updateTimeMs = 3;
+        barGroup.savedTabs.get(1).updateTimeMs = 2;
+        barGroup.savedTabs.get(2).updateTimeMs = 1;
 
         createMediator();
         assertEquals(2, mModelList.size());
@@ -269,6 +274,7 @@ public class TabGroupListMediatorUnitTest {
                 barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
+        // Ensure the tab groups are sorted by update time and NOT creation time.
         PropertyModel fooModel = mModelList.get(1).model;
         assertEquals(
                 new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),
@@ -838,12 +844,17 @@ public class TabGroupListMediatorUnitTest {
         fooGroup.color = TabGroupColorId.BLUE;
         fooGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(2);
         fooGroup.creationTimeMs = 1;
+        fooGroup.savedTabs.get(0).updateTimeMs = 1;
+        fooGroup.savedTabs.get(1).updateTimeMs = 0;
 
         SavedTabGroup barGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID2);
         barGroup.title = "Bar";
         barGroup.color = TabGroupColorId.RED;
         barGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(3);
         barGroup.creationTimeMs = 2;
+        barGroup.savedTabs.get(0).updateTimeMs = 3;
+        barGroup.savedTabs.get(1).updateTimeMs = 2;
+        barGroup.savedTabs.get(2).updateTimeMs = 1;
 
         createMediator();
 
@@ -855,6 +866,7 @@ public class TabGroupListMediatorUnitTest {
                 model1.get(DESCRIPTION_TEXT));
         assertEquals(MESSAGE, model1.get(CARD_TYPE));
 
+        // Ensure the tab groups are sorted by update time and NOT creation time.
         PropertyModel barModel = mModelList.get(1).model;
         assertEquals(
                 new TabGroupRowViewTitleData("Bar", 3, R.plurals.tab_group_row_accessibility_text),
@@ -935,12 +947,17 @@ public class TabGroupListMediatorUnitTest {
         fooGroup.color = TabGroupColorId.BLUE;
         fooGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(2);
         fooGroup.creationTimeMs = 1;
+        fooGroup.savedTabs.get(0).updateTimeMs = 2;
+        fooGroup.savedTabs.get(1).updateTimeMs = 1;
 
         SavedTabGroup barGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID2);
         barGroup.title = "Bar";
         barGroup.color = TabGroupColorId.RED;
         barGroup.savedTabs = SyncedGroupTestHelper.tabsFromCount(3);
         barGroup.creationTimeMs = 2;
+        barGroup.savedTabs.get(0).updateTimeMs = 3;
+        barGroup.savedTabs.get(1).updateTimeMs = 2;
+        barGroup.savedTabs.get(2).updateTimeMs = 1;
 
         createMediator();
 
@@ -962,6 +979,7 @@ public class TabGroupListMediatorUnitTest {
                 barModel.get(TITLE_DATA));
         assertEquals(TabGroupColorId.RED, barModel.get(COLOR_INDEX));
 
+        // Ensure the tab groups are sorted by update time and NOT creation time.
         PropertyModel fooModel = mModelList.get(1).model;
         assertEquals(
                 new TabGroupRowViewTitleData("Foo", 2, R.plurals.tab_group_row_accessibility_text),

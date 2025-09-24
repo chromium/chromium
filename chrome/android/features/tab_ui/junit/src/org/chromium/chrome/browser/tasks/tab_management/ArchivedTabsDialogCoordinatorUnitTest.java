@@ -185,6 +185,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         recyclerView.setId(R.id.tab_list_recycler_view);
         ((ViewGroup) mCoordinator.getViewForTesting().findViewById(R.id.tab_list_editor_container))
                 .addView(recyclerView);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
     }
 
     private void setUpMocks() {
