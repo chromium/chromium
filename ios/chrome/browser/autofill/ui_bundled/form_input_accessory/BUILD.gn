@@ -27,6 +27,7 @@ source_set("form_input_accessory") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",

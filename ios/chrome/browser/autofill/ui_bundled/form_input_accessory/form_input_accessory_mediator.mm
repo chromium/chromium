@@ -23,6 +23,7 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -304,7 +305,7 @@ bool IsStateless() {
     if (IsBottomOmniboxAvailable()) {
       _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
           initWithPrefService:GetApplicationContext()->GetLocalState()
-                     prefName:prefs::kBottomOmnibox];
+                     prefName:omnibox::kIsOmniboxInBottomPosition];
       [_bottomOmniboxEnabled setObserver:self];
       // Initialize to the current value.
       [self booleanDidChange:_bottomOmniboxEnabled];

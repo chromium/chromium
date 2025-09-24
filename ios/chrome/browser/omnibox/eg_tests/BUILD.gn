@@ -83,6 +83,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
     "//components/omnibox/common",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",

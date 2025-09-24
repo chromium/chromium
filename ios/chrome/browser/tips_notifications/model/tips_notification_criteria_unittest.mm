@@ -6,6 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -378,7 +379,7 @@ TEST_F(TipsNotificationCriteriaTest,
 // has already made a choice.
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendOmniboxPosition_ShouldNotSend) {
-  GetLocalState()->SetBoolean(prefs::kBottomOmnibox, true);
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, true);
   EXPECT_FALSE(criteria_->ShouldSendNotification(
       TipsNotificationType::kOmniboxPosition));
 }
@@ -401,7 +402,7 @@ TEST_F(TipsNotificationCriteriaTest,
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     GTEST_SKIP() << "Test is running on a phone, skipping.";
   }
-  GetLocalState()->SetBoolean(prefs::kBottomOmnibox, false);
+  GetLocalState()->SetBoolean(omnibox::kIsOmniboxInBottomPosition, false);
   EXPECT_FALSE(criteria_->ShouldSendNotification(
       TipsNotificationType::kOmniboxPosition));
 }

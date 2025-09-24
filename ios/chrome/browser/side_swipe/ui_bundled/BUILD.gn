@@ -115,6 +115,7 @@ source_set("eg2_tests") {
   sources = [ "side_swipe_egtest.mm" ]
   deps = [
     "//base",
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

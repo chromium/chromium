@@ -12,6 +12,7 @@ source_set("omnibox_position") {
   deps = [
     ":omnibox_position_ui",
     "//base",
+    "//components/omnibox/browser:pref_names",
     "//components/prefs",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//ios/chrome/browser/segmentation_platform/model",
@@ -87,6 +88,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//build:branding_buildflags",
+    "//components/omnibox/browser:pref_names",
     "//components/search_engines:search_engines_switches",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",

@@ -42,6 +42,7 @@
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/zero_suggest_provider.h"
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -307,6 +308,29 @@ void MigrateListPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
+// Renames a boolean pref within a PrefService.
+void RenameBooleanPref(std::string_view target_pref_name,
+                       std::string_view source_pref_name,
+                       PrefService* pref_service) {
+  const PrefService::Preference* target_pref =
+      pref_service->FindPreference(target_pref_name);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      pref_service->FindPreference(source_pref_name);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    pref_service->SetBoolean(target_pref_name,
+                             pref_service->GetBoolean(source_pref_name));
+  }
+
+  // In all cases, clear the pref from source.
+  pref_service->ClearPref(source_pref_name);
+}
+
 // Helper function migrating the `int` preference from LocalState prefs to
 // Profile prefs.
 void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
@@ -529,7 +553,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastInfobarDisplayTimeKey, base::Time());
 
   // Bottom omnibox preferences.
-  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
   registry->RegisterBooleanPref(prefs::kBottomOmniboxByDefault, false);
 
   // Preferences related to the Docking Promo feature (used only if
@@ -645,6 +668,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       prefs::kNTPHomeCustomizationNewBadgeImpressionCount, 0);
 
   registry->RegisterBooleanPref(prefs::kWidgetsForMultiProfile, false);
+
+  // Deprecated 09/2025.
+  registry->RegisterBooleanPref(prefs::kBottomOmnibox, false);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1113,6 +1139,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 07/2025.
   prefs->ClearPref(prefs::kTabPickupEnabled);
+
+  // Added 09/2025.
+  RenameBooleanPref(omnibox::kIsOmniboxInBottomPosition, prefs::kBottomOmnibox,
+                    prefs);
 }
 
 // This method should be periodically pruned of year+ old migrations.

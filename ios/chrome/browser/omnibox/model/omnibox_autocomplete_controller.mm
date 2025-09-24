@@ -22,6 +22,7 @@
 #import "components/omnibox/browser/history_url_provider.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/page_classification_functions.h"
 #import "components/omnibox/browser/verbatim_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -84,7 +85,7 @@ using base::UserMetricsAction;
     _preferredOmniboxPosition = metrics::OmniboxEventProto::UNKNOWN_POSITION;
     _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:GetApplicationContext()->GetLocalState()
-                   prefName:prefs::kBottomOmnibox];
+                   prefName:omnibox::kIsOmniboxInBottomPosition];
     [_bottomOmniboxEnabled setObserver:self];
     // Initialize to the correct value.
     [self booleanDidChange:_bottomOmniboxEnabled];

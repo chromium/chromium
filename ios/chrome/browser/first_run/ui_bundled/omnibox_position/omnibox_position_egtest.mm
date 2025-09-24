@@ -6,6 +6,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
@@ -87,7 +88,8 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 #pragma mark Tests
@@ -113,8 +115,10 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is top.
-  GREYAssertFalse([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
-                  @"Failed to set preferred omnibox position to top");
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition],
+      @"Failed to set preferred omnibox position to top");
 }
 
 // Tests selecting bottom omnibox when top is selected by default.
@@ -146,7 +150,8 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is bottom.
-  GREYAssertTrue([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
+  GREYAssertTrue([ChromeEarlGrey
+                     localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition],
                  @"Failed to set preferred omnibox position to bottom");
 }
 
@@ -172,8 +177,10 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
   TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
 
   // Verify that the preferred omnibox position is top.
-  GREYAssertFalse([ChromeEarlGrey localStateBooleanPref:prefs::kBottomOmnibox],
-                  @"Failed to set preferred omnibox position to top");
+  GREYAssertFalse(
+      [ChromeEarlGrey
+          localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition],
+      @"Failed to set preferred omnibox position to top");
 }
 
 /// Tests discarding the omnibox position choice promo.
@@ -198,7 +205,8 @@ void TapPromoStyleButton(NSString* buttonIdentifier) {
 
   // Verify that there is no user preferred omnibox position.
   GREYAssertTrue(
-      [ChromeEarlGrey prefWithNameIsDefaultValue:prefs::kBottomOmnibox],
+      [ChromeEarlGrey
+          prefWithNameIsDefaultValue:omnibox::kIsOmniboxInBottomPosition],
       @"Failed to discard the selected position");
 }
 

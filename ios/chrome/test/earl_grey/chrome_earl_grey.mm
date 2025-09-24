@@ -13,6 +13,7 @@
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -1415,7 +1416,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (BOOL)isUnfocusedOmniboxAtBottom {
   return !self.isIPadIdiom && self.isSplitToolbarMode &&
-         [self localStateBooleanPref:prefs::kBottomOmnibox];
+         [self localStateBooleanPref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 #pragma mark - ContentSettings

@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -170,7 +171,7 @@ bool TipsNotificationCriteria::ShouldSendOmniboxPosition() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
-  return !local_state_->GetUserPrefValue(prefs::kBottomOmnibox);
+  return !local_state_->GetUserPrefValue(omnibox::kIsOmniboxInBottomPosition);
 }
 
 bool TipsNotificationCriteria::ShouldSendLens() {

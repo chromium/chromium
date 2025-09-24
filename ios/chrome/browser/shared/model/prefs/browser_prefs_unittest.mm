@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -93,6 +94,9 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   local_state()->SetInteger(prefs::kNTPHomeCustomizationNewBadgeImpressionCount,
                             99);
 
+  // Bottom omnibox position
+  local_state()->SetBoolean(prefs::kBottomOmnibox, true);
+
   // Verify initial state before migration.
 
   // Check Magic Stack Segmentation Impressions in pref_service (should be -1)
@@ -149,6 +153,12 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
             99);
+
+  // Check bottom omnibox position.
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kBottomOmnibox));
+  EXPECT_TRUE(local_state()
+                  ->FindPreference(omnibox::kIsOmniboxInBottomPosition)
+                  ->IsDefaultValue());
 
   // Perform migration
   MigrateObsoleteLocalStatePrefs(local_state());
@@ -210,6 +220,11 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
             0);
+
+  // Check bottom omnibox position.
+  EXPECT_TRUE(
+      local_state()->FindPreference(prefs::kBottomOmnibox)->IsDefaultValue());
+  EXPECT_TRUE(local_state()->GetBoolean(omnibox::kIsOmniboxInBottomPosition));
 }
 
 TEST_F(BrowserPrefsTest, VerifyUserDefaultsToProfilePrefsMigration) {

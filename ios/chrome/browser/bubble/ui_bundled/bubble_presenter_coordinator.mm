@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -73,7 +74,7 @@
 
   _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
       initWithPrefService:GetApplicationContext()->GetLocalState()
-                 prefName:prefs::kBottomOmnibox];
+                 prefName:omnibox::kIsOmniboxInBottomPosition];
   [_bottomOmniboxEnabled setObserver:self];
 }
 

@@ -4,6 +4,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -48,7 +49,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/long-fullscreen",
@@ -60,7 +62,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
 - (void)tearDownHelper {
   [super tearDownHelper];
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -303,7 +306,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
 
   // Enable bottom omnibox.
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Make sure that panel can still be closed.

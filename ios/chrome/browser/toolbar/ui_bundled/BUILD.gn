@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//components/bookmarks/common",
     "//components/collaboration/public",
     "//components/google/core/common",
+    "//components/omnibox/browser:pref_names",
     "//components/open_from_clipboard",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/prefs",
@@ -197,6 +198,7 @@ source_set("unit_tests") {
     "//components/bookmarks/common",
     "//components/bookmarks/test",
     "//components/collaboration:test_support",
+    "//components/omnibox/browser:pref_names",
     "//components/open_from_clipboard",
     "//components/open_from_clipboard:test_support",
     "//components/prefs",
@@ -275,6 +277,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
+    "//components/omnibox/browser:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",

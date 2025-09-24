@@ -132,6 +132,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:test_utils",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -154,6 +154,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/omnibox/browser:pref_names",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/browser/fullscreen/ui_bundled/test:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

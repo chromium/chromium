@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
@@ -911,7 +912,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     UIImage* image = nil;
     ToolbarType targetToolbarType;
     if (GetApplicationContext()->GetLocalState()->GetBoolean(
-            prefs::kBottomOmnibox)) {
+            omnibox::kIsOmniboxInBottomPosition)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
       image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
                                          kSymbolActionPointSize);
@@ -1035,7 +1036,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 /// Set the preferred omnibox position to `toolbarType`.
 - (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {
   GetApplicationContext()->GetLocalState()->SetBoolean(
-      prefs::kBottomOmnibox, toolbarType == ToolbarType::kSecondary);
+      omnibox::kIsOmniboxInBottomPosition,
+      toolbarType == ToolbarType::kSecondary);
 
   if (toolbarType == ToolbarType::kPrimary) {
     RecordAction(

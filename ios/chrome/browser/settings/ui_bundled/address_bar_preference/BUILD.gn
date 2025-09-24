@@ -11,6 +11,7 @@ source_set("address_bar_preference") {
   ]
   deps = [
     ":ui",
+    "//components/omnibox/browser:pref_names",
     "//components/prefs",
     "//ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
     "//ios/chrome/browser/settings/ui_bundled/cells",
@@ -45,6 +46,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "address_bar_preference_egtest.mm" ]
   deps = [
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

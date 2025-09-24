@@ -21,6 +21,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -397,9 +398,9 @@ struct EnhancedSafeBrowsingActivePromoData
                                               prefName:prefs::kSigninAllowed];
     _allowChromeSigninPreference.observer = self;
 
-    _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:localState
-                                              prefName:prefs::kBottomOmnibox];
+    _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:localState
+                   prefName:omnibox::kIsOmniboxInBottomPosition];
     [_bottomOmniboxEnabled setObserver:self];
 
     _discoverFeedVisibilityBrowserAgent =

@@ -5,6 +5,7 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -389,7 +390,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 // Tests that tapping a button cancels the focus on the omnibox.
@@ -769,7 +771,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 // Verifies that the address bar can be moved from the location bar context

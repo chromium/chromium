@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -28,7 +29,8 @@
 
 - (void)saveSelectedPosition {
   GetApplicationContext()->GetLocalState()->SetBoolean(
-      prefs::kBottomOmnibox, self.selectedPosition == ToolbarType::kSecondary);
+      omnibox::kIsOmniboxInBottomPosition,
+      self.selectedPosition == ToolbarType::kSecondary);
 }
 
 #pragma mark - Setters

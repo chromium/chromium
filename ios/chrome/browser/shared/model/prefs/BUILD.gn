@@ -169,6 +169,7 @@ source_set("unit_tests") {
     ":pref_names",
     ":prefs",
     "//base",
+    "//components/omnibox/browser:pref_names",
     "//components/password_manager/core/common",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

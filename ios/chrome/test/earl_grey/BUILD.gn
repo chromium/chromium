@@ -355,6 +355,7 @@ source_set("eg_test_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/omnibox/browser:pref_names",
     "//components/strings",
     "//components/sync/base",
     "//components/url_formatter",

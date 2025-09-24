@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_egtest_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -81,7 +82,8 @@ void ReloadFromOmnibox() {
 - (void)setUp {
   [super setUp];
   MakeFirstRunRecent();
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (void)tearDownHelper {
@@ -644,7 +646,8 @@ void ReloadFromOmnibox() {
       @"Lens overlay entrypoint tip is not shown");
 
   // Move Omnibox to the bottom.
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Verify Lens overlay entrypoint tip is hidden after Omnibox position

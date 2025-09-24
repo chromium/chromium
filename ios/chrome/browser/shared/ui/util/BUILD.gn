@@ -204,6 +204,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "omnibox_util_egtest.mm" ]
   deps = [
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

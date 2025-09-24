@@ -6,6 +6,7 @@
 
 #import <sstream>
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -829,7 +830,8 @@ id<GREYMatcher> PasteButton() {
 - (void)helperTestFindInPageWithBottomOmnibox {
   if (@available(iOS 16.1.1, *)) {
     // Set bottom Omnibox.
-    [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+    [ChromeEarlGrey setBoolValue:YES
+               forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 
     // Load test page.
     [self setUpTestServersForWebPageTest];

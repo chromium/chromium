@@ -16,6 +16,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/bubble/model/utils.h"
@@ -450,7 +451,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
                          GetApplicationContext()->GetLocalState()->GetBoolean(
-                             prefs::kBottomOmnibox);
+                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text = l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT);
@@ -763,7 +764,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
                          GetApplicationContext()->GetLocalState()->GetBoolean(
-                             prefs::kBottomOmnibox);
+                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text = l10n_util::GetNSString(IDS_IOS_BWG_IPH_TEXT);
@@ -812,7 +813,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   BOOL isBottomOmnibox = IsBottomOmniboxAvailable() &&
                          GetApplicationContext()->GetLocalState()->GetBoolean(
-                             prefs::kBottomOmnibox);
+                             omnibox::kIsOmniboxInBottomPosition);
   BubbleArrowDirection arrowDirection =
       isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
   NSString* text =

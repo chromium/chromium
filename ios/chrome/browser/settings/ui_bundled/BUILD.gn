@@ -99,6 +99,7 @@ source_set("ui_bundled") {
     "//components/feature_engagement",
     "//components/history/core/browser",
     "//components/image_fetcher/ios",
+    "//components/omnibox/browser:pref_names",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
