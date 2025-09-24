@@ -67,6 +67,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.Toast;
@@ -210,12 +211,12 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             modelList.add(new ListItem(SHARE_SHEET_ITEM, model));
         }
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(modelList);
-        adapter.registerType(
-                SHARE_SHEET_ITEM,
-                new LayoutViewBuilder(R.layout.share_sheet_item),
-                (firstParty
+        PropertyModelChangeProcessor.ViewBinder<PropertyModel, ViewGroup, PropertyKey> viewBinder =
+                firstParty
                         ? ShareSheetBottomSheetContent::bindShareItem
-                        : ShareSheetBottomSheetContent::bind3PShareItem));
+                        : ShareSheetBottomSheetContent::bind3PShareItem;
+        adapter.registerType(
+                SHARE_SHEET_ITEM, new LayoutViewBuilder(R.layout.share_sheet_item), viewBinder);
         view.setAdapter(adapter);
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false);

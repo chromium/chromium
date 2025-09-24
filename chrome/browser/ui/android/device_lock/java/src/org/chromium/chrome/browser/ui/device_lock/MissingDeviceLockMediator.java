@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.REMOVE_ALL_LOCAL_DATA_CHECKED;
 
 import android.content.Context;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -25,15 +26,16 @@ public class MissingDeviceLockMediator {
     MissingDeviceLockMediator(Callback<Boolean> onContinueWithoutDeviceLock, Context context) {
         mOnContinueWithoutDeviceLock = onContinueWithoutDeviceLock;
         mContext = context;
-
+        final View.OnClickListener onClickListener;
+        if (DeviceLockUtils.isDeviceLockCreationIntentSupported(mContext)) {
+            onClickListener = v -> createDeviceLockDirectly();
+        } else {
+            onClickListener = v -> createDeviceLockThroughOSSettings();
+        }
         mModel =
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
-                        .with(
-                                ON_CREATE_DEVICE_LOCK_CLICKED,
-                                DeviceLockUtils.isDeviceLockCreationIntentSupported(mContext)
-                                        ? v -> createDeviceLockDirectly()
-                                        : v -> createDeviceLockThroughOSSettings())
+                        .with(ON_CREATE_DEVICE_LOCK_CLICKED, onClickListener)
                         .with(ON_CONTINUE_CLICKED, v -> continueWithoutDeviceLock())
                         .with(ON_CHECKBOX_TOGGLED, (v, isChecked) -> onCheckboxToggled(isChecked))
                         .build();
