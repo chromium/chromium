@@ -269,8 +269,7 @@ class AggregationTest(unittest.TestCase):
 
     self.assertEqual(
         GenerateCCAggregation('TypeName', agg), '''
-const auto kTestArray =
-    std::array<const TypeName*, 3>({{
+const std::array<const TypeName*, 3> kTestArray ({{
   &item_1,
   &item_2,
   &item_3,
@@ -288,7 +287,7 @@ const auto kTestArray =
 
     self.assertEqual(
         GenerateCCAggregation('ValueTypeName', agg), '''
-const auto kTestMap =
+const base::fixed_flat_map<std::string, const ValueTypeName*, 3> kTestMap =
     base::MakeFixedFlatMap<std::string, const ValueTypeName*>({
   {std::string("src_1"), &tgt_1},
   {std::string("src_2"), &tgt_2},

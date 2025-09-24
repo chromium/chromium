@@ -134,8 +134,9 @@ def _GenerateCCArray(type_name: str, aggregation: AggregationDetails) -> str:
     Returns:
         str: The generated C++ array aggregation code.
     """
-  res = f'\nconst auto {aggregation.name} =\n'
-  res += f'    std::array<const {type_name}*, {len(aggregation.elements)}>'
+  res = '\nconst '
+  res += f'std::array<const {type_name}*, {len(aggregation.elements)}> '
+  res += f'{aggregation.name} '
 
   res += '({{\n'
   for element_name in aggregation.elements.values():
@@ -157,7 +158,10 @@ def _GenerateCCMap(type_name: str, aggregation: AggregationDetails) -> str:
     """
   key_type = aggregation.map_key_type
 
-  res = f'\nconst auto {aggregation.name} =\n'
+  res = '\nconst '
+  res += f'base::fixed_flat_map<{aggregation.map_key_type}, '
+  res += f'const {type_name}*, {len(aggregation.GetSortedMapElements())}> '
+  res += f'{aggregation.name} =\n'
   res += f'    base::MakeFixedFlatMap<{key_type}, const {type_name}*>'
 
   res += '({\n'
