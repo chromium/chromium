@@ -48,13 +48,13 @@ export function getHtml(this: ViewerSaveToDriveBubbleElement) {
           </cr-progress>
         ` : ''}
         ${this.isSaveToDriveState_(SaveToDriveState.STORAGE_FULL_ERROR) ? html`
-          <cr-button id="manage-storage-button"
+          <cr-button id="manage-storage-button" role="link"
               @click="${this.onRequestButtonClick_}">
             $i18n{saveToDriveDialogManageStorageButtonLabel}
           </cr-button>
         ` : ''}
         ${this.isSaveToDriveState_(SaveToDriveState.SUCCESS) ? html`
-          <cr-button id="open-in-drive-button" class="action-button"
+          <cr-button id="open-in-drive-button" class="action-button" role="link"
               @click="${this.onRequestButtonClick_}">
             $i18n{saveToDriveDialogOpenInDriveButtonLabel}
           </cr-button>
