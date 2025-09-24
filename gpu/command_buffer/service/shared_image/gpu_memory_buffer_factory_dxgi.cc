@@ -26,25 +26,23 @@ GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI(
   DETACH_FROM_THREAD(thread_checker_);
 }
 GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() {
-  base::WaitableEvent wait;
-  auto clear_io_thread_state = base::BindOnce(
-      [](GpuMemoryBufferFactoryDXGI* gmb_factory, base::WaitableEvent* wait) {
-        gmb_factory->ClearIOThreadState();
-        wait->Signal();
-      },
-      this, base::Unretained(&wait));
-
-  if (io_runner_ &&
-      io_runner_->PostTask(FROM_HERE, std::move(clear_io_thread_state))) {
-    wait.Wait();
-  }
-}
-
-void GpuMemoryBufferFactoryDXGI::ClearIOThreadState() {
+  // Ensure that IO-thread specific state is destroyed on the IO thread. Note
+  // that it is valid to be *accessing* this state on the Viz thread here as the
+  // owner of this instance must have guaranteed all calls to this class on the
+  // IO thread are finished before destroying this object on the Viz thread (or
+  // else those calls would inherently race with destroying this object). Note
+  // also that that we need to be holding the ThreadChecker to access
+  // `d3d11_device_`.
+  DETACH_FROM_THREAD(thread_checker_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  d3d11_device_.Reset();
-  staging_texture_.Reset();
+  if (io_runner_) {
+    io_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+               Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture) {},
+            std::move(d3d11_device_), std::move(staging_texture_)));
+  }
 }
 
 // TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
