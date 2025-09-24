@@ -232,21 +232,6 @@
             ]
         }
     ],
-    "AccessibilityManifestV3EspeakNGTts": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityManifestV3EspeakNGTts"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [
