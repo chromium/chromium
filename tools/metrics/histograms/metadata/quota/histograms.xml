@@ -117,28 +117,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Quota.DaysSinceLastAccessed400DaysGT" units="days"
-    expires_after="2025-10-31">
+<histogram name="Quota.DaysSinceLastAccessed" units="days"
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Emitted when the browsing context loads a quota bucket for use and updates
     the last_accessed field in the database.
 
-    Number of days since a quota bucket was accessed (for values over 400 days).
-  </summary>
-</histogram>
-
-<histogram name="Quota.DaysSinceLastAccessed400DaysLTE" units="days"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Emitted when the browsing context loads a quota bucket for use and updates
-    the last_accessed field in the database.
-
-    Number of days since a quota bucket was accessed (for values under 400
-    days).
+    Number of days since a quota bucket was accessed. Capped at 400 days as
+    buckets are not retained past that point.
   </summary>
 </histogram>
 
@@ -239,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.OrphanBucketCount" units="areas"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -338,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.StaleBucketCount" units="areas"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

@@ -38,7 +38,7 @@ using ::blink::StorageKey;
 namespace storage {
 namespace {
 
-static const int kDaysInTenYears = 10 * 365;
+static const int kStaleBucketCutoffInDays = 400;
 
 // Version number of the database schema.
 //
@@ -462,14 +462,9 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
         last_accessed > earlier_last_accessed) {
       int days_since_last_accessed =
           (last_accessed - earlier_last_accessed).InDays();
-      if (days_since_last_accessed > 400) {
-        base::UmaHistogramCustomCounts("Quota.DaysSinceLastAccessed400DaysGT",
-                                       days_since_last_accessed, 401,
-                                       kDaysInTenYears, 100);
-      } else {
-        base::UmaHistogramCustomCounts("Quota.DaysSinceLastAccessed400DaysLTE",
-                                       days_since_last_accessed, 1, 400, 100);
-      }
+      base::UmaHistogramCustomCounts("Quota.DaysSinceLastAccessed",
+                                     days_since_last_accessed, 1,
+                                     kStaleBucketCutoffInDays, 100);
     }
   }
 
@@ -822,7 +817,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
       db_->GetCachedStatement(SQL_FROM_HERE, kSqlExpiredAndStaleAndOrphan));
   base::Time expiration_cutoff = GetNow();
   statement.BindTime(0, expiration_cutoff);
-  base::Time stale_cutoff = GetNow() - base::Days(400);
+  base::Time stale_cutoff = GetNow() - base::Days(kStaleBucketCutoffInDays);
   statement.BindTime(1, stale_cutoff);
   statement.BindTime(2, stale_cutoff);
   base::Time orphan_cutoff = GetNow() - base::Days(1);
