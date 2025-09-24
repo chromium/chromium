@@ -2285,6 +2285,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions"
+    enum="Boolean" expires_after="2026-03-19">
+  <owner>alexmt@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether or not the `maxContributions` field is set in the
+    `privateAggregationConfig` parameter of `run()` and `selectURL()`. Recorded
+    for each call to those methods (when the corresponding feature is enabled).
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.PrivateAggregationConfig.RequestedMaxContributions"
+    units="contributions" expires_after="2026-03-19">
+  <owner>alexmt@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the value of the `maxContributions` field in the
+    `privateAggregationConfig` parameter of `run()` and `selectURL()`. Recorded
+    for each call to those methods where the field is set (and the corresponding
+    feature is enabled).
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Run.DataDeserialization.Time" units="ms"
     expires_after="2026-02-05">
   <owner>cammie@chromium.org</owner>

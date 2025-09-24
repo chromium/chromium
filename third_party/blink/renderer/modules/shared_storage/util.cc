@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -190,21 +191,29 @@ bool CheckPrivateAggregationConfig(
         options.privateAggregationConfig()->filteringIdMaxBytes());
   }
 
-  if (options.privateAggregationConfig()->hasMaxContributions() &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kPrivateAggregationApiMaxContributions)) {
-    const auto requested_max_contributions =
-        options.privateAggregationConfig()->maxContributions();
-    if (requested_max_contributions == 0) {
-      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state.GetIsolate(), DOMExceptionCode::kDataError,
-          "maxContributions must be positive"));
-      return false;
+    base::UmaHistogramBoolean(
+        "Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions",
+        options.privateAggregationConfig()->hasMaxContributions());
+    if (options.privateAggregationConfig()->hasMaxContributions()) {
+      const auto requested_max_contributions =
+          options.privateAggregationConfig()->maxContributions();
+      base::UmaHistogramCounts10000(
+          "Storage.SharedStorage.PrivateAggregationConfig."
+          "RequestedMaxContributions",
+          requested_max_contributions);
+      if (requested_max_contributions == 0) {
+        resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+            script_state.GetIsolate(), DOMExceptionCode::kDataError,
+            "maxContributions must be positive"));
+        return false;
+      }
+      const uint16_t max_contributions_clamped =
+          base::MakeClampedNum(requested_max_contributions);
+      out_private_aggregation_config->max_contributions =
+          max_contributions_clamped;
     }
-    const uint16_t max_contributions_clamped =
-        base::MakeClampedNum(requested_max_contributions);
-    out_private_aggregation_config->max_contributions =
-        max_contributions_clamped;
   }
 
   return true;
