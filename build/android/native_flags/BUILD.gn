@@ -17,6 +17,10 @@ if (current_toolchain == default_toolchain) {
       command = "$solink {{output}} {{ldflags}}"
       outputs = [ "{{root_out_dir}}/{{label_name}}.txt" ]
     }
+    tool("cxx_module") {
+      command = "this-should-never-run"
+      outputs = [ "this-will-never-exist" ]
+    }
     tool("alink") {
       command = "this-should-never-run"
       outputs = [ "this-will-never-exist" ]
@@ -30,8 +34,10 @@ if (current_toolchain == default_toolchain) {
   # This will record flags from all default configs of the default toolchain.
   source_set("default_ccflags") {
     sources = [ "empty.cc" ]
+    use_libcxx_modules = false
   }
   shared_library("default_ldflags") {
     no_default_deps = true
+    use_libcxx_modules = false
   }
 }
