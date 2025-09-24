@@ -1237,6 +1237,11 @@ class FencedFrameFileSystemAccessBrowserTest
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         FencedFrameFileSystemAccessBrowserTest,
+                         testing::Bool(),
+                         &ParamInfoToString);
+
 IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
                        RequestWriteAccess) {
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
@@ -1321,11 +1326,6 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserTest,
             content::EvalJs(second_tab,
                             "self.showOpenFilePicker().catch(e => e.name)"));
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         FencedFrameFileSystemAccessBrowserTest,
-                         testing::Bool(),
-                         &ParamInfoToString);
 
 class FileSystemAccessBrowserTestForWebUI
     : public InProcessBrowserTest,
