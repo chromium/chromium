@@ -177,26 +177,6 @@ bool IsValidFileUploadStatusForMultimodalRequest(
          upload_status == FileUploadStatus::kUploadSuccessful;
 }
 
-// Returns the media type for the given mime type.
-lens::LensOverlayRequestId::MediaType GetMediaType(
-    lens::MimeType mime_type,
-    bool has_viewport_screenshot) {
-  switch (mime_type) {
-    case lens::MimeType::kPdf:
-      return has_viewport_screenshot
-                 ? lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE
-                 : lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
-    case lens::MimeType::kAnnotatedPageContent:
-      return has_viewport_screenshot
-                 ? lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE
-                 : lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE;
-    case lens::MimeType::kImage:
-      [[fallthrough]];
-    default:
-      return lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE;
-  }
-}
-
 }  // namespace
 
 ComposeboxQueryController::ComposeboxQueryController(
@@ -240,8 +220,7 @@ ComposeboxQueryController::GetNextRequestId(
     lens::MimeType mime_type,
     lens::LensOverlayRequestId_MediaType media_type) {
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
-      request_id_generator_.GetNextRequestId(update_mode);
-  request_id->set_media_type(media_type);
+      request_id_generator_.GetNextRequestId(update_mode, media_type);
 
   suggest_inputs_.set_encoded_request_id(
       lens::Base64EncodeRequestId(*request_id));
@@ -359,7 +338,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
                               kPageContentWithViewportRequest
                         : lens::RequestIdUpdateMode::kPageContentRequest)),
       current_file_info.mime_type_,
-      GetMediaType(current_file_info.mime_type_, has_viewport_screenshot));
+      lens::MimeTypeToMediaType(current_file_info.mime_type_,
+                                has_viewport_screenshot));
 
   // Update the file upload status to processing. This will notify the UI
   // to fetch suggestions at the earliest possible time. The suggest inputs are

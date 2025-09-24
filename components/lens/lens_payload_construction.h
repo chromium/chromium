@@ -13,6 +13,10 @@
 
 namespace lens {
 
+lens::LensOverlayRequestId::MediaType MimeTypeToMediaType(
+    lens::MimeType mime_type,
+    bool has_viewport_screenshot);
+
 lens::ContentData::ContentType MimeTypeToContentType(
     lens::MimeType content_type);
 

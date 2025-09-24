@@ -69,7 +69,8 @@ class LensOverlayRequestIdGenerator {
   // Updates the request id based on the given update mode and returns the
   // request id proto.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
-      RequestIdUpdateMode update_mode);
+      RequestIdUpdateMode update_mode,
+      lens::LensOverlayRequestId::MediaType media_type);
 
   // Returns the current analytics id as a base32 encoded string.
   std::string GetBase32EncodedAnalyticsId();

@@ -141,8 +141,9 @@ const std::vector<lens::PageContent> kFakeSmallPdfPageContents = {
     lens::PageContent(kFakeSmallContentBytes, lens::MimeType::kPdf)};
 const std::vector<lens::PageContent> kFakeTextPageContents = {
     lens::PageContent(kFakeContentBytes, lens::MimeType::kPlainText)};
-const std::vector<lens::PageContent> kFakeHtmlPageContents = {
-    lens::PageContent(kFakeContentBytes, lens::MimeType::kHtml)};
+const std::vector<lens::PageContent> kFakeApcPageContents = {
+    lens::PageContent(kFakeContentBytes,
+                      lens::MimeType::kAnnotatedPageContent)};
 const std::vector<lens::PageContent> kFakeHtmlPageContentsWithMultipleContents =
     {lens::PageContent(kFakeContentBytes, lens::MimeType::kHtml),
      lens::PageContent(kFakeContentBytes2, lens::MimeType::kPlainText),
@@ -982,6 +983,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().media_type(),
+      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
             lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
@@ -1201,6 +1205,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().media_type(),
+      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
             lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
@@ -1334,6 +1341,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().media_type(),
+      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
             lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
@@ -1526,6 +1536,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().media_type(),
+      lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
             lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
@@ -1591,7 +1604,7 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       FetchTextOnlyInteractionWithHtml_ReturnsResponse) {
+       FetchTextOnlyInteractionWithApc_ReturnsResponse) {
   InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
@@ -1628,9 +1641,9 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeHtmlPageContents,
-      lens::MimeType::kHtml, /*pdf_current_page=*/std::nullopt, 0,
-      base::TimeTicks::Now());
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeApcPageContents,
+      lens::MimeType::kAnnotatedPageContent, /*pdf_current_page=*/std::nullopt,
+      0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   query_controller.SendContextualTextQuery(
       kTestTime, kTestQueryText,
@@ -1660,7 +1673,7 @@ TEST_F(LensOverlayQueryControllerTest,
       page_content_request.payload().content().content_data(0).data().empty());
   ASSERT_EQ(
       page_content_request.payload().content().content_data(0).content_type(),
-      lens::ContentData::CONTENT_TYPE_INNER_HTML);
+      lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT);
 
   // Verify the page url was included in the request.
   ASSERT_EQ(page_content_request.payload().content().webpage_url(),
@@ -1677,6 +1690,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_interaction_request);
   ASSERT_EQ(
       sent_interaction_request.request_context().request_id().sequence_id(), 2);
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().media_type(),
+      lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata().type(),
             lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
   ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
@@ -3547,7 +3563,7 @@ TEST_F(LensOverlayQueryControllerTest,
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeHtmlPageContents,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeApcPageContents,
       lens::MimeType::kHtml, /*pdf_current_page=*/std::nullopt, 0,
       base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
@@ -3569,7 +3585,7 @@ TEST_F(LensOverlayQueryControllerTest,
   auto webpage_content_data =
       page_content_request.payload().content().content_data(0);
   ASSERT_EQ(webpage_content_data.content_type(),
-            lens::ContentData::CONTENT_TYPE_INNER_HTML);
+            lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT);
   ASSERT_EQ(webpage_content_data.data().size(), kFakeContentBytes.size());
   ASSERT_EQ(webpage_content_data.compression_type(),
             lens::CompressionType::UNCOMPRESSED);
@@ -4449,7 +4465,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
   query_controller.StartQueryFlow(
       bitmap, GURL(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeHtmlPageContents,
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeApcPageContents,
       lens::MimeType::kHtml, std::nullopt, 0, base::TimeTicks::Now());
   ASSERT_TRUE(full_image_response_future.Wait());
   CheckClusterInfoRequestMatchesDefaultClientContentRequest(
@@ -4482,7 +4498,7 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
       page_content_request.payload().content().content_data(0).data().empty());
   ASSERT_EQ(
       page_content_request.payload().content().content_data(0).content_type(),
-      lens::ContentData::CONTENT_TYPE_INNER_HTML);
+      lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT);
 
   // Verify the page url and title were included in the request.
   ASSERT_EQ(page_content_request.payload().content().webpage_url(),

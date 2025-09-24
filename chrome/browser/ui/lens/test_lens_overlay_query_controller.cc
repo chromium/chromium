@@ -408,6 +408,9 @@ void TestLensOverlayQueryController::RunSuggestInputsCallback() {
   // Set the time_usec field to 0 to ignore it in the comparison.
   latest_request_id.set_time_usec(0);
   current_request_id->set_time_usec(0);
+  // Since the media type is not stored in the current request id, manually
+  // set it here to compare the two request ids.
+  current_request_id->set_media_type(latest_request_id.media_type());
 
   // Verifies that the last request ids passed in the SuggestInputs callback are
   // the same as current request id in the request id generator.

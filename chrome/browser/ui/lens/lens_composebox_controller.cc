@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_payload_construction.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 
@@ -177,11 +178,16 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
       lens_search_controller_->lens_search_contextualization_controller();
   lens_image_query_data->set_search_session_id(
       query_controller->search_session_id());
+
+  const auto& primary_content_type =
+      contextualization_controller->primary_content_type();
   lens_image_query_data->mutable_request_id()->CopyFrom(
       *query_controller->GetNextRequestId(
-          lens::RequestIdUpdateMode::kSearchUrl));
-  lens_image_query_data->set_visual_input_type(LensMimeTypeToVisualInputType(
-      contextualization_controller->primary_content_type()));
+          lens::RequestIdUpdateMode::kSearchUrl,
+          MimeTypeToMediaType(primary_content_type,
+                              /*has_viewport_screenshot=*/true)));
+  lens_image_query_data->set_visual_input_type(
+      LensMimeTypeToVisualInputType(primary_content_type));
   return client_to_aim_message;
 }
 

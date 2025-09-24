@@ -16,6 +16,26 @@
 
 namespace lens {
 
+// Returns the media type for the given mime type.
+lens::LensOverlayRequestId::MediaType MimeTypeToMediaType(
+    lens::MimeType mime_type,
+    bool has_viewport_screenshot) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
+      return has_viewport_screenshot
+                 ? lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE
+                 : lens::LensOverlayRequestId::MEDIA_TYPE_PDF;
+    case lens::MimeType::kAnnotatedPageContent:
+      return has_viewport_screenshot
+                 ? lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE
+                 : lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE;
+    case lens::MimeType::kImage:
+      [[fallthrough]];
+    default:
+      return lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE;
+  }
+}
+
 lens::ContentData::ContentType MimeTypeToContentType(
     lens::MimeType content_type) {
   switch (content_type) {
