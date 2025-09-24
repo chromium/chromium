@@ -223,7 +223,8 @@ void ShowFileSystemAccessDangerousFileDialogOnUIThread(
 bool ContainsInvalidDNSCharacter(base::FilePath::StringType hostname) {
   for (base::FilePath::CharType c : hostname) {
     if (!((c >= L'A' && c <= L'Z') || (c >= L'a' && c <= L'z') ||
-          (c >= L'0' && c <= L'9') || (c == L'.') || (c == L'-'))) {
+          (c >= L'0' && c <= L'9') || (c == L'.') || (c == L'-') ||
+          (c == L'_'))) {
       return true;
     }
   }
