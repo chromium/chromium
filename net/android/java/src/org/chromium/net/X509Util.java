@@ -607,6 +607,7 @@ public class X509Util {
                                 ocspResponse,
                                 sctList);
             } catch (CertificateException eDefaultManager) {
+                String errorMessage = eDefaultManager.getMessage();
                 if (sTestTrustManager != null) {
                     try {
                         verifiedChain =
@@ -618,17 +619,18 @@ public class X509Util {
                                         ocspResponse,
                                         sctList);
                     } catch (CertificateException eTestManager) {
+                        errorMessage =
+                                "[default trust manager] "
+                                        + errorMessage
+                                        + "; [test trust manager] "
+                                        + eTestManager.getMessage();
                         // See following if block.
                     }
                 }
 
                 if (verifiedChain == null) {
-                    // Neither of the trust managers confirms the validity of the certificate chain,
-                    // log the error message returned by the system trust manager.
-                    Log.i(
-                            TAG,
-                            "Failed to validate the certificate chain, error: "
-                                    + eDefaultManager.getMessage());
+                    // Neither of the trust managers confirms the validity of the certificate chain
+                    Log.i(TAG, "Failed to validate the certificate chain, error: " + errorMessage);
                     return new AndroidCertVerifyResult(CertVerifyStatusAndroid.NO_TRUSTED_ROOT);
                 }
             }
