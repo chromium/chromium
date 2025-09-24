@@ -3213,39 +3213,62 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       result.dynamic_pseudo =
           CSSSelector::GetPseudoId(selector.GetPseudoType());
       DCHECK_NE(result.dynamic_pseudo, kPseudoIdNone);
-      // If we are matching for pseudo-element, we can be
-      // at some pseudo-element sub selector here, check that
-      // it matches the current element from ancestor pseudo-elements
-      // (element would be set to one above).
-      // E.g. when matching for scroll marker pseudo-element that is
-      // generated from column pseudo-element that is generated from element
-      // with id=div and selector is #div::column::scroll-marker, we can end up
-      // here with `element`=column pseudo-element and sub-selector being
-      // ::column, so return true, but if the selector was
-      // #div::after::scroll-marker, we would fail here as ::after shouldn't
-      // match column pseudo-element.
+
+      // Normally, we don't match elements against nested pseudo-selectors;
+      // a rule such as div::column::scroll-marker will never match div,
+      // and never create a ::column by itself (some other rule, such as
+      // div::column, will need to do that, via dynamic_pseudo).
+      // This case is handled later.
+      //
+      // However, if we are matching against a pseudo-element, we are in
+      // a different situation. Check that the current simple selector
+      // matches the current element from the ancestor pseudo-elements
+      // (`element` would be set to the pseudo-element one step up in the
+      // chain).
+      //
+      // E.g., when matching against a scroll marker pseudo-element that is
+      // generated from a column pseudo-element, which is in turn generated
+      // from a div element, and the selector is indeed
+      // div::column::scroll-marker, we can end up here with
+      //
+      //   element = PseudoElement for column
+      //   selector = ::column
+      //
+      // so return true. However, if the selector was div::after::scroll-marker,
+      // we would fail here, as ::after doesn't match a column pseudo-element.
       if (context.pseudo_element) {
-        // #div::before::before for before of #div should be added as a rule to
-        // before, but for before of before of #div, only set before pseudo-
-        // element style flag for before of #div.
         if (result.pseudo_ancestor_index ==
                 context.pseudo_element_ancestors.size() - 1 &&
             context.pseudo_element == element) {
+          // We've matched the entire ancestor chain, so there are
+          // no more pseudo-elements to create.
           result.dynamic_pseudo = kPseudoIdNone;
         }
-        // If `pseudo_ancestor_index` == size, it means that we've match the
-        // ancestors chain and now collect pseudo styles for pseudo-element,
-        // always match in this case. E.g. column pseudo-element and rule
-        // div::column::scroll-marker. When ::column is matched and now we
-        // look at ::scroll-marker part, index == size == 1, so just mark
-        // column as having scroll-marker style.
+
+        // If `pseudo_ancestor_index` == size (i.e., past the end of the chain),
+        // it means that we've matched the entire ancestor chain and are now
+        // collecting pseudo styles for the pseudo-element; always match in this
+        // case (the dynamic_pseudo logic will pick up our result and create
+        // a pseudo-element instead of actually applying the style rule).
+        //
+        // E.g., for a column pseudo-element and the rule
+        // div::column::scroll-marker, when we've matched ::column and then look
+        // at the ::scroll-marker part, then index == size == 1, so mark
+        // ::column as having a ::scroll-marker pseudo (dynamic_pseudo was set
+        // earlier).
+        if (result.pseudo_ancestor_index ==
+            context.pseudo_element_ancestors.size()) {
+          return true;
+        }
+
+        // If not, we are still in the process of testing the chain of
+        // pseudo-selectors.
         return element.GetPseudoIdForStyling() ==
-                   selector.GetPseudoId(selector.GetPseudoType()) ||
-               result.pseudo_ancestor_index ==
-                   context.pseudo_element_ancestors.size();
+               selector.GetPseudoId(selector.GetPseudoType());
       }
+
       // Don't allow matching nested pseudo-elements from regular elements,
-      // e.g. #div::column::scroll-marker on #div.
+      // e.g., div::column::scroll-marker against a div.
       return context.previously_matched_pseudo_element == kPseudoIdNone;
   }
 }
