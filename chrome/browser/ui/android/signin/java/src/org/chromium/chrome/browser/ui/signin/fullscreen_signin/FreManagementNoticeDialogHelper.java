@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.content.Context;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
@@ -27,8 +26,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Helper for showing management notice dialog and record metrics during the fre sign-in flow. */
 @NullMarked
 final class FreManagementNoticeDialogHelper {
-    private static final String UNMANAGED_SIGNIN_DURATION_NAME =
-            "Signin.Android.FREUnmanagedAccountSigninDuration";
     private static final String FRE_SIGNIN_EVENTS_NAME = "Signin.Android.FRESigninEvents";
 
     @IntDef({
@@ -94,15 +91,11 @@ final class FreManagementNoticeDialogHelper {
             @Nullable SignInCallback callback,
             Context context,
             ModalDialogManager modalDialogManager) {
-        long startTimeMillis = SystemClock.uptimeMillis();
         if (signinManager.getUserAcceptedAccountManagement()) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                    UNMANAGED_SIGNIN_DURATION_NAME,
-                                    SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
                             super.onSignInComplete();
                         }
@@ -129,8 +122,7 @@ final class FreManagementNoticeDialogHelper {
                             accessPoint,
                             callback,
                             context,
-                            modalDialogManager,
-                            startTimeMillis);
+                            modalDialogManager);
                 });
     }
 
@@ -142,17 +134,13 @@ final class FreManagementNoticeDialogHelper {
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback,
             Context context,
-            ModalDialogManager modalDialogManager,
-            long startTimeMillis) {
+            ModalDialogManager modalDialogManager) {
         signinFlowLogger.recordTimestamp(Event.MANAGEMENT_STATUS_LOADED);
         if (!isAccountManaged) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                    UNMANAGED_SIGNIN_DURATION_NAME,
-                                    SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
                             super.onSignInComplete();
                         }

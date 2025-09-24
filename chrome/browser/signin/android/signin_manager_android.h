@@ -123,7 +123,6 @@ class SigninManagerAndroid : public KeyedService {
   void OnPolicyRegisterDoneForIsAccountManaged(
       const CoreAccountInfo& account,
       base::android::ScopedJavaGlobalRef<jobject> callback,
-      base::Time start_time,
       const std::optional<ManagementCredentials>& credentials);
 
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,

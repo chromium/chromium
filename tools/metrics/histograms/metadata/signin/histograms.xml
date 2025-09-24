@@ -708,25 +708,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Android.FREUnmanagedAccountSigninDuration" units="ms"
-    expires_after="2025-07-06">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    The time it takes to perform signin on the FRE for unmanaged accounts.
-  </summary>
-</histogram>
-
-<histogram name="Signin.Android.IsAccountManagedDuration" units="ms"
-    expires_after="2025-07-06">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    The time it takes to check if the Account is managed. Recoreded every time
-    isAccountManaged is called.
-  </summary>
-</histogram>
-
 <histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
     expires_after="2025-06-22">
   <owner>samarchehade@chromium.org</owner>
