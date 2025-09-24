@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -22,6 +23,7 @@
 #include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -46,6 +48,8 @@
 namespace signin {
 
 namespace {
+
+using ::testing::_;
 
 constexpr GaiaId::Literal kGaiaId("gaia_id_1");
 constexpr GaiaId::Literal kGaiaId2("gaia_id_2");
@@ -412,10 +416,10 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
@@ -449,10 +453,10 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
@@ -483,10 +487,10 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access tokens.
@@ -526,15 +530,15 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("FOO", "FOO_value", ".google.com"),
-                  CookieSourceMatcher("google.com"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("FOO", "FOO_value", ".google.com"),
+                         CookieSourceMatcher("google.com"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
@@ -565,15 +569,15 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".youtube.com"),
-                  CookieSourceMatcher("youtube.com"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".youtube.com"),
+                         CookieSourceMatcher("youtube.com"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("FOO", "FOO_value", ".google.com"),
-                  CookieSourceMatcher("google.com"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("FOO", "FOO_value", ".google.com"),
+                         CookieSourceMatcher("google.com"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
@@ -597,6 +601,29 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
   EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(OAuthMultiloginHelperTest, CorrectRequestWhenOamlCookieBindingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {switches::kEnableOAuthMultiloginCookiesBinding,
+       switches::kEnableOAuthMultiloginCookiesBindingServerExperiment},
+      /*disabled_features=*/{});
+
+  token_service()->UpdateCredentials(kAccountId, "refresh_token");
+  CreateHelper(/*accounts=*/{{kAccountId, kGaiaId}});
+
+  // Issue access token.
+  OAuth2AccessTokenConsumer::TokenResponse success_response;
+  success_response.access_token = kAccessToken;
+  token_service()->IssueAllTokensForAccount(kAccountId, success_response);
+
+  EXPECT_TRUE(
+      url_loader()->IsPending(multilogin_url() + "&oaml_cookie_binding=1",
+                              /*request_out=*/nullptr));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // Failure to get the access token.
 TEST_F(OAuthMultiloginHelperTest, OneAccountAccessTokenFailure) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
@@ -617,10 +644,10 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
@@ -728,10 +755,10 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Configure mock cookie manager: check that the cookie is the expected one.
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
@@ -816,10 +843,10 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
@@ -876,10 +903,10 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", "SID_value", ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
@@ -929,10 +956,10 @@ TEST_F(OAuthMultiloginHelperTest,
   // Configure mock cookie manager:
   // - check that the cookie is the expected one
   // - immediately invoke the callback
-  EXPECT_CALL(*cookie_manager(),
-              SetCanonicalCookie(
-                  CookieMatcher("SID", kCookieValue, ".google.fr"),
-                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+  EXPECT_CALL(
+      *cookie_manager(),
+      SetCanonicalCookie(CookieMatcher("SID", kCookieValue, ".google.fr"),
+                         CookieSourceMatcher("google.fr"), _, _))
       .WillOnce(RunSetCookieCallbackWithSuccess);
 
   std::string response =
@@ -1007,15 +1034,15 @@ TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   {
     testing::InSequence seq;
 
-    EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies(testing::_));
-    EXPECT_CALL(*cookie_manager(),
-                SetCanonicalCookie(
-                    CookieMatcher("SID", "SID_value", ".google.fr"),
-                    CookieSourceMatcher("google.fr"), testing::_, testing::_));
-    EXPECT_CALL(*cookie_manager(),
-                SetCanonicalCookie(
-                    CookieMatcher("FOO", "FOO_value", ".google.com"),
-                    CookieSourceMatcher("google.com"), testing::_, testing::_));
+    EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies(_));
+    EXPECT_CALL(
+        *cookie_manager(),
+        SetCanonicalCookie(CookieMatcher("SID", "SID_value", ".google.fr"),
+                           CookieSourceMatcher("google.fr"), _, _));
+    EXPECT_CALL(
+        *cookie_manager(),
+        SetCanonicalCookie(CookieMatcher("FOO", "FOO_value", ".google.com"),
+                           CookieSourceMatcher("google.com"), _, _));
     EXPECT_CALL(*bound_session_delegate(), OnCookiesSet());
   }
 

@@ -181,6 +181,11 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableOAuthMultiloginCookiesBinding);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableOAuthMultiloginCookiesBindingServerExperiment);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // Enables a separate account-scoped storage for preferences.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);

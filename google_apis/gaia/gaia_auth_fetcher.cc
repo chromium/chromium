@@ -479,7 +479,8 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
     gaia::MultiloginMode mode,
     const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
     const std::string& external_cc_result,
-    OAuthMultiloginResult::CookieDecryptor cookie_decryptor) {
+    OAuthMultiloginResult::CookieDecryptor cookie_decryptor,
+    bool enable_oaml_cookie_binding) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   UMA_HISTOGRAM_COUNTS_100("Signin.Multilogin.NumberOfAccounts",
@@ -515,6 +516,9 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
     base::StringAppendF(
         &parameters, "&externalCcResult=%s",
         base::EscapeUrlEncodedData(external_cc_result, true).c_str());
+  }
+  if (enable_oaml_cookie_binding) {
+    base::StringAppendF(&parameters, "&oaml_cookie_binding=1");
   }
   oauth_multilogin_cookie_decryptor_ = std::move(cookie_decryptor);
 

@@ -8395,6 +8395,14 @@ const char kEnableOAuthMultiloginCookiesBindingName[] =
 const char kEnableOAuthMultiloginCookiesBindingDescription[] =
     "Enables binding of cookies returned from OAuthMultilogin to cryptographic "
     "keys.";
+
+const char kEnableOAuthMultiloginCookiesBindingServerExperimentName[] =
+    "Enable OAuthMultilogin Cookies Binding Server Experiment";
+const char kEnableOAuthMultiloginCookiesBindingServerExperimentDescription[] =
+    "When enabled, Chrome will send will send a specific URL parameter to Gaia "
+    "to trigger the server-side experiment for binding the OAuthMultilogin "
+    "cookies to cryptographic keys. This flag is meant to be used in "
+    "conjunction with the 'Enable OAuthMultilogin Cookies Binding' flag.";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

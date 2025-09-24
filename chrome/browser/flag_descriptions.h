@@ -4864,6 +4864,10 @@ extern const char kEnableHistorySyncOptinExpansionPillDescription[];
 
 extern const char kEnableOAuthMultiloginCookiesBindingName[];
 extern const char kEnableOAuthMultiloginCookiesBindingDescription[];
+
+extern const char kEnableOAuthMultiloginCookiesBindingServerExperimentName[];
+extern const char
+    kEnableOAuthMultiloginCookiesBindingServerExperimentDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

@@ -48,7 +48,9 @@ using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::Optional;
 using ::testing::Property;
+using ::testing::SizeIs;
 
 namespace {
 
@@ -314,7 +316,7 @@ TEST_F(GaiaAuthFetcherTest,
   EXPECT_TRUE(
       base::Contains(body, "bound_token_registration_jwt=registration_jwt"));
   EXPECT_THAT(received_requests_.at(0).headers.GetHeader(kVersionListHeader),
-              testing::Optional(std::string("version_list")));
+              Optional(std::string("version_list")));
   EXPECT_TRUE(auth.HasPendingFetch());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
@@ -373,9 +375,8 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
 
   const network::ResourceRequest& request0 = received_requests_.at(0);
   EXPECT_EQ("POST", request0.method);
-  EXPECT_THAT(
-      request0.headers.GetHeader("Authorization"),
-      testing::Optional(std::string("MultiBearer token1:id1,token2:id2")));
+  EXPECT_THAT(request0.headers.GetHeader("Authorization"),
+              Optional(std::string("MultiBearer token1:id1,token2:id2")));
   EXPECT_EQ("source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result",
             request0.url.query());
 
@@ -390,6 +391,28 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   const network::ResourceRequest& request1 = received_requests_.at(1);
   EXPECT_EQ("source=ChromiumBrowser&reuseCookies=1&externalCcResult=cc_result",
             request1.url.query());
+}
+
+TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
+  MockGaiaConsumer consumer;
+  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
+  const std::vector<gaia::MultiloginAccountAuthCredentials> accounts = {
+      {GaiaId("id"), "token", ""},
+  };
+
+  auth.StartOAuthMultilogin(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER, accounts,
+      "cc_result", base::NullCallback(), /*enable_oaml_cookie_binding=*/true);
+
+  ASSERT_THAT(received_requests_, SizeIs(1));
+  const network::ResourceRequest& request = received_requests_.at(0);
+  EXPECT_EQ("POST", request.method);
+  EXPECT_THAT(request.headers.GetHeader("Authorization"),
+              Optional(std::string("MultiBearer token:id")));
+  EXPECT_EQ(
+      "source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result&oaml_"
+      "cookie_binding=1",
+      request.url.query());
 }
 
 TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {

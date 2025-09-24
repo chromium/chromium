@@ -8393,6 +8393,8 @@ from previous Chrome versions.
       label="CookieDeprecationFacilitatedTesting:disabled"/>
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
+  <int value="-2053160869"
+      label="EnableOAuthMultiloginCookiesBindingServerExperiment:enabled"/>
   <int value="-2053098867" label="AutofillEnableCvcStorageAndFilling:enabled"/>
   <int value="-2053062676" label="EnableNeuralPalmAdaptiveHold:enabled"/>
   <int value="-2052783936" label="EnablePixPaymentsInLandscapeMode:enabled"/>
@@ -18648,6 +18650,8 @@ from previous Chrome versions.
   <int value="1610905768"
       label="SegmentationPlatformEphemeralCardRanker:enabled"/>
   <int value="1611265771" label="Win10TabSearchCaptionButton:enabled"/>
+  <int value="1611273367"
+      label="EnableOAuthMultiloginCookiesBindingServerExperiment:disabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
   <int value="1612206633" label="CCTModuleCustomHeader:enabled"/>
   <int value="1612446645" label="enable-weak-memorycache"/>

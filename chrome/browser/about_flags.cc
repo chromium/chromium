@@ -11858,6 +11858,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableOAuthMultiloginCookiesBinding)},
 
+    {"enable-oauth-multilogin-cookies-binding-server-experiment",
+     flag_descriptions::
+         kEnableOAuthMultiloginCookiesBindingServerExperimentName,
+     flag_descriptions::
+         kEnableOAuthMultiloginCookiesBindingServerExperimentDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(
+         switches::kEnableOAuthMultiloginCookiesBindingServerExperiment)},
+
     {"enable-chrome-refresh-token-binding",
      flag_descriptions::kEnableChromeRefreshTokenBindingName,
      flag_descriptions::kEnableChromeRefreshTokenBindingDescription,

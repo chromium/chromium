@@ -210,6 +210,17 @@ BASE_FEATURE(kEnableOAuthMultiloginCookiesBinding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// When enabled, Chrome will send a specific URL parameter to Gaia to trigger
+// the server-side experiment for binding the OAuthMultilogin cookies to
+// cryptographic keys.
+//
+// NOTE: This flag is meant to be used in conjunction with the
+// `kEnableOAuthMultiloginCookiesBinding` flag.
+BASE_FEATURE(kEnableOAuthMultiloginCookiesBindingServerExperiment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 BASE_FEATURE(kEnablePreferencesAccountStorage,
 #if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT

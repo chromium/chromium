@@ -129,7 +129,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
       const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
       const std::string& external_cc_result,
       OAuthMultiloginResult::CookieDecryptor cookie_decryptor =
-          base::NullCallback());
+          base::NullCallback(),
+      bool enable_oaml_cookie_binding = false);
 
   // Starts a request to list the accounts in the GAIA cookie.
   void StartListAccounts();
