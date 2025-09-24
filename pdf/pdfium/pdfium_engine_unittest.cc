@@ -3077,6 +3077,27 @@ TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
       *engine, /*page_index=*/2, "multi_page_hello_world_caret_1.png");
 }
 
+TEST_P(PDFiumEngineCaretTest, TextSelect) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->SetCaretBrowsingEnabled(true);
+  engine->PluginSizeUpdated({500, 500});
+
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_start.png");
+
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldEndPosition));
+
+  // Caret should not be visible when text selecting.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection.png");
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
