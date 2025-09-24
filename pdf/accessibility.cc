@@ -38,20 +38,18 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   PDFiumPage* page = engine->GetPage(page_index);
   CHECK(page);
 
-  const int raw_char_count = page->GetCharCount();
-  // Treat a char count of -1 (error) as 0 (an empty page), since
-  // other pages might have valid content.
-  const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
+  page->GetTextAndCharInfo(text_runs, chars);
 
   page_info.page_index = page_index;
   page_info.bounds = page->rect();
-  page_info.char_count = char_count;
+  page_info.char_count = chars.size();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   page_info.is_searchified = page->IsPageSearchified();
 #else
   page_info.is_searchified = false;
 #endif
-  page->GetTextAndImageInfo(text_runs, chars, page_objects.images);
+  page->PopulateTextRunTypeAndImageAltText(text_runs);
+  page_objects.images = page->GetImageInfo(text_runs.size());
   page_info.text_run_count = text_runs.size();
   page_objects.links = page->GetLinkInfo(text_runs);
   page_objects.highlights = page->GetHighlightInfo(text_runs);

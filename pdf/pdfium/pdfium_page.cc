@@ -505,10 +505,9 @@ int PDFiumPage::GetCharCount() {
   return FPDFText_CountChars(GetTextPage());
 }
 
-void PDFiumPage::GetTextAndImageInfo(
+void PDFiumPage::GetTextAndCharInfo(
     std::vector<AccessibilityTextRunInfo>& text_runs,
-    std::vector<AccessibilityCharInfo>& chars,
-    std::vector<AccessibilityImageInfo>& images) {
+    std::vector<AccessibilityCharInfo>& chars) {
   const int raw_char_count = GetCharCount();
   // Treat a char count of -1 (error) as 0 (an empty page), since
   // other pages might have valid content.
@@ -570,9 +569,6 @@ void PDFiumPage::GetTextAndImageInfo(
 
     char_index += text_run_info.len;
   }
-
-  PopulateTextRunTypeAndImageAltText(text_runs);
-  images = GetImageInfo(text_runs.size());
 }
 
 std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(

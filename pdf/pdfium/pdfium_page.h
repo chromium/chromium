@@ -87,10 +87,9 @@ class PDFiumPage {
   // Resets loaded text and loads it again.
   void ReloadTextPage();
 
-  // Get all the chars, text runs and images from the page.
-  void GetTextAndImageInfo(std::vector<AccessibilityTextRunInfo>& text_runs,
-                           std::vector<AccessibilityCharInfo>& chars,
-                           std::vector<AccessibilityImageInfo>& images);
+  // Get all the chars and text runs from the page.
+  void GetTextAndCharInfo(std::vector<AccessibilityTextRunInfo>& text_runs,
+                          std::vector<AccessibilityCharInfo>& chars);
 
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out
@@ -161,6 +160,13 @@ class PDFiumPage {
   // value, bounding boxes, etc.
   std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
       uint32_t text_run_count);
+
+  // Traverses the entire struct tree of the page recursively and extracts the
+  // text run type or the alt text from struct tree elements corresponding to
+  // the marked content IDs associated with `text_runs` or present in
+  // `marked_content_id_to_images_map_` respectively.
+  void PopulateTextRunTypeAndImageAltText(
+      std::vector<AccessibilityTextRunInfo>& text_runs);
 
   enum Area {
     NONSELECTABLE_AREA,
@@ -467,13 +473,6 @@ class PDFiumPage {
   void CalculatePageObjectTextRunBreaks();
   // Calculate and caches all text runs and character information on the page.
   void CalculateTextRuns();
-
-  // Traverses the entire struct tree of the page recursively and extracts the
-  // text run type or the alt text from struct tree elements corresponding to
-  // the marked content IDs associated with `text_runs` or present in
-  // `marked_content_id_to_images_map_` respectively.
-  void PopulateTextRunTypeAndImageAltText(
-      std::vector<AccessibilityTextRunInfo>& text_runs);
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // text run type or the alt text from struct elements corresponding to the
