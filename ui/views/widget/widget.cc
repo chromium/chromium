@@ -943,10 +943,6 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
                               CloseRequestResult::kCannotClose) {
     return;
   }
-  // This is the last chance to cancel closing.
-  if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason)) {
-    return;
-  }
 
   // Cancel widget close on focus lost. This is used in UI Devtools to lock
   // bubbles and in some tests where we want to ignore spurious deactivation.
@@ -955,6 +951,11 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
            DisableActivationChangeHandlingType::kIgnore ||
        g_disable_activation_change_handling_ ==
            DisableActivationChangeHandlingType::kIgnoreDeactivationOnly)) {
+    return;
+  }
+
+  // This is the last chance to cancel closing.
+  if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason)) {
     return;
   }
 
