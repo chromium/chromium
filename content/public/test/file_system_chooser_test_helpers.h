@@ -75,6 +75,40 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   raw_ptr<SelectFileDialogParams, DanglingUntriaged> out_params_;
 };
 
+// A dialog that signals when it is created and/or destroyed to an observer.
+class ObservableSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  class Observer {
+   public:
+    virtual void WasCreated() {}
+    virtual void WasDestroyed() {}
+  };
+  explicit ObservableSelectFileDialogFactory(Observer* observer);
+  ~ObservableSelectFileDialogFactory() override;
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override;
+
+ private:
+  const raw_ptr<Observer> observer_;
+};
+
+// Tracks the state of the dialog.
+class SelectFileDialogRecorder
+    : public ObservableSelectFileDialogFactory::Observer {
+ public:
+  enum State {
+    kNotCreated,
+    kCreated,
+    kDestroyed,
+  };
+  void WasCreated() override;
+  void WasDestroyed() override;
+
+  State state = kNotCreated;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_

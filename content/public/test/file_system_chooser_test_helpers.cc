@@ -5,6 +5,7 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 
 #include "base/memory/raw_ptr.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
@@ -142,6 +143,37 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
   raw_ptr<SelectFileDialogParams> out_params_;
 };
 
+class ObservableSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  ObservableSelectFileDialog(
+      Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy,
+      ObservableSelectFileDialogFactory::Observer* observer)
+      : ui::SelectFileDialog(listener, std::move(policy)), observer_(observer) {
+    observer_->WasCreated();
+  }
+
+ protected:
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      const GURL* caller) override {}
+
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return false;
+  }
+  void ListenerDestroyed() override { listener_ = nullptr; }
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+ private:
+  ~ObservableSelectFileDialog() override { observer_->WasDestroyed(); }
+  raw_ptr<ObservableSelectFileDialogFactory::Observer> observer_;
+};
+
 }  // namespace
 
 SelectFileDialogParams::SelectFileDialogParams() = default;
@@ -183,6 +215,29 @@ ui::SelectFileDialog* FakeSelectFileDialogFactory::Create(
     std::unique_ptr<ui::SelectFilePolicy> policy) {
   return new FakeSelectFileDialog(result_, out_params_, listener,
                                   std::move(policy));
+}
+
+ObservableSelectFileDialogFactory::ObservableSelectFileDialogFactory(
+    Observer* observer)
+    : observer_(observer) {}
+
+ObservableSelectFileDialogFactory::~ObservableSelectFileDialogFactory() =
+    default;
+
+ui::SelectFileDialog* ObservableSelectFileDialogFactory::Create(
+    ui::SelectFileDialog::Listener* listener,
+    std::unique_ptr<ui::SelectFilePolicy> policy) {
+  return new ObservableSelectFileDialog(listener, std::move(policy),
+                                        observer_.get());
+}
+
+void SelectFileDialogRecorder::WasCreated() {
+  CHECK_EQ(state, kNotCreated);
+  state = kCreated;
+}
+void SelectFileDialogRecorder::WasDestroyed() {
+  CHECK_EQ(state, kCreated);
+  state = kDestroyed;
 }
 
 }  // namespace content

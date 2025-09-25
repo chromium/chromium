@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -28,7 +29,8 @@ class WebContents;
 // a callback on a specific task runner. Furthermore the listener will delete
 // itself when any of its listener methods are called.
 // All of this class has to be called on the UI thread.
-class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
+class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener,
+                                         WebContentsObserver {
  public:
   using ResultCallback =
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
@@ -103,7 +105,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
-                    ScopedObjects scoped_objects);
+                    ScopedObjects scoped_objects,
+                    WebContents* web_contents);
 
  private:
   ~FileSystemChooser() override;
@@ -114,6 +117,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
       const std::vector<ui::SelectedFileInfo>& files) override;
   void FileSelectionCanceled() override;
 
+  // WebContentsObserver
+  void OnVisibilityChanged(Visibility visibility) override;
   SEQUENCE_CHECKER(sequence_checker_);
 
   const ui::SelectFileDialog::Type type_;
