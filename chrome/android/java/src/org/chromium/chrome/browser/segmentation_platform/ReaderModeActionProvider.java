@@ -158,6 +158,15 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
             signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
             return;
         }
+
+        // If ReaderModeDistillInApp is enabled and the param for showing the CPA is disabled, don't
+        // show the button.
+        if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
+                && !DomDistillerFeatures.sReaderModeDistillInAppShowCpa.getValue()) {
+            signalAccumulator.setSignal(AdaptiveToolbarButtonVariant.READER_MODE, false);
+            return;
+        }
+
         final TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(tab);
         if (tabDistillabilityProvider == null) return;

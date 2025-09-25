@@ -53,6 +53,10 @@ public class DomDistillerFeatures {
 
     // Feature params -- alphabetical ordering.
 
+    /** Whether the CPA should be shown. */
+    public static final MutableBooleanParamWithSafeDefault sReaderModeDistillInAppShowCpa =
+            sReaderModeDistillInApp.newBooleanParam("show_cpa", true);
+
     /** The number of times the CPA can be shown without interaction before being suppressed. */
     public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppCpaShowLimit =
             sReaderModeDistillInApp.newIntParam("cpa_show_limit", 3);
