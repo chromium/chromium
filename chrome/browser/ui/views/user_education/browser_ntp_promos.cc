@@ -105,12 +105,12 @@ NtpPromoSpecification::Eligibility CheckExtensionsPromoEligibility(
 }
 
 void InvokeExtensionsPromo(ContextPtr context) {
-  BrowserWindowInterface* const bwi =
-      context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser();
-  NavigateParams params(bwi, extension_urls::GetWebstoreLaunchURL(),
-                        ui::PAGE_TRANSITION_LINK);
+  // TODO(crbug.com/443062679): Use the BrowserWindowInterface version when it
+  // becomes available.
+  NavigateParams params(
+      context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser(),
+      extension_urls::GetWebstoreLaunchURL(), ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
-  params.initiating_profile = GetProfile(context);
   Navigate(&params);
 }
 
