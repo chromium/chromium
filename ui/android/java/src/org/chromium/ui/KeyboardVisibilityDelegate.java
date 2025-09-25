@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 
 /**
