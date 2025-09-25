@@ -26359,7 +26359,7 @@ class InterestGroupOOPIFBrowserTest : public InterestGroupBrowserTest {
 // Test to make sure we don't crash when Page changes with DFSS ad slot pending.
 // https://crbug.com/326085515
 // TODO(crbug.com/446756531): Re-enable this test.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_FUCHSIA) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)))
 #define MAYBE_PageImplChangeDirectFromSellerSignals \
   DISABLED_PageImplChangeDirectFromSellerSignals
 #else
