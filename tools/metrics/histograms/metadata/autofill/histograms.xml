@@ -2196,6 +2196,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bubble.Queue.TimeInQueue.{BubbleType}" units="ms"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged for bubbles from the queue, tracking the time from being queued to
+    being shown for each bubble type when they are shown. This metric is
+    recorded when a bubble is shown from the queue.
+  </summary>
+<!-- LINT.IfChange(Autofill.Bubble.Queue.TimeInQueue.BubbleType) -->
+
+  <token key="BubbleType">
+    <variant name="FilledCardInformation"
+        summary="Filled card information bubble."/>
+    <variant name="MandatoryReauth" summary="Mandatory reauth bubble."/>
+    <variant name="OfferNotification" summary="Offer notification bubble."/>
+    <variant name="Password" summary="Password bubble."/>
+    <variant name="SaveIban" summary="Save IBAN bubble."/>
+    <variant name="SaveUpdateAddress" summary="Save/update address bubble."/>
+    <variant name="SaveUpdateAutofillAi"
+        summary="Save/update Autofill AI data bubble."/>
+    <variant name="SaveUpdateCard" summary="Save/update card bubble."/>
+    <variant name="VirtualCardEnrollConfirmation"
+        summary="Virtual card enroll confirmation bubble."/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_manager_impl.cc:BubbleTypeToMetricSuffix) -->
+
+</histogram>
+
 <histogram name="Autofill.Bubble.RequestShow" enum="AutofillBubbleType"
     expires_after="2026-04-22">
   <owner>vidhanj@google.com</owner>

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "components/tabs/public/tab_interface.h"
@@ -64,6 +65,32 @@ bool ShouldAlwaysPreemptSameType(BubbleType bubble_type) {
   }
   NOTREACHED();
 }
+
+// LINT.IfChange(BubbleTypeToMetricSuffix)
+std::string_view BubbleTypeToMetricSuffix(BubbleType bubble_type) {
+  switch (bubble_type) {
+    case BubbleType::kSaveUpdateAddress:
+      return "SaveUpdateAddress";
+    case BubbleType::kSaveIban:
+      return "SaveIban";
+    case BubbleType::kSaveUpdateCard:
+      return "SaveUpdateCard";
+    case BubbleType::kSaveUpdateAutofillAi:
+      return "SaveUpdateAutofillAi";
+    case BubbleType::kVirtualCardEnrollConfirmation:
+      return "VirtualCardEnrollConfirmation";
+    case BubbleType::kMandatoryReauth:
+      return "MandatoryReauth";
+    case BubbleType::kOfferNotification:
+      return "OfferNotification";
+    case BubbleType::kFilledCardInformation:
+      return "FilledCardInformation";
+    case BubbleType::kPassword:
+      return "Password";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Bubble.Queue.TimeInQueue.BubbleType)
 
 }  // namespace
 
@@ -237,11 +264,18 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
     return;
   }
 
-  auto next_controller_to_show = pending_bubbles_queue_.begin()->controller;
-  pending_bubbles_queue_.erase(pending_bubbles_queue_.begin());
+  auto it = pending_bubbles_queue_.begin();
+  base::WeakPtr<BubbleControllerBase> next_controller_to_show = it->controller;
+  base::TimeDelta time_in_queue = now - it->time_added;
+  pending_bubbles_queue_.erase(it);
 
   base::UmaHistogramEnumeration("Autofill.Bubble.Queue.ShownFromQueue",
                                 next_controller_to_show->GetBubbleType());
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"Autofill.Bubble.Queue.TimeInQueue.",
+           BubbleTypeToMetricSuffix(next_controller_to_show->GetBubbleType())}),
+      time_in_queue);
   // Show the next bubble from the queue.
   ShowAndSetCurrentActive(next_controller_to_show);
 }
