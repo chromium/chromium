@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/persistent_cache/backend_params.h"
@@ -31,17 +32,24 @@ SqliteVfsFileSet SqliteBackendImpl::GetVfsFileSetFromParams(
     BackendParams backend_params) {
   CHECK_EQ(backend_params.type, BackendType::kSqlite);
 
+  base::UnsafeSharedMemoryRegion shared_lock =
+      std::move(backend_params.shared_lock);
+
+  base::WritableSharedMemoryMapping mapped_shared_lock = shared_lock.Map();
+
   using AccessRights = SandboxedFile::AccessRights;
   std::unique_ptr<SandboxedFile> db_file = std::make_unique<SandboxedFile>(
-      std::move(backend_params.db_file), backend_params.db_file_is_writable
-                                             ? AccessRights::kReadWrite
-                                             : AccessRights::kReadOnly);
+      std::move(backend_params.db_file),
+      backend_params.db_file_is_writable ? AccessRights::kReadWrite
+                                         : AccessRights::kReadOnly,
+      std::move(mapped_shared_lock));
   std::unique_ptr<SandboxedFile> journal_file = std::make_unique<SandboxedFile>(
       std::move(backend_params.journal_file),
       backend_params.journal_file_is_writable ? AccessRights::kReadWrite
                                               : AccessRights::kReadOnly);
 
-  return SqliteVfsFileSet(std::move(db_file), std::move(journal_file));
+  return SqliteVfsFileSet(std::move(db_file), std::move(journal_file),
+                          std::move(shared_lock));
 }
 
 SqliteBackendImpl::SqliteBackendImpl(BackendParams backend_params)
@@ -54,6 +62,7 @@ SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
           SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
               vfs_file_set_)),
       db_(sql::DatabaseOptions()
+              .set_exclusive_locking(false)
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)
               // Prevent SQLite from trying to use mmap, as SandboxedVfs does

@@ -17,6 +17,7 @@ BackendParams BackendParams::Copy() const {
   params.db_file_is_writable = db_file_is_writable;
   params.journal_file = journal_file.Duplicate();
   params.journal_file_is_writable = journal_file_is_writable;
+  params.shared_lock = shared_lock.Duplicate();
   params.type = type;
   return params;
 }

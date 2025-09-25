@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
+#include "sql/sandboxed_vfs_file.h"
 
 namespace persistent_cache::test_utils {
 
@@ -31,12 +32,18 @@ BackendParams TestHelper::CreateBackendFilesAndBuildParams(BackendType type) {
   backend_params.db_file_is_writable = true;
   backend_params.journal_file = CreateFile(temporary_subdir, "SECOND");
   backend_params.journal_file_is_writable = true;
+  backend_params.shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
   backend_params.type = type;
   return backend_params;
 }
 
 SqliteVfsFileSet TestHelper::CreateFilesAndBuildVfsFileSet() {
   base::FilePath temporary_subdir = CreateTemporaryDir();
+
+  base::UnsafeSharedMemoryRegion shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
+  base::WritableSharedMemoryMapping mapped_shared_lock = shared_lock.Map();
 
   // Note: Specifically give nonsensical names to the files here to examplify
   // that using a vfs allows for their use not through their actual names.
@@ -45,9 +52,11 @@ SqliteVfsFileSet TestHelper::CreateFilesAndBuildVfsFileSet() {
 
   return SqliteVfsFileSet(
       std::make_unique<SandboxedFile>(std::move(db_file),
-                                      SandboxedFile::AccessRights::kReadWrite),
+                                      SandboxedFile::AccessRights::kReadWrite,
+                                      std::move(mapped_shared_lock)),
       std::make_unique<SandboxedFile>(std::move(journal_file),
-                                      SandboxedFile::AccessRights::kReadWrite));
+                                      SandboxedFile::AccessRights::kReadWrite),
+      std::move(shared_lock));
 }
 
 base::FilePath TestHelper::CreateTemporaryDir() {

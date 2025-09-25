@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
 namespace {
 
@@ -415,6 +416,9 @@ BackendParams BackendParamsManager::CreateParamsSync(
           smallest_path_length - kMaxFilePathLength);
     }
   }
+
+  params.shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
 
   return params;
 }
