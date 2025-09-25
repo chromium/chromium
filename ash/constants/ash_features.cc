@@ -260,9 +260,6 @@ BASE_FEATURE(kBocaTranslateToggle, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBocaMigrateSpeechRecongnizerClient,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables marker mode.
-BASE_FEATURE(kBocaMarkerMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables Boca receiver app.
 BASE_FEATURE(kBocaReceiverApp, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2549,10 +2546,6 @@ bool IsBocaTranslateToggleEnabled() {
 
 bool IsBocaMigrateSpeechRecognizerClientEnabled() {
   return base::FeatureList::IsEnabled(kBocaMigrateSpeechRecongnizerClient);
-}
-
-bool IsBocaMarkerModeEnabled() {
-  return base::FeatureList::IsEnabled(kBocaMarkerMode);
 }
 
 bool IsBocaReceiverAppEnabled() {

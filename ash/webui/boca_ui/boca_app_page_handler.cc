@@ -328,7 +328,7 @@ BocaAppHandler::~BocaAppHandler() {
   // Best effort end session. Not handling response, if update failed,
   // persistent notification will stay.
   EndSession(base::BindOnce([](std::optional<mojom::UpdateSessionError>) {}));
-  if (ash::features::IsBocaMarkerModeEnabled() && is_producer_) {
+  if (ash::features::IsAnnotatorModeEnabled() && is_producer_) {
     ash::boca::util::EnableOrDisableMarkerMode(/*enable=*/false);
   }
 }

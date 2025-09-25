@@ -147,7 +147,7 @@ void BocaUI::Create(
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
       is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);
-  if (ash::features::IsBocaMarkerModeEnabled() && is_producer_) {
+  if (ash::features::IsAnnotatorModeEnabled() && is_producer_) {
     ash::boca::util::EnableOrDisableMarkerMode(/*enable=*/true);
   }
 }
