@@ -172,6 +172,21 @@ TEST_F(ModelBrokerAndroidTest, ExecuteModel) {
   EXPECT_FALSE(response.error().has_value());
   // MockAiCoreFactory returns the input string as the response.
   EXPECT_EQ(*response.value(), "some context some input");
+
+  auto* model_execution_info = response.model_execution_info();
+  ASSERT_TRUE(model_execution_info);
+  auto& on_device_model_service_version =
+      model_execution_info->on_device_model_execution_info()
+          .model_versions()
+          .on_device_model_service_version();
+  EXPECT_EQ(on_device_model_service_version.model_adaptation_version(),
+            test_asset_.version());
+  EXPECT_EQ(on_device_model_service_version.on_device_base_model_metadata()
+                .base_model_name(),
+            spec_.model_name);
+  EXPECT_EQ(on_device_model_service_version.on_device_base_model_metadata()
+                .base_model_version(),
+            spec_.model_version);
 }
 
 // Verify that ExecuteModel succeeds after the model is disconnected.
