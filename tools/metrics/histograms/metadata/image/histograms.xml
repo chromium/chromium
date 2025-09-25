@@ -75,10 +75,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".FedCMAccountChooser"
       summary="Profile image fetcher for FedCM Account chooser."/>
   <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
+  <variant name=".HomeCustomization"
+      summary="Background image fetcher for the Home Customization feature on
+               iOS."/>
   <variant name=".Internal"
       summary="Showing cache patterns only for Internal."/>
   <variant name=".NewTabPageAnimatedLogo"
       summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
+  <variant name=".NtpBackground"
+      summary="Background image fetcher for the New Tab Page on iOS."/>
   <variant name=".OfflinePages"
       summary="Showing cache patterns only for OfflinePages."/>
   <variant name=".Omnibox"
