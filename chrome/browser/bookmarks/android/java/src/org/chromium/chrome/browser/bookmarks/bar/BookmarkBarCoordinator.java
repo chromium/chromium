@@ -442,6 +442,7 @@ public class BookmarkBarCoordinator
     @Override
     public void onMaxWidthChanged(int maxWidth) {
         mBookmarkBarItemsLayoutManager.setItemMaxWidth(maxWidth);
+        mMediator.dismissPopupMenu();
     }
 
     // View.OnLayoutChangeListener implementation:

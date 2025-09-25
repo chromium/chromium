@@ -797,6 +797,16 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
         }
     }
 
+    /**
+     * Dismisses the pop up menu if it is open, used for upstream clients/owners communicating state
+     * changes from external components, e.g. screen width change.
+     */
+    public void dismissPopupMenu() {
+        if (mAnchoredPopupWindow != null) {
+            mAnchoredPopupWindow.dismiss();
+        }
+    }
+
     // A {@link RectProvider} that provides the visible area of the screen, accounting for the
     // browser controls. Flow:
     // 1. BrowserControlsStateProvider.Observer in BookmarkBarCoordinator calls
