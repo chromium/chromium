@@ -42,7 +42,6 @@
     "gn_args": {
       "debuggable_apks": false,
       "devtools_instrumentation_dumping": true,
-      "enable_chrome_android_internal": false,
       "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
@@ -61,7 +60,6 @@
     "gn_args": {
       "debuggable_apks": false,
       "devtools_instrumentation_dumping": true,
-      "enable_chrome_android_internal": false,
       "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,

@@ -43,8 +43,8 @@
     'chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
-      'webview-arm-orderfile': 'official_android_arm32_orderfile',
-      'webview-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_webview_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_webview_arm64_orderfile',
     },
 
     'chrome.pgo': {
@@ -234,8 +234,8 @@
     'tryserver.chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
-      'webview-arm-orderfile': 'official_android_arm32_orderfile',
-      'webview-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_webview_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_webview_arm64_orderfile',
     },
 
     'tryserver.chrome.pgo': {
@@ -603,6 +603,14 @@
 
     'official_remoteexec_x86': [
       'official', 'remoteexec', 'x86', 'minimal_symbols',
+    ],
+
+    'official_webview_arm32_orderfile': [
+      'official', 'remoteexec', 'android', 'arm', 'minimal_symbols', 'orderfile',
+    ],
+
+    'official_webview_arm64_orderfile': [
+      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'orderfile',
     ],
 
     'official_win_arm64_pgo': [
