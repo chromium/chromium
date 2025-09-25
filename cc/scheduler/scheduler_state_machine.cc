@@ -1537,14 +1537,22 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   //
   // Apply some slack, so that if for some reason the interval is a bit larger
   // than 8.33333333333333ms, then we catch it still.
+  //
+  // Do not enable throttling for the synchronous compositor, as it hasn't been
+  // evaluated for this use case, as of 09/2025. The aim is to make sure that
+  // this does not get enabled on WebView when the feature is active on Android,
+  // as they share the same binary configuration. Exclude this platform, which
+  // is using the synchronous compositor.
   constexpr float kSlackFactor = .9;
   bool fast_vsync_interval =
       frame_interval < base::Hertz(120) * (1 / kSlackFactor);
-  if (fast_vsync_interval) {
+  if (fast_vsync_interval && !settings_.using_synchronous_renderer_compositor) {
     features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
+  // Same as above, no synchronous compositor.
   if (fast_vsync_interval &&
-      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz) &&
+      !settings_.using_synchronous_renderer_compositor) {
     // Here as well, use a slack factor, to make sure that small timing
     // variations don't result in uneven pacing.
     //
