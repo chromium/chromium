@@ -73,6 +73,15 @@ suite('Scrim', function() {
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
   });
+
+  test('PreventsDefaultOnWheelEvent', async function() {
+    // WheelEvent needs to be cancelable to allow e.preventDefault() to work.
+    const wheelEvent = new WheelEvent('wheel', {cancelable: true});
+    assertFalse(wheelEvent.defaultPrevented);
+    page.dispatchEvent(wheelEvent);
+    await microtasksFinished();
+    assertTrue(wheelEvent.defaultPrevented);
+  });
 });
 
 suite('MagicCursor', function() {

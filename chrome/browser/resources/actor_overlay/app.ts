@@ -45,6 +45,7 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.eventTracker_.add(this, 'pointerleave', () => {
       proxy.handler.onHoverStatusChanged(false);
     });
+    this.addEventListener('wheel', this.onWheelEvent_);
     this.setScrimBackgroundListenerId_ =
         proxy.callbackRouter.setScrimBackground.addListener(
             this.setScrimBackground.bind(this));
@@ -53,9 +54,17 @@ export class ActorOverlayAppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.removeEventListener('wheel', this.onWheelEvent_);
     assert(this.setScrimBackgroundListenerId_);
     ActorOverlayBrowserProxy.getInstance().callbackRouter.removeListener(
         this.setScrimBackgroundListenerId_);
+  }
+
+  // Prevents user scroll gestures (mouse wheel, touchpad) from moving the
+  // overlay.
+  private onWheelEvent_(e: WheelEvent) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   private setScrimBackground(isVisible: boolean) {
