@@ -95,7 +95,9 @@ public class TabPersistentStoreIntegrationTest {
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
-            new WebContentsState(ByteBuffer.allocateDirect(100));
+            new WebContentsState(
+                    ByteBuffer.allocateDirect(100),
+                    WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
 
     private TabModelSelector mTabModelSelector;
     private TabPersistentStore mTabPersistentStore;

@@ -135,14 +135,17 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                             ? ByteBuffer.allocateDirect(0)
                             : tabStateFlatBuffer.webContentsStateBytesAsByteBuffer().slice();
             if (mIsEncrypted) {
+                ByteBuffer buffer = ByteBuffer.allocateDirect(webContentsStateBuffer.remaining());
+                buffer.put(webContentsStateBuffer);
                 state.contentsState =
                         new WebContentsState(
-                                ByteBuffer.allocateDirect(webContentsStateBuffer.remaining()));
-                state.contentsState.buffer().put(webContentsStateBuffer);
+                                buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             } else {
-                state.contentsState = new WebContentsState(webContentsStateBuffer);
+                state.contentsState =
+                        new WebContentsState(
+                                webContentsStateBuffer,
+                                WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             }
-            state.contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             return state;
         } catch (IndexOutOfBoundsException e) {
             RecordHistogram.recordEnumeratedHistogram(

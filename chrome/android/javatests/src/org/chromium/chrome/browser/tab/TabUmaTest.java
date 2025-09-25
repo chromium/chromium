@@ -197,8 +197,8 @@ public class TabUmaTest {
                                     .map(
                                             FileChannel.MapMode.READ_ONLY,
                                             fileInputStream.getChannel().position(),
-                                            file.length()));
-            state.contentsState.setVersion(2);
+                                            file.length()),
+                            WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             state.timestampMillis = 10L;
             state.parentId = 1;
             state.themeColor = 4;

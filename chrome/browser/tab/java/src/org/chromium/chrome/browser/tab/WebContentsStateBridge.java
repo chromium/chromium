@@ -159,9 +159,7 @@ public class WebContentsStateBridge {
     private static @Nullable WebContentsState newWebContentsStateFromByteBuffer(
             @Nullable ByteBuffer buffer) {
         if (buffer == null) return null;
-        WebContentsState newState = new WebContentsState(buffer);
-        newState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        return newState;
+        return new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
     }
 
     @NativeMethods

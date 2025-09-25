@@ -12,14 +12,23 @@ import java.nio.ByteBuffer;
 /** Contains the state for a WebContents. */
 @NullMarked
 public class WebContentsState {
+    /** Version number used to denote an invalid buffer. */
+    public static final int INVALID_BUFFER_VERSION = -1;
+
     /**
      * Version number of the format used to save the WebContents navigation history, as returned by
-     * TabStateJni.get().getContentsStateAsByteBuffer(). Version labels:
-     *   0 - Chrome m18
-     *   1 - Chrome m25
-     *   2 - Chrome m26+
+     * TabStateJni.get().getContentsStateAsByteBuffer().
+     *
+     * <pre>
+     *   Version labels:
+     *     0 - Chrome m18
+     *     1 - Chrome m25
+     *     2 - Chrome m26+
+     * </pre>
      */
     public static final int CONTENTS_STATE_CURRENT_VERSION = 2;
+
+    private static @Nullable WebContentsState sEmptyWebContentsState;
 
     /**
      * mBuffer should not be modified once it is set. Also, it is required to be a "direct" buffer
@@ -28,14 +37,14 @@ public class WebContentsState {
      */
     private final ByteBuffer mBuffer;
 
-    private int mVersion;
-    private @Nullable String mFallbackUrlForRestorationFailure;
-    private static @Nullable WebContentsState sEmptyWebContentsState;
+    private final int mVersion;
 
-    public WebContentsState(ByteBuffer buffer) {
+    private @Nullable String mFallbackUrlForRestorationFailure;
+
+    public WebContentsState(ByteBuffer buffer, int version) {
         assert buffer.isDirect();
         mBuffer = buffer;
-        sEmptyWebContentsState = null;
+        mVersion = version;
     }
 
     public ByteBuffer buffer() {
@@ -46,16 +55,12 @@ public class WebContentsState {
         return mVersion;
     }
 
-    public void setVersion(int version) {
-        mVersion = version;
-    }
-
-    /** @return Title currently being displayed in the saved state's current entry. */
+    /** Returns the title currently being displayed in the saved state's current entry. */
     public @Nullable String getDisplayTitleFromState() {
         return WebContentsStateBridge.getDisplayTitleFromState(this);
     }
 
-    /** @return URL currently being displayed in the saved state's current entry. */
+    /** Returns the URL currently being displayed in the saved state's current entry. */
     public @Nullable String getVirtualUrlFromState() {
         return WebContentsStateBridge.getVirtualUrlFromState(this);
     }
@@ -70,10 +75,11 @@ public class WebContentsState {
         mFallbackUrlForRestorationFailure = fallbackUrlForRestorationFailure;
     }
 
+    /** Returns a singleton empty web contents state. */
     public static WebContentsState getTempWebContentsState() {
         if (sEmptyWebContentsState == null) {
-            sEmptyWebContentsState = new WebContentsState(ByteBuffer.allocateDirect(0));
-            sEmptyWebContentsState.setVersion(-1);
+            sEmptyWebContentsState =
+                    new WebContentsState(ByteBuffer.allocateDirect(0), INVALID_BUFFER_VERSION);
         }
         return sEmptyWebContentsState;
     }

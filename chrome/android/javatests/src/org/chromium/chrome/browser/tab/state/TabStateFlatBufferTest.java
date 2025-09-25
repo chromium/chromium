@@ -308,7 +308,8 @@ public class TabStateFlatBufferTest {
         ByteBuffer buffer = ByteBuffer.allocateDirect(capacity);
         buffer.put(bytes);
         buffer.rewind();
-        state.contentsState = new WebContentsState(buffer);
+        state.contentsState =
+                new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
         state.openerAppId = "openerAppId";
         return state;
     }

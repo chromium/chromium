@@ -129,8 +129,7 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalTab_FromBulk_NonNullBuffer() {
         ByteBuffer buf = ByteBuffer.allocateDirect(3);
-        WebContentsState tempState = new WebContentsState(buf);
-        tempState.setVersion(1);
+        WebContentsState tempState = new WebContentsState(buf, /* version= */ 1);
 
         MockTab tab = MockTab.createAndInitialize(0, mProfile);
         TabTestUtils.setWebContentsState(tab, tempState);

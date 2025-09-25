@@ -102,8 +102,8 @@ public class TabStateFileManagerUnitTest {
         for (int i = 0; i < LARGE_BYTE_BUFFER_SIZE; i++) {
             buffer.put((byte) (i % Byte.MAX_VALUE));
         }
-        WebContentsState contentsState = new WebContentsState(buffer);
-        contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        WebContentsState contentsState =
+                new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
         TabState state = createTabState(contentsState);
         TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false, mCipherFactory);
         validateTestTabState(
@@ -566,7 +566,8 @@ public class TabStateFileManagerUnitTest {
                                     .map(
                                             FileChannel.MapMode.READ_ONLY,
                                             fileInputStream.getChannel().position(),
-                                            file.length())),
+                                            file.length()),
+                            VERSION),
                     tabGroupId);
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
@@ -577,7 +578,6 @@ public class TabStateFileManagerUnitTest {
             WebContentsState contentsState, @Nullable Token tabGroupId) {
         TabState state = new TabState();
         state.contentsState = contentsState;
-        state.contentsState.setVersion(VERSION);
         state.timestampMillis = TIMESTAMP;
         state.parentId = PARENT_ID;
         state.themeColor = THEME_COLOR;
@@ -601,7 +601,7 @@ public class TabStateFileManagerUnitTest {
         for (int i = 0; i < CONTENTS_STATE_BYTES.length; i++) {
             byteBuffer.put(CONTENTS_STATE_BYTES[i]);
         }
-        validateTestTabState(state, tabGroupId, new WebContentsState(byteBuffer));
+        validateTestTabState(state, tabGroupId, new WebContentsState(byteBuffer, VERSION));
     }
 
     private static void validateTestTabState(TabState state, WebContentsState contentsState) {

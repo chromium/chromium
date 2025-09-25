@@ -116,8 +116,8 @@ public class TabStateStorageService {
         tabState.rootId = rootId;
         tabState.timestampMillis = timestampMillis;
         if (webContentsStateBuffer != null) {
-            tabState.contentsState = new WebContentsState(webContentsStateBuffer);
-            tabState.contentsState.setVersion(webContentsStateVersion);
+            tabState.contentsState =
+                    new WebContentsState(webContentsStateBuffer, webContentsStateVersion);
         }
         tabState.openerAppId = openerAppId;
         tabState.themeColor = themeColor;

@@ -832,7 +832,7 @@ public class TabPersistentStoreTest {
         TabState tabState = new TabState();
         ByteBuffer buffer = ByteBuffer.allocateDirect(4);
         buffer.put(new byte[] {1, 2, 3, 4});
-        tabState.contentsState = new WebContentsState(buffer);
+        tabState.contentsState = new WebContentsState(buffer, /* version= */ 1);
         tabState.rootId = rootId;
         TabStateExtractor.setTabStateForTesting(tabId, tabState);
     }
@@ -886,7 +886,9 @@ public class TabPersistentStoreTest {
                         TabState tabState = new TabState();
                         ByteBuffer buffer = ByteBuffer.allocateDirect(4);
                         buffer.put(new byte[] {1, 2, 3, 4});
-                        tabState.contentsState = new WebContentsState(buffer);
+                        tabState.contentsState =
+                                new WebContentsState(
+                                        buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
                         TabStateExtractor.setTabStateForTesting(tab.getId(), tabState);
                     }
                     helper.notifyCalled();

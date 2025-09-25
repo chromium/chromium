@@ -335,18 +335,20 @@ public class TabStateFileManager {
             TabState tabState = new TabState();
             tabState.timestampMillis = stream.readLong();
             int size = stream.readInt();
+
+            ByteBuffer contentsStateBuffer;
             if (encrypted) {
                 // If it's encrypted, we have to read the stream normally to apply the cipher.
                 byte[] state = new byte[size];
                 stream.readFully(state);
-                tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(size));
-                tabState.contentsState.buffer().put(state);
+                contentsStateBuffer = ByteBuffer.allocateDirect(size);
+                contentsStateBuffer.put(state);
+                contentsStateBuffer.rewind();
             } else {
                 // If not, we can mmap the file directly, saving time and copies into the java heap.
                 FileChannel channel = input.getChannel();
-                tabState.contentsState =
-                        new WebContentsState(
-                                channel.map(MapMode.READ_ONLY, channel.position(), size));
+                long position = channel.position();
+                contentsStateBuffer = channel.map(MapMode.READ_ONLY, position, size);
                 // Skip ahead to avoid re-reading data that mmap'd.
                 long skipped = input.skip(size);
                 if (skipped != size) {
@@ -360,6 +362,7 @@ public class TabStateFileManager {
                                     + "been skipped. Tab restore may fail.");
                 }
             }
+
             tabState.parentId = stream.readInt();
             try {
                 tabState.openerAppId = stream.readUTF();
@@ -368,12 +371,13 @@ public class TabStateFileManager {
                 // Could happen if reading a version of a TabState that does not include the app id.
                 Log.w(TAG, "Failed to read opener app id state from tab state");
             }
+            int webContentsStateVersion;
             try {
-                tabState.contentsState.setVersion(stream.readInt());
+                webContentsStateVersion = stream.readInt();
             } catch (EOFException eof) {
                 // On the stable channel, the first release is version 18. For all other channels,
                 // chrome 25 is the first release.
-                tabState.contentsState.setVersion(isStableChannelBuild() ? 0 : 1);
+                webContentsStateVersion = isStableChannelBuild() ? 0 : 1;
 
                 // Could happen if reading a version of a TabState that does not include the
                 // version id.
@@ -381,8 +385,10 @@ public class TabStateFileManager {
                         TAG,
                         "Failed to read saved state version id from tab state. Assuming "
                                 + "version "
-                                + tabState.contentsState.version());
+                                + webContentsStateVersion);
             }
+            tabState.contentsState =
+                    new WebContentsState(contentsStateBuffer, webContentsStateVersion);
             try {
                 // Skip obsolete sync ID.
                 stream.readLong();

@@ -172,7 +172,6 @@ public class TabStateStore {
             }
 
             WebContentsState contentsState = tabState.contentsState;
-            contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             Log.i(
                     TAG,
                     " Tab %d: url: %s, title: %s, state size: %d",

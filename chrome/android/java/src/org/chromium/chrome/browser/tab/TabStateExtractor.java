@@ -69,9 +69,7 @@ public class TabStateExtractor {
         ByteBuffer buffer = getWebContentsStateAsByteBuffer(tab);
         if (buffer == null) return null;
 
-        WebContentsState state = new WebContentsState(buffer);
-        state.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-        return state;
+        return new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
     }
 
     /** Returns an ByteBuffer representing the state of the Tab's WebContents. */
