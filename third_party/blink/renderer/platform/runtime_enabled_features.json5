@@ -1751,6 +1751,7 @@
     {
       // https://crbug.com/393631108
       name: "DecoupleResolvedColumnRuleWidthFromStyle",
+      public: true,
       status: "experimental",
     },
     {

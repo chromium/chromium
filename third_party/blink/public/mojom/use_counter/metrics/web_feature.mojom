@@ -4978,6 +4978,8 @@ enum WebFeature {
   kWebCodecsAv1EncodingWithQP = 5667,
   kExternalSVGDocumentResources = 5668,
   kIndexedDBGetAllRecords = 5669,
+  kResolvedColumnRuleWidthWithNoneOrHiddenStyle = 5670,
+  kResolvedOutlineWidthWithNoneOrHiddenStyle = 5671,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

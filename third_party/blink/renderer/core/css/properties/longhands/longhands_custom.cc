@@ -2790,7 +2790,7 @@ const CSSValue* ColumnRuleWidth::ParseSingleValue(
 
 const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const LayoutObject*,
+    const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   GapDataList<int> widths;
@@ -2802,6 +2802,27 @@ const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(
     widths = style.ColumnRuleWidthInternal();
   } else {
     widths = style.ColumnRuleWidth();
+  }
+
+  bool is_legacy_column_rule =
+      style.ColumnRuleWidthInternal().HasSingleValue() &&
+      style.ColumnRuleStyle().HasSingleValue();
+
+  // Record use counter for the `column-rule-width` property if its resolved
+  // value is non-zero and the corresponding style is "none" or "hidden". This
+  // is to evaluate web compat risk in changing the behavior of
+  // `column-rule-width` to be independent of the `column-rule-style`.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (is_legacy_column_rule && value_phase == CSSValuePhase::kResolvedValue &&
+      layout_object) {
+    int width_value = style.ColumnRuleWidthInternal().GetLegacyValue();
+    EBorderStyle style_value = style.ColumnRuleStyle().GetLegacyValue();
+    if (width_value != 0 && (style_value == EBorderStyle::kNone ||
+                             style_value == EBorderStyle::kHidden)) {
+      layout_object->GetDocument().CountUse(
+          WebFeature::kResolvedColumnRuleWidthWithNoneOrHiddenStyle);
+    }
   }
 
   return ComputedStyleUtils::ValueForGapDecorationWidthDataList(widths, style,
@@ -7462,7 +7483,7 @@ const CSSValue* OutlineWidth::ParseSingleValue(
 
 const CSSValue* OutlineWidth::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const LayoutObject*,
+    const LayoutObject* layout_object,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   int width = 0;
@@ -7474,6 +7495,22 @@ const CSSValue* OutlineWidth::CSSValueFromComputedStyleInternal(
     width = style.OutlineWidthInternal();
   } else {
     width = style.OutlineWidth();
+  }
+
+  // Record use counter for the `outline-width` property if its resolved value
+  // is non-zero and the corresponding style is "none" or "hidden". This is to
+  // evaluate web compat risk in changing the behavior of `outline-width` to be
+  // independent of the `outline-style`.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (value_phase == CSSValuePhase::kResolvedValue && layout_object) {
+    EBorderStyle outline_style = style.OutlineStyle();
+    if (style.OutlineWidthInternal() != 0 &&
+        (outline_style == EBorderStyle::kNone ||
+         outline_style == EBorderStyle::kHidden)) {
+      layout_object->GetDocument().CountUse(
+          WebFeature::kResolvedOutlineWidthWithNoneOrHiddenStyle);
+    }
   }
 
   return ZoomAdjustedPixelValue(width, style);
