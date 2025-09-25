@@ -25,8 +25,9 @@ std::string SharedL10nMap::GetMessage(const ExtensionId& extension_id,
 
   const L10nMessagesMap* extension_map =
       GetMapForExtension(extension_id, ipc_target);
-  if (!extension_map)
+  if (!extension_map) {
     return std::string();
+  }
 
   return MessageBundle::GetL10nMessage(message_name, *extension_map);
 }
@@ -38,8 +39,9 @@ bool SharedL10nMap::ReplaceMessages(const ExtensionId& extension_id,
 
   const L10nMessagesMap* extension_map =
       GetMapForExtension(extension_id, ipc_target);
-  if (!extension_map)
+  if (!extension_map) {
     return false;
+  }
 
   std::string error_unused;
   return MessageBundle::ReplaceMessagesWithExternalDictionary(
@@ -63,8 +65,9 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   lock_.AssertAcquired();
 
   auto iter = map_.find(extension_id);
-  if (iter != map_.end())
+  if (iter != map_.end()) {
     return &iter->second;
+  }
 
   if (!ipc_target) {
     return nullptr;
