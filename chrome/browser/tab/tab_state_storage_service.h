@@ -18,6 +18,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace tabs {
+class TabCollection;
+}  // namespace tabs
+
+namespace tabs {
 
 class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData {
@@ -44,6 +48,8 @@ class TabStateStorageService : public KeyedService,
                bool tab_has_sensitive_content,
                bool is_pinned);
 
+  void Save(const tabs::TabCollection* tab_collection);
+
   void LoadAllTabs(LoadAllTabsCallback callback);
 
   // Returns a Java object of the type TabStateStorageService. This is
@@ -52,9 +58,17 @@ class TabStateStorageService : public KeyedService,
       TabStateStorageService* tab_state_storage_service);
 
  private:
+  class SaveProcessor;
+
+  template <typename T>
+  int GetOrCreateStorageId(T* object, std::map<int32_t, int>& handle_map);
+
   void OnAllTabsLoaded(LoadAllTabsCallback callback,
                        std::vector<NodeState> entries);
   std::unique_ptr<TabStateStorageBackend> tab_backend_;
+  int next_storage_id_ = 1;
+  std::map<int32_t, int> tab_handle_to_storage_id_;
+  std::map<int32_t, int> collection_handle_to_storage_id_;
 };
 
 }  // namespace tabs

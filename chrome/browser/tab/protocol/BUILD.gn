@@ -7,10 +7,16 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protocol") {
   proto_in_dir = "//"
-  sources = [ "tab_state.proto" ]
+  sources = [
+    "children.proto",
+    "tab_state.proto",
+  ]
 }
 
 proto_java_library("proto_java") {
   proto_path = "//"
-  sources = [ "tab_state.proto" ]
+  sources = [
+    "children.proto",
+    "tab_state.proto",
+  ]
 }
