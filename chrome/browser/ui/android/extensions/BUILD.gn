@@ -45,6 +45,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUiBackendImpl.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
     ]
@@ -65,6 +66,7 @@ if (enable_extensions_core) {
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionPopupContents.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionActionsBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridge.java",
+      "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridge.java",
       "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUtilBridge.java",
     ]
   }
@@ -109,6 +111,7 @@ if (enable_extensions_core) {
   robolectric_library("junit") {
     sources = [
       "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridgeTest.java",
+      "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridgeTest.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeTest.java",
     ]
 
@@ -125,8 +128,12 @@ if (enable_extensions_core) {
       "//components/browser_ui/site_settings/android:java",
       "//components/embedder_support/android:util_java",
       "//content/public/android:content_full_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
     ]
   }
 }
@@ -139,6 +146,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_settings.xml",
     "java/res/drawable/ic_webstore.xml",
     "java/res/layout/extension_action_button.xml",
+    "java/res/layout/extension_install_dialog.xml",
     "java/res/layout/extension_toolbar_container.xml",
     "java/res/layout/extensions_menu.xml",
     "java/res/layout/extensions_menu_footer.xml",
