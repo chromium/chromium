@@ -128,8 +128,6 @@ void AXPlatform::DisableActiveUiaProvider() {
   // for more info.
   HRESULT hr = ::UiaDisconnectAllProviders();
   DCHECK(SUCCEEDED(hr));
-
-  delegate_->OnUiaProviderDisabled();
 }
 
 bool AXPlatform::IsUiaProviderEnabled() const {
@@ -137,11 +135,6 @@ bool AXPlatform::IsUiaProviderEnabled() const {
   return uia_provider_enablement_ == UiaProviderEnablement::kVariations
              ? base::FeatureList::IsEnabled(features::kUiaProvider)
              : (uia_provider_enablement_ == UiaProviderEnablement::kEnabled);
-}
-
-void AXPlatform::OnUiaProviderRequested(bool uia_provider_enabled) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  delegate_->OnUiaProviderRequested(uia_provider_enabled);
 }
 
 void AXPlatform::SetUiaClientServiced(bool uia_client_serviced) {

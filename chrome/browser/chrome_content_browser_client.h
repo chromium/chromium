@@ -1159,11 +1159,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-  void OnUiaProviderRequested(bool uia_provider_enabled) override;
-  void OnUiaProviderDisabled() override;
-#endif
-
   bool ShouldDispatchPagehideDuringCommit(
       content::BrowserContext* browser_context,
       const GURL& destination_url) override;
@@ -1420,8 +1415,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
 
 #if BUILDFLAG(IS_WIN)
-  bool handled_uia_provider_request_ = false;
-
   std::unique_ptr<WindowsSystemTracingClient> windows_system_tracing_client_;
 #endif
 

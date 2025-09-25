@@ -1934,11 +1934,6 @@ void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
-void ContentBrowserClient::OnUiaProviderDisabled() {}
-#endif
-
 bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
   return false;
 }

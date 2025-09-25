@@ -2097,9 +2097,6 @@ LRESULT HWNDMessageHandler::OnGetObject(UINT message,
       if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
         // Return the IRawElementProviderSimple for the window's client area to
         // a UI Automation client.
-        ui::AXPlatform::GetInstance().OnUiaProviderRequested(
-            /*uia_provider_enabled=*/true);
-
         Microsoft::WRL::ComPtr<IRawElementProviderSimple> root;
         ax_fragment_root_->GetNativeViewAccessible()->QueryInterface(
             IID_PPV_ARGS(&root));
@@ -2111,8 +2108,6 @@ LRESULT HWNDMessageHandler::OnGetObject(UINT message,
 
       // The UIA Provider is not enabled. The client will most likely try again
       // for OBJID_CLIENT.
-      ui::AXPlatform::GetInstance().OnUiaProviderRequested(
-          /*uia_provider_enabled=*/false);
       break;
 
     case OBJID_CLIENT:

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/win/win_util.h"
@@ -19,8 +18,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/common/features.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -308,9 +305,6 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
       if (ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
         // Return the IRawElementProviderSimple for the window's client area to
         // a UI Automation client.
-        CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-            .OnUiaProviderRequested(/*uia_provider_enabled=*/true);
-
         Microsoft::WRL::ComPtr<IRawElementProviderSimple> root;
         GetOrCreateWindowRootAccessible(/*is_uia_request=*/true)
             ->QueryInterface(IID_PPV_ARGS(&root));
@@ -322,8 +316,6 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
 
       // The UIA Provider is not enabled. The client will most likely try again
       // for OBJID_CLIENT.
-      CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-          .OnUiaProviderRequested(/*uia_provider_enabled=*/false);
       break;
 
     case OBJID_CLIENT:

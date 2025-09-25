@@ -324,8 +324,6 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   void RefreshAssistiveTech() override;
   void RefreshAssistiveTechIfNecessary(ui::AXMode new_mode) override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
-  void OnUiaProviderRequested(bool uia_provider_enabled) override;
-  void OnUiaProviderDisabled() override;
 
  private:
   void OnDiscoveredAssistiveTech(
@@ -572,17 +570,6 @@ BrowserAccessibilityStateImplWin::GetProductStrings() {
   }
   return {product_components[0], product_components[1],
           CHECK_DEREF(content_client.browser()).GetUserAgent()};
-}
-
-void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
-    bool uia_provider_enabled) {
-  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-      .OnUiaProviderRequested(uia_provider_enabled);
-}
-
-void BrowserAccessibilityStateImplWin::OnUiaProviderDisabled() {
-  CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
-      .OnUiaProviderDisabled();
 }
 
 // static

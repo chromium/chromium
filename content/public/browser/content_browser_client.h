@@ -3258,18 +3258,6 @@ class CONTENT_EXPORT ContentBrowserClient {
           callback);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-  // Invoked when an accessibility client requests the UI automation root object
-  // for a window. `uia_provider_enabled` is true when the request was
-  // satisfied, and false when the request was refused.
-  virtual void OnUiaProviderRequested(bool uia_provider_enabled);
-
-  // Invoked when the UI Automation Provider for Windows has been disabled due
-  // to a detected assistive technology that may cause issues with the
-  // provider, such as JAWS.
-  virtual void OnUiaProviderDisabled();
-#endif
-
   // Indicates whether this client allows paint holding in cross-origin
   // navigations even if there was no user activation.
   virtual bool AllowNonActivatedCrossOriginPaintHolding();
