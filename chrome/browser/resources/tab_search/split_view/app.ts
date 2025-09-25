@@ -183,6 +183,10 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   private sortTabs_() {
+    // If no tabs are eligible for selection, redirect to the regular NTP.
+    if (this.allEligibleTabs_.length === 0) {
+      this.redirectToNtp_();
+    }
     this.allEligibleTabs_.sort((a, b) => {
       const tabA = a.tab as Tab;
       const tabB = b.tab as Tab;
