@@ -73,7 +73,7 @@ namespace {
 // Temporary alias as this code moves incrementally into the storage namespace.
 using StorageAreaImpl = StorageAreaImpl;
 
-static const int kDaysInTenYears = 10 * 365;
+static const int kStaleBucketCutoffInDays = 400;
 
 constexpr std::string_view kVersionKey = "VERSION";
 const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A'};
@@ -889,15 +889,9 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
         info->last_modified < base::Time::Now()) {
       int days_since_last_modified =
           (base::Time::Now() - info->last_modified).InDays();
-      if (days_since_last_modified > 400) {
-        base::UmaHistogramCustomCounts(
-            "LocalStorage.DaysSinceLastModified400DaysGT",
-            days_since_last_modified, 401, kDaysInTenYears, 100);
-      } else {
-        base::UmaHistogramCustomCounts(
-            "LocalStorage.DaysSinceLastModified400DaysLTE",
-            days_since_last_modified, 1, 400, 100);
-      }
+      base::UmaHistogramCustomCounts("LocalStorage.DaysSinceLastModified",
+                                     days_since_last_modified, 1,
+                                     kStaleBucketCutoffInDays, 100);
     }
     // Delete the storage if its origin matches one of the origins to purge, or
     // if it is third-party and the top-level site is same-site with one of
@@ -1053,7 +1047,8 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area is currently loaded it must not be cleared.
       continue;
     }
-    if ((base::Time::Now() - accessed_or_modified_time) >= base::Days(400)) {
+    if ((base::Time::Now() - accessed_or_modified_time) >=
+        base::Days(kStaleBucketCutoffInDays)) {
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);

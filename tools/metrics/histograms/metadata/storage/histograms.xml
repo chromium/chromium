@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.AccessMetaDataUpdateAtShutdown" enum="Boolean"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.DatabaseOpen" enum="LevelDBStatus"
-    expires_after="2025-10-31">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>tamartol@microsoft.com</owner>
   <summary>
@@ -767,29 +767,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorage.DaysSinceLastModified400DaysGT" units="days"
-    expires_after="2025-10-31">
+<histogram name="LocalStorage.DaysSinceLastModified" units="days"
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Emitted when the browsing context that loaded the related local storage
     controller shuts down. One entry is recorded per local storage area.
 
-    Number of days since a local storage area was modified (for values over 400
-    days).
-  </summary>
-</histogram>
-
-<histogram name="LocalStorage.DaysSinceLastModified400DaysLTE" units="days"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Emitted when the browsing context that loaded the related local storage
-    controller shuts down. One entry is recorded per local storage area.
-
-    Number of days since a local storage area was modified (for values under 400
-    days).
+    Number of days since a local storage area was modified. Capped at 400 days
+    as areas are not retained past that point.
   </summary>
 </histogram>
 
@@ -835,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.OrphanStorageAreasOnStartupCount" units="areas"
-    expires_after="2026-03-08">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -861,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupCount"
-    units="areas" expires_after="2026-03-08">
+    units="areas" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -875,7 +862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.StaleStorageAreasDeletedOnStartupSuccess"
-    enum="BooleanSuccess" expires_after="2025-10-31">
+    enum="BooleanSuccess" expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
