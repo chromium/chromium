@@ -312,7 +312,7 @@ GlicWindowControllerImpl::GlicWindowControllerImpl(
     previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
   }
   application_hotkey_manager_ = MakeApplicationHotkeyManager(GetWeakPtr());
-  host_.Initialize(this);
+  host_.SetDelegate(this);
   host_observation_.Observe(&host());
 }
 

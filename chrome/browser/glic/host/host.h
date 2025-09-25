@@ -147,7 +147,7 @@ class Host : public GlicSharingManagerProvider {
   ~Host() override;
   Host& operator=(const Host&) = delete;
 
-  void Initialize(EmbedderDelegate* delegate);
+  void SetDelegate(EmbedderDelegate* delegate);
 
   struct PanelWillOpenOptions {
     PanelWillOpenOptions();

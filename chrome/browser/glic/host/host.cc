@@ -66,8 +66,9 @@ Host::Host(Profile* profile,
       sharing_manager_provider_(sharing_manager_provider) {}
 Host::~Host() = default;
 
-void Host::Initialize(EmbedderDelegate* delegate) {
-  delegate_ = delegate;
+void Host::SetDelegate(EmbedderDelegate* new_delegate) {
+  CHECK(new_delegate);
+  delegate_ = new_delegate;
 }
 
 void Host::Shutdown() {
@@ -515,7 +516,7 @@ Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
 
   tab_hosts_.push_back(std::make_unique<Host>(profile_));
   Host& new_host = *tab_hosts_.back();
-  new_host.Initialize(empty_embedder_delegate_.get());
+  new_host.SetDelegate(empty_embedder_delegate_.get());
   new_host.WebUIPageHandlerAdded(page_handler);
   return &new_host;
 }
