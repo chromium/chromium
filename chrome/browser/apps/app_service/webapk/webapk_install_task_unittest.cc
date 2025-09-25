@@ -21,7 +21,9 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -102,14 +104,18 @@ class WebApkInstallTaskTest : public testing::Test {
 
  public:
   WebApkInstallTaskTest()
-      : task_environment_(content::BrowserTaskEnvironment::MainThreadType::IO) {
-  }
+      : task_environment_(content::BrowserTaskEnvironment::MainThreadType::IO),
+        profile_manager_(std::make_unique<TestingProfileManager>(
+            TestingBrowserProcess::GetGlobal())) {}
   WebApkInstallTaskTest(const WebApkInstallTaskTest&) = delete;
   WebApkInstallTaskTest& operator=(const WebApkInstallTaskTest&) = delete;
 
   void SetUp() override {
     testing::Test::SetUp();
-    app_service_test_.SetUp(&profile_);
+    EXPECT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("test");
+
+    app_service_test_.SetUp(profile());
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -119,7 +125,7 @@ class WebApkInstallTaskTest : public testing::Test {
     profile()->GetPrefs()->SetBoolean(
         apps::webapk_prefs::kGeneratedWebApksEnabled, false);
 
-    arc_test_.SetUp(&profile_);
+    arc_test_.SetUp(profile());
     auto* arc_bridge_service =
         arc_test_.arc_service_manager()->arc_bridge_service();
     fake_webapk_instance_ = std::make_unique<arc::FakeWebApkInstance>();
@@ -153,7 +159,7 @@ class WebApkInstallTaskTest : public testing::Test {
     return InstallWebApk(app_id);
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
 
@@ -173,7 +179,8 @@ class WebApkInstallTaskTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
 
