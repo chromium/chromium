@@ -40,6 +40,7 @@ public class TabStateStorageService {
      * @param rootId If the tab is part of a tab group, the owner tab id.
      * @param timestampMillis The last time it was shown.
      * @param webContentsStateBuffer Holds serialized web contents data.
+     * @param webContentsStateVersion The version of the web contents state.
      * @param openerAppId If associated with another app, its id. Optional.
      * @param themeColor The toolbar color specified by the page. Optional.
      * @param launchTypeAtCreation How the tab was created.
@@ -55,6 +56,7 @@ public class TabStateStorageService {
             int rootId,
             long timestampMillis,
             @Nullable ByteBuffer webContentsStateBuffer,
+            int webContentsStateVersion,
             String openerAppId,
             int themeColor,
             int launchTypeAtCreation,
@@ -71,6 +73,7 @@ public class TabStateStorageService {
                         rootId,
                         timestampMillis,
                         webContentsStateBuffer,
+                        webContentsStateVersion,
                         openerAppId,
                         themeColor,
                         launchTypeAtCreation,
@@ -98,6 +101,7 @@ public class TabStateStorageService {
             int rootId,
             long timestampMillis,
             @Nullable ByteBuffer webContentsStateBuffer,
+            int webContentsStateVersion,
             @Nullable @JniType("std::string") String openerAppId,
             int themeColor,
             int launchTypeAtCreation,
@@ -113,6 +117,7 @@ public class TabStateStorageService {
         tabState.timestampMillis = timestampMillis;
         if (webContentsStateBuffer != null) {
             tabState.contentsState = new WebContentsState(webContentsStateBuffer);
+            tabState.contentsState.setVersion(webContentsStateVersion);
         }
         tabState.openerAppId = openerAppId;
         tabState.themeColor = themeColor;
@@ -134,6 +139,7 @@ public class TabStateStorageService {
                 int rootId,
                 long timestampMillis,
                 @Nullable ByteBuffer webContentsStateBuffer,
+                int webContentsStateVersion,
                 @Nullable @JniType("std::string") String openerAppId,
                 int themeColor,
                 int launchTypeAtCreation,

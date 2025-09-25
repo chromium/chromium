@@ -107,6 +107,7 @@ public class TabStateStore {
                 tab.getRootId(),
                 tab.getTimestampMillis(),
                 state == null ? null : state.buffer(),
+                state == null ? 0 : state.version(),
                 assumeNonNull(TabAssociatedApp.getAppId(tab)),
                 tab.getThemeColor(),
                 tab.getTabLaunchTypeAtCreation(),

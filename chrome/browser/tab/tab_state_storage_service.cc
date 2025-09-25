@@ -22,6 +22,7 @@ void TabStateStorageService::SaveTab(
     int root_id,
     long timestamp_millis,
     const std::string* web_content_state_string,
+    int web_content_state_version,
     std::string_view opener_app_id,
     int theme_color,
     int launch_type_at_creation,
@@ -38,6 +39,7 @@ void TabStateStorageService::SaveTab(
   if (web_content_state_string) {
     tab_state.set_web_contents_state_bytes(*web_content_state_string);
   }
+  tab_state.set_web_contents_state_version(web_content_state_version);
 
   tab_state.set_opener_app_id(opener_app_id);
   tab_state.set_theme_color(theme_color);

@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 package tabs_pb;
 option java_package = "org.chromium.chrome.browser.tabs.proto";
 
+// Next ID: 15
 message TabState {
   optional int32 parent_id = 1;
 
@@ -16,6 +17,8 @@ message TabState {
   optional int64 timestamp_millis = 3;
 
   optional bytes web_contents_state_bytes = 4;
+
+  optional int32 web_contents_state_version = 14;
 
   optional string opener_app_id = 5;
 

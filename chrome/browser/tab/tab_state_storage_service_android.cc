@@ -57,8 +57,9 @@ void RunJavaCallbackLoadAllTabs(
         Java_TabStateStorageService_createTabState(
             env, tab_state.parent_id(), tab_state.root_id(),
             tab_state.timestamp_millis(), j_web_contents_state_buffer,
-            tab_state.opener_app_id(), tab_state.theme_color(),
-            tab_state.launch_type_at_creation(), tab_state.user_agent(),
+            tab_state.web_contents_state_version(), tab_state.opener_app_id(),
+            tab_state.theme_color(), tab_state.launch_type_at_creation(),
+            tab_state.user_agent(),
             tab_state.last_navigation_committed_timestamp_millis(),
             j_tab_group_id, tab_state.tab_has_sensitive_content(),
             tab_state.is_pinned());
@@ -92,6 +93,7 @@ void TabStateStorageServiceAndroid::SaveTab(
     int root_id,
     long timestamp_millis,
     const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
+    int web_contents_state_version,
     std::string opener_app_id,
     int theme_color,
     int launch_type_at_creation,
@@ -116,8 +118,8 @@ void TabStateStorageServiceAndroid::SaveTab(
 
   tab_state_storage_service_->SaveTab(
       id, parent_tab_id, root_id, timestamp_millis,
-      web_content_state_string.get(), opener_app_id, theme_color,
-      launch_type_at_creation, user_agent,
+      web_content_state_string.get(), web_contents_state_version, opener_app_id,
+      theme_color, launch_type_at_creation, user_agent,
       last_navigation_committed_timestamp_millis, tab_group_id.get(),
       tab_has_sensitive_content, is_pinned);
 }
