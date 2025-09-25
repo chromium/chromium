@@ -2521,6 +2521,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.Gallery.MaxVisibleItemIndex"
+    units="index" expires_after="2026-03-22">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The maximum background thumbnail index within a collection that was visible
+    to the user in the background image gallery. This is recorded when the
+    gallery view is dismissed.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.HomeCustomization.Background.Gallery.MaxVisibleSectionIndex"
+    units="index" expires_after="2026-03-22">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The maximum collection index that was visible to the user in the background
+    image gallery. This is recorded when the gallery view is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Background.UserUploaded.Error"
     enum="IOSUserUploadedImageError" expires_after="2026-03-01">
   <owner>cheickcisse@google.com</owner>

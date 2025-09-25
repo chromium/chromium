@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
@@ -74,6 +75,10 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   // The current index of the cell being dimmed in the loading animation.
   NSInteger _skeletonAnimationIndex;
+
+  // Tracking for maximum visible indices
+  NSInteger _maxVisibleSectionIndex;
+  NSInteger _maxVisibleItemIndex;
 }
 @end
 
@@ -179,6 +184,13 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+  // Log final maximums before disappearing, for example.
+  base::UmaHistogramSparse(
+      "IOS.HomeCustomization.Background.Gallery.MaxVisibleSectionIndex",
+      _maxVisibleSectionIndex);
+  base::UmaHistogramSparse(
+      "IOS.HomeCustomization.Background.Gallery.MaxVisibleItemIndex",
+      _maxVisibleItemIndex);
   [self stopLoadingAnimation];
 }
 
@@ -233,6 +245,13 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 - (void)collectionView:(UICollectionView*)collectionView
        willDisplayCell:(HomeCustomizationBackgroundCell*)cell
     forItemAtIndexPath:(NSIndexPath*)indexPath {
+  // Update the maximum visible section index.
+  _maxVisibleSectionIndex =
+      std::max(_maxVisibleSectionIndex, indexPath.section);
+
+  // Update the maximum visible item index.
+  _maxVisibleItemIndex = std::max(_maxVisibleItemIndex, indexPath.item);
+
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
