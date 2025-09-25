@@ -22,14 +22,22 @@
 
 namespace content {
 
+namespace {
+
+bool IsWebUIScheme(std::string_view scheme) {
+  return scheme == content::kChromeUIScheme ||
+         scheme == content::kChromeUIUntrustedScheme ||
+         scheme == content::kChromeDevToolsScheme;
+}
+
+}  // namespace
+
 bool HasWebUIScheme(const GURL& url) {
-  return HasWebUIOrigin(url::Origin::Create(url));
+  return IsWebUIScheme(url.scheme_piece());
 }
 
 bool HasWebUIOrigin(const url::Origin& origin) {
-  return origin.scheme() == content::kChromeUIScheme ||
-         origin.scheme() == content::kChromeUIUntrustedScheme ||
-         origin.scheme() == content::kChromeDevToolsScheme;
+  return IsWebUIScheme(origin.scheme());
 }
 
 bool IsSavableURL(const GURL& url) {
