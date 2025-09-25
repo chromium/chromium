@@ -372,4 +372,30 @@ std::vector<base::FilePath> GetFilesWithPredicate(
   return files;
 }
 
+void EnumerateUpdateClientTempDirectories(
+    UpdaterScope scope,
+    base::FunctionRef<void(const base::FilePath& dir)> callback) {
+  base::FilePath temp_dir;
+
+#if BUILDFLAG(IS_WIN)
+  if (!base::GetSecureTempDirectory(&temp_dir)) {
+    return;
+  }
+#else   // BUILDFLAG(IS_WIN)
+  if (!base::GetTempDir(&temp_dir)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  for (const auto& matcher :
+       {FILE_PATH_LITERAL("chrome_url_fetcher_*"),
+        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping*"),
+        FILE_PATH_LITERAL("chrome_BITS_*")}) {
+    base::FileEnumerator(temp_dir,
+                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
+                         matcher)
+        .ForEach([&callback](const base::FilePath& dir) { callback(dir); });
+  }
+}
+
 }  // namespace updater

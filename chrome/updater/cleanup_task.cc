@@ -91,6 +91,14 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
       });
 }
 
+void CleanupOldUpdateClientTempFiles(UpdaterScope scope) {
+  EnumerateUpdateClientTempDirectories(scope, [](const base::FilePath& dir) {
+    const bool success =
+        update_client::RetryFileOperation(&base::DeletePathRecursively, dir);
+    VLOG_IF(1, !success) << "Failed to delete " << dir;
+  });
+}
+
 }  // namespace
 
 CleanupTask::CleanupTask(UpdaterScope scope, scoped_refptr<Configurator> config)
@@ -107,6 +115,7 @@ void CleanupTask::Run(base::OnceClosure callback) {
           [](UpdaterScope scope) {
             CleanupGoogleUpdate(scope);
             CleanupOldUpdaterVersions(scope);
+            CleanupOldUpdateClientTempFiles(scope);
           },
           scope_),
       base::BindOnce(

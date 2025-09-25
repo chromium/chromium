@@ -291,4 +291,34 @@ TEST(Util, GetFilesWithPredicate) {
   }
 }
 
+TEST(Util, EnumerateUpdateClientTempDirectories) {
+  ASSERT_NO_FATAL_FAILURE(EnumerateUpdateClientTempDirectories(
+      GetUpdaterScopeForTesting(), [](const base::FilePath& dir) {
+        ADD_FAILURE() << "Unexpected directory: " << dir;
+      }));
+
+  // TODO(crbug.com/447234785): enable the following test for `posix` after
+  // `CreateNewTempDirectory` in `file_util_posix.cc` starts respecting
+  // `prefix`.
+#if BUILDFLAG(IS_WIN)
+  base::FilePath dir;
+  for (const auto& matcher :
+       {FILE_PATH_LITERAL("chrome_url_fetcher_"),
+        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"),
+        FILE_PATH_LITERAL("chrome_BITS_"), FILE_PATH_LITERAL("BazBar")}) {
+    ASSERT_TRUE(base::CreateNewTempDirectory(matcher, &dir));
+  }
+
+  int count = 0;
+  ASSERT_NO_FATAL_FAILURE(EnumerateUpdateClientTempDirectories(
+      GetUpdaterScopeForTesting(), [&count](const base::FilePath& dir) {
+        ++count;
+        EXPECT_TRUE(base::DeletePathRecursively(dir));
+      }));
+
+  EXPECT_EQ(count, 3);
+  EXPECT_TRUE(base::DeletePathRecursively(dir));
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 }  // namespace updater

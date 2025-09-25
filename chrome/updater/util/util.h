@@ -251,6 +251,12 @@ std::vector<base::FilePath> GetFilesWithPredicate(
     const base::FilePath& dir,
     base::FunctionRef<bool(const base::FilePath&)> predicate);
 
+// Enumerates and calls `callback` for each update client temp directory found
+// for `scope`.
+void EnumerateUpdateClientTempDirectories(
+    UpdaterScope scope,
+    base::FunctionRef<void(const base::FilePath& dir)> callback);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UTIL_H_

@@ -744,26 +744,6 @@ bool BuildMockOfflineMetaInstaller(const std::string& appid,
   return RunVPythonCommand(create_meta_installer) == 0;
 }
 
-void EnumerateUpdateClientTempDirectories(
-    UpdaterScope scope,
-    base::FunctionRef<void(const base::FilePath& dir)> callback) {
-  base::FilePath temp_dir;
-  EXPECT_TRUE(IsSystemInstall(scope)
-                  ? base::PathService::Get(base::DIR_SYSTEM_TEMP, &temp_dir)
-                  : base::GetTempDir(&temp_dir));
-  for (const auto& matcher :
-       {FILE_PATH_LITERAL("chrome_url_fetcher_*"),
-        FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping*"),
-        FILE_PATH_LITERAL("chrome_BITS_*")}) {
-    base::FileEnumerator(temp_dir,
-                         /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
-                         matcher)
-        .ForEach([&callback](const base::FilePath& dir) {
-          ASSERT_NO_FATAL_FAILURE(callback(dir));
-        });
-  }
-}
-
 void CleanUpdateClientTempDirectories(UpdaterScope scope) {
   EnumerateUpdateClientTempDirectories(scope, [](const base::FilePath& dir) {
     EXPECT_TRUE(base::DeletePathRecursively(dir));
