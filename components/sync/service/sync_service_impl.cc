@@ -555,8 +555,12 @@ void SyncServiceImpl::TryStart() {
     auto barrier = base::BarrierCallback<os_crypt_async::Encryptor>(
         2, std::move(on_encryptors_gotten));
 
-    os_crypt_async_->GetInstance(barrier);
-    os_crypt_async_->GetInstance(barrier);
+    // TODO(419157433): Remove the option to get the encryptor for SyncEngine
+    //  once the kSyncUseOsCryptAsync feature is enabled by default.
+    os_crypt_async_->GetInstance(
+        barrier, os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+    os_crypt_async_->GetInstance(
+        barrier, os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
