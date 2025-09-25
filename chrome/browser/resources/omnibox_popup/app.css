@@ -8,6 +8,9 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-searchbox-icon-container-size: 28px;
+  --cr-searchbox-match-padding: 5px;
+  --cr-searchbox-match-padding-inline-start: 16px;
   --cr-searchbox-min-width: 75%;
   --cr-searchbox-width: 100%;
   font-size: 14.6px; /* closely resembles the omnibox input font size. */

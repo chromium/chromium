@@ -114,13 +114,14 @@
 }
 
 #focus-indicator {
+  --searchbox-match-focus-indicator-width_: 7px;
   background-color: var(--color-searchbox-results-focus-indicator);
   border-radius: 3px;
   display: none;
   height: 100%;
-  margin-inline-start: -15px; /* -1 * (.container padding + width / 2) */
+  inset-inline-start: round(up, calc(-1 * var(--searchbox-match-focus-indicator-width_) / 2), 1px);
   position: absolute;
-  width: 7px;
+  width: var(--searchbox-match-focus-indicator-width_);
 }
 
 /* Focus indicator only shown for vertically rendered matches. */
