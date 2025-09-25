@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] window.event should not be affected by nodes moving post-dispatch
-  assert_equals: expected (undefined) undefined but got (object) object "[object Event]"
-Harness: the test ran to completion.
-

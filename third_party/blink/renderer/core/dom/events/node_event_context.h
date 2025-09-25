@@ -73,6 +73,7 @@ class CORE_EXPORT NodeEventContext {
   Member<Node> node_;
   Member<EventTarget> current_target_;
   Member<TreeScopeEventContext> tree_scope_event_context_;
+  bool invocation_target_in_shadow_tree_{false};
 };
 
 template <>

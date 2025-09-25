@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -143,8 +144,14 @@ void JSBasedEventListener::Invoke(
     // event's target is in a shadow tree), then set |global|’s current
     // event to event.
     Node* target_node = event->RawTarget()->ToNode();
-    if (!(target_node && target_node->IsInShadowTree()))
+    bool in_shadow_tree =
+        RuntimeEnabledFeatures::TargetInShadowDeterminedBeforeListenerEnabled()
+            ? event->invocationTargetInShadowTree()
+            : (target_node && target_node->IsInShadowTree());
+
+    if (!in_shadow_tree) {
       window->SetCurrentEvent(event);
+    }
   }
 
   {
