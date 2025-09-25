@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_launcher_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -183,23 +185,30 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   // The first, second and third browser should restore to the first, second
   // and third desk, consecutively.
   for (int i = 0; i < 3; i++) {
-    auto* browser = browser_list->get(i);
-    int desk_index = 0;
-    ASSERT_TRUE(base::StringToInt(browser->initial_workspace(), &desk_index));
-    // Verify that browser i_th with title i, has initial_workspace equals to
-    // desk i_th.
-    ASSERT_EQ(i, desk_index);
-    ASSERT_EQ(base::NumberToString(i), browser->user_title());
+    // Verify that the browser with title i, has initial_workspace equal to desk
+    // i.
+    BrowserWindowInterface* const browser =
+        ui_test_utils::FindMatchingBrowsers(
+            [&](BrowserWindowInterface* browser) {
+              int desk_index = 0;
+              EXPECT_TRUE(base::StringToInt(
+                  browser->GetBrowserForMigrationOnly()->initial_workspace(),
+                  &desk_index));
+              return desk_index == i;
+            })
+            .front();
+    ASSERT_TRUE(browser);
+    ASSERT_EQ(base::NumberToString(i),
+              browser->GetBrowserForMigrationOnly()->user_title());
 
     // Check that a browser window is restored to the right desk i_th.
     ASSERT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(
-        browser->window()->GetNativeWindow(), desk_index));
-    int workspace = browser->window()->GetNativeWindow()->GetProperty(
+        browser->GetWindow()->GetNativeWindow(), i));
+    int workspace = browser->GetWindow()->GetNativeWindow()->GetProperty(
         aura::client::kWindowWorkspaceKey);
-    ASSERT_EQ(desk_index,
-              workspace == aura::client::kWindowWorkspaceUnassignedWorkspace
-                  ? 0
-                  : workspace);
+    ASSERT_EQ(i, workspace == aura::client::kWindowWorkspaceUnassignedWorkspace
+                     ? 0
+                     : workspace);
   }
 
   RemoveInactiveDesks();
@@ -246,17 +255,20 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   ASSERT_EQ(2u, browser_list->size());
 
   // Check that the visible on all desks browser is restored properly.
-  auto* visible_on_all_desks_browser = browser_list->get(1);
-  auto* visible_on_all_desks_window =
-      visible_on_all_desks_browser->window()->GetNativeWindow();
+  BrowserWindowInterface* const visible_on_all_desks_browser =
+      ui_test_utils::FindMatchingBrowsers([&](BrowserWindowInterface* browser) {
+        return browser->GetWindow()->GetNativeWindow()->GetProperty(
+                   aura::client::kWindowWorkspaceKey) ==
+               aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
+      }).front();
+  ASSERT_TRUE(visible_on_all_desks_browser);
+  EXPECT_EQ("", visible_on_all_desks_browser->GetBrowserForMigrationOnly()
+                    ->initial_workspace());
 
-  EXPECT_EQ("", visible_on_all_desks_browser->initial_workspace());
-
-  EXPECT_TRUE(visible_on_all_desks_window->GetProperty(
-                  aura::client::kWindowWorkspaceKey) ==
-              aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   // Visible on all desks windows should always reside on the active desk,
   // even if there is a desk switch.
+  aura::Window* const visible_on_all_desks_window =
+      visible_on_all_desks_browser->GetWindow()->GetNativeWindow();
   EXPECT_TRUE(chromeos::DesksHelper::Get(visible_on_all_desks_window)
                   ->BelongsToActiveDesk(visible_on_all_desks_window));
 

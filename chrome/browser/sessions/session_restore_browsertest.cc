@@ -66,6 +66,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -157,6 +159,8 @@ using sessions::ContentTestHelper;
 using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
 
+namespace {
+
 GURL GetUrl1() {
   return ui_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
@@ -188,6 +192,47 @@ void WaitForTabsToLoad(Browser* browser) {
   for (int i = 0; i < browser->tab_strip_model()->count(); ++i)
     EXPECT_TRUE(WaitForTabToLoad(browser, i));
 }
+
+// Verifies that the given NavigationController has exactly two
+// entries that correspond to the given URLs and that all entries have non-null
+// timestamps.
+void VerifyNavigationEntries(content::NavigationController& controller,
+                             GURL url1,
+                             GURL url2) {
+  ASSERT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(url1, controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(url2, controller.GetEntryAtIndex(1)->GetURL());
+  EXPECT_FALSE(controller.GetEntryAtIndex(0)->GetTimestamp().is_null());
+  EXPECT_FALSE(controller.GetEntryAtIndex(1)->GetTimestamp().is_null());
+}
+
+// Returns a single browser matching `url`.
+BrowserWindowInterface* FindBrowserWithUrl(const GURL& url) {
+  auto browsers = ui_test_utils::FindMatchingBrowsers(
+      [&url](BrowserWindowInterface* browser) {
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          if (tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL() ==
+              url) {
+            return true;
+          }
+        }
+        return false;
+      });
+  return browsers.empty() ? nullptr : browsers.front();
+}
+
+// Returns a single browser matching `type`.
+BrowserWindowInterface* FindBrowserWithType(BrowserWindowInterface::Type type) {
+  auto browsers = ui_test_utils::FindMatchingBrowsers(
+      [type](BrowserWindowInterface* browser) {
+        return browser->GetType() == type;
+      });
+  return browsers.empty() ? nullptr : browsers.front();
+}
+
+}  // namespace
 
 class SessionRestoreTest : public InProcessBrowserTest {
  public:
@@ -360,9 +405,9 @@ class SessionRestoreTest : public InProcessBrowserTest {
     observer.Wait();
   }
 
-  void AssertOneWindowWithOneTab(Browser* browser) {
+  void AssertOneWindowWithOneTab(BrowserWindowInterface* browser) {
     ASSERT_EQ(1u, active_browser_list_->size());
-    ASSERT_EQ(1, browser->tab_strip_model()->count());
+    ASSERT_EQ(1, browser->GetTabStripModel()->count());
   }
 
   int RenderProcessHostCount() {
@@ -642,8 +687,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
   CloseBrowserSynchronously(popup);
   QuitBrowserAndRestore(browser());
   ASSERT_EQ(2u, active_browser_list_->size());
-  EXPECT_EQ(Browser::TYPE_NORMAL, active_browser_list_->get(0)->type());
-  EXPECT_EQ(Browser::TYPE_POPUP, active_browser_list_->get(1)->type());
+  BrowserWindowInterface* const normal_browser =
+      FindBrowserWithType(BrowserWindowInterface::Type::TYPE_NORMAL);
+  BrowserWindowInterface* const popup_browser =
+      FindBrowserWithType(BrowserWindowInterface::Type::TYPE_POPUP);
+  EXPECT_TRUE(normal_browser);
+  EXPECT_TRUE(popup_browser);
+  EXPECT_NE(normal_browser, popup_browser);
 }
 
 // Flaky on Mac. https://crbug.com/1334914.
@@ -768,24 +818,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, IncognitotoNonIncognito) {
   EXPECT_EQ(url, new_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-namespace {
-
-// Verifies that the given NavigationController has exactly two
-// entries that correspond to the given URLs and that all entries have non-null
-// timestamps.
-void VerifyNavigationEntries(content::NavigationController& controller,
-                             GURL url1,
-                             GURL url2) {
-  ASSERT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(1, controller.GetCurrentEntryIndex());
-  EXPECT_EQ(url1, controller.GetEntryAtIndex(0)->GetURL());
-  EXPECT_EQ(url2, controller.GetEntryAtIndex(1)->GetURL());
-  EXPECT_FALSE(controller.GetEntryAtIndex(0)->GetTimestamp().is_null());
-  EXPECT_FALSE(controller.GetEntryAtIndex(1)->GetTimestamp().is_null());
-}
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   GURL url1("https://google.com");
@@ -1888,24 +1920,26 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TwoWindowsCloseOneRestoreOnlyOne) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
 
   // Open a second window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
   ASSERT_EQ(2u, active_browser_list_->size());
 
   // Close it.
-  Browser* new_window = active_browser_list_->get(1);
-  CloseBrowserSynchronously(new_window);
+  CloseBrowserSynchronously(new_browser);
 
   // Restart and make sure we have only one window with one tab and the url
   // is GetUrl1().
-  Browser* new_browser = QuitBrowserAndRestore(browser());
+  BrowserWindowInterface* const restored_browser =
+      QuitBrowserAndRestore(browser());
 
-  AssertOneWindowWithOneTab(new_browser);
+  AssertOneWindowWithOneTab(restored_browser);
 
-  ASSERT_EQ(GetUrl1(),
-            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(
+      GetUrl1(),
+      restored_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
@@ -1931,7 +1965,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
   // Set a custom user title to this second browser window.
   const std::string custom_user_title = "Window 2";
   browser2->SetWindowUserTitle(custom_user_title);
-  ASSERT_EQ(custom_user_title, active_browser_list_->get(1)->user_title());
+  ASSERT_EQ(custom_user_title, browser2->user_title());
 
   // Simulate an exit by shutting down the session service. If we don't do this
   // the window close is treated as though the user closed the window and won't
@@ -1944,21 +1978,19 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
 
   // The two browsers should be restored with their respective URLs.
   ASSERT_EQ(2u, active_browser_list_->size());
-  EXPECT_EQ(GetUrl1(), active_browser_list_->get(0)
-                           ->tab_strip_model()
-                           ->GetWebContentsAt(0)
-                           ->GetLastCommittedURL());
-  EXPECT_EQ(GetUrl2(), active_browser_list_->get(1)
-                           ->tab_strip_model()
-                           ->GetWebContentsAt(0)
-                           ->GetLastCommittedURL());
+  BrowserWindowInterface* const new_browser1 = FindBrowserWithUrl(GetUrl1());
+  BrowserWindowInterface* const new_browser2 = FindBrowserWithUrl(GetUrl2());
+  EXPECT_TRUE(new_browser1);
+  EXPECT_TRUE(new_browser2);
+  EXPECT_NE(new_browser1, new_browser2);
 
   // The user title should be empty for first window as it did not have a
   // custom title.
-  EXPECT_TRUE(active_browser_list_->get(0)->user_title().empty());
+  EXPECT_TRUE(new_browser1->GetBrowserForMigrationOnly()->user_title().empty());
 
   // The user title for second window should be restored.
-  EXPECT_EQ(custom_user_title, active_browser_list_->get(1)->user_title());
+  EXPECT_EQ(custom_user_title,
+            new_browser2->GetBrowserForMigrationOnly()->user_title());
 }
 
 // Make sure after a restore the number of processes matches that of the number
@@ -3453,14 +3485,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OmitFromSessionRestore) {
   // The first two browsers with url1 and url2 should be back, but the browser
   // with url3 shouldn't.
   ASSERT_EQ(2u, active_browser_list_->size());
-  EXPECT_EQ(GetUrl1(), active_browser_list_->get(0)
-                           ->tab_strip_model()
-                           ->GetWebContentsAt(0)
-                           ->GetLastCommittedURL());
-  EXPECT_EQ(GetUrl2(), active_browser_list_->get(1)
-                           ->tab_strip_model()
-                           ->GetWebContentsAt(0)
-                           ->GetLastCommittedURL());
+  const BrowserWindowInterface* const new_browser1 =
+      FindBrowserWithUrl(GetUrl1());
+  const BrowserWindowInterface* const new_browser2 =
+      FindBrowserWithUrl(GetUrl2());
+  EXPECT_TRUE(new_browser1);
+  EXPECT_TRUE(new_browser2);
+  EXPECT_NE(new_browser1, new_browser2);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -4078,11 +4109,12 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Check we got all the tabs back.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+  const BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_TRUE(browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(1)->GetURL(),
             example_url);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(2)->GetURL(),
             example_url2);
 
   keep_alive.reset();
@@ -4140,12 +4172,13 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Check we got all the tabs back.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_EQ(browser->tab_strip_model()->count(), 3);
-  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+  const BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(browser->GetTabStripModel()->count(), 3);
+  EXPECT_TRUE(browser->GetType() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(1)->GetVisibleURL(),
             example_url);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(2)->GetURL(),
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(2)->GetVisibleURL(),
             example_url2);
 
   keep_alive.reset();
@@ -4255,10 +4288,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Check we got all the tabs back.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_EQ(browser->tab_strip_model()->count(), 2);
-  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+  const BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(browser->GetTabStripModel()->count(), 2);
+  EXPECT_TRUE(browser->GetType() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(1)->GetVisibleURL(),
             example_url2);
 
   keep_alive.reset();
@@ -4303,10 +4337,12 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, InvokeTwoAppsThenRestore) {
   restore_observer.Wait();
 
   // Check we got all the tabs back.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_EQ(browser->tab_strip_model()->count(), 2);
-  EXPECT_TRUE(browser->type() == Browser::Type::TYPE_NORMAL);
-  EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  const BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(browser->GetTabStripModel()->count(), 2);
+  EXPECT_TRUE(browser->GetType() == Browser::Type::TYPE_NORMAL);
+  EXPECT_EQ(browser->GetTabStripModel()->GetWebContentsAt(1)->GetVisibleURL(),
             example_url2);
 
   keep_alive.reset();
@@ -4371,7 +4407,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
   // url2 should still be censored in navigation after restore, url1 should not.
   ASSERT_EQ(1u, active_browser_list_->size());
   content::WebContents* restored_contents =
-      active_browser_list_->get(0)->tab_strip_model()->GetWebContentsAt(0);
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetTabStripModel()
+          ->GetWebContentsAt(0);
   EXPECT_EQ(GetUrl3(), restored_contents->GetLastCommittedURL());
   const char kCheckEntriesLength[] = "navigation.entries().length;";
   int entries_length =
