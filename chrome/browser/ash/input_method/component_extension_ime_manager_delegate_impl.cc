@@ -301,15 +301,11 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
 
   std::string url_string;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool is_global_emoji_preferences_enabled = base::FeatureList::IsEnabled(
-      features::kVirtualKeyboardGlobalEmojiPreferences);
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
       "inputview.html");
   url = net::AppendOrReplaceQueryParameter(url, "jelly", "true");
-  url = net::AppendOrReplaceQueryParameter(
-      url, "globalemojipreferences",
-      base::ToString(is_global_emoji_preferences_enabled));
+  url = net::AppendOrReplaceQueryParameter(url, "globalemojipreferences", "false");
   // Information is managed on VK extension side so just use a default value
   // here.
   url = net::AppendOrReplaceRef(url, "id=default");

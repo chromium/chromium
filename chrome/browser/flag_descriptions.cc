@@ -7704,12 +7704,6 @@ const char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
-const char kVirtualKeyboardGlobalEmojiPreferencesName[] =
-    "Virtual Keyboard Global Emoji Preferences";
-const char kVirtualKeyboardGlobalEmojiPreferencesDescription[] =
-    "Enable global preferences for skin tone and gender in the virtual "
-    "keyboard emoji picker.";
-
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";

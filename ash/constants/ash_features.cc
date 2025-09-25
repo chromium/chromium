@@ -2232,11 +2232,6 @@ BASE_FEATURE(kVcLightIntensity,
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable global preferences for skin tone and gender in the virtual
-// keyboard emoji picker.
-BASE_FEATURE(kVirtualKeyboardGlobalEmojiPreferences,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to allow enabling wake on WiFi features in shill.
 BASE_FEATURE(kWakeOnWifiAllowed, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -4451,9 +4451,6 @@ extern const char kVirtualKeyboardDescription[];
 extern const char kVirtualKeyboardDisabledName[];
 extern const char kVirtualKeyboardDisabledDescription[];
 
-extern const char kVirtualKeyboardGlobalEmojiPreferencesName[];
-extern const char kVirtualKeyboardGlobalEmojiPreferencesDescription[];
-
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 
