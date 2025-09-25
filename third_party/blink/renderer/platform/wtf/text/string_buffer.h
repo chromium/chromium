@@ -26,11 +26,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
 
@@ -62,19 +57,13 @@ class StringBuffer {
 
   void Shrink(unsigned new_length);
 
-  // Prefer Span() to length()/Characters().
-  base::span<CharType> Span() { return data_->Span<CharType>(); }
+  base::span<CharType> Span() {
+    return data_ ? data_->Span<CharType>() : base::span<CharType>();
+  }
 
   unsigned length() const { return data_ ? data_->length() : 0; }
-  CharType* Characters() {
-    return length() ? const_cast<CharType*>(data_->GetCharacters<CharType>())
-                    : nullptr;
-  }
 
-  CharType& operator[](unsigned i) {
-    SECURITY_DCHECK(i < length());
-    return Characters()[i];
-  }
+  CharType& operator[](unsigned i) { return data_->Span<CharType>()[i]; }
 
   scoped_refptr<StringImpl> Release() { return std::move(data_); }
 

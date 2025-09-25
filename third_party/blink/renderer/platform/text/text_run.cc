@@ -64,8 +64,7 @@ String TextRun::NormalizedUTF16() const {
       character = uchar::kZeroWidthSpace;
     }
 
-    UNSAFE_TODO(
-        U16_APPEND(buffer.Characters(), result_length, len, character, error));
+    U16_APPEND(buffer.Span(), result_length, len, character, error);
     DCHECK(!error);
   }
 

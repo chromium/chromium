@@ -70,8 +70,9 @@ String GetLocaleInfoString(LCID lcid, LCTYPE type, bool defaults_for_locale) {
     return String();
   }
   StringBuffer<UChar> buffer(buffer_size_with_nul);
-  ::GetLocaleInfo(lcid, type, base::as_writable_wcstr(buffer.Characters()),
-                  buffer_size_with_nul);
+  auto span = buffer.Span();
+  ::GetLocaleInfo(lcid, type, base::as_writable_wcstr(span.data()),
+                  span.size());
   buffer.Shrink(buffer_size_with_nul - 1);
   return String::Adopt(buffer);
 }

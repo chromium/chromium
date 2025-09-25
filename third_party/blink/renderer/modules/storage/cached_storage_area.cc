@@ -731,7 +731,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
         break;
       }
       StringBuffer<UChar> buffer(input_size / sizeof(UChar));
-      UNSAFE_TODO(std::memcpy(buffer.Characters(), input.data(), input_size));
+      UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data(), input_size));
       result = String::Adopt(buffer);
       break;
     }
@@ -756,8 +756,8 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
             break;
           }
           StringBuffer<UChar> buffer(payload_size / sizeof(UChar));
-          UNSAFE_TODO(
-              std::memcpy(buffer.Characters(), input.data() + 1, payload_size));
+          UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data() + 1,
+                                  payload_size));
           result = String::Adopt(buffer);
           break;
         }

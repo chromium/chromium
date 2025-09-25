@@ -69,10 +69,7 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
       result_length = last_index;
     }
     if (buffer) {
-      // SAFETY: buffer->Characters()'s size is `length`, and `result_length`
-      // is less than `length`.
-      UNSAFE_BUFFERS(U16_APPEND(buffer->Characters(), result_length, length,
-                                normalized, error));
+      U16_APPEND(buffer->Span(), result_length, length, normalized, error);
       DCHECK(!error);
     }
   }
