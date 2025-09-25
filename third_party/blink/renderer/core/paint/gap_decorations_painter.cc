@@ -25,9 +25,10 @@ bool ShouldMoveIntersectionEndForward(GridTrackSizingDirection track_direction,
                                       wtf_size_t gap_index,
                                       wtf_size_t end_index,
                                       RuleBreak rule_break,
-                                      const GapGeometry& gap_geometry) {
+                                      const GapGeometry& gap_geometry,
+                                      const Vector<LayoutUnit>& intersections) {
   BlockedStatus blocked_status = gap_geometry.GetIntersectionBlockedStatus(
-      track_direction, gap_index, end_index);
+      track_direction, gap_index, end_index, intersections);
 
   // For `kSpanningItem` rule break, decorations break only at "T"
   // intersections, so we simply check that the intersection isn't blocked
@@ -73,7 +74,7 @@ bool ShouldMoveIntersectionEndForward(GridTrackSizingDirection track_direction,
   // intersection.
   const BlockedStatus cross_gaps_blocked_status =
       gap_geometry.GetIntersectionBlockedStatus(cross_direction, end_index - 1,
-                                                gap_index + 1);
+                                                gap_index + 1, intersections);
   // Move forward if the cross intersection is flanked by spanners on both
   // sides.
   return cross_gaps_blocked_status.HasBlockedStatus(
@@ -90,7 +91,8 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
                                  wtf_size_t intersection_count,
                                  wtf_size_t gap_index,
                                  RuleBreak rule_break,
-                                 const GapGeometry& gap_geometry) {
+                                 const GapGeometry& gap_geometry,
+                                 const Vector<LayoutUnit>& intersections) {
   // If rule_break is `kNone`, cover the entire intersection range.
   const wtf_size_t last_intersection_index = intersection_count - 1;
   if (rule_break == RuleBreak::kNone) {
@@ -103,7 +105,8 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   // after.
   while (start < intersection_count &&
          (gap_geometry
-              .GetIntersectionBlockedStatus(track_direction, gap_index, start)
+              .GetIntersectionBlockedStatus(track_direction, gap_index, start,
+                                            intersections)
               .HasBlockedStatus(BlockedStatus::kBlockedAfter))) {
     ++start;
   }
@@ -119,7 +122,8 @@ void AdjustIntersectionIndexPair(GridTrackSizingDirection track_direction,
   // Advance `end` based on the rule_break type.
   while (end < last_intersection_index &&
          ShouldMoveIntersectionEndForward(track_direction, gap_index, end,
-                                          rule_break, gap_geometry)) {
+                                          rule_break, gap_geometry,
+                                          intersections)) {
     ++end;
   }
 }
@@ -183,7 +187,8 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     const LayoutUnit rule_thickness = LayoutUnit(width_iterator.Next());
 
     const LayoutUnit center =
-        gap_geometry.GetGapOffset(track_direction, gap_index);
+        gap_geometry.GetGapCenterOffset(track_direction, gap_index);
+
     const Vector<LayoutUnit> intersections =
         gap_geometry.GenerateIntersectionListForGap(track_direction, gap_index);
 
@@ -193,7 +198,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       wtf_size_t end = start;
       AdjustIntersectionIndexPair(track_direction, start, end,
                                   intersections.size(), gap_index, rule_break,
-                                  gap_geometry);
+                                  gap_geometry, intersections);
       if (start >= end) {
         // Break because there's no gap segment to paint.
         break;
@@ -206,13 +211,13 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // * The cross gutter size if it is an intersection with another gap.
       // https://drafts.csswg.org/css-gaps-1/#crossing-gap-width
       const LayoutUnit start_width =
-          gap_geometry.IsEdgeIntersection(gap_index, start,
-                                          intersections.size(), is_main)
+          gap_geometry.IsEdgeIntersection(
+              gap_index, start, intersections.size(), is_main, intersections)
               ? LayoutUnit()
               : cross_gutter_width;
       const LayoutUnit end_width =
           gap_geometry.IsEdgeIntersection(gap_index, end, intersections.size(),
-                                          is_main)
+                                          is_main, intersections)
               ? LayoutUnit()
               : cross_gutter_width;
 

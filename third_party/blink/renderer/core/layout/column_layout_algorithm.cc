@@ -473,9 +473,6 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
         gap_geometry->SetContentBlockOffsets(*content_block_start_,
                                              content_block_end);
 
-        gap_geometry->SetSpannerMainGapsIndices(
-            std::move(spanner_main_gaps_indices_));
-
         // For multicol, the main direction will always be the rows.
         gap_geometry->SetMainDirection(kForRows);
       }
@@ -883,8 +880,6 @@ void ColumnLayoutAlgorithm::BuildRowGapIntersections(
 
 void ColumnLayoutAlgorithm::AddCrossGapForColumn(LayoutUnit inline_offset,
                                                  LayoutUnit block_offset) {
-  // Unlike in flex, gaps in multicol will always start and end at either a
-  // content edge or spanner, both cases which are treated the same by paint.
   CrossGap::EdgeIntersectionState state =
       CrossGap::EdgeIntersectionState::kBoth;
 
@@ -897,6 +892,45 @@ void ColumnLayoutAlgorithm::AddCrossGapForColumn(LayoutUnit inline_offset,
                                                          1);
 }
 
+void ColumnLayoutAlgorithm::AddMainGapForSpanner(
+    LayoutUnit block_offset,
+    LayoutUnit logical_fragment_block_size) {
+  // The only situation where we would expect the range to not be valid is if
+  // there are spanners placed back-to-back with no content in between. As far
+  // as GapDecorations is related, in these cases we "condense" the sequence
+  // of consecutive spanners into a single spanner, by having only two
+  // MainGaps (a start and an end) represent the entire sequence of spanners.
+  bool spanner_placed_after_spanner_with_no_content_in_between =
+      !range_of_cross_gaps_before_current_main_gap_.IsValid();
+
+  // If we have consecutive spanners with no content in between, we remove the
+  // last end spanner main gap, and the new spanner's end will become the end
+  // of the big condensed spanner.
+  if (spanner_placed_after_spanner_with_no_content_in_between) {
+    main_gaps_.pop_back();
+  } else {
+    // As described in third_party/blink/renderer/core/layout/gap/README.md,
+    // we create a `MainGap` at the spanner's block start offset when we have
+    // a spanner, and another `MainGap` at the spanner's block end offset.
+    main_gaps_.emplace_back(block_offset, SpannerMainGapType::kStart);
+  }
+
+  // A spanner ends the current range of cross gaps, since it leads to the
+  // introduction of new `CrossGap`s.
+  CommitRangeOfCrossGapsBeforeCurrentMainGap();
+
+  main_gaps_.emplace_back(block_offset + logical_fragment_block_size,
+                          SpannerMainGapType::kEnd);
+
+  CHECK_GE(main_gaps_.size(), 2u);
+
+  // Even though this last `MainGap` is a spanner end gap, we set its cross
+  // gap before range to be that of the main gap before this one.
+  main_gaps_.back().SetRangeOfCrossGapsBefore(
+      main_gaps_[main_gaps_.size() - 2].RangeOfCrossGapsBefore());
+  CHECK(main_gaps_.back().RangeOfCrossGapsBefore().IsValid());
+}
+
 void ColumnLayoutAlgorithm::ResetRangeOfCrossGapsBeforeCurrentMainGap() {
   range_of_cross_gaps_before_current_main_gap_ = CrossGapRange();
 }
@@ -906,20 +940,25 @@ void ColumnLayoutAlgorithm::CommitRangeOfCrossGapsBeforeCurrentMainGap() {
     return;
   }
 
+  CHECK(!main_gaps_.back().IsEndSpannerMainGap());
+
   if (!range_of_cross_gaps_before_current_main_gap_.IsValid()) {
     // The only situation where we would expect the range to not be valid is if
     // we have inserted multiple spanners in a row (back to back, with no space
-    // in between). In such cases, we need to use the range from the previous
-    // main gap, which will be valid. Subsequent calls to this after each
-    // spanner in the sequence will always then find that same valid range.
-    CHECK_GT(main_gaps_.size(), 1u);
+    // in between, each spanner accounting for 2 `MainGap`s). In such cases, we
+    // need to use the range from the previously inserted main gap, which will
+    // be valid. Subsequent calls to this after each spanner in the sequence
+    // will always then find that same valid range.
+    CHECK_GE(main_gaps_.size(), 1u);
     range_of_cross_gaps_before_current_main_gap_ =
-        main_gaps_[main_gaps_.size() - 2].RangeOfCrossGapsBefore();
+        main_gaps_[main_gaps_.size() - 1].RangeOfCrossGapsBefore();
     CHECK(range_of_cross_gaps_before_current_main_gap_.IsValid());
   }
 
   main_gaps_.back().SetRangeOfCrossGapsBefore(
       range_of_cross_gaps_before_current_main_gap_);
+
+  ResetRangeOfCrossGapsBeforeCurrentMainGap();
 }
 
 struct ResultWithOffset {
@@ -1466,11 +1505,11 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       if (column_index_in_row == 0 && has_wrapped &&
           row_gap_size_ > LayoutUnit()) {
         // If this `MainGap` is not for a spanner, the offset will be the
-        // midpoint in the gap between one row and the next. Otherwise, it will
+        // start of the row gap. Otherwise, it will
         // be the start of the spanner.
-        main_gaps_.emplace_back(
-            column_logical_rect.BlockStartOffset() - (row_gap_size_ / 2),
-            /*is_spanner_main_gap=*/false);
+        main_gaps_.emplace_back(column_logical_rect.BlockStartOffset() -
+                                row_gap_size_);
+        CommitRangeOfCrossGapsBeforeCurrentMainGap();
       }
 
       // The first column in a row has no associated column intersections.
@@ -1481,19 +1520,15 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
         // TODO(crbug.com/436140061): The following are for the optimized
         // version of GapDecorations. Once the optimized version is implemented,
         // we can remove all the other unused methods and members from the old
-        // version. We don't add new CrossGaps if we have inserted a row gap.
-        // This is because the only times new columns are inserted are when we
-        // have wrapped or when we layout a spanner. The only time we want to
-        // add new cross gaps is when we laid out a spanner, not when
-        // we have wrapped, since the `CrossGap` can be shared across rows.
+        // version. We add a cross gap at the start of for every column in a
+        // row, after the first column, since there is no gap before the first
+        // column.
         //
         // See third_party/blink/renderer/core/layout/gap/README.md for more
         // information.
-        if (!has_wrapped) {
-          AddCrossGapForColumn(
-              column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2),
-              column_logical_rect.BlockStartOffset());
-        }
+        AddCrossGapForColumn(
+            column_logical_rect.InlineStartOffset() - (column_gap_size_ / 2),
+            column_logical_rect.BlockStartOffset());
       }
 
       if (!content_inline_start_.has_value() &&
@@ -1517,15 +1552,6 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     }
 
     column_index_in_row++;
-  }
-
-  if (RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    // We purposely commit the range of cross gaps before current main gap after
-    // processing the row to capture all cross gaps that began prior to the main
-    // gap boundary. Only do this if a `MainGap` was created.
-    if (has_wrapped) {
-      CommitRangeOfCrossGapsBeforeCurrentMainGap();
-    }
   }
 
   if (!row_gap_intersections.empty()) {
@@ -1616,20 +1642,11 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
   has_processed_first_child_ = true;
 
+  // If the spanner comes before the start of any cross gaps, we skip it since
+  // it won't affect the cross gaps.
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasGapRule() && !cross_gaps_.empty()) {
-    // If the spanner comes before the start of any cross gaps, we skip it since
-    // it won't affect the cross gaps.
-    // As described in third_party/blink/renderer/core/layout/gap/README.md,
-    // we create a `MainGap` at the spanner's block start offset when we have a
-    // spanner.
-    main_gaps_.emplace_back(offset.block_offset,
-                            /*is_spanner_main_gap=*/true);
-    // A spanner ends the current range of cross gaps, since it leads to the
-    // introduction of new `CrossGap`s.
-    CommitRangeOfCrossGapsBeforeCurrentMainGap();
-    ResetRangeOfCrossGapsBeforeCurrentMainGap();
-    spanner_main_gaps_indices_.push_back(main_gaps_.size() - 1);
+    AddMainGapForSpanner(offset.block_offset, logical_fragment.BlockSize());
   }
 
   return BreakStatus::kContinue;

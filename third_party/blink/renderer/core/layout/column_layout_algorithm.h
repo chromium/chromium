@@ -140,6 +140,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // See third_party/blink/renderer/core/layout/gap/README.md for more info.
   void AddCrossGapForColumn(LayoutUnit inline_offset, LayoutUnit block_offset);
 
+  void AddMainGapForSpanner(LayoutUnit block_offset,
+                            LayoutUnit logical_fragment_block_size);
+
   // Populates `range_of_cross_gaps_before_current_main_gap_` with
   // `CrossGapRanges` for each group of `CrossGap`s before each `MainGap`.
   // For each `MainGap` we say that the `CrossGaps` associated with it are any
@@ -266,12 +269,6 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
   std::optional<LayoutUnit> content_inline_start_;
   std::optional<LayoutUnit> content_block_start_;
-
-  // We use this to keep track of the indices of `MainGap`s that are created by
-  // spanners. This is used later by `GapGeometry` during paint time, since
-  // CrossGaps end at spanners. The indices correspond to indices in
-  // `main_gaps_`.
-  Vector<wtf_size_t> spanner_main_gaps_indices_;
 
   // This will be set during (outer) block fragmentation once we've processed
   // the first piece of content of the multicol container. It is used to check

@@ -245,12 +245,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return column_gaps_to_blocked_row_ranges_;
   }
 
-  // Returns the offset of the gap at the specified `gap_index` in the given
-  // `direction` (main or cross axis). For the main axis, it returns the offset
-  // directly. For the cross axis, it returns either the inline or block offset
-  // depending on the direction (columns or rows).
-  LayoutUnit GetGapOffset(GridTrackSizingDirection direction,
-                          wtf_size_t gap_index) const;
+  // Returns the center offset of the gap at the specified `gap_index` in the
+  // given `direction` (main or cross axis). For the main axis, it returns the
+  // offset directly. For the cross axis, it returns either the inline or block
+  // offset depending on the direction (columns or rows).
+  LayoutUnit GetGapCenterOffset(GridTrackSizingDirection direction,
+                                wtf_size_t gap_index) const;
 
   // Gap Decorations are painted relative to intersection points within a gap.
   // This methods returns a Vector of ordered intersection offsets for the gap
@@ -269,7 +269,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   bool IsEdgeIntersection(wtf_size_t gap_index,
                           wtf_size_t intersection_index,
                           wtf_size_t intersection_count,
-                          bool is_main_gap) const;
+                          bool is_main_gap,
+                          const Vector<LayoutUnit>& intersections) const;
 
   // Determines if a given track at `cross_index` is covered for gap at
   // `main_index`. For the given `track_direction`, this function looks up any
@@ -287,16 +288,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   BlockedStatus GetIntersectionBlockedStatus(
       GridTrackSizingDirection track_direction,
       wtf_size_t primary_index,
-      wtf_size_t secondary_index) const;
+      wtf_size_t secondary_index,
+      const Vector<LayoutUnit>& intersections) const;
 
   blink::String ToString(bool verbose = false) const;
-
-  const Vector<wtf_size_t>& GetSpannerMainGapsIndices() const {
-    return spanner_main_gaps_indices_;
-  }
-  void SetSpannerMainGapsIndices(Vector<wtf_size_t>&& indices) {
-    spanner_main_gaps_indices_ = std::move(indices);
-  }
 
   bool IsMultiColSpanner(wtf_size_t gap_index,
                          GridTrackSizingDirection direction = kForRows) const;
@@ -320,16 +315,28 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       GridTrackSizingDirection direction,
       wtf_size_t gap_index) const;
 
-  // Computes the end offset for a flex cross gap at `cross_gap_index`. The end
-  // offset is either:
+  // Computes the end offset for a flex or multicol cross gap at
+  // `cross_gap_index`. The end offset is either:
   // - The container's content end which occurs when the cross gap is at last
   // line, or
   // - The offset of the main gap where this cross gap ends (tracked by
   // `main_gap_running_index_`) which occurs when the cross gap occurs on any
   // line but the last.
-  LayoutUnit ComputeEndOffsetForFlexCrossGap(wtf_size_t cross_gap_index,
-                                             GridTrackSizingDirection direction,
-                                             bool cross_gap_is_at_end) const;
+  LayoutUnit ComputeEndOffsetForFlexOrMulticolCrossGap(
+      wtf_size_t cross_gap_index,
+      GridTrackSizingDirection direction,
+      bool cross_gap_is_at_end) const;
+
+  // In multicol, the intersections of a given `CrossGap` will be spanner
+  // adjacent if and only if there are 3 intersections in the gap, and we are at
+  // the middle intersection. This is because all multicol `CrossGap` will have
+  // only 2 intersections, except if they are adjacent to a spanner, in which
+  // case they will have 3 intersections: One at the start of the gap, one at
+  // the start of the spanner, and one at the end of the spanner. The middle
+  // intersection is the one that is spanner adjacent.
+  bool MulticolCrossGapIntersectionsEndAtSpanner(
+      wtf_size_t intersection_index,
+      const Vector<LayoutUnit>& intersections) const;
 
   // TODO(samomekarajr): Potential optimization. This can be a single
   // Vector<GapIntersection> if we exclude intersection points at the edge of
@@ -354,22 +361,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // version.
   // See third_party/blink/renderer/core/layout/gap/README.md for more
   // information.
-
-  // In order to correctly get the start and end intersections for a `CrossGap`,
-  // (i.e. stopping at spanners), we use two indices (`main_gap_running_index_`
-  // and `next_spanner_main_gap_index_`), to help us in doing this in constant
-  // time (for most cases). `next_spanner_main_gap_index_` is an index of
-  // `spanner_main_gaps_indices_`, which in turn is a vector of indices for
-  // spanner main gaps in `main_gaps_`, and it is used to track the next spanner
-  // main gap (the end offset/intersection of the cross gap we want to paint).
-  // `main_gap_running_index_` is an index of `main_gaps_`, and we use
-  // `spanner_main_gap_indices_` along with `next_spanner_main_gap_index_` to
-  // move `main_gap_running_index_` forward as we progress.
-  //
-  // After we are done painting a cross gap that goes from one spanner to the
-  // next (or to the end of the container), we advance the indices to point
-  // towards the next spanner main gap that we will paint up until.
-  void AdvanceMulticolRunningIndices(bool& should_add_content_end) const;
 
   MainGaps main_gaps_;
   CrossGaps cross_gaps_;
@@ -409,20 +400,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // TODO(samomekarajr): Explore removing this in favour of having this state
   // live at the parent paint call and passing in as an input/output param.
   mutable wtf_size_t main_gap_running_index_ = kNotFound;
-  // For multicol, for a given cross gap, we need to track the index the next
-  // spanner main gap, since this will be the end of that cross gap. This is a
-  // running index (in `spanner_main_gaps_indices_`) that gets updated as we
-  // progress, using the `spanner_main_gaps_indices_`.
-  //
-  // This must be mutable for the same reasons that `main_gap_running_index_` is
-  // mutable.
-  mutable wtf_size_t next_spanner_main_gap_index_ = 0;
-  // These are the indices (in `main_gaps_`) of the main gaps that are spanners.
-  // Only used for multicol.
-  //
-  // This must be mutable for the same reasons that `main_gap_running_index_` is
-  // mutable.
-  mutable Vector<wtf_size_t> spanner_main_gaps_indices_;
 };
 
 }  // namespace blink

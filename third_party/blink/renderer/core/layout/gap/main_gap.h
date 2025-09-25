@@ -12,6 +12,12 @@
 
 namespace blink {
 
+// Represents the type of a `MainGap` created by a multicol spanner.
+// * `kStart`: The gap is at the start of the spanner.
+// * `kEnd`: The gap is at the end of the spanner.
+// * `kNone`: The gap is not associated with a spanner.
+enum class SpannerMainGapType { kStart, kEnd, kNone };
+
 // Represents the gap in the primary axis. For example, in a row-based flex
 // container the MainGaps represent the gaps between flex lines, while the
 // CrossGaps represent the gaps between flex items in the same line. See
@@ -19,8 +25,9 @@ namespace blink {
 class CORE_EXPORT MainGap {
  public:
   MainGap() = default;
-  MainGap(LayoutUnit offset, bool is_spanner_main_gap = false)
-      : gap_offset_(offset), is_spanner_main_gap_(is_spanner_main_gap) {}
+  MainGap(LayoutUnit offset,
+          SpannerMainGapType spanner_main_gap_type = SpannerMainGapType::kNone)
+      : gap_offset_(offset), spanner_main_gap_type_(spanner_main_gap_type) {}
 
   void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
   LayoutUnit GetGapOffset() const { return gap_offset_; }
@@ -84,7 +91,15 @@ class CORE_EXPORT MainGap {
     return str;
   }
 
-  bool IsSpannerMainGap() const { return is_spanner_main_gap_; }
+  bool IsStartSpannerMainGap() const {
+    return spanner_main_gap_type_ == SpannerMainGapType::kStart;
+  }
+  bool IsEndSpannerMainGap() const {
+    return spanner_main_gap_type_ == SpannerMainGapType::kEnd;
+  }
+  bool IsSpannerMainGap() const {
+    return spanner_main_gap_type_ != SpannerMainGapType::kNone;
+  }
 
  private:
   // This represents the midpoint offset (block or inline) of the gap. If the main
@@ -102,7 +117,7 @@ class CORE_EXPORT MainGap {
   CrossGapRange range_of_cross_gaps_after_;
 
   // Only used for multicol.
-  bool is_spanner_main_gap_ = false;
+  SpannerMainGapType spanner_main_gap_type_ = SpannerMainGapType::kNone;
 };
 
 }  // namespace blink
