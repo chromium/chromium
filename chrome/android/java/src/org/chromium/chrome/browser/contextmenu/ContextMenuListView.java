@@ -60,7 +60,7 @@ public class ContextMenuListView extends ListView {
         // the background is a 9-patch, it gets some extra padding automatically, and we should
         // take it into account when calculating the width here. This flow is not applicable if the
         // background does not comes with a 9-patch (e.g. frame's width is 0).
-        final View frame = ((View) getParent());
+        final View frame = ((View) getParent().getParent());
         assert frame.getId() == R.id.context_menu_frame;
         final int frameWidth = frame.getMeasuredWidth();
         final int parentLateralPadding = frame.getPaddingLeft();
