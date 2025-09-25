@@ -141,14 +141,6 @@ class LockedFullscreenWindowApiTestChromeOS
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
                        OpenLockedFullscreenWindow) {
-  // This test is for the legacy behavior of locking a standard browser window.
-  // Skip it when the new SWA-based migration is enabled.
-  // TODO(crbug.com/438540673): Update `chrome.windows.create` to migrate locked
-  // quiz to Boca SWA.
-  if (IsLockedQuizMigrationEnabled()) {
-    GTEST_SKIP() << "This test is only relevant for the legacy case.";
-  }
-
   ASSERT_TRUE(RunExtensionTest("locked_fullscreen/with_permission",
                                {.custom_arg = "openLockedFullscreenWindow"}))
       << message_;
@@ -156,6 +148,24 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
   // Make sure the newly created window is "trusted pinned" (which means that
   // it's in locked fullscreen mode).
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+}
+
+IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
+                       OpenLockedFullscreenWindowWithIncorrectUrlCount) {
+  if (!IsLockedQuizMigrationEnabled()) {
+    GTEST_SKIP()
+        << "This test is only relevant for the new SWA-based migration case.";
+  }
+
+  ASSERT_TRUE(RunExtensionTest(
+      "locked_fullscreen/with_permission",
+      {.custom_arg = "openLockedFullscreenWindowWithIncorrectUrlCount"}))
+      << message_;
+
+  // Make sure no new windows get created (so only the one created by default
+  // exists) since the call to chrome.windows.create fails on the javascript
+  // side.
+  EXPECT_EQ(1u, extensions::WindowControllerList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
@@ -195,8 +205,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
   Browser* current_browser = browser();
   if (IsLockedQuizMigrationEnabled()) {
     LaunchBocaAppAndWait();
-    Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
-    current_browser = boca_app_browser;
+    current_browser = FindBocaSystemWebAppBrowser();
   }
   ASSERT_THAT(current_browser, NotNull());
 
@@ -307,8 +316,7 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenWindowApiTestChromeOS,
   Browser* current_browser = browser();
   if (IsLockedQuizMigrationEnabled()) {
     LaunchBocaAppAndWait();
-    Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
-    current_browser = boca_app_browser;
+    current_browser = FindBocaSystemWebAppBrowser();
   }
   ASSERT_THAT(current_browser, NotNull());
 

@@ -40,6 +40,12 @@ class GURL;
 class SkBitmap;
 class TabStripModel;
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace ash {
+class BrowserDelegate;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace base {
 class TaskRunner;
 }
@@ -195,6 +201,11 @@ class WindowsCreateFunction : public ExtensionFunction {
   ~WindowsCreateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnWindowCreatedAsynchronously(ash::BrowserDelegate* browser_delegate);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 class WindowsUpdateFunction : public ExtensionFunction {
   ~WindowsUpdateFunction() override = default;

@@ -128,8 +128,10 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -167,6 +169,12 @@ constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
     "tab by its ID.";
 constexpr char kWindowCreateCannotMoveIwaTabError[] =
     "The tab of an Isolated Web App cannot be moved to a new window.";
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kWindowCreateLockedFullscreenUrlCountMismatchError[] =
+    "When creating a new window in locked fullscreen mode, exactly one URL "
+    "should be supplied.";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsValidStateForWindowsCreateFunction(
     const windows::Create::Params::CreateData* create_data) {
@@ -284,7 +292,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : calling_profile;
 
+  if (!IsValidStateForWindowsCreateFunction(base::OptionalToPtr(create_data))) {
+    return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
+  }
+
   // Look for optional tab id.
+  bool is_locked_fullscreen =
+      create_data &&
+      create_data->state == windows::WindowState::kLockedFullscreen;
   WindowController* source_window = nullptr;
   if (create_data && create_data->tab_id) {
     if (isolated_web_app_url_info.has_value()) {
@@ -329,10 +344,41 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
     }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // Tabs cannot be moved to the OnTask system web app. Only relevant for
+    // locked fullscreen on ChromeOS.
+    if (is_locked_fullscreen &&
+        ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
+      return RespondNow(
+          Error(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  if (!IsValidStateForWindowsCreateFunction(base::OptionalToPtr(create_data))) {
-    return RespondNow(Error(tabs_constants::kInvalidWindowStateError));
+  if (is_locked_fullscreen) {
+    if (!tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
+      return RespondNow(
+          Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
+    }
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // Set up and launch the OnTask system web app if applicable. The legacy
+    // setup leverages a regular browser instance today.
+    if (ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
+      if (urls.size() != 1) {
+        return RespondNow(
+            Error(kWindowCreateLockedFullscreenUrlCountMismatchError));
+      }
+      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
+          ->GetForBrowserContext(calling_profile)
+          ->OpenLockedQuiz(
+              urls.front(),
+              base::BindOnce(
+                  &WindowsCreateFunction::OnWindowCreatedAsynchronously, this));
+      return RespondLater();
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   Browser::Type window_type = Browser::TYPE_NORMAL;
@@ -442,11 +488,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
   create_params.initial_show_state = ui::mojom::WindowShowState::kNormal;
   if (create_data && create_data->state != windows::WindowState::kNone) {
-    if (create_data->state == windows::WindowState::kLockedFullscreen &&
-        !tabs_internal::ExtensionHasLockedFullscreenPermission(extension())) {
-      return RespondNow(
-          Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
-    }
     create_params.initial_show_state =
         tabs_internal::ConvertToWindowShowState(create_data->state);
   }
@@ -593,6 +634,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // Lock the window fullscreen only after the new tab has been created
   // (otherwise the tabstrip is empty), and window()->show() has been called
   // (otherwise that resets the locked mode for devices in tablet mode).
+  // TODO(crbug.com/438540029) - Remove once the migration is complete.
   if (create_data &&
       create_data->state == windows::WindowState::kLockedFullscreen) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -615,6 +657,19 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           *new_window, extension(), WindowController::kPopulateTabs,
           source_context_type())));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WindowsCreateFunction::OnWindowCreatedAsynchronously(
+    ash::BrowserDelegate* browser_delegate) {
+  if (!browser_delegate) {
+    RespondWithError(ExtensionTabUtil::kBrowserWindowNotAllowed);
+    return;
+  }
+  Respond(WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
+      browser_delegate->GetBrowser(), extension(),
+      WindowController::kPopulateTabs, source_context_type())));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tabs ------------------------------------------------------------------------
 

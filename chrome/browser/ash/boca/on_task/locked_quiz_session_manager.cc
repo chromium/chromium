@@ -27,17 +27,17 @@ namespace {
 
 using ::boca::LockedNavigationOptions;
 
-// Returns a pointer to the browser window with the specified id. Returns
-// nullptr if there is no match.
-ash::BrowserDelegate* GetBrowserWindowWithID(SessionID window_id) {
-  if (!window_id.is_valid()) {
+// Returns a pointer to the browser delegate for the window with the specified
+// id. Returns nullptr if there is no match.
+ash::BrowserDelegate* GetBrowserDelegateBySessionID(SessionID session_id) {
+  if (!session_id.is_valid()) {
     return nullptr;
   }
   ash::BrowserDelegate* result = nullptr;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingCreationTime,
       [&](ash::BrowserDelegate& browser) {
-        if (browser.GetSessionID() == window_id) {
+        if (browser.GetSessionID() == session_id) {
           result = &browser;
           return ash::BrowserController::kBreakIteration;
         }
@@ -104,16 +104,16 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
   system_web_app_manager_->SetParentTabsRestriction(
       window_id, LockedNavigationOptions::DOMAIN_NAVIGATION);
 
-  auto* const browser = GetBrowserWindowWithID(window_id);
-  LOG_IF(WARNING, !browser)
+  auto* const browser_delegate = GetBrowserDelegateBySessionID(window_id);
+  LOG_IF(WARNING, !browser_delegate)
       << "Successfully configured Boca SWA window but could not "
       << "find its Browser instance for window_id: " << window_id;
 
   // Activate SWA window to ensure it remains the active/focused window.
-  if (browser) {
-    browser->Activate();
+  if (browser_delegate) {
+    browser_delegate->Activate();
   }
-  std::move(callback).Run(browser);
+  std::move(callback).Run(browser_delegate);
 }
 
 void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,

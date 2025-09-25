@@ -9,6 +9,26 @@ openLockedFullscreenWindow = async function() {
   chrome.test.succeed();
 };
 
+openLockedFullscreenWindowWithIncorrectUrlCount = async function() {
+  const incorrectUrlCountErrorMessage =
+      'When creating a new window in locked fullscreen mode, exactly one URL ' +
+      'should be supplied.';
+
+  // Verify error when no URLs are specified.
+  await chrome.test.assertPromiseRejects(
+      chrome.windows.create({url: [], state: 'locked-fullscreen'}),
+      `Error: ${incorrectUrlCountErrorMessage}`);
+
+  // Also verify error when more than one URL is specified.
+  await chrome.test.assertPromiseRejects(
+      chrome.windows.create({
+        url: ['about:blank', 'chrome://version'],
+        state: 'locked-fullscreen'
+      }),
+      `Error: ${incorrectUrlCountErrorMessage}`);
+  chrome.test.succeed();
+};
+
 updateWindowToLockedFullscreen = async function() {
   const window = await chrome.windows.getCurrent();
   const updatedWindow =
@@ -47,6 +67,7 @@ removeLockedFullscreenFromIncompatibleWindow = async function() {
 
 const tests = {
   openLockedFullscreenWindow,
+  openLockedFullscreenWindowWithIncorrectUrlCount,
   updateWindowToLockedFullscreen,
   updateIncompatibleWindowToLockedFullscreen,
   removeLockedFullscreenFromWindow,
