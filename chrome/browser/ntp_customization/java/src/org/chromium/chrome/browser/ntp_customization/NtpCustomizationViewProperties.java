@@ -87,9 +87,8 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_FEED_LIST_ITEMS_TITLE_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<Integer>
-            SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID =
-                    new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<String>
+            SET_FEED_SWITCH_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] FEED_SETTINGS_KEYS =
             new PropertyKey[] {
@@ -97,6 +96,6 @@ public class NtpCustomizationViewProperties {
                 IS_FEED_SWITCH_CHECKED,
                 IS_FEED_LIST_ITEMS_TITLE_VISIBLE,
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
-                SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID
+                SET_FEED_SWITCH_CONTENT_DESCRIPTION
             };
 }

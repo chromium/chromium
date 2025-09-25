@@ -105,14 +105,30 @@ public class MaterialSwitchWithText extends LinearLayout implements Checkable, O
     }
 
     /**
+     * Get the title for the Textview besides the material switch in this {@link
+     * MaterialSwitchWithText}
+     */
+    public String getText() {
+        return mTextView.getText().toString();
+    }
+
+    /**
      * Sets the content description for the TextView besides the material switch in this {@link
      * MaterialSwitchWithText}. Use this method when the content description differs from the
      * displayed text.
      *
-     * @param contentDescriptionResId The resource id of the content description to set.
+     * @param contentDescription The content description to set.
      */
-    public void setTextContentDescriptionResId(@StringRes int contentDescriptionResId) {
-        mTextView.setContentDescription(getResources().getString(contentDescriptionResId));
+    public void setTextContentDescription(String contentDescription) {
+        mTextView.setContentDescription(contentDescription);
+    }
+
+    /**
+     * Gets the content description for the TextView besides the material switch in this {@link
+     * MaterialSwitchWithText}.
+     */
+    public String getTextContentDescription() {
+        return mTextView.getContentDescription().toString();
     }
 
     /**

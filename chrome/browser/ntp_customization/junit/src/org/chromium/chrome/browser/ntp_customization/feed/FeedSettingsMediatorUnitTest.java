@@ -96,6 +96,7 @@ public class FeedSettingsMediatorUnitTest {
         FeedSettingsMediator.setPrefForTesting(mPrefChangeRegistrar, mPrefService);
         mFeedSettingsMediator =
                 new FeedSettingsMediator(
+                        mContext,
                         mContainerPropertyModel,
                         mBottomSheetPropertyModel,
                         mFeedSettingsPropertyModel,
@@ -124,6 +125,7 @@ public class FeedSettingsMediatorUnitTest {
         // handler should be set to null.
         when(mDelegate.shouldShowAlone()).thenReturn(true);
         new FeedSettingsMediator(
+                mContext,
                 mContainerPropertyModel,
                 mBottomSheetPropertyModel,
                 mFeedSettingsPropertyModel,
@@ -137,6 +139,7 @@ public class FeedSettingsMediatorUnitTest {
         clearInvocations(mBottomSheetPropertyModel);
         when(mDelegate.shouldShowAlone()).thenReturn(false);
         new FeedSettingsMediator(
+                mContext,
                 mContainerPropertyModel,
                 mBottomSheetPropertyModel,
                 mFeedSettingsPropertyModel,

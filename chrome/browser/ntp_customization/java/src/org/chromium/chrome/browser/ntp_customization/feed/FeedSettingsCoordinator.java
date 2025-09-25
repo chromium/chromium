@@ -10,7 +10,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
@@ -88,6 +88,7 @@ public class FeedSettingsCoordinator {
 
         mMediator =
                 new FeedSettingsMediator(
+                        context,
                         containerPropertyModel,
                         bottomSheetPropertyModel,
                         feedSettingsPropertyModel,
@@ -116,9 +117,13 @@ public class FeedSettingsCoordinator {
             View feedListItemsTitle = view.findViewById(R.id.feed_list_items_title);
             feedListItemsTitle.setVisibility(
                     model.get(IS_FEED_LIST_ITEMS_TITLE_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (propertyKey == SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID) {
-            feedSwitch.setTextContentDescriptionResId(
-                    model.get(SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID));
+        } else if (propertyKey == SET_FEED_SWITCH_CONTENT_DESCRIPTION) {
+            feedSwitch.setTextContentDescription(
+                    feedSwitch.getText()
+                            + feedSwitch
+                                    .getContext()
+                                    .getString(R.string.autofill_address_summary_separator)
+                            + model.get(SET_FEED_SWITCH_CONTENT_DESCRIPTION));
         } else if (propertyKey == LEARN_MORE_BUTTON_CLICK_LISTENER) {
             ImageView learnMoreButton = view.findViewById(R.id.learn_more_button);
             learnMoreButton.setOnClickListener(model.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
