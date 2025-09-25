@@ -436,7 +436,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/startup_passwords_import_service_factory.h"  // nogncheck (Desktop only)
 #endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -1359,7 +1359,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   SpellcheckServiceFactory::GetInstance();
 #endif
-#if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_ANDROID)
   StartupPasswordsImportServiceFactory::GetInstance();
 #endif
   StatefulSSLHostStateDelegateFactory::GetInstance();

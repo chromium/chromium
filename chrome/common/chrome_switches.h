@@ -126,7 +126,7 @@ extern const char kRefreshPlatformPolicy[];
 extern const char kForceWhatsNew[];
 extern const char kHideCrashRestoreBubble[];
 extern const char kHomePage[];
-#if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kImportPasswords[];
 #endif
 extern const char kIncognito[];

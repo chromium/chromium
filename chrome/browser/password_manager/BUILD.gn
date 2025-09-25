@@ -11,7 +11,7 @@ group("password_manager") {
   ]
 }
 
-if (!is_android && !is_official_build) {
+if (!is_android) {
   static_library("startup_import") {
     sources = [
       "startup_passwords_import_service.cc",
@@ -27,6 +27,7 @@ if (!is_android && !is_official_build) {
       "//base",
       "//chrome/browser/affiliations",
       "//chrome/browser/profiles:profile",
+      "//chrome/common:channel_info",
       "//chrome/common:non_code_constants",
       "//components/affiliations/core/browser:affiliations",
       "//components/keyed_service/core",

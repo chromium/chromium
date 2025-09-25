@@ -382,7 +382,7 @@ const char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
 // http://google.com.
 const char kHomePage[] = "homepage";
 
-#if !BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_ANDROID)
 // Triggers the import of passwords on startup.
 const char kImportPasswords[] = "import-passwords";
 #endif
