@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -295,7 +296,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // URLs have different outcomes to comply with standards. Please see
   // GURLTest::ContentForNonStandardURLs for more information.
   std::string GetContent() const;
-  std::string_view GetContentPiece() const;
+  std::string_view GetContentPiece() const LIFETIME_BOUND;
 
   // Returns true if the hostname is an IP address. Note: this function isn't
   // as cheap as a simple getter because it re-parses the hostname to verify.
@@ -306,7 +307,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string scheme() const {
     return ComponentString(parsed_.scheme);
   }
-  std::string_view scheme_piece() const {
+  std::string_view scheme_piece() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.scheme);
   }
 
@@ -314,7 +315,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string username() const {
     return ComponentString(parsed_.username);
   }
-  std::string_view username_piece() const {
+  std::string_view username_piece() const LIFETIME_BOUND{
     return ComponentStringPiece(parsed_.username);
   }
 
@@ -322,7 +323,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string password() const {
     return ComponentString(parsed_.password);
   }
-  std::string_view password_piece() const {
+  std::string_view password_piece() const LIFETIME_BOUND{
     return ComponentStringPiece(parsed_.password);
   }
 
@@ -336,7 +337,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string host() const {
     return ComponentString(parsed_.host);
   }
-  std::string_view host_piece() const {
+  std::string_view host_piece() const LIFETIME_BOUND{
     return ComponentStringPiece(parsed_.host);
   }
 
@@ -347,7 +348,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string port() const {
     return ComponentString(parsed_.port);
   }
-  std::string_view port_piece() const {
+  std::string_view port_piece() const LIFETIME_BOUND{
     return ComponentStringPiece(parsed_.port);
   }
 
@@ -357,7 +358,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string path() const {
     return ComponentString(parsed_.path);
   }
-  std::string_view path_piece() const {
+  std::string_view path_piece() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.path);
   }
 
@@ -366,7 +367,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string query() const {
     return ComponentString(parsed_.query);
   }
-  std::string_view query_piece() const {
+  std::string_view query_piece() const LIFETIME_BOUND{
     return ComponentStringPiece(parsed_.query);
   }
 
@@ -376,7 +377,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string ref() const {
     return ComponentString(parsed_.ref);
   }
-  std::string_view ref_piece() const {
+  std::string_view ref_piece() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.ref);
   }
 
@@ -398,14 +399,14 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string PathForRequest() const;
 
   // Returns the same characters as PathForRequest(), avoiding a copy.
-  std::string_view PathForRequestPiece() const;
+  std::string_view PathForRequestPiece() const LIFETIME_BOUND;
 
   // Returns the host, excluding the square brackets surrounding IPv6 address
   // literals. This can be useful for passing to getaddrinfo().
   std::string HostNoBrackets() const;
 
   // Returns the same characters as HostNoBrackets(), avoiding a copy.
-  std::string_view HostNoBracketsPiece() const;
+  std::string_view HostNoBracketsPiece() const LIFETIME_BOUND;
 
   // Returns true if this URL's host matches or is in the same domain as
   // the given input string. For example, if the hostname of the URL is
@@ -475,7 +476,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string ComponentString(const url::Component& comp) const {
     return std::string(ComponentStringPiece(comp));
   }
-  std::string_view ComponentStringPiece(const url::Component& comp) const {
+  std::string_view ComponentStringPiece(const url::Component& comp) const LIFETIME_BOUND {
     if (comp.is_empty())
       return std::string_view();
     return std::string_view(spec_).substr(static_cast<size_t>(comp.begin),
