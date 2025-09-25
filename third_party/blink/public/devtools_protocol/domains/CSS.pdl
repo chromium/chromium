@@ -165,6 +165,8 @@ experimental domain CSS
       StyleSheetOrigin origin
       # Associated style declaration.
       CSSStyle style
+      # The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
+      experimental optional DOM.BackendNodeId originTreeScopeNodeId
       # Media list array (for rules involving media queries). The array enumerates media queries
       # starting with the innermost one, going outwards.
       optional array of CSSMedia media

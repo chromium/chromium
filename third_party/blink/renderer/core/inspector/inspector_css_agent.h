@@ -440,7 +440,8 @@ class CORE_EXPORT InspectorCSSAgent final
       CSSStyleRule*,
       Element* element,
       PseudoId pseudo_id = kPseudoIdNone,
-      const AtomicString& pseudo_argument = g_null_atom);
+      const AtomicString& pseudo_argument = g_null_atom,
+      const TreeScope* tree_scope = nullptr);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildCoverageInfo(CSSStyleRule*,
                                                               bool);
   std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
