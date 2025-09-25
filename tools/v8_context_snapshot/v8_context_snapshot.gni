@@ -13,9 +13,13 @@ import("//build/config/v8_target_cpu.gni")
 import("//v8/gni/v8.gni")
 
 declare_args() {
-  # If set, both snapshots are included, and the context snapshot is enabled
-  # using the UseContextSnapshot feature.
-  include_both_v8_snapshots = false
+  # If set, both snapshots are included. At this time, this only applicable to
+  # android. In other words, it will not work correctly on other platforms.
+  # Building the context snapshots on android requires building blink multiple
+  # times. To avoid impacting developer productivity the context snapshot is
+  # only built for official builds.
+  include_both_v8_snapshots =
+      is_official_build && target_os == "android" && target_cpu == "arm64"
 
   if (target_os == "android") {
     # Whether to include both snapshots on arm32 when building fat binary.
@@ -26,23 +30,11 @@ declare_args() {
   }
 }
 
-# At this time, include_both_v8_snapshots is only applicable to android. In
-# other words, it will not work correctly on other platforms.
-assert(!include_both_v8_snapshots || (target_os == "android"))
-
 declare_args() {
-  # If set, the V8 context snapshot is included and used.
-  # This is currently enabled by default on:
-  # - Desktop platforms (linux, mac, win), excluding cross builds and msan
-  # - Android arm64 builds (official builds only by default)
   # TODO(crbug.com/40539769): Enable the feature on more environments.
+  # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
       include_both_v8_snapshots ||
-      # Building the context snapshots on android requires building blink
-      # multiple times. To avoid impacting developer productivity the android
-      # context snapshot is only built for official builds.
-      (is_official_build && target_os == "android" && target_cpu == "arm64") ||
-      # Disable in mac and win cross builds since building Blink twice is slow.
       (!is_chromeos && !is_android && !is_castos && !is_fuchsia &&
        !(host_toolchain == default_toolchain && is_msan) &&
        !(is_win && host_os != "win") && !(is_mac && host_os != "mac"))
