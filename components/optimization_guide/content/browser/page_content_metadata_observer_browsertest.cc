@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -132,8 +133,17 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest, NoMetaTags) {
   EXPECT_FALSE(callback_waiter_.IsReady());
 }
 
+// TODO(crbug.com/440240260): This test flakes frequently on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MetaTagsAreObservedInMultipleFrames \
+  DISABLED_MetaTagsAreObservedInMultipleFrames
+#else
+#define MAYBE_MetaTagsAreObservedInMultipleFrames \
+  MetaTagsAreObservedInMultipleFrames
+#endif
+
 IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MetaTagsAreObservedInMultipleFrames) {
+                       MAYBE_MetaTagsAreObservedInMultipleFrames) {
   ASSERT_TRUE(LoadPage(
       https_server()->GetURL("a.com", "/meta_tags_in_multiple_frames.html")));
   CreateObserver();
