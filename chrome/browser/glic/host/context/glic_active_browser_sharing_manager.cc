@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace glic {
 
@@ -23,7 +24,34 @@ GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() {
 }
 
 void GlicActiveBrowserSharingManager::OnBrowserSetLastActive(Browser* browser) {
-  if (browser->profile() != profile_) {
+  if (browser->profile() == profile_) {
+    active_tab_subscription_ =
+        browser->RegisterActiveTabDidChange(base::BindRepeating(
+            &GlicActiveBrowserSharingManager::OnActiveTabChanged,
+            base::Unretained(this)));
+  } else {
+    active_tab_subscription_ = {};
+  }
+
+  UpdateDelegate();
+}
+
+void GlicActiveBrowserSharingManager::OnBrowserNoLongerActive(
+    Browser* browser) {
+  active_tab_subscription_ = {};
+
+  UpdateDelegate();
+}
+
+void GlicActiveBrowserSharingManager::OnActiveTabChanged(
+    BrowserWindowInterface* browser) {
+  UpdateDelegate();
+}
+
+void GlicActiveBrowserSharingManager::UpdateDelegate() {
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (browser->GetProfile() != profile_ || !browser->IsActive()) {
     SetDelegate(nullptr);
     return;
   }
@@ -31,17 +59,11 @@ void GlicActiveBrowserSharingManager::OnBrowserSetLastActive(Browser* browser) {
   GlicInstance* glic_instance =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
           ->GetInstanceForActiveTab(browser);
-
   if (glic_instance && glic_instance->IsShowing()) {
     SetDelegate(glic_instance->host().sharing_manager().GetWeakPtr());
     return;
   }
 
-  SetDelegate(nullptr);
-}
-
-void GlicActiveBrowserSharingManager::OnBrowserNoLongerActive(
-    Browser* browser) {
   SetDelegate(nullptr);
 }
 

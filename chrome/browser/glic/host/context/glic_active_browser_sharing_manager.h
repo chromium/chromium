@@ -32,7 +32,16 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager,
   void OnBrowserSetLastActive(Browser* browser) override;
   void OnBrowserNoLongerActive(Browser* browser) override;
 
+  // Callback for changes to the active tab.
+  void OnActiveTabChanged(BrowserWindowInterface* browser);
+
  private:
+  // Updates the delegate based on current active browser state.
+  void UpdateDelegate();
+
+  // Subscription for active tab changes.
+  base::CallbackListSubscription active_tab_subscription_;
+
   raw_ptr<Profile> profile_;
 };
 
