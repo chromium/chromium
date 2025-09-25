@@ -103,6 +103,9 @@ public class NtpThemeMediator {
         if (mNtpThemeCollectionsCoordinator != null) {
             mNtpThemeCollectionsCoordinator.destroy();
         }
+        if (mNtpChromeColorsCoordinator != null) {
+            mNtpChromeColorsCoordinator.destroy();
+        }
     }
 
     /** Sets the on click listener for each theme bottom sheet section. */
@@ -249,5 +252,10 @@ public class NtpThemeMediator {
     void setNtpThemeCollectionsCoordinatorForTesting(
             NtpThemeCollectionsCoordinator ntpThemeCollectionsCoordinator) {
         mNtpThemeCollectionsCoordinator = ntpThemeCollectionsCoordinator;
+    }
+
+    public void setNtpChromeColorsCoordinatorForTesting(
+            NtpChromeColorsCoordinator ntpChromeColorsCoordinator) {
+        mNtpChromeColorsCoordinator = ntpChromeColorsCoordinator;
     }
 }

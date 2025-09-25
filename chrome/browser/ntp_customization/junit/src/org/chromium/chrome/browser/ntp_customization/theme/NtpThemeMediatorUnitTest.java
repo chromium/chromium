@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,6 +64,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private View mView;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
+    @Mock private NtpChromeColorsCoordinator mNtpChromeColorsCoordinator;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -108,6 +110,7 @@ public class NtpThemeMediatorUnitTest {
     public void testDestroy() {
         createMediator(/* shouldShowAlone= */ false);
         mMediator.setNtpThemeCollectionsCoordinatorForTesting(mNtpThemeCollectionsCoordinator);
+        mMediator.setNtpChromeColorsCoordinatorForTesting(mNtpChromeColorsCoordinator);
 
         assertNotNull(mBottomSheetPropertyModel.get(BACK_PRESS_HANDLER));
         assertNotNull(mThemePropertyModel.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
@@ -118,6 +121,7 @@ public class NtpThemeMediatorUnitTest {
         assertNull(mThemePropertyModel.get(LEARN_MORE_BUTTON_CLICK_LISTENER));
 
         verify(mNtpThemeCollectionsCoordinator).destroy();
+        verify(mNtpChromeColorsCoordinator).destroy();
     }
 
     @Test
