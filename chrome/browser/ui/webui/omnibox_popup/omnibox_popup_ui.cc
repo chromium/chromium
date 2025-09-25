@@ -29,7 +29,8 @@
 
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup);
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup) ||
+         base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug);
 }
 
 OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)

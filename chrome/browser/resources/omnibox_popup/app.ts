@@ -59,6 +59,14 @@ export class OmniboxPopupAppElement extends CrLitElement {
         reflect: true,
       },
 
+      /**
+       * Whether the app is in debug mode.
+       */
+      isDebug: {
+        type: Boolean,
+        reflect: true,
+      },
+
       result_: {type: Object},
     };
   }
@@ -66,6 +74,7 @@ export class OmniboxPopupAppElement extends CrLitElement {
   accessor canShowSecondarySide: boolean =
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
+  accessor isDebug: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
 
   private callbackRouter_: PageCallbackRouter;
@@ -75,6 +84,7 @@ export class OmniboxPopupAppElement extends CrLitElement {
   constructor() {
     super();
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
+    this.isDebug = new URLSearchParams(window.location.search).has('debug');
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -108,8 +118,7 @@ export class OmniboxPopupAppElement extends CrLitElement {
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     // Skip empty results. Otherwise, blurring/closing the omnibox would clear
     // the results in the debug UI.
-    if (new URLSearchParams(window.location.search).has('debug') &&
-        !result.matches.length) {
+    if (this.isDebug && !result.matches.length) {
       return;
     }
 

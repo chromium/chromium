@@ -44,3 +44,11 @@
 :host([can-show-secondary-side][has-secondary-side]) {
   --cr-searchbox-secondary-side-display: block;
 }
+
+/**
+ * In debug mode, make the element take up 50% of the viewport width.
+ */
+:host([is-debug]) {
+  display: block;
+  width: 50%;
+}

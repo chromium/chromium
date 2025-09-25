@@ -171,8 +171,13 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
-// If enabled, shows the omnibox suggestions popup in WebUI.
+// If enabled, shows the omnibox suggestions in the popup in WebUI.
 BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
+// Enables the WebUI for omnibox suggestions without modifying the popup UI.
+BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
+// Enables side-by-side comparison omnibox suggestions in WebUI and Views.
+const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam{
+    &kWebUIOmniboxPopupDebug, "SxS", false};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.

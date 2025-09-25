@@ -1804,6 +1804,9 @@ extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 extern const char kWebUIOmniboxPopupName[];
 extern const char kWebUIOmniboxPopupDescription[];
 
+extern const char kWebUIOmniboxPopupDebugName[];
+extern const char kWebUIOmniboxPopupDebugDescription[];
+
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 

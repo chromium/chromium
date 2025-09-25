@@ -2,8 +2,11 @@
 
 ## Debug instructions
 
-* Launch Chrome with `--enable-features=WebUIOmniboxPopup` or enable it via
-  `chrome://flags/#webui-omnibox-popup`.
+* Launch Chrome with `--enable-features=WebUIOmniboxPopupDebug` or enable it via
+`chrome://flags/#webui-omnibox-popup-debug`.
+  * For side-by-side comparison with the Views popup, launch Chrome with
+  `--enable-features=WebUIOmniboxPopupDebug:SxS/true` or select the
+  `Side by Side` flag variant.
 * Navigate to `chrome://omnibox-popup.top-chrome?debug` in a tab. A blank page
   should be shown.
 * Start typing a query into the omnibox. The omnibox suggestions should be shown
