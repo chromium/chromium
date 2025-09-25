@@ -865,6 +865,13 @@ class Namespace:
       if node.GetClass() == 'Enum':
         types.append(Enum(node).process())
       if node.GetClass() == 'Dictionary':
+        # Manifest keys defined in the schema are separate from normal custom
+        # types and instead get put into the manifest_keys property.
+        if node.GetName() == 'Manifest':
+          manifest_keys = Dictionary(node).process()['properties']
+          continue
+        # Otherwise this is a normal Dictionary defined type and goes in the
+        # normal types.
         types.append(Dictionary(node).process())
 
     # Events are defined as Attributes on the API Interface definition, which

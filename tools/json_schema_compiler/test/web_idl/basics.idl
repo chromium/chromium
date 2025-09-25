@@ -147,6 +147,13 @@ enum EnumType {
   "name2"
 };
 
+partial dictionary Manifest {
+  // Description of a manifest key.
+  DOMString string_key;
+  ExampleType custom_type_key;
+  (DOMString or long) union_type_key;
+};
+
 partial interface Browser {
   static attribute TestWebIdl testWebIdl;
 };

@@ -1102,6 +1102,37 @@ class WebIdlSchemaTest(unittest.TestCase):
             'isInstanceOf': 'ArrayBuffer'
         }, array_buffer_params[1])
 
+  # Tests Manifest keys defined on a partial 'Manifest' dictionary are
+  # extracted and put into the manifest keys details and not into the Types.
+  def testManifestKeys(self):
+    schema = self.idl_basics
+    # The 'Manifest' dictionary shouldn't get put into the custom types.
+    self.assertFalse(any(obj['id'] == 'Manifest' for obj in schema['types']))
+    manifest_keys = schema['manifest_keys']
+
+    # We should have 3 manifest keys of varying types.
+    self.assertEqual(['string_key', 'custom_type_key', 'union_type_key'],
+                     list(manifest_keys.keys()))
+    self.assertEqual(
+        {
+            'type': 'string',
+            'name': 'string_key',
+            'description': 'Description of a manifest key.'
+        }, manifest_keys['string_key'])
+    self.assertEqual({
+        '$ref': 'ExampleType',
+        'name': 'custom_type_key'
+    }, manifest_keys['custom_type_key'])
+    self.assertEqual(
+        {
+            'choices': [{
+                'type': 'string'
+            }, {
+                'type': 'integer'
+            }],
+            'name': 'union_type_key'
+        }, manifest_keys['union_type_key'])
+
 
 if __name__ == '__main__':
   unittest.main()
