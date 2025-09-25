@@ -140,9 +140,10 @@ CWV_EXPORT
 // CWVWebViewConfiguration instance is initialized.
 @property(nonatomic, class) BOOL chromeContextMenuEnabled;
 
-// Whether or not to use the new session storage. Defaults to NO.
+// Whether or not to use the new session storage. Defaults to YES.
 // This class property setting should only be changed BEFORE any
 // CWVWebViewConfiguration instance is initialized.
+// Deprecated: the code ignore the value assigned.
 @property(nonatomic, class) BOOL useOptimizedSessionStorage;
 
 // Whether or not to enable debugging by Safari Web Inspector.
