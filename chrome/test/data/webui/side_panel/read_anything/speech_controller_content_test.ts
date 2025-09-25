@@ -316,6 +316,64 @@ suite('SpeechController', () => {
     assertEquals(2, readAloudModel.getCallCount('moveSpeechForward'));
   });
 
+  test('onPlayPauseToggle with selection resets word boundaries', async () => {
+    const id = 35;
+    const p = document.createElement('p');
+    const text1 = 'And the disgraces. ';
+    const text2 = 'I\'m done. ';
+    const text3 = 'Cause all this time.';
+    const textNode = document.createTextNode(text1 + text2 + text3);
+    p.appendChild(textNode);
+    document.body.appendChild(p);
+    // Start playing and then pause
+    speechController.onPlayPauseToggle(p);
+    wordBoundaries.updateBoundary(2);
+    speechController.onPlayPauseToggle(p);
+    assertTrue(wordBoundaries.hasBoundaries());
+    // Now select text and play from there.
+    chrome.readingMode.startNodeId = id;
+    chrome.readingMode.startOffset = text1.length + text2.length + 3;
+    chrome.readingMode.endNodeId = id;
+    chrome.readingMode.endOffset = text1.length + text2.length + 8;
+    nodeStore.setDomNode(textNode, id);
+    const selection = document.getSelection();
+    assertTrue(!!selection);
+    const range = new Range();
+    range.setStart(textNode, chrome.readingMode.startOffset);
+    range.setEnd(textNode, chrome.readingMode.endOffset);
+    selection.addRange(range);
+    selectionController.onSelectionChange(selection);
+    readAloudModel.setInitialized(true);
+    readAloudModel.setCurrentTextContent(text3);
+    const node = ReadAloudNode.create(textNode);
+    assertTrue(!!node);
+    readAloudModel.setCurrentTextSegments(
+        [{node, start: 0, length: text1.length}]);
+    let calls = 0;
+    readAloudModel.moveSpeechForward = () => {
+      readAloudModel.methodCalled('moveSpeechForward');
+      calls++;
+      if (calls === 1) {
+        readAloudModel.setCurrentTextSegments(
+            [{node, start: text1.length, length: text2.length}]);
+      } else {
+        readAloudModel.setCurrentTextSegments([
+          {node, start: text1.length + text2.length, length: text3.length},
+        ]);
+      }
+    };
+
+    speechController.onPlayPauseToggle(p);
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    mockTimer.tick(playFromSelectionTimeout);
+    mockTimer.uninstall();
+    await speech.whenCalled('speak');
+
+    assertTrue(onPlayingFromSelection);
+    assertFalse(wordBoundaries.hasBoundaries());
+  });
+
   test('onNextGranularityClick updates state', () => {
     setSimpleNodeStoreWithTextAndModel(
         'Know all about the glories', readAloudModel);

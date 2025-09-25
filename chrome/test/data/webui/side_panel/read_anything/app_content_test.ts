@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, ContentController, ContentType, NodeStore, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, ContentType, NodeStore, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -19,7 +19,9 @@ suite('AppContent', () => {
   let contentController: ContentController;
   let emptyState: SpEmptyStateElement;
   let speechController: SpeechController;
+  let voiceLanguageController: VoiceLanguageController;
   let nodeStore: NodeStore;
+  let notificationManager: VoiceNotificationManager;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -32,7 +34,10 @@ suite('AppContent', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
-    VoiceLanguageController.setInstance(new VoiceLanguageController());
+    notificationManager = new VoiceNotificationManager();
+    VoiceNotificationManager.setInstance(notificationManager);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     contentController = new ContentController();
@@ -348,5 +353,65 @@ suite('AppContent', () => {
     app.onPlayingFromSelection();
 
     assertEquals('', selection.toString());
+  });
+
+  suite('language toast', () => {
+    const lang = 'ko-km';
+    let toast: LanguageToastElement;
+
+    setup(() => {
+      toast = app.$.languageToast;
+    });
+
+    test('shows error toasts', async () => {
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+      assertTrue(toast.$.toast.open);
+    });
+
+    test('does not shows error toast with language menu open', async () => {
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+
+      assertFalse(toast.$.toast.open);
+    });
+
+    test('shows error toast after language menu is closed', async () => {
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_OPEN);
+      emitEvent(app, ToolbarEvent.LANGUAGE_MENU_CLOSE);
+
+      notificationManager.onNoEngineConnection();
+      await microtasksFinished();
+
+      assertTrue(toast.$.toast.open);
+    });
+
+    // <if expr="is_chromeos">
+    test('shows downloaded toast on ChromeOS', async () => {
+      notificationManager.onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+      await microtasksFinished();
+      notificationManager.onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.AVAILABLE, []);
+      await microtasksFinished();
+
+      assertTrue(toast.$.toast.open);
+    });
+    // </if>
+
+    // <if expr="not is_chromeos">
+    test('no downloaded toast outside ChromeOS', async () => {
+      notificationManager.onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST, []);
+      await microtasksFinished();
+      notificationManager.onVoiceStatusChange(
+          lang, VoiceClientSideStatusCode.AVAILABLE, []);
+      await microtasksFinished();
+
+      assertFalse(toast.$.toast.open);
+    });
+    // </if>
   });
 });

@@ -45,6 +45,23 @@ suite('LanguageToast', () => {
 
     assertFalse(toast.$.toast.open);
   });
+
+  test('does not show toast if still downloading', async () => {
+    const lang = 'pt-br';
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
+
+  test('does not show toast if error while downloading', async () => {
+    const lang = 'pt-br';
+    toast.notify(NotificationType.DOWNLOADING, lang);
+    toast.notify(NotificationType.NO_INTERNET, lang);
+    await microtasksFinished();
+
+    assertFalse(toast.$.toast.open);
+  });
   // </if>
 
   // <if expr="not is_chromeos">

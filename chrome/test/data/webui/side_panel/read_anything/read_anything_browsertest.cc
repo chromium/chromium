@@ -153,13 +153,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
                    "mocha.run()");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DownloadNotification) {
-  RunSidePanelTest("side_panel/read_anything/download_notification_test.js",
-                   "mocha.run()");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
   RunSidePanelTest("side_panel/read_anything/toolbar_overflow_test.js",
                    "mocha.run()");
@@ -209,11 +202,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentIntegration) {
   RunSidePanelTest(
       "side_panel/read_anything/update_content_integration_test.js",
       "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WordHighlighting) {
-  RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
-                   "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Highlighter) {
@@ -281,12 +269,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudPhraseHighlightingMochaTest,
-                       PhraseHighlighting) {
-  RunSidePanelTest("side_panel/read_anything/phrase_highlighting_test.js",
-                   "mocha.run()");
-}
-
 class ReadAnythingReadAloudTsSegmentationMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
@@ -318,12 +300,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
                        SpeechController) {
   RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       WordHighlighting) {
-  RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
                    "mocha.run()");
 }
 
