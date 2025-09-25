@@ -349,9 +349,15 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   }
 }
 
+// TODO(crbug.com/447228160): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AboutBlankNavigationCleanUp DISABLED_AboutBlankNavigationCleanUp
+#else
+#define MAYBE_AboutBlankNavigationCleanUp AboutBlankNavigationCleanUp
+#endif
 // Link captures from about:blank cleans up the about:blank page.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
-                       AboutBlankNavigationCleanUp) {
+                       MAYBE_AboutBlankNavigationCleanUp) {
   if (!ShouldLinksWithExistingFrameTargetsCapture()) {
     GTEST_SKIP();
   }
