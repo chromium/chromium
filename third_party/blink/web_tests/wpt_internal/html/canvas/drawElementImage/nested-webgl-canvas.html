@@ -9,9 +9,6 @@
   </canvas>
 </canvas>
 <script>
-  // TODO(pdr): This should not be needed.
-  const force_layout = nested_webgl_canvas.getBoundingClientRect();
-
   function drawWebGLElementImage(canvas, child) {
     const gl = canvas.getContext('webgl2');
     const vsSrc = `#version 300 es

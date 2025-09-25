@@ -6888,16 +6888,11 @@ void WebGLRenderingContextBase::texElementImage2D(
     return;
   }
 
-  if (!IsDrawElementImageEligible(element, "texElementImage2D()",
-                                  exception_state)) {
-    return;
-  }
-
   canvas()->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kCanvasDrawElementImage);
 
-  // Canvas could have been removed after the layout update.
-  if (!canvas()) {
+  if (!IsDrawElementImageEligible(element, "texElementImage2D()",
+                                  exception_state)) {
     return;
   }
 
