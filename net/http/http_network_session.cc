@@ -85,12 +85,8 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
 
 bool OriginToForceQuicOnInternal(const QuicParams& quic_params,
                                  const url::SchemeHostPort& destination) {
-  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
-  // use url::SchemeHostPort.
-  return (
-      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
-      base::Contains(quic_params.origins_to_force_quic_on,
-                     HostPortPair::FromSchemeHostPort(destination)));
+  return (quic_params.force_quic_everywhere ||
+          base::Contains(quic_params.origins_to_force_quic_on, destination));
 }
 
 }  // unnamed namespace
@@ -310,8 +306,12 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
   dict.Set("supported_versions", std::move(supported_versions));
 
   base::Value::List origins_to_force_quic_on;
-  for (const auto& origin : quic_params->origins_to_force_quic_on) {
-    origins_to_force_quic_on.Append(origin.ToString());
+  if (quic_params->force_quic_everywhere) {
+    origins_to_force_quic_on.Append("<everywhere>");
+  } else {
+    for (const auto& origin : quic_params->origins_to_force_quic_on) {
+      origins_to_force_quic_on.Append(origin.Serialize());
+    }
   }
   dict.Set("origins_to_force_quic_on", std::move(origins_to_force_quic_on));
 

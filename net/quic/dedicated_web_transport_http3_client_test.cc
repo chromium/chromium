@@ -167,7 +167,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
     // This is required to bypass the check that only allows known certificate
     // roots in QUIC.
     quic_context->params()->origins_to_force_quic_on.insert(
-        HostPortPair("test.example.com", 0));
+        url::SchemeHostPort("https", "test.example.com", 443));
     builder.set_quic_context(std::move(quic_context));
 
     builder.set_net_log(NetLog::Get());

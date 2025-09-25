@@ -940,7 +940,7 @@ class JobControllerReconsiderProxyAfterErrorTest
           &crypto_client_stream_factory_;
       session_context.quic_context = &quic_context_;
       session_context.quic_context->params()->origins_to_force_quic_on.insert(
-          HostPortPair::FromURL(GURL("https://www.example.com")));
+          url::SchemeHostPort(GURL("https://www.example.com")));
     }
     session_ = std::make_unique<HttpNetworkSession>(params, session_context);
     factory_ = session_->http_stream_factory();

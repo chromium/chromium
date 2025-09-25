@@ -2258,7 +2258,7 @@ class HttpStreamFactoryQuicTest
     quic_context_->params()->supported_versions =
         quic::test::SupportedVersions(version_);
     quic_context_->params()->origins_to_force_quic_on.insert(
-        HostPortPair::FromString("www.example.org:443"));
+        url::SchemeHostPort("https", "www.example.org", 443));
     quic_context_->AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
     session_deps_.enable_quic = true;
     session_deps_.quic_context = std::move(quic_context_);

@@ -38,6 +38,7 @@
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -801,11 +802,13 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
       for (const std::string& host_port : base::SplitString(
                origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
         if (host_port == "*")
-          quic_params->origins_to_force_quic_on.insert(net::HostPortPair());
-        net::HostPortPair quic_origin =
+          quic_params->force_quic_everywhere = true;
+        net::HostPortPair quic_host_port =
             net::HostPortPair::FromString(host_port);
-        if (!quic_origin.IsEmpty())
-          quic_params->origins_to_force_quic_on.insert(quic_origin);
+        if (!quic_host_port.IsEmpty()) {
+          quic_params->origins_to_force_quic_on.insert(url::SchemeHostPort(
+              "https", quic_host_port.host(), quic_host_port.port()));
+        }
       }
     }
 

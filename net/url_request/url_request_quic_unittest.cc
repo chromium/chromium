@@ -45,6 +45,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -78,7 +79,7 @@ class URLRequestQuicTest
     auto quic_context = std::make_unique<QuicContext>();
     quic_context->params()->supported_versions = {version()};
     quic_context->params()->origins_to_force_quic_on.insert(
-        HostPortPair(kTestServerHost, 443));
+        url::SchemeHostPort("https", kTestServerHost, 443));
     context_builder_->set_quic_context(std::move(quic_context));
     params.enable_quic = true;
     context_builder_->set_host_resolver(std::move(host_resolver_));

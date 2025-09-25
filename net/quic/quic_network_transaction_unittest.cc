@@ -101,6 +101,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using ::testing::ElementsAre;
 using ::testing::Key;
@@ -1107,7 +1108,7 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
 
 TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponse) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1154,7 +1155,7 @@ TEST_P(QuicNetworkTransactionTest, HeaderDecodingDelayHistogram) {
   base::HistogramTester histograms;
 
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1202,7 +1203,7 @@ TEST_P(QuicNetworkTransactionTest, HeaderDecodingDelayHistogram) {
 
 TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithAsycWrites) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1245,7 +1246,7 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithAsycWrites) {
 
 TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithTrailers) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1297,7 +1298,7 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithTrailers) {
 // Regression test for crbug.com/332587381
 TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithEmptyTrailers) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1348,7 +1349,7 @@ TEST_P(QuicNetworkTransactionTest, BasicRequestAndResponseWithEmptyTrailers) {
 // newly created single session.
 TEST_P(QuicNetworkTransactionTest, TwoGets) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData quic_data(version_);
   int sent_packet_num = 0;
@@ -1441,7 +1442,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmed) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   base::HistogramTester histograms;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
@@ -1471,7 +1472,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmedAsync) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   base::HistogramTester histograms;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
@@ -1499,7 +1500,7 @@ TEST_P(QuicNetworkTransactionTest, WriteErrorHandshakeConfirmedAsync) {
 
 TEST_P(QuicNetworkTransactionTest, SocketWatcherEnabled) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1536,7 +1537,7 @@ TEST_P(QuicNetworkTransactionTest, SocketWatcherEnabled) {
 
 TEST_P(QuicNetworkTransactionTest, SocketWatcherDisabled) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1573,7 +1574,7 @@ TEST_P(QuicNetworkTransactionTest, SocketWatcherDisabled) {
 
 TEST_P(QuicNetworkTransactionTest, ForceQuic) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1648,7 +1649,7 @@ TEST_P(QuicNetworkTransactionTest, ForceQuic) {
 TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int write_packet_num = 1;
@@ -1694,7 +1695,7 @@ TEST_P(QuicNetworkTransactionTest, ResetOnEmptyResponseHeaders) {
 
 TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1752,7 +1753,7 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
 TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1817,7 +1818,7 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
 TEST_P(QuicNetworkTransactionTest, RedirectMultipleLocations) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int packet_num = 1;
@@ -1860,8 +1861,8 @@ TEST_P(QuicNetworkTransactionTest, RedirectMultipleLocations) {
   ASSERT_THAT(callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
 }
 
-TEST_P(QuicNetworkTransactionTest, ForceQuicForAll) {
-  context_.params()->origins_to_force_quic_on.insert(HostPortPair());
+TEST_P(QuicNetworkTransactionTest, ForceQuicEverywhere) {
+  context_.params()->force_quic_everywhere = true;
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
@@ -1897,7 +1898,7 @@ TEST_P(QuicNetworkTransactionTest, ForceQuicForAll) {
 
 // Regression test for https://crbug.com/695225
 TEST_P(QuicNetworkTransactionTest, 408Response) {
-  context_.params()->origins_to_force_quic_on.insert(HostPortPair());
+  context_.params()->force_quic_everywhere = true;
 
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);
 
@@ -2356,7 +2357,7 @@ TEST_P(QuicNetworkTransactionTest, RetryMisdirectedRequest) {
 
 TEST_P(QuicNetworkTransactionTest, ForceQuicWithErrorConnecting) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data1(version_);
   mock_quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
@@ -2391,7 +2392,7 @@ TEST_P(QuicNetworkTransactionTest, ForceQuicWithErrorConnecting) {
 TEST_P(QuicNetworkTransactionTest, DoNotForceQuicForHttps) {
   // Attempt to "force" quic on 443, which will not be honored.
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("www.google.com:443"));
+      url::SchemeHostPort("https", "www.google.com", 443));
 
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n\r\n"), MockRead(kHttpRespData),
@@ -5891,7 +5892,7 @@ TEST_P(QuicNetworkTransactionTest, SecureResourceOverSecureQuic) {
 
 TEST_P(QuicNetworkTransactionTest, QuicUpload) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -5926,7 +5927,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUploadWriteError) {
       {kDefaultNetworkForTests, kNewNetworkForTests});
 
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
   context_.params()->migrate_sessions_on_network_change_v2 = true;
 
   MockQuicData socket_data(version_);
@@ -5973,7 +5974,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUploadWriteError) {
 
 TEST_P(QuicNetworkTransactionTest, RetryAfterAsyncNoBufferSpace) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData socket_data(version_);
   int packet_num = 1;
@@ -6015,7 +6016,7 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterAsyncNoBufferSpace) {
 
 TEST_P(QuicNetworkTransactionTest, RetryAfterSynchronousNoBufferSpace) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData socket_data(version_);
   int packet_num = 1;
@@ -6058,7 +6059,7 @@ TEST_P(QuicNetworkTransactionTest, RetryAfterSynchronousNoBufferSpace) {
 TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterAsyncNoBufferSpace) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
@@ -6096,7 +6097,7 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterAsyncNoBufferSpace) {
 TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterSynchronousNoBufferSpace) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);  // No more data to read
@@ -6134,7 +6135,7 @@ TEST_P(QuicNetworkTransactionTest, MaxRetriesAfterSynchronousNoBufferSpace) {
 TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
   const std::string error_details = base::StrCat(
       {"Write failed with error: ", base::NumberToString(ERR_MSG_TOO_BIG), " (",
        strerror(ERR_MSG_TOO_BIG), ")"});
@@ -6168,7 +6169,7 @@ TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
 
 TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
 
@@ -7848,8 +7849,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectNoReuseDifferentChains) {
 
   proxy_delegate_->set_proxy_chain(ProxyChain::Direct());
 
-  context_.params()->origins_to_force_quic_on.insert(
-      kQuicProxyServer.host_port_pair());
+  context_.params()->origins_to_force_quic_on.insert(url::SchemeHostPort(
+      "https", kQuicProxyServer.GetHost(), kQuicProxyServer.GetPort()));
 
   QuicTestPacketMaker client_maker2(
       version_,
@@ -8509,7 +8510,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
       NetworkAnonymizationKey::CreateSameSite(kSite2);
 
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   GURL url1 = GURL("https://mail.example.org/1");
   GURL url2 = GURL("https://mail.example.org/2");
@@ -8531,7 +8532,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
     // used.
 
     context_.params()->origins_to_force_quic_on.insert(
-        HostPortPair::FromString("mail.example.org:443"));
+        url::SchemeHostPort("https", "mail.example.org", 443));
 
     MockQuicData unpartitioned_mock_quic_data(version_);
     QuicTestPacketMaker client_maker1(
@@ -8922,7 +8923,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1FalseProhibitsH1) {
 // QUIC.
 TEST_P(QuicNetworkTransactionTest, AllowHTTP1MockTest) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   int write_packet_index = 1;
@@ -8967,7 +8968,7 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1MockTest) {
 TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadPauseAndResume) {
   FLAGS_quic_enable_chaos_protection = false;
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
 
   MockQuicData mock_quic_data(version_);
   mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // Hanging read
@@ -9327,7 +9328,7 @@ TEST_P(QuicNetworkTransactionTest, RetryOnHttp3GoAway) {
 // HTTP/1.
 TEST_P(QuicNetworkTransactionTest, WebsocketOpensNewConnectionWithHttp1) {
   context_.params()->origins_to_force_quic_on.insert(
-      HostPortPair::FromString("mail.example.org:443"));
+      url::SchemeHostPort("https", "mail.example.org", 443));
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
 
   MockQuicData mock_quic_data(version_);

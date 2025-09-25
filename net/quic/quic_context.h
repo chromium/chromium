@@ -11,9 +11,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
-#include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -126,8 +126,12 @@ struct NET_EXPORT QuicParams {
   // Maximum number of server configs that are to be stored in
   // HttpServerProperties, instead of the disk cache.
   size_t max_server_configs_stored_in_properties = 0u;
+
+  // If trust, QUIC will be forced on all origins.
+  bool force_quic_everywhere = false;
   // QUIC will be used for all connections in this set.
-  std::set<HostPortPair> origins_to_force_quic_on;
+  std::set<url::SchemeHostPort> origins_to_force_quic_on;
+
   // WebTransport developer mode disables the requirement that all QUIC
   // connections are anchored to a system certificate root, but only for
   // WebTransport connections.

@@ -619,7 +619,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     return raw_client_maker;
   }
 
-  std::set<HostPortPair>& origins_to_force_quic_on() {
+  std::set<url::SchemeHostPort>& origins_to_force_quic_on() {
     return origins_to_force_quic_on_;
   }
 
@@ -630,7 +630,7 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
 
-  std::set<HostPortPair> origins_to_force_quic_on_;
+  std::set<url::SchemeHostPort> origins_to_force_quic_on_;
 
   ProofVerifyDetailsChromium verify_details_;
   std::vector<std::unique_ptr<QuicTestPacketMaker>> quic_client_makers_;
@@ -5772,7 +5772,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnOk) {
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   AddQuicData();
@@ -5790,7 +5790,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnOk) {
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnExistingSession) {
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   AddQuicData();
@@ -5823,7 +5823,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnExistingSession) {
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnFail) {
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   auto quic_data = std::make_unique<MockQuicData>(quic_version());
@@ -5843,7 +5843,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnFail) {
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectOk) {
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   AddQuicData();
@@ -5861,7 +5861,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectOk) {
 
 TEST_F(HttpStreamPoolAttemptManagerTest, OriginsToForceQuicOnPreconnectFail) {
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   auto quic_data = std::make_unique<MockQuicData>(quic_version());
@@ -5883,7 +5883,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicSessionGoneBeforeUsing) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
   origins_to_force_quic_on().insert(
-      HostPortPair::FromURL(GURL(kDefaultDestination)));
+      url::SchemeHostPort(GURL(kDefaultDestination)));
   InitializeSession();
 
   QuicTestPacketMaker* client_maker = CreateQuicClientPacketMaker();

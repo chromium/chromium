@@ -146,7 +146,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     // To simplify the test, and avoid the race with the HTTP request, we force
     // QUIC for these requests.
     quic_context_.params()->origins_to_force_quic_on.insert(
-        HostPortPair::FromString("test.example.com:443"));
+        url::SchemeHostPort("https", "test.example.com", 443));
 
     transaction_factory_ = std::make_unique<TestTransactionFactory>(
         session_params_, session_context_);

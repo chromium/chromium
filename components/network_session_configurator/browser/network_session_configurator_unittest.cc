@@ -19,7 +19,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/features.h"
-#include "net/base/host_port_pair.h"
 #include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/http/http_network_session.h"
@@ -29,6 +28,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/scheme_host_port.h"
 
 namespace network_session_configurator {
 
@@ -103,6 +103,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
 
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_FALSE(
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
@@ -781,9 +782,8 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "*");
   ParseCommandLineAndFieldTrials(command_line);
-  EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.size());
-  EXPECT_EQ(1u,
-            quic_params_.origins_to_force_quic_on.count(net::HostPortPair()));
+  EXPECT_TRUE(quic_params_.force_quic_everywhere);
+  EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
 }
 
 TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn2) {
@@ -791,9 +791,10 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn2) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "foo:1234");
   ParseCommandLineAndFieldTrials(command_line);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("foo", 1234)));
+                    url::SchemeHostPort("https", "foo", 1234)));
 }
 
 TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn3) {
@@ -801,11 +802,12 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn3) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "foo:1,bar:2");
   ParseCommandLineAndFieldTrials(command_line);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(2u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("foo", 1)));
+                    url::SchemeHostPort("https", "foo", 1)));
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("bar", 2)));
+                    url::SchemeHostPort("https", "bar", 2)));
 }
 
 TEST_F(NetworkSessionConfiguratorTest, EnableUserAlternateProtocolPorts) {
