@@ -102,6 +102,7 @@ source_set("impl") {
     sources += [
       "controlled_home_dialog.cc",
       "extension_install_blocked_dialog.cc",
+      "extension_install_friction_dialog.cc",
       "extension_install_ui.cc",
       "extension_multiple_uninstall_dialog.cc",
       "extension_uninstall_dialog_impl.cc",

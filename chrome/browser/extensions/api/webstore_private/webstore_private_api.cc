@@ -901,17 +901,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::
       NOTREACHED();
   }
 
-// TODO(crbug.com/424012380): Enable on Desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   ShowExtensionInstallFrictionDialog(
       contents,
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
                          OnFrictionPromptDone,
                      this));
-#else
-  NOTIMPLEMENTED() << "ShowInstallFrictionDialog not supported on Android";
-  OnFrictionPromptDone(true);
-#endif
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
