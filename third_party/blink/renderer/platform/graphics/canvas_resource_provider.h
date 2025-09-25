@@ -357,9 +357,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // change.
   cc::PaintImage MakeImageSnapshot(FlushReason);
   virtual void RasterRecord(cc::PaintRecord);
-  void RasterRecordOOP(cc::PaintRecord last_recording,
-                       bool needs_clear,
-                       gpu::Mailbox mailbox);
+  void AcceleratedRasterRecord(cc::PaintRecord last_recording,
+                               bool needs_clear,
+                               gpu::Mailbox mailbox);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
 

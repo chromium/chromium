@@ -869,8 +869,8 @@ void CanvasResourceProviderSharedImage::RasterRecord(
   WillDrawInternal(true);
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
-  RasterRecordOOP(std::move(last_recording), needs_clear,
-                  resource()->GetClientSharedImage()->mailbox());
+  AcceleratedRasterRecord(std::move(last_recording), needs_clear,
+                          resource()->GetClientSharedImage()->mailbox());
   resource()->GetSyncToken();
 }
 
@@ -1055,8 +1055,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
   void RasterRecord(cc::PaintRecord last_recording) override {
     TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::RasterRecord");
     WillDraw();
-    RasterRecordOOP(last_recording, initial_needs_clear_,
-                    resource_->GetBackBufferClientSharedImage()->mailbox());
+    AcceleratedRasterRecord(
+        last_recording, initial_needs_clear_,
+        resource_->GetBackBufferClientSharedImage()->mailbox());
     initial_needs_clear_ = false;
   }
 
@@ -1794,9 +1795,10 @@ void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 }
 
-void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,
-                                             bool needs_clear,
-                                             gpu::Mailbox mailbox) {
+void CanvasResourceProvider::AcceleratedRasterRecord(
+    cc::PaintRecord last_recording,
+    bool needs_clear,
+    gpu::Mailbox mailbox) {
   if (IsGpuContextLost())
     return;
   gpu::raster::RasterInterface* ri = RasterInterface();
