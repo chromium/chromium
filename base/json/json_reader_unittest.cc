@@ -1221,14 +1221,12 @@ TEST(JSONReaderTest, ReadingJsonIntoDictAndList) {
   }
 
   {
-    std::optional<base::Value::Dict> dict =
-        JSONReader::ReadDict("{}", JSON_PARSE_CHROMIUM_EXTENSIONS);
+    std::optional<base::Value::Dict> dict = JSONReader::ReadDict("{}");
     ASSERT_TRUE(dict);
   }
 
   {
-    std::optional<base::Value::Dict> dict =
-        JSONReader::ReadDict("[1, 2, 3]", JSON_PARSE_CHROMIUM_EXTENSIONS);
+    std::optional<base::Value::Dict> dict = JSONReader::ReadDict("[1, 2, 3]");
     ASSERT_FALSE(dict);
   }
 }
