@@ -11632,16 +11632,6 @@ void WebContentsImpl::SetVisibilityForChildViews(bool visible) {
 }
 
 void WebContentsImpl::HandleColorRelatedStateChanges() {
-  if (blink::ColorProviderColorMaps color_maps = GetColorProviderColorMaps();
-      color_maps_ != color_maps) {
-    color_maps_.swap(color_maps);
-    ExecutePageBroadcastMethodForAllPages([this](RenderViewHostImpl* rvh) {
-      if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-        broadcast->UpdateColorProviders(color_maps_);
-      }
-    });
-  }
-
   if (const auto* const theme = ui::NativeTheme::GetInstanceForWeb();
       prefers_reduced_transparency_ != theme->prefers_reduced_transparency() ||
       inverted_colors_ != theme->inverted_colors() ||
@@ -11650,6 +11640,24 @@ void WebContentsImpl::HandleColorRelatedStateChanges() {
           ->WebPreferencesNeedUpdateForColorRelatedStateChanges(
               *this, *GetPrimaryMainFrame()->GetSiteInstance())) {
     NotifyPreferencesChanged();
+  }
+
+  // Update color providers after applying any pending WebPreferences changes.
+  // This is done because WebPreferences changes (e.g. `in_forced_colors`) might
+  // not trigger an invalidation in Blink, but color provider changes will
+  // always trigger invalidation. Therefore, we want to update color providers
+  // after we have the right states for the web preferences so we can use the
+  // right color providers in Blink to paint. This also handles scenarios where
+  // the forced colors state remains the same, but the `forced_colors_map` is
+  // updated due to changes in the forced colors mode theme.
+  if (blink::ColorProviderColorMaps color_maps = GetColorProviderColorMaps();
+      color_maps_ != color_maps) {
+    color_maps_.swap(color_maps);
+    ExecutePageBroadcastMethodForAllPages([this](RenderViewHostImpl* rvh) {
+      if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+        broadcast->UpdateColorProviders(color_maps_);
+      }
+    });
   }
 }
 
