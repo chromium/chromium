@@ -783,6 +783,7 @@ void AuthenticatorRequestDialogController::
     // duplicate it.
     const bool authenticator_shows_own_confirmation =
         cred && (cred->value().source == AuthenticatorType::kICloudKeychain ||
+                 cred->value().source == AuthenticatorType::kWinNative ||
                  // The enclave Touch ID prompts shows the credential details.
                  (cred->value().source == AuthenticatorType::kEnclave &&
                   enclave_will_do_uv && kIsMac &&

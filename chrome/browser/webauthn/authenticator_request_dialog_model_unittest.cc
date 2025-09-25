@@ -732,13 +732,15 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       // Windows should also jump to the QR code first.
       // TODO: the expectation here (mss) doesn't match the comment.
       {L, ga, {cable}, {empty_al, has_winapi}, {add, winapi}, mss},
-      // Unless there is a recognized platform credential.
+      // Unless there is a recognized platform credential, in which case we
+      // should jump directly to Windows.
+      // Regression test for https://crbug.com/326508293.
       {L,
        ga,
        {cable},
        {empty_al, has_winapi, has_plat, one_cred},
        {c(wincred1), add, winapi},
-       hero},
+       plat_ui},
       // For <=Win 10, we can't tell if there is a credential or not. Show the
       // mechanism selection screen instead.
       {L,
