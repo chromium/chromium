@@ -60,7 +60,7 @@ export class TestPdfViewerPrivateProxy extends TestBrowserProxy implements
   sendSessionTimeoutError(): void {
     this.sendSaveToDriveProgress({
       status: SaveToDriveStatus.UPLOAD_IN_PROGRESS,
-      errorType: SaveToDriveErrorType.OFFLINE,
+      errorType: SaveToDriveErrorType.OAUTH_ERROR,
     });
   }
 
@@ -99,6 +99,13 @@ function assertBubbleAndProgressBar(
   const progressBar = getRequiredElement(bubble, 'cr-progress');
   chrome.test.assertEq(value, progressBar.value);
   chrome.test.assertEq(max, progressBar.max);
+}
+
+function assertBubbleDescription(
+    bubble: ViewerSaveToDriveBubbleElement, description: string): void {
+  const descriptionElement = getRequiredElement(bubble, '#description');
+  chrome.test.assertTrue(!!descriptionElement.textContent);
+  chrome.test.assertEq(description, descriptionElement.textContent.trim());
 }
 
 function closeBubble(bubble: ViewerSaveToDriveBubbleElement): void {
@@ -191,6 +198,7 @@ const tests = [
     // hide the progress bar.
     privateProxy.sendSessionTimeoutError();
     await microtasksFinished();
+    assertBubbleDescription(bubble, 'Session timed out');
     chrome.test.assertFalse(!!bubble.shadowRoot.querySelector('cr-progress'));
     chrome.test.assertTrue(!!bubble.shadowRoot.querySelector('#retry-button'));
 
@@ -306,10 +314,7 @@ const tests = [
     controls.$.save.click();
     await microtasksFinished();
 
-    const description = getRequiredElement(bubble, '#description');
-    chrome.test.assertTrue(!!description.textContent);
-    chrome.test.assertEq(
-        'Your Google Drive storage is full', description.textContent.trim());
+    assertBubbleDescription(bubble, 'Your Google Drive storage is full');
 
     // Click the manage storage button in the bubble and verify the bubble is
     // closed.
@@ -343,11 +348,8 @@ const tests = [
     controls.$.save.click();
     await microtasksFinished();
 
-    const description = getRequiredElement(bubble, '#description');
-    chrome.test.assertTrue(!!description.textContent);
-    chrome.test.assertEq(
-        'Saved to your test-parent-folder-name folder',
-        description.textContent.trim());
+    assertBubbleDescription(
+        bubble, 'Saved to your test-parent-folder-name folder');
     const filename = getRequiredElement(bubble, '#filename');
     chrome.test.assertTrue(!!filename.textContent);
     chrome.test.assertEq('save_to_drive_test.pdf', filename.textContent.trim());
@@ -556,6 +558,28 @@ const tests = [
     chrome.test.assertEq(
         '566px', progress.$.innerProgress.getAttribute('stroke-dashoffset'));
     assertBubbleAndProgressBar(bubble, 0, 0);
+
+    // Reset the bubble open state for the next test.
+    closeBubble(bubble);
+
+    chrome.test.succeed();
+  },
+
+  async function testSaveToDriveBubbleConnectionError() {
+    const privateProxy = setUpTestPrivateProxy();
+    const bubble = getRequiredElement(viewer, 'viewer-save-to-drive-bubble');
+    const controls =
+        getRequiredElement(viewer.$.toolbar, 'viewer-save-to-drive-controls');
+
+    privateProxy.sendSaveToDriveProgress({
+      status: SaveToDriveStatus.UPLOAD_FAILED,
+      errorType: SaveToDriveErrorType.OFFLINE,
+    });
+    await microtasksFinished();
+    controls.$.save.click();
+    await microtasksFinished();
+
+    assertBubbleDescription(bubble, 'Check your internet connection');
 
     // Reset the bubble open state for the next test.
     closeBubble(bubble);

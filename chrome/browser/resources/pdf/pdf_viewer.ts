@@ -192,6 +192,7 @@ function convertSaveToDriveProgressToSaveToDriveState(
     case SaveToDriveErrorType.QUOTA_EXCEEDED:
       return SaveToDriveState.STORAGE_FULL_ERROR;
     case SaveToDriveErrorType.OFFLINE:
+      return SaveToDriveState.CONNECTION_ERROR;
     case SaveToDriveErrorType.OAUTH_ERROR:
       return SaveToDriveState.SESSION_TIMEOUT_ERROR;
     case SaveToDriveErrorType.ACCOUNT_CHOOSER_CANCELED:
