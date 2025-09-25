@@ -291,9 +291,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
     return false;
   }
 
-  if (*engine_id == "ko-t-i0-und" &&
-      base::FeatureList::IsEnabled(
-          features::kImeKoreanOnlyModeSwitchOnRightAlt)) {
+  if (*engine_id == "ko-t-i0-und") {
     out->layout = "kr(cros)";
   } else if (!layouts->empty() && layouts->front().is_string()) {
     out->layout = layouts->front().GetString();

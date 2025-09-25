@@ -4214,9 +4214,6 @@ extern const char kImeAssistMultiWordDescription[];
 extern const char kImeFstDecoderParamsUpdateName[];
 extern const char kImeFstDecoderParamsUpdateDescription[];
 
-extern const char kImeKoreanOnlyModeSwitchOnRightAltName[];
-extern const char kImeKoreanOnlyModeSwitchOnRightAltDescription[];
-
 extern const char kImeSwitchCheckConnectionStatusName[];
 extern const char kImeSwitchCheckConnectionStatusDescription[];
 

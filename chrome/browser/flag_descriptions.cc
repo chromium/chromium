@@ -7317,12 +7317,6 @@ const char kImeFstDecoderParamsUpdateName[] =
 const char kImeFstDecoderParamsUpdateDescription[] =
     "Enable updated parameters for the FST decoder.";
 
-const char kImeKoreanOnlyModeSwitchOnRightAltName[] =
-    "Only internal-mode switch on right-Alt in Korean input method";
-const char kImeKoreanOnlyModeSwitchOnRightAltDescription[] =
-    "When enabled and in Korean input method, right-Alt key location solely "
-    "toggles internal Korean/English mode, without Alt modifier functionality";
-
 const char kImeSwitchCheckConnectionStatusName[] =
     "Enable IME switching using global boolean";
 const char kImeSwitchCheckConnectionStatusDescription[] =
