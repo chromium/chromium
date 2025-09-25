@@ -62,6 +62,14 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   EXPECT_EQ(window.subviews.count, 0u);
 
+  // Upon background with incognito content, the blocker should be added.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  EXPECT_EQ(window.subviews.count, 1u);
+
+  // Upon destruction, the blocker should be removed.
+  scene_state_.activationLevel = SceneActivationLevelDisconnected;
+  EXPECT_EQ(window.subviews.count, 0u);
+
   // No blocker should be added when no incognito content is shown.
   scene_state_.incognitoContentVisible = NO;
   scene_state_.activationLevel = SceneActivationLevelBackground;

@@ -62,7 +62,8 @@
     [self showOverlay];
   }
 
-  if (level >= SceneActivationLevelForegroundInactive) {
+  if (level >= SceneActivationLevelForegroundInactive ||
+      level == SceneActivationLevelDisconnected) {
     [self hideOverlay];
   }
 }
