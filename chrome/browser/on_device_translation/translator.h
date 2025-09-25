@@ -47,6 +47,7 @@ class Translator : public blink::mojom::Translator {
  private:
   // Callback for on_device_translation chunks requested by TranslateStreaming.
   void TranslateStreamingCallback(mojo::RemoteSetElementId responder_id,
+                                  int total_translations,
                                   const std::optional<std::string>& output);
   // Check shared prerequisites for Translate and TranslateStreaming;
   // return true if all were satisfied, false otherwise.
