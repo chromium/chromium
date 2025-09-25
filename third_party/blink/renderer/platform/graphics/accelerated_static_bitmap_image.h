@@ -137,7 +137,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       viz::ReleaseCallback release_callback);
 
   void CreateImageFromMailboxIfNeeded();
-  void InitializeTextureBacking(GLuint shared_image_texture_id);
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   SkAlphaType alpha_type_;

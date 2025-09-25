@@ -278,12 +278,6 @@ void AcceleratedStaticBitmapImage::CreateImageFromMailboxIfNeeded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (texture_backing_)
     return;
-  InitializeTextureBacking(0u);
-}
-
-void AcceleratedStaticBitmapImage::InitializeTextureBacking(
-    GLuint shared_image_texture_id) {
-  DCHECK(!shared_image_texture_id || !mailbox_ref_->is_cross_thread());
 
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper)
@@ -304,7 +298,6 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     return;
   }
 
-  DCHECK_EQ(shared_image_texture_id, 0u);
   skia_context_provider_wrapper_ = context_provider_wrapper;
   texture_backing_ = sk_make_sp<MailboxTextureBacking>(
       shared_image_->mailbox(), mailbox_ref_, GetSize(), GetSharedImageFormat(),
