@@ -752,9 +752,22 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowReaderModeItem(@Nullable Tab currentTab) {
-        return currentTab != null
-                && (DomDistillerFeatures.showAlwaysOnEntryPoint()
-                        || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled());
+        if (currentTab == null) {
+            return false;
+        }
+
+        GURL url = currentTab.getUrl();
+        boolean isChromeOrNativePage =
+                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                        || currentTab.isNativePage();
+
+        if (isChromeOrNativePage) {
+            return false;
+        }
+
+        return (DomDistillerFeatures.showAlwaysOnEntryPoint()
+                || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled());
     }
 
     private MVCListAdapter.ListItem buildReaderModeItem(Tab currentTab) {

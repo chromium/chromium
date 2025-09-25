@@ -1631,6 +1631,22 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
+    public void readerModeEntryPointEnabled_chromePage() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        Context context = ContextUtils.getApplicationContext();
+        assertFalse(
+                isMenuVisibleWithCorrectTitle(
+                        modelList,
+                        R.id.reader_mode_menu_id,
+                        context.getString(R.string.hide_reading_mode_text)));
+    }
+
+    @Test
     public void pageZoomMenuOption_NotVisibleInReadingMode() {
         setUpMocksForPageMenu();
         PageZoomUtils.setShouldShowMenuItemForTesting(true);
