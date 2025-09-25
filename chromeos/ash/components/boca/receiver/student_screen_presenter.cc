@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -56,11 +57,13 @@ std::unique_ptr<google_apis::RequestSender> CreateSender(
 }  // namespace
 
 StudentScreenPresenterImpl::StudentScreenPresenterImpl(
+    std::string_view session_id,
     const ::boca::UserIdentity& teacher_identity,
     std::string_view teacher_device_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : teacher_identity_(teacher_identity),
+    : session_id_(session_id),
+      teacher_identity_(teacher_identity),
       teacher_device_id_(teacher_device_id),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
@@ -68,18 +71,16 @@ StudentScreenPresenterImpl::StudentScreenPresenterImpl(
 StudentScreenPresenterImpl::~StudentScreenPresenterImpl() = default;
 
 void StudentScreenPresenterImpl::Start(
-    std::string_view session_id,
     std::string_view receiver_id,
     const ::boca::UserIdentity& student_identity,
     std::string_view student_device_id,
     base::OnceCallback<void(bool)> success_cb,
     base::OnceClosure disconnected_cb) {
-  if (session_id_.has_value()) {
+  if (receiver_id_.has_value()) {
     LOG(ERROR) << "[Boca] Trying to present more than one student screen";
     std::move(success_cb).Run(false);
     return;
   }
-  session_id_ = session_id;
   receiver_id_ = receiver_id;
   disconnected_cb_ = std::move(disconnected_cb);
   start_connection_request_sender_ = CreateSender(
@@ -101,7 +102,7 @@ void StudentScreenPresenterImpl::Start(
 }
 
 void StudentScreenPresenterImpl::CheckConnection() {
-  if (!connection_id_.has_value()) {
+  if (!connection_id_.has_value() || stop_request_in_progress_) {
     return;
   }
   CHECK(receiver_id_.has_value());
@@ -120,6 +121,34 @@ void StudentScreenPresenterImpl::CheckConnection() {
       std::move(get_receiver_request));
 }
 
+void StudentScreenPresenterImpl::Stop(
+    base::OnceCallback<void(bool)> success_cb) {
+  if (!connection_id_.has_value()) {
+    std::move(success_cb).Run(false);
+    return;
+  }
+  CHECK(receiver_id_.has_value());
+  // Ignore any connection check in progress, connection state will be checked
+  // on response.
+  get_receiver_request_sender_.reset();
+  stop_request_in_progress_ = true;
+  stop_success_cb_ = std::move(success_cb);
+  update_connection_request_sender_ = CreateSender(
+      url_loader_factory_, identity_manager_,
+      boca_receiver::UpdateKioskReceiverStateRequest::kTrafficAnnotation);
+  auto stop_request_delegate =
+      std::make_unique<boca_receiver::UpdateKioskReceiverStateRequest>(
+          receiver_id_.value(), connection_id_.value(),
+          ::boca::ReceiverConnectionState::STOP_REQUESTED,
+          base::BindOnce(&StudentScreenPresenterImpl::OnStopResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
+  auto stop_request =
+      std::make_unique<BocaRequest>(update_connection_request_sender_.get(),
+                                    std::move(stop_request_delegate));
+  update_connection_request_sender_->StartRequestWithAuthRetry(
+      std::move(stop_request));
+}
+
 void StudentScreenPresenterImpl::OnStartResponse(
     base::OnceCallback<void(bool)> success_cb,
     std::optional<std::string> connection_id) {
@@ -136,17 +165,46 @@ void StudentScreenPresenterImpl::OnCheckConnectionResponse(
     std::optional<::boca::KioskReceiver> receiver) {
   if (!receiver.has_value() ||
       receiver->state() != ::boca::ReceiverConnectionState::DISCONNECTED) {
+    if (stop_success_cb_ && !stopped_check_timer_.IsRunning()) {
+      std::move(stop_success_cb_).Run(false);
+    }
     return;
   }
-  std::move(disconnected_cb_).Run();
+  if (stop_success_cb_) {
+    std::move(stop_success_cb_).Run(true);
+  } else {
+    std::move(disconnected_cb_).Run();
+  }
   Reset();
+}
+
+void StudentScreenPresenterImpl::OnStopResponse(
+    std::optional<::boca::ReceiverConnectionState> connection_state) {
+  stop_request_in_progress_ = false;
+  if (!connection_state.has_value()) {
+    std::move(stop_success_cb_).Run(false);
+    return;
+  }
+  if (connection_state.value() ==
+      ::boca::ReceiverConnectionState::DISCONNECTED) {
+    std::move(stop_success_cb_).Run(true);
+    Reset();
+    return;
+  }
+  constexpr base::TimeDelta kStoppedCheckDelay = base::Seconds(5);
+  stopped_check_timer_.Start(
+      FROM_HERE, kStoppedCheckDelay,
+      base::BindOnce(&StudentScreenPresenterImpl::CheckConnection,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StudentScreenPresenterImpl::Reset() {
   receiver_id_.reset();
-  session_id_.reset();
   connection_id_.reset();
   disconnected_cb_.Reset();
+  stop_request_in_progress_ = false;
+  stop_success_cb_.Reset();
+  stopped_check_timer_.Stop();
 }
 
 }  // namespace ash::boca

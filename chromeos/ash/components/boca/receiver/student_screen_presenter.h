@@ -41,14 +41,15 @@ class StudentScreenPresenter {
 
   virtual ~StudentScreenPresenter() = default;
 
-  virtual void Start(std::string_view session_id,
-                     std::string_view receiver_id,
+  virtual void Start(std::string_view receiver_id,
                      const ::boca::UserIdentity& student_identity,
                      std::string_view student_device_id,
                      base::OnceCallback<void(bool)> success_cb,
                      base::OnceClosure disconnected_cb) = 0;
 
   virtual void CheckConnection() = 0;
+
+  virtual void Stop(base::OnceCallback<void(bool)> success_cb) = 0;
 
  protected:
   StudentScreenPresenter() = default;
@@ -57,6 +58,7 @@ class StudentScreenPresenter {
 class StudentScreenPresenterImpl : public StudentScreenPresenter {
  public:
   StudentScreenPresenterImpl(
+      std::string_view session_id,
       const ::boca::UserIdentity& teacher_identity,
       std::string_view teacher_device_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -69,13 +71,13 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   ~StudentScreenPresenterImpl() override;
 
   // StudentScreenPresenter:
-  void Start(std::string_view session_id,
-             std::string_view receiver_id,
+  void Start(std::string_view receiver_id,
              const ::boca::UserIdentity& student_identity,
              std::string_view student_device_id,
              base::OnceCallback<void(bool)> success_cb,
              base::OnceClosure disconnected_cb) override;
   void CheckConnection() override;
+  void Stop(base::OnceCallback<void(bool)> success_cb) override;
 
  private:
   void OnStartResponse(base::OnceCallback<void(bool)> success_cb,
@@ -83,18 +85,25 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
 
   void OnCheckConnectionResponse(std::optional<::boca::KioskReceiver> receiver);
 
+  void OnStopResponse(
+      std::optional<::boca::ReceiverConnectionState> connection_state);
+
   void Reset();
 
+  const std::string session_id_;
   const ::boca::UserIdentity teacher_identity_;
   const std::string teacher_device_id_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  std::optional<std::string> session_id_;
   std::optional<std::string> receiver_id_;
   base::OnceClosure disconnected_cb_;
   std::optional<std::string> connection_id_;
   std::unique_ptr<google_apis::RequestSender> start_connection_request_sender_;
   std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;
+  std::unique_ptr<google_apis::RequestSender> update_connection_request_sender_;
+  bool stop_request_in_progress_ = false;
+  base::OnceCallback<void(bool)> stop_success_cb_;
+  base::OneShotTimer stopped_check_timer_;
 
   base::WeakPtrFactory<StudentScreenPresenterImpl> weak_ptr_factory_{this};
 };
