@@ -24,6 +24,7 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -110,8 +111,7 @@ public class NtpCustomizationMediator {
                         // Recreates the activity if a new customized theme color is selected or
                         // removed.
                         if (mShouldRecreate) {
-                            // TODO(https://crbug.com/423579377): Notify to recreate the activity to
-                            // apply the new theme.
+                            assumeNonNull(ContextUtils.activityFromContext(context)).recreate();
                         }
                     }
                 };

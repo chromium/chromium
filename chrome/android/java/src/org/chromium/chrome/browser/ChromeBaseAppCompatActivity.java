@@ -34,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerCreator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeFieldTrialImpl;
@@ -532,7 +534,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
         // Note: this should be called before any calls to `Window#getDecorView`.
         if (shouldApplyDynamicColors()) {
-            DynamicColors.applyToActivityIfAvailable(this);
+            applyDynamicColors();
         }
 
         DeferredStartupHandler.getInstance()
@@ -755,5 +757,19 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Returns whether dynamic colors should be applied. */
     protected boolean shouldApplyDynamicColors() {
         return true;
+    }
+
+    /** Applies dynamic colors or a selected color theme generated using DynamicColors API. */
+    private void applyDynamicColors() {
+        @ColorInt
+        Integer primaryColor = NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor();
+        if (primaryColor != null) {
+            DynamicColorsOptions.Builder builder = new DynamicColorsOptions.Builder();
+            builder.setContentBasedSource(primaryColor);
+            DynamicColorsOptions dynamicColorsOptions = builder.build();
+            DynamicColors.applyToActivityIfAvailable(this, dynamicColorsOptions);
+        } else {
+            DynamicColors.applyToActivityIfAvailable(this);
+        }
     }
 }
