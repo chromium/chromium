@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/cbor/reader.h"
@@ -24,6 +25,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/constants.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
@@ -45,6 +47,11 @@ constexpr uint8_t kSignature[] = "signature";
 constexpr uint8_t kUserId[] = "ab";
 constexpr uint8_t kEncryptedPasskey[] = {1, 2, 3, 4};
 constexpr char kClientDataJson[] = "client_data_json";
+constexpr uint8_t kClientDataJsonHash[] = {
+    0x13, 0xb2, 0x37, 0x27, 0x97, 0xd5, 0xca, 0x8a, 0xfa, 0x37, 0xb2,
+    0x91, 0x46, 0x0a, 0x82, 0x83, 0x35, 0x07, 0x0f, 0xea, 0xc6, 0x0f,
+    0xb5, 0x42, 0xbf, 0x2d, 0x7a, 0x03, 0xda, 0xd6, 0xca, 0xf2,
+};
 constexpr char kRpId[] = "test.example";
 constexpr char kGetAssertionRequestJson[] = R"({
     "allowCredentials":[
@@ -270,6 +277,8 @@ class EnclaveProtocolUtilsTest : public testing::Test {
   std::vector<uint8_t> user_id_;
   std::vector<uint8_t> encrypted_passkey_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kWebAuthenticationHashClientDataJsonForEnclave};
 };
 
 }  // namespace
@@ -306,9 +315,9 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
               command_map.end());
   EXPECT_TRUE(command_map.find(cbor::Value("wrapped_pin_data")) ==
               command_map.end());
-  EXPECT_EQ(
-      command_map.find(cbor::Value("client_data_json"))->second.GetString(),
-      kClientDataJson);
+  EXPECT_THAT(command_map.find(cbor::Value("client_data_json_hash"))
+                  ->second.GetBytestring(),
+              testing::ElementsAreArray(kClientDataJsonHash));
   auto& request_value_map =
       command_map.find(cbor::Value("request"))->second.GetMap();
   EXPECT_EQ(request_value_map.find(cbor::Value("rpId"))->second.GetString(),

@@ -149,6 +149,11 @@ BASE_DECLARE_FEATURE(kWebAuthnNewRefreshFlow);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthenticationFixWindowsHelloRdp);
 
+// When running an assertion operation, sends the enclave a hash of the client
+// data JSON instead of the full contents.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

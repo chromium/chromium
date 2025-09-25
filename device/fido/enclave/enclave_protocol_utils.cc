@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -56,6 +57,7 @@ const size_t kCredentialIdSize = 16;
 // JSON keys for request fields used for both GetAssertion and MakeCredential.
 const char kRequestDataKey[] = "request";
 const char kRequestClientDataJSONKey[] = "client_data_json";
+const char kRequestClientDataJSONHashKey[] = "client_data_json_hash";
 const char kRequestClaimedPINKey[] = "claimed_pin";
 
 // JSON keys for GetAssertion request fields.
@@ -175,7 +177,7 @@ std::optional<AuthenticatorGetAssertionResponse>
 AuthenticatorGetAssertionResponseFromValue(const cbor::Value::MapValue& map) {
   // 'authenticatorData' and signature' are required fields.
   // 'clientDataJSON' is also a required field, by spec, but we ignore it here
-  // since that is cached at a higher layer.
+  // since the enclave may not return it and it is cached at a higher layer.
   // 'attestationObject' is optional and also ignored.
   auto authenticator_data = ReadAuthenticatorData(map);
   if (!authenticator_data) {
@@ -551,8 +553,14 @@ cbor::Value BuildGetAssertionCommand(
   entry_map.emplace(cbor::Value(kGetAssertionRequestProtobufKey),
                     cbor::Value(serialized_passkey));
 
-  entry_map.emplace(cbor::Value(kRequestClientDataJSONKey),
-                    cbor::Value(client_data_json));
+  if (base::FeatureList::IsEnabled(
+          kWebAuthenticationHashClientDataJsonForEnclave)) {
+    entry_map.emplace(cbor::Value(kRequestClientDataJSONHashKey),
+                      cbor::Value(crypto::hash::Sha256(client_data_json)));
+  } else {
+    entry_map.emplace(cbor::Value(kRequestClientDataJSONKey),
+                      cbor::Value(client_data_json));
+  }
 
   if (claimed_pin) {
     entry_map.emplace(kRequestClaimedPINKey, std::move(claimed_pin->pin_claim));
