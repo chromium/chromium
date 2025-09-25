@@ -586,14 +586,6 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
   std::move(on_error_callback).Run(error);
 }
 
-base::FilePath ProfilePickerFlowController::GetSwitchProfilePathOrEmpty()
-    const {
-  if (weak_post_sign_in_adapter_) {
-    return weak_post_sign_in_adapter_->switch_profile_path();
-  }
-  return base::FilePath();
-}
-
 void ProfilePickerFlowController::CancelPostSignInFlow() {
   // Triggered from either entreprise welcome or profile switch screens.
   DCHECK_EQ(Step::kPostSignInFlow, current_step());

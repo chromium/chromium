@@ -100,10 +100,6 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // Getter of the path of profile which is displayed on the profile switch
-  // screen. Returns an empty path if no such screen has been displayed.
-  base::FilePath switch_profile_path() const { return switch_profile_path_; }
-
   content::WebContents* contents() const { return contents_.get(); }
 
  protected:
@@ -187,9 +183,6 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // Email of the signed-in account. It is set after the user finishes the
   // sign-in flow on GAIA and Chrome receives the account info.
   std::string email_;
-
-  // Path to a profile that should be displayed on the profile switch screen.
-  base::FilePath switch_profile_path_;
 
   GURL url_to_open_;
 

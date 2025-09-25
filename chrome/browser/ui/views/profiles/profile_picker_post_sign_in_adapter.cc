@@ -230,7 +230,6 @@ void ProfilePickerPostSignInAdapter::SwitchToProfileSwitch(
   profile_switch_url = net::AppendQueryParameter(
       profile_switch_url, "profileSwitchPath", base::ToString(profile_path));
 
-  switch_profile_path_ = profile_path;
   host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
 }
 

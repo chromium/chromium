@@ -42,8 +42,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   std::u16string GetFallbackAccessibleWindowTitle() const override;
 
-  base::FilePath GetSwitchProfilePathOrEmpty() const;
-
   // Switch to the flow that is shown when the user decides to create a profile
   // without signing in.
   void SwitchToSignedOutPostIdentityFlow(Profile* profile);
@@ -92,10 +90,8 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   // color choice that the user would be able to override.
   std::optional<SkColor> suggested_profile_color_;
 
-  // TODO(crbug.com/40237338): To be refactored out.
-  // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information
-  // should ideally be provided to the handler of the profile switch page once
-  // its controller is created instead of relying on static calls.
+  // TODO(crbug.com/40942098): To be refactored out.
+  // This is used to get the web contents that is used in this structure.
   base::WeakPtr<ProfilePickerPostSignInAdapter> weak_post_sign_in_adapter_;
 
   base::WeakPtr<Profile> created_profile_;
