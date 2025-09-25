@@ -107,7 +107,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   // Retrieves the popover target element and triggering behavior.
   PopoverTargetElement popoverTargetElement();
 
-  Element* InterestForElement() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
 
   // Handles popover activation for the given event and element.
   static void HandlePopoverActivation(Event& event, HTMLElement& element);

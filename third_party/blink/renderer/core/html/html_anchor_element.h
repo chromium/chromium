@@ -109,7 +109,7 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
   void SendPings(const KURL& destination_url) const;
 
-  Element* InterestForElement() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
 
   void Trace(Visitor*) const override;
 

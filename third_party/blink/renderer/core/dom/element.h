@@ -1213,7 +1213,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns the target of the `interestfor` attribute, if any, and only if
   // the element supports this attribute. For example, `interestfor` is not
   // allowed on a `<div>`.
-  virtual Element* InterestForElement() const { return nullptr; }
+  Element* InterestForElement() const;
+  // Checks that the provided interest invoker relationship is valid. For this
+  // call, `this` is the interest invoker (with the `interestfor` attribute),
+  // and the provided `target` is the proposed target element.
+  virtual bool IsValidInterestInvoker(Element& target) const { return false; }
   // Returns the active interest invoker for which this element is the target,
   // or nullptr otherwise.
   Element* SourceInterestInvoker() const;
