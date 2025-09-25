@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -443,7 +443,9 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   void UpdateHasFilters(EffectNode* node, EffectNode* parent_node);
   void UpdateHasFastRoundedCorner(EffectNode* node, EffectNode* parent_node);
 
-  typedef std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
+  // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
+  // 'multimap'.
+  typedef std::multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
       CopyRequestMap;
 
   void AddCopyRequest(int node_id,
@@ -510,8 +512,9 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
                                           EffectNode* parent_node);
 
   // Stores copy requests, keyed by node id.
-  std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
-      copy_requests_;
+  // TODO(crbug.com/443024856): Revisit decision of 'unordered_multimap' to
+  // 'multimap'.
+  std::multimap<int, std::unique_ptr<viz::CopyOutputRequest>> copy_requests_;
 
   // Indexed by node id.
   std::vector<std::unique_ptr<RenderSurfaceImpl>> render_surfaces_;
