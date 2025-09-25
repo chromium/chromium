@@ -88,7 +88,8 @@
               checked="[[mergedHistoryTabsToggleChecked_(syncPrefs)]]"
               on-change="onMergedHistoryTabsToggleChanged_"
               disabled="[[mergedHistoryTabsToggleDisabled_(syncStatus,
-                  syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged)]]"
+                  syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged,
+                  syncStatus.disabled)]]"
               aria-labelledby="historyTabsCheckboxLabel">
           </cr-toggle>
         </div>
@@ -108,7 +109,8 @@
               checked="{{syncPrefs.typedUrlsSynced}}"
               on-change="onSingleSyncDataTypeChanged_"
               disabled="[[disableTypeCheckBox_(syncStatus,
-                  syncPrefs.syncAllDataTypes , syncPrefs.typedUrlsManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.typedUrlsManaged,
+                syncStatus.disabled)]]"
               aria-labelledby="historyCheckboxLabel"
               data-type$="[[UserSelectableTypeEnum_.HISTORY]]">
           </cr-toggle>
@@ -126,7 +128,8 @@
         <cr-toggle checked="{{syncPrefs.bookmarksSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.bookmarksManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.bookmarksManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="bookmarksCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.BOOKMARKS]]">
         </cr-toggle>
@@ -143,7 +146,8 @@
         <cr-toggle checked="{{syncPrefs.readingListSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes ,syncPrefs.readingListManaged)]]"
+                syncPrefs.syncAllDataTypes ,syncPrefs.readingListManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="readingListCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.READING_LIST]]">
         </cr-toggle>
@@ -161,7 +165,8 @@
           <cr-toggle checked="{{syncPrefs.tabsSynced}}"
               on-change="onSingleSyncDataTypeChanged_"
               disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes,syncPrefs.tabsManaged)]]"
+                syncPrefs.syncAllDataTypes,syncPrefs.tabsManaged,
+                syncStatus.disabled)]]"
               aria-labelledby="openTabsCheckboxLabel"
               data-type$="[[UserSelectableTypeEnum_.TABS]]">
           </cr-toggle>
@@ -173,12 +178,13 @@
           </div>
           <cr-policy-indicator indicator-type="userPolicy"
               hidden="[[!showPolicyIndicator_(syncStatus,
-                    syncPrefs.savedTabGroupsManaged)]]">
+                    syncPrefs.savedTabGroupsManaged, syncStatus.disabled)]]">
           </cr-policy-indicator>
           <cr-toggle checked="{{syncPrefs.savedTabGroupsSynced}}"
               on-change="onSingleSyncDataTypeChanged_"
               disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.savedTabGroupsManaged,
+                syncStatus.disabled)]]"
               aria-labelledby="savedTabGroupsCheckboxLabel"
               data-type$="[[UserSelectableTypeEnum_.SAVED_TAB_GROUPS]]">
           </cr-toggle>
@@ -197,7 +203,8 @@
             checked="{{syncPrefs.autofillSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-              syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged)]]"
+              syncPrefs.syncAllDataTypes,syncPrefs.autofillManaged,
+              syncStatus.disabled)]]"
             aria-labelledby="autofillCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.AUTOFILL]]">
         </cr-toggle>
@@ -216,7 +223,8 @@
             checked="{{syncPrefs.paymentsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.paymentsManaged,
+                syncStatus.disabled)]]"
             aria-label="$i18n{paymentsCheckboxLabel}"
             data-type$="[[UserSelectableTypeEnum_.PAYMENTS]]">
         </cr-toggle>
@@ -233,7 +241,8 @@
         <cr-toggle checked="{{syncPrefs.passwordsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-              syncPrefs.syncAllDataTypes, syncPrefs.passwordsManaged)]]"
+              syncPrefs.syncAllDataTypes, syncPrefs.passwordsManaged,
+              syncStatus.disabled)]]"
             aria-labelledby="passwordsCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.PASSWORDS]]">
         </cr-toggle>
@@ -250,7 +259,8 @@
         <cr-toggle checked="{{syncPrefs.preferencesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.preferencesManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.preferencesManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="settingsCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.PREFERENCES]]">
         </cr-toggle>
@@ -265,7 +275,8 @@
         <cr-toggle checked="{{syncPrefs.appsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.appsManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.appsManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="appCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.APPS]]">
         </cr-toggle>
@@ -282,7 +293,8 @@
         <cr-toggle checked="{{syncPrefs.extensionsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes , syncPrefs.extensionsManaged)]]"
+                syncPrefs.syncAllDataTypes , syncPrefs.extensionsManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="extensionsCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.EXTENSIONS]]">
         </cr-toggle>
@@ -299,7 +311,8 @@
         <cr-toggle checked="{{syncPrefs.themesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes ,syncPrefs.themesManaged)]]"
+                syncPrefs.syncAllDataTypes ,syncPrefs.themesManaged,
+                syncStatus.disabled)]]"
             aria-labelledby="themeCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.THEMES]]">
         </cr-toggle>
@@ -317,7 +330,8 @@
         <cr-toggle checked="{{syncPrefs.productComparisonSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged)]]"
+              syncPrefs.syncAllDataTypes, syncPrefs.productComparisonManaged,
+              syncStatus.disabled)]]"
             aria-labelledby="productComparisonsCheckboxLabel"
             data-type$="[[UserSelectableTypeEnum_.PRODUCT_COMPARISON]]">
         </cr-toggle>
@@ -337,7 +351,8 @@
             checked="{{syncPrefs.cookiesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged)]]"
+                syncPrefs.syncAllDataTypes, syncPrefs.cookiesManaged,
+                syncStatus.disabled)]]"
             aria-label="$i18n{cookiesCheckboxLabel}">
         </cr-toggle>
       </div>
@@ -354,7 +369,8 @@
         <cr-toggle checked="{{syncPrefs.wifiConfigurationsSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[disableTypeCheckBox_(syncStatus,
-              syncPrefs.syncAllDataTypes,syncPrefs.wifiConfigurationsManaged)]]"
+              syncPrefs.syncAllDataTypes,syncPrefs.wifiConfigurationsManaged,
+              syncStatus.disabled)]]"
             aria-labelledby="wifiConfigurationsCheckboxLabel">
         </cr-toggle>
       </div>

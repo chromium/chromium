@@ -101,7 +101,8 @@ export class SettingsSyncControlsElement extends
       showSyncDisabledInformation: {
         type: Boolean,
         value: false,
-        computed: 'computeShowSyncDisabledInformation_(syncStatus.disabled)',
+        computed: 'computeShowSyncDisabledInformation_(syncStatus.disabled, ' +
+            'isAccountSettingsPage_)',
         reflectToAttribute: true,
       },
 
@@ -268,15 +269,22 @@ export class SettingsSyncControlsElement extends
   private disableTypeCheckBox_(
       syncStatus: SyncStatus, syncAllDataTypes: boolean,
       dataTypeManaged: boolean): boolean {
+    if (!syncStatus) {
+      return true;
+    }
+
+    if (dataTypeManaged) {
+      return true;
+    }
+
+    if (syncStatus.signedInState === SignedInState.SYNCING) {
+      return syncAllDataTypes;
+    }
+
     // Toggles should be disabled on the account settings page if sync is
     // disabled, or if the sync prefs are undefined, which is the case e.g.
     // right after startup.
-    if (this.isAccountSettingsPage_) {
-      return !syncStatus || syncStatus.disabled || !this.syncPrefs ||
-          dataTypeManaged;
-    }
-
-    return syncAllDataTypes || dataTypeManaged;
+    return syncStatus.disabled || !this.syncPrefs;
   }
 
   private showPolicyIndicator_(
