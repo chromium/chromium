@@ -320,9 +320,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
-      base::Seconds(5);
-
  protected:
   class CanvasImageProvider;
 
@@ -562,6 +559,9 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   void OnDestroyResource() { --num_inflight_resources_; }
   void SetResourceRecyclingEnabled(bool value);
+
+  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
+      base::Seconds(5);
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();

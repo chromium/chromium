@@ -416,7 +416,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnusedResources) {
   // There is a ready-to-reuse resource
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
-      CanvasResourceProvider::kUnusedResourceExpirationTime);
+      CanvasResourceProviderSharedImage::kUnusedResourceExpirationTime);
   // The resource is freed, don't repost the task.
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   EXPECT_FALSE(
@@ -465,7 +465,8 @@ TEST_F(CanvasResourceProviderTest,
   // There is a ready-to-reuse resource
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   task_environment_.FastForwardBy(
-      CanvasResourceProvider::kUnusedResourceExpirationTime - base::Seconds(1));
+      CanvasResourceProviderSharedImage::kUnusedResourceExpirationTime -
+      base::Seconds(1));
   // The reclaim task hasn't run yet.
   EXPECT_TRUE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
@@ -487,7 +488,7 @@ TEST_F(CanvasResourceProviderTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 
   task_environment_.FastForwardBy(
-      CanvasResourceProvider::kUnusedResourceExpirationTime);
+      CanvasResourceProviderSharedImage::kUnusedResourceExpirationTime);
   // Now it's collected.
   EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
   // And no new task is posted.
