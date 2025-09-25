@@ -6,7 +6,10 @@
 
 #include "base/command_line.h"
 #include "chrome/common/channel_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

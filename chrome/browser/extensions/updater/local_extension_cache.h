@@ -18,6 +18,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class SequencedTaskRunner;

@@ -52,6 +52,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_update_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -67,6 +68,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::RandDouble;
 using base::UnguessableToken;

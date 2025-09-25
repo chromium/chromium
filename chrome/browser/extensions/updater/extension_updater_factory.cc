@@ -16,6 +16,9 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/pending_extension_manager_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserContext;
 
