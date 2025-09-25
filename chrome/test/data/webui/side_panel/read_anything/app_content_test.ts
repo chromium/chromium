@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, ContentController, NodeStore, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, ContentType, NodeStore, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -90,6 +90,16 @@ suite('AppContent', () => {
     await microtasksFinished();
 
     assertEquals('', document.getSelection()?.toString());
+  });
+
+  test('no content shows empty state', async () => {
+    const emptyPath = 'empty_state.svg';
+
+    contentController.setState(ContentType.NO_CONTENT);
+    await microtasksFinished();
+
+    assertStringContains(emptyState.darkImagePath, emptyPath);
+    assertStringContains(emptyState.imagePath, emptyPath);
   });
 
   suite('updateContent', () => {

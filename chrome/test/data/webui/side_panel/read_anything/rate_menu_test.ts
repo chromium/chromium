@@ -8,7 +8,7 @@ import {ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-any
 import type {RateMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -25,6 +25,10 @@ suite('RateMenuElement', () => {
 
     rateMenu = document.createElement('rate-menu') as RateMenuElement;
     document.body.appendChild(rateMenu);
+  });
+
+  test('has checkmarks', () => {
+    assertCheckMarksForDropdown(rateMenu);
   });
 
   test('rate change', async () => {

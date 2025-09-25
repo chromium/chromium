@@ -46,12 +46,6 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, CheckmarkVisibleOnSelected) {
-  RunSidePanelTest(
-      "side_panel/read_anything/checkmark_visible_on_selected_test.js",
-      "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
@@ -63,11 +57,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppContent) {
   RunSidePanelTest("side_panel/read_anything/app_content_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, EmptyState) {
-  RunSidePanelTest("side_panel/read_anything/empty_state_test.js",
                    "mocha.run()");
 }
 
@@ -91,11 +80,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceNotificationManager) {
   RunSidePanelTest(
       "side_panel/read_anything/voice_notification_manager_test.js",
       "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudFlag) {
-  RunSidePanelTest("side_panel/read_anything/read_aloud_flag_test.js",
-                   "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontSize) {
@@ -147,16 +131,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageMenu) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageToast) {
   RunSidePanelTest("side_panel/read_anything/language_toast_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggle) {
-  RunSidePanelTest("side_panel/read_anything/links_toggle_button_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ImagesToggle) {
-  RunSidePanelTest("side_panel/read_anything/images_toggle_button_test.js",
                    "mocha.run()");
 }
 

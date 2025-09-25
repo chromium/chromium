@@ -8,7 +8,7 @@ import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-
 import type {LineSpacingMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -25,6 +25,10 @@ suite('LineSpacing', () => {
 
     lineSpacingMenu = document.createElement('line-spacing-menu');
     document.body.appendChild(lineSpacingMenu);
+  });
+
+  test('has checkmarks', () => {
+    assertCheckMarksForDropdown(lineSpacingMenu);
   });
 
   test('spacing change', async () => {

@@ -8,6 +8,7 @@ import {MetricsBrowserProxyImpl, NodeStore, playFromSelectionTimeout, ReadAloudN
 import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -55,6 +56,26 @@ export function getItemsInMenu(
   // query the dropdown item elements.
   const menu = lazyMenu.get();
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
+}
+
+function assertCheckMarkVisible(
+    checkMarks: NodeListOf<HTMLElement>, expectedIndex: number): void {
+  checkMarks.forEach((element, index) => {
+    assertEquals(
+        index === expectedIndex ? 'visible' : 'hidden',
+        element.style.visibility);
+  });
+}
+
+export function assertCheckMarksForDropdown(dropdown: HTMLElement): void {
+  const buttons =
+      dropdown.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+  const checkMarks = dropdown.querySelectorAll<HTMLElement>('.check-mark');
+  assertEquals(buttons.length, checkMarks.length);
+  buttons.forEach((button, index) => {
+    button.click();
+    assertCheckMarkVisible(checkMarks, index);
+  });
 }
 
 export function createSpeechErrorEvent(
