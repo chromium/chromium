@@ -1609,23 +1609,15 @@ void CanvasResourceProvider::NotifyWillTransfer(
 }
 
 void CanvasResourceProvider::EnsureSkiaCanvas() {
+  CHECK(!IsAccelerated());
+
   WillDraw();
 
   if (skia_canvas_)
     return;
 
-  cc::SkiaPaintCanvas::ContextFlushes context_flushes;
-  if (IsAccelerated() && ContextProviderWrapper() &&
-      !ContextProviderWrapper()
-           ->ContextProvider()
-           .GetGpuFeatureInfo()
-           .IsWorkaroundEnabled(gpu::DISABLE_2D_CANVAS_AUTO_FLUSH)) {
-    context_flushes.enable = true;
-    context_flushes.max_draws_before_flush = kMaxDrawsBeforeContextFlush;
-  }
   skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-      GetSkSurface()->getCanvas(), GetOrCreateCanvasImageProvider(),
-      context_flushes);
+      GetSkSurface()->getCanvas(), GetOrCreateCanvasImageProvider());
 }
 
 CanvasResourceProvider::CanvasImageProvider*
