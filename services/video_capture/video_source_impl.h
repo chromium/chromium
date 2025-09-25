@@ -53,16 +53,6 @@ class VideoSourceImpl : public mojom::VideoSource {
       mojo::PendingReceiver<mojom::PushVideoStreamSubscription> subscription,
       CreatePushSubscriptionCallback callback) override;
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  void RegisterVideoEffectsProcessor(
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote)
-      override;
-
-  void RegisterReadonlyVideoEffectsManager(
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote)
-      override;
-#endif
-
  private:
   enum class DeviceStatus {
     kNotStarted,

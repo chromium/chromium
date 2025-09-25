@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//services/video_effects/args.gni")
 
 mojom("mojom") {
   sources = [
@@ -37,11 +36,6 @@ mojom("mojom") {
       "//components/chromeos_camera/common",
       "//media/capture/video/chromeos/mojom:cros_camera",
     ]
-  }
-
-  enabled_features = []
-  if (enable_video_effects) {
-    enabled_features += [ "enable_video_effects" ]
   }
 }
 

@@ -87,18 +87,6 @@ void VideoSourceImpl::CreatePushSubscription(
   }
 }
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void VideoSourceImpl::RegisterVideoEffectsProcessor(
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {
-  pending_video_effects_processor_ = std::move(remote);
-}
-
-void VideoSourceImpl::RegisterReadonlyVideoEffectsManager(
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote) {
-  pending_readonly_video_effects_manager_ = std::move(remote);
-}
-#endif
-
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receivers_.empty()) {

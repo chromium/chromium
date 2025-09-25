@@ -17,10 +17,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "chrome/browser/media_effects/media_effects_manager_binder.h"
-#endif
-
 CameraCoordinator::CameraCoordinator(
     views::View& parent_view,
     bool needs_borders,
@@ -127,25 +123,6 @@ void CameraCoordinator::OnVideoSourceChanged(
     if (blur_switch_view_controller_) {
       blur_switch_view_controller_->BindVideoEffectsManager(active_device_id_);
     }
-
-    // TODO: Consider moving this to `CameraMediator` when the code becomes more
-    // permanent.
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor;
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager;
-
-    media_effects::BindVideoEffectsProcessor(
-        active_device_id_, browser_context_.get(),
-        video_effects_processor.InitWithNewPipeAndPassReceiver());
-    video_source->RegisterVideoEffectsProcessor(
-        std::move(video_effects_processor));
-
-    media_effects::BindReadonlyVideoEffectsManager(
-        active_device_id_, browser_context_.get(),
-        readonly_video_effects_manager.InitWithNewPipeAndPassReceiver());
-    video_source->RegisterReadonlyVideoEffectsManager(
-        std::move(readonly_video_effects_manager));
   }
 #endif
 

@@ -13,11 +13,6 @@
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#endif
 
 class FakeVideoSource : public video_capture::mojom::VideoSource {
  public:
@@ -31,16 +26,6 @@ class FakeVideoSource : public video_capture::mojom::VideoSource {
       mojo::PendingReceiver<video_capture::mojom::PushVideoStreamSubscription>
           subscription,
       CreatePushSubscriptionCallback callback) override;
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  void RegisterVideoEffectsProcessor(
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          processor) override {}
-
-  void RegisterReadonlyVideoEffectsManager(
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote)
-      override {}
-#endif
 
   [[nodiscard]] bool WaitForCreatePushSubscription();
 

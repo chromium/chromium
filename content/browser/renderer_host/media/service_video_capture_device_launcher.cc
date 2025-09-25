@@ -136,17 +136,6 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   service_connection_->source_provider()->GetVideoSource(
       device_id, source.BindNewPipeAndPassReceiver());
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (video_effects_processor) {
-    source->RegisterVideoEffectsProcessor(std::move(video_effects_processor));
-  }
-
-  if (readonly_video_effects_manager) {
-    source->RegisterReadonlyVideoEffectsManager(
-        std::move(readonly_video_effects_manager));
-  }
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-
   auto receiver_adapter =
       std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(
           std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
