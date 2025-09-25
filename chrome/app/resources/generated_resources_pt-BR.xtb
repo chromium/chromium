@@ -2525,7 +2525,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="270921614578699633">Média</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
 <translation id="2710101514844343743">Dados de uso e diagnóstico</translation>
-<translation id="271033894570825754">Novo</translation>
+<translation id="271033894570825754">Nova</translation>
 <translation id="2710507903599773521">Seu <ph name="DEVICE_TYPE" /> está desbloqueado</translation>
 <translation id="2710676967944965821">Redefinir todas as permissões do leitor de cartão inteligente?</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
@@ -9351,7 +9351,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Fechar guia e excluir grupo?}=1{Fechar guia e excluir grupo?}one{Fechar guia e excluir grupo?}other{Fechar guias e excluir grupo?}}</translation>
 <translation id="7509097596023256288">Configurando o gerenciamento</translation>
 <translation id="7509539379068593709">Desinstalar app</translation>
-<translation id="7513438205469584978">Sugestões com base na sua <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />atividade no Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
+<translation id="7513438205469584978">Sugestões para você com base na sua <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />atividade no Google<ph name="END_LINK_GOOGLE_ACTIVITY" /></translation>
 <translation id="7514239104543605883">Copiar para o dispositivo</translation>
 <translation id="7514365320538308">Baixar</translation>
 <translation id="7514417110442087199">Adicionar atribuição</translation>

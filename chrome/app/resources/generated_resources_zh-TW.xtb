@@ -1563,7 +1563,7 @@
 <translation id="2059913712424898428">時區</translation>
 <translation id="2060375639911876205">移除 eSIM 設定檔</translation>
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
-<translation id="2061589908388230480">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
+<translation id="2061589908388230480">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動變更密碼的功能<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">如果不希望系統在你使用網路時儲存你的瀏覽記錄，請使用無痕視窗</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與目前瀏覽的網站相同</translation>
 <translation id="2065405795449409761">Chrome 目前受到自動測試軟體控制。</translation>
@@ -2460,7 +2460,7 @@
 <translation id="2669241540496514785">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
-<translation id="2670168377011445813">如果 Chrome 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
+<translation id="2670168377011445813">如果 Chrome 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動變更密碼的功能<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">經過簡化的動畫</translation>
 <translation id="2670403088701171361">禁止網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
@@ -3462,7 +3462,7 @@
 <translation id="3387829698079331264">不得偵測你使用裝置的時間</translation>
 <translation id="3388094447051599208">輸出紙匣幾乎已滿</translation>
 <translation id="3388788256054548012">這個檔案已加密。請要求檔案擁有者解密。</translation>
-<translation id="3389326266972418853">進一步瞭解自動密碼變更</translation>
+<translation id="3389326266972418853">進一步瞭解自動變更密碼的功能</translation>
 <translation id="3390013585654699824">應用程式詳細資料</translation>
 <translation id="3390442085511866400">另存影片影格(&amp;F)...</translation>
 <translation id="3390530051434634135">備註：<ph name="NOTE" /></translation>
@@ -8045,7 +8045,7 @@
 <translation id="6624687053722465643">小蛋糕</translation>
 <translation id="6626581113916585374">特效模式</translation>
 <translation id="6627743754845412571">禁止追蹤手勢</translation>
-<translation id="6628184833987882108">這個網站的內容會傳送給 Google，也可能交由專人審查，以改善這項功能</translation>
+<translation id="6628184833987882108">這個網站的內容會傳送給 Google，也可能交由專人審查來改良這項功能</translation>
 <translation id="6628316682330029452">用戶端憑證可用於讓其他伺服器識別你的身分。</translation>
 <translation id="6628328486509726751">上傳時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /> 鍵</translation>
@@ -10010,7 +10010,7 @@
 <translation id="7974713334845253259">預設顏色</translation>
 <translation id="7974936243149753750">遮視區域</translation>
 <translation id="7975504106303186033">你必須將這部 Chrome Education 裝置註冊至教育版帳戶。如要註冊新帳戶，請前往 g.co/workspace/edusignup。</translation>
-<translation id="7977029776654598145">使用時</translation>
+<translation id="7977029776654598145">運作方式</translation>
 <translation id="7978412674231730200">秘密金鑰</translation>
 <translation id="7978450511781612192">你將登出自己的 Google 帳戶。你的書籤、歷史記錄、密碼和其他設定將不再保持同步。</translation>
 <translation id="7980066177668669492">Base64 編碼 ASCII，多項憑證</translation>

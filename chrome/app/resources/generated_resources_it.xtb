@@ -1677,7 +1677,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2136476978468204130">La passphrase inserita non è corretta</translation>
 <translation id="2137128126782078222">Non consentire notifiche da <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Pulsante di configurazione</translation>
-<translation id="2140788884185208305">Condizioni batteria</translation>
+<translation id="2140788884185208305">Stato della batteria</translation>
 <translation id="2142328300403846845">Apri link come</translation>
 <translation id="2142484069755256151">Crea un PIN di recupero di 6 cifre per il Gestore delle password di Google, cifra del PIN: <ph name="NUM_DIGIT" /> di 6</translation>
 <translation id="2142582065325732898">Attiva <ph name="LINK1_BEGIN" />Sincronizzazione Chrome<ph name="LINK1_END" /> per visualizzare le schede recenti di Chrome. <ph name="LINK2_BEGIN" />Scopri di più<ph name="LINK2_END" /></translation>
@@ -2511,7 +2511,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="270921614578699633">Media superiore a</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="2710101514844343743">Dati diagnostici e sull'utilizzo</translation>
-<translation id="271033894570825754">Nuovo</translation>
+<translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2710507903599773521">Il tuo <ph name="DEVICE_TYPE" /> è ora sbloccato</translation>
 <translation id="2710676967944965821">Reimpostare tutte le autorizzazioni del lettore di smart card?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>

@@ -11,10 +11,10 @@
 <translation id="1229234641991056119">‏از گذرواژه‌ها، سابقه، نشانک‌ها، و کارت‌های اعتباری Safari خود در Chromium استفاده کنید</translation>
 <translation id="1257458525759135959">‏برای ذخیره کردن تصاویر، روی «تنظیمات» تک‌ضرب بزنید و به Chromium اجازه دهید آن‌ها را به عکس‌ها اضافه کند</translation>
 <translation id="1260702988262336471">‏باز کردن منو Chromium</translation>
-<translation id="12739128458173458">‏برای ارسال این برگه به دستگاهی دیگر، در هردو دستگاه به سیستم Chromium وارد شوید.</translation>
+<translation id="12739128458173458">‏برای ارسال این زبانه به دستگاهی دیگر، در هردو دستگاه به سیستم Chromium وارد شوید.</translation>
 <translation id="1361748954329991663">‏نسخه Chromium قدیمی است. اگر به‌روزرسانی‌ای در <ph name="BEGIN_LINK" />فروشگاه برنامه<ph name="END_LINK" /> دردسترس نیست، احتمالاً دستگاهتان نسخه‌های جدید Chromium را دیگر پشتیبانی نمی‌کند.</translation>
 <translation id="1383876407941801731">جستجو</translation>
-<translation id="1423007117030725713">‏جستجویی در برگه جدید Chromium شروع کنید.</translation>
+<translation id="1423007117030725713">‏جستجویی در زبانه جدید Chromium شروع کنید.</translation>
 <translation id="1431818719585918472">‏اجازه دهید Chromium «برگه‌های ناشناس» را قفل کند.</translation>
 <translation id="1451665391191990528">‏پنهان کردن برگه‌های ناشناسِ باز هنگام ترک کردن Chromium</translation>
 <translation id="146407871188825689">‏استفاده از Chromium در iPad به‌طور پیش‌فرض</translation>
@@ -29,7 +29,7 @@
 <translation id="1561849081734670621">‏برای غیرفعال کردن «حالت قفل همه» در Chromium، آن را در iPhone خود خاموش کنید.</translation>
 <translation id="1569258826720962327">‏استفاده از کنش‌های Chromium در iOS</translation>
 <translation id="159029779861043703">‏Chromium بااستفاده از Face ID امنیت داده‌های حساس شما را حفظ می‌کند.</translation>
-<translation id="1591119736686995611">‏شبکه برگه‌ها را در Chromium باز می‌کند.</translation>
+<translation id="1591119736686995611">‏شبکه زبانه‌ها را در Chromium باز می‌کند.</translation>
 <translation id="16001233025397167">‏«بررسی ایمنی» از شما دربرابر سرقت اطلاعات شبکه، وب‌سایت‌های ناامن، و خطرات دیگر محافظت می‌کند. برای هر مشکل حریم خصوصی یا امنیتی که Chromium تشخیص می‌دهد هشدار دریافت کنید.</translation>
 <translation id="1617663976202781617">‏داده‌های مربوط به همگام‌سازی Chromium</translation>
 <translation id="164952285225495380">‏این بسته درحال‌حاضر در Chromium پیگیری می‌شود.</translation>
@@ -67,7 +67,7 @@
 <translation id="2386292341327187942">‏در چارگوش «ابزارک‌های جستجو»، Chromium را وارد کنید</translation>
 <translation id="2426113998523353159">‏سازمانتان از شما می‌خواهد برای استفاده از Chromium به سیستم وارد شوید.</translation>
 <translation id="2450140762465183767">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chromium باز شوند.</translation>
-<translation id="2459183986985456602">‏باز کردن آخرین برگه من در Chromium.</translation>
+<translation id="2459183986985456602">‏باز کردن آخرین زبانه من در Chromium.</translation>
 <translation id="2476409803017965813">‏هروقت بخواهید می‌توانید انتخاب‌هایتان را در تنظیمات Chromium به‌روز کنید.</translation>
 <translation id="2478931088402984578">‏<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> را انتخاب کنید</translation>
 <translation id="2485774047568879945">‏با تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض، به‌راحتی پیوندها را هم‌رسانی و باز کنید.</translation>
@@ -152,7 +152,7 @@
 <translation id="4633738821577273991">‏برای این نمایه Chromium نیز «مرور ایمن پیشرفته» را دریافت کنید</translation>
 <translation id="4654936625574199632">‏برای کمک به بهبود برنامه، Chromium داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏روشن کردن اسکنر Chromium</translation>
-<translation id="4685611756167369067">‏باز کردن برگه «ناشناس» Chromium</translation>
+<translation id="4685611756167369067">‏باز کردن زبانه «ناشناس» Chromium</translation>
 <translation id="4736424910885271643">‏<ph name="HOSTED_DOMAIN" /> حسابتان را مدیریت می‌کند، درنتیجه داده‌های Chromium شما از این دستگاه پاک خواهد شد</translation>
 <translation id="4790638144988730920">‏به استفاده از داده‌های Chromium ذخیره‌شده در «حساب Google» خود ادامه دهید.</translation>
 <translation id="4828317641996116749">‏Chromium نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
@@ -195,7 +195,7 @@
 <translation id="5571094606370987472">‏برگه‌های اخیر Chromium را باز می‌کند.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">‏روشن/خاموش کردن Chromium</translation>
-<translation id="5664395081284292058">‏باز کردن آخرین برگه من در Chromium</translation>
+<translation id="5664395081284292058">‏باز کردن آخرین زبانه من در Chromium</translation>
 <translation id="5671188105328420281">‏نکته‌های Chromium</translation>
 <translation id="5688047395118852662">‏این کارت پیشنهادهایی را برای بردن بیشترین بهره از Chromium نشان می‌دهد.</translation>
 <translation id="5700709190537129682">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
@@ -225,18 +225,18 @@
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
 <translation id="6301717043141881464">‏برای دریافت آسان گذرواژه‌های ذخیره‌شده در برنامه‌های دیگر، «Chromium برای تکمیل خودکار» را انتخاب کنید</translation>
-<translation id="6324041800010509197">‏رفتن به شبکه برگه‌ها در Chromium</translation>
+<translation id="6324041800010509197">‏رفتن به شبکه زبانه‌ها در Chromium</translation>
 <translation id="6325378625795868881">‏برای باز کردن پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chromium استفاده کنید.</translation>
 <translation id="6387994184698195448">‏از نکات مفید Chromium و موارد بیشتر مطلع شوید.</translation>
 <translation id="6424492062988593837">‏Chromium بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="6433172051771630690">‏نکاتی برای اینکه بیشترین بهره را از Chromium ببرید.</translation>
 <translation id="65045991564554105">‏دیدن نشانک‌های Chromium</translation>
 <translation id="6538713818758208754">‏صفحه تنظیم روش‌های پرداخت را در Chromium باز می‌کند.</translation>
-<translation id="6540186279384079894">‏باز کردن برگه جدید در Chromium</translation>
+<translation id="6540186279384079894">‏باز کردن زبانه جدید در Chromium</translation>
 <translation id="6563921047760808519">‏درباره اینکه <ph name="BEGIN_LINK" />Chromium چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="6574750762636192517">‏مدیریت کردن گذرواژه‌ها در Chromium</translation>
 <translation id="6590232959690355435">‏صفحه سابقه Chromium را باز می‌کند.</translation>
-<translation id="6674470628873622334">‏برگه «ناشناس» جدیدی را در Chromium باز می‌کند.</translation>
+<translation id="6674470628873622334">‏زبانه «ناشناس» جدیدی را در Chromium باز می‌کند.</translation>
 <translation id="6680609900732453726">‏وقتی Chromium را می‌بندید، مرورتان را با اصالت‌سنجی دستگاه خصوصی نگه دارید</translation>
 <translation id="6752854822223394465">‏سازمانتان درحال راه‌اندازی Chromium است…</translation>
 <translation id="6794054469102824109">‏بازی «دایناسور Chromium» را باز می‌کند.</translation>
@@ -245,7 +245,7 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6852419005633611413">‏از جایگاه صفحه اصلی سریع‌تر به Chromium دسترسی داشته باشید</translation>
 <translation id="6852799557929001644">‏در دیگر برنامه‌های این دستگاه به گذرواژه‌های Chromium و موارد دیگر دسترسی داشته باشید.</translation>
-<translation id="6887138405044152640">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chromium وارد شوید.</translation>
+<translation id="6887138405044152640">‏برای ارسال این زبانه به دستگاهی دیگر، در آنجا به سیستم Chromium وارد شوید.</translation>
 <translation id="6911341667534646387">‏همچنان از داده‌های Chromium ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="7018284295775193585">‏Chromium به‌روزرسانی نمی‌شود</translation>
 <translation id="7055269218854630176">‏سازمانتان (<ph name="DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chromium را مدیریت می‌کند. سرپرستتان می‌توانید برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
@@ -284,7 +284,7 @@
 <translation id="7928628054454574139">‏هرزمان در برنامه‌های دیگر روی پیوندها تک‌ضرب بزنید، Chromium باز می‌شود</translation>
 <translation id="7934404985878918282">‏دیدن فهرست خواندن Chromium</translation>
 <translation id="7935734571048689933">‏‫Chromium تحت‌مدیریت است</translation>
-<translation id="7951793218148208717">‏برگه جدیدی را در Chromium باز می‌کند.</translation>
+<translation id="7951793218148208717">‏زبانه جدیدی را در Chromium باز می‌کند.</translation>
 <translation id="7980860476903281594">‏Chromium مکانتان را با سایت‌هایی که مجاز کرده‌اید هم‌رسانی می‌کند.</translation>
 <translation id="7994322153108931467">‏برای دریافت نکته‌های مفید درباره Chromium، اعلان‌ها را در تنظیمات iOS روشن کنید.</translation>
 <translation id="7997159823054171568">‏تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض</translation>
