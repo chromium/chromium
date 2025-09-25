@@ -1,0 +1,103 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/payments/bnpl_util.h"
+
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/payments/core/currency_formatter.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace autofill::payments {
+
+BnplIssuerContext::BnplIssuerContext() = default;
+
+BnplIssuerContext::BnplIssuerContext(BnplIssuer issuer,
+                                     BnplIssuerEligibilityForPage eligibility)
+    : issuer(std::move(issuer)), eligibility(eligibility) {}
+
+BnplIssuerContext::BnplIssuerContext(const BnplIssuerContext& other) = default;
+
+BnplIssuerContext::BnplIssuerContext(BnplIssuerContext&&) = default;
+
+BnplIssuerContext& BnplIssuerContext::operator=(
+    const BnplIssuerContext& other) = default;
+
+BnplIssuerContext& BnplIssuerContext::operator=(BnplIssuerContext&&) = default;
+
+BnplIssuerContext::~BnplIssuerContext() = default;
+
+bool BnplIssuerContext::operator==(const BnplIssuerContext&) const = default;
+
+std::u16string GetBnplIssuerSelectionOptionText(
+    BnplIssuer::IssuerId issuer_id,
+    const std::string& app_locale,
+    base::span<const BnplIssuerContext> issuer_contexts) {
+  // TODO(crbug.com/403361321): Add a util function that returns all supported
+  // locales.
+  CHECK_EQ(app_locale, "en-US");
+  ::payments::CurrencyFormatter formatter = ::payments::CurrencyFormatter(
+      /*currency_code=*/"USD",
+      /*locale_name=*/app_locale);
+  formatter.SetMaxFractionalDigits(/*max_fractional_digits=*/2);
+
+  BnplIssuerContext issuer_context;
+  for (const BnplIssuerContext& current_issuer_context : issuer_contexts) {
+    if (current_issuer_context.issuer.issuer_id() == issuer_id) {
+      issuer_context = current_issuer_context;
+      break;
+    }
+  }
+
+  // Get the price range in USD as it's the only supported currency for now.
+  base::optional_ref<const BnplIssuer::EligiblePriceRange>
+      eligible_price_range =
+          issuer_context.issuer.GetEligiblePriceRangeForCurrency("USD");
+  CHECK(eligible_price_range);
+
+  switch (issuer_context.eligibility) {
+    case BnplIssuerEligibilityForPage::kUndefined:
+      NOTREACHED();
+    case BnplIssuerEligibilityForPage::kIsEligible:
+      switch (issuer_id) {
+        case BnplIssuer::IssuerId::kBnplAffirm:
+        case BnplIssuer::IssuerId::kBnplAfterpay:
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY);
+        case BnplIssuer::IssuerId::kBnplZip:
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_ZIP);
+        case BnplIssuer::IssuerId::kBnplKlarna:
+          return l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_KLARNA);
+      }
+      NOTREACHED();
+    case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT);
+    case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow:
+      // Divide displayed price by `1'000'000.0` to convert from micros and
+      // retain decimals.
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          formatter.Format(base::NumberToString(
+              eligible_price_range->price_lower_bound / 1'000'000.0)));
+    case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh:
+      // Divide displayed price by `1'000'000.0` to convert from micros and
+      // retain decimals.
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
+          formatter.Format(base::NumberToString(
+              eligible_price_range->price_upper_bound / 1'000'000.0)));
+  }
+  NOTREACHED();
+}
+
+}  // namespace autofill::payments

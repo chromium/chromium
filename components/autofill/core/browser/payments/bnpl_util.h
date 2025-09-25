@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_
+
+#include <string>
+#include <vector>
+
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+
+namespace autofill::payments {
+
+// An enum indicating the eligibility of a BNPL issuer on the current page.
+enum class BnplIssuerEligibilityForPage {
+  kUndefined = 0,
+  kIsEligible = 1,
+  // Note: If an issuer is not eligible due to checkout amount and lack of
+  // merchant support, then lack of merchant support takes precedence.
+  kNotEligibleIssuerDoesNotSupportMerchant = 2,
+  kNotEligibleCheckoutAmountTooLow = 3,
+  kNotEligibleCheckoutAmountTooHigh = 4,
+  kMaxValue = kNotEligibleCheckoutAmountTooHigh
+};
+
+// A struct containing a BNPL issuer and the context necessary to display it.
+struct BnplIssuerContext {
+ public:
+  BnplIssuerContext();
+  BnplIssuerContext(BnplIssuer issuer,
+                    BnplIssuerEligibilityForPage eligibility);
+  BnplIssuerContext(const BnplIssuerContext& other);
+  BnplIssuerContext(BnplIssuerContext&&);
+  BnplIssuerContext& operator=(const BnplIssuerContext& other);
+  BnplIssuerContext& operator=(BnplIssuerContext&&);
+  ~BnplIssuerContext();
+  bool operator==(const BnplIssuerContext&) const;
+
+  // The BNPL issuer to display.
+  BnplIssuer issuer;
+
+  // The eligibility of the BNPL issuer on the current page.
+  BnplIssuerEligibilityForPage eligibility =
+      BnplIssuerEligibilityForPage::kUndefined;
+};
+
+// Returns the selection option text for a given BNPL issuer.
+std::u16string GetBnplIssuerSelectionOptionText(
+    BnplIssuer::IssuerId issuer_id,
+    const std::string& app_locale,
+    base::span<const BnplIssuerContext> issuer_contexts);
+
+}  // namespace autofill::payments
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_UTIL_H_

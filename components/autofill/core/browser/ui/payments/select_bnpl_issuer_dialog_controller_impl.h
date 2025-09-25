@@ -13,6 +13,7 @@
 
 namespace autofill::payments {
 
+struct BnplIssuerContext;
 class SelectBnplIssuerView;
 
 // Implementation for the SelectBnplIssuerDialogController.
