@@ -238,17 +238,6 @@ void FingerprintingProtectionWebContentsHelper::WillDestroyThrottleManager(
   CHECK(was_erased);
 }
 
-void FingerprintingProtectionWebContentsHelper::NotifyPageActivationComputed(
-    content::NavigationHandle* navigation_handle,
-    const subresource_filter::mojom::ActivationState& activation_state,
-    const subresource_filter::ActivationDecision& activation_decision) {
-  if (ThrottleManager* throttle_manager =
-          GetThrottleManager(*navigation_handle)) {
-    throttle_manager->OnPageActivationComputed(
-        navigation_handle, activation_state, activation_decision);
-  }
-}
-
 void FingerprintingProtectionWebContentsHelper::
     NotifyChildFrameNavigationEvaluated(
         content::NavigationHandle* navigation_handle,

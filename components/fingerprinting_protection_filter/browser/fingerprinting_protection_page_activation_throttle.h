@@ -28,6 +28,7 @@ namespace subresource_filter {
 enum class ActivationDecision;
 namespace mojom {
 enum class ActivationLevel;
+class ActivationState;
 }  // namespace mojom
 }  // namespace subresource_filter
 
@@ -53,7 +54,13 @@ struct GetActivationResult {
 };
 
 // Navigation throttle responsible for activating subresource filtering on page
-// loads that match the Fingerprinting Protection Filtering criteria.
+// loads that match the Fingerprinting Protection Filtering criteria. It does
+// this by calling ThrottleManager::OnPageActivationComputed in
+// WillProcessResponse, rather than by returning an activation decision there
+// (i.e. rather than by directly throttling). We still implement this as a
+// NavigationThrottle because the WillProcessResponse hook allows us to compute
+// activation only for navigation requests that successfully received a
+// response.
 class FingerprintingProtectionPageActivationThrottle
     : public content::NavigationThrottle {
  public:

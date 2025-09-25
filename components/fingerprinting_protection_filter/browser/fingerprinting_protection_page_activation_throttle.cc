@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
@@ -240,13 +241,13 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
 void FingerprintingProtectionPageActivationThrottle::
     NotifyPageActivationComputed(ActivationState activation_state,
                                  ActivationDecision activation_decision) {
-  auto* web_contents_helper =
-      FingerprintingProtectionWebContentsHelper::FromWebContents(
-          navigation_handle()->GetWebContents());
-  // Making sure the WebContentsHelper exists is outside the scope of this
+  ThrottleManager* throttle_manager =
+      FingerprintingProtectionWebContentsHelper::GetThrottleManager(
+          *navigation_handle());
+  // Making sure the ThrottleManager exists is outside the scope of this
   // class.
-  if (web_contents_helper) {
-    web_contents_helper->NotifyPageActivationComputed(
+  if (throttle_manager) {
+    throttle_manager->OnPageActivationComputed(
         navigation_handle(), activation_state, activation_decision);
   }
 }

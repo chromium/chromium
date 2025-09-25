@@ -154,6 +154,14 @@ class ThrottleManager : public base::SupportsUserData::Data,
     return ruleset_handle_.get();
   }
 
+  // Will be called at the latest in the WillProcessResponse stage from a
+  // NavigationThrottle that was registered before the throttle manager's
+  // throttles created in MaybeAppendNavigationThrottles().
+  void OnPageActivationComputed(
+      content::NavigationHandle* navigation_handle,
+      const subresource_filter::mojom::ActivationState& activation_state,
+      const subresource_filter::ActivationDecision& activation_decision);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(
       ThrottleManagerEnabledTest,
@@ -183,11 +191,6 @@ class ThrottleManager : public base::SupportsUserData::Data,
   // frame Page doesn't own a throttle manager)
   void OnPageCreated(content::Page& page);
 
-  // Similar to above, called from the WebContentsHelper.
-  void OnPageActivationComputed(
-      content::NavigationHandle* navigation_handle,
-      const subresource_filter::mojom::ActivationState& activation_state,
-      const subresource_filter::ActivationDecision& activation_decision);
 
  private:
   friend FingerprintingProtectionWebContentsHelper;
