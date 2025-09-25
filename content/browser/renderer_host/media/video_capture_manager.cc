@@ -68,16 +68,9 @@ namespace content {
 // Class used for queuing request for starting a device.
 class VideoCaptureManager::CaptureDeviceStartRequest {
  public:
-  CaptureDeviceStartRequest(
-      scoped_refptr<VideoCaptureController> controller,
-      const media::VideoCaptureSessionId& session_id,
-      const media::VideoCaptureParams& params,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor,
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager);
+  CaptureDeviceStartRequest(scoped_refptr<VideoCaptureController> controller,
+                            const media::VideoCaptureSessionId& session_id,
+                            const media::VideoCaptureParams& params);
   scoped_refptr<VideoCaptureController> controller() const {
     return controller_;
   }
@@ -111,22 +104,10 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
 VideoCaptureManager::CaptureDeviceStartRequest::CaptureDeviceStartRequest(
     scoped_refptr<VideoCaptureController> controller,
     const media::VideoCaptureSessionId& session_id,
-    const media::VideoCaptureParams& params,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager)
+    const media::VideoCaptureParams& params)
     : controller_(std::move(controller)),
       session_id_(session_id),
-      params_(params),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      video_effects_processor_(std::move(video_effects_processor)),
-#endif
-      readonly_video_effects_manager_(
-          std::move(readonly_video_effects_manager)) {
-}
+      params_(params) {}
 
 VideoCaptureManager::VideoCaptureManager(
     std::unique_ptr<VideoCaptureProvider> video_capture_provider,
@@ -293,21 +274,11 @@ void VideoCaptureManager::ApplySubCaptureTarget(
 void VideoCaptureManager::QueueStartDevice(
     const media::VideoCaptureSessionId& session_id,
     scoped_refptr<VideoCaptureController> controller,
-    const media::VideoCaptureParams& params,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {
+    const media::VideoCaptureParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(lock_time_.is_null());
   device_start_request_queue_.push_back(
-      CaptureDeviceStartRequest(std::move(controller), session_id, params,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-                                std::move(video_effects_processor),
-#endif
-                                std::move(readonly_video_effects_manager)));
+      CaptureDeviceStartRequest(std::move(controller), session_id, params));
   if (device_start_request_queue_.size() == 1)
     ProcessDeviceStartRequestQueue();
 }
@@ -393,11 +364,7 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
       base::BindOnce([](scoped_refptr<VideoCaptureManager>,
                         scoped_refptr<VideoCaptureController>) {},
                      scoped_refptr<VideoCaptureManager>(this),
-                     std::move(controller)),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      request->TakeVideoEffectsProcessor(),
-#endif
-      request->TakeReadonlyVideoEffectsManager());
+                     std::move(controller)));
 }
 
 void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
@@ -525,32 +492,7 @@ void VideoCaptureManager::ConnectClient(
         << "VideoCaptureManager queueing device start for device_id = "
         << controller->device_id();
     EmitLogMessage(string_stream.str(), 1);
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager;
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor;
-    // Only create the video effects processor for DEVICE_VIDEO_CAPTURE media
-    // streams, i.e. cameras.
-    if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-        controller->stream_type() ==
-            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      auto* content_client = GetContentClient();
-      if (browser_context && content_client && content_client->browser()) {
-        content_client->browser()->BindVideoEffectsProcessor(
-            controller->device_id(), browser_context,
-            video_effects_processor.InitWithNewPipeAndPassReceiver());
-      }
-      content_client->browser()->BindReadonlyVideoEffectsManager(
-          controller->device_id(), browser_context,
-          readonly_video_effects_manager.InitWithNewPipeAndPassReceiver());
-    }
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    QueueStartDevice(session_id, controller, params,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-                     std::move(video_effects_processor),
-#endif
-                     std::move(readonly_video_effects_manager));
+    QueueStartDevice(session_id, controller, params);
   }
 
   // Run the callback first, as AddClient() may trigger OnFrameInfo().
@@ -1089,11 +1031,7 @@ void VideoCaptureManager::ResumeDevices() {
       // Session ID is only valid for Screen capture. So we can fake it to
       // resume video capture devices here.
       QueueStartDevice(FakeSessionId(), controller.get(),
-                       controller->parameters(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-                       /*video_effects_processor=*/{},
-#endif
-                       /*readonly_video_effects_manager=*/{});
+                       controller->parameters());
     }
   }
 }
