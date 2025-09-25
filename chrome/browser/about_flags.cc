@@ -2982,6 +2982,14 @@ const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
      std::size(kShowNewTabAnimationsListeners), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kTabStorageSqlitePrototypeAuthoritativeReads[] = {
+        {"authoritative_read_source", "true"}};
+const FeatureEntry::FeatureVariation kTabStorageSqlitePrototypeVariations[] = {
+    {"- Authoritative Read Source",
+     kTabStorageSqlitePrototypeAuthoritativeReads,
+     std::size(kTabStorageSqlitePrototypeAuthoritativeReads), nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kRenderDocument_Subframe[] = {
@@ -7383,7 +7391,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-storage-sqlite-prototype",
      flag_descriptions::kTabStorageSqlitePrototypeName,
      flag_descriptions::kTabStorageSqlitePrototypeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStorageSqlitePrototype)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStorageSqlitePrototype,
+                                    kTabStorageSqlitePrototypeVariations,
+                                    "TabStorageSqlitePrototype")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

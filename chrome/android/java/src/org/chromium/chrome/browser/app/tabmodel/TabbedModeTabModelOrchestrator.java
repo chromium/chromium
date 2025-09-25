@@ -11,6 +11,7 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
@@ -50,6 +51,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
+    private static final String TAG = "TMTMOrchestrator";
+
     private final boolean mTabMergingEnabled;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final CipherFactory mCipherFactory;
@@ -63,6 +66,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
     private @Nullable TabStateStore mTabStateStore;
+    private @Nullable Boolean mTabStateStoreIsAuthoritative;
 
     /**
      * Constructor.
@@ -231,6 +235,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         }
 
         if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()) {
+            mTabStateStoreIsAuthoritative =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE,
+                            "authoritative_read_source",
+                            false);
+            // Temporary variable usage to avoid unused variable warning.
+            Log.i(TAG, "mTabStateStoreIsAuthoritative: " + mTabStateStoreIsAuthoritative);
+
             assert mProfileProviderSupplier.get() != null;
             ProfileProvider profileProvider = mProfileProviderSupplier.get();
             Profile profile = profileProvider.getOriginalProfile();
