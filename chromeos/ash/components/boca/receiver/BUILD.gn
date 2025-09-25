@@ -15,6 +15,8 @@ static_library("receiver") {
     "receiver_handler_delegate.h",
     "register_receiver_request.cc",
     "register_receiver_request.h",
+    "screen_presenter_factory.cc",
+    "screen_presenter_factory.h",
     "start_kiosk_receiver_request.cc",
     "start_kiosk_receiver_request.h",
     "student_screen_presenter.cc",
