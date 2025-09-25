@@ -192,6 +192,10 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService))
+#elif BUILDFLAG(IS_ANDROID)
+      ,
+      model_broker_android_(*g_browser_process->local_state(),
+                            prediction_manager_)
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 {
   prediction_model_store_.Initialize(GetBaseStoreDir());

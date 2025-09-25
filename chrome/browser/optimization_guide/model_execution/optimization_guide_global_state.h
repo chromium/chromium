@@ -18,6 +18,10 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace optimization_guide {
 
 class ChromeModelComponentStateManagerObserver;
@@ -93,6 +97,10 @@ class OptimizationGuideGlobalState final
   void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
     model_broker_state_.service_controller().BindBroker(std::move(receiver));
+#elif BUILDFLAG(IS_ANDROID)
+    if (features::IsOnDeviceExecutionEnabled()) {
+      model_broker_android_.BindBroker(std::move(receiver));
+    }
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   }
 
@@ -129,6 +137,8 @@ class OptimizationGuideGlobalState final
   ModelBrokerState model_broker_state_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>
       component_state_manager_observer_;
+#elif BUILDFLAG(IS_ANDROID)
+  ModelBrokerAndroid model_broker_android_;
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
