@@ -693,6 +693,15 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
+  if (!is_delete_scheduled_) {
+    // Guarantee the Browser has performed the necessary cleanup in the
+    // `OnWindowClosing()` lifecycle hook. This may not be invoked during
+    // Browser shutdown specifically in cases where clients directly reset
+    // the Browser unique_ptr.
+    force_skip_warning_user_on_close_ = true;
+    OnWindowClosing();
+  }
+
   BrowserList::RemoveBrowser(this);
   window_.reset();
 

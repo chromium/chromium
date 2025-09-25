@@ -3259,6 +3259,25 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserCloseEmitsClosedNotificationsOnce) {
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
 
+// Asserts that browser propagates browser closed notifications in the case the
+// object is synchronously destroyed via `SynchronouslyDestroyBrowser()`.
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       BrowserCloseEmitsClosedNotificationsWhenDestroyed) {
+  Browser* const new_browser = CreateBrowser(GetProfile());
+
+  // Assert a closed event is delivered in the case the browser is synchronously
+  // destroyed.
+  base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
+      browser_did_close_callback;
+  EXPECT_CALL(browser_did_close_callback, Run).Times(1);
+  base::CallbackListSubscription subscription =
+      new_browser->RegisterBrowserDidClose(browser_did_close_callback.Get());
+
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  new_browser->SynchronouslyDestroyBrowser();
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+}
+
 class GuestSessionBrowserTest : public BrowserTest {
  public:
 #if BUILDFLAG(IS_CHROMEOS)
