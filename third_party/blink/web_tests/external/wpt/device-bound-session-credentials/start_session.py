@@ -11,7 +11,7 @@ def main(request, response):
 
     jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Secure-Session-Response").decode('utf-8'))
     session_id = test_session_manager.create_new_session()
-    test_session_manager.set_session_key(session_id, jwt_payload.get('key'))
+    test_session_manager.set_session_key(session_id, jwt_header.get('jwk'))
 
     if not verified or jwt_payload.get("jti") != "login_challenge_value":
         return (400, response.headers, "")

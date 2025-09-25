@@ -90,12 +90,10 @@ class NET_EXPORT RegistrationFetcher {
   // Helper function for generating a new binding key and a registration token
   // to bind the key on the server. unexportable_key_service must outlive the
   // callback result
-  static void CreateTokenAsyncForTesting(
+  static void CreateRegistrationTokenAsyncForTesting(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
       std::string challenge,
-      const GURL& registration_url,
       std::optional<std::string> authorization,
-      std::optional<std::string> session_identifier,
       base::OnceCallback<void(std::optional<RegistrationToken>)> callback);
 
   static void SetFetcherForTesting(FetcherType* fetcher);

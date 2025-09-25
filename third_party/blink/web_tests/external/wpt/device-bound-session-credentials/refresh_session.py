@@ -41,7 +41,4 @@ def main(request, response):
         if not verified or jwt_payload.get("jti") != challenge:
             return (400, response.headers, "")
 
-        if jwt_payload.get("sub") != session_id_header:
-            return (400, response.headers, "")
-
     return test_session_manager.get_session_instructions_response(session_id, request)

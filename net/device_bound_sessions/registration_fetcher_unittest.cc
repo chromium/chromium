@@ -2719,11 +2719,9 @@ TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::test::TestFuture<std::optional<RegistrationFetcher::RegistrationToken>>
       future;
-  RegistrationFetcher::CreateTokenAsyncForTesting(
+  RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
-      GURL("https://accounts.example.test.com/Register"),
-      /*authorization=*/std::nullopt, /*session_identifier=*/std::nullopt,
-      future.GetCallback());
+      /*authorization=*/std::nullopt, future.GetCallback());
   RunBackgroundTasks();
   ASSERT_TRUE(future.Get().has_value());
 }
@@ -2732,11 +2730,9 @@ TEST_F(RegistrationTokenHelperTest, CreateFail) {
   crypto::ScopedNullUnexportableKeyProvider scoped_null_key_provider;
   base::test::TestFuture<std::optional<RegistrationFetcher::RegistrationToken>>
       future;
-  RegistrationFetcher::CreateTokenAsyncForTesting(
+  RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
       unexportable_key_service(), "test_challenge",
-      GURL("https://https://accounts.example.test/Register"),
-      /*authorization=*/std::nullopt, /*session_identifier=*/std::nullopt,
-      future.GetCallback());
+      /*authorization=*/std::nullopt, future.GetCallback());
   RunBackgroundTasks();
   EXPECT_FALSE(future.Get().has_value());
 }

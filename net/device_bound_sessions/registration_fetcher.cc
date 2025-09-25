@@ -77,6 +77,7 @@ void OnDataSigned(
 }
 
 void SignChallengeWithKey(
+    bool is_for_refresh,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     unexportable_keys::UnexportableKeyId& key_id,
     const GURL& registration_url,
@@ -86,31 +87,49 @@ void SignChallengeWithKey(
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
   auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
-  auto expected_public_key =
-      unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-  if (!expected_algorithm.has_value() || !expected_public_key.has_value()) {
+  if (!expected_algorithm.has_value()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::optional<std::string> optional_header_and_payload =
-      CreateKeyRegistrationHeaderAndPayload(
-          challenge, registration_url, expected_algorithm.value(),
-          expected_public_key.value(), base::Time::Now(),
-          std::move(authorization), std::move(session_identifier));
+  std::optional<std::string> header_and_payload;
+  if (!base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsOriginTrialFeedback)) {
+    auto expected_public_key =
+        unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
+    if (!expected_public_key.has_value()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    header_and_payload = CreateLegacyKeyRegistrationHeaderAndPayload(
+        challenge, registration_url, expected_algorithm.value(),
+        expected_public_key.value(), base::Time::Now(),
+        std::move(authorization), std::move(session_identifier));
+  } else if (is_for_refresh) {
+    header_and_payload =
+        CreateKeyRefreshHeaderAndPayload(challenge, expected_algorithm.value());
+  } else {
+    auto expected_public_key =
+        unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
+    if (!expected_public_key.has_value()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    header_and_payload = CreateKeyRegistrationHeaderAndPayload(
+        challenge, expected_algorithm.value(), expected_public_key.value(),
+        std::move(authorization));
+  }
 
-  if (!optional_header_and_payload.has_value()) {
+  if (!header_and_payload.has_value()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::string header_and_payload =
-      std::move(optional_header_and_payload.value());
   unexportable_key_service.SignSlowlyAsync(
-      key_id, base::as_byte_span(header_and_payload), kTaskPriority,
+      key_id, base::as_byte_span(*header_and_payload), kTaskPriority,
       /*max_retries=*/0,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
-                     std::ref(unexportable_key_service), header_and_payload,
+                     std::ref(unexportable_key_service), *header_and_payload,
                      std::move(callback)));
 }
 
@@ -441,11 +460,15 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   static constexpr size_t kMaxChallenges = 5;
 
   void AttemptChallengeSigning() {
-    SignChallengeWithKey(
-        *key_service_, *key_id_, fetcher_endpoint_, *current_challenge_,
-        current_authorization_, session_identifier_,
-        base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
-                       GetWeakPtr()));
+    base::OnceCallback<void(
+        std::optional<RegistrationFetcher::RegistrationToken>)>
+        callback = base::BindOnce(
+            &RegistrationFetcherImpl::OnRegistrationTokenCreated, GetWeakPtr());
+
+    SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
+                         fetcher_endpoint_, *current_challenge_,
+                         current_authorization_, session_identifier_,
+                         std::move(callback));
     // `this` may be deleted.
   }
 
@@ -765,12 +788,11 @@ void RegistrationFetcher::SetFetcherForTesting(FetcherType* func) {
   g_mock_fetcher = func;
 }
 
-void RegistrationFetcher::CreateTokenAsyncForTesting(
+// static
+void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
-    const GURL& registration_url,
     std::optional<std::string> authorization,
-    std::optional<std::string> session_identifier,
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
   static constexpr crypto::SignatureVerifier::SignatureAlgorithm
@@ -780,9 +802,8 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
       kSupportedAlgos, kTaskPriority,
       base::BindOnce(
           [](unexportable_keys::UnexportableKeyService& key_service,
-             const GURL& registration_url, const std::string& challenge,
+             const std::string& challenge,
              std::optional<std::string>&& authorization,
-             std::optional<std::string>&& session_identifier,
              base::OnceCallback<void(
                  std::optional<RegistrationFetcher::RegistrationToken>)>
                  callback,
@@ -794,13 +815,12 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
             }
 
             SignChallengeWithKey(
-                key_service, key_result.value(), registration_url, challenge,
-                std::move(authorization), std::move(session_identifier),
-                std::move(callback));
+                /*is_for_refresh=*/false, key_service, key_result.value(),
+                GURL(), challenge, std::move(authorization),
+                /*session_identifier=*/std::nullopt, std::move(callback));
           },
-          std::ref(unexportable_key_service), registration_url,
-          std::move(challenge), std::move(authorization),
-          std::move(session_identifier), std::move(callback)));
+          std::ref(unexportable_key_service), std::move(challenge),
+          std::move(authorization), std::move(callback)));
 }
 
 }  // namespace net::device_bound_sessions
