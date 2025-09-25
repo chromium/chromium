@@ -15,6 +15,7 @@
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item_cell.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_input_item_view.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
@@ -38,7 +39,6 @@ const float kInputPlateShadowOpacity = 0.2f;
 const CGFloat kInputPlateShadowRadius = 20.0f;
 /// The spacing between items in the carousel.
 const CGFloat kCarouselItemSpacing = 6.0f;
-const CGSize kEstimatedCarouselItemSize = {76.0f, 36.0f};
 /// The height of the carousel view.
 const CGFloat kCarouselHeight = 36.0f;
 /// The height of the AIM mode button.
@@ -82,7 +82,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 @interface AIMPrototypeViewController () <UITextViewDelegate,
                                           AIMInputItemCellDelegate,
-                                          UICollectionViewDelegate>
+                                          UICollectionViewDelegate,
+                                          UICollectionViewDelegateFlowLayout>
 
 /// Whether the AI mode is enabled.
 @property(nonatomic, assign) BOOL AIModeEnabled;
@@ -194,7 +195,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UICollectionViewFlowLayout* layout =
       [[UICollectionViewFlowLayout alloc] init];
   layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-  layout.estimatedItemSize = kEstimatedCarouselItemSize;
   layout.minimumLineSpacing = kCarouselItemSpacing;
   _carouselView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                      collectionViewLayout:layout];
@@ -520,6 +520,20 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   }
 
   [self updateCarouselFade];
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout
+
+- (CGSize)collectionView:(UICollectionView*)collectionView
+                    layout:(UICollectionViewLayout*)collectionViewLayout
+    sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
+  AIMInputItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
+
+  if (!item || item.type == AIMInputItemType::kAIMInputItemTypeImage) {
+    return kImageInputItemSize;
+  }
+
+  return kTabFileInputItemSize;
 }
 
 #pragma mark - Private

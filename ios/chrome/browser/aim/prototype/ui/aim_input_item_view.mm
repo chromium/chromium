@@ -8,11 +8,10 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
+const CGSize kImageInputItemSize = {72.0f, 36.0f};
+const CGSize kTabFileInputItemSize = {136.0f, 36.0f};
+
 namespace {
-// The input item max width.
-const CGFloat kInputItemMaxWidth = 136.0f;
-// The input item height.
-const CGFloat kInputItemHeight = 36.0f;
 // The input item padding.
 const CGFloat kPadding = 10.0;
 // The leading icon size.
@@ -169,8 +168,9 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
 
 - (void)setupConstraints {
   [NSLayoutConstraint activateConstraints:@[
-    [self.widthAnchor constraintLessThanOrEqualToConstant:kInputItemMaxWidth],
-    [self.heightAnchor constraintEqualToConstant:kInputItemHeight],
+    [self.widthAnchor
+        constraintLessThanOrEqualToConstant:kTabFileInputItemSize.width],
+    [self.heightAnchor constraintEqualToConstant:kTabFileInputItemSize.height],
     // leading icon ImageView
     [_leadingIconImageView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor

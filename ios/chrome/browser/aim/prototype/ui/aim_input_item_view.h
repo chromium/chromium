@@ -9,6 +9,11 @@
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 
+/// Image input item size.
+extern const CGSize kImageInputItemSize;
+/// Tab/File input item size.
+extern const CGSize kTabFileInputItemSize;
+
 // The aim input item view.
 @interface AimInputItemView : UIView
 
