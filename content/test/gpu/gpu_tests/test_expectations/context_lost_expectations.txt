@@ -183,10 +183,6 @@ crbug.com/1334650 [ linux ] GpuCrash_SoftwareFallbackDisabled [ Skip ]
 # since Windows 8 is no longer tested.
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
-# Slow on DCHECK and need extra time to address.
-crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
-crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -240,6 +236,14 @@ crbug.com/365565140 [ angle-opengl debug graphite-disabled intel-0x3e9b arch-x86
 crbug.com/338574390 [ mac intel-0x3e9b angle-metal asan graphite-disabled ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 crbug.com/338574390 [ angle-metal asan graphite-disabled intel-0x3e9b mac ] GpuNormalTermination_NewWebGLNotBlocked [ RetryOnFailure ]
 crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Slow ]
+
+###############################
+# Permanent Slow Expectations #
+###############################
+
+# Slow on DCHECK builds being used on fuchsia builders.
+crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromQuantity [ Slow ]
+crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromSelectElement [ Slow ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

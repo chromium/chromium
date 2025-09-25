@@ -205,7 +205,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @functools.lru_cache(maxsize=None)
   def _GetWaitTimeout(cls):
     timeout = 60
-    if cls._is_asan or cls.browser.browser_type == 'debug':
+    if cls._is_asan or cls.browser.browser_type in ('debug', 'web-engine-shell',
+                                                    'cast-streaming-shell'):
       timeout *= 2
     return timeout
 
@@ -379,8 +380,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
-  def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(self, test_path: str
-                                                          ) -> None:
+  def _ContextLost_WebGPUStressRequestDeviceAndRemoveLoop(
+      self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
     self._NavigateAndWaitForLoad(test_path)
 
@@ -436,8 +437,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # No reason to wait more than 10 seconds for this test to complete.
     self._WaitForTabAndCheckCompletion(timeout=10)
 
-  def _ContextLost_WebGLContextRestoredInHiddenTab(self, test_path: str
-                                                   ) -> None:
+  def _ContextLost_WebGLContextRestoredInHiddenTab(self,
+                                                   test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -493,8 +494,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'Page should have been blocked from getting a new WebGL context')
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
-  def _ContextLost_WebGLUnblockedAfterUserInitiatedReload(self, test_path: str
-                                                          ) -> None:
+  def _ContextLost_WebGLUnblockedAfterUserInitiatedReload(
+      self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWaitForLoad(test_path)
     tab = self.tab
@@ -859,9 +860,8 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     return [
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
-            'context_lost_expectations.txt')
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations', 'context_lost_expectations.txt')
     ]
 
 

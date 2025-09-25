@@ -554,8 +554,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.Navigate(url, script_to_evaluate_on_commit=args.test_harness_script)
 
     try:
-      tab.action_runner.WaitForJavaScriptCondition(args.finish_js_condition,
-                                                   timeout=60)
+      tab.action_runner.WaitForJavaScriptCondition(args.finish_js_condition)
     finally:
       test_messages = tab.EvaluateJavaScript(
           'domAutomationController._messages')

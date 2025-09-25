@@ -109,8 +109,17 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
-# Slow on DCHECK and need extra time to address.
-crbug.com/425745937 [ fuchsia web-engine-shell ] ExpectedColor_maps [ Skip ]
+# Too slow on low performant smart display and won't work with default 10s timeout.
+# https://crsrc.org/c/third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/devtools_client_backend.py;drc=99f2d536fbf0a4b520f6e45de76d5295ea1c8cba;l=195
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-astro ] ExpectedColor_maps [ Skip ]
+
+###############################
+# Permanent Slow Expectations #
+###############################
+
+# Slow on DCHECK builds being used on fuchsia builders.
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-sherlock ] ExpectedColor_maps [ Slow ]
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedColor_maps [ Slow ]
 
 ###################
 # Failures/Flakes #
