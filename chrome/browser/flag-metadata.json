@@ -1426,6 +1426,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "browser-report-include-all-profiles",
+    "owners": ["nicolaso@chromium.org", "zmin@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "browsing-data-model-clank",
     "owners": [
       "alimariam@google.com",
@@ -4268,6 +4273,11 @@
     "name": "enable-process-per-site-up-to-main-frame-threshold",
     "owners": [ "dtapuska@chromium.org", "blink-network-stack@google.com" ],
     "expiry_milestone": 145
+  },
+  {
+    "name": "enable-profile-reporting",
+    "owners": ["nicolaso@chromium.org", "zmin@chromium.org"],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-projector-app-debug",

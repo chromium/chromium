@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
@@ -2668,6 +2669,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSEnablePasswordManagerTrustedVaultWidget)},
+    {"enable-profile-reporting",
+     flag_descriptions::kIOSEnableCloudProfileReportingName,
+     flag_descriptions::kIOSEnableCloudProfileReportingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(enterprise_reporting::kCloudProfileReporting)},
+    {"browser-report-include-all-profiles",
+     flag_descriptions::kIOSBrowserReportIncludeAllProfilesName,
+     flag_descriptions::kIOSBrowserReportIncludeAllProfilesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         enterprise_reporting::kBrowserReportIncludeAllProfiles)},
     {"lens-load-aim-in-lens-result-page",
      flag_descriptions::kLensLoadAIMInLensResultPageName,
      flag_descriptions::kLensLoadAIMInLensResultPageDescription,

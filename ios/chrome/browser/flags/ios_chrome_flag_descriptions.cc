@@ -258,7 +258,8 @@ const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
 const char kBeginCursorAtPointTentativeFixName[] =
     "Begin cursor at point tentative fix";
 const char kBeginCursorAtPointTentativeFixDescription[] =
-    "A tentative fix for crbug.com/361003475. When enabled, it prevents a call to "
+    "A tentative fix for crbug.com/361003475. When enabled, it prevents a call "
+    "to "
     "setSelectedTextRange.";
 
 const char kBestFeaturesScreenInFirstRunName[] =
@@ -749,6 +750,18 @@ extern const char kIOSEnableRealtimeEventReportingName[] =
 extern const char kIOSEnableRealtimeEventReportingDescription[] =
     "When enabled, realtime events will be reported to the user's "
     "organization.";
+
+extern const char kIOSEnableCloudProfileReportingName[] =
+    "Enable profile reporting on iOS";
+extern const char kIOSEnableCloudProfileReportingDescription[] =
+    "When enabled, profile reports will be reported to the user's "
+    "organization.";
+
+extern const char kIOSBrowserReportIncludeAllProfilesName[] =
+    "include all profiles in browser reports";
+extern const char kIOSBrowserReportIncludeAllProfilesDescription[] =
+    "When enabled, enterprise browser reports include all profiles (instead of "
+    "only the current profile).";
 
 const char kIOSFillRecoveryPasswordName[] =
     "Enable autofilling with a recovery password";

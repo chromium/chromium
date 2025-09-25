@@ -432,6 +432,12 @@ extern const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[];
 extern const char kIOSEnableRealtimeEventReportingName[];
 extern const char kIOSEnableRealtimeEventReportingDescription[];
 
+extern const char kIOSEnableCloudProfileReportingName[];
+extern const char kIOSEnableCloudProfileReportingDescription[];
+
+extern const char kIOSBrowserReportIncludeAllProfilesName[];
+extern const char kIOSBrowserReportIncludeAllProfilesDescription[];
+
 extern const char kIOSFillRecoveryPasswordName[];
 extern const char kIOSFillRecoveryPasswordDescription[];
 
