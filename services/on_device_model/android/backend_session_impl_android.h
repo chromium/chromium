@@ -29,8 +29,23 @@ class BackendSessionImplAndroid : public BackendSession {
   enum class GenerateResult {
     kSuccess = 0,
     kUnknownError = 1,
+    // The backend API is not constructed. This happens if this is an upstream
+    // build.
     kApiNotAvailable = 2,
-    kMaxValue = kApiNotAvailable,
+    // The backend is not able to find the feature ID. This happens if the
+    // ID is newly added and the AICore APK is on an older version.
+    kFeatureIsNull = 3,
+    // An exception is thrown when getting the feature.
+    kGetFeatureError = 4,
+    // A general exception is thrown when running inference.
+    kInferenceGeneralError = 5,
+    // A request processing error is thrown when running inference. This may
+    // be caused by safety filtering.
+    kInferenceRequestProcessingError = 6,
+    // A response processing error is thrown when running inference. This may
+    // be caused by safety filtering.
+    kInferenceResponseProcessingError = 7,
+    kMaxValue = kInferenceResponseProcessingError,
   };
 
   BackendSessionImplAndroid(

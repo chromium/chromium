@@ -32,8 +32,25 @@ class ModelDownloaderAndroid {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.on_device_model
   enum class DownloadFailureReason {
     kUnknownError = 0,
+    // The backend API is not constructed. This happens if this is an upstream
+    // build.
     kApiNotAvailable = 1,
-    kMaxValue = kApiNotAvailable,
+    // The backend is not able to find the feature ID. This happens if the
+    // ID is newly added and the AICore APK is on an older version.
+    kFeatureIsNull = 2,
+    // An exception is thrown when getting the feature.
+    kGetFeatureError = 3,
+    // An exception is thrown when getting the status of the feature.
+    kGetFeatureStatusError = 4,
+    // The status of the feature is not available. This can happen if the
+    // feature is only enabled for certain device types or certain dogfood
+    // groups.
+    kFeatureNotAvailable = 5,
+    // A general exception is thrown when downloading the model.
+    kDownloadGeneralError = 6,
+    // There is no enough disk space when downloading the model.
+    kDownloadNotEnoughDiskSpaceError = 7,
+    kMaxValue = kDownloadNotEnoughDiskSpaceError,
   };
 
   using OnDownloadCompleteCallback = base::OnceCallback<void(

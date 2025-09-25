@@ -80,11 +80,22 @@ histograms-xml-to-struct.py script to generate enums for histograms.
   <int value="0" label="Success"/>
   <int value="1" label="UnknownError"/>
   <int value="2" label="ApiNotAvailable"/>
+  <int value="3" label="FeatureIsNull"/>
+  <int value="4" label="GetFeatureError"/>
+  <int value="5" label="InferenceGeneralError"/>
+  <int value="6" label="InferenceRequestProcessingError"/>
+  <int value="7" label="InferenceResponseProcessingError"/>
 </enum>
 
 <enum name="OnDeviceModelAndroidModelDownloadFailureReason">
   <int value="0" label="UnknownError"/>
   <int value="1" label="ApiNotAvailable"/>
+  <int value="2" label="FeatureIsNull"/>
+  <int value="3" label="GetFeatureError"/>
+  <int value="4" label="GetFeatureStatusError"/>
+  <int value="5" label="FeatureNotAvailable"/>
+  <int value="6" label="DownloadGeneralError"/>
+  <int value="7" label="DownloadNotEnoughDiskSpaceError"/>
 </enum>
 
 <enum name="VeryLowPerformanceReason">
