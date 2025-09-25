@@ -285,6 +285,12 @@ std::string ProfileAuthServersSyncBridge::GetStorageKey(
   return entity_data.specifics.printers_authorization_server().uri();
 }
 
+bool ProfileAuthServersSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_printers_authorization_server());
+  return !entity_data.specifics.printers_authorization_server().uri().empty();
+}
+
 void ProfileAuthServersSyncBridge::OnCommit(
     const std::optional<syncer::ModelError>& error) {
   if (error) {
