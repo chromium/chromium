@@ -82,7 +82,11 @@ void PostStyleUpdateScope::ApplyAnimations() {
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
   }
 
-  document_.GetDocumentAnimations().UpdateAnimationTriggerAttachments();
+  // NOTE(crbug.com/446159591): With AnimationTrigger enabled, we see renderer
+  // hang reports. This hang should be fixed before enabling AnimationTrigger.
+  if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+    document_.GetDocumentAnimations().UpdateAnimationTriggerAttachments();
+  }
 
   DCHECK(animation_data_.elements_with_pending_updates_.empty())
       << "MaybeApplyPendingUpdate must not set further pending updates";

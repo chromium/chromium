@@ -246,12 +246,7 @@ void AnimationTimeline::ServiceTriggers() {
 }
 
 void AnimationTimeline::UpdateAnimationTriggerAttachments() {
-  // Mitigation for  https://crbug.com/446159591 to avoid hang reports.
-  // TODO(crbug.com/c/446159591): This hang should be fixed before enabling
-  // AnimationTrigger.
-  if (!RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
-    return;
-  }
+  DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
   if (!GetDocument() || !GetDocument()->View()) {
     return;
   }
