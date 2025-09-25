@@ -13,7 +13,7 @@ namespace tabs {
 namespace {
 constexpr base::TaskTraits kDBTaskTraits = {
     base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
+    base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 }  // namespace
 
 TabStateStorageBackend::TabStateStorageBackend(
