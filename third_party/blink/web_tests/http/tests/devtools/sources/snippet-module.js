@@ -38,6 +38,6 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   await ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
   await ConsoleTestRunner.dumpConsoleMessages();
-  Console.ConsoleView.ConsoleView.clearConsole();
+  Console.ConsoleView.ConsoleView.instance().clearConsole();
   TestRunner.completeTest();
 })();

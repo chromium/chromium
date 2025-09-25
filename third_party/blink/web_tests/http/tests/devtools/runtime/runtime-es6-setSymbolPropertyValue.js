@@ -28,7 +28,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function dumpAndClearConsoleMessages() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    Console.ConsoleView.ConsoleView.clearConsole();
+    Console.ConsoleView.ConsoleView.instance().clearConsole();
   }
 
   TestRunner.runTestSuite([

@@ -27,7 +27,7 @@ import * as Console from 'devtools/panels/console/console.js';
         // Sorting console messages to prevent flakiness.
         await ConsoleTestRunner.waitForPendingViewportUpdates();
         TestRunner.addResults((await ConsoleTestRunner.dumpConsoleMessagesIntoArray()).sort());
-        Console.ConsoleView.ConsoleView.clearConsole();
+        Console.ConsoleView.ConsoleView.instance().clearConsole();
         step2();
       });
     });

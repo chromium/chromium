@@ -61,7 +61,7 @@ import * as Console from 'devtools/panels/console/console.js';
   function dumpAndClearConsoleMessages(next) {
     TestRunner.deprecatedRunAfterPendingDispatches(async function() {
       await ConsoleTestRunner.dumpConsoleMessages();
-      Console.ConsoleView.ConsoleView.clearConsole();
+      Console.ConsoleView.ConsoleView.instance().clearConsole();
       TestRunner.deprecatedRunAfterPendingDispatches(next);
     });
   }
