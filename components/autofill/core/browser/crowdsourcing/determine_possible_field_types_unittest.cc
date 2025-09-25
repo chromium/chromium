@@ -35,6 +35,8 @@ void PrintTo(const PossibleTypes& ps, std::ostream* os) {
         return u"AFFIX";
       case FormatString_Type_DATE:
         return u"DATE";
+      case FormatString_Type_FLIGHT_NUMBER:
+        return u"FLIGHT_NUMBER";
     }
     NOTREACHED();
   };

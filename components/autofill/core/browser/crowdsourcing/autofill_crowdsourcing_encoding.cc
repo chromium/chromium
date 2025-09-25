@@ -473,6 +473,8 @@ void EncodeFormFieldsForUpload(
               return data_util::IsValidAffixFormat(string);
             case FormatString_Type_DATE:
               return data_util::IsValidDateFormat(string);
+            case FormatString_Type_FLIGHT_NUMBER:
+              return data_util::IsValidFlightNumberFormat(string);
           }
           return false;
         }());
@@ -1054,6 +1056,7 @@ void ProcessServerPredictionsQueryResponse(
         switch (field_suggestion->format_string().type()) {
           case FormatString_Type_AFFIX:
           case FormatString_Type_DATE:
+          case FormatString_Type_FLIGHT_NUMBER:
             field->set_format_string_unless_overruled(
                 base::UTF8ToUTF16(
                     field_suggestion->format_string().format_string()),

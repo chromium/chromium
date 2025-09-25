@@ -248,6 +248,12 @@ bool IsValidAffixFormat(std::u16string_view format, bool exclude_full_value) {
                base::checked_cast<int>(kMaxAffixLengthForFormatString)));
 }
 
+bool IsValidFlightNumberFormat(std::u16string_view format,
+                               bool exclude_full_value) {
+  return format == u"A" || format == u"N" ||
+         (format == u"F" && !exclude_full_value);
+}
+
 std::u16string Expiration2DigitMonthAsString(int expiration_month) {
   if (expiration_month < 1 || expiration_month > 12)
     return std::u16string();

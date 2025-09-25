@@ -395,5 +395,16 @@ TEST(AutofillDataModelUtils, IsValidAffixFormat) {
   EXPECT_FALSE(IsValidAffixFormat(u"100"));
 }
 
+TEST(AutofillDataModelUtilsTest, IsValidFlightNumberFormat) {
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"A"));
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"N"));
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"F"));
+
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"B"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"a"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"Aa"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"F", /*exclude_full_value=*/true));
+}
+
 }  // namespace
 }  // namespace autofill::data_util

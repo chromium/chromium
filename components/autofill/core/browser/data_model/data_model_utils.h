@@ -128,6 +128,20 @@ inline constexpr size_t kMaxAffixLengthForFormatString = 8;
 bool IsValidAffixFormat(std::u16string_view format,
                         bool exclude_full_value = false);
 
+// Indicates whether `format` designates a sub-component of an IATA flight
+// number (e.g., "LH89"). That is, `format` must have one of the following
+// values:
+// - "A" refers to the airline designator in a flight number. IATA allows for
+//   three-letter designators, but they are not used in practice. Therefore
+//   the designator is assumed to be the first two character of the full flight
+//   number ("LH").
+// - "N" refers to the numerical part, i.e. a 1-4 digit number following the
+//    airline designator ("89").
+// - "F" refers to full flight number ("LH89").
+// Excludes the case of 'F' if `exclude_full_value == true`.
+bool IsValidFlightNumberFormat(std::u16string_view format,
+                               bool exclude_full_value = false);
+
 // Converts the integer `expiration_month` to std::u16string. Returns a value
 // between ["01"-"12"].
 std::u16string Expiration2DigitMonthAsString(int expiration_month);
