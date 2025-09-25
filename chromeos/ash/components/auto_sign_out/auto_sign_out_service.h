@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(AUTO_SIGN_OUT) AutoSignOutService
 
   // syncer::SyncServiceObserver override:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // session_manager::SessionManagerObserver override:
   void OnUnlockScreenAttempt(

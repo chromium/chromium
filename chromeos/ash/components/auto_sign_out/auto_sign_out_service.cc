@@ -143,6 +143,11 @@ void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
   }
 }
 
+void AutoSignOutService::OnSyncShutdown(syncer::SyncService* sync) {
+  // This service must be destroyed before the SyncService is Shutdown().
+  NOTREACHED();
+}
+
 void AutoSignOutService::OnUnlockScreenAttempt(
     const bool success,
     const session_manager::UnlockType unlock_type) {
