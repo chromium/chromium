@@ -2604,6 +2604,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("html-attributes-and-tag-names.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityHtmlVsAriaAttributes) {
+  RunHtmlTest(FILE_PATH_LITERAL("html-vs-aria-attributes.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityI) {
   RunHtmlTest(FILE_PATH_LITERAL("i.html"));
 }

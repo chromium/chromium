@@ -1,0 +1,59 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Checked' nameFrom=contents
+++++++++staticText name='Checked' nameFrom=contents
+++++++++++inlineTextBox name='Checked' nameFrom=contents
+++++++group
+++++++++checkBox checkedState=true
+++++++++checkBox checkedState=true
+++++++++checkBox checkedState=false
+++++++++checkBox checkedState=false
+++++++heading name='Disabled' nameFrom=contents
+++++++++staticText name='Disabled' nameFrom=contents
+++++++++++inlineTextBox name='Disabled' nameFrom=contents
+++++++group
+++++++++textField restriction=disabled
+++++++++++genericContainer
+++++++++textField restriction=disabled
+++++++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++++textField restriction=disabled
+++++++++++genericContainer
+++++++heading name='Placeholder' nameFrom=contents
+++++++++staticText name='Placeholder' nameFrom=contents
+++++++++++inlineTextBox name='Placeholder' nameFrom=contents
+++++++group
+++++++++textField name='HTML' nameFrom=placeholder
+++++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++textField name='Name match' nameFrom=placeholder
+++++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++textField name='Aria' nameFrom=placeholder
+++++++++++genericContainer
+++++++heading name='Readonly' nameFrom=contents
+++++++++staticText name='Readonly' nameFrom=contents
+++++++++++inlineTextBox name='Readonly' nameFrom=contents
+++++++group
+++++++++textField restriction=readOnly
+++++++++++genericContainer
+++++++++textField restriction=readOnly
+++++++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++++textField restriction=readOnly
+++++++++++genericContainer
+++++++heading name='Required' nameFrom=contents
+++++++++staticText name='Required' nameFrom=contents
+++++++++++inlineTextBox name='Required' nameFrom=contents
+++++++group
+++++++++textField required
+++++++++++genericContainer
+++++++++textField required
+++++++++++genericContainer
+++++++++textField
+++++++++++genericContainer
+++++++++textField required
+++++++++++genericContainer
