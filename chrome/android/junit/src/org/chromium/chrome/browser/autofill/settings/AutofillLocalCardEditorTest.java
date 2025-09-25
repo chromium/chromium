@@ -54,10 +54,10 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.NullUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
-import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -230,13 +230,7 @@ public class AutofillLocalCardEditorTest {
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         mActionTester = new UserActionTester();
 
-        CreditCardScanner.setFactory(
-                new CreditCardScanner.Factory() {
-                    @Override
-                    public CreditCardScanner create(Delegate delegate) {
-                        return mMockScanner;
-                    }
-                });
+        CreditCardScanner.setFactory(delegate -> mMockScanner);
     }
 
     @After
@@ -280,7 +274,20 @@ public class AutofillLocalCardEditorTest {
         mExpirationYear =
                 mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_year_spinner);
         mExpirationDate = mSettingsActivity.findViewById(R.id.expiration_month_and_year);
-        mCvc = mSettingsActivity.findViewById(R.id.cvc);
+
+        View cvcLegacyContainer = mSettingsActivity.findViewById(R.id.cvc_legacy_container);
+        TextInputLayout cvcMaterialLabel =
+                mSettingsActivity.findViewById(R.id.credit_card_security_code_label_material);
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            cvcLegacyContainer.setVisibility(View.GONE);
+            cvcMaterialLabel.setVisibility(View.VISIBLE);
+            mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+        } else {
+            cvcLegacyContainer.setVisibility(View.VISIBLE);
+            cvcMaterialLabel.setVisibility(View.GONE);
+            mCvc = mSettingsActivity.findViewById(R.id.cvc);
+        }
         mCvcHintImage = mSettingsActivity.findViewById(R.id.cvc_hint_image);
         mNumberText = mSettingsActivity.findViewById(R.id.credit_card_number_edit);
         mExpirationDateInvalidError =

@@ -34,6 +34,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.NullUtil;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -166,7 +167,19 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
             mExpirationDate = v.findViewById(R.id.expiration_month_and_year);
             mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
 
-            mCvc = v.findViewById(R.id.cvc);
+            View cvcLegacyContainer = v.findViewById(R.id.cvc_legacy_container);
+            TextInputLayout cvcMaterialLabel =
+                    v.findViewById(R.id.credit_card_security_code_label_material);
+
+            if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+                cvcLegacyContainer.setVisibility(View.GONE);
+                cvcMaterialLabel.setVisibility(View.VISIBLE);
+                mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+            } else {
+                cvcLegacyContainer.setVisibility(View.VISIBLE);
+                cvcMaterialLabel.setVisibility(View.GONE);
+                mCvc = v.findViewById(R.id.cvc);
+            }
             mCvcHintImage = v.findViewById(R.id.cvc_hint_image);
             mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
@@ -190,13 +203,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
         if (mScannerManager.canScan()) {
             mScanButton.setVisibility(View.VISIBLE);
             mScanButton.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
+                    v1 ->
                             mScannerManager.scan(
-                                    ((SettingsActivity) getActivity()).getIntentRequestTracker());
-                        }
-                    });
+                                    ((SettingsActivity) getActivity()).getIntentRequestTracker()));
         }
 
         addCardDataToEditFields();
