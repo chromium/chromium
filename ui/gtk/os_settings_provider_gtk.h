@@ -38,7 +38,8 @@ class OsSettingsProviderGtk : public ui::OsSettingsProvider {
 
   // Have to explicitly give template params instead of using `std::to_array()`,
   // since CTAD is banned in non-static member declarations :(
-  std::array<ScopedGSignal, 3> signals_{
+  std::array<ScopedGSignal, 4> signals_{
+      ConnectSignal("notify::gtk-application-prefer-dark-theme"),
       ConnectSignal("notify::gtk-cursor-blink"),
       ConnectSignal("notify::gtk-cursor-blink-time"),
       ConnectSignal("notify::gtk-theme-name"),

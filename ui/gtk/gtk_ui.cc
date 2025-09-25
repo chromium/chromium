@@ -84,6 +84,7 @@
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_button_order_observer.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -911,7 +912,7 @@ void GtkUi::LoadGtkValues() {
   // to the theme bits associated with the NativeThemeGtk instance to ensure
   // we do not regress existing behavior during the transition.
   ui::ColorProviderKey key;
-  if (native_theme_->preferred_color_scheme() ==
+  if (ui::OsSettingsProvider::Get().PreferredColorScheme() ==
       ui::NativeTheme::PreferredColorScheme::kDark) {
     key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
   }
