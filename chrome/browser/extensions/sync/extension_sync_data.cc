@@ -15,8 +15,11 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_url_handlers.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using syncer::StringOrdinal;
 

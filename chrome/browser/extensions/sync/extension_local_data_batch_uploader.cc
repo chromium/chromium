@@ -16,12 +16,15 @@
 #include "components/sync/service/local_data_description.h"
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

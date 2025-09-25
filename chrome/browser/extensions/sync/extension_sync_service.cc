@@ -38,6 +38,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
@@ -46,6 +47,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::AccountExtensionTracker;
 using extensions::AppSorting;

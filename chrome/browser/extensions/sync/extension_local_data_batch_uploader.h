@@ -9,7 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
