@@ -33,8 +33,8 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 26.0 (17A324) along with the macOS 26.0 SDK
-# (25A352, which is like macOS 26.0 25A354) and the Metal toolchain (17A324,
+# This contains binaries from Xcode 26.0.1 (17A400) along with the macOS 26.0
+# SDK (25A352, which is like macOS 26.0 25A354) and the Metal toolchain (17A324,
 # 32023). To build these packages, see comments in build/xcode_binaries.yaml.
 #
 # To update the version numbers, open Xcode's "About Xcode" or run `xcodebuild
@@ -46,7 +46,7 @@ def LoadPList(path):
 # MAC_BINARIES_LABEL.
 
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'R3tAh86UE4bodN1_DNbWgVXD2aNcpXpz9xo1JaPE-4oC'
+MAC_BINARIES_TAG = 'ab7mQwdyDemzw1Utqhv4AaS7WLz4_Nq9V3L-eMuupMsC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the Darwin major version number for macOS 10.15. Xcode 26.0 17A324 only
