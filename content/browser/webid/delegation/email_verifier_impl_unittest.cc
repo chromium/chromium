@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verification_request.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/test/test_browser_context.h"
@@ -25,7 +26,11 @@ namespace content::webid {
 
 class MockEmailVerificationRequest : public EmailVerificationRequest {
  public:
-  MockEmailVerificationRequest() : EmailVerificationRequest(nullptr, nullptr) {}
+  explicit MockEmailVerificationRequest(RenderFrameHost& rfh)
+      : EmailVerificationRequest(
+            nullptr,
+            nullptr,
+            static_cast<RenderFrameHostImpl&>(rfh).GetSafeRef()) {}
   ~MockEmailVerificationRequest() override { Destroy(); }
 
   MOCK_METHOD(void, Destroy, (), ());
@@ -33,7 +38,6 @@ class MockEmailVerificationRequest : public EmailVerificationRequest {
               Send,
               (const std::string&,
                const std::string&,
-               const url::Origin&,
                EmailVerifier::OnEmailVerifiedCallback));
 };
 
@@ -42,7 +46,7 @@ class MockRequestBuilder {
   MOCK_METHOD(std::unique_ptr<EmailVerificationRequest>, Run, ());
 };
 
-class EmailVerifierImplTest : public testing::Test {
+class EmailVerifierImplTest : public RenderViewHostTestHarness {
  public:
   EmailVerifierImplTest() = default;
   ~EmailVerifierImplTest() override = default;
@@ -50,7 +54,8 @@ class EmailVerifierImplTest : public testing::Test {
 
 TEST_F(EmailVerifierImplTest, TestSingleRequest) {
   auto request =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>();
+      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
+          *main_rfh());
   auto* request_ptr = request.get();
 
   MockRequestBuilder builder;
@@ -60,8 +65,8 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
   EmailVerifierImpl verifier(base::BindRepeating(&MockRequestBuilder::Run,
                                                  base::Unretained(&builder)));
 
-  EXPECT_CALL(*request_ptr, Send("test@example.com", "nonce", _, _))
-      .WillOnce(testing::WithArgs<3>(
+  EXPECT_CALL(*request_ptr, Send("test@example.com", "nonce", _))
+      .WillOnce(testing::WithArgs<2>(
           [&](EmailVerifier::OnEmailVerifiedCallback callback) {
             std::move(callback).Run("token");
           }));
@@ -69,17 +74,17 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
 
   base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> cb;
   EXPECT_CALL(cb, Run(Optional<std::string>("token")));
-  verifier.Verify("test@example.com", "nonce",
-                  url::Origin::Create(GURL("https://rp.example.com")),
-                  cb.Get());
+  verifier.Verify("test@example.com", "nonce", cb.Get());
 }
 
 TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   auto request1 =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>();
+      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
+          *main_rfh());
   auto* request_ptr1 = request1.get();
   auto request2 =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>();
+      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
+          *main_rfh());
   auto* request_ptr2 = request2.get();
 
   MockRequestBuilder builder;
@@ -92,29 +97,25 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
 
   // Set up expectations and capture callbacks for the two requests.
   EmailVerifier::OnEmailVerifiedCallback callback1;
-  EXPECT_CALL(*request_ptr1, Send("test1@example.com", "nonce1", _, _))
-      .WillOnce(testing::WithArgs<3>(
+  EXPECT_CALL(*request_ptr1, Send("test1@example.com", "nonce1", _))
+      .WillOnce(testing::WithArgs<2>(
           [&](EmailVerifier::OnEmailVerifiedCallback callback) {
             callback1 = std::move(callback);
           }));
 
   EmailVerifier::OnEmailVerifiedCallback callback2;
-  EXPECT_CALL(*request_ptr2, Send("test2@example.com", "nonce2", _, _))
-      .WillOnce(testing::WithArgs<3>(
+  EXPECT_CALL(*request_ptr2, Send("test2@example.com", "nonce2", _))
+      .WillOnce(testing::WithArgs<2>(
           [&](EmailVerifier::OnEmailVerifiedCallback callback) {
             callback2 = std::move(callback);
           }));
 
   // Make the concurrent calls to Verify.
   base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> cb1;
-  verifier.Verify("test1@example.com", "nonce1",
-                  url::Origin::Create(GURL("https://rp.example.com")),
-                  cb1.Get());
+  verifier.Verify("test1@example.com", "nonce1", cb1.Get());
 
   base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> cb2;
-  verifier.Verify("test2@example.com", "nonce2",
-                  url::Origin::Create(GURL("https://rp.example.com")),
-                  cb2.Get());
+  verifier.Verify("test2@example.com", "nonce2", cb2.Get());
 
   ASSERT_TRUE(callback1);
   ASSERT_TRUE(callback2);

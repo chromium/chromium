@@ -43,28 +43,28 @@ std::optional<std::string> GetDomainFromEmail(const std::string& email) {
 }
 
 EmailVerificationRequest::EmailVerificationRequest(
-    content::RenderFrameHost& render_frame_host)
+    RenderFrameHostImpl& render_frame_host)
     : EmailVerificationRequest(
-          IdpNetworkRequestManager::Create(
-              static_cast<RenderFrameHostImpl*>(&render_frame_host)),
+          IdpNetworkRequestManager::Create(&render_frame_host),
           std::make_unique<DnsRequest>(base::BindRepeating(
-              [](content::RenderFrameHost* rfh)
-                  -> network::mojom::NetworkContext* {
+              [](RenderFrameHost* rfh) -> network::mojom::NetworkContext* {
                 return rfh->GetStoragePartition()->GetNetworkContext();
               },
-              &render_frame_host))) {}
+              &render_frame_host)),
+          render_frame_host.GetSafeRef()) {}
 
 EmailVerificationRequest::EmailVerificationRequest(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
-    std::unique_ptr<DnsRequest> dns_request)
+    std::unique_ptr<DnsRequest> dns_request,
+    base::SafeRef<RenderFrameHost> render_frame_host)
     : dns_request_(std::move(dns_request)),
-      network_manager_(std::move(network_manager)) {}
+      network_manager_(std::move(network_manager)),
+      render_frame_host_(render_frame_host) {}
 
 EmailVerificationRequest::~EmailVerificationRequest() = default;
 
 sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
     const std::string& email,
-    const url::Origin& website,
     const sdjwt::Jwk& public_key) {
   sdjwt::Header header;
   header.alg = "RS256";
@@ -83,10 +83,10 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
   // TODO(crbug.com/380367784): figure out why/whether the
   // nonce is needed here. Use a hardcoded value for now.
   payload.nonce = "--a-fake-nonce--";
-  // TODO(crbug.com/380367784): check if `website` isn't an
+  // TODO(crbug.com/380367784): check if `render_frame_host_` isn't an
   // opaque origin, or any other validation that might be
   // necessary.
-  payload.aud = website.Serialize();
+  payload.aud = render_frame_host_->GetLastCommittedOrigin().Serialize();
   payload.exp = expiration;
   payload.iat = now;
 
@@ -104,7 +104,6 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 void EmailVerificationRequest::Send(
     const std::string& email,
     const std::string& nonce,
-    const url::Origin& website,
     EmailVerifier::OnEmailVerifiedCallback callback) {
   // Step 3: Token Request
 
@@ -121,13 +120,12 @@ void EmailVerificationRequest::Send(
   dns_request_->SendRequest(
       hostname, base::BindOnce(&EmailVerificationRequest::OnDnsRequestComplete,
                                weak_ptr_factory_.GetWeakPtr(), email, nonce,
-                               website, std::move(callback)));
+                               std::move(callback)));
 }
 
 void EmailVerificationRequest::OnDnsRequestComplete(
     const std::string& email,
     const std::string& nonce,
-    const url::Origin& website,
     EmailVerifier::OnEmailVerifiedCallback callback,
     const std::optional<std::vector<std::string>>& text_records) {
   // Step 3.2: when the DNS response is received, the browser
@@ -155,17 +153,16 @@ void EmailVerificationRequest::OnDnsRequestComplete(
 
   GURL issuer("https://" + iss);
   network_manager_->FetchWellKnown(
-      issuer, base::BindOnce(&EmailVerificationRequest::OnWellKnownFetched,
-                             weak_ptr_factory_.GetWeakPtr(), email,
-                             url::Origin::Create(issuer), nonce, website,
-                             std::move(callback)));
+      issuer,
+      base::BindOnce(&EmailVerificationRequest::OnWellKnownFetched,
+                     weak_ptr_factory_.GetWeakPtr(), email,
+                     url::Origin::Create(issuer), nonce, std::move(callback)));
 }
 
 void EmailVerificationRequest::OnWellKnownFetched(
     const std::string& email,
     const url::Origin& issuer,
     const std::string& nonce,
-    const url::Origin& website,
     EmailVerifier::OnEmailVerifiedCallback callback,
     IdpNetworkRequestManager::FetchStatus status,
     const IdpNetworkRequestManager::WellKnown& well_known) {
@@ -194,7 +191,7 @@ void EmailVerificationRequest::OnWellKnownFetched(
   std::optional<sdjwt::Jwk> public_key = sdjwt::ExportPublicKey(*private_key);
   CHECK(public_key);
 
-  sdjwt::Jwt jwt = CreateRequestToken(email, issuer, *public_key);
+  sdjwt::Jwt jwt = CreateRequestToken(email, *public_key);
 
   auto signer = sdjwt::CreateJwtSigner(*private_key);
   CHECK(jwt.Sign(std::move(signer)));
@@ -210,7 +207,7 @@ void EmailVerificationRequest::OnWellKnownFetched(
       "request_token=" + request_token.value(),
       /*idp_blindness=*/true,
       base::BindOnce(&EmailVerificationRequest::OnTokenRequestComplete,
-                     weak_ptr_factory_.GetWeakPtr(), nonce, website,
+                     weak_ptr_factory_.GetWeakPtr(), nonce,
                      std::move(private_key), std::move(callback)),
       // TODO(crbug.com/380367784): we should probably not be using a
       // DoNothing here, but we also don't support the continuation_url.
@@ -222,7 +219,6 @@ void EmailVerificationRequest::OnWellKnownFetched(
 
 void EmailVerificationRequest::OnTokenRequestComplete(
     const std::string& nonce,
-    const url::Origin& website,
     std::unique_ptr<crypto::keypair::PrivateKey> private_key,
     EmailVerifier::OnEmailVerifiedCallback callback,
     IdpNetworkRequestManager::FetchStatus token_status,
@@ -266,7 +262,7 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   header.typ = "kb+jwt";
 
   sdjwt::Payload payload;
-  payload.aud = website.Serialize();
+  payload.aud = render_frame_host_->GetLastCommittedOrigin().Serialize();
   payload.nonce = nonce;
 
   sdjwt::Jwt kb_jwt;

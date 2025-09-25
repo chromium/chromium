@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webid/email_verifier.h"
 
 // An implementation of an email verifier that follows the
@@ -22,7 +21,11 @@
 //
 // EmailVerifierImpl is associated with a valid and alive
 // RenderFrameHost which has to outlive it.
-namespace content::webid {
+namespace content {
+
+class RenderFrameHostImpl;
+
+namespace webid {
 
 class EmailVerificationRequest;
 
@@ -31,7 +34,7 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   using RequestBuilder =
       base::RepeatingCallback<std::unique_ptr<EmailVerificationRequest>()>;
 
-  explicit EmailVerifierImpl(content::RenderFrameHost& render_frame_host);
+  explicit EmailVerifierImpl(RenderFrameHostImpl* rfh);
   explicit EmailVerifierImpl(RequestBuilder builder);
   ~EmailVerifierImpl() override;
 
@@ -41,7 +44,6 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   // Starts the verification process for the given `email`.
   void Verify(const std::string& email,
               const std::string& nonce,
-              const url::Origin& rp_origin,
               EmailVerifier::OnEmailVerifiedCallback callback) override;
 
  private:
@@ -54,6 +56,8 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   base::WeakPtrFactory<EmailVerifierImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace content::webid
+}  // namespace webid
+
+}  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFIER_IMPL_H_

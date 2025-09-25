@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
@@ -49,7 +50,7 @@ class MockDnsRequest : public DnsRequest {
               (override));
 };
 
-class EmailVerificationRequestTest : public testing::Test {
+class EmailVerificationRequestTest : public RenderViewHostTestHarness {
  public:
   EmailVerificationRequestTest() = default;
 
@@ -68,7 +69,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   NiceMock<MockIdpNetworkRequestManager>* mock_network_manager_ =
       mock_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr));
+      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
   const std::string kNonce = "test_nonce";
@@ -127,7 +129,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                 jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
             EXPECT_TRUE(payload);
             EXPECT_EQ(payload->aud,
-                      url::Origin::Create(kIssuerUrl).Serialize());
+                      main_rfh()->GetLastCommittedOrigin().Serialize());
             EXPECT_EQ(payload->email, kEmail);
 
             sdjwt::SdJwt token;
@@ -161,8 +163,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   base::test::TestFuture<std::optional<std::string>> future;
   std::string nonce = kNonce;
-  email_verification_request_.Send(kEmail, nonce, kRpOrigin,
-                                   future.GetCallback());
+  email_verification_request_.Send(kEmail, nonce, future.GetCallback());
   std::optional<std::string> token = future.Get();
   EXPECT_TRUE(token.has_value());
 
@@ -176,7 +177,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   auto kb_payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
       kb_jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(kb_payload);
-  EXPECT_EQ(kb_payload->aud, kRpOrigin.Serialize());
+  EXPECT_EQ(kb_payload->aud, main_rfh()->GetLastCommittedOrigin().Serialize());
   EXPECT_EQ(kb_payload->nonce, kNonce);
 }
 

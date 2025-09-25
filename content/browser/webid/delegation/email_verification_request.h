@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
@@ -35,11 +35,11 @@ CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
 // to outlive it.
 class CONTENT_EXPORT EmailVerificationRequest {
  public:
-  explicit EmailVerificationRequest(
-      content::RenderFrameHost& render_frame_host);
+  explicit EmailVerificationRequest(RenderFrameHostImpl& render_frame_host);
   EmailVerificationRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
-      std::unique_ptr<DnsRequest> dns_request);
+      std::unique_ptr<DnsRequest> dns_request,
+      base::SafeRef<RenderFrameHost> render_frame_host);
   virtual ~EmailVerificationRequest();
 
   EmailVerificationRequest(const EmailVerificationRequest&) = delete;
@@ -48,30 +48,25 @@ class CONTENT_EXPORT EmailVerificationRequest {
   // Starts the verification process for the given `email`.
   virtual void Send(const std::string& email,
                     const std::string& nonce,
-                    const url::Origin& website,
                     EmailVerifier::OnEmailVerifiedCallback callback);
 
  private:
   sdjwt::Jwt CreateRequestToken(const std::string& email,
-                                const url::Origin& website,
                                 const sdjwt::Jwk& public_key);
   void OnDnsRequestComplete(
       const std::string& email,
       const std::string& nonce,
-      const url::Origin& website,
       EmailVerifier::OnEmailVerifiedCallback callback,
       const std::optional<std::vector<std::string>>& text_records);
   void OnWellKnownFetched(
       const std::string& email,
       const url::Origin& issuer,
       const std::string& nonce,
-      const url::Origin& website,
       EmailVerifier::OnEmailVerifiedCallback callback,
       IdpNetworkRequestManager::FetchStatus status,
       const IdpNetworkRequestManager::WellKnown& well_known);
   void OnTokenRequestComplete(
       const std::string& nonce,
-      const url::Origin& website,
       std::unique_ptr<crypto::keypair::PrivateKey> private_key,
       EmailVerifier::OnEmailVerifiedCallback callback,
       IdpNetworkRequestManager::FetchStatus token_status,
@@ -79,6 +74,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
+  base::SafeRef<RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};
 };
