@@ -1712,9 +1712,13 @@ class LocalDeviceInstrumentationTestRun(
             should_rewrite = True
             del json_dict['full_test_name']
 
-        running_on_unsupported = (
-            device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
-                device.product_model, []) and not fail_on_unsupported)
+        supported_sdks_for_device = RENDER_TEST_MODEL_SDK_CONFIGS.get(
+            device.product_model, [])
+        is_unsupported_config = (device.build_version_sdk
+                                 not in supported_sdks_for_device
+                                 or self._env.skia_gold_consider_unsupported)
+        running_on_unsupported = (is_unsupported_config
+                                  and not fail_on_unsupported)
         should_ignore_in_gold = running_on_unsupported
         # We still want to fail the test even if we're ignoring the image in
         # Gold if we're running on a supported configuration, so
@@ -1755,20 +1759,22 @@ class LocalDeviceInstrumentationTestRun(
         # the test has explicitly opted in, as it's likely that baselines
         # aren't maintained for that configuration.
         if should_hide_failure:
-          if self._test_instance.skia_gold_properties.local_pixel_tests:
-            _AppendToLog(
-                results, full_test_name,
-                'Gold comparison for %s failed, but model %s with SDK '
-                '%d is not a supported configuration. This failure would be '
-                'ignored on the bots, but failing since tests are being run '
-                'locally.' %
-                (render_name, device.product_model, device.build_version_sdk))
+          message = 'Gold comparison for %s failed, but ' % render_name
+          if self._env.skia_gold_consider_unsupported:
+            message += 'the --skia-gold-consider-unsupported flag was passed'
           else:
-            _AppendToLog(
-                results, full_test_name,
-                'Gold comparison for %s failed, but model %s with SDK '
-                '%d is not a supported configuration, so ignoring failure.' %
-                (render_name, device.product_model, device.build_version_sdk))
+            message += (
+                'model %s with SDK %d is not a supported configuration' %
+                (device.product_model, device.build_version_sdk))
+
+          if self._test_instance.skia_gold_properties.local_pixel_tests:
+            message += (
+                '. This failure would be ignored on the bots, but failing '
+                'since tests are being run locally.')
+            _AppendToLog(results, full_test_name, message)
+          else:
+            message += ', so ignoring failure.'
+            _AppendToLog(results, full_test_name, message)
             continue
 
         _FailTestIfNecessary(results, full_test_name)

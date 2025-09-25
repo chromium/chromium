@@ -783,6 +783,12 @@ def AddSkiaGoldTestOptions(parser):
       help='Bypass all interaction with Skia Gold, effectively disabling the '
       'image comparison portion of any tests that use Gold. Only meant to be '
       'used in case a Gold outage occurs and cannot be fixed quickly.')
+  parser.add_argument(
+      '--skia-gold-consider-unsupported',
+      action='store_true',
+      help='Considers the configuration unsupported for Skia Gold, even if the '
+      'Device + SDK Level is considered supported, which will avoid failing '
+      'the test if there is a mismatch with goldens.')
 
 
 def AddHostsideTestOptions(parser):

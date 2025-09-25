@@ -803,6 +803,7 @@
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
           "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -860,6 +861,7 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1067,6 +1069,7 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3194,6 +3197,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
           "--use-persistent-shell",
           "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3247,6 +3251,7 @@
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
           "--use-persistent-shell",
           "--disable-field-trial-config",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

@@ -2551,6 +2551,7 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
                     "--disable-field-trial-config",
+                    "--skia-gold-consider-unsupported",
                 ],
                 swarming = targets.swarming(
                     dimensions = {
@@ -2563,6 +2564,7 @@ ci.builder(
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
                     "--disable-field-trial-config",
+                    "--skia-gold-consider-unsupported",
                 ],
             ),
             "components_browsertests": targets.mixin(
@@ -2588,6 +2590,7 @@ ci.builder(
             "content_shell_test_apk": targets.mixin(
                 args = [
                     "--disable-field-trial-config",
+                    "--skia-gold-consider-unsupported",
                 ],
                 swarming = targets.swarming(
                     dimensions = {
@@ -2646,6 +2649,7 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
                     "--use-persistent-shell",
                     "--disable-field-trial-config",
+                    "--skia-gold-consider-unsupported",
                 ],
                 swarming = targets.swarming(
                     shards = 18,
@@ -2655,6 +2659,7 @@ ci.builder(
                 args = [
                     "--use-persistent-shell",
                     "--disable-field-trial-config",
+                    "--skia-gold-consider-unsupported",
                 ],
                 # Only multiple process tests run in CQ.
                 ci_only = True,

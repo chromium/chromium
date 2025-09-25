@@ -119,6 +119,9 @@ class LocalDeviceEnvironment(environment.Environment):
     self._force_main_user = False
     if hasattr(args, 'force_main_user'):
       self._force_main_user = args.force_main_user
+    self._skia_gold_consider_unsupported = False
+    if hasattr(args, 'skia_gold_consider_unsupported'):
+      self._skia_gold_consider_unsupported = args.skia_gold_consider_unsupported
     self._use_persistent_shell = args.use_persistent_shell
 
     use_local_devil_tools = False
@@ -260,6 +263,10 @@ class LocalDeviceEnvironment(environment.Environment):
   @property
   def force_main_user(self):
     return self._force_main_user
+
+  @property
+  def skia_gold_consider_unsupported(self):
+    return self._skia_gold_consider_unsupported
 
   #override
   def TearDown(self):
