@@ -49,6 +49,7 @@ class InputHandlerProxyMomentumScrollJankTest;
 class InputHandlerProxyForceHandlingOnMainThread;
 class TestInputHandlerProxy;
 class UnifiedScrollingInputHandlerProxyTest;
+class InputHandlerProxyEventMetricsTest;
 }  // namespace test
 
 class CompositorThreadEventQueue;
@@ -270,6 +271,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   friend class test::InputHandlerProxyEventQueueTest;
   friend class test::InputHandlerProxyMomentumScrollJankTest;
   friend class test::InputHandlerProxyForceHandlingOnMainThread;
+  friend class test::InputHandlerProxyEventMetricsTest;
 
   void DispatchSingleInputEvent(std::unique_ptr<EventWithCallback>);
   void DispatchQueuedInputEvents(bool frame_aligned);

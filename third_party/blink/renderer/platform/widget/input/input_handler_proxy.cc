@@ -857,6 +857,12 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
           event_with_callback->latency_info().trace_id());
 
     case WebInputEvent::Type::kGestureScrollEnd:
+      if (scoped_event_monitor) {
+        // Always save scroll end metrics to ensure
+        // `ScrollJankDroppedFrameReporter` emits per-scroll metrics at the end
+        // of a scroll.
+        scoped_event_monitor->SetSaveMetrics();
+      }
       return HandleGestureScrollEnd(static_cast<const WebGestureEvent&>(event));
 
     case WebInputEvent::Type::kGesturePinchBegin: {

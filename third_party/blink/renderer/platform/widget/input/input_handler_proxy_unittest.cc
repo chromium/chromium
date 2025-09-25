@@ -16,14 +16,19 @@
 #include "base/test/task_environment.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/test/trace_test_utils.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
+#include "cc/metrics/event_metrics.h"
+#include "cc/metrics/events_metrics_manager.h"
 #include "cc/test/mock_input_handler.h"
 #include "components/input/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -38,6 +43,7 @@
 #include "third_party/blink/renderer/platform/widget/input/mock_input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/scroll_predictor.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -3607,6 +3613,99 @@ INSTANTIATE_TEST_SUITE_P(All,
                          InputHandlerProxyTouchScrollbarTest,
                          kTestCombinations,
                          kSuffixGenerator);
+
+// Ideally, we would mock `GetScopedEventMetricsMonitor` on
+// `cc::MockInputHandler` instead. However, that would cause more than 100 tests
+// in this file would fail because they use
+// `testing::StrictMock<MockInputHandler>`.
+class MockInputHandlerWithEventMetricsManager : public cc::MockInputHandler {
+ public:
+  std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor>
+  GetScopedEventMetricsMonitor(
+      cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback)
+      override {
+    return events_metrics_manager.GetScopedMonitor(std::move(done_callback));
+  }
+
+  cc::EventsMetricsManager events_metrics_manager;
+};
+
+struct InputHandlerProxyEventMetricsTestCase {
+  WebGestureEvent::InertialPhaseState inertial_phase;
+  bool is_inertial;
+  cc::EventMetrics::EventType expected_event_type;
+  std::string test_name;
+};
+
+class InputHandlerProxyEventMetricsTest
+    : public testing::Test,
+      public testing::WithParamInterface<
+          InputHandlerProxyEventMetricsTestCase> {
+ public:
+  InputHandlerProxyEventMetricsTest()
+      : input_handler_proxy_(mock_input_handler_, &mock_client_) {
+    tick_clock_.SetNowTicks(base::TimeTicks::Now());
+    input_handler_proxy_.SetTickClockForTesting(&tick_clock_);
+  }
+
+  ~InputHandlerProxyEventMetricsTest() override = default;
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  MockInputHandlerWithEventMetricsManager mock_input_handler_;
+  MockInputHandlerProxyClient mock_client_;
+  base::SimpleTestTickClock tick_clock_;
+  TestInputHandlerProxy input_handler_proxy_;
+};
+
+TEST_P(InputHandlerProxyEventMetricsTest, SavesScrollEndMetrics) {
+  std::unique_ptr<WebGestureEvent> gesture_event =
+      std::make_unique<WebGestureEvent>(
+          WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
+          WebInputEvent::GetStaticTimeStampForTests(),
+          WebGestureDevice::kTouchscreen);
+  gesture_event->data.scroll_end.inertial_phase = GetParam().inertial_phase;
+  std::unique_ptr<WebCoalescedInputEvent> coalesced_event =
+      std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
+                                               ui::LatencyInfo());
+
+  base::TimeTicks timestamp = tick_clock_.NowTicks();
+  tick_clock_.Advance(base::Microseconds(10));
+  base::TimeTicks arrived_in_browser_main_timestamp = tick_clock_.NowTicks();
+  tick_clock_.Advance(base::Microseconds(10));
+  std::unique_ptr<cc::EventMetrics> metrics =
+      cc::ScrollEventMetrics::CreateForTesting(
+          ui::EventType::kGestureScrollEnd, ui::ScrollInputType::kTouchscreen,
+          GetParam().is_inertial, timestamp, arrived_in_browser_main_timestamp,
+          &tick_clock_);
+
+  input_handler_proxy_.HandleInputEventWithLatencyInfo(
+      std::move(coalesced_event), std::move(metrics),
+      /* callback= */ base::DoNothing());
+
+  EXPECT_THAT(
+      mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics(),
+      testing::ElementsAre(testing::Pointee(testing::Property(
+          &cc::EventMetrics::type, GetParam().expected_event_type))));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InputHandlerProxyEventMetricsTest,
+    InputHandlerProxyEventMetricsTest,
+    testing::ValuesIn<InputHandlerProxyEventMetricsTestCase>(
+        {{.inertial_phase = WebGestureEvent::InertialPhaseState::kNonMomentum,
+          .is_inertial = false,
+          .expected_event_type = cc::EventMetrics::EventType::kGestureScrollEnd,
+          .test_name = "RegularScroll"},
+         {.inertial_phase = WebGestureEvent::InertialPhaseState::kMomentum,
+          .is_inertial = true,
+          .expected_event_type =
+              cc::EventMetrics::EventType::kInertialGestureScrollEnd,
+          .test_name = "InertialScroll"}}),
+    [](const testing::TestParamInfo<
+        InputHandlerProxyEventMetricsTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace test
 }  // namespace blink
