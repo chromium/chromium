@@ -109,14 +109,6 @@ void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
   }
 }
 
-std::unique_ptr<views::View> GlicInstanceImpl::CreateViewForSidePanel(
-    tabs::TabInterface* tab) {
-  if (auto* embedder = GetEmbedderForTab(tab)) {
-    return embedder->CreateView();
-  }
-  return nullptr;
-}
-
 GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForTab(tabs::TabInterface* tab) {
   return GetEmbedderForKey(EmbedderKey(tab));
 }

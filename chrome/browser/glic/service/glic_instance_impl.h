@@ -22,10 +22,6 @@
 class BrowserWindowInterface;
 class Profile;
 
-namespace views {
-class View;
-}
-
 namespace tabs {
 class TabInterface;
 }
@@ -88,7 +84,6 @@ class GlicInstanceImpl : public GlicInstance,
   void Show(EmbedderType type, tabs::TabInterface* tab);
   void Close(EmbedderType type, tabs::TabInterface* tab);
   void Toggle(EmbedderType type, tabs::TabInterface* tab);
-  std::unique_ptr<views::View> CreateViewForSidePanel(tabs::TabInterface* tab);
 
   // Manages the association of this instance with a tab.
   void DisassociateFromTab(tabs::TabInterface* tab);

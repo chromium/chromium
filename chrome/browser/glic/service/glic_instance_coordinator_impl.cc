@@ -320,9 +320,10 @@ void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
 
 std::unique_ptr<views::View>
 GlicInstanceCoordinatorImpl::CreateViewForSidePanel(tabs::TabInterface& tab) {
-  GlicInstanceImpl* instance = GetOrCreateGlicInstanceImplForTab(&tab);
-  CHECK(instance);
-  return instance->CreateViewForSidePanel(&tab);
+  // This method is only used by single instance (when the GlicMultiTab feature
+  // is disabled). This implementation is never called.
+  NOTIMPLEMENTED();
+  return std::make_unique<views::View>();
 }
 
 void GlicInstanceCoordinatorImpl::SidePanelShown(

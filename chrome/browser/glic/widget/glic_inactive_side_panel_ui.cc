@@ -5,6 +5,8 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -12,13 +14,28 @@ namespace glic {
 
 // static
 std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
-    const GlicSidePanelUi& active_ui) {
+    const GlicSidePanelUi& active_ui,
+    base::WeakPtr<tabs::TabInterface> tab) {
   // Using `new` to access a private constructor.
-  return base::WrapUnique(new GlicInactiveSidePanelUi());
+  return base::WrapUnique(new GlicInactiveSidePanelUi(tab));
 }
 
-GlicInactiveSidePanelUi::GlicInactiveSidePanelUi()
-    : dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {}
+GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
+    base::WeakPtr<tabs::TabInterface> tab)
+    : dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {
+  if (tab && tab->GetTabFeatures()) {
+    auto* glic_side_panel_coordinator =
+        tab->GetTabFeatures()->glic_side_panel_coordinator();
+    glic_side_panel_coordinator->SetContentsView(CreateView(tab));
+  }
+}
+
+std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
+    base::WeakPtr<tabs::TabInterface> tab) {
+  return std::make_unique<views::Label>(u"Inactive",
+                                        views::style::CONTEXT_DIALOG_TITLE);
+}
+
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 
 Host::Delegate* GlicInactiveSidePanelUi::GetHostDelegate() {
@@ -33,12 +50,6 @@ void GlicInactiveSidePanelUi::Show() {
 void GlicInactiveSidePanelUi::Close() {
   // TODO: implement close.
   NOTIMPLEMENTED();
-}
-
-std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView() {
-  auto view = std::make_unique<views::View>();
-  view->AddChildView(std::make_unique<views::Label>(u"Inactive"));
-  return view;
 }
 
 std::unique_ptr<GlicUiEmbedder>

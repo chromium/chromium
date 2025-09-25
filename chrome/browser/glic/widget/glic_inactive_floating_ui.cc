@@ -20,6 +20,13 @@ std::unique_ptr<GlicInactiveFloatingUi> GlicInactiveFloatingUi::From(
 GlicInactiveFloatingUi::GlicInactiveFloatingUi() = default;
 GlicInactiveFloatingUi::~GlicInactiveFloatingUi() = default;
 
+std::unique_ptr<views::View> GlicInactiveFloatingUi::CreateView() {
+  // TODO: implement CreateView. This should set up the contents for the
+  // floating UI and be called from the constructor.
+  NOTIMPLEMENTED();
+  return std::make_unique<views::View>();
+}
+
 Host::Delegate* GlicInactiveFloatingUi::GetHostDelegate() {
   return nullptr;
 }
@@ -32,12 +39,6 @@ void GlicInactiveFloatingUi::Show() {
 void GlicInactiveFloatingUi::Close() {
   // TODO: implement close.
   NOTIMPLEMENTED();
-}
-
-std::unique_ptr<views::View> GlicInactiveFloatingUi::CreateView() {
-  auto view = std::make_unique<views::View>();
-  view->AddChildView(std::make_unique<views::Label>(u"Inactive"));
-  return view;
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicInactiveFloatingUi::CreateInactiveEmbedder()

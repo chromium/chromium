@@ -12,6 +12,13 @@ namespace glic {
 GlicFloatingUi::GlicFloatingUi() = default;
 GlicFloatingUi::~GlicFloatingUi() = default;
 
+std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
+  // TODO: implement CreateView. This should set up the contents for the
+  // floating UI and be called from the constructor.
+  NOTIMPLEMENTED();
+  return std::make_unique<views::View>();
+}
+
 Host::Delegate* GlicFloatingUi::GetHostDelegate() {
   return this;
 }
@@ -59,11 +66,6 @@ void GlicFloatingUi::Show() {
 
 void GlicFloatingUi::Close() {
   NOTIMPLEMENTED();
-}
-
-std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
-  NOTIMPLEMENTED();
-  return nullptr;
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {

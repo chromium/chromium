@@ -17,7 +17,8 @@ class GlicSidePanelUi;
 class GlicInactiveSidePanelUi : public GlicUiEmbedder {
  public:
   static std::unique_ptr<GlicInactiveSidePanelUi> From(
-      const GlicSidePanelUi& active_ui);
+      const GlicSidePanelUi& active_ui,
+      base::WeakPtr<tabs::TabInterface> tab);
 
   ~GlicInactiveSidePanelUi() override;
 
@@ -25,11 +26,12 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   Host::Delegate* GetHostDelegate() override;
   void Show() override;
   void Close() override;
-  std::unique_ptr<views::View> CreateView() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
  private:
-  GlicInactiveSidePanelUi();
+  explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
+  std::unique_ptr<views::View> CreateView(
+      base::WeakPtr<tabs::TabInterface> tab);
   std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
 };
 

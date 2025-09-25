@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_SIDE_PANEL_UI_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -34,7 +36,6 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   Host::Delegate* GetHostDelegate() override;
   void Show() override;
   void Close() override;
-  std::unique_ptr<views::View> CreateView() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
   // Host::Delegate:
@@ -60,6 +61,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   base::ScopedObservation<GlicSidePanelCoordinator,
                           GlicSidePanelCoordinator::StateObserver>
       coordinator_observation_{this};
+  std::unique_ptr<views::View> CreateView(Profile* profile);
   mojom::PanelState panel_state_;
 
   raw_ptr<Profile> profile_;

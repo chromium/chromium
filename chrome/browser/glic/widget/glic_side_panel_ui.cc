@@ -27,6 +27,21 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
     coordinator_observation_.Observe(
         tab_->GetTabFeatures()->glic_side_panel_coordinator());
   }
+
+  if (tab && tab->GetTabFeatures()) {
+    auto* glic_side_panel_coordinator =
+        tab_->GetTabFeatures()->glic_side_panel_coordinator();
+    glic_side_panel_coordinator->SetContentsView(CreateView(profile));
+  }
+}
+
+std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
+  auto glic_view = std::make_unique<GlicView>(
+      profile, GlicWidget::GetInitialSize(), nullptr);
+  delegate_->host().CreateContents(/*initially_hidden=*/true);
+  glic_view->SetWebContents(delegate_->host().webui_contents());
+  glic_view->UpdateBackgroundColor();
+  return glic_view;
 }
 
 GlicSidePanelUi::~GlicSidePanelUi() = default;
@@ -100,6 +115,7 @@ void GlicSidePanelUi::Show() {
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
 }
+
 void GlicSidePanelUi::Close() {
   if (!tab_ || !IsShowing()) {
     return;
@@ -110,18 +126,9 @@ void GlicSidePanelUi::Close() {
   side_panel_coordinator->Close();
 }
 
-std::unique_ptr<views::View> GlicSidePanelUi::CreateView() {
-  auto glic_view = std::make_unique<GlicView>(
-      profile_, GlicWidget::GetInitialSize(), nullptr);
-  // TODO(refactor): use the right host when we have multiple hosts
-  glic_view->SetWebContents(delegate_->host().webui_contents());
-  glic_view->UpdateBackgroundColor();
-  return glic_view;
-}
-
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
-  return GlicInactiveSidePanelUi::From(*this);
+  return GlicInactiveSidePanelUi::From(*this, tab_);
 }
 
 }  // namespace glic

@@ -24,7 +24,6 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
   Host::Delegate* GetHostDelegate() override;
   void Show() override;
   void Close() override;
-  std::unique_ptr<views::View> CreateView() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
   // Host::Delegate:
@@ -44,6 +43,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
  private:
+  std::unique_ptr<views::View> CreateView();
   mojom::PanelState panel_state_;
 };
 

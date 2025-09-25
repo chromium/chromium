@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -16,6 +17,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/view_tracker.h"
 
 class SidePanelEntryScope;
 class SidePanelRegistry;
@@ -47,6 +49,9 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   void AddObserver(StateObserver* observer);
   void RemoveObserver(StateObserver* observer);
 
+  // Set the content to display in the Glic side panel.
+  void SetContentsView(std::unique_ptr<views::View> contents_view);
+
  protected:
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();
@@ -58,12 +63,15 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
  private:
   // Gets the Glic WebView from the Glic service.
   std::unique_ptr<views::View> CreateView(SidePanelEntryScope& scope);
+
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
   raw_ptr<actions::ActionItem> glic_action_ = nullptr;
   raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
   base::CallbackListSubscription on_glic_enabled_changed_subscription_;
   base::ObserverList<StateObserver> state_observers_;
+  std::unique_ptr<views::View> contents_view_;
+  views::ViewTracker glic_container_tracker_;
 };
 
 }  // namespace glic

@@ -24,6 +24,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "glic_side_panel_coordinator.h"
 #include "ui/actions/actions.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace glic {
 DEFINE_USER_DATA(GlicSidePanelCoordinator);
@@ -126,8 +127,28 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
   if (!glic_service) {
     return nullptr;
   }
-  return glic_service->window_controller().CreateViewForSidePanel(
-      scope.GetTabInterface());
+  // Provide the side panel with an empty container View so that different
+  // `GlicUiEmbedder`s can update its contents as needed.
+  auto glic_container = std::make_unique<views::View>();
+  glic_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+  glic_container_tracker_.SetView(glic_container.get());
+
+  if (contents_view_) {
+    glic_container->AddChildView(std::move(contents_view_));
+  }
+
+  return glic_container;
+}
+
+void GlicSidePanelCoordinator::SetContentsView(
+    std::unique_ptr<views::View> contents_view) {
+  if (!glic_container_tracker_) {
+    contents_view_ = std::move(contents_view);
+    return;
+  }
+
+  glic_container_tracker_.view()->RemoveAllChildViews();
+  glic_container_tracker_.view()->AddChildView(std::move(contents_view));
 }
 
 void GlicSidePanelCoordinator::AddObserver(StateObserver* observer) {

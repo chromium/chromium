@@ -11,10 +11,6 @@
 #include "chrome/browser/glic/host/host.h"
 #include "ui/views/view.h"
 
-namespace views {
-class View;
-}
-
 namespace tabs {
 class TabInterface;
 }
@@ -42,9 +38,6 @@ class GlicUiEmbedder {
   virtual void Show() = 0;
   // Close the glic UI (keeps webclient alive for now)
   virtual void Close() = 0;
-
-  // Create the WebView in which to show glic.
-  virtual std::unique_ptr<views::View> CreateView() = 0;
 
   // Creates the inactive version of this embedder.
   virtual std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const = 0;
