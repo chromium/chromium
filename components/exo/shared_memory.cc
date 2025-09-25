@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/buffer.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/compositor/compositor.h"
@@ -55,7 +54,8 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(
   }
 
   size_t bytes_per_row =
-      viz::ResourceSizes::CheckedWidthInBytes<size_t>(size.width(), format);
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, 0, size.width())
+          .value();
   if (bytes_per_row > stride || stride & 3) {
     DLOG(WARNING) << "Failed to create shm buffer. Unsupported stride "
                   << stride;
