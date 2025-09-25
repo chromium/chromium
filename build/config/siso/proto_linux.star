@@ -10,8 +10,7 @@ def __filegroups(ctx):
     return {}
 
 def __step_config(ctx, step_config):
-    # TODO(crbug.com/447224649): enable again once RBE is fixed.
-    remote_run = False  # True  # Turn this to False when you do file access trace.
+    remote_run = True  # Turn this to False when you do file access trace.
     step_config["rules"].extend([
         {
             "name": "proto/protoc_wrapper",
