@@ -42,7 +42,7 @@ class DataControlsTabHelperTest : public PlatformTest {
     return DataControlsTabHelper::GetOrCreateForWebState(web_state_.get());
   }
 
-  void SetBlockRule() {
+  void SetCopyBlockRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "sources": {
                           "urls": ["block.com"]
@@ -53,7 +53,7 @@ class DataControlsTabHelperTest : public PlatformTest {
                       })"});
   }
 
-  void SetAllowRule() {
+  void SetCopyAllowRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "sources": {
                           "urls": ["allow.com"]
@@ -64,9 +64,42 @@ class DataControlsTabHelperTest : public PlatformTest {
                       })"});
   }
 
-  void SetWarnRule() {
+  void SetCopyWarnRule() {
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "sources": {
+                          "urls": ["warn.com"]
+                        },
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "WARN"}
+                        ]
+                      })"});
+  }
+
+  void SetPasteBlockRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "destinations": {
+                          "urls": ["block.com"]
+                        },
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"});
+  }
+
+  void SetPasteAllowRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "destinations": {
+                          "urls": ["allow.com"]
+                        },
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "ALLOW"}
+                        ]
+                      })"});
+  }
+
+  void SetPasteWarnRule() {
+    SetDataControls(profile_->GetTestingPrefService(), {R"({
+                        "destinations": {
                           "urls": ["warn.com"]
                         },
                         "restrictions": [
@@ -93,7 +126,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Default) {
 
 // Tests that copy is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
-  SetBlockRule();
+  SetCopyBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -105,7 +138,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
 
 // Tests that copy is allowed when an "ALLOW" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Allowed) {
-  SetAllowRule();
+  SetCopyAllowRule();
   web_state_->SetCurrentURL(GURL(kAllowedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -115,13 +148,14 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Allowed) {
   run_loop.Run();
 }
 
-// Tests that copy is allowed when a "WARN" rule matches the page URL.
+// Tests that copy is blocked when a "WARN" rule matches the page URL and the
+// user does not bypass the warning.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn) {
-  SetWarnRule();
+  SetCopyWarnRule();
   web_state_->SetCurrentURL(GURL(kWarnUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
-    EXPECT_TRUE(allowed);
+    EXPECT_FALSE(allowed);
     run_loop.Quit();
   }));
   run_loop.Run();
@@ -129,7 +163,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn) {
 
 // Tests that copy is allowed from a URL that doesn't match any rules.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
-  SetBlockRule();
+  SetCopyBlockRule();
   // The blocking rule is set for `kBlockedUrl`, so it shouldn't apply to
   // `kOtherUrl`.
   web_state_->SetCurrentURL(GURL(kOtherUrl));
@@ -146,7 +180,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
-  SetBlockRule();
+  SetCopyBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -157,7 +191,72 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_FeatureDisabled) {
 }
 
 // Tests that paste is allowed by default.
-TEST_F(DataControlsTabHelperTest, ShouldAllowPaste) {
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Default) {
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_TRUE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+// Tests that paste is blocked when a "BLOCK" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked) {
+  SetPasteBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+// Tests that paste is allowed when an "ALLOW" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Allowed) {
+  SetPasteAllowRule();
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_TRUE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+// Tests that paste is blocked when a "WARN" rule matches the page URL and the
+// user does not bypass the warning.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Warn_NotBypassed) {
+  // TODO(crbug.com/438198880): Add a test for the bypassed scenario.
+  SetPasteWarnRule();
+  web_state_->SetCurrentURL(GURL(kWarnUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_FALSE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+// Tests that paste is allowed to a URL that doesn't match any rules.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_OtherUrl) {
+  SetPasteBlockRule();
+  web_state_->SetCurrentURL(GURL(kOtherUrl));
+  base::RunLoop run_loop;
+  tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
+    EXPECT_TRUE(allowed);
+    run_loop.Quit();
+  }));
+  run_loop.Run();
+}
+
+// Tests that paste is allowed when a "BLOCK" rule is set but the feature is
+// disabled.
+TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
+  SetPasteBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
@@ -168,7 +267,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste) {
 
 // Tests that cut is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCut) {
-  SetBlockRule();
+  SetCopyBlockRule();
   web_state_->SetCurrentURL(GURL(kBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCut(base::BindLambdaForTesting([&](bool allowed) {

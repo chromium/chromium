@@ -7,7 +7,6 @@
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_forward.h"
-#import "components/enterprise/data_controls/core/browser/action_context.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_metadata.h"

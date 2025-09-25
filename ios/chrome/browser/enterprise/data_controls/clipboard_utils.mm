@@ -22,10 +22,19 @@ PastePolicyVerdict IsPasteAllowedByPolicy(
     const ui::ClipboardMetadata& metadata,
     ProfileIOS* source_profile,  // Can be null if the source isn't Chrome
     ProfileIOS* destination_profile) {
+  CHECK(destination_profile);
   // TODO(crbug.com/438202190): This is the place holder for paste policy
   // evaluation API.
 
-  return PastePolicyVerdict{Verdict::Warn({}), true};
+  PastePolicyVerdict policy_verdict{Verdict::NotSet(), false};
+
+  IOSRulesService* rules_service =
+      IOSRulesServiceFactory::GetForProfile(destination_profile);
+  CHECK(rules_service);
+
+  policy_verdict.verdict = rules_service->GetPasteVerdict(
+      source_url, destination_url, source_profile, destination_profile);
+  return policy_verdict;
 }
 
 CopyPolicyVerdicts IsCopyAllowedByPolicy(const GURL& source_url,

@@ -23,7 +23,7 @@ DataControlsTabHelper::~DataControlsTabHelper() = default;
 
 void DataControlsTabHelper::ShouldAllowCopy(
     base::OnceCallback<void(bool)> callback) {
-  if (!base::FeatureList::IsEnabled(kEnableClipboardDataControlsIOS)) {
+  if (!IsClipboardDataControlsEnabled()) {
     std::move(callback).Run(true);
     return;
   }
@@ -36,13 +36,67 @@ void DataControlsTabHelper::ShouldAllowCopy(
 
   const GURL& source_url = web_state_->GetLastCommittedURL();
 
-  OnCopyAllowed(source_url, std::move(callback),
-                IsCopyAllowedByPolicy(source_url, metadata, profile));
+  CopyPolicyVerdicts verdicts =
+      IsCopyAllowedByPolicy(source_url, metadata, profile);
+
+  switch (verdicts.copy_action_verdict.level()) {
+    case Rule::Level::kWarn:
+      // TODO(crbug.com/438198880): Show a warning dialog to the user.
+      // For now, assume the user does not bypass the warning.
+      FinishCopy(source_url, std::move(verdicts), std::move(callback),
+                 /*bypassed=*/false);
+      break;
+    case Rule::Level::kBlock:
+      // TODO(crbug.com/438198881): Show a toast to the user indicating that
+      // the copy action has been blocked.
+    case Rule::Level::kReport:
+    case Rule::Level::kAllow:
+    case Rule::Level::kNotSet:
+      FinishCopy(source_url, std::move(verdicts), std::move(callback),
+                 /*bypassed=*/false);
+      break;
+  }
 }
 
 void DataControlsTabHelper::ShouldAllowPaste(
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(true);
+  if (!IsClipboardDataControlsEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  // TODO(crbug.com/444224082): Include size and format type for paste
+  // operations.
+  ui::ClipboardMetadata metadata;
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& destination_url = web_state_->GetLastCommittedURL();
+
+  // TODO(crbug.com/439549626): Pass the source URL and profile when available.
+  const GURL source_url;
+  PastePolicyVerdict policy_verdict = IsPasteAllowedByPolicy(
+      /*source_url=*/source_url, destination_url, metadata,
+      /*source_profile=*/nullptr, profile);
+
+  switch (policy_verdict.verdict.level()) {
+    case Rule::Level::kWarn:
+      // TODO(crbug.com/438198880): Show a warning dialog to the user.
+      // For now, assume the user does not bypass the warning.
+      FinishPaste(destination_url, std::move(policy_verdict.verdict),
+                  std::move(callback),
+                  /*bypassed=*/false);
+      break;
+    case Rule::Level::kBlock:
+    // TODO(crbug.com/438198881): Show a toast to the user indicating that
+    // the paste action has been blocked.
+    case Rule::Level::kReport:
+    case Rule::Level::kAllow:
+    case Rule::Level::kNotSet:
+      FinishPaste(destination_url, std::move(policy_verdict.verdict),
+                  std::move(callback),
+                  /*bypassed=*/false);
+      break;
+  }
 }
 
 void DataControlsTabHelper::ShouldAllowCut(
@@ -56,10 +110,14 @@ void DataControlsTabHelper::ShouldAllowShare(
   std::move(callback).Run(true);
 }
 
-void DataControlsTabHelper::OnCopyAllowed(
-    const GURL& source_url,
-    base::OnceCallback<void(bool)> callback,
-    CopyPolicyVerdicts copy_verdicts) {
+bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
+  return base::FeatureList::IsEnabled(kEnableClipboardDataControlsIOS);
+}
+
+void DataControlsTabHelper::FinishCopy(const GURL& source_url,
+                                       CopyPolicyVerdicts verdicts,
+                                       base::OnceCallback<void(bool)> callback,
+                                       bool bypassed) {
   // The user may have navigated away from the page from which the copy
   // operation was initiated. If the URL has changed, we should block the copy
   // operation as the original content is no longer available.
@@ -68,10 +126,33 @@ void DataControlsTabHelper::OnCopyAllowed(
     return;
   }
 
-  // TODO(crbug.com/439549626): Store metadata when decision is
-  // kAllow or kAllowAndProtect.
-  bool allowed =
-      (copy_verdicts.copy_action_verdict.level() != Rule::Level::kBlock);
+  Verdict verdict = std::move(verdicts.copy_action_verdict);
+
+  bool allowed = verdict.level() != Rule::Level::kBlock;
+  if (verdict.level() == Rule::Level::kWarn) {
+    allowed = bypassed;
+  }
+
+  // TODO(crbug.com/439549626): Store metadata for allowed operations.
+  std::move(callback).Run(allowed);
+}
+
+void DataControlsTabHelper::FinishPaste(const GURL& destination_url,
+                                        Verdict verdict,
+                                        base::OnceCallback<void(bool)> callback,
+                                        bool bypassed) {
+  // The user may have navigated away from the page into which the paste
+  // operation was initiated. If the URL has changed, we should block the paste
+  // operation as the original destination is no longer available.
+  if (destination_url != web_state_->GetLastCommittedURL()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool allowed = verdict.level() != Rule::Level::kBlock;
+  if (verdict.level() == Rule::Level::kWarn) {
+    allowed = bypassed;
+  }
   std::move(callback).Run(allowed);
 }
 
