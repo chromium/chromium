@@ -18,6 +18,13 @@ class ContextualTasksContextControllerImpl
       ContextualTasksService* service);
   ~ContextualTasksContextControllerImpl() override;
 
+  // ContextualTasksController implementation.
+  void GetTasks(
+      base::OnceCallback<void(std::vector<ContextualTask>)> callback) override;
+  void GetTask(base::Uuid task_id,
+               base::OnceCallback<void(std::optional<ContextualTask>)> callback)
+      override;
+
  private:
   raw_ptr<ContextualTasksService> service_;
 };

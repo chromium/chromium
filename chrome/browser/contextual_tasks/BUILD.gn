@@ -79,6 +79,7 @@ source_set("unit_tests") {
 
   sources = [
     "contextual_tasks_context_controller_factory_unittest.cc",
+    "contextual_tasks_context_controller_impl_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
   ]
 
@@ -91,6 +92,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
