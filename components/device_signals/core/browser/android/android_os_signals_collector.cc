@@ -12,6 +12,12 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+
+using safe_browsing::SafeBrowsingApiHandlerBridge;
+using safe_browsing::VerifyAppsEnabledResult;
+using safe_browsing::VerifyAppsResponseCallback;
 
 namespace device_signals {
 
@@ -39,7 +45,25 @@ void AndroidOsSignalsCollector::GetOsSignals(
 
   auto signal_response = std::make_unique<OsSignalsResponse>();
 
-  response.os_signals_response = std::move(*signal_response);
+  safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+      .StartIsVerifyAppsEnabled(base::BindOnce(
+          &AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
+          weak_factory_.GetWeakPtr(), permission, request, std::ref(response),
+          std::move(signal_response), std::move(done_closure)));
+}
+
+void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
+    UserPermission permission,
+    const SignalsAggregationRequest& request,
+    SignalsAggregationResponse& response,
+    std::unique_ptr<OsSignalsResponse> os_signals_response,
+    base::OnceClosure done_closure,
+    VerifyAppsEnabledResult result) {
+  os_signals_response->verified_apps_enabled =
+      (result == VerifyAppsEnabledResult::SUCCESS_ENABLED ||
+       result == VerifyAppsEnabledResult::SUCCESS_ALREADY_ENABLED);
+
+  response.os_signals_response = std::move(*os_signals_response);
 
   std::move(done_closure).Run();
 }

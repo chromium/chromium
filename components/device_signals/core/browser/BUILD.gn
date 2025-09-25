@@ -62,12 +62,13 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_android) {
-  }
-
   if (is_android) {
     public += [ "android/android_os_signals_collector.h" ]
     sources += [ "android/android_os_signals_collector.cc" ]
+    deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
   } else if (is_win || is_mac || is_linux) {
     public += [
       "agent_signals_collector.h",
@@ -150,6 +151,15 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [ "android/android_os_signals_collector_unittest.cc" ]
+    deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+      "//content/test:test_support",
+    ]
+  }
 
   if (is_win || is_mac || is_linux) {
     sources += [

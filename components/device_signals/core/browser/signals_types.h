@@ -242,6 +242,11 @@ struct OsSignalsResponse : BaseSignalResponse {
 
   // Linux specific
   std::optional<std::string> distribution_version = std::nullopt;
+
+  // Android specific
+  bool has_potentially_harmful_apps;
+  bool verified_apps_enabled;
+  std::string security_patch;
 };
 
 struct ProfileSignalsResponse : BaseSignalResponse {
