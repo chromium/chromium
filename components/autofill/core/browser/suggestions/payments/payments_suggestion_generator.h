@@ -36,8 +36,6 @@ class Iban;
 // Describes the suggestions returned by
 // `GetCreditCardOrCvcFieldSuggestions()`.
 struct CreditCardSuggestionSummary {
-  // Whether any card has card-linked offers.
-  bool with_offer = false;
   // True if any card has a saved CVC.
   bool with_cvc = false;
   // True if any card is card info retrieval enrolled.

@@ -57,7 +57,6 @@ void CreditCardFormEventLogger::OnBnplSuggestionShown() {
 
 void CreditCardFormEventLogger::OnDidFetchSuggestion(
     const std::vector<Suggestion>& suggestions,
-    bool with_offer,
     bool with_cvc,
     bool with_card_info_retrieval_enrolled,
     bool is_virtual_card_standalone_cvc_field,

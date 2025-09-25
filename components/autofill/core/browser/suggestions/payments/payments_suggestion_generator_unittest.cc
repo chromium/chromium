@@ -1277,7 +1277,6 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       CREDIT_CARD_NUMBER,
       /*should_show_scan_credit_card=*/false, summary);
 
-  EXPECT_TRUE(summary.with_offer);
   ASSERT_EQ(suggestions.size(), 5U);
   // The suggestion with card linked offer available should be ranked to the
   // top.

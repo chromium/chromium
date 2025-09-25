@@ -1176,7 +1176,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
 
   std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
-  summary.with_offer = !card_linked_offers_map.empty();
   bool suppress_disused_cards =
       SanitizeCreditCardFieldValue(trigger_field.value()).empty();
   bool should_prefix_match = !allow_payment_swapping;
