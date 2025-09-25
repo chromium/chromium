@@ -1583,10 +1583,10 @@
       status: "experimental",
     },
     {
-      // https://github.com/w3c/csswg-drafts/issues/11600
+      // https://drafts.csswg.org/css-overflow-5/#active-before-after-scroll-markers
       // :target-before and :target-after pseudo classes for scroll markers.
       name: "CSSScrollMarkerTargetBeforeAfter",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
