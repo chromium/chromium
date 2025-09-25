@@ -37,7 +37,7 @@ export class TabFaviconElement extends CrLitElement {
     };
   }
 
-  accessor url: string;
+  accessor url: string = '';
   accessor size: number = 16;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

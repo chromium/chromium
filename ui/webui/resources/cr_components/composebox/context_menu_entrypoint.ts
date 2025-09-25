@@ -58,7 +58,7 @@ export class ContextMenuEntrypointElement extends
   }
 
   accessor inputsDisabled: boolean = false;
-  accessor showEntrypointDescription: boolean;
+  accessor showEntrypointDescription: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
   protected accessor showDeepSearch_: boolean =
       loadTimeData.getBoolean('composeboxShowDeepSearchButton');

@@ -11,7 +11,7 @@ import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote}
 
 import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
-import {ComposeboxProxyImpl} from './composebox_proxy.js';
+import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.js';
 
 export interface ComposeboxMatchElement {
   $: {
@@ -51,9 +51,9 @@ export class ComposeboxMatchElement extends CrLitElement {
     };
   }
 
-  accessor match: AutocompleteMatch;
+  accessor match: AutocompleteMatch = createAutocompleteMatch();
 
-  accessor matchIndex: number;
+  accessor matchIndex: number = -1;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
@@ -70,21 +70,15 @@ export class ComposeboxMatchElement extends CrLitElement {
   }
 
   protected computeContents_(): string {
-    if (!this.match) {
-      return '';
-    }
     return mojoString16ToString(this.match.contents);
   }
 
   protected computeRemoveButtonAriaLabel_(): string {
-    if (!this.match) {
-      return '';
-    }
     return mojoString16ToString(this.match.removeButtonA11yLabel);
   }
 
   protected iconPath_(): string {
-    return this.match.iconPath;
+    return this.match.iconPath || '';
   }
 
   private onMatchFocusin_() {

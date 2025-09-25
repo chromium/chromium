@@ -174,7 +174,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor isCollapsible: boolean = false;
   // Whether the composebox is currently expanded. Always true if isCollapsible
   // is false.
-  protected accessor expanded_: boolean;
+  protected accessor expanded_: boolean = false;
   protected accessor input_: string = '';
   protected accessor inputsDisabled_: boolean = false;
   protected accessor showDropdown_: boolean =
@@ -213,7 +213,7 @@ export class ComposeboxElement extends I18nMixinLit
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
 
-  private selectedMatch_: AutocompleteMatch|null;
+  private selectedMatch_: AutocompleteMatch|null = null;
   private lastQueriedInput_: string = '';
 
   constructor() {
@@ -824,7 +824,7 @@ export class ComposeboxElement extends I18nMixinLit
       // Set the selected match since the `selectedMatchIndex_` does not change
       // (and therefore `selectedMatch_` does not get updated since
       // `onSelectedMatchIndexChanged_` is not called).
-      this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_];
+      this.selectedMatch_ = this.result_.matches[this.selectedMatchIndex_]!;
       this.input_ = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
       this.$.input.value = this.input_;
     } else {

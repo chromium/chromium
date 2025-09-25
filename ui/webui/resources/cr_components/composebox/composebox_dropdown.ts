@@ -48,7 +48,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
   }
 
   accessor result: AutocompleteResult|null = null;
-  accessor selectedMatchIndex: number;
+  accessor selectedMatchIndex: number = -1;
 
   //============================================================================
   // Public methods
@@ -137,9 +137,6 @@ export class ComposeboxDropdownElement extends CrLitElement {
   }
 
   protected computeAriaLabel_(match: AutocompleteMatch): string {
-    if (!match) {
-      return '';
-    }
     return mojoString16ToString(match.a11yLabel);
   }
 }
