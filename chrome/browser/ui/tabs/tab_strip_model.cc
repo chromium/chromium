@@ -1881,19 +1881,6 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
                  SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
 }
 
-void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
-                                tab_groups::TabGroupVisualData visual_data) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  CHECK(SupportsTabGroups());
-  TabGroupDesktop::Factory factory(profile());
-  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
-      std::make_unique<tabs::TabGroupTabCollection>(factory, group_id,
-                                                    visual_data);
-  group_model_->AddTabGroup(group_collection->GetTabGroup(),
-                            base::PassKey<TabStripModel>());
-  contents_data_->CreateTabGroup(std::move(group_collection));
-}
-
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
     const std::vector<int> indices) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
