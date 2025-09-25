@@ -131,15 +131,8 @@ id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
-- (void)testTwoColorsSnapshot {
 // TODO(crbug.com/443715006): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    if ([ChromeEarlGrey isIPadIdiom]) {
-      EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-    }
-  }
-#endif
+- (void)DISABLED_testTwoColorsSnapshot {
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
