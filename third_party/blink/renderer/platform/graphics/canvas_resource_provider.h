@@ -563,7 +563,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
- protected:
+ private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
 
   // The maximum number of in-flight resources waiting to be used for
@@ -602,7 +602,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
- private:
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
   // `viz::ContextLostObserver` implementation.
