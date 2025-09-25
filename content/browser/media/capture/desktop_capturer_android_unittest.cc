@@ -23,6 +23,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
+#include "ui/gfx/geometry/rect.h"
 
 using testing::Return;
 
@@ -308,6 +309,109 @@ TEST_F(DesktopCapturerAndroidTest, TimestampCalculation) {
   // last timestamp, even if it was a non-monotonic update.
   PushRgbaFrameWithTimestampNs(160 * base::Time::kNanosecondsPerMillisecond);
   ExpectFrameWithCaptureTime(base::Milliseconds(30));
+}
+
+TEST_F(DesktopCapturerAndroidTest, RgbaFrameWithStrideAndCrop) {
+  StartCapturer(/*start_success=*/true);
+
+  // Setup a buffer larger than the actual image and crop a region.
+  constexpr int kBufferWidth = 32;
+  constexpr int kBufferHeight = 32;
+  // Add extra padding to the stride.
+  constexpr int kStride = kBufferWidth * kBytesPerPixel + 16;
+
+  constexpr gfx::Rect kCropRect(4, 8, 16, 12);
+
+  std::vector<uint8_t> buffer(kStride * kBufferHeight, 'A');
+  auto buffer_span = base::span(buffer);
+  for (int y = 0; y < kBufferHeight; ++y) {
+    for (int x = 0; x < kBufferWidth; ++x) {
+      auto pixel_span = buffer_span.subspan(
+          base::checked_cast<size_t>(y * kStride + x * kBytesPerPixel), 4u);
+      // Store coordinates in the first two bytes to verify correct copying.
+      pixel_span[0] = static_cast<uint8_t>(x);
+      pixel_span[1] = static_cast<uint8_t>(y);
+    }
+  }
+
+  auto j_buf = CreateJavaByteBuffer(buffer);
+  RunnableFlag release_cb;
+  capturer_->OnRgbaFrameAvailable(env_, release_cb.GetJavaObject(),
+                                  kTimestampNs, j_buf, kBytesPerPixel, kStride,
+                                  kCropRect.x(), kCropRect.y(),
+                                  kCropRect.right(), kCropRect.bottom());
+  EXPECT_TRUE(release_cb.WasRun());
+
+  const auto& [result, frame] = CaptureFrame();
+  EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->size().width(), kCropRect.width());
+  ASSERT_EQ(frame->size().height(), kCropRect.height());
+
+  // The frame should be tightly packed.
+  ASSERT_EQ(frame->stride(), kCropRect.width() * kBytesPerPixel);
+
+  // SAFETY: No safe interface to DesktopFrame.
+  auto frame_span = UNSAFE_BUFFERS(base::span(
+      frame->data(),
+      base::checked_cast<size_t>(frame->stride() * frame->size().height())));
+  for (int y = 0; y < kCropRect.height(); ++y) {
+    for (int x = 0; x < kCropRect.width(); ++x) {
+      const auto pixel_span = frame_span.subspan(
+          base::checked_cast<size_t>(y * frame->stride() + x * kBytesPerPixel),
+          2u);
+      const int src_x = x + kCropRect.x();
+      const int src_y = y + kCropRect.y();
+      EXPECT_EQ(pixel_span[0], static_cast<uint8_t>(src_x));
+      EXPECT_EQ(pixel_span[1], static_cast<uint8_t>(src_y));
+    }
+  }
+}
+
+TEST_F(DesktopCapturerAndroidTest, RgbaFrameInvalidBufferSizeDeathTest) {
+  StartCapturer(/*start_success=*/true);
+
+  // Buffer is one byte too small.
+  std::vector<uint8_t> buffer(kFrameSize - 1);
+  auto j_buf = CreateJavaByteBuffer(buffer);
+  RunnableFlag release_cb;
+
+  // Should CHECK.
+  EXPECT_DEATH(capturer_->OnRgbaFrameAvailable(
+                   env_, release_cb.GetJavaObject(), kTimestampNs, j_buf,
+                   kBytesPerPixel, kStride, 0, 0, kWidth, kHeight),
+               "");
+  EXPECT_FALSE(release_cb.WasRun());
+}
+
+TEST_F(DesktopCapturerAndroidTest, RgbaFrameInvalidStrideDeathTest) {
+  StartCapturer(/*start_success=*/true);
+
+  std::vector<uint8_t> buffer(kFrameSize);
+  auto j_buf = CreateJavaByteBuffer(buffer);
+  RunnableFlag release_cb;
+
+  // Stride is one byte too small.
+  const int kStride = kWidth * kBytesPerPixel - 1;
+  EXPECT_DEATH(capturer_->OnRgbaFrameAvailable(
+                   env_, release_cb.GetJavaObject(), kTimestampNs, j_buf,
+                   kBytesPerPixel, kStride, 0, 0, kWidth, kHeight),
+               "");
+  EXPECT_FALSE(release_cb.WasRun());
+}
+
+TEST_F(DesktopCapturerAndroidTest, RgbaFrameInvalidCropRectDeathTest) {
+  StartCapturer(/*start_success=*/true);
+
+  std::vector<uint8_t> buffer(kFrameSize);
+  auto j_buf = CreateJavaByteBuffer(buffer);
+  RunnableFlag release_cb;
+
+  EXPECT_DEATH(capturer_->OnRgbaFrameAvailable(
+                   env_, release_cb.GetJavaObject(), kTimestampNs, j_buf,
+                   kBytesPerPixel, kStride, 1, 0, 0, kHeight),
+               "");
+  EXPECT_FALSE(release_cb.WasRun());
 }
 
 }  // namespace content
