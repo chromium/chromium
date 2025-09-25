@@ -4884,8 +4884,6 @@ extern const char kEnableStandardBoundSessionCredentialsName[];
 extern const char kEnableStandardBoundSessionCredentialsDescription[];
 extern const char kEnableStandardBoundSessionPersistenceName[];
 extern const char kEnableStandardBoundSessionPersistenceDescription[];
-extern const char kEnableStandardBoundSessionRefreshQuotaName[];
-extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
 extern const char kEnableStandardBoundSessionCredentialsFederatedSessionsName[];
 extern const char
     kEnableStandardBoundSessionCredentialsFederatedSessionsDescription[];
