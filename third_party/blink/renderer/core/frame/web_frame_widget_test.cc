@@ -828,6 +828,8 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeBeforeLayout) {
 }
 
 TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {
+  // Tests that an image with large layout size but small intrinsic image size
+  // will not be speculatively decoded.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -836,7 +838,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {
       /*disabled_features=*/{});
   url_test_helpers::RegisterMockedURLLoad(
       url_test_helpers::ToKURL("https://example.com/image.png"),
-      test::CoreTestDataPath("background_image.png"));
+      test::CoreTestDataPath("notifications/48x48.png"));
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest doc_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -844,7 +846,7 @@ TEST_F(WebFrameWidgetImplSimTest, SpeculativeImageDecodeMinimumSize) {
   doc_request.Complete(
       R"HTML(
 <!DOCTYPE html>
-<img id="img" width=4 height=5 src="image.png">
+<img id="img" width=400 height=300 src="image.png">
       )HTML");
   url_test_helpers::ServeAsynchronousRequests();
 }

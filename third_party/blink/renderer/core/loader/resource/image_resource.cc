@@ -596,10 +596,16 @@ ImageResource::PriorityFromObservers() const {
   return GetContent()->PriorityFromObservers();
 }
 
+bool ImageResource::HasNonDegenerateContentSize() const {
+  return GetContent() && !GetContent()->MaxSize().IsZero();
+}
+
 bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold() const {
   // Images with too few pixels will not be speculatively decoded.
-  return GetContent()->MaxSize().GetCheckedArea().ValueOrDefault(0) >=
-         kSpeculativeDecodeMinImageSize;
+  CHECK(GetContent()->GetImage());
+  gfx::Size intrinsic_size = GetContent()->GetImage()->Size();
+  return intrinsic_size.GetCheckedArea().ValueOrDefault(0) >=
+         ImageResource::kSpeculativeDecodeMinImageSize;
 }
 
 void ImageResource::OnePartInMultipartReceived(

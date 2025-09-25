@@ -212,6 +212,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return std::make_pair(ResourcePriority(), ResourcePriority());
   }
 
+  virtual bool HasNonDegenerateContentSize() const { return false; }
   virtual bool IsAboveSpeculativeDecodeSizeThreshold() const { return false; }
 
   // If this Resource is already finished when AddClient is called, the

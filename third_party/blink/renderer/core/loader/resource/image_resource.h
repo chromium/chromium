@@ -70,9 +70,9 @@ class CORE_EXPORT ImageResource final
                                const DOMWrapperWorld* world);
   static ImageResource* CreateForTest(const KURL&);
 
-  // This will exclude ~65% of images on the web, based on:
-  //   https://almanac.httparchive.org/en/2024/media#image-dimensions
-  static constexpr int kSpeculativeDecodeMinImageSize = 100000;
+  // This restricts speculative decoding to images that are relatively expensive
+  // to decode.
+  static constexpr int kSpeculativeDecodeMinImageSize = 10000;
 
   ImageResource(const ResourceRequest&,
                 const ResourceLoaderOptions&,
@@ -106,6 +106,7 @@ class CORE_EXPORT ImageResource final
   void UpdateResourceInfoFromObservers() override;
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
       const override;
+  bool HasNonDegenerateContentSize() const override;
   bool IsAboveSpeculativeDecodeSizeThreshold() const override;
 
   // MultipartImageResourceParser::Client

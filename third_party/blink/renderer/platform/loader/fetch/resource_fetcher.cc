@@ -3239,12 +3239,18 @@ void ResourceFetcher::StartSpeculativeImageDecodes() {
   HeapVector<Member<Resource>> candidate_vector(
       speculative_decode_candidate_images_);
   for (Resource* resource : candidate_vector) {
-    const ResourcePriority& priority = resource->PriorityFromObservers().first;
-    if (priority.visibility != ResourcePriority::kVisible ||
-        !resource->IsAboveSpeculativeDecodeSizeThreshold()) {
+    // If the img element doesn't have extrinsic sizing, and we haven't yet run
+    // layout with the image's intrinsic sizing available, then we risk decoding
+    // at the wrong resolution. Skip the image for now until layout has a chance
+    // to run.
+    if (!resource->HasNonDegenerateContentSize()) {
       continue;
     }
-    Context().StartSpeculativeImageDecode(resource);
+    const ResourcePriority& priority = resource->PriorityFromObservers().first;
+    if (priority.visibility == ResourcePriority::kVisible &&
+        resource->IsAboveSpeculativeDecodeSizeThreshold()) {
+      Context().StartSpeculativeImageDecode(resource);
+    }
     speculative_decode_candidate_images_.erase(resource);
   }
 }
