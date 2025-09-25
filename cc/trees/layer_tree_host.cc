@@ -1066,6 +1066,7 @@ void LayerTreeHost::ApplyViewportChanges(
           pending_commit_state()->viewport_property_ids.inner_scroll)) {
     UpdateScrollOffsetFromImpl(
         inner_scroll->element_id, inner_viewport_scroll_delta,
+        ScrollSourceType::kNone,
         commit_data.inner_viewport_scroll.snap_target_element_ids);
   }
 
@@ -1086,8 +1087,9 @@ void LayerTreeHost::ApplyViewportChanges(
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
+    ScrollSourceType type,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
-  property_tree_delegate_->UpdateScrollOffsetFromImpl(id, delta,
+  property_tree_delegate_->UpdateScrollOffsetFromImpl(id, delta, type,
                                                       snap_target_ids);
 }
 
@@ -1113,8 +1115,12 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
 
   if (has_root_layer()) {
     for (auto& scroll : commit_data->scrolls) {
+      ScrollSourceType scroll_type = ScrollSourceType::kNone;
+      if (scroll.element_id == commit_data->scroll_latched_element_id) {
+        scroll_type = commit_data->scroll_type;
+      }
       UpdateScrollOffsetFromImpl(scroll.element_id, scroll.scroll_delta,
-                                 scroll.snap_target_element_ids);
+                                 scroll_type, scroll.snap_target_element_ids);
     }
     // const_cast to ensure the compiler chooses to the const version of
     // property_trees(), to avoid blocking on commit.

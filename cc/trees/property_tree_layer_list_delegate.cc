@@ -50,6 +50,7 @@ void PropertyTreeLayerListDelegate::UpdatePropertyTreesIfNeeded() {
 void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
+    ScrollSourceType type,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   auto& scroll_tree = host()->property_trees()->scroll_tree_mutable();
   auto new_offset = scroll_tree.current_scroll_offset(id) + delta;
@@ -92,7 +93,7 @@ void PropertyTreeLayerListDelegate::UpdateScrollOffsetFromImpl(
     host()->SetNeedsUpdateLayers();
   }
 
-  scroll_tree.NotifyDidCompositorScroll(id, new_offset, snap_target_ids);
+  scroll_tree.NotifyDidCompositorScroll(id, new_offset, type, snap_target_ids);
 }
 
 void PropertyTreeLayerListDelegate::OnAnimateLayers() {

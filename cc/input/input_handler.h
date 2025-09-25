@@ -25,6 +25,7 @@
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/scroll_source_type.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
@@ -750,6 +751,8 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
                                 const ScrollNode& scroll_node,
                                 gfx::Vector2dF& delta) const;
 
+  void UpdateLastLatchedScrollSourceType();
+
   // The input handler is owned by the delegate so their lifetimes are tied
   // together.
   const raw_ref<CompositorDelegateForInput> compositor_delegate_;
@@ -887,6 +890,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   base::flat_set<ElementId> pending_scrollend_containers_;
 
   base::TimeTicks last_scroll_begin_time_;
+
+  // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+  ScrollSourceType last_latched_scroll_source_type_ = ScrollSourceType::kNone;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

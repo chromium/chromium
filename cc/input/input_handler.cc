@@ -1133,6 +1133,21 @@ void InputHandler::NotifyInputEvent(bool is_fling) {
   compositor_delegate_->NotifyInputEvent(is_fling);
 }
 
+void InputHandler::UpdateLastLatchedScrollSourceType() {
+  if (has_scrolled_by_wheel_ || has_scrolled_by_touch_ ||
+      has_scrolled_by_precisiontouchpad_ || has_scrolled_by_scrollbar_ ||
+      has_pinch_zoomed_) {
+    // TODO(crbug.com/414556050): Need to distinguish between different types of
+    // scrollbar scrolls. For example: scrollbar dragging should be absolute
+    // scrolls, while pressing arrow buttons or scrollbar track clicks should be
+    // relative scrolls.
+    // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+    last_latched_scroll_source_type_ = ScrollSourceType::kRelativeScroll;
+    return;
+  }
+  last_latched_scroll_source_type_ = ScrollSourceType::kNone;
+}
+
 //
 // =========== InputDelegateForCompositor Interface
 //
@@ -1162,6 +1177,8 @@ void InputHandler::ProcessCommitDeltas(
       commit_data, inner_viewport_scroll_element_id,
       compositor_delegate_->GetSettings().commit_fractional_scroll_deltas,
       snapped_elements, main_thread_mutator_host);
+
+  commit_data->scroll_type = last_latched_scroll_source_type_;
 
   // Record and reset scroll source flags.
   DCHECK(!commit_data->manipulation_info);
@@ -1200,6 +1217,7 @@ void InputHandler::ProcessCommitDeltas(
   if (commit_data->scroll_end_data.done_containers.contains(
           last_latched_scroller_)) {
     last_latched_scroller_ = ElementId();
+    last_latched_scroll_source_type_ = ScrollSourceType::kNone;
   }
 }
 
@@ -2187,6 +2205,7 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
   compositor_delegate_->DidStartScroll();
 
   UpdateScrollSourceInfo(scroll_state, type);
+  UpdateLastLatchedScrollSourceType();
 }
 
 bool InputHandler::CanConsumeDelta(const ScrollState& scroll_state,

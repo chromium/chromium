@@ -168,7 +168,8 @@ TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(100, 100));
-  scrollable_area->DidCompositorScroll(gfx::PointF(40, 51));
+  scrollable_area->DidCompositorScroll(gfx::PointF(40, 51),
+                                       cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().x());
   EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().y());

@@ -553,7 +553,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const = 0;
 
   // Callback for compositor-side scrolling.
-  virtual void DidCompositorScroll(const gfx::PointF& position);
+  virtual void DidCompositorScroll(const gfx::PointF& position,
+                                   cc::ScrollSourceType source_type);
 
   virtual void ScrollbarFrameRectChanged() {}
 

@@ -63,6 +63,7 @@ class COMPOSITOR_EXPORT CompositorPropertyTreeDelegate
   void UpdateScrollOffsetFromImpl(
       const cc::ElementId& id,
       const gfx::Vector2dF& delta,
+      cc::ScrollSourceType type,
       const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids)
       override;
   void OnAnimateLayers() override;

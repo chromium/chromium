@@ -15,6 +15,7 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/scroll_source_type.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -124,6 +125,12 @@ struct CC_EXPORT CompositorCommitData {
   // scroll based on the scroll updates so far. The main thread will use this to
   // determine whether to fire scrollsnapchanging or not.
   std::unique_ptr<SnapSelectionStrategy> snap_strategy;
+
+  // Tracks different types of scrolling: absolute, relative, stationary.
+  // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+  // TODO(crbug.com/414556050): Check if dirrefent `ScrollUpdateInfo` can have
+  // different scroll types, store this state in `ScrollUpdateInfo` if yes.
+  ScrollSourceType scroll_type = ScrollSourceType::kNone;
 };
 
 }  // namespace cc

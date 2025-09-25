@@ -2870,7 +2870,8 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
                          .GlobalRootScroller();
     ScrollableArea* scrollable_area =
         To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
-    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000));
+    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000),
+                                         cc::ScrollSourceType::kNone);
 
     WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
 

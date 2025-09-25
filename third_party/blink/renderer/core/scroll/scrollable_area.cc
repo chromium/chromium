@@ -1149,7 +1149,8 @@ gfx::Size ScrollableArea::ExcludeScrollbars(const gfx::Size& size) const {
                    std::max(0, size.height() - HorizontalScrollbarHeight()));
 }
 
-void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
+void ScrollableArea::DidCompositorScroll(const gfx::PointF& position,
+                                         cc::ScrollSourceType source_type) {
   ScrollOffset new_offset(ScrollPositionToOffset(position));
   ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
   // A non-latched compositor scroll update might be in service of a
@@ -1158,11 +1159,20 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   // targeted scroll, the associated ScrollMarkerGroupPseudoElement's
   // selected marker will still be pinned and we should not change that.
   bool targeted_scroll = group && group->SelectedMarkerIsPinned();
-  // TODO(crbug.com/414556050): Pass the correct `cc::ScrollSourceType` from the
-  // compositor.
+  // if `source_type=cc::ScrollSourceType::kNone` then compositor scroll was
+  // triggered from `ScrollAnimator` or `ProgrammaticScrollAnimator` so we need
+  // to use `ScrollSourceType` cached in `ScrollAnimator` or
+  // `ProgrammaticScrollAnimator` accordingly.
+  if (source_type == cc::ScrollSourceType::kNone && ExistingScrollAnimator()) {
+    source_type = ExistingScrollAnimator()->GetScrollSourceType();
+  }
+  if (source_type == cc::ScrollSourceType::kNone &&
+      ExistingProgrammaticScrollAnimator()) {
+    source_type = ExistingProgrammaticScrollAnimator()->GetScrollSourceType();
+  }
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
                   mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
-                  targeted_scroll);
+                  targeted_scroll, source_type);
 }
 
 Scrollbar* ScrollableArea::GetScrollbar(

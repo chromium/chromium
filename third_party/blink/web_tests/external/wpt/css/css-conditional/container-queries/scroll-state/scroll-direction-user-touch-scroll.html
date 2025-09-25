@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <title>@container: scroll-state(direction) user touch scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-rule">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12394">
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -43,7 +42,10 @@
         .addPointer("TestPointer", "touch")
         .pointerMove(Math.round(start_pos.x), Math.round(start_pos.y))
         .pointerDown()
+        .addTick()
+        .pause(200)
         .pointerMove(Math.round(end_pos.x), Math.round(end_pos.y), {duration: duration})
+        .addTick()
         .pointerUp()
         .send();
   }
@@ -51,10 +53,10 @@
   promise_test(async t => {
     // Scrollbar element position
     const start_pos = {
-      x: 50,
-      y: 50,
+      x: 100,
+      y: 100,
     };
-    const end_pos = { x: 50, y: -50 };
+    const end_pos = { x: 100, y: 0 };
 
     await touch_scroll(start_pos, end_pos, 1000);
     await waitForAnimationFrames(2);
@@ -65,10 +67,10 @@
   promise_test(async t => {
     // Scrollbar element position
     const start_pos = {
-      x: 50,
-      y: 50,
+      x: 100,
+      y: 100,
     };
-    const end_pos = { x: 50, y: -50 };
+    const end_pos = { x: 100, y: 0 };
 
     await touch_scroll(start_pos, end_pos, 10);
     await waitForAnimationFrames(2);

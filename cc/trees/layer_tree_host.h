@@ -1046,6 +1046,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void UpdateScrollOffsetFromImpl(
       const ElementId&,
       const gfx::Vector2dF& delta,
+      ScrollSourceType type,
       const std::optional<TargetSnapAreaElementIds>&);
 
   const CompositorMode compositor_mode_;
