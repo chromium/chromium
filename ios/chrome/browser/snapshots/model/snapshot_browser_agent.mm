@@ -9,7 +9,6 @@
 #import "base/ios/ios_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
@@ -60,23 +59,13 @@ void SnapshotBrowserAgent::SetSessionID(const std::string& identifier) {
   DCHECK(!snapshot_storage_);
   DCHECK(!identifier.empty());
 
-  const base::FilePath& profile_path = browser_->GetProfile()->GetStatePath();
-
-  // The snapshots are stored in a sub-directory of the session storage.
-  // TODO(crbug.com/40942167): change this before launching the optimised
-  // session storage as the session directory will be renamed.
-  const base::FilePath legacy_path = profile_path.Append(kLegacySessionsDirname)
-                                         .Append(identifier)
-                                         .Append(kSnapshots);
-
-  const base::FilePath storage_path =
-      profile_path.Append(kSnapshots).Append(identifier);
-
-  snapshot_storage_ = CreateSnapshotStorage(storage_path, legacy_path);
+  snapshot_storage_ = CreateSnapshotStorage(browser_->GetProfile()
+                                                ->GetStatePath()
+                                                .Append(kSnapshots)
+                                                .Append(identifier));
 }
 
 void SnapshotBrowserAgent::PerformStorageMaintenance() {
-  MigrateStorageIfNecessary();
   PurgeUnusedSnapshots();
 }
 
@@ -121,34 +110,6 @@ void SnapshotBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
 void SnapshotBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
                                                    web::WebState* new_active) {
   // Nothing to do.
-}
-
-void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
-  DCHECK(snapshot_storage_);
-
-  WebStateList* web_state_list = browser_->GetWebStateList();
-  const int web_state_list_count = web_state_list->count();
-  if (!web_state_list_count) {
-    return;
-  }
-
-  // Snapshots used to be identified by the web state stable identifier, but are
-  // now identified by a snapshot ID.
-  NSMutableArray<NSString*>* stable_identifiers =
-      [NSMutableArray arrayWithCapacity:web_state_list_count];
-
-  NSMutableArray<SnapshotIDWrapper*>* snapshot_identifiers =
-      [[NSMutableArray alloc] initWithCapacity:web_state_list_count];
-
-  for (int index = 0; index < web_state_list_count; ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [stable_identifiers addObject:web_state->GetStableIdentifier()];
-    [snapshot_identifiers
-        addObject:ToWrapper(SnapshotID(web_state->GetUniqueIdentifier()))];
-  }
-
-  [snapshot_storage_ renameSnapshotsWithOldIDs:stable_identifiers
-                                        newIDs:snapshot_identifiers];
 }
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {

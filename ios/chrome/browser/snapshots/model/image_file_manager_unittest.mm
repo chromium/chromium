@@ -56,8 +56,7 @@ class LegacyImageFileManagerTest : public PlatformTest {
     }
 
     image_file_manager_ = [[LegacyImageFileManager alloc]
-        initWithStoragePath:scoped_temp_directory_.GetPath()
-                 legacyPath:base::FilePath()];
+        initWithStoragePath:scoped_temp_directory_.GetPath()];
 
     CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
 
@@ -288,36 +287,6 @@ TEST_F(LegacyImageFileManagerTest, PurgeImagesOlderThan) {
   }
 }
 
-// Tests that migration code correctly rename the specified files and leave
-// the other files untouched.
-TEST_F(LegacyImageFileManagerTest, RenameSnapshots) {
-  LegacyImageFileManager* file_manager = GetImageFileManager();
-  ASSERT_TRUE(file_manager);
-
-  // This snapshot will be renamed.
-  NSString* image1_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image1_path =
-      [file_manager legacyImagePathForSnapshotID:image1_id];
-  ASSERT_TRUE(base::WriteFile(image1_path, "image1"));
-
-  // This snapshot will not be renamed.
-  NSString* image2_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image2_path =
-      [file_manager legacyImagePathForSnapshotID:image2_id];
-  ASSERT_TRUE(base::WriteFile(image2_path, "image2"));
-
-  SnapshotID new_id = SnapshotID(SessionID::NewUnique().id());
-  [file_manager renameSnapshotsWithIDs:@[ image1_id ] toIDs:{new_id}];
-  FlushRunLoops();
-
-  // image1 should have been moved.
-  EXPECT_FALSE(base::PathExists(image1_path));
-  EXPECT_TRUE(base::PathExists([file_manager imagePathForSnapshotID:new_id]));
-
-  // image2 should not have moved.
-  EXPECT_TRUE(base::PathExists(image2_path));
-}
-
 // Tests that image size and scale are preserved when writing and reading
 // from disk.
 TEST_F(LegacyImageFileManagerTest, SizeAndScalePreservation) {
@@ -440,17 +409,11 @@ class ImageFileManagerTest : public PlatformTest {
     if (!scoped_temp_directory_.CreateUniqueTempDir()) {
       return false;
     }
-    if (!scoped_temp_directory_for_legacy_path_.CreateUniqueTempDir()) {
-      return false;
-    }
 
     NSURL* storage_url =
         base::apple::FilePathToNSURL(scoped_temp_directory_.GetPath());
-    NSURL* legacy_url = base::apple::FilePathToNSURL(
-        scoped_temp_directory_for_legacy_path_.GetPath());
     image_file_manager_ =
-        [[ImageFileManager alloc] initWithStorageDirectoryUrl:storage_url
-                                           legacyDirectoryUrl:legacy_url];
+        [[ImageFileManager alloc] initWithStorageDirectoryUrl:storage_url];
     // Make sure that the storage directory is ready.
     FlushRunLoops();
 
@@ -580,7 +543,6 @@ class ImageFileManagerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
-  base::ScopedTempDir scoped_temp_directory_for_legacy_path_;
   ImageFileManager* image_file_manager_;
   std::map<SnapshotIDWrapper*, UIImage*> test_images_;
 };
@@ -694,40 +656,6 @@ TEST_F(ImageFileManagerTest, PurgeImagesOlderThan) {
           [[NSFileManager defaultManager] fileExistsAtPath:[image_url path]]);
     }
   }
-}
-
-// Tests that migration code correctly rename the specified files and leave
-// the other files untouched.
-TEST_F(ImageFileManagerTest, RenameSnapshots) {
-  ImageFileManager* file_manager = GetImageFileManager();
-  ASSERT_TRUE(file_manager);
-
-  // This snapshot will be renamed.
-  NSString* image1_id = [[NSUUID UUID] UUIDString];
-  NSURL* image1_url = [file_manager legacyImagePathWithSnapshotID:image1_id];
-  ASSERT_TRUE(base::WriteFile(
-      base::FilePath(base::SysNSStringToUTF8([image1_url path])), "image1"));
-
-  // This snapshot will not be renamed.
-  NSString* image2_id = [[NSUUID UUID] UUIDString];
-  NSURL* image2_url = [file_manager legacyImagePathWithSnapshotID:image2_id];
-  ASSERT_TRUE(base::WriteFile(
-      base::FilePath(base::SysNSStringToUTF8([image2_url path])), "image2"));
-
-  SnapshotIDWrapper* new_id = [[SnapshotIDWrapper alloc]
-      initWithSnapshotID:SnapshotID(SessionID::NewUnique().id())];
-  [file_manager renameSnapshotsWithOldIDs:@[ image1_id ] newIDs:@[ new_id ]];
-  FlushRunLoops();
-
-  // image1 should have been moved.
-  EXPECT_FALSE(
-      [[NSFileManager defaultManager] fileExistsAtPath:[image1_url path]]);
-  EXPECT_TRUE([[NSFileManager defaultManager]
-      fileExistsAtPath:[[file_manager imagePathWithSnapshotID:new_id] path]]);
-
-  // image2 should not have moved.
-  EXPECT_TRUE(
-      [[NSFileManager defaultManager] fileExistsAtPath:[image2_url path]]);
 }
 
 // Tests that image size and scale are preserved when writing and reading

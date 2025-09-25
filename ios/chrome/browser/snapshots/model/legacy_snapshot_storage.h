@@ -29,21 +29,12 @@ class FilePath;
 // managed by this LegacySnapshotStorage are stored. `storagePath` is not
 // guaranteed to exist. The contents of `storagePath` are entirely managed by
 // this LegacySnapshotStorage.
-//
-// To support renaming the directory where the snapshots are stored, it is
-// possible to pass a non-empty path via `legacyPath`. If present, then it
-// will be moved to `storagePath`.
-//
-// TODO(crbug.com/40942167): Remove when the storage for all users has been
-// migrated.
 - (instancetype)initWithLRUCache:(LegacySnapshotLRUCache*)lruCache
                      storagePath:(const base::FilePath&)storagePath
-                      legacyPath:(const base::FilePath&)legacyPath
     NS_DESIGNATED_INITIALIZER;
 
 // Convenience initializer that uses a default `lruCache` .
-- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
-                         legacyPath:(const base::FilePath&)legacyPath;
+- (instancetype)initWithStoragePath:(const base::FilePath&)storagePath;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

@@ -32,10 +32,6 @@ import UIKit
   // `liveSnapshotIDs` will be kept. This will be done asynchronously.
   @objc func purgeImagesOlderThan(thresholdDate: Date, liveSnapshotIDs: [SnapshotIDWrapper])
 
-  // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a programmatic error if
-  // the two array do not have the same length.
-  @objc func renameSnapshots(oldIDs: [String], newIDs: [SnapshotIDWrapper])
-
   // Moves the on-disk snapshot from the receiver storage to the destination on-disk storage. If
   // the snapshot is also in-memory, it is moved as well.
   @objc func migrateImage(snapshotID: SnapshotIDWrapper, destinationStorage: SnapshotStorage)

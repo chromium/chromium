@@ -9,16 +9,11 @@
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 
-id<SnapshotStorage> CreateSnapshotStorage(
-    const base::FilePath& storage_path,
-    const base::FilePath& legacy_storage_path) {
+id<SnapshotStorage> CreateSnapshotStorage(const base::FilePath& storage_path) {
   if (!base::FeatureList::IsEnabled(kSnapshotInSwift)) {
-    return
-        [[LegacySnapshotStorage alloc] initWithStoragePath:storage_path
-                                                legacyPath:legacy_storage_path];
+    return [[LegacySnapshotStorage alloc] initWithStoragePath:storage_path];
   }
   using base::apple::FilePathToNSURL;
   return [[SnapshotStorageImpl alloc]
-      initWithStorageDirectoryUrl:FilePathToNSURL(storage_path)
-               legacyDirectoryUrl:FilePathToNSURL(legacy_storage_path)];
+      initWithStorageDirectoryUrl:FilePathToNSURL(storage_path)];
 }

@@ -105,7 +105,7 @@ class SnapshotTabHelperTest : public PlatformTest {
     // Set custom snapshot storage.
     EXPECT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
     base::FilePath directory_name = scoped_temp_directory_.GetPath();
-    snapshot_storage_ = CreateSnapshotStorage(directory_name, base::FilePath());
+    snapshot_storage_ = CreateSnapshotStorage(directory_name);
     SnapshotTabHelper::FromWebState(&web_state_)
         ->SetSnapshotStorage(snapshot_storage_);
 
