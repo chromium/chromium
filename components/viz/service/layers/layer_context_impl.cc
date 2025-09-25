@@ -1469,6 +1469,16 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
 
 void LayerContextImpl::ReceiveReturnsFromParent(
     std::vector<ReturnedResource> resources) {
+  // Impl and Main thread task runners are the same. They bind to the viz
+  // thread.
+  auto* task_runner = task_runner_provider_->MainThreadTaskRunner();
+  if (!task_runner->BelongsToCurrentThread()) {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LayerContextImpl::ReceiveReturnsFromParent,
+                       weak_factory_.GetWeakPtr(), std::move(resources)));
+    return;
+  }
   host_impl_->resource_provider()->ReceiveReturnsFromParent(
       std::move(resources));
   DoReturnResources();

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "cc/animation/animation_host.h"
@@ -170,6 +171,10 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
 
   raw_ptr<cc::LayerTreeFrameSinkClient> frame_sink_client_ = nullptr;
   const std::unique_ptr<cc::LayerTreeHostImpl> host_impl_;
+
+  // Must be the last member to ensure this is destroyed first in the
+  // destruction order and invalidates all weak pointers.
+  base::WeakPtrFactory<LayerContextImpl> weak_factory_{this};
 };
 
 }  // namespace viz
