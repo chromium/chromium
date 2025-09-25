@@ -112,7 +112,7 @@ class BASE_EXPORT JSONReader {
   // If |json| is not a properly formed JSON dict string, returns std::nullopt.
   static std::optional<Value::Dict> ReadDict(
       std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      int options,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Reads and parses |json|, returning a Value::List.
