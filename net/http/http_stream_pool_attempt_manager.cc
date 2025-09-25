@@ -164,6 +164,7 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
                  static_cast<int>(tcp_based_attempt_delay_.InMilliseconds()));
         dict.Set("should_block_tcp_based_attempt",
                  should_block_tcp_based_attempt_);
+        dict.Set("supports_spdy", SupportsSpdy());
         group_->net_log().source().AddToEventParameters(dict);
         return dict;
       });
@@ -942,6 +943,8 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
            static_cast<int>(group_->ActiveStreamSocketCount()));
   dict.Set("num_idle_sockets",
            static_cast<int>(group_->IdleStreamSocketCount()));
+  dict.Set("num_handed_out_sockets",
+           static_cast<int>(group_->HandedOutStreamSocketCount()));
   dict.Set("num_total_sockets",
            static_cast<int>(group_->ActiveStreamSocketCount()));
   dict.Set("num_jobs", static_cast<int>(request_jobs_.size()));
