@@ -269,7 +269,7 @@ void EventRouter::DispatchEventToSender(
       // and `histogram_value` args are not used for metrics recording since we
       // do not include events from EventDispatchSource::kDispatchEventToSender.
       /*dispatch_start_time=*/base::TimeTicks::Now(), service_worker_version_id,
-      EventDispatchSource::kDispatchEventToSender,
+      worker_thread_id, EventDispatchSource::kDispatchEventToSender,
       // Background script is active/started at this point.
       /*lazy_background_active_on_dispatch=*/true,
       events::HistogramValue::UNKNOWN);
@@ -1114,7 +1114,7 @@ void EventRouter::DispatchEventToProcess(
 
     IncrementInFlightEvents(
         listener_context, process, extension, event_id, event->event_name,
-        event->dispatch_start_time, service_worker_version_id,
+        event->dispatch_start_time, service_worker_version_id, worker_thread_id,
         EventDispatchSource::kDispatchEventToProcess,
         event->lazy_background_active_on_dispatch, event->histogram_value);
   }
@@ -1144,7 +1144,7 @@ void EventRouter::DecrementInFlightEventsForServiceWorker(
       process->GetStoragePartition()->GetServiceWorkerContext();
   event_ack_data_.DecrementInflightEvent(
       service_worker_context, process->GetDeprecatedID(), worker_id.version_id,
-      event_id, worker_stopped,
+      worker_id.thread_id, event_id, worker_stopped,
       base::BindOnce(
           [](RenderProcessHost* process) {
             bad_message::ReceivedBadMessage(process,
@@ -1179,6 +1179,7 @@ void EventRouter::IncrementInFlightEvents(
     const std::string& event_name,
     base::TimeTicks dispatch_start_time,
     int64_t service_worker_version_id,
+    int worker_thread_id,
     EventDispatchSource dispatch_source,
     bool lazy_background_active_on_dispatch,
     events::HistogramValue histogram_value) {
@@ -1208,8 +1209,9 @@ void EventRouter::IncrementInFlightEvents(
           process->GetStoragePartition()->GetServiceWorkerContext();
       event_ack_data_.IncrementInflightEvent(
           service_worker_context, process->GetDeprecatedID(),
-          service_worker_version_id, event_id, dispatch_start_time,
-          dispatch_source, lazy_background_active_on_dispatch, histogram_value);
+          service_worker_version_id, worker_thread_id, event_id,
+          dispatch_start_time, dispatch_source,
+          lazy_background_active_on_dispatch, histogram_value);
     }
   }
 }
@@ -1409,6 +1411,18 @@ void EventRouter::OnStoppedTrackingServiceWorkerInstance(
   // Remove any active listeners since they are no longer guaranteed to be ready
   // to receive events.
   listeners_.RemoveActiveServiceWorkerListenersForExtension(worker_id);
+
+  // Clear any un-acked events associated with this worker instance, as we won't
+  // reliably receive an ack from a stopped worker.
+  content::StoragePartition* storage_partition =
+      util::GetStoragePartitionForExtensionId(
+          worker_id.extension_id, browser_context_, /*can_create=*/false);
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition ? storage_partition->GetServiceWorkerContext()
+                        : nullptr;
+  event_ack_data_.ClearUnackedEventsForWorker(
+      service_worker_context, worker_id.render_process_id, worker_id.version_id,
+      worker_id.thread_id);
 }
 
 void EventRouter::AddLazyEventListenerImpl(

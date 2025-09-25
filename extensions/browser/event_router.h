@@ -481,6 +481,7 @@ class EventRouter : public KeyedService,
                                const std::string& event_name,
                                base::TimeTicks dispatch_start_time,
                                int64_t service_worker_version_id,
+                               int worker_thread_id,
                                EventDispatchSource dispatch_source,
                                bool lazy_background_active_on_dispatch,
                                events::HistogramValue histogram_value);
