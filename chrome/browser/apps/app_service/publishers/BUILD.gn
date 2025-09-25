@@ -76,6 +76,7 @@ source_set("publishers") {
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/app_service/app_icon:util",
+      "//chrome/browser/apps/app_service/webapk",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/apps",

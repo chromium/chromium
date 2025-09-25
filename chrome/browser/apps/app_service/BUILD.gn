@@ -49,12 +49,8 @@ source_set("app_service") {
   deps = [
     "//base",
     "//chrome/browser/apps/app_service/app_icon:util",
-    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/notifications",
-    "//chrome/browser/profiles",
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/extensions",
-    "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:features",
     "//components/app_constants",
     "//components/web_package",
@@ -132,25 +128,11 @@ source_set("app_service") {
       "promise_apps/promise_app_wrapper.h",
       "uninstall_dialog.cc",
       "uninstall_dialog.h",
-      "webapk/webapk_install_queue.cc",
-      "webapk/webapk_install_queue.h",
-      "webapk/webapk_install_task.cc",
-      "webapk/webapk_install_task.h",
-      "webapk/webapk_manager.cc",
-      "webapk/webapk_manager.h",
-      "webapk/webapk_metrics.cc",
-      "webapk/webapk_metrics.h",
-      "webapk/webapk_prefs.cc",
-      "webapk/webapk_prefs.h",
-      "webapk/webapk_utils.cc",
-      "webapk/webapk_utils.h",
     ]
 
     deps += [
-      "//ash",
       "//ash/webui/mall:app_id",
       "//ash/webui/projector_app/public/cpp",
-      "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
@@ -161,8 +143,6 @@ source_set("app_service") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
-      "//chrome/browser/ash/arc:arc_util",
-      "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/child_accounts",
       "//chrome/browser/ash/child_accounts/time_limits",
@@ -186,21 +166,14 @@ source_set("app_service") {
       "//chromeos/ash/components/demo_mode",
       "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/experiences/arc:arc_app_constants",
-      "//chromeos/ash/experiences/arc:arc_base",
       "//chromeos/ash/experiences/arc:arc_features",
-      "//chromeos/ash/experiences/arc/session",
       "//chromeos/components/kiosk",
       "//chromeos/components/mgs",
       "//components/image_fetcher/core",
-      "//components/services/app_service/public/cpp:instance_update",
       "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
-      "//components/webapk:proto",
       "//services/metrics/public/cpp:ukm_builders",
-      "//third_party/smhasher:murmurhash2",
       "//ui/native_window_tracker",
-      "//ui/wm",
-      "//ui/wm/public",
 
       # For circular deps.
       "//chrome/browser/ash/android_sms",
@@ -359,8 +332,6 @@ source_set("unit_tests") {
       "promise_apps/promise_app_unittest.cc",
       "promise_apps/promise_app_update_unittest.cc",
       "promise_apps/promise_app_wrapper_unittest.cc",
-      "webapk/webapk_install_task_unittest.cc",
-      "webapk/webapk_manager_unittest.cc",
     ]
 
     deps += [
@@ -405,24 +376,29 @@ source_set("test_support") {
   public_deps = [ ":app_service" ]
 
   deps = [
-    "//chrome/browser/sync",
-    "//chrome/test:test_support",
-    "//components/services/app_service",
-    "//skia",
+    "//base/test:test_support",
+    "//ui/gfx:test_support",
   ]
 
   if (is_chromeos) {
     sources += [
       "metrics/app_platform_metrics_service_test_base.cc",
       "metrics/app_platform_metrics_service_test_base.h",
-      "webapk/webapk_test_server.cc",
-      "webapk/webapk_test_server.h",
     ]
 
     deps += [
+      "//chrome/browser",
       "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/ash/login/users:test_support",
-      "//components/webapk:proto",
+      "//chrome/browser/ash/profiles",
+      "//chrome/browser/sync",
+      "//chrome/test:test_support",
+      "//chromeos/dbus/power",
+      "//components/services/app_service/public/cpp:instance_update",
+      "//components/sync:test_support",
+      "//components/sync_preferences:test_support",
+      "//components/ukm:test_support",
+      "//content/test:test_support",
     ]
   }
 }
