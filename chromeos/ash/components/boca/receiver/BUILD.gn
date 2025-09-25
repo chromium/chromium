@@ -21,6 +21,8 @@ static_library("receiver") {
     "start_kiosk_receiver_request.h",
     "student_screen_presenter.cc",
     "student_screen_presenter.h",
+    "teacher_screen_presenter.cc",
+    "teacher_screen_presenter.h",
     "update_kiosk_receiver_state_request.cc",
     "update_kiosk_receiver_state_request.h",
   ]
@@ -64,6 +66,7 @@ source_set("unit_tests") {
     "register_receiver_request_unittest.cc",
     "start_kiosk_receiver_request_unittest.cc",
     "student_screen_presenter_unittest.cc",
+    "teacher_screen_presenter_unittest.cc",
     "update_kiosk_receiver_state_request_unittest.cc",
   ]
 
