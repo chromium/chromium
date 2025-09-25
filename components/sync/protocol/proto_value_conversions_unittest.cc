@@ -68,7 +68,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(56 == syncer::GetNumDataTypes(),
+static_assert(57 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -129,6 +129,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(workspace_desk)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_comment)
+DEFINE_SPECIFICS_TO_VALUE_TEST(ai_thread)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;

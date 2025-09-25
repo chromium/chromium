@@ -19,6 +19,15 @@ namespace syncer {
   case enum_parent::enum_value:            \
     return #enum_value
 
+const char* ProtoEnumToString(sync_pb::AiThreadSpecifics::ThreadType type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::AiThreadSpecifics, ThreadType, UNKNOWN, AI_MODE);
+  switch (type) {
+    ENUM_CASE(sync_pb::AiThreadSpecifics, UNKNOWN);
+    ENUM_CASE(sync_pb::AiThreadSpecifics, AI_MODE);
+  }
+  NOTREACHED();
+}
+
 const char* ProtoEnumToString(
     sync_pb::AppListSpecifics::AppListItemType item_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::AppListSpecifics, AppListItemType, TYPE_APP,

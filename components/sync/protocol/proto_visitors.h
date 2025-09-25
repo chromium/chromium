@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/ai_thread_specifics.pb.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -726,7 +727,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(56 == GetNumDataTypes(),
+  static_assert(57 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -787,6 +788,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(wifi_configuration);
   VISIT(workspace_desk);
   VISIT(webauthn_credential);
+  VISIT(ai_thread);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ExtensionSettingSpecifics& proto) {
@@ -2139,6 +2141,13 @@ VISIT_PROTO_FIELDS(const sync_pb::SharedCommentSpecifics& proto) {
   VISIT(proto_version);
   VISIT(comment);
   VISIT(shared_url_context);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {
+  VISIT_ENUM(type);
+  VISIT(server_id);
+  VISIT(conversation_turn_id);
+  VISIT(title);
 }
 
 }  // namespace syncer
