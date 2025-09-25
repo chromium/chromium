@@ -150,9 +150,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
 
 // Tests that consent screen is not triggered, but IPH is configured.
 TEST_F(MiniMapCoordinatorTest, TestIPH) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -184,9 +181,6 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
 
 // Tests IPH is not displayed on second trigger
 TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -209,9 +203,6 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
 
 // Tests that correct metrics are logged on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -251,9 +242,6 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
 // Tests that correct metrics are logged on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestLinkDismissMap) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -293,9 +281,6 @@ TEST_F(MiniMapCoordinatorTest, TestLinkDismissMap) {
 
 // Tests that URL is opened if requested on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -335,9 +320,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
 // Tests that the query is opened if requested on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -377,9 +359,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
 
 // Tests the footer buttons.
 TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
