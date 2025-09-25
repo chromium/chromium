@@ -518,6 +518,23 @@ public class SelectableListToolbar<E> extends Toolbar
         updateDisplayStyleIfNecessary();
     }
 
+    /**
+     * Requests focus on the search text field if the search view is currently visible.
+     *
+     * @param showKeyboard Whether to show the soft keyboard.
+     */
+    public void requestSearchFocus(boolean showKeyboard) {
+        if (!isSearching() || mSearchEditText == null) return;
+
+        mSearchEditText.post(
+                () -> {
+                    mSearchEditText.requestFocus();
+                    if (showKeyboard) {
+                        KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
+                    }
+                });
+    }
+
     /** Shows the search edit text box and related views. */
     public void showSearchView(boolean showKeyboard) {
         assert mHasSearchView;
@@ -528,13 +545,7 @@ public class SelectableListToolbar<E> extends Toolbar
         showSearchViewInternal();
 
         setTitle(null);
-        mSearchEditText.post(
-                () -> {
-                    mSearchEditText.requestFocus();
-                    if (showKeyboard) {
-                        KeyboardVisibilityDelegate.getInstance().showKeyboard(mSearchEditText);
-                    }
-                });
+        requestSearchFocus(showKeyboard);
     }
 
     /** Hides the search edit text box and related views. Notifies delegate of the change. */

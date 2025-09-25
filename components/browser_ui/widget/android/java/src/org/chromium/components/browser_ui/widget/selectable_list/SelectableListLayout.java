@@ -125,6 +125,16 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE
+                && mToolbar != null
+                && (mToolbar.isSearching() || mToolbar.isLargeScreenWithKeyboard())) {
+            mToolbar.requestSearchFocus(/* showKeyboard= */ true);
+        }
+    }
+
+    @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
