@@ -52,6 +52,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -209,7 +210,12 @@ class FirstRunInteractiveUiTest
       : InteractiveFeaturePromoTestT<FirstRunServiceBrowserTestBase>(
             UseDefaultTrackerAllowingPromos(
                 {feature_engagement::kIPHSupervisedUserProfileSigninFeature})),
-        params_(params) {}
+        params_(params) {
+    // TODO(crbug.com/447151253): Fix the tests to work with the feature
+    // enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
   ~FirstRunInteractiveUiTest() override = default;
 
  protected:
@@ -433,6 +439,7 @@ class FirstRunInteractiveUiTest
 
  private:
   TestParam params_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
   base::HistogramTester histogram_tester_;

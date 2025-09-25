@@ -55,6 +55,12 @@ constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
 
 class DiceMigrationServiceInteractiveUiTest : public InteractiveBrowserTest {
  public:
+  DiceMigrationServiceInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kOfferMigrationToDiceUsers},
+        /*disabled_features=*/{switches::kForcedDiceMigration});
+  }
+
   Profile* GetProfile() { return browser()->profile(); }
 
   DiceMigrationService* GetDiceMigrationService() {
@@ -106,8 +112,7 @@ class DiceMigrationServiceInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  protected:
-  const base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kOfferMigrationToDiceUsers};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 };

@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -233,81 +234,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
                                        /*sample=*/2,  // kOnDisk_SignedOut.
                                        /*expected_bucket_count=*/2);
 
-  ASSERT_NE(nullptr, paydm);
-  std::vector<const CreditCard*> cards = paydm->GetCreditCards();
-  ASSERT_EQ(1uL, cards.size());
-
-  ExpectDefaultCreditCardValues(*cards[0]);
-
-  GetClient(0)->SignOutPrimaryAccount();
-
-  // Verify that sync is stopped.
-  ASSERT_EQ(syncer::SyncService::TransportState::DISABLED,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // Wait for paydm to receive the data change with no cards.
-  WaitForNumberOfCards(0, paydm);
-
-  // Check directly in the DB that the account storage is now cleared.
-  EXPECT_EQ(0U, GetServerCards(account_data).size());
-}
-
-// PRE_ test used to ensure the user is signed in at the time the browser starts
-// up, which is more realistic for the implicit signed-in state.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
-                       PRE_DownloadAccountStorageWithImplicitSignIn_Card) {
-  ASSERT_TRUE(SetupClients());
-
-  secondary_account_helper::ImplicitSignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@email.com");
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
-                       DownloadAccountStorageWithImplicitSignIn_Card) {
-  ASSERT_TRUE(SetupClients());
-  GetFakeServer()->SetWalletData(
-      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_TRUE(AwaitQuiescence());
-  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
-            GetSyncService(0)->GetTransportState());
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  scoped_refptr<autofill::AutofillWebDataService> profile_data =
-      GetProfileWebDataService(0);
-  ASSERT_NE(nullptr, profile_data);
-  scoped_refptr<autofill::AutofillWebDataService> account_data =
-      GetAccountWebDataService(0);
-  ASSERT_NE(nullptr, account_data);
-
-  // Check that no data is stored in the profile storage.
-  EXPECT_EQ(0U, GetServerCards(profile_data).size());
-
-  // Check that one card is stored in the account storage.
-  EXPECT_EQ(1U, GetServerCards(account_data).size());
-
-  // Check whether cards are stored in-memory (which is always the case for
-  // implicit sign-ins). The corresponding metric is recorded twice as an
-  // artifact of the test setup: SyncTest creates a new profile for
-  // single-client tests, disregarding the existing profile that browser tests
-  // already have.
-  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTesting());
-  histogram_tester_.ExpectBucketCount(
-      "WebDatabase.AutofillAccountStorage",
-      /*sample=*/1,  // kInMemory_SignedInImplicitly.
-      /*expected_bucket_count=*/1);
-
-  PaymentsDataManager* paydm = GetPaymentsDataManager(0);
   ASSERT_NE(nullptr, paydm);
   std::vector<const CreditCard*> cards = paydm->GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
@@ -1122,4 +1048,93 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(0U, GetCreditCardCloudTokenData(account_data).size());
   EXPECT_EQ(1U, GetCreditCardCloudTokenData(profile_data).size());
 }
+
+class SingleClientWalletSyncTestWithForcedDiceMigrationDisabled
+    : public SingleClientWalletSyncTest {
+ public:
+  SingleClientWalletSyncTestWithForcedDiceMigrationDisabled() {
+    feature_list_.InitAndDisableFeature(switches::kForcedDiceMigration);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// PRE_ test used to ensure the user is signed in at the time the browser starts
+// up, which is more realistic for the implicit signed-in state.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWalletSyncTestWithForcedDiceMigrationDisabled,
+    PRE_DownloadAccountStorageWithImplicitSignIn_Card) {
+  ASSERT_TRUE(SetupClients());
+
+  secondary_account_helper::ImplicitSignInUnconsentedAccount(
+      GetProfile(0), &test_url_loader_factory_, "user@email.com");
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWalletSyncTestWithForcedDiceMigrationDisabled,
+    DownloadAccountStorageWithImplicitSignIn_Card) {
+  ASSERT_TRUE(SetupClients());
+  GetFakeServer()->SetWalletData(
+      {CreateDefaultSyncWalletCard(), CreateDefaultSyncPaymentsCustomerData()});
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
+  ASSERT_NE(nullptr, profile_data);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
+  ASSERT_NE(nullptr, account_data);
+
+  // Check that no data is stored in the profile storage.
+  EXPECT_EQ(0U, GetServerCards(profile_data).size());
+
+  // Check that one card is stored in the account storage.
+  EXPECT_EQ(1U, GetServerCards(account_data).size());
+
+  // Check whether cards are stored in-memory (which is always the case for
+  // implicit sign-ins). The corresponding metric is recorded twice as an
+  // artifact of the test setup: SyncTest creates a new profile for
+  // single-client tests, disregarding the existing profile that browser tests
+  // already have.
+  EXPECT_TRUE(GetAccountWebDataService(0)->UsesInMemoryDatabaseForTesting());
+  histogram_tester_.ExpectBucketCount(
+      "WebDatabase.AutofillAccountStorage",
+      /*sample=*/1,  // kInMemory_SignedInImplicitly.
+      /*expected_bucket_count=*/1);
+
+  PaymentsDataManager* paydm = GetPaymentsDataManager(0);
+  ASSERT_NE(nullptr, paydm);
+  std::vector<const CreditCard*> cards = paydm->GetCreditCards();
+  ASSERT_EQ(1uL, cards.size());
+
+  ExpectDefaultCreditCardValues(*cards[0]);
+
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // Verify that sync is stopped.
+  ASSERT_EQ(syncer::SyncService::TransportState::DISABLED,
+            GetSyncService(0)->GetTransportState());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // Wait for paydm to receive the data change with no cards.
+  WaitForNumberOfCards(0, paydm);
+
+  // Check directly in the DB that the account storage is now cleared.
+  EXPECT_EQ(0U, GetServerCards(account_data).size());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
