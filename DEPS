@@ -2908,16 +2908,16 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@825ff0e4b11b16047ba91fa8061c96cc1c5ac6ce',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@1acbb10d560942f3deccc74f55f91bf257d3ec91',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@d213562e35573012b6348b2d584457c3704ac09b',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@01e0577914a75a2569c846778c2f93aa8e6feddd',
   'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@19042c8921f35f7bec56b9e5c96c5f5691588ca8',
-  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@d7a7044334ad88485c0a6113d1bf51520ac9e541',
+  'src/third_party/vulkan-headers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Headers@9a0f3099c8a9607a7c0f3127d8abfdc19a93e8c5',
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@6ec5a0d91c253c6374701e142a95a0d3215bf5a7',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@e3ecc39da57a5ed15ec8de67f136273ee54b78be',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@23081f01cdee214226bfed5aedd37f092fa55dd9',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@a969631ba7cdd8580ac3f95a46a908431c94db7c',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@102c30690b1e84e58ad659a249dbb819dcc7f926',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'cb0597213b0fcb999caa9ed08c2f88dc45eb7d50',
