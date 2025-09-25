@@ -26,7 +26,11 @@ OpenXrSpaceBasedAnchorManager::~OpenXrSpaceBasedAnchorManager() {
 AnchorId OpenXrSpaceBasedAnchorManager::CreateAnchor(
     XrPosef pose,
     XrSpace space,
-    XrTime predicted_display_time) {
+    XrTime predicted_display_time,
+    std::optional<PlaneId> plane_id) {
+  // Note that we have no support for plane detection, so we don't bother to try
+  // to parent the anchor to the given plane_id. Any such ID is likely bogus
+  // anyways.
   XrSpace anchor_space =
       CreateAnchorInternal(pose, space, predicted_display_time);
   if (anchor_space == XR_NULL_HANDLE) {
@@ -37,15 +41,6 @@ AnchorId OpenXrSpaceBasedAnchorManager::CreateAnchor(
   CHECK(anchor_id);
   openxr_anchors_.insert({anchor_id, anchor_space});
   return anchor_id;
-}
-
-AnchorId OpenXrSpaceBasedAnchorManager::CreatePlaneAnchor(
-    PlaneId plane_id,
-    XrPosef pose,
-    XrTime predicted_display_time) {
-  // None of the corresponding infrastructure supports plane detection at this
-  // moment, so realistically this shouldn't be called.
-  return kInvalidAnchorId;
 }
 
 void OpenXrSpaceBasedAnchorManager::DetachAnchor(AnchorId anchor_id) {
@@ -67,6 +62,14 @@ OpenXrSpaceBasedAnchorManager::GetXrLocationFromAnchor(
     const gfx::Transform& anchor_id_from_new_anchor) const {
   return XrLocation{GfxTransformToXrPose(anchor_id_from_new_anchor),
                     GetAnchorSpace(anchor_id)};
+}
+
+std::optional<OpenXrAnchorManager::XrLocation>
+OpenXrSpaceBasedAnchorManager::GetXrLocationFromPlane(
+    PlaneId plane_id,
+    const gfx::Transform& plane_id_from_new_anchor) const {
+  // We don't support planes, so this should never be called.
+  return std::nullopt;
 }
 
 mojom::XRAnchorsDataPtr OpenXrSpaceBasedAnchorManager::GetCurrentAnchorsData(

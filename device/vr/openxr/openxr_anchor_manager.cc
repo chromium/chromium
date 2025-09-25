@@ -45,31 +45,19 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   XrTime display_time = openxr->GetPredictedDisplayTime();
   for (auto& request : create_anchor_requests_) {
-    AnchorId anchor_id;
-    // GetXrLocationFromNativeOriginInformation relies on a point being
-    // locatable in a particular XrSpace. However, planes may not be represented
-    // by an XrSpace or may have another means of being attached.
-    // We'll let the child classes determine how to handle that, whether that's
-    // parsing an XrLocation out of it themselves to then call `CreateAnchor` or
-    // if they have a way to directly attach it to the plane via the PlaneId.
-    // TODO(https://crbug.com/394772465): Fixup OpenXr PlaneId handling.
-    if (request.GetPlaneId().has_value()) {
-      anchor_id = CreatePlaneAnchor(
-          request.GetPlaneId().value(),
-          GfxTransformToXrPose(request.GetNativeOriginFromAnchor()),
-          display_time);
-    } else {
-      std::optional<XrLocation> anchor_location =
-          GetXrLocationFromNativeOriginInformation(
-              openxr, request.GetNativeOriginInformation(),
-              request.GetNativeOriginFromAnchor(), input_state);
-      if (!anchor_location.has_value()) {
-        request.TakeCallback().Run(std::nullopt);
-        continue;
-      }
-      anchor_id = CreateAnchor(anchor_location->pose, anchor_location->space,
-                               display_time);
+    std::optional<XrLocation> anchor_location =
+        GetXrLocationFromNativeOriginInformation(
+            openxr, request.GetNativeOriginInformation(),
+            request.GetNativeOriginFromAnchor(), input_state);
+
+    if (!anchor_location.has_value()) {
+      request.TakeCallback().Run(std::nullopt);
+      continue;
     }
+
+    AnchorId anchor_id =
+        CreateAnchor(anchor_location->pose, anchor_location->space,
+                     display_time, request.GetPlaneId());
 
     request.TakeCallback().Run(anchor_id);
   }
@@ -105,8 +93,8 @@ OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
       return GetXrLocationFromAnchor(native_origin_information.get_anchor_id(),
                                      native_origin_from_anchor);
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
-      NOTREACHED() << "Plane origins should be handled by CreatePlaneAnchor. "
-                   << "Not all planes are backed by an XrSpace.";
+      return GetXrLocationFromPlane(native_origin_information.get_plane_id(),
+                                    native_origin_from_anchor);
   }
 }
 
