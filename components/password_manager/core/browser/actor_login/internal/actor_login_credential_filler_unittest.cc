@@ -6,6 +6,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -15,6 +16,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -330,7 +332,8 @@ TEST_F(ActorLoginCredentialFillerTest,
   filler.AttemptLogin(&mock_password_manager_);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
+// Tests filling the username and password in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPasswordSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -345,9 +348,9 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    mock_callback.Get());
+                                    future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -368,13 +371,16 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kSuccessUsernameAndPasswordFilled)));
 
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
+// Tests filling the username in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameFieldSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -390,9 +396,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    mock_callback.Get());
+                                    future.GetCallback());
+
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -414,12 +421,14 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .Times(0);
-  EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kSuccessUsernameFilled)));
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
+// Tests filling the password in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordFieldSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -436,9 +445,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    mock_callback.Get());
+                                    future.GetCallback());
+
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -459,12 +469,14 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kSuccessPasswordFilled)));
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
+// Tests filling the username in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillUsernameFailsSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -479,9 +491,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    callback.Get());
+                                    future.GetCallback());
+
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -499,11 +512,15 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kSuccessPasswordFilled)));
   filler.AttemptLogin(&mock_password_manager_);
+
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kSuccessPasswordFilled);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
+// Tests filling the password in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillPasswordFailsSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -518,9 +535,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    callback.Get());
+                                    future.GetCallback());
+
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -538,11 +556,14 @@ TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
-  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kSuccessUsernameFilled)));
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kSuccessUsernameFilled);
 }
 
-TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
+// Tests that filling both fields fails in a single chosen form.
+TEST_F(ActorLoginCredentialFillerTest, FillBothFailsSingleForm) {
   const url::Origin origin = url::Origin::Create(GURL(kLoginUrl));
   const Credential credential =
       CreateTestCredential(kTestUsername, origin.GetURL());
@@ -557,9 +578,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    callback.Get());
+                                    future.GetCallback());
+
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -578,8 +600,10 @@ TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(false));
-  EXPECT_CALL(callback, Run(Eq(LoginStatusResult::kErrorNoFillableFields)));
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoFillableFields);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, FillingIsDisabled) {
@@ -615,9 +639,9 @@ TEST_F(ActorLoginCredentialFillerTest, RequestsReauthBeforeFilling) {
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
-  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  base::test::TestFuture<LoginStatusResultOrError> future;
   ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
-                                    mock_callback.Get());
+                                    future.GetCallback());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -644,9 +668,11 @@ TEST_F(ActorLoginCredentialFillerTest, RequestsReauthBeforeFilling) {
       FillField(parsed_form->password_element_renderer_id, Eq(kTestPassword),
                 autofill::FieldPropertiesFlags::kAutofilledActorLogin, _))
       .WillOnce(RunOnceCallback<3>(true));
-  EXPECT_CALL(mock_callback,
-              Run(Eq(LoginStatusResult::kSuccessUsernameAndPasswordFilled)));
   filler.AttemptLogin(&mock_password_manager_);
+  const LoginStatusResultOrError& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(),
+            LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 }
 
 TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {

@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -38,6 +39,8 @@ class ActorLoginCredentialFiller {
       password_manager::PasswordManagerInterface* password_manager);
 
  private:
+  enum class FieldType { kUsername, kPassword };
+
   // Retrieves the full data of a saved credential for the form managed
   // by `signin_form_manager` corresponding to `credential_`.
   const password_manager::PasswordForm* GetMatchingStoredCredential(
@@ -60,11 +63,23 @@ class ActorLoginCredentialFiller {
                 std::u16string username,
                 std::u16string password);
 
+  // Fills the field of `type` identified by `field_renderer_id` within the
+  // `driver`'s frame with `value`. `closure` will be called to signal
+  // completion at the very end of the flow.
+  void FillField(password_manager::PasswordManagerDriver* driver,
+                 autofill::FieldRendererId field_renderer_id,
+                 const std::u16string& value,
+                 FieldType type,
+                 base::OnceClosure closure);
+
   // Called with the success status of filling the respective field.
-  // Once both methods have been invoked, the result is passed on via
-  // `callback_`.
-  void OnUsernameFillingDone(bool success);
-  void OnPasswordFillingDone(bool success);
+  void ProcessSingleFillingResult(FieldType field_type,
+                                  autofill::FieldRendererId field_id,
+                                  bool success);
+
+  // Called when all filling operations have finished. Invokes `callback_`
+  // with the result based on `username_filled_` and `password_filled_`.
+  void OnFillingDone();
 
   // The origin of the primary main frame.
   const url::Origin origin_;
@@ -73,10 +88,9 @@ class ActorLoginCredentialFiller {
   // matching the `origin_`.
   const Credential credential_;
 
-  // Populated once the request to fill the field comes back with a success
-  // reply from the renderer.
-  std::optional<bool> username_filled_;
-  std::optional<bool> password_filled_;
+  // Populated with the aggregated results of the calls to fill.
+  bool username_filled_ = false;
+  bool password_filled_ = false;
 
   // Safe to access from everywhere apart from the destructor.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;

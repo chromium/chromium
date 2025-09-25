@@ -8,11 +8,14 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_util.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -20,6 +23,7 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -27,6 +31,7 @@
 
 namespace actor_login {
 
+using autofill::FieldRendererId;
 using autofill::SavePasswordProgressLogger;
 using password_manager::BrowserSavePasswordProgressLogger;
 using password_manager::PasswordForm;
@@ -63,7 +68,8 @@ void LogStatus(BrowserSavePasswordProgressLogger* logger,
   }
 }
 
-LoginStatusResult GetFillingResult(bool username_filled, bool password_filled) {
+LoginStatusResult GetEndFillingResult(bool username_filled,
+                                      bool password_filled) {
   if (username_filled && password_filled) {
     return LoginStatusResult::kSuccessUsernameAndPasswordFilled;
   }
@@ -227,57 +233,61 @@ void ActorLoginCredentialFiller::FillForm(
     return;
   }
 
-  if (form_to_fill->username_element_renderer_id.is_null()) {
-    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_USERNAME_FIELD);
-    OnUsernameFillingDone(false);
-  } else {
-    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID,
-              base::ToString(form_to_fill->username_element_renderer_id));
-    driver->FillField(
-        form_to_fill->username_element_renderer_id, username,
-        autofill::FieldPropertiesFlags::kAutofilledActorLogin,
-        base::BindOnce(&ActorLoginCredentialFiller::OnUsernameFillingDone,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  base::ConcurrentClosures concurrent_filling;
+  FillField(driver.get(), form_to_fill->username_element_renderer_id, username,
+            FieldType::kUsername, concurrent_filling.CreateClosure());
+  FillField(driver.get(), form_to_fill->password_element_renderer_id, password,
+            FieldType::kPassword, concurrent_filling.CreateClosure());
 
-  if (form_to_fill->password_element_renderer_id.is_null()) {
-    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_NO_PASWORD_FIELD);
-    OnPasswordFillingDone(false);
-  } else {
-    LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID,
-              base::ToString(form_to_fill->password_element_renderer_id));
-    driver->FillField(
-        form_to_fill->password_element_renderer_id, password,
-        autofill::FieldPropertiesFlags::kAutofilledActorLogin,
-        base::BindOnce(&ActorLoginCredentialFiller::OnPasswordFillingDone,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  std::move(concurrent_filling)
+      .Done(base::BindOnce(&ActorLoginCredentialFiller::OnFillingDone,
+                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ActorLoginCredentialFiller::OnUsernameFillingDone(bool success) {
-  username_filled_ = success;
-  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
-      GetLogger(client_);
-  LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_USERNAME_FILL_SUCCESS,
-            base::ToString(success));
-  if (!password_filled_.has_value()) {
+void ActorLoginCredentialFiller::FillField(PasswordManagerDriver* driver,
+                                           FieldRendererId field_renderer_id,
+                                           const std::u16string& value,
+                                           FieldType type,
+                                           base::OnceClosure closure) {
+  if (field_renderer_id.is_null()) {
+    ProcessSingleFillingResult(type, field_renderer_id, false);
+    std::move(closure).Run();
     return;
   }
-  std::move(callback_).Run(
-      GetFillingResult(username_filled_.value(), password_filled_.value()));
+  driver->FillField(
+      field_renderer_id, value,
+      autofill::FieldPropertiesFlags::kAutofilledActorLogin,
+      base::BindOnce(&ActorLoginCredentialFiller::ProcessSingleFillingResult,
+                     weak_ptr_factory_.GetWeakPtr(), type, field_renderer_id)
+          .Then(std::move(closure)));
 }
 
-void ActorLoginCredentialFiller::OnPasswordFillingDone(bool success) {
-  password_filled_ = success;
+void ActorLoginCredentialFiller::ProcessSingleFillingResult(
+    FieldType field_type,
+    autofill::FieldRendererId field_id,
+    bool success) {
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
       GetLogger(client_);
-  LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_PASSWORD_FILL_SUCCESS,
-            base::ToString(success));
-  if (!username_filled_.has_value()) {
-    return;
-  }
-  std::move(callback_).Run(
-      GetFillingResult(username_filled_.value(), password_filled_.value()));
+  LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_FIELD_WITH_ID,
+            base::ToString(field_id));
+  switch (field_type) {
+    case FieldType::kUsername: {
+      LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_USERNAME_FILL_SUCCESS,
+                base::ToString(success));
+      username_filled_ = username_filled_ || success;
+      break;
+    }
+    case FieldType::kPassword: {
+      LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_PASSWORD_FILL_SUCCESS,
+                base::ToString(success));
+      password_filled_ = password_filled_ || success;
+      break;
+    }
+  };
 }
 
+void ActorLoginCredentialFiller::OnFillingDone() {
+  std::move(callback_).Run(
+      GetEndFillingResult(username_filled_, password_filled_));
+}
 }  // namespace actor_login
