@@ -482,6 +482,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.verbose = False
         self.args.sandbox = False
         self.args.print_output_on_success = False
+        self.args.retries = 0
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -503,7 +504,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_atomic_counter = atomic_counter_patcher.start()
         self.addCleanup(atomic_counter_patcher.stop)
 
-        workdir_patcher = mock.patch('eval_prompts.workers.WorkDir')
+        workdir_patcher = mock.patch('workers.WorkDir')
         self.mock_workdir = workdir_patcher.start()
         mock_workdir_instance = (
             self.mock_workdir.return_value.__enter__.return_value)
@@ -697,6 +698,60 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         command = mock_promptfoo_instance.run.call_args[0][0]
         for arg in command:
             self.assertNotIn('sandbox', arg)
+
+    def test_run_prompt_eval_tests_retry_pass(self):
+        """Tests that a test that passes on retry is recorded as a success."""
+        self.args.retries = 1
+        self.mock_atomic_counter.return_value.get.return_value = 2
+        mock_promptfoo_instance = self.mock_setup_promptfoo.return_value
+        mock_promptfoo_instance.run.side_effect = [
+            subprocess.CompletedProcess(args=[], returncode=1, stdout=''),
+            subprocess.CompletedProcess(args=[], returncode=0, stdout=''),
+        ]
+
+        with self.assertLogs(level='INFO') as cm:
+            returncode = eval_prompts._run_prompt_eval_tests(self.args)
+            self.assertIn('Successfully ran 1 tests', cm.output[-1])
+
+        self.assertEqual(mock_promptfoo_instance.run.call_count, 2)
+        self.assertEqual(returncode, 0)
+
+    def test_run_prompt_eval_tests_retry_fail(self):
+        """Tests that a test that fails all retries is recorded as a fail."""
+        self.args.retries = 2
+        self.mock_atomic_counter.return_value.get.return_value = 3
+        mock_promptfoo_instance = self.mock_setup_promptfoo.return_value
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=1, stdout='')
+
+        with mock.patch('eval_prompts.queue.Queue') as mock_queue:
+            mock_failed_queue = mock_queue.return_value
+            mock_failed_queue.empty.side_effect = [False, True]
+            ftr = mock.Mock(spec=eval_prompts.results.TestResult)
+            ftr.test_file = 'test'
+            mock_failed_queue.get.return_value = ftr
+            with self.assertLogs(level='WARNING') as cm:
+                returncode = eval_prompts._run_prompt_eval_tests(self.args)
+                self.assertIn('0 tests ran successfully and 1 failed',
+                              cm.output[-3])
+
+        self.assertEqual(mock_promptfoo_instance.run.call_count, 3)
+        self.assertEqual(returncode, 1)
+
+    def test_run_prompt_eval_tests_no_retry_on_pass(self):
+        """Tests that a passing test is not retried."""
+        self.args.retries = 5
+        self.mock_atomic_counter.return_value.get.return_value = 1
+        mock_promptfoo_instance = self.mock_setup_promptfoo.return_value
+        mock_promptfoo_instance.run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout='')
+
+        with self.assertLogs(level='INFO') as cm:
+            returncode = eval_prompts._run_prompt_eval_tests(self.args)
+            self.assertIn('Successfully ran 1 tests', cm.output[-1])
+
+        self.assertEqual(mock_promptfoo_instance.run.call_count, 1)
+        self.assertEqual(returncode, 0)
 
 
 if __name__ == '__main__':

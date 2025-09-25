@@ -250,6 +250,53 @@ def _fetch_sandbox_image() -> bool:
             return False
 
 
+def _run_test_attempt(
+    config: pathlib.Path,
+    args: argparse.Namespace,
+    root_path: pathlib.Path,
+    is_btrfs: bool,
+    console_width: int,
+    promptfoo: 'promptfoo_installation.PromptfooInstallation',
+) -> tuple[subprocess.CompletedProcess, float]:
+    """Runs a single attempt of a test.
+
+    Args:
+        config: The path to the promptfoo config file.
+        args: The parsed command line args.
+        root_path: The path to the gclient root.
+        is_btrfs: Whether the checkout is on a btrfs filesystem.
+        console_width: The width of the console.
+        promptfoo: The promptfoo installation to use.
+
+    Returns:
+        A tuple containing the completed process and the duration of the test.
+    """
+    with workers.WorkDir('workdir', root_path, not args.no_clean, args.verbose,
+                         args.force, is_btrfs) as workdir:
+        command = [
+            'eval',
+            '-j',
+            '1',
+            '--no-cache',
+            # Not useful since we're running one test per eval and the
+            # tables don't render properly in captured logs.
+            '--no-table',
+            '-c',
+            str(config),
+            '--var',
+            f'console_width={console_width}',
+        ]
+        if args.sandbox:
+            command.extend(['--var', 'sandbox=True'])
+        if args.verbose:
+            command.extend(['--var', 'verbose=True'])
+
+        start_time = time.time()
+        proc = promptfoo.run(command, cwd=workdir.path / 'src')
+        duration = time.time() - start_time
+        return proc, duration
+
+
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """Performs all the necessary steps to run prompt evaluation tests.
 
@@ -288,41 +335,32 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     console_width = shutil.get_terminal_size().columns
     root_path = _get_gclient_root()
     is_btrfs = _check_btrfs(root_path)
+    results_to_process = 0
     for config in configs_to_run:
-        with workers.WorkDir('workdir', root_path, not args.no_clean,
-                             args.verbose, args.force, is_btrfs) as workdir:
-            command = [
-                'eval',
-                '-j',
-                '1',
-                '--no-cache',
-                # Not useful since we're running one test per eval and the
-                # tables don't render properly in captured logs.
-                '--no-table',
-                '-c',
-                str(config),
-                '--var',
-                f'console_width={console_width}',
-            ]
-            if args.sandbox:
-                command.extend(['--var', 'sandbox=True'])
-            if args.verbose:
-                command.extend(['--var', 'verbose=True'])
+        for attempt in range(args.retries + 1):
+            if attempt > 0:
+                logging.info('Retrying test (%d/%d): %s', attempt,
+                             args.retries, str(config))
+            else:
+                logging.info('Running test: %s', str(config))
 
-            logging.info('Running test: %s', str(config))
-            start_time = time.time()
-            proc = promptfoo.run(command, cwd=workdir.path / 'src')
-            duration = time.time() - start_time
+            proc, duration = _run_test_attempt(config, args, root_path,
+                                               is_btrfs, console_width,
+                                               promptfoo)
 
             r = results.TestResult(test_file=config,
                                    success=not proc.returncode,
                                    duration=duration,
                                    test_log=proc.stdout)
             finished_test_queue.put(r)
+            results_to_process += 1
+
+            if not proc.returncode:
+                break
 
     # Wait for all results to be reported.
     failed_test_results = []
-    while tests_run.get() != len(configs_to_run):
+    while tests_run.get() != results_to_process:
         result_thread.maybe_reraise_fatal_exception()
         time.sleep(_ALL_TESTS_RUN_POLLING_SLEEP_DURATION)
 
@@ -395,6 +433,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument('--no-build',
                         action='store_true',
                         help='Do not build out/Default.')
+    parser.add_argument('--retries',
+                        type=int,
+                        default=0,
+                        help='Number of times to retry a failed test.')
     promptfoo_install_group = parser.add_mutually_exclusive_group()
     promptfoo_install_group.add_argument(
         '--install-promptfoo-from-npm',
