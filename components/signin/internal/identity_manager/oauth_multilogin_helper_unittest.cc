@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -356,7 +357,7 @@ class OAuthMultiloginHelperTest
   std::string multilogin_url_with_external_cc_result() const {
     return GaiaUrls::GetInstance()->oauth_multilogin_url().spec() +
            "?source=ChromiumBrowser&reuseCookies=0&externalCcResult=" +
-           kExternalCcResult;
+           base::EscapeQueryParamValue(kExternalCcResult, true);
   }
 
   MockCookieManager* cookie_manager() { return &mock_cookie_manager_; }

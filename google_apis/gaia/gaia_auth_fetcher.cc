@@ -36,6 +36,7 @@
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "net/base/isolation_info.h"
+#include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -506,20 +507,21 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
         "MultiBearer " + base::JoinString(authorization_header_parts, ","));
   }
 
-  std::string source_string = base::EscapeUrlEncodedData(source_, true);
-  std::string parameters = base::StringPrintf(
-      "?source=%s&reuseCookies=%i", source_string.c_str(),
+  GURL url = oauth_multilogin_gurl_;
+  url = net::AppendQueryParameter(url, "source", source_);
+  url = net::AppendQueryParameter(
+      url, "reuseCookies",
       mode == gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER
-          ? 1
-          : 0);
+          ? "1"
+          : "0");
   if (!external_cc_result.empty()) {
-    base::StringAppendF(
-        &parameters, "&externalCcResult=%s",
-        base::EscapeUrlEncodedData(external_cc_result, true).c_str());
+    url =
+        net::AppendQueryParameter(url, "externalCcResult", external_cc_result);
   }
   if (enable_oaml_cookie_binding) {
-    base::StringAppendF(&parameters, "&oaml_cookie_binding=1");
+    url = net::AppendQueryParameter(url, "oaml_cookie_binding", "1");
   }
+
   oauth_multilogin_cookie_decryptor_ = std::move(cookie_decryptor);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -550,9 +552,9 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
             }
           }
         })");
+
   CreateAndStartGaiaFetcher(" ",  // Non-empty to force a POST
-                            kFormEncodedContentType, headers,
-                            oauth_multilogin_gurl_.Resolve(parameters),
+                            kFormEncodedContentType, headers, url,
                             network::mojom::CredentialsMode::kInclude,
                             traffic_annotation);
 }
