@@ -160,6 +160,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImpl.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/IdSequencer.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManager.java",
     ]
     deps = [
       "//base:base_java",
@@ -198,6 +199,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridgeUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskImplUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/PendingActionManagerUnitTest.java",
     ]
     deps = [
       ":java",
