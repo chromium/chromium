@@ -4,6 +4,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "base/test/metrics/user_action_tester.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
@@ -188,6 +190,68 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey selectElementWithMatcher:cardCellMatcher]
       assertWithMatcher:grey_not(grey_descendant(grey_text(cvcIndicator)))];
+}
+
+// Tests that the user actions for the delete CVCs flow are recorded correctly.
+- (void)testDeleteActionsAreRecorded {
+  base::UserActionTester userActionTester;
+
+  // Create & save local credit card.
+  [AutofillAppInterface saveLocalCreditCardWithCvc];
+  [self openCvcStorageSettings];
+
+  // Verify the delete button is visible before proceeding.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillDeleteSecurityCodesButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the delete button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillDeleteSecurityCodesButtonId)]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+
+  // Tap outside the action sheet to dismiss it.
+  [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
+      performAction:grey_tapAtPoint(CGPointMake(1, 1))];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:DeleteConfirmationButton()];
+
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "BulkCvcDeletionConfirmationDialogCancelled"));
+
+  // Tap the delete button again.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillDeleteSecurityCodesButtonId)]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "BulkCvcDeletionConfirmationDialogCancelled"));
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+
+  // Tap the "Delete" confirmation button.
+  id<GREYMatcher> confirmationButton = DeleteConfirmationButton();
+  [[EarlGrey selectElementWithMatcher:confirmationButton]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:confirmationButton];
+
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "BulkCvcDeletionConfirmationDialogCancelled"));
+  EXPECT_EQ(1,
+            userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "BulkCvcDeletionConfirmationDialogAccepted"));
 }
 
 @end

@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
@@ -181,6 +182,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
   if (type == ItemTypeDeleteSavedSecurityCodesButton) {
+    base::RecordAction(
+        base::UserMetricsAction("BulkCvcDeletionHyperlinkClicked"));
     [self showDeleteConfirmationForIndexPath:indexPath];
   }
 }
@@ -209,6 +212,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_SAVED_SECURITY_CODE)
                 style:UIAlertActionStyleDestructive
               handler:^(UIAlertAction* action) {
+                base::RecordAction(base::UserMetricsAction(
+                    "BulkCvcDeletionConfirmationDialogAccepted"));
                 [weakSelf.delegate
                     deleteAllSavedCvcsForViewController:weakSelf];
                 [weakSelf userDismissedAlert];
@@ -219,6 +224,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                           IDS_IOS_DELETE_SAVED_SECURITY_CODE_CANCEL)
                 style:UIAlertActionStyleCancel
               handler:^(UIAlertAction* action) {
+                base::RecordAction(base::UserMetricsAction(
+                    "BulkCvcDeletionConfirmationDialogCancelled"));
                 [weakSelf userDismissedAlert];
               }];
 
