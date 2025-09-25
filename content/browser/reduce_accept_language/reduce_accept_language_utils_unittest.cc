@@ -253,8 +253,9 @@ TEST_F(AcceptLanguageUtilsTests, FirstMatchPreferredLang) {
 
 TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kReduceAcceptLanguage);
+  scoped_feature_list.InitWithFeatures(
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
@@ -742,7 +743,8 @@ TEST_F(CreateAcceptLanguageUtilsTest, CreateUtils) {
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {}, {network::features::kReduceAcceptLanguage});
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
   // Feature reset should expect no instance returns
   EXPECT_EQ(ReduceAcceptLanguageUtils::Create(browser_context()), std::nullopt);
 }
