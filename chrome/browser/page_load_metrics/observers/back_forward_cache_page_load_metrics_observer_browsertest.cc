@@ -36,6 +36,13 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
   ~BackForwardCachePageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{page_load_metrics::features::
+                  kBackForwardCacheEmitZeroSamplesForKeyMetrics,
+              {{}}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
     MetricIntegrationTest::SetUpCommandLine(command_line);
   }
 
@@ -117,6 +124,8 @@ class BackForwardCachePageLoadMetricsObserverBrowserTest
     // Should have been through all the reasons.
     EXPECT_EQ(reason_index, reasons.size());
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -161,6 +170,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
         internal::kHistogramFirstPaintAfterBackForwardCacheRestore, 1);
     ExpectMetricCountForUrl(
         url_a, "NavigationToFirstPaintAfterBackForwardCacheRestore", 1);
+
+    // 0 values are emitted for non-back-forward-cache metrics due to the flag
+    // kBackForwardCacheEmitZeroSamplesForKeyMetrics.
+    histogram_tester().ExpectBucketCount(internal::kHistogramFirstPaint, 0, 1);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramFirstContentfulPaint, 0, 1);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramLargestContentfulPaint, 0, 1);
   }
 
   // Navigate to B again.
@@ -186,6 +203,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     ExpectMetricCountForUrl(
         url_a, "NavigationToFirstPaintAfterBackForwardCacheRestore", 2);
 
+    histogram_tester().ExpectBucketCount(internal::kHistogramFirstPaint, 0, 2);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramFirstContentfulPaint, 0, 2);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramLargestContentfulPaint, 0, 2);
   }
 }
 
@@ -231,6 +253,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
         internal::kHistogramFirstPaintAfterBackForwardCacheRestore, 0);
     ExpectMetricCountForUrl(
         url_a, "NavigationToFirstPaintAfterBackForwardCacheRestore", 0);
+
+    histogram_tester().ExpectBucketCount(internal::kHistogramFirstPaint, 0, 0);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramFirstContentfulPaint, 0, 0);
+    histogram_tester().ExpectBucketCount(
+        internal::kHistogramLargestContentfulPaint, 0, 0);
   }
 }
 
@@ -283,6 +311,11 @@ IN_PROC_BROWSER_TEST_F(
         internal::kHistogramFirstInputDelayAfterBackForwardCacheRestore, 1);
     ExpectMetricCountForUrl(url_a,
                             "FirstInputDelayAfterBackForwardCacheRestore", 1);
+
+    // 0 values are emitted for non-back-forward-cache metrics due to the flag
+    // kBackForwardCacheEmitZeroSamplesForKeyMetrics.
+    histogram_tester().ExpectBucketCount(internal::kHistogramFirstInputDelay, 0,
+                                         1);
   }
 }
 
@@ -419,6 +452,15 @@ return score;
                           "CumulativeShiftScoreAfterBackForwardCacheRestore",
                           page_load_metrics::LayoutShiftUkmValue(next_score));
 
+  // 0 values are emitted for non-back-forward-cache metrics due to the flag
+  // kBackForwardCacheEmitZeroSamplesForKeyMetrics.
+  // As back-foward cache is used twice (once for A and once for B), the current
+  // total count is 2.
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame", 0, 2);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 2);
+
   // Go back to A again.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -440,6 +482,12 @@ return score;
 
   ExpectMetricCountForUrl(
       url_a, "CumulativeShiftScoreAfterBackForwardCacheRestore", 2);
+
+  // As back-foward cache is used fourth in total.
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame", 0, 4);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.LayoutInstability.CumulativeShiftScore", 0, 4);
 }
 
 // TODO(crbug.com/40752530): Disabled for being flaky.
