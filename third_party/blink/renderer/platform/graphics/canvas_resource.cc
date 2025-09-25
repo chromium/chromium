@@ -542,10 +542,13 @@ const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
   }
 
   auto* raster_interface = RasterInterface();
-  DCHECK(raster_interface);  // caller should already have early exited if
-                             // !raster_interface.
-  raster_interface->GenUnverifiedSyncTokenCHROMIUM(
-      owning_thread_data().sync_token.GetData());
+
+  // TODO(crbug.com/40286368): Verify that context loss is handled at all
+  // callsites before invoking this method and remove this conditional.
+  if (raster_interface) {
+    raster_interface->GenUnverifiedSyncTokenCHROMIUM(
+        owning_thread_data().sync_token.GetData());
+  }
 
   return sync_token();
 }

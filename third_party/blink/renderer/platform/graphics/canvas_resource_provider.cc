@@ -878,6 +878,11 @@ void CanvasResourceProviderSharedImage::RasterRecord(
     UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
+
+  if (IsGpuContextLost()) {
+    return;
+  }
+
   WillDrawInternal(true);
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
