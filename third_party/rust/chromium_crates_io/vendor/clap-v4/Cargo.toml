@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.47"
+version = "4.5.48"
 build = false
 include = [
     "build.rs",
@@ -504,12 +504,12 @@ required-features = ["derive"]
 
 [[example]]
 name = "typed-derive"
-path = "examples/typed-derive.rs"
+path = "examples/typed-derive/main.rs"
 doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.47"
+version = "=4.5.48"
 default-features = false
 
 [dependencies.clap_derive]
@@ -528,6 +528,9 @@ version = "0.2.3"
 
 [dev-dependencies.rustversion]
 version = "1.0.15"
+
+[dev-dependencies.semver]
+version = "1.0.26"
 
 [dev-dependencies.shlex]
 version = "1.3.0"

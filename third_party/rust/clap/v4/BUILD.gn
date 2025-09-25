@@ -14,6 +14,7 @@ cargo_crate("lib") {
   crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/lib.rs"
   sources = [
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/_concepts.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/_cookbook/cargo_example.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/_cookbook/cargo_example_derive.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/_cookbook/escaped_positional.rs",
@@ -145,8 +146,16 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_derive/04_04_custom.md",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_derive/04_04_custom.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/tutorial_derive/05_01_assert.rs",
-    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive.md",
-    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/builtin.md",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/builtin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/custom.md",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/custom.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/fn_parser.md",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/fn_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/foreign_crate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/implicit.md",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/implicit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap-v4/src/../examples/typed-derive/main.rs",
   ]
 
   build_native_rust_unit_tests = false
@@ -154,7 +163,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "clap"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   cargo_pkg_repository = "https://github.com/clap-rs/clap"
-  cargo_pkg_version = "4.5.47"
+  cargo_pkg_version = "4.5.48"
 
   allow_unsafe = false
 

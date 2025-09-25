@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.47"
+version = "4.5.48"
 build = false
 include = [
     "build.rs",

@@ -1657,6 +1657,8 @@ impl Arg {
     /// i.e. allow values (`val1,val2,val3`) to be parsed as three values (`val1`, `val2`,
     /// and `val3`) instead of one value (`val1,val2,val3`).
     ///
+    /// See also [`Command::dont_delimit_trailing_values`][crate::Command::dont_delimit_trailing_values].
+    ///
     /// # Examples
     ///
     /// ```rust

@@ -109,7 +109,7 @@ lto = true
 
 [package]
 name = "clap"
-version = "4.5.47"
+version = "4.5.48"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -186,7 +186,7 @@ unstable-markdown = ["clap_derive/unstable-markdown"]
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.5.47", default-features = false }
+clap_builder = { path = "./clap_builder", version = "=4.5.48", default-features = false }
 clap_derive = { path = "./clap_derive", version = "=4.5.47", optional = true }
 
 [dev-dependencies]
@@ -199,6 +199,7 @@ snapbox = { version = "0.6.16", features = ["term-svg"] }
 shlex = "1.3.0"
 automod = "1.0.14"
 clap-cargo = { version = "0.15.0", default-features = false }
+semver = "1.0.26"
 
 [[example]]
 name = "demo"

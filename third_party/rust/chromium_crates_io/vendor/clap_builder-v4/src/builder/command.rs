@@ -624,6 +624,13 @@ impl Command {
 
     /// Custom error message for post-parsing validation
     ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build] for any
+    /// relevant context, including usage.
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -906,6 +913,12 @@ impl Command {
     ///
     /// See also [`Command::print_long_help`].
     ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -930,6 +943,12 @@ impl Command {
     /// Prints the long help message (`--help`) to [`io::stdout()`].
     ///
     /// See also [`Command::print_help`].
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// # Examples
     ///
@@ -959,6 +978,12 @@ impl Command {
     ///
     /// See also [`Command::render_long_help`].
     ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -985,6 +1010,12 @@ impl Command {
     /// Render the long help message (`--help`) to a [`StyledStr`].
     ///
     /// See also [`Command::render_help`].
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// # Examples
     ///
@@ -1090,6 +1121,12 @@ impl Command {
     }
 
     /// Usage statement
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// ### Examples
     ///
@@ -1214,7 +1251,7 @@ impl Command {
         }
     }
 
-    /// Disables the automatic delimiting of values after `--` or when [`Arg::trailing_var_arg`]
+    /// Disables the automatic [delimiting of values][Arg::value_delimiter] after `--` or when [`Arg::trailing_var_arg`]
     /// was used.
     ///
     /// <div class="warning">
