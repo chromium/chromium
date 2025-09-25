@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_error_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/info_message/lens_translate_indication_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_info_message_animator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_results_page_presenter_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -34,22 +35,10 @@ const CGFloat kThresholdHeightForClosingSheet = 200.0f;
 // by the bottom sheet presentation.
 const CGFloat kVisibleAreaMediumDetentThreshold = 100.0f;
 
-// The duration of the opacity transition in the results page.
-const CGFloat kOpacityAnimationDuration = 0.4;
-
 // The horizontal occlusion inset to apply when the side panel is displayed.
 const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 }  // namespace
-
-// Animator responsible for handling the hiding and showing fading transition of
-// the informational message views.
-@interface InfoMessageAnimator
-    : NSObject <UIViewControllerAnimatedTransitioning>
-
-- (instancetype)initWithOperation:(UINavigationControllerOperation)operation;
-
-@end
 
 @interface LensOverlayResultsPagePresenter () <
     LensOverlayPanTrackerDelegate,
@@ -623,7 +612,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     animationControllerForOperation:(UINavigationControllerOperation)operation
                  fromViewController:(UIViewController*)fromVC
                    toViewController:(UIViewController*)toVC {
-  return [[InfoMessageAnimator alloc] initWithOperation:operation];
+  return [[LensOverlayInfoMessageAnimator alloc] initWithOperation:operation];
 }
 
 - (void)lensResultPageViewControllerDidTapBottomSheetGrabber:
@@ -637,66 +626,6 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
     [self requestMinimizeBottomSheet];
     return;
   }
-}
-
-@end
-
-@implementation InfoMessageAnimator {
-  // The navigation operation for the animator.
-  UINavigationControllerOperation _operation;
-}
-
-- (instancetype)initWithOperation:(UINavigationControllerOperation)operation {
-  self = [super init];
-  if (self) {
-    _operation = operation;
-  }
-
-  return self;
-}
-
-- (NSTimeInterval)transitionDuration:
-    (id<UIViewControllerContextTransitioning>)transitionContext {
-  return kOpacityAnimationDuration;
-}
-
-- (void)animateTransition:
-    (id<UIViewControllerContextTransitioning>)transitionContext {
-  UIViewController* toViewController = [transitionContext
-      viewControllerForKey:UITransitionContextToViewControllerKey];
-  UIViewController* fromViewController = [transitionContext
-      viewControllerForKey:UITransitionContextFromViewControllerKey];
-  NSTimeInterval duration = [self transitionDuration:transitionContext];
-  auto animationFinished = ^(BOOL finished) {
-    [transitionContext
-        completeTransition:![transitionContext transitionWasCancelled]];
-  };
-
-  if (_operation == UINavigationControllerOperationPush) {
-    [[transitionContext containerView] addSubview:toViewController.view];
-    toViewController.view.alpha = 0.0;
-    [UIView animateWithDuration:duration
-                     animations:^{
-                       toViewController.view.alpha = 1.0;
-                     }
-                     completion:animationFinished];
-
-    return;
-  }
-
-  if (_operation == UINavigationControllerOperationPop) {
-    [[transitionContext containerView] insertSubview:toViewController.view
-                                        belowSubview:fromViewController.view];
-
-    [UIView animateWithDuration:duration
-                     animations:^{
-                       fromViewController.view.alpha = 0.0;
-                     }
-                     completion:animationFinished];
-    return;
-  }
-
-  animationFinished(YES);
 }
 
 @end

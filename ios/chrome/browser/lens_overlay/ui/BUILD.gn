@@ -33,6 +33,8 @@ source_set("protocols") {
 
 source_set("results_page_presenter") {
   sources = [
+    "lens_overlay_info_message_animator.h",
+    "lens_overlay_info_message_animator.mm",
     "lens_overlay_results_page_presenter.h",
     "lens_overlay_results_page_presenter.mm",
     "lens_overlay_results_page_presenter_delegate.h",
