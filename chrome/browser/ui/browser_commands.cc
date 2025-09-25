@@ -1554,7 +1554,8 @@ bool GroupAllUngroupedTabs(Browser* browser) {
     return false;
   }
 
-  tab_strip_model->AddToNewGroup(indices);
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup(indices);
+  tab_strip_model->OpenTabGroupEditor(group);
   return true;
 }
 
