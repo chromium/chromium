@@ -33,6 +33,7 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
+#include "third_party/xnnpack/src/include/xnnpack.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
@@ -65,6 +66,18 @@ const base::FeatureParam<bool> kUseLowPower{
 const base::FeatureParam<bool> kAllowFp16{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_allow_fp16", true};
+
+// This is a copy of the XNNPackCacheHeader struct from
+// third_party/tflite/src/tensorflow/lite/delegates/xnnpack/weight_cache.h
+// We can't include that header directly because of linter issues.
+// TODO(crbug.com/447174993): Remove once xnnpack includes cb018b2d.
+struct XNNPackCacheHeader {
+  enum : uint64_t { kInvalidHeader = 0, kVersion = 1 };
+  uint64_t version;
+  uint8_t xnnpack_build_identifier[32];
+  uint64_t buffer_list_offset;
+  uint64_t buffer_list_size;
+};
 
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
@@ -674,6 +687,31 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
 #endif
 }
 
+// Truncates the given xnnpack cache file if it is not compatible with the
+// current build.
+void MaybeDeleteCacheFile(base::File& cache_file) {
+  if (!cache_file.IsValid()) {
+    return;
+  }
+  XNNPackCacheHeader header;
+  if (cache_file.GetLength() < static_cast<int64_t>(sizeof(header))) {
+    return;
+  }
+  // SAFETY: `header` is stack-allocated and guaranteed to be non-null.
+  auto header_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<uint8_t*>(&header), sizeof(header)));
+  if (!cache_file.ReadAndCheck(0, header_span)) {
+    return;
+  }
+  if (header.version == XNNPackCacheHeader::kVersion &&
+      xnn_experimental_check_build_identifier(
+          header.xnnpack_build_identifier,
+          sizeof(header.xnnpack_build_identifier))) {
+    return;
+  }
+  cache_file.SetLength(0);
+}
+
 DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params,
@@ -699,6 +737,19 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.model_path = weights_path_str.data();
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
+
+  // Xnnpack doesn't delete the old cache file when it needs to be rebuilt
+  // due to its build identifier changing, which will happen during browser
+  // updates. This manually checks if the cache's build identifier matches the
+  // current build, and if not, truncates it. This is a temporary fix until
+  // xnnpack is updated with cb018b2d.
+  // TODO(crbug.com/447174993): Remove once xnnpack includes cb018b2d.
+  if (params->backend_type == ml::ModelBackendType::kCpuBackend) {
+    MaybeDeleteCacheFile(assets.cache);
+  }
+  MaybeDeleteCacheFile(assets.encoder_cache);
+  MaybeDeleteCacheFile(assets.adapter_cache);
+
   // TODO(crbug.com/400998489): Cache files are experimental for now.
   data.cache_file = params->backend_type == ml::ModelBackendType::kCpuBackend &&
                             assets.cache.IsValid()
