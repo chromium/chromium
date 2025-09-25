@@ -231,8 +231,10 @@ TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
   EXPECT_EQ(title2, thread2->title);
 
   service_.RemoveThreadFromTask(task1.GetTaskId(), type, server_id1);
-  EXPECT_FALSE(GetTaskById(task1.GetTaskId())->GetThread().has_value());
-  EXPECT_TRUE(GetTaskById(task2.GetTaskId())->GetThread().has_value());
+  std::vector<ContextualTask> tasks_after_remove = GetTasks();
+  ASSERT_EQ(1u, tasks_after_remove.size());
+
+  EXPECT_TRUE(tasks_after_remove[0].GetThread().has_value());
 }
 
 TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
@@ -251,18 +253,19 @@ TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
   ASSERT_EQ(1u, tasks_before_remove.size());
   EXPECT_TRUE(tasks_before_remove[0].GetThread().has_value());
 
+  EXPECT_CALL(
+      observer_,
+      OnTaskRemoved(testing::_, ContextualTasksService::TriggerSource::kLocal));
   service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   task_environment_.RunUntilIdle();
   std::vector<ContextualTask> tasks_after_remove = GetTasks();
-  ASSERT_EQ(1u, tasks_after_remove.size());
-  EXPECT_FALSE(tasks_after_remove[0].GetThread().has_value());
+  ASSERT_EQ(0u, tasks_after_remove.size());
 
   // Calling remove again should be a no-op and not crash.
   service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   task_environment_.RunUntilIdle();
-  std::vector<ContextualTask> tasks_after_second_remove = GetTasks();
-  ASSERT_EQ(1u, tasks_after_second_remove.size());
-  EXPECT_FALSE(tasks_after_second_remove[0].GetThread().has_value());
+  tasks_after_remove = GetTasks();
+  ASSERT_EQ(0u, tasks_after_remove.size());
   service_.RemoveObserver(&observer_);
 }
 

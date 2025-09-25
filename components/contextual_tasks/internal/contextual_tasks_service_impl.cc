@@ -106,11 +106,10 @@ void ContextualTasksServiceImpl::RemoveThreadFromTask(
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.RemoveThread(type, server_id);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskUpdated,
-                       weak_ptr_factory_.GetWeakPtr(), it->second,
-                       TriggerSource::kLocal));
+    // If the task no longer has any thread, remove it.
+    if (!it->second.GetThread()) {
+      DeleteTask(task_id);
+    }
   }
 }
 
