@@ -102,4 +102,10 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     int getHeaderPanelWidthPx() {
         return mHeaderPanelWidthPx;
     }
+
+    @Override
+    @SuppressWarnings("MissingSuperCall")
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        // Workaround. Disable back button handler by not calling super.onViewCreated().
+    }
 }

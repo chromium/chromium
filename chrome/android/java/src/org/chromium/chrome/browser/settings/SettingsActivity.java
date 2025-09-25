@@ -683,6 +683,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
+            if (mMultiColumnSettings != null) {
+                // PreferenceHeaderFragmentCompat implements back button behavior.
+                // In order to forward the event to there, translate the event to the back button.
+                onBackPressed();
+                return true;
+            }
             assumeNonNull(mainFragment);
             finishCurrentSettings(mainFragment);
             return true;
