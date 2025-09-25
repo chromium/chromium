@@ -18174,7 +18174,7 @@ TEST_F(AuctionRunnerTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                             blink::features::kFledgeEnforceKAnonymity},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
 
   // Only one bidder participating the auction, to keep things simple.
   interest_group_buyers_ = {{kBidder1}};
