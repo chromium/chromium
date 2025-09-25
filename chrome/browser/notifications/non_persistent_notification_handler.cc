@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -18,6 +19,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/message_center/message_center_stats_collector.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
@@ -139,4 +141,10 @@ void NonPersistentNotificationHandler::DisableNotifications(
 void NonPersistentNotificationHandler::OpenSettings(Profile* profile,
                                                     const GURL& origin) {
   NotificationCommon::OpenNotificationSettings(profile, origin);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Notifications.Actions",
+      message_center::MessageCenterStatsCollector::NotificationActionType::
+          NOTIFICATION_ACTION_OPEN_SETTINGS_BUTTON_CLICK,
+      message_center::MessageCenterStatsCollector::NotificationActionType::
+          NOTIFICATION_ACTION_COUNT);
 }

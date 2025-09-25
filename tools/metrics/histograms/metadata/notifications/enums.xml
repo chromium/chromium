@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Notification displayed"/>
   <int value="6" label="Notification closed by user"/>
   <int value="7" label="Notification closed by system"/>
+  <int value="8" label="Notification Open Settings button clicked"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
