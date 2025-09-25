@@ -11560,15 +11560,27 @@ Element::InterestState Element::GetInterestState() {
 }
 
 namespace {
-Element* NestedSourceInterestInvoker(Element& starting_target) {
+
+void AllSourceInterestInvokersRecursive(
+    Element& target,
+    HeapLinkedHashSet<Member<Element>>& sources) {
   DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
-  for (Element* target = &starting_target; target;
-       target = target->parentElement()) {
-    if (Element* upstream = target->SourceInterestInvoker()) {
-      return upstream;
-    }
+  if (Element* upstream = target.SourceInterestInvoker();
+      upstream && !sources.Contains(upstream)) {
+    DCHECK_NE(&target, upstream);
+    sources.insert(upstream);
+    AllSourceInterestInvokersRecursive(*upstream, sources);
   }
-  return nullptr;
+  if (Element* parent = target.parentElement();
+      parent && !sources.Contains(parent)) {
+    AllSourceInterestInvokersRecursive(*parent, sources);
+  }
+}
+
+HeapLinkedHashSet<Member<Element>> AllSourceInterestInvokers(Element& target) {
+  HeapLinkedHashSet<Member<Element>> sources;
+  AllSourceInterestInvokersRecursive(target, sources);
+  return sources;
 }
 
 }  // namespace
@@ -11618,8 +11630,7 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
     if (invoker_data) [[unlikely]] {
       invoker_data->CancelInterestLostTask();
     }
-    for (Element* upstream = upstream_invoker; upstream;
-         upstream = NestedSourceInterestInvoker(*upstream)) {
+    for (Member<Element> upstream : AllSourceInterestInvokers(*this)) {
       upstream->GetInvokerData()->CancelInterestLostTask();
     }
     if (auto* target = InterestForElement();
@@ -11642,8 +11653,7 @@ void Element::HandleInterestForHoverOrFocus(InterestSource source,
         ScheduleInterestLostTask();
       }
     }
-    for (Element* upstream = upstream_invoker; upstream;
-         upstream = NestedSourceInterestInvoker(*upstream)) {
+    for (Member<Element> upstream : AllSourceInterestInvokers(*this)) {
       // This is the target of an interest invoker, which was just de-hovered or
       // blurred. There are two possibilities:
       // 1. The upstream invoker is either not an ancestor of this target
