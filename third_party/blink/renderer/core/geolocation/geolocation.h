@@ -171,17 +171,30 @@ class CORE_EXPORT Geolocation final
   // and the user must have given permission.
   void MakeSuccessCallbacks();
 
-  // Sends the given error to all notifiers, unless the error is not fatal and
-  // the notifier is due to receive a cached position. Clears the oneshots,
   // and also  clears the watchers if the error is fatal.
   void HandleError(GeolocationPositionError*);
 
-  // Connects to the Geolocation mojo service and starts polling for updates.
-  void StartUpdating(GeoNotifier*);
+  // Ensures location updates are active and accuracy is
+  // always configured based on the current set of requests. This central
+  // function should be called whenever active notifiers change or permission is
+  // granted.
+  // If the connection to the Geolocation service is not yet established, it
+  // initiates the connection and permission request, then returns early. This
+  // function is called again once the permission status is resolved.
+  void UpdateGeolocationState();
 
+  // Tears down the connection to the Geolocation service and stops all timers.
   void StopUpdating();
 
-  void UpdateGeolocationConnection(GeoNotifier*);
+  // Establishes a connection to the Geolocation service and request permission.
+  // This is an asynchronous operation. Returns true if the connection is
+  // already established. Returns false if the connection is not yet
+  // established, In this case, permission will be reuested and
+  // OnGeolocationPermissionStatusUpdated will be called upon completion.
+  bool EnsureGeolocationConnection();
+
+  // Resets the connection to the Geolocation service.
+  void ResetGeolocationConnection();
   void QueryNextPosition();
 
   // Attempts to obtain a position for the given notifier, either by using
@@ -201,8 +214,13 @@ class CORE_EXPORT Geolocation final
 
   void OnGeolocationConnectionError();
 
-  void OnGeolocationPermissionStatusUpdated(GeoNotifier*,
-                                            mojom::PermissionStatus);
+  // Callback for the asynchronous permission request. Upon invoked, it proceeds
+  // with location updates or handles the error.
+  void OnGeolocationPermissionStatusUpdated(mojom::blink::PermissionStatus);
+
+  void HandlePermissionError();
+
+  void UpdateAccuracyHint();
 
   Member<GeoNotifierSet> one_shots_;
   Member<GeolocationWatchers> watchers_;
@@ -225,13 +243,10 @@ class CORE_EXPORT Geolocation final
   HeapMojoRemote<mojom::blink::GeolocationService> geolocation_service_;
   bool enable_high_accuracy_ = false;
 
-  // Whether a GeoNotifier is waiting for a position update.
+  // Whether a QueryNextPosition request sent and we are waiting for a position
+  // update.
   bool updating_ = false;
-
-  // Set to true when |geolocation_| is disconnected. This is used to
-  // detect when |geolocation_| is disconnected and reconnected while
-  // running callbacks in response to a call to OnPositionUpdated().
-  bool disconnected_geolocation_ = false;
+  bool permission_request_in_progress_ = false;
 };
 
 }  // namespace blink

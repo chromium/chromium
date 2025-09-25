@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/geolocation/geolocation.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/notreached.h"
@@ -40,12 +41,12 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_error.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
-#include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
-#include "third_party/blink/renderer/core/geolocation/geolocation_error.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
@@ -295,9 +296,11 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
 
   if (HaveSuitableCachedPosition(notifier->Options())) {
     notifier->SetUseCachedPosition();
-  } else {
-    StartUpdating(notifier);
+    return;
   }
+
+  notifier->StartTimer();
+  UpdateGeolocationState();
 }
 
 void Geolocation::FatalErrorOccurred(GeoNotifier* notifier) {
@@ -320,12 +323,13 @@ void Geolocation::RequestUsesCachedPosition(GeoNotifier* notifier) {
   // exists, start the service to get updates.
   if (one_shots_->Contains(notifier)) {
     one_shots_->erase(notifier);
-  } else if (watchers_->Contains(notifier)) {
-    StartUpdating(notifier);
   }
 
-  if (!HasListeners())
+  if (HasListeners()) {
+    UpdateGeolocationState();
+  } else {
     StopUpdating();
+  }
 }
 
 void Geolocation::RequestTimedOut(GeoNotifier* notifier) {
@@ -469,9 +473,6 @@ void Geolocation::MakeSuccessCallbacks() {
   for (auto& notifier : watchers_being_invoked_)
     notifier->RunSuccessCallback(last_position_);
 
-  if (!HasListeners())
-    StopUpdating();
-
   one_shots_being_invoked_->clear();
   watchers_being_invoked_.clear();
 }
@@ -483,35 +484,30 @@ void Geolocation::PositionChanged() {
   MakeSuccessCallbacks();
 }
 
-void Geolocation::StartUpdating(GeoNotifier* notifier) {
-  updating_ = true;
-  if (notifier->Options()->enableHighAccuracy() && !enable_high_accuracy_) {
-    enable_high_accuracy_ = true;
-    if (geolocation_.is_bound()) {
-      geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
-    }
+void Geolocation::UpdateGeolocationState() {
+  if (!EnsureGeolocationConnection() || permission_request_in_progress_) {
+    // Return early while waiting for asynchronous setup to complete. This
+    // function will be called again by OnGeolocationPermissionStatusUpdated.
+    return;
   }
-  UpdateGeolocationConnection(notifier);
+
+  UpdateAccuracyHint();
+
+  if (!updating_) {
+    QueryNextPosition();
+    updating_ = true;
+  }
 }
 
 void Geolocation::StopUpdating() {
   updating_ = false;
-  UpdateGeolocationConnection(nullptr);
+  ResetGeolocationConnection();
   enable_high_accuracy_ = false;
 }
 
-void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
-  if (!GetExecutionContext() || !GetPage() || !GetPage()->IsPageVisible() ||
-      !updating_) {
-    geolocation_.reset();
-    geolocation_service_.reset();
-    disconnected_geolocation_ = true;
-    return;
-  }
+bool Geolocation::EnsureGeolocationConnection() {
   if (geolocation_.is_bound()) {
-    if (notifier)
-      notifier->StartTimer();
-    return;
+    return true;
   }
 
   // See https://bit.ly/2S0zRAS for task types.
@@ -523,14 +519,18 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
       geolocation_.BindNewPipeAndPassReceiver(std::move(task_runner)),
       LocalFrame::HasTransientUserActivation(GetFrame()),
       blink::BindOnce(&Geolocation::OnGeolocationPermissionStatusUpdated,
-                      WrapWeakPersistent(this), WrapWeakPersistent(notifier)));
+                      WrapWeakPersistent(this)));
 
   geolocation_.set_disconnect_handler(blink::BindOnce(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));
-  if (enable_high_accuracy_) {
-    geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
-  }
-  QueryNextPosition();
+
+  permission_request_in_progress_ = true;
+  return false;
+}
+
+void Geolocation::ResetGeolocationConnection() {
+  geolocation_.reset();
+  geolocation_service_.reset();
 }
 
 void Geolocation::QueryNextPosition() {
@@ -540,7 +540,11 @@ void Geolocation::QueryNextPosition() {
 
 void Geolocation::OnPositionUpdated(
     device::mojom::blink::GeopositionResultPtr result) {
-  disconnected_geolocation_ = false;
+  updating_ = false;
+  if (!GetExecutionContext()) {
+    return;
+  }
+
   if (result->is_position()) {
     if (!ValidateGeoposition(*result->get_position())) {
       return;
@@ -553,13 +557,12 @@ void Geolocation::OnPositionUpdated(
     GeolocationPositionError* position_error =
         CreatePositionError(geoposition_error);
 
-    auto* context = GetExecutionContext();
-    DCHECK(context);
     if (!geoposition_error.error_technical.empty()) {
-      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kNetwork,
-          mojom::blink::ConsoleMessageLevel::kError,
-          geoposition_error.error_technical));
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kNetwork,
+              mojom::blink::ConsoleMessageLevel::kError,
+              geoposition_error.error_technical));
     }
 
     if (position_error->code() == GeolocationPositionError::kPermissionDenied) {
@@ -567,18 +570,20 @@ void Geolocation::OnPositionUpdated(
     }
     HandleError(position_error);
   }
-  if (!disconnected_geolocation_)
-    QueryNextPosition();
+
+  if (HasListeners()) {
+    UpdateGeolocationState();
+  } else {
+    StopUpdating();
+  }
 }
 
 void Geolocation::PageVisibilityChanged() {
-  for (auto& notifier : *one_shots_)
-    UpdateGeolocationConnection(notifier);
-
-  HeapVector<Member<GeoNotifier>> watchers;
-  watchers_->CopyNotifiersToVector(watchers);
-  for (auto& notifier : watchers)
-    UpdateGeolocationConnection(notifier);
+  if (GetPage() && GetPage()->IsPageVisible() && HasListeners()) {
+    UpdateGeolocationState();
+  } else {
+    StopUpdating();
+  }
 }
 
 bool Geolocation::HasPendingActivity() const {
@@ -587,9 +592,31 @@ bool Geolocation::HasPendingActivity() const {
 }
 
 void Geolocation::OnGeolocationConnectionError() {
-  StopUpdating();
-  // The only reason that we would fail to get a ConnectionError is if we lack
-  // sufficient permission.
+  ResetGeolocationConnection();
+  HandlePermissionError();
+}
+
+void Geolocation::OnGeolocationPermissionStatusUpdated(
+    mojom::blink::PermissionStatus status) {
+  permission_request_in_progress_ = false;
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    // A watchPosition() request can be canceled while the permission prompt
+    // is showing. Check that we still have listeners before starting updates.
+    if (HasListeners()) {
+      UpdateGeolocationState();
+    } else {
+      StopUpdating();
+    }
+  } else {
+    HandlePermissionError();
+  }
+}
+
+void Geolocation::HandlePermissionError() {
   auto* error = MakeGarbageCollected<GeolocationPositionError>(
       GeolocationPositionError::kPermissionDenied,
       kPermissionDeniedErrorMessage);
@@ -597,14 +624,21 @@ void Geolocation::OnGeolocationConnectionError() {
   HandleError(error);
 }
 
-void Geolocation::OnGeolocationPermissionStatusUpdated(
-    GeoNotifier* notifier,
-    mojom::PermissionStatus status) {
-  if (notifier && status == mojom::PermissionStatus::GRANTED) {
-    // Avoid starting the notifier timer if the notifier has already been
-    // removed.
-    if (DoesOwnNotifier(notifier))
-      notifier->StartTimer();
+void Geolocation::UpdateAccuracyHint() {
+  const bool new_enable_high_accuracy =
+      std::ranges::any_of(*one_shots_,
+                          [](const auto& notifier) {
+                            return notifier->Options()->enableHighAccuracy();
+                          }) ||
+      std::ranges::any_of(watchers_->Notifiers(), [](const auto& notifier) {
+        return notifier->Options()->enableHighAccuracy();
+      });
+
+  if (new_enable_high_accuracy != enable_high_accuracy_) {
+    enable_high_accuracy_ = new_enable_high_accuracy;
+    if (geolocation_.is_bound()) {
+      geolocation_->SetHighAccuracyHint(enable_high_accuracy_);
+    }
   }
 }
 
