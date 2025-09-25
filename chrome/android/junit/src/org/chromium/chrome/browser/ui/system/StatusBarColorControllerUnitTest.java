@@ -219,7 +219,7 @@ public class StatusBarColorControllerUnitTest {
         @ColorInt int currentNtpBackground = mContext.getColor(R.color.default_red);
         NtpCustomizationConfigManager ntpCustomizationConfigManager =
                 NtpCustomizationConfigManager.getInstance();
-        ntpCustomizationConfigManager.setBackgroundImageTypeFroTesting(
+        ntpCustomizationConfigManager.setBackgroundImageTypeForTesting(
                 NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR);
         ntpCustomizationConfigManager.setBackgroundColorForTesting(currentNtpBackground);
 

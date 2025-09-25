@@ -91,6 +91,15 @@ public class UploadImagePreviewCoordinatorUnitTest {
         assertTrue(
                 "The background image file should have been saved.",
                 NtpCustomizationUtils.getBackgroundImageFile().exists());
+        assertNotNull(
+                "The matrices should have been saved.",
+                NtpCustomizationUtils.readNtpBackgroundImageMatrices());
+        assertNotNull(
+                "The portrait matrix should have been saved.",
+                NtpCustomizationUtils.readNtpBackgroundImageMatrices().portraitMatrix);
+        assertNotNull(
+                "The landscape matrix should have been saved.",
+                NtpCustomizationUtils.readNtpBackgroundImageMatrices().landscapeMatrix);
 
         // Verify the dismiss callback was invoked.
         verify(mDismissRunnable).run();

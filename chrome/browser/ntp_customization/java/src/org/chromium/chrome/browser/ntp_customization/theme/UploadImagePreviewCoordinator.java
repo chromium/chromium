@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class UploadImagePreviewCoordinator {
 
     private final PropertyModel mPreviewPropertyModel;
+    private final CropImageView mCropImageView;
 
     /**
      * @param activity The activity context.
@@ -44,6 +46,7 @@ public class UploadImagePreviewCoordinator {
         View contentView =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.ntp_customization_theme_preview_dialog_layout, null);
+        mCropImageView = contentView.findViewById(R.id.preview_image);
 
         final ChromeDialog dialog =
                 new ChromeDialog(
@@ -60,9 +63,12 @@ public class UploadImagePreviewCoordinator {
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
-                    // TODO(crbug.com/423579377): update the current onBackgroundChanged to the
-                    // latest one.
-                    NtpCustomizationConfigManager.getInstance().onBackgroundChanged(bitmap);
+                    Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
+                    Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
+                    NtpCustomizationConfigManager.getInstance()
+                            .onBackgroundChanged(
+                                    bitmap,
+                                    new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
 
                     dismissBottomSheetRunnable.run();
                     dialog.dismiss();
