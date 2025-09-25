@@ -22,8 +22,11 @@
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -52,7 +55,9 @@ GlicInstanceImpl::GlicInstanceImpl(
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
           std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
           profile,
-          metrics) {}
+          metrics) {
+  browser_list_observation_.Observe(BrowserList::GetInstance());
+}
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
@@ -297,6 +302,17 @@ std::optional<std::string> GlicInstanceImpl::conversation_id() const {
 void GlicInstanceImpl::set_conversation_id(const std::string& conversation_id) {
   CHECK(!conversation_info_);
   conversation_info_ = ConversationInfo{conversation_id, ""};
+}
+
+void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
+  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+  if (!active_tab) {
+    return;
+  }
+  auto* embedder = GetEmbedderForTab(active_tab);
+  if (embedder && embedder->IsShowing()) {
+    Show(EmbedderType::kSidePanel, active_tab);
+  }
 }
 
 GlicInstanceImpl::EmbedderKey GlicInstanceImpl::GetEmbedderKey(

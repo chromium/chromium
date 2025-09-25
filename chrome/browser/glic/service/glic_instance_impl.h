@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -36,7 +39,7 @@ class GlicUiEmbedder;
 // even if it has no GlicUiEmbedder showing the UI. A host could have many
 // different GlicUiEmbedders during its lifetime.
 class GlicInstanceImpl : public GlicInstance,
-
+                         public BrowserListObserver,
                          public Host::InstanceDelegate,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate {
@@ -137,6 +140,9 @@ class GlicInstanceImpl : public GlicInstance,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
+
  private:
   // A tag type to represent the floating embedder key.
   struct FloatingEmbedderKey {
@@ -197,6 +203,10 @@ class GlicInstanceImpl : public GlicInstance,
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
+
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
+
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/views/controls/label.h"
@@ -17,7 +18,9 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
     const GlicSidePanelUi& active_ui,
     base::WeakPtr<tabs::TabInterface> tab) {
   // Using `new` to access a private constructor.
-  return base::WrapUnique(new GlicInactiveSidePanelUi(tab));
+  auto inactive_side_panel = base::WrapUnique(new GlicInactiveSidePanelUi(tab));
+  inactive_side_panel->VisibilityChanged(/*visible=*/true);
+  return inactive_side_panel;
 }
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
@@ -51,7 +54,6 @@ bool GlicInactiveSidePanelUi::IsShowing() const {
 }
 
 void GlicInactiveSidePanelUi::Show() {
-  // TODO: implement show.
   NOTIMPLEMENTED();
 }
 
