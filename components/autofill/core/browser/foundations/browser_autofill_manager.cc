@@ -2167,14 +2167,6 @@ void BrowserAutofillManager::OnDidFillAutofillFormDataImpl(
     const FormData& form,
     const base::TimeTicks timestamp) {
   UpdatePendingForm(form);
-
-  // Find the FormStructure that corresponds to |form|. Use default form type if
-  // form is not present in our cache, which will happen rarely.
-  FormStructure* form_structure = FindCachedFormById(form.global_id());
-  DenseSet<FormType> form_types;
-  if (form_structure) {
-    form_types = form_structure->GetFormTypes();
-  }
   UpdateInitialInteractionTimestamp(timestamp);
 }
 
