@@ -27537,6 +27537,22 @@
             ]
         }
     ],
+    "WebViewEarlyStartupTracing": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewEarlyPerfettoInit",
+                        "WebViewEarlyStartupTracing"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewFileSystemAccessDirectoryIterationBlocklistCheckReenable": [
         {
             "platforms": [
