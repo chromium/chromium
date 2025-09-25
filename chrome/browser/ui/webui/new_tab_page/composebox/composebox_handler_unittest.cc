@@ -344,6 +344,48 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery) {
                                    SessionState::kNavigationOccurred));
 }
 
+TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
+  // Wait until the state changes to kClusterInfoReceived.
+  base::RunLoop run_loop;
+  query_controller().set_on_query_controller_state_changed_callback(
+      base::BindLambdaForTesting([&](QueryControllerState state) {
+        if (state == QueryControllerState::kClusterInfoReceived) {
+          run_loop.Quit();
+        }
+      }));
+
+  // Start the session.
+  EXPECT_CALL(query_controller(), NotifySessionStarted)
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          &query_controller(), &MockQueryController::NotifySessionStartedBase));
+  handler().NotifySessionStarted();
+  run_loop.Run();
+
+  // Submitting without setting deep search.
+  std::string dr_param;
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  EXPECT_FALSE(net::GetValueForKeyInQuery(query_url, "dr", &dr_param));
+
+  // Submitting with setting deep search.
+  handler().SetDeepSearchMode(true);
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url_dr =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url_dr, "dr", &dr_param));
+  EXPECT_EQ("1", dr_param);
+
+  // Submitting after disabling deep search.
+  handler().SetDeepSearchMode(false);
+  SubmitQueryAndWaitForNavigation();
+  GURL query_url_disabled_dr =
+      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
+  EXPECT_FALSE(
+      net::GetValueForKeyInQuery(query_url_disabled_dr, "dr", &dr_param));
+}
+
 TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
   searchbox::mojom::SelectedFileInfoPtr file_info =
       searchbox::mojom::SelectedFileInfo::New();

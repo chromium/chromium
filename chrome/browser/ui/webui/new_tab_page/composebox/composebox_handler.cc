@@ -84,6 +84,10 @@ void ComposeboxHandler::SubmitQuery(
                   return success;
                 });
 
+  if (deep_search_mode_enabled_) {
+    additional_params["dr"] = "1";
+  }
+
   // This is the time that the user clicked the submit button, however optional
   // autocomplete logic may be run before this if there was a match associated
   // with the query.
@@ -96,6 +100,10 @@ void ComposeboxHandler::SubmitQuery(
       SessionState::kNavigationOccurred);
   metrics_recorder_->RecordQueryMetrics(
       query_text.size(), query_controller_->num_files_in_request());
+}
+
+void ComposeboxHandler::SetDeepSearchMode(bool enabled) {
+  deep_search_mode_enabled_ = enabled;
 }
 
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,

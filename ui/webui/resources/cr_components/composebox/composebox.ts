@@ -555,6 +555,10 @@ export class ComposeboxElement extends I18nMixinLit
     // TODO(crbug.com/445698141): Open the Lens overlay selection state.
   }
 
+  protected onDeepSearchClick_() {
+    this.pageHandler_.setDeepSearchMode(true);
+  }
+
   // Sets the input property to compute the cancel button title without using
   // "$." syntax  as this is not allowed in WillUpdate().
   protected handleInput_(e: Event) {

@@ -26,6 +26,8 @@ interface PageHandler {
               bool shift_key);
   // Called when the user enters/loses focus into the composebox.
   FocusChanged(bool focused);
+  // Called when the user enables deep search mode.
+  SetDeepSearchMode(bool enabled);
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

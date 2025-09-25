@@ -73,6 +73,11 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
   lens_composebox_controller_->OnFocusChanged(focused);
 }
 
+void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
+  // Ignore, intentionally unimplemented for Lens. Deep search not implemented
+  // in Lens.
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   NOTREACHED();

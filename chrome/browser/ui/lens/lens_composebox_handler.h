@@ -53,6 +53,7 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
                    bool meta_key,
                    bool shift_key) override;
   void FocusChanged(bool focused) override;
+  void SetDeepSearchMode(bool enabled) override;
 
   // searchbox::mojom::PageHandler:
   void DeleteAutocompleteMatch(uint8_t line, const GURL& url) override;
