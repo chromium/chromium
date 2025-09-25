@@ -779,6 +779,10 @@ class CrossbenchTest(object):
         help='Connect to test device over TCP (used on Android desktop)')
     parser.add_argument('--device', help='The device to connect to')
     parser.add_argument(
+        '--disable-field-trial-config',
+        action='store_true',
+        help='Start Chrome with --disable-field-trial-config option')
+    parser.add_argument(
         '--extra-browser-args',
         dest='extra_browser_args_as_string',
         help='Additional arguments to pass to the browser when it starts')
@@ -917,8 +921,11 @@ class CrossbenchTest(object):
       # Required until crbug.com/41491492 and crbug.com/346323630 are fixed.
       default_args.append('--enable-features=DisablePrivacySandboxPrompts')
     if self.is_chrome and not self.is_android:
-      # See http://shortn/_xGSaVM9P5g
-      default_args.append('--enable-field-trial-config')
+      if self.cb_options.disable_field_trial_config:
+        default_args.append('--disable-field-trial-config')
+      else:
+        # See http://shortn/_xGSaVM9P5g
+        default_args.append('--enable-field-trial-config')
     if self.options.luci_chromium:
       default_args.append('--headless')
     return default_args
