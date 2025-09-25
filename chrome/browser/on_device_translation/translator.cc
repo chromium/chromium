@@ -123,13 +123,17 @@ void Translator::TranslateStreamingCallback(
     mojo::RemoteSetElementId responder_id,
     const std::optional<std::string>& output) {
   auto it = pending_translations_.find(responder_id);
-  if (it == pending_translations_.end()) {
-    NOTREACHED() << "Received a callback for a non-existent responder_id.";
-  }
 
   blink::mojom::ModelStreamingResponder* responder_ptr =
       responder_set_.Get(responder_id);
 
+  // This should only happen after the responder disconnected.
+  if (it == pending_translations_.end()) {
+    CHECK(!responder_ptr);
+    return;
+  }
+
+  // This indicates that the responder disconnected.
   if (!responder_ptr) {
     pending_translations_.erase(it);
     return;
