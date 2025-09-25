@@ -233,7 +233,9 @@ void AddInfoBarsIfNecessary(BrowserWindowInterface* browser,
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   if (base::FeatureList::IsEnabled(features::kSessionRestoreInfobar)) {
-    session_restore_infobar::SessionRestoreInfobarController().MaybeShowInfoBar(
+    auto* session_restore_infobar_controller =
+        session_restore_infobar::SessionRestoreInfobarController::From(browser);
+    session_restore_infobar_controller->MaybeShowInfoBar(
         *profile, was_restarted, is_post_crash_launch);
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

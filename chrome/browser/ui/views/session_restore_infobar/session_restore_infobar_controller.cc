@@ -12,26 +12,51 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_prefs.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace session_restore_infobar {
+
+DEFINE_USER_DATA(SessionRestoreInfobarController);
+
+SessionRestoreInfobarController::SessionRestoreInfobarController(
+    BrowserWindowInterface* browser)
+    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
+
+SessionRestoreInfobarController::~SessionRestoreInfobarController() = default;
 
 void SessionRestoreInfobarController::MaybeShowInfoBar(
     Profile& profile,
     bool was_restarted,
     bool is_post_crash_launch) {
-  model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
-                                                        is_post_crash_launch);
   if (InfoBarShownMaxTimes(profile.GetPrefs())) {
     return;
   }
+
+  if (UserInteractedWithSessionRestorePref(profile.GetPrefs())) {
+    return;
+  }
+
+  if (features::kSetDefaultToContinueSession.Get()) {
+    SessionStartupPref::SetStartupPref(
+        &profile, SessionStartupPref(SessionStartupPref::LAST));
+  }
+
+  model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
+                                                        is_post_crash_launch);
+
   if (!model_->ShouldShowOnStartup()) {
     return;
   }
@@ -45,9 +70,10 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
   IncrementInfoBarShownCount(profile.GetPrefs());
 }
 
-SessionRestoreInfobarController::SessionRestoreInfobarController() = default;
-
-SessionRestoreInfobarController::~SessionRestoreInfobarController() = default;
+SessionRestoreInfobarController* SessionRestoreInfobarController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
 
 SessionRestoreInfoBarDelegate::InfobarMessageType
 SessionRestoreInfobarController::GetInfobarMessageType() {

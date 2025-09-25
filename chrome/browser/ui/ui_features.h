@@ -66,6 +66,10 @@ BASE_DECLARE_FEATURE_PARAM(PdfInfoBarTrigger, kPdfInfoBarTrigger);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // When enabled, user may see the session restore UI flow.
 BASE_DECLARE_FEATURE(kSessionRestoreInfobar);
+
+// When this param is true, the session restore preference will have
+// continue where you left off as default behavior
+BASE_DECLARE_FEATURE_PARAM(bool, kSetDefaultToContinueSession);
 #endif
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);

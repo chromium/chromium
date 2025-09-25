@@ -23,7 +23,9 @@ SessionRestoreInfobarModel::SessionRestoreInfobarModel(
     bool is_post_crash_launch)
     : profile_(profile),
       was_restarted_(was_restarted),
-      is_post_crash_launch_(is_post_crash_launch) {}
+      is_post_crash_launch_(is_post_crash_launch),
+      initial_restore_on_startup_value_(
+          profile_->GetPrefs()->GetInteger(prefs::kRestoreOnStartup)) {}
 
 SessionRestoreInfobarModel::SessionRestoreMessageValue
 SessionRestoreInfobarModel::GetSessionRestoreMessageValue() const {
@@ -63,6 +65,12 @@ bool SessionRestoreInfobarModel::IsDefaultSessionRestorePref() const {
       profile_->GetPrefs()->FindPreference(prefs::kRestoreOnStartup);
   CHECK(pref);
   return pref->IsDefaultValue();
+}
+
+bool SessionRestoreInfobarModel::HasSessionRestoreSettingChanged(
+    const PrefService& prefs) const {
+  return initial_restore_on_startup_value_ !=
+         prefs.GetInteger(prefs::kRestoreOnStartup);
 }
 
 }  // namespace session_restore_infobar

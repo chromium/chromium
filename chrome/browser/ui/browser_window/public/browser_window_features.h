@@ -97,6 +97,9 @@ class PinInfoBarController;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class ProfileCustomizationBubbleSyncController;
+namespace session_restore_infobar {
+class SessionRestoreInfobarController;
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -427,6 +430,7 @@ class BrowserWindowFeatures {
   profile_customization_bubble_sync_controller() {
     return profile_customization_bubble_sync_controller_.get();
   }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Get the FindBarController for this browser window, creating it if it does
@@ -596,6 +600,9 @@ class BrowserWindowFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<ProfileCustomizationBubbleSyncController>
       profile_customization_bubble_sync_controller_;
+
+  std::unique_ptr<session_restore_infobar::SessionRestoreInfobarController>
+      session_restore_infobar_controller_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;

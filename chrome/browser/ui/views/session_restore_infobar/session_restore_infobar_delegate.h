@@ -9,12 +9,16 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
+
+class Profile;
 
 namespace session_restore_infobar {
 
@@ -47,7 +51,8 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:SessionRestoreInfoBarAction)
 
-  explicit SessionRestoreInfoBarDelegate(base::OnceCallback<void()> close_cb,
+  explicit SessionRestoreInfoBarDelegate(Profile& profile,
+                                         base::OnceCallback<void()> close_cb,
                                          InfobarMessageType message_type);
   SessionRestoreInfoBarDelegate(const SessionRestoreInfoBarDelegate&) = delete;
   SessionRestoreInfoBarDelegate& operator=(
@@ -58,8 +63,13 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   // `infobar_manager`. The `infobar_manager` will own the returned infobar.
   static infobars::InfoBar* Show(
       infobars::ContentInfoBarManager* infobar_manager,
+      Profile& profile,
       base::OnceCallback<void()> close_cb,
       InfobarMessageType message_type);
+
+  void RecordSettingChanged(
+      bool setting_changed,
+      SessionRestoreInfoBarDelegate::InfobarMessageType message_type);
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -75,9 +85,15 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool LinkClicked(WindowOpenDisposition disposition) override;
 
  private:
+  void OnSessionRestorePrefChanged();
+
+  const raw_ref<Profile> profile_;
   base::OnceCallback<void()> close_cb_;
   const InfobarMessageType message_type_;
   bool action_taken_ = false;
+
+  // Used to track changes to the session restore preference.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace session_restore_infobar

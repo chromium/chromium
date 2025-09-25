@@ -90,6 +90,10 @@ source_set("internal") {
       ]
     }
 
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/views/session_restore_infobar" ]
+    }
+
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
     }

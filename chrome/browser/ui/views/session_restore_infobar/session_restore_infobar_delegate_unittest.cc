@@ -31,21 +31,24 @@ class SessionRestoreInfoBarDelegateTest
  protected:
   SessionRestoreInfoBarDelegateTest()
       : web_contents_(content::WebContentsTester::CreateTestWebContents(
-            content::WebContents::CreateParams(&profile_))) {}
+            content::WebContents::CreateParams(profile()))) {}
 
   void SetUp() override {
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents_.get());
   }
 
   infobars::InfoBar* CreateDelegate() {
-    return SessionRestoreInfoBarDelegate::Show(
-        infobar_manager(), base::DoNothing(), GetParam().message_type);
+    return SessionRestoreInfoBarDelegate::Show(infobar_manager(), *profile(),
+                                               base::DoNothing(),
+                                               GetParam().message_type);
   }
 
   infobars::ContentInfoBarManager* infobar_manager() {
     return infobars::ContentInfoBarManager::FromWebContents(
         web_contents_.get());
   }
+
+  TestingProfile* profile() { return &profile_; }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 

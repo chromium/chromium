@@ -111,6 +111,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.Restore.SettingChanged.{SessionRestoreInfobarType}"
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>koretadaniel@chromium.org</owner>
+  <summary>
+    Records whether the user changed the session restore setting after being
+    shown the session restore infobar that informs the user about
+    {SessionRestoreInfobarType}.
+
+    A `true` value is recorded if the user changes the session restore setting
+    while the infobar is shown. A `false` value is recorded if the user
+    dismisses the infobar without changing the setting (which stops the infobar
+    from being shown again), or the user has ignored the infobar and it has been
+    shown a max of 3 times.
+
+    This histogram is not recorded if the user changes the setting at any other
+    time (i.e. when the session restore infobar is not showing).
+  </summary>
+  <token key="SessionRestoreInfobarType">
+    <variant name="TurnOffFromRestart"
+        summary="turning off session restore from browser restart"/>
+    <variant name="TurnOffFromSession"
+        summary="turning off session restore from a restored session"/>
+    <variant name="TurnOnSessionRestore" summary="turning on session restore"/>
+  </token>
+</histogram>
+
 <histogram name="Session.TimeSpentInFocusMode" units="s" expires_after="M80">
   <owner>yiningwang@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

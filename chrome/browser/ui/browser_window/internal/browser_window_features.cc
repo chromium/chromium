@@ -134,6 +134,10 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_controller.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/frame/windows_taskbar_icon_updater.h"
 #endif
@@ -374,6 +378,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   profile_customization_bubble_sync_controller_ =
       std::make_unique<ProfileCustomizationBubbleSyncController>(browser,
                                                                  profile);
+  session_restore_infobar_controller_ =
+      GetUserDataFactory()
+          .CreateInstance<
+              session_restore_infobar::SessionRestoreInfobarController>(
+              *browser, browser);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 

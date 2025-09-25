@@ -11,12 +11,16 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_prefs.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -52,25 +56,72 @@ void RecordInfoBarAction(
 // static
 infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
     infobars::ContentInfoBarManager* infobar_manager,
+    Profile& profile,
     base::OnceCallback<void()> close_cb,
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
   RecordInfoBarAction(message_type,
                       SessionRestoreInfoBarDelegate::InfobarAction::kShown);
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
-      std::make_unique<SessionRestoreInfoBarDelegate>(std::move(close_cb),
-                                                      message_type);
+      std::make_unique<SessionRestoreInfoBarDelegate>(
+          profile, std::move(close_cb), message_type);
   return infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 }
 
 SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(
+    Profile& profile,
     base::OnceCallback<void()> close_cb,
     SessionRestoreInfoBarDelegate::InfobarMessageType message_type)
-    : close_cb_(std::move(close_cb)), message_type_(message_type) {}
+    : profile_(profile),
+      close_cb_(std::move(close_cb)),
+      message_type_(message_type) {
+  pref_change_registrar_.Init(profile_.get().GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kRestoreOnStartup,
+      base::BindRepeating(
+          &SessionRestoreInfoBarDelegate::OnSessionRestorePrefChanged,
+          base::Unretained(this)));
+}
 
 SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
   if (!action_taken_) {
     RecordInfoBarAction(message_type_,
                         SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
+    if (profile_->GetPrefs()->GetInteger(
+            prefs::kSessionRestoreInfoBarTimesShown) ==
+               kSessionRestoreInfoBarMaxTimesToShow) {
+      RecordSettingChanged(false, message_type_);
+    }
+  }
+}
+
+void SessionRestoreInfoBarDelegate::OnSessionRestorePrefChanged() {
+  RecordSettingChanged(true, message_type_);
+  // Set the pref to true so that the infobar does not show on the next startup.
+  profile_.get().GetPrefs()->SetBoolean(prefs::kSessionRestorePrefChanged,
+                                        true);
+  infobar()->RemoveSelf();
+}
+
+void SessionRestoreInfoBarDelegate::RecordSettingChanged(
+    bool setting_changed,
+    SessionRestoreInfoBarDelegate::InfobarMessageType message_type) {
+  switch (message_type) {
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart:
+      base::UmaHistogramBoolean(
+          "Session.Restore.SettingChanged.TurnOffFromRestart", setting_changed);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromSession:
+      base::UmaHistogramBoolean(
+          "Session.Restore.SettingChanged.TurnOffFromSession", setting_changed);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::
+        kTurnOnSessionRestore:
+      base::UmaHistogramBoolean(
+          "Session.Restore.SettingChanged.TurnOnSessionRestore",
+          setting_changed);
+      break;
+    case SessionRestoreInfoBarDelegate::InfobarMessageType::kNone:
+      break;
   }
 }
 
@@ -130,6 +181,11 @@ void SessionRestoreInfoBarDelegate::InfoBarDismissed() {
                       SessionRestoreInfoBarDelegate::InfobarAction::kDismissed);
   if (close_cb_) {
     std::move(close_cb_).Run();
+    if (!UserInteractedWithSessionRestorePref(profile_.get().GetPrefs())) {
+      RecordSettingChanged(false, message_type_);
+      profile_.get().GetPrefs()->SetBoolean(prefs::kSessionRestorePrefChanged,
+                                            true);
+    }
   }
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }

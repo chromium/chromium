@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -52,10 +53,15 @@ class SessionRestoreInfobarModel {
   // default value, and has not been set.
   bool IsDefaultSessionRestorePref() const;
 
+  // Returns true if the session restore setting has changed since the infobar
+  // was shown.
+  bool HasSessionRestoreSettingChanged(const PrefService& prefs) const;
+
  private:
   const raw_ref<Profile> profile_;
   const bool was_restarted_;
   const bool is_post_crash_launch_;
+  const int initial_restore_on_startup_value_;
 };
 
 }  // namespace session_restore_infobar

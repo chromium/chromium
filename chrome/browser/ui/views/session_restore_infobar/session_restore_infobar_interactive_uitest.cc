@@ -46,7 +46,9 @@ class SessionRestoreInfobarInteractiveTest : public InteractiveBrowserTest {
 
  protected:
   void CreateInfobar(bool was_restarted, bool is_post_crash_launch) {
-    auto controller = std::make_unique<SessionRestoreInfobarController>();
+    auto* controller =
+        session_restore_infobar::SessionRestoreInfobarController::From(
+            browser());
     controller->MaybeShowInfoBar(*browser()->profile(), was_restarted,
                                  is_post_crash_launch);
   }

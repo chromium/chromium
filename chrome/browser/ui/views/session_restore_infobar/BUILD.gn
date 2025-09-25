@@ -28,6 +28,7 @@ source_set("session_restore_infobar") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:browser_tab_strip",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/tabs:tab_strip",

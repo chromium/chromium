@@ -636,6 +636,12 @@ bool IsBookmarkTabGroupConversionEnabled() {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kSessionRestoreInfobar, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kSetDefaultToContinueSession,
+                   &kSessionRestoreInfobar,
+                   "continue_session",
+                   false);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

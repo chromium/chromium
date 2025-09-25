@@ -93,7 +93,7 @@ void SessionRestoreInfoBarManager::CreateInfoBarForWebContents(
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobars::InfoBar* infobar =
       session_restore_infobar::SessionRestoreInfoBarDelegate::Show(
-          infobar_manager,
+          infobar_manager, *profile_,
           base::BindOnce(
               &SessionRestoreInfoBarManager::OnUserInitiatedInfoBarClose,
               base::Unretained(this)),
