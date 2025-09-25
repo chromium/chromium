@@ -6,16 +6,16 @@
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_ZERO_STATE_PROMO_ZERO_STATE_PROMO_UI_H_
 
 #include <memory>
+#include <string_view>
 
-#include "chrome/browser/ui/views/user_education/custom_webui_help_bubble.h"
+#include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo.mojom.h"
-#include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+class ZeroStatePromoPageHandler;
 
 namespace extensions {
 

@@ -7,12 +7,13 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom-forward.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-using password_manager::metrics_util::PasswordType;
+namespace password_manager::metrics_util {
+enum class PasswordType;
+}
 
 class ResetPasswordUI;
 
@@ -25,6 +26,8 @@ class ResetPasswordUIConfig
 // The WebUI for chrome://reset-password/.
 class ResetPasswordUI : public ui::MojoWebUIController {
  public:
+  using PasswordType = password_manager::metrics_util::PasswordType;
+
   explicit ResetPasswordUI(content::WebUI* web_ui);
 
   ResetPasswordUI(const ResetPasswordUI&) = delete;
