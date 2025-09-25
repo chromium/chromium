@@ -1795,6 +1795,8 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
 }
 
 void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
+  CHECK(!IsAccelerated());
+
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
   skgpu::ganesh::FlushAndSubmit(GetSkSurface());
