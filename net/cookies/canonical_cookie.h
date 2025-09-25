@@ -47,8 +47,6 @@ using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 // Represents the call sites of CanonicalCookie::FromStorage, used for metrics
 // so we can better identify any callers that are not enforcing cookie name and
 // value size limits as expected.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // LINT.IfChange(CanonicalCookieFromStorageCallSite)
 enum class CanonicalCookieFromStorageCallSite {
   kAndroidCookiesFetcherRestoreUtil,
@@ -60,7 +58,6 @@ enum class CanonicalCookieFromStorageCallSite {
   kCookieManagerMojomTraits,
   kRestrictedCookieManager,
   kTests,
-  kMaxValue = kTests,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/cookie/histograms.xml:CanonicalCookieFromStorageCallSite)
 
