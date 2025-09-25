@@ -3581,7 +3581,7 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
 
   // TabDialogManager handles updates based on web contents resizing.
   if (change.type != SplitTabChange::Type::kVisualsChanged) {
-    UpdateTabModalDialogBounds();
+    UpdateTabModalDialogHost();
   }
 }
 
@@ -4611,7 +4611,7 @@ bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
              new_contents;
 }
 
-void BrowserView::UpdateTabModalDialogBounds() {
+void BrowserView::UpdateTabModalDialogHost() {
   multi_contents_view_->ExecuteOnEachVisibleContentsView(
       base::BindRepeating([](ContentsWebView* contents_view) {
         if (contents_view->web_contents()) {
@@ -4620,7 +4620,7 @@ void BrowserView::UpdateTabModalDialogBounds() {
                   ->GetTabFeatures();
           // When the browser is closing, TabFeatures may be destroyed.
           if (tab_features) {
-            tab_features->tab_dialog_manager()->UpdateModalDialogBounds();
+            tab_features->tab_dialog_manager()->UpdateModalDialogHost();
           }
         }
       }));

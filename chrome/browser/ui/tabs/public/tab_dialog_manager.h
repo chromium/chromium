@@ -136,6 +136,10 @@ class TabDialogManager : public content::WebContentsObserver,
   // call this when the dialog's preferred size changes.
   void UpdateModalDialogBounds();
 
+  // Updates the modal dialog host the dialog is associated with from the
+  // browser window.
+  void UpdateModalDialogHost();
+
   // Trigger the dialog manager to re-evaluate the dialog's visibility.
   // Optionally pass in a `requested_visibility` which is the state the client
   // thinks the dialog should be in, assuming the tab is visible and the window
@@ -156,7 +160,9 @@ class TabDialogManager : public content::WebContentsObserver,
 
  private:
   class BrowserWindowWidgetObserver;
+  class WebContentsModalDialogHostObserver;
   friend class BrowserWindowWidgetObserver;
+  friend class WebContentsModalDialogHostObserver;
   //  Overridden from content::WebContentObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -181,6 +187,8 @@ class TabDialogManager : public content::WebContentsObserver,
       scoped_ignore_input_events_;
   std::unique_ptr<TabDialogWidgetObserver> tab_dialog_widget_observer_;
   std::unique_ptr<BrowserWindowWidgetObserver> browser_window_widget_observer_;
+  std::unique_ptr<WebContentsModalDialogHostObserver>
+      web_contents_modal_dialog_host_observer_;
   std::unique_ptr<ScopedTabModalUI> showing_modal_ui_;
   std::unique_ptr<Params> params_;
 

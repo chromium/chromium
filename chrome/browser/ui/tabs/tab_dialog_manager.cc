@@ -233,6 +233,48 @@ class TabDialogManager::BrowserWindowWidgetObserver
       browser_window_widget_observation_{this};
 };
 
+class TabDialogManager::WebContentsModalDialogHostObserver
+    : public web_modal::ModalDialogHostObserver {
+ public:
+  WebContentsModalDialogHostObserver(TabDialogManager* tab_dialog_manager,
+                                     TabInterface* tab_interface)
+      : tab_dialog_manager_(tab_dialog_manager), tab_(tab_interface) {
+    UpdateModalDialogHost();
+  }
+
+  WebContentsModalDialogHostObserver(
+      const WebContentsModalDialogHostObserver&) = delete;
+  WebContentsModalDialogHostObserver& operator=(
+      const WebContentsModalDialogHostObserver&) = delete;
+  ~WebContentsModalDialogHostObserver() override = default;
+
+  void UpdateModalDialogHost() {
+    model_dialog_host_observation_.Reset();
+    BrowserWindowInterface* const host_browser_window =
+        tab_->GetBrowserWindowInterface();
+    web_modal::WebContentsModalDialogHost* dialog_host =
+        host_browser_window->GetWebContentsModalDialogHostForTab(tab_);
+    model_dialog_host_observation_.Observe(dialog_host);
+  }
+
+  // web_modal::ModalDialogHostObserver:
+  void OnPositionRequiresUpdate() override {
+    tab_dialog_manager_->UpdateModalDialogBounds();
+  }
+
+  void OnHostDestroying() override { model_dialog_host_observation_.Reset(); }
+
+ private:
+  const raw_ptr<TabDialogManager> tab_dialog_manager_;
+
+  // The tab that owns this dialog manager.
+  raw_ptr<TabInterface> tab_;
+
+  base::ScopedObservation<web_modal::WebContentsModalDialogHost,
+                          web_modal::ModalDialogHostObserver>
+      model_dialog_host_observation_{this};
+};
+
 TabDialogManager::Params::Params() = default;
 
 TabDialogManager::Params::~Params() = default;
@@ -302,9 +344,17 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   if (params_->block_new_modal) {
     showing_modal_ui_ = tab_interface_->ShowModalUI();
   }
-  browser_window_widget_observer_ =
-      std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
-                                                    widget_.get());
+
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    web_contents_modal_dialog_host_observer_ =
+        std::make_unique<WebContentsModalDialogHostObserver>(this,
+                                                             tab_interface_);
+  } else {
+    browser_window_widget_observer_ =
+        std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
+                                                      widget_.get());
+  }
+
   if (params_->should_show_inactive) {
     widget_->ShowInactive();
   } else {
@@ -358,6 +408,7 @@ void TabDialogManager::WidgetDestroyed(views::Widget* widget) {
   tab_dialog_widget_observer_.reset();
   scoped_ignore_input_events_.reset();
   browser_window_widget_observer_.reset();
+  web_contents_modal_dialog_host_observer_.reset();
   bounds_animation_.reset();
   tab_interface_->GetBrowserWindowInterface()
       ->capabilities()
@@ -416,6 +467,13 @@ void TabDialogManager::UpdateModalDialogBounds() {
     bounds_animation_->Start();
   } else {
     widget_->SetBounds(target_bounds);
+  }
+}
+
+void TabDialogManager::UpdateModalDialogHost() {
+  if (web_contents_modal_dialog_host_observer_) {
+    web_contents_modal_dialog_host_observer_->UpdateModalDialogHost();
+    UpdateModalDialogBounds();
   }
 }
 
@@ -478,9 +536,15 @@ void TabDialogManager::PrimaryMainFrameWasResized(bool width_changed) {
 
 void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
   if (widget_) {
-    browser_window_widget_observer_ =
-        std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
-                                                      widget_.get());
+    if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+      web_contents_modal_dialog_host_observer_ =
+          std::make_unique<WebContentsModalDialogHostObserver>(this,
+                                                               tab_interface_);
+    } else {
+      browser_window_widget_observer_ =
+          std::make_unique<BrowserWindowWidgetObserver>(this, tab_interface_,
+                                                        widget_.get());
+    }
     // Check if the tab was detached and dragged to a new browser window. This
     // ensures the widget is properly reparented.
     auto* parent_widget = GetHostWidget();
@@ -499,6 +563,7 @@ void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
     }
     widget_->SetVisible(false);
     browser_window_widget_observer_.reset();
+    web_contents_modal_dialog_host_observer_.reset();
   }
 }
 
