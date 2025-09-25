@@ -52,7 +52,7 @@
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
-                "shards": 72,
+                "shards": 36,
                 "try_builder": "android-desktop-x64-rel"
             },
             "unit_tests": {
