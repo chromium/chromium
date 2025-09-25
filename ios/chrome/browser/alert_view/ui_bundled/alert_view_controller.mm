@@ -1044,8 +1044,10 @@ UIButton* GetButtonForAction(AlertAction* action) {
 
 // React to user taps on `button`.
 - (void)didSelectActionForButton:(UIButton*)button {
+  // Prevent further taps on this button.
+  button.enabled = NO;
   AlertAction* action = self.buttonAlertActionsDictionary[@(button.tag)];
-  if (action.handler) {
+  if (action && action.handler) {
     action.handler(action);
   }
 }
