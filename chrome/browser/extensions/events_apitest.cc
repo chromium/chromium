@@ -478,8 +478,6 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
 // Tests that, if an extension registers multiple listeners for a filtered
 // event where the listeners overlap, but are not identical, each listener is
 // only triggered once for a given event.
-// TODO(crbug.com/40365717): This test is currently (intentionally)
-// testing improper behavior and will be fixed as part of the linked bug.
 IN_PROC_BROWSER_TEST_F(
     EventsApiTest,
     MultipleFilteredListenersWithOverlappingFiltersShouldOnlyTriggerOnce) {
