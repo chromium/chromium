@@ -30,7 +30,13 @@ BubbleManager* BubbleManager::GetForWebContents(
     return nullptr;
   }
 
-  return tab_interface->GetTabFeatures()->autofill_bubble_manager();
+  tabs::TabFeatures* tab_features = tab_interface->GetTabFeatures();
+  if (!tab_features) {
+    // The TabFeatures object might be destroyed during WebContents teardown.
+    return nullptr;
+  }
+
+  return tab_features->autofill_bubble_manager();
 }
 
 }  // namespace autofill
