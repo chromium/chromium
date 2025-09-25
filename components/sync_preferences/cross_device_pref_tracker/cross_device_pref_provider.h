@@ -25,10 +25,14 @@ class CrossDevicePrefProvider {
  public:
   virtual ~CrossDevicePrefProvider() = default;
 
-  // Returns a set of profile-based prefs to be tracked.
+  // Returns a set of profile-based prefs to be tracked. These should be the
+  // prefs that are tracked by the cross-device pref tracker, not the ones the
+  // cross-device pref tracker updates (prefixed with `cross_device.`).
   virtual const base::flat_set<std::string_view>& GetProfilePrefs() const = 0;
 
-  // Returns a set of local-state prefs to be tracked.
+  // Returns a set of local-state prefs to be tracked. These should be the prefs
+  // that are tracked by the cross-device pref tracker, not the ones the
+  // cross-device pref tracker updates (prefixed with `cross_device.`).
   virtual const base::flat_set<std::string_view>& GetLocalStatePrefs()
       const = 0;
 

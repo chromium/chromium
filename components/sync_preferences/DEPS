@@ -40,5 +40,6 @@ specific_include_rules = {
     "+components/translate",
     "+components/variations",
     "+components/sharing_message",
+    "+components/sync_preferences/cross_device_pref_tracker",
   ]
 }

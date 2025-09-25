@@ -80,6 +80,7 @@
 #import "components/sync/service/glue/sync_transport_data_prefs.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
+#import "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_registry.h"
 #import "components/sync_sessions/session_sync_prefs.h"
 #import "components/themes/pref_names.h"
 #import "components/translate/core/browser/translate_pref_names.h"
@@ -678,6 +679,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   collaboration::prefs::RegisterProfilePrefs(registry);
   commerce::RegisterPrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
+  cross_device::RegisterProfilePrefs(registry);
   CrossPlatformPromosService::RegisterProfilePrefs(registry);
   data_controls::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);

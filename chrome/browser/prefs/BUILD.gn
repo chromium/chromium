@@ -142,6 +142,7 @@ source_set("impl") {
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
     "//components/sync_preferences",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/sync_sessions",
     "//components/tpcd/metadata/browser:prefs",
     "//components/ukm",

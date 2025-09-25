@@ -90,6 +90,7 @@ source_set("browser_prefs") {
     "//components/supervised_user/core/common",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/sync_sessions",
     "//components/themes:prefs",
     "//components/translate/core/browser",
