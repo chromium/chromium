@@ -800,22 +800,22 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<IDLUndefined>();
+    return EmptyPromise();
+  }
+
+  if (!language_model_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return EmptyPromise();
+  }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
   }
 
   ScriptPromiseResolver<IDLUndefined>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
-    return promise;
-  }
-
-  AbortSignal* signal = options->getSignalOr(nullptr);
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
-    return promise;
-  }
 
   ConvertPromptInputsToMojo(
       script_state, options->getSignalOr(nullptr), input, input_types_,
@@ -840,14 +840,14 @@ ScriptPromise<LanguageModel> LanguageModel::clone(
     return EmptyPromise();
   }
 
+  if (!language_model_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return EmptyPromise();
+  }
+
   ScriptPromiseResolver<LanguageModel>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageModel>>(script_state);
   auto promise = resolver->Promise();
-
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
-    return promise;
-  }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
@@ -871,14 +871,14 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
     return EmptyPromise();
   }
 
+  if (!language_model_remote_) {
+    ThrowSessionDestroyedException(exception_state);
+    return EmptyPromise();
+  }
+
   ScriptPromiseResolver<IDLDouble>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
   auto promise = resolver->Promise();
-
-  if (!language_model_remote_) {
-    ThrowSessionDestroyedException(exception_state);
-    return promise;
-  }
 
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (signal && signal->aborted()) {
