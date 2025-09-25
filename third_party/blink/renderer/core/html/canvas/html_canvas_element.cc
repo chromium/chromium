@@ -1589,10 +1589,8 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
 }
 
 bool HTMLCanvasElement::CanStartSelection() const {
-  if (RuntimeEnabledFeatures::AvoidSelectionChangeOnCanvasClickEnabled()) {
-    if (GetHitTestRegions().empty()) {
-      return false;
-    }
+  if (GetHitTestRegions().empty()) {
+    return false;
   }
   return HTMLElement::CanStartSelection();
 }
