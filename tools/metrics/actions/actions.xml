@@ -28709,6 +28709,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarPinnedOnlyTabStrip">
+  <owner>zheliooo@google.com</owner>
+  <description>
+    User entered a state where pinned tabs occupy the entire visible area of
+    tablet tab strip; record at most once per session. Android only.
+  </description>
+</action>
+
 <action name="MobileToolbarReload">
   <owner>tedchoc@chromium.org</owner>
   <description>

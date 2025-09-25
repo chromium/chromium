@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.isTabPinningFromStripEnabled;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.animation.Animator;
@@ -423,6 +424,10 @@ public class StripLayoutHelper
                                             stripTab, /* isNonDragReordering= */ false);
                                 }
                             });
+
+                    if (isPinned) {
+                        recordPinnedOnlyTabStripUserAction();
+                    }
                 }
             };
 
@@ -619,6 +624,7 @@ public class StripLayoutHelper
 
     // Pinned tabs.
     private int mPinnedTabCount;
+    private boolean mIsPinnedOnlyStripRecorded;
 
     @FunctionalInterface
     interface QueuedIph {
@@ -989,11 +995,9 @@ public class StripLayoutHelper
         // If there isn’t enough room to show even a single unpinned tab (pinned-only strip), force
         // show the end edge fade, because the end fade is used to mask the cut-off tab area so it
         // doesn't appear under the NTB.
-        boolean noSpaceForUnpinnedTabs =
-                getAvailableTabWidthForResizing() <= mCachedTabWidthSupplier.get();
         boolean rtl = LocalizationUtils.isLayoutRtl();
         boolean isEndFade = rtl ? isLeft : !isLeft;
-        if (noSpaceForUnpinnedTabs && isEndFade) return 1.f;
+        if (doPinnedTabsOccupyEntireVisibleArea() && isEndFade) return 1.f;
 
         float edgeOffset = mScrollDelegate.getEdgeOffset(isLeft);
 
@@ -1007,6 +1011,10 @@ public class StripLayoutHelper
         } else {
             return edgeOffset / FADE_FULL_OPACITY_THRESHOLD_DP;
         }
+    }
+
+    private boolean doPinnedTabsOccupyEntireVisibleArea() {
+        return getAvailableTabWidthForResizing() < mCachedTabWidthSupplier.get();
     }
 
     /**
@@ -1176,6 +1184,8 @@ public class StripLayoutHelper
         if ((orientationChanged && wasSelectedTabVisible) || !mTabStateInitialized) {
             bringSelectedTabToVisibleArea(time, mTabStateInitialized);
         }
+
+        recordPinnedOnlyTabStripUserAction();
     }
 
     /**
@@ -1482,6 +1492,15 @@ public class StripLayoutHelper
             }
         }
         return doneAnimating;
+    }
+
+    private void recordPinnedOnlyTabStripUserAction() {
+        if (isTabPinningFromStripEnabled()
+                && !mIsPinnedOnlyStripRecorded
+                && doPinnedTabsOccupyEntireVisibleArea()) {
+            mIsPinnedOnlyStripRecorded = true;
+            RecordUserAction.record("MobileToolbarPinnedOnlyTabStrip");
+        }
     }
 
     /**
@@ -3603,7 +3622,7 @@ public class StripLayoutHelper
             final Tab tab = assumeNonNull(mModel.getTabAt(i));
             final int id = tab.getId();
             final StripLayoutTab oldTab = findTabById(id);
-            boolean isPinned = tab.getIsPinned();
+            boolean isPinned = isTabPinningFromStripEnabled() && tab.getIsPinned();
             tabs[i] = oldTab != null ? oldTab : createStripTab(id, isPinned);
             mPinnedTabCount += isPinned ? 1 : 0;
             setAccessibilityDescription(tabs[i], tab);
@@ -3622,6 +3641,8 @@ public class StripLayoutHelper
                         || mPendingMouseTabClosure)) {
             return null;
         }
+
+        recordPinnedOnlyTabStripUserAction();
 
         // Otherwise, animate the required width changes.
         computeIdealViewPositions();
