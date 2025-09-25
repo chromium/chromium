@@ -125,18 +125,26 @@ DeviceInfo::OsType GetLocalDeviceOSType() {
 }
 
 DeviceInfo::FormFactor GetLocalDeviceFormFactor() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-  return DeviceInfo::FormFactor::kDesktop;
-#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-             ? DeviceInfo::FormFactor::kTablet
-             : DeviceInfo::FormFactor::kPhone;
-#elif BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
+  switch (ui::GetDeviceFormFactor()) {
+    case ui::DEVICE_FORM_FACTOR_TABLET:
+      return DeviceInfo::FormFactor::kTablet;
+    case ui::DEVICE_FORM_FACTOR_DESKTOP:
+      return DeviceInfo::FormFactor::kDesktop;
+    case ui::DEVICE_FORM_FACTOR_TV:
+      return DeviceInfo::FormFactor::kTv;
+    case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+      return DeviceInfo::FormFactor::kAutomotive;
+    case ui::DEVICE_FORM_FACTOR_PHONE:
+    case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+      return DeviceInfo::FormFactor::kPhone;
+    case ui::DEVICE_FORM_FACTOR_XR:
+      return DeviceInfo::FormFactor::kUnknown;
+  }
+  NOTREACHED();
+#else   // !BUILDFLAG(IS_FUCHSIA)
   return DeviceInfo::FormFactor::kUnknown;
-#else
-#error Please handle your new device OS here.
-#endif
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 }
 
 std::string GetPersonalizableDeviceNameBlocking() {
