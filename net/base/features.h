@@ -603,6 +603,11 @@ NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyEnableIppPanelInDevTools;
 
+// A comma-separated list of domains (eTLD+1) for which all requests will be
+// proxied.
+NET_EXPORT extern const base::FeatureParam<std::string>
+    kIpPrivacyUnconditionalProxyDomainList;
+
 // Enables more advanced handling of IP Protection proxy request failures.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpPrivacyProxyAdvancedFallbackLogic);
 

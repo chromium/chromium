@@ -485,6 +485,10 @@ const base::FeatureParam<bool> kIpPrivacyEnableIppPanelInDevTools{
     /*name=*/"IpPrivacyEnableIppPanelInDevTools",
     /*default_value=*/false};
 
+const base::FeatureParam<std::string> kIpPrivacyUnconditionalProxyDomainList{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyUnconditionalProxyDomainList", /*default_value=*/""};
+
 BASE_FEATURE(kEnableIpPrivacyProxyAdvancedFallbackLogic,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
