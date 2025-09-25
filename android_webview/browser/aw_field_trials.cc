@@ -61,6 +61,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       ::features::kBlockCrossPartitionBlobUrlFetching);
 
+  // TODO(crbug.com/445202443): There are some test cases need to be
+  // fixed before enabling this feature flag for android.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kAboutBlankPageRespectsDarkModeOnUserAction);
+
   // Disable enforcing `noopener` on Blob URL navigations on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kEnforceNoopenerOnBlobURLNavigation);

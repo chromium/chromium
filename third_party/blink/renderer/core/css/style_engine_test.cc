@@ -4505,6 +4505,50 @@ TEST_F(StyleEngineSimTest, ColorSchemeBaseBackgroundWhileRenderBlocking) {
   css_resource.Finish();
 }
 
+TEST_F(StyleEngineSimTest, AboutBlankPageRespectsDarkModeOnUserActionFeature) {
+  // This test refers to AboutBlankPageRespectsDarkModeOnUserAction feature
+  // flag.
+
+  ScopedAboutBlankPageRespectsDarkModeOnUserActionForTest forced_scoped_feature(
+      false);
+
+  LoadURL("about:blank");
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color::kWhite, GetDocument().View()->BaseBackgroundColor());
+}
+
+TEST_F(StyleEngineSimTest, AboutBlankPageRespectsUserPreferredColorScheme) {
+  // This refers to opening about:blank likely via non-programmatic means.
+  // We do this to apply DarkMode to newly opened tabs and user initiated
+  // navigations directly to about:blank.
+  // See: https://issues.chromium.org/issues/40190899.
+
+  LoadURL("about:blank");
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  // Set preferred color scheme to light.
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color::kWhite, GetDocument().View()->BaseBackgroundColor());
+
+  // Set preferred color scheme to dark.
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(Color(0x12, 0x12, 0x12),
+            GetDocument().View()->BaseBackgroundColor());
+}
+
 TEST_F(StyleEngineSimTest, IFramePreferredColorScheme) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(
