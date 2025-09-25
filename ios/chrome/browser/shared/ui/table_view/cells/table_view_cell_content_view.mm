@@ -179,18 +179,21 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _title.textColor =
       _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
   _title.numberOfLines = _configuration.titleNumberOfLines;
+  _title.enabled = !_configuration.textDisabled;
 
   _subtitle.hidden = !_configuration.subtitle;
   _subtitle.text = _configuration.subtitle;
   _subtitle.textColor =
       _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
   _subtitle.numberOfLines = _configuration.subtitleNumberOfLines;
+  _subtitle.enabled = !_configuration.textDisabled;
 
   _trailingLabel.hidden = !_configuration.trailingText;
   _trailingLabel.text = _configuration.trailingText;
   _trailingLabel.textColor = _configuration.trailingTextColor
                                  ?: [UIColor colorNamed:kTextSecondaryColor];
   _trailingLabel.numberOfLines = _configuration.trailingTextNumberOfLines;
+  _trailingLabel.enabled = !_configuration.textDisabled;
 }
 
 // Updates the elements based on a change in the content size.

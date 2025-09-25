@@ -24,14 +24,17 @@
 // The updates to properties must be reflected in the copy method.
 // LINT.IfChange(Copy)
 
+// The leading content configuration for the cell.
+@property(nonatomic, copy) id<UIContentConfiguration> leadingConfiguration;
+
+// Whether the labels should be disabled (change text color). Default NO.
+@property(nonatomic, assign, getter=isTextDisabled) BOOL textDisabled;
+
 // The title of the cell.
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, strong) UIColor* titleColor;
 // Defaults to 0 (unlimited).
 @property(nonatomic, assign) NSInteger titleNumberOfLines;
-
-// The leading content configuration for the cell.
-@property(nonatomic, copy) id<UIContentConfiguration> leadingConfiguration;
 
 // The subtitle of the cell.
 @property(nonatomic, copy) NSString* subtitle;

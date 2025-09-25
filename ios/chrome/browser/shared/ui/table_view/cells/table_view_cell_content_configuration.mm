@@ -63,10 +63,11 @@
       [[TableViewCellContentConfiguration allocWithZone:zone] init];
   // The updates to properties must be reflected in the copy method.
   // LINT.IfChange(Copy)
+  copy.leadingConfiguration = [self.leadingConfiguration copyWithZone:zone];
+  copy.textDisabled = self.textDisabled;
   copy.title = self.title;
   copy.titleColor = self.titleColor;
   copy.titleNumberOfLines = self.titleNumberOfLines;
-  copy.leadingConfiguration = [self.leadingConfiguration copyWithZone:zone];
   copy.subtitle = self.subtitle;
   copy.subtitleColor = self.subtitleColor;
   copy.subtitleNumberOfLines = self.subtitleNumberOfLines;
@@ -93,6 +94,10 @@
   }
 
   return [parts componentsJoinedByString:@", "];
+}
+
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  return @[ self.title ];
 }
 
 @end

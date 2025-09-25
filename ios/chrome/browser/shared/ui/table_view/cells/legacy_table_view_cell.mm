@@ -61,5 +61,19 @@ const CGFloat kTableViewCustomSeparatorHeight = 0.5;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.useCustomSeparator = NO;
+  self.userInteractionEnabled = YES;
+  self.accessibilityLabel = nil;
+  self.accessibilityUserInputLabels = nil;
 }
+
+#pragma mark - Accessibility
+
+- (UIAccessibilityTraits)accessibilityTraits {
+  UIAccessibilityTraits accessibilityTraits = super.accessibilityTraits;
+  if (!self.isUserInteractionEnabled) {
+    accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+  }
+  return accessibilityTraits;
+}
+
 @end

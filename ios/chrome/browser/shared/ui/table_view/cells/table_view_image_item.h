@@ -34,17 +34,4 @@
 
 @end
 
-// TableViewImageCell contains a favicon, a text, an optional detail text and an
-// optional chevron.
-@interface TableViewImageCell : LegacyTableViewCell
-
-// The cell favicon imageView.
-@property(nonatomic, readonly, strong) UIImageView* imageView;
-// The cell text.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-// The cell detail text.
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
-
-@end
-
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_IMAGE_ITEM_H_
