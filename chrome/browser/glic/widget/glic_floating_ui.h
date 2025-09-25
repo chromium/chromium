@@ -7,8 +7,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

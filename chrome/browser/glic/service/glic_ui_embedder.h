@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_HOST_GLIC_UI_EMBEDDER_H_
-#define CHROME_BROWSER_GLIC_HOST_GLIC_UI_EMBEDDER_H_
+#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_EMBEDDER_H_
+#define CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_EMBEDDER_H_
 
 #include <memory>
 
@@ -31,7 +31,7 @@ class GlicUiEmbedder {
 
   virtual ~GlicUiEmbedder() = default;
 
-  // Returns the Host::Delegate if this embedder uses one.
+  // Returns the Host::EmbedderDelegate if this embedder uses one.
   virtual Host::EmbedderDelegate* GetHostEmbedderDelegate() = 0;
 
   // Show the glic UI.
@@ -45,4 +45,4 @@ class GlicUiEmbedder {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_HOST_GLIC_UI_EMBEDDER_H_
+#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_UI_EMBEDDER_H_

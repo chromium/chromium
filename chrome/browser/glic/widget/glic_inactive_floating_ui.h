@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_FLOATING_UI_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_FLOATING_UI_H_
 
-#include "chrome/browser/glic/host/glic_ui_embedder.h"
+#include "chrome/browser/glic/service/glic_ui_embedder.h"
 
 namespace glic {
 

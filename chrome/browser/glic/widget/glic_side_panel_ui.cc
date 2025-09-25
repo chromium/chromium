@@ -5,8 +5,8 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
 #include "base/notimplemented.h"
-#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
