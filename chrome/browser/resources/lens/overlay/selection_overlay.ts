@@ -1013,6 +1013,14 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       this.resizeSelectionCanvases(
           this.selectionOverlayRect.width, this.selectionOverlayRect.height);
 
+      // If the overlay was set to closed and a resize event is received,
+      // the overlay is no longer closing and instead being reshown.
+      if (this.isClosing) {
+        requestAnimationFrame(() => {
+          this.isClosing = false;
+        });
+      }
+
       this.handleResizeRequestId = undefined;
     });
   }
@@ -1328,6 +1336,24 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.canvasWidth = window.innerWidth;
     this.canvasHeight = window.innerHeight;
 
+    // If the screenshot was rendered before, this is a screenshot update
+    // and the overlay needs to be updated to the new bounds.
+    if (this.isScreenshotRendered) {
+      // Update our cached selection overlay rect to the new bounds.
+      this.updateSelectionOverlayRect();
+      this.resizeSelectionCanvases(
+          this.selectionOverlayRect.width, this.selectionOverlayRect.height);
+
+      // If the bitmap size does not match the viewport size, then do not remove
+      // the isClosing state. This will instead be done on resize.
+      if (this.canvasWidth === this.selectionOverlayRect.width &&
+          this.canvasHeight === this.selectionOverlayRect.height) {
+        this.isClosing = false;
+      }
+      return;
+    }
+
+    // This is the first time the screenshot has been rendered.
     this.isScreenshotRendered = true;
     this.onImageRendered();
   }

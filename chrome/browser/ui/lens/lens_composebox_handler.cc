@@ -78,6 +78,10 @@ void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
   // in Lens.
 }
 
+void LensComposeboxHandler::HandleLensButtonClick() {
+  lens_composebox_controller_->ShowLensSelectionOverlay();
+}
+
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
   NOTREACHED();

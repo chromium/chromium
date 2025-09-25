@@ -107,6 +107,10 @@ class LensSearchController {
       const gfx::Rect& region_bounds,
       const SkBitmap& region_bitmap);
 
+  // Opens the Lens overlay in the current session. This is a no-op if the
+  // overlay is already open or if the current Lens session is not active.
+  void OpenLensOverlayInCurrentSession();
+
   // Starts the contextualization flow without the overlay being shown to the
   // user. Virtual for testing.
   virtual void StartContextualization(

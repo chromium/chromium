@@ -28,6 +28,9 @@ interface PageHandler {
   FocusChanged(bool focused);
   // Called when the user enables deep search mode.
   SetDeepSearchMode(bool enabled);
+
+  // Called when the Lens button is clicked in the composebox.
+  HandleLensButtonClick();
 };
 
 // NewTabPage WebUI-side handler for requests from the browser.

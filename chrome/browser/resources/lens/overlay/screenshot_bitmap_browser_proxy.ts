@@ -45,6 +45,10 @@ export class ScreenshotBitmapBrowserProxyImpl implements
   }
 
   fetchScreenshot(callback: ScreenshotReceivedCallback): void {
+    // Store the callback for calling if the screenshot updates or when the
+    // screenshot is ready if the below check fails.
+    this.callbacks.push(callback);
+
     if (this.screenshot) {
       // We need to make a new bitmap because each canvas takes ownership of the
       // bitmap, so it cannot be drawn to multiple HTMLCanvasElement.
@@ -53,9 +57,6 @@ export class ScreenshotBitmapBrowserProxyImpl implements
       });
       return;
     }
-
-    // Queue the callback for when the screenshot is ready.
-    this.callbacks.push(callback);
   }
 
   private async screenshotDataReceived(screenshotData:
@@ -101,10 +102,5 @@ export class ScreenshotBitmapBrowserProxyImpl implements
         callback(bitmap);
       });
     }
-    this.callbacks = [];
-
-    // Stop listening for new screenshots.
-    assert(BrowserProxyImpl.getInstance().callbackRouter.removeListener(
-        this.screenshotListenerId));
   }
 }

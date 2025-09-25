@@ -560,6 +560,11 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // side panel is bound.
   void HideOverlayAndMaybeSetHiddenState();
 
+  // Should only be called when the overlay is in kHidden state. This will
+  // reshow the overlay using the current viewport screenshot and page context
+  // on the live page.
+  void ReshowOverlay();
+
  private:
   // Data class for constructing overlay and storing overlay state for
   // kSuspended state.
@@ -671,36 +676,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
       AutocompleteMatchType::Type match_type,
       bool is_zero_prefix_suggestion,
       lens::LensOverlayInvocationSource invocation_source);
-
-  // Fetches the bounding boxes of all images within the current viewport.
-  void FetchViewportImageBoundingBoxes(
-      std::optional<base::TimeTicks> bounding_box_start_time,
-      const SkBitmap& bitmap);
-
-  // Gets the current page number if viewing a PDF.
-  void GetPdfCurrentPage(
-      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-          chrome_render_frame,
-      int attempt_id,
-      const SkBitmap& bitmap,
-      std::optional<base::TimeTicks> bounding_box_start_time,
-      const std::vector<gfx::Rect>& bounds);
-
-  // Called once a screenshot has been captured. This should trigger transition
-  // to kOverlay. As this process is asynchronous, there are edge cases that can
-  // result in multiple in-flight screenshot attempts. We record the
-  // `attempt_id` for each attempt so we can ignore all but the most recent
-  // attempt.
-  // `chrome_render_frame` is added to keep the InterfacePtr alive during the
-  // IPC call in FetchViewportImageBoundingBoxes().
-  void DidCaptureScreenshot(
-      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-          chrome_render_frame,
-      int attempt_id,
-      const SkBitmap& bitmap,
-      const std::vector<gfx::Rect>& bounds,
-      std::optional<base::TimeTicks> pdf_page_start_time,
-      std::optional<uint32_t> pdf_current_page);
 
   // Process the bitmap and creates all necessary data to initialize the
   // overlay. Happens on a separate thread to prevent main thread from hanging.
@@ -954,6 +929,13 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
                          const SkBitmap& bitmap,
                          const std::vector<gfx::Rect>& all_bounds,
                          std::optional<uint32_t> pdf_current_page);
+
+  // Part 2 of reshowing the overlay. Called after the screenshot and page
+  // context has been updated.
+  void ReshowOverlayPart2();
+  // Part 3 of reshowing the overlay. Called after the RGB bitmap has been
+  // created.
+  void ReshowOverlayPart3(const SkBitmap& rgb_bitmap);
 
   // Shorthand to grab the LensSearchboxController for this instance of Lens.
   lens::LensSearchboxController* GetLensSearchboxController();

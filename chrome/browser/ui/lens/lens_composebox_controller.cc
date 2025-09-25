@@ -153,6 +153,10 @@ void LensComposeboxController::OnAimMessage(
   }
 }
 
+void LensComposeboxController::ShowLensSelectionOverlay() {
+  lens_search_controller_->OpenLensOverlayInCurrentSession();
+}
+
 lens::LensSessionMetricsLogger*
 LensComposeboxController::GetSessionMetricsLogger() {
   return lens_search_controller_->lens_session_metrics_logger();

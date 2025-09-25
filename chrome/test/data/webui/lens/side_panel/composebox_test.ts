@@ -628,4 +628,38 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
     assertEquals(input.value, 'match 1');
   });
+
+  test('LensButtonClickNotifiesHandler', async () => {
+    loadTimeData.overrideValues(
+        {enableAimSearchbox: true, showLensButton: true});
+    const composebox = await setupTest();
+
+    const lensButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+    assertTrue(!!lensButton);
+
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+
+    // The button should not be visible initially while the composebox is
+    // collapsed.
+    assertFalse(isTrulyVisible(lensButton));
+
+    // Focusing the input should expand the composebox.
+    const expandPromise =
+        getTransitionEndPromise(animatedElement, 'max-height');
+    input.focus();
+    await expandPromise;
+
+    assertTrue(isTrulyVisible(lensButton));
+
+    lensButton.click();
+    await mockPageHandler.whenCalled('handleLensButtonClick');
+    assertEquals(1, mockPageHandler.getCallCount('handleLensButtonClick'));
+  });
 });

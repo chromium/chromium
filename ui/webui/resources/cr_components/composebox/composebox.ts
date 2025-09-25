@@ -557,7 +557,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onLensClick_() {
-    // TODO(crbug.com/445698141): Open the Lens overlay selection state.
+    this.pageHandler_.handleLensButtonClick();
   }
 
   protected onDeepSearchClick_() {

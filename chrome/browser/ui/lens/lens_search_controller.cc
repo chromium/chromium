@@ -138,11 +138,11 @@ void LensSearchController::OpenLensOverlay(
   CheckInitialized(initialized_);
 
   // If the eligibility checks fail, do not procced with opening any UI.
-  if (!IsOff() || !RunLensEligibilityChecks(
-                      invocation_source,
-                      /*permission_granted_callback=*/base::BindRepeating(
-                          &LensSearchController::OpenLensOverlay,
-                          weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
+  if (!RunLensEligibilityChecks(
+          invocation_source,
+          /*permission_granted_callback=*/base::BindRepeating(
+              &LensSearchController::OpenLensOverlay,
+              weak_ptr_factory_.GetWeakPtr(), invocation_source))) {
     return;
   }
 
@@ -163,7 +163,7 @@ void LensSearchController::OpenLensOverlay(
 
   // If the overlay is already active, don't start a new session. This can
   // happen if the side panel is open and the user reinvokes the overlay.
-  if (!lens_overlay_controller_->IsOverlayActive()) {
+  if (IsOff()) {
     // Setup all state necessary for this Lens session.
     StartLensSession(invocation_source);
   }
@@ -206,6 +206,14 @@ void LensSearchController::OpenLensOverlayWithPendingRegion(
   lens_overlay_controller_->ShowUIWithPendingRegion(
       lens_overlay_query_controller_.get(), invocation_source,
       std::move(region), region_bitmap);
+}
+
+void LensSearchController::OpenLensOverlayInCurrentSession() {
+  if (IsOff() || lens_overlay_controller_->IsOverlayShowing()) {
+    return;
+  }
+
+  lens_overlay_controller_->ReshowOverlay();
 }
 
 void LensSearchController::StartContextualization(

@@ -58,6 +58,9 @@ class LensComposeboxController {
   // Handles AIM messages from the side panel remote UI.
   void OnAimMessage(const std::vector<uint8_t>& message);
 
+  // Shows the Lens selection overlay. A no-op if it is already open.
+  void ShowLensSelectionOverlay();
+
   // Returns the session metrics logger for the current Lens session.
   LensSessionMetricsLogger* GetSessionMetricsLogger();
 

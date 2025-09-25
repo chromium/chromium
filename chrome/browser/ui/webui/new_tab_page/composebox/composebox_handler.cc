@@ -123,6 +123,10 @@ void ComposeboxHandler::FocusChanged(bool focused) {
   // connected/disconnected from the DOM, so this is not needed.
 }
 
+void ComposeboxHandler::HandleLensButtonClick() {
+  // Ignore, intentionally unimplemented for NTP.
+}
+
 void ComposeboxHandler::OpenUrl(GURL url,
                                 const WindowOpenDisposition disposition) {
   content::OpenURLParams params(url, content::Referrer(), disposition,

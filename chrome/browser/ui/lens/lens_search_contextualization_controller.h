@@ -183,6 +183,9 @@ class LensSearchContextualizationController {
 
   bool IsActive() const { return state_ == State::kActive; }
 
+  // Returns the most recent viewport screenshot.
+  const SkBitmap& viewport_screenshot() { return viewport_screenshot_; }
+
  protected:
   // The page context eligibility API if it has been fetched. Can be nullptr.
   // This is marked protected so that it can be accessed by the test

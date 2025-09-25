@@ -348,6 +348,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
+      callbackRouter.screenshotDataReceived.addListener(() => {
+        // If the overlay was previously closed, then reset the state.
+        if (this.isClosing) {
+          this.isClosing = false;
+        }
+      }),
       callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
       callbackRouter.pageContentTypeChanged.addListener(

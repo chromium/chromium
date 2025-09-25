@@ -439,3 +439,42 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       "Lens.Composebox.UserActionInSession",
       lens::LensComposeboxUserAction::kQuerySubmitted, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       LensButtonClickReshowsOverlay) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Hide the overlay. The state should transition to hidden since the side
+  // panel is open.
+  lens_controller->HideOverlay(
+      lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kHidden; }));
+
+  // Simulate Lens button click. This should reshow the overlay.
+  GetLensComposeboxController()
+      ->composebox_handler_for_testing()
+      ->HandleLensButtonClick();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+}

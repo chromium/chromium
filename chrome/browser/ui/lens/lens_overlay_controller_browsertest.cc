@@ -7580,9 +7580,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  // Verify we entered the live page state.
+  // Overlay should remain in off state.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kHidden; }));
+      [&]() { return controller->state() == State::kOff; }));
 
   // Make another query to build the history stack.
   content::TestNavigationObserver observer(
@@ -7643,9 +7643,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::WaitForLoadStop(
       controller->GetSidePanelWebContentsForTesting()));
 
-  // Verify we entered the live page state.
+  // Overlay should remain in off state.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kHidden; }));
+      [&]() { return controller->state() == State::kOff; }));
 
   // Make another query to build the history stack.
   content::TestNavigationObserver observer(
@@ -9395,4 +9395,54 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToWebuiBound", 1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.TimeToCloseOpenedSidePanel",
                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ReshowOverlay) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Get the first screenshot.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  SkBitmap first_screenshot =
+      fake_controller->fake_overlay_page_.last_received_screenshot_;
+  EXPECT_FALSE(first_screenshot.isNull());
+
+  // Make a searchbox query to open the side panel and hide the overlay.
+  controller->IssueSearchBoxRequestForTesting(
+      kTestTime, "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      /*additional_query_params=*/{});
+
+  // Wait for the side panel to load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify transitions to hidden state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kHidden; }));
+  EXPECT_FALSE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Reset the screenshot in the fake page to verify a new one is sent.
+  fake_controller->fake_overlay_page_.last_received_screenshot_.reset();
+
+  // Opening the overlay in the current session should reshow the overlay.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Verify a new screenshot was sent.
+  EXPECT_FALSE(
+      fake_controller->fake_overlay_page_.last_received_screenshot_.isNull());
 }
