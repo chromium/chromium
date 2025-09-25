@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
@@ -29,7 +30,7 @@ void FreeNativePixmapForTesting(
 
 MappableBufferNativePixmap::MappableBufferNativePixmap(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
     : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
@@ -55,11 +56,15 @@ MappableBufferNativePixmap::CreateFromHandle(
     gfx::ClientNativePixmapFactory* client_native_pixmap_factory,
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory->ImportFromHandle(
-          std::move(handle).native_pixmap_handle(), size, format, usage);
+          std::move(handle).native_pixmap_handle(), size, buffer_format, usage);
   if (!native_pixmap) {
     return nullptr;
   }
@@ -71,21 +76,21 @@ MappableBufferNativePixmap::CreateFromHandle(
 // static
 base::OnceClosure MappableBufferNativePixmap::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    gfx::BufferFormat buffer_format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
                ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
-                                    format, usage);
+                                    buffer_format, usage);
+  viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
   if (!pixmap) {
     // https://crrev.com/c/5348599
     // In some format + usage combination the pixmap may be null. For example,
     // YUV_420_BIPLANAR + SCANOUT_CAMERA_READ_WRITE may fail to allocate because
     // only some of platform supports that.
-    LOG(WARNING) << "Failed to allocate pixmap "
-                 << gfx::BufferFormatToString(format) << " + "
+    LOG(WARNING) << "Failed to allocate pixmap " << format.ToString() << " + "
                  << gfx::BufferUsageToString(usage);
   } else {
     *handle = gfx::GpuMemoryBufferHandle(pixmap->ExportHandle());
@@ -102,13 +107,12 @@ bool MappableBufferNativePixmap::Map() {
     return true;
   }
 
-  if (gfx::NumberOfPlanesForLinearBufferFormat(format_) !=
-      pixmap_->GetNumberOfPlanes()) {
+  if (format_.NumberOfPlanes() !=
+      static_cast<int>(pixmap_->GetNumberOfPlanes())) {
     // RGBX8888 and BGR_565 allocates 2 planes while the gfx function returns 1
-    LOG(WARNING) << "Mismatched plane count "
-                 << gfx::BufferFormatToString(format_) << " expected "
-                 << gfx::NumberOfPlanesForLinearBufferFormat(format_)
-                 << " value " << pixmap_->GetNumberOfPlanes();
+    LOG(WARNING) << "Mismatched plane count " << format_.ToString()
+                 << " expected " << format_.NumberOfPlanes() << " value "
+                 << pixmap_->GetNumberOfPlanes();
   }
 
   if (!pixmap_->Map()) {

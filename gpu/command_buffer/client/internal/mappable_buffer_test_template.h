@@ -98,7 +98,7 @@ class MappableBufferTest : public testing::Test {
       case gfx::NATIVE_PIXMAP:
         return MappableBufferNativePixmap::CreateFromHandleForTesting(
             client_native_pixmap_factory_.get(), std::move(handle), size,
-            format, usage);
+            viz::GetSharedImageFormat(format), usage);
 #endif
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE:

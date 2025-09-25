@@ -313,15 +313,12 @@ ClientSharedImage::CreateMappableBufferFromHandle(
 #endif
 #if BUILDFLAG(IS_OZONE)
     case gfx::NATIVE_PIXMAP: {
-      auto buffer_format =
-          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-              format);
       // NOTE: This is not used beyond the lifetime of CreateFromHandle().
       auto client_native_pixmap_factory =
           ui::CreateClientNativePixmapFactoryOzone();
       return MappableBufferNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory.get(), std::move(handle), size,
-          buffer_format, usage);
+          client_native_pixmap_factory.get(), std::move(handle), size, format,
+          usage);
     }
 #endif
 #if BUILDFLAG(IS_WIN)

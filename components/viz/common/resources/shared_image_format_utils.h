@@ -10,6 +10,7 @@
 
 namespace gpu {
 class ClientSharedImage;
+class MappableBufferNativePixmap;
 class SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
 class SharedImageFormatRestrictedUtilsAccessor;
 class TestSharedImageInterface;
@@ -132,6 +133,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
   friend class gpu::ClientSharedImage;
   friend class gpu::SharedImageFormatToBufferFormatRestrictedUtilsAccessor;
   friend class gpu::TestSharedImageInterface;
+  friend class gpu::MappableBufferNativePixmap;
   friend class ui::WaylandOverlayManager;
 
   // BufferFormat is being transitioned out of SharedImage code (to use
