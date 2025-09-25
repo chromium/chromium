@@ -1384,6 +1384,8 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
     bool success,
     std::unique_ptr<GlobalMemoryDump> dump) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("Memory.MemoryDumpSuccess", success);
+
   if (!success) {
     return;
   }

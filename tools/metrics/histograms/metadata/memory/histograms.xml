@@ -2030,6 +2030,20 @@ chromium-metrics-reviews@google.com.
   <summary>The memory size freed by each low memory kill event.</summary>
 </histogram>
 
+<histogram name="Memory.MemoryDumpSuccess" enum="Boolean"
+    expires_after="2025-12-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether an attempt to gather a memory dump to emit memory metrics was
+    successful. Recorded at Poisson sampled time intervals with a mean of 5
+    minutes on Android and 30 minutes on other platforms. Many other memory
+    metrics, including Memory.*.PrivateMemoryFootprint, will not be recorded
+    when this is false. This can be used as a diagnosis metric when the count of
+    other memory metrics drops.
+  </summary>
+</histogram>
+
 <histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
     units="KB" expires_after="2026-02-01">
   <owner>lizeb@chromium.org</owner>
