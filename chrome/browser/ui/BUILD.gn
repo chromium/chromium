@@ -4750,7 +4750,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/sharing_hub:impl",
-      "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/permissions/chip:impl",
       "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/window_name_prompt",

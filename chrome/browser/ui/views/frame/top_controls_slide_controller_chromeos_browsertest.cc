@@ -418,9 +418,10 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     EXPECT_EQ(top_container_bounds.height(), top_controls_height);
 
     const int top_container_bottom = top_container_bounds.bottom();
-    const gfx::Rect& contents_container_bounds =
-        browser_view->contents_container()->bounds();
-    EXPECT_EQ(top_container_bottom, contents_container_bounds.y());
+    const int& contents_container_bounds =
+        browser_view->main_container()->bounds().y() -
+        browser_view->contents_container()->bounds().y();
+    EXPECT_EQ(top_container_bottom, contents_container_bounds);
 
     if (shown_state == TopChromeShownState::kFullyHidden) {
       // Top container is shifted up.

@@ -244,6 +244,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* vertical_tab_strip_container,
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
+    views::View* main_container,
     views::View* contents_container,
     MultiContentsView* multi_contents_view,
     views::View* left_aligned_side_panel_separator,
@@ -261,6 +262,7 @@ BrowserViewLayout::BrowserViewLayout(
       vertical_tab_strip_container_(vertical_tab_strip_container),
       toolbar_(toolbar),
       infobar_container_(infobar_container),
+      main_container_(main_container),
       contents_container_(contents_container),
       multi_contents_view_(multi_contents_view),
       unified_side_panel_(unified_side_panel),
@@ -376,6 +378,8 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   UpdateTopContainerBounds(available_bounds);
 
   // Layout the contents container in the remaining space.
+  // Ensure `available_bounds` has the correct height.
+  available_bounds.set_height(available_bounds.height() - available_bounds.y());
   LayoutContentsContainerView(available_bounds);
 
   // This must be done _after_ we lay out the WebContents since this
@@ -442,8 +446,12 @@ BrowserViewLayout::GetChildViewsInPaintOrder(const views::View* host) const {
   // controls are in fact drawn on top of the web contents.
   if (delegate_->IsWindowControlsOverlayEnabled()) {
     auto top_container_iter = std::ranges::find(result, top_container_);
-    auto contents_container_iter =
-        std::ranges::find(result, contents_container_);
+
+    // TODO(crbug.com/445446905): For now `main_container_` only holds
+    // `contents_container_` and side panel related views. Once we are further
+    // along in the ToolbarHeightSidePanel effort, this function should be
+    // revisited and updated accordingly.
+    auto contents_container_iter = std::ranges::find(result, main_container_);
     CHECK(contents_container_iter != result.end());
     // When in Immersive Fullscreen `top_container_` might not be one of our
     // children at all. While Window Controls Overlay shouldn't be enabled in
@@ -718,8 +726,6 @@ BrowserViewLayout::ContentsContainerLayoutResult
 BrowserViewLayout::CalculateContentsContainerLayout(
     const gfx::Rect& available_bounds) const {
   gfx::Rect contents_container_bounds = available_bounds;
-  contents_container_bounds.set_height(available_bounds.height() -
-                                       available_bounds.y());
   int vertical_tab_offset = 0;
   if (tabs::IsVerticalTabsFeatureEnabled() && ShouldDisplayVerticalTabs()) {
     vertical_tab_offset = BrowserView::kVerticalTabStripWidth;
@@ -835,12 +841,12 @@ BrowserViewLayout::CalculateContentsContainerLayout(
 void BrowserViewLayout::LayoutContentsContainerView(
     const gfx::Rect& available_bounds) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
-  // |contents_container_| contains web page contents and devtools.
-  // See browser_view.h for details.
+  // |main_contents_region_| contains web page contents, side panel and
+  // devtools. See browser_view.h for details.
+  main_container_->SetBoundsRect(available_bounds);
 
   BrowserViewLayout::ContentsContainerLayoutResult layout_result =
-      CalculateContentsContainerLayout(available_bounds);
-
+      CalculateContentsContainerLayout(main_container_->GetLocalBounds());
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
   if (unified_side_panel_) {

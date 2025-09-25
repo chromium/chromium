@@ -845,30 +845,33 @@ BrowserView::BrowserView(Browser* browser)
   top_container_separator_->SetProperty(views::kElementIdentifierKey,
                                         kContentsSeparatorTopEdgeElementId);
 
-  contents_container_ = AddChildView(std::move(contents_container));
+  main_container_ = AddChildView(std::make_unique<views::View>());
+  contents_container_ =
+      main_container_->AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
-  unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                             : SidePanel::HorizontalAlignment::kLeft));
+  unified_side_panel_ =
+      main_container_->AddChildView(std::make_unique<SidePanel>(
+          this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                                 : SidePanel::HorizontalAlignment::kLeft));
 
   // `MultiContentsView` owns separators when `SideBySide` is enabled.
   if (!multi_contents_view_) {
-    right_aligned_side_panel_separator_ =
-        AddChildView(ContentsSeparator::CreateContentsSeparator());
+    right_aligned_side_panel_separator_ = main_container_->AddChildView(
+        ContentsSeparator::CreateContentsSeparator());
     right_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kRightAlignedSidePanelSeparatorViewElementId);
 
-    left_aligned_side_panel_separator_ =
-        AddChildView(ContentsSeparator::CreateContentsSeparator());
+    left_aligned_side_panel_separator_ = main_container_->AddChildView(
+        ContentsSeparator::CreateContentsSeparator());
     left_aligned_side_panel_separator_->SetProperty(
         views::kElementIdentifierKey,
         kLeftAlignedSidePanelSeparatorViewElementId);
     side_panel_rounded_corner_ =
-        AddChildView(std::make_unique<ContentsRoundedCorner>(
+        main_container_->AddChildView(std::make_unique<ContentsRoundedCorner>(
             this, views::ShapeContextTokens::kContentSeparatorRadius,
             base::BindRepeating(&SidePanel::IsRightAligned,
                                 base::Unretained(unified_side_panel_))));
@@ -967,6 +970,7 @@ BrowserView::~BrowserView() {
   find_bar_host_view_ = nullptr;
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
+  main_container_ = nullptr;
   contents_container_view_ = nullptr;
   lens_overlay_view_ = nullptr;
   window_scrim_view_ = nullptr;
@@ -5128,7 +5132,7 @@ void BrowserView::AddedToWidget() {
           window_scrim_view_, top_container_, web_app_frame_toolbar_,
           web_app_window_title_, tab_strip_region_view_,
           vertical_tab_strip_container_, toolbar_, infobar_container_,
-          contents_container_, multi_contents_view_,
+          main_container_, contents_container_, multi_contents_view_,
           left_aligned_side_panel_separator_, unified_side_panel_,
           right_aligned_side_panel_separator_, side_panel_rounded_corner_,
           top_container_separator_));

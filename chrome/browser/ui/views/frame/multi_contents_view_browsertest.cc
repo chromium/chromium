@@ -466,15 +466,15 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/429495554): Flaky on Mac and Windows.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice \
-  DISABLED_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes \
+  DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes
 #else
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice \
-  EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice
+#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes \
+  EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes
 #endif
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
-    MAYBE_EnterAndExitFullscreenInSplitTabShouldOnlyResizeTwice) {
+    MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes) {
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/429495554): Investigate why this test failed on wayland.
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
@@ -520,8 +520,17 @@ IN_PROC_BROWSER_TEST_F(
       [this, split_tab]() { return GetResizeCount(split_tab) >= 2; }));
   RunScheduledLayouts();
 
-  // Should resized twice.
-  EXPECT_EQ(GetResizeCount(split_tab), 2);
+  // The WebContents is resized three times when entering and exiting fullscreen
+  // due to the layout process involving the new `main_container_`:
+  // 1. `BrowserViewLayout` sets the bounds of `main_container_`. The default
+  //    layout manager for `main_container_` immediately resizes its child,
+  //    `contents_container_`, to fit.
+  // 2. `BrowserViewLayout` then explicitly sets the bounds of
+  //    `contents_container_` itself, triggering a second layout.
+  // 3. `BrowserViewLayout` also updates separators in `MultiContentsView`,
+  //    which calls `InvalidateLayout()`, scheduling a final, asynchronous
+  //    layout pass.
+  EXPECT_EQ(GetResizeCount(split_tab), 3);
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {

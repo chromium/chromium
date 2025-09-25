@@ -41,6 +41,4 @@ source_set("frame") {
     "//components/tab_groups",
     "//ui/views",
   ]
-
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }

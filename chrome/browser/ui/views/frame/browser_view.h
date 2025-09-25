@@ -246,6 +246,8 @@ class BrowserView : public BrowserWindow,
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
 
+  views::View* main_container() { return main_container_; }
+
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
@@ -1222,6 +1224,12 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains all visible WebContents.
   raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
+
+  // The view that contains the main views of the browser not added to top
+  // container (WebContents, SidePanel, DevTools, etc.).
+  // TODO(crbug.com/445446905): Eventually this should include all views other
+  // than the TabStripRegionView such as the Toolbar, BookmarksBar, and InfoBar.
+  raw_ptr<views::View> main_container_ = nullptr;
 
   // The view that contains the Lens overlay. The Lens Overlay is a UI overlay
   // that is shown on top of the web contents. It therefore must always have the
