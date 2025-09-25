@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -256,12 +255,7 @@ class DiceWebSigninInterceptionBubblePixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  DiceWebSigninInterceptionBubblePixelTest() {
-    // TODO(crbug.com/444621383): Fix the test suite to work with the feature
-    // enabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+  DiceWebSigninInterceptionBubblePixelTest() = default;
 
   // DialogBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -391,9 +385,6 @@ class DiceWebSigninInterceptionBubblePixelTest
 
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
   std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
