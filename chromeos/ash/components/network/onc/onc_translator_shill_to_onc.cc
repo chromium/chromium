@@ -898,7 +898,8 @@ void ShillToONCTranslator::TranslateEap() {
         continue;
       }
       base::JSONReader::Result deserialized_dict =
-          base::JSONReader::ReadAndReturnValueWithError(*san_string);
+          base::JSONReader::ReadAndReturnValueWithError(
+              *san_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!deserialized_dict.has_value()) {
         LOG(ERROR) << "failed to deserialize " << san << " with error "
                    << deserialized_dict.error().ToString();

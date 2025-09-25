@@ -324,7 +324,8 @@ std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
   }
 
   base::JSONReader::Result value =
-      base::JSONReader::ReadAndReturnValueWithError(json_content);
+      base::JSONReader::ReadAndReturnValueWithError(
+          json_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json string with error: "
                         << value.error().ToString();

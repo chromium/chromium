@@ -165,7 +165,8 @@ void ProvisioningConfigFetcherImpl::OnDownloadToStringComplete(
   }
 
   base::JSONReader::Result response_result =
-      base::JSONReader::ReadAndReturnValueWithError(*response_body);
+      base::JSONReader::ReadAndReturnValueWithError(
+          *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response_result.has_value()) {
     LOG(ERROR) << "Provisioning JSONReader failed: "
                << response_result.error().message;

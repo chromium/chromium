@@ -184,7 +184,8 @@ void RecommendAppsFetcherImpl::OnDownloaded(
 
 std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     std::string_view response) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing response JSON: "

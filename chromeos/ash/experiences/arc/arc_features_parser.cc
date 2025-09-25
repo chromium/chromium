@@ -31,7 +31,8 @@ base::RepeatingCallback<std::optional<ArcFeatures>()>*
 std::optional<ArcFeatures> ParseFeaturesJson(std::string_view input_json) {
   ArcFeatures arc_features;
 
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(input_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      input_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Error parsing feature JSON: " << parsed_json.error().message;
     return std::nullopt;

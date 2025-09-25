@@ -384,7 +384,8 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     LOG(WARNING) << "No content for: " << package_name;
     return touch_injector;
   }
-  const auto result = base::JSONReader::ReadAndReturnValueWithError(json_file);
+  const auto result = base::JSONReader::ReadAndReturnValueWithError(
+      json_file, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(result.has_value())
       << "Could not load input overlay data file: " << result.error().message;
   if (!result.has_value() || !result->is_dict()) {

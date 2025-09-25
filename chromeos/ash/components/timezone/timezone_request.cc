@@ -228,8 +228,8 @@ bool ParseServerResponse(const GURL& server_url,
           << response_body;
 
   // Parse the response, ignoring comments.
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(response_body);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     PrintTimeZoneError(server_url,
                        "JSONReader failed: " + parsed_json.error().message,

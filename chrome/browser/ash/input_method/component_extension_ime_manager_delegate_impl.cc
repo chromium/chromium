@@ -214,7 +214,8 @@ std::optional<base::Value::Dict>
 ComponentExtensionIMEManagerDelegateImpl::ParseManifest(
     std::string_view manifest_string) {
   base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(manifest_string);
+      base::JSONReader::ReadAndReturnValueWithError(
+          manifest_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to parse manifest: " << result.error().message
                << " at line " << result.error().line << " column "

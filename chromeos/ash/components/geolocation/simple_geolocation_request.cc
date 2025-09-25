@@ -203,8 +203,8 @@ bool ParseServerResponse(const GURL& server_url,
           << response_body << "'";
 
   // Parse the response, ignoring comments.
-  auto response_result =
-      base::JSONReader::ReadAndReturnValueWithError(response_body);
+  auto response_result = base::JSONReader::ReadAndReturnValueWithError(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response_result.has_value()) {
     PrintGeolocationError(
         server_url, "JSONReader failed: " + response_result.error().message,

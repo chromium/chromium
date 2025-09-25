@@ -12976,8 +12976,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::string double_tap_actions_json =
       base::StringPrintf(kActionsTemplate, tap_position.x(), tap_position.y(),
                          tap_position.x(), tap_position.y());
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(double_tap_actions_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      double_tap_actions_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
   ActionsParser actions_parser(std::move(*parsed_json));
 

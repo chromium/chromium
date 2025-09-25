@@ -52,7 +52,8 @@ FullRestoreFileHandler::ReadFromFile() {
   // This JSON file is written by Chrome, so it is safe to deserialise it
   // in-process.
   base::JSONReader::Result full_restore_value =
-      base::JSONReader::ReadAndReturnValueWithError(full_restore_data);
+      base::JSONReader::ReadAndReturnValueWithError(
+          full_restore_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!full_restore_value.has_value()) {
     DVLOG(0)
         << "Fail to deserialize json value from string with error message: "

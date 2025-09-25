@@ -77,7 +77,8 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
   using extensions::api::file_system_provider_internal::
       GetActionsRequestedSuccess::Params;
 
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
 
   ASSERT_TRUE(parsed_json->is_list());

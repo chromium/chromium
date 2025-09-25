@@ -333,8 +333,8 @@ class TouchInjectorTest : public views::ViewsTestBase {
 };
 
 TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   CheckActions(injector_.get(), /*expect_size=*/2u,
                /*expect_types=*/{ActionType::TAP, ActionType::TAP},
@@ -456,8 +456,8 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   EXPECT_EQ(0, injector_->actions()[0]->id());
@@ -517,8 +517,8 @@ TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   // Extra Action with the same ID is removed.
   EXPECT_EQ(2, (int)injector_->actions().size());
@@ -672,8 +672,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->set_enable_mouse_lock(true);
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
@@ -742,8 +742,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(1u, injector_->actions().size());
   auto* action = injector_->actions()[0].get();
@@ -840,8 +840,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->set_enable_mouse_lock(true);
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
@@ -929,8 +929,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
-  const auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  const auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   const auto* first_action_ptr = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
@@ -994,8 +994,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
-  const auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
+  const auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   const auto* first_action_ptr = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
@@ -1062,8 +1062,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
 
 TEST_F(TouchInjectorTest, TestCleanupTouchEvents) {
   // Setup.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
   EXPECT_FALSE(GetHasPendingTouchEvents());
@@ -1096,8 +1096,8 @@ TEST_F(TouchInjectorTest, TestCleanupTouchEvents) {
 
 TEST_F(TouchInjectorTest, TestActivePlayMode) {
   // Setup.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
   EXPECT_FALSE(GetHasPendingTouchEvents());
@@ -1177,8 +1177,8 @@ TEST_F(TouchInjectorTest, TestActivePlayMode) {
 
 TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   // Change input binding on actions[1].
   auto new_input = InputElement::CreateActionTapKeyElement(ui::DomCode::US_C);
@@ -1226,8 +1226,8 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2, (int)injector_->actions().size());
   injector_->RegisterEventRewriter();
@@ -1264,8 +1264,8 @@ TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
 }
 
 TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsNo) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2, (int)injector_->actions().size());
   injector_->RegisterEventRewriter();
