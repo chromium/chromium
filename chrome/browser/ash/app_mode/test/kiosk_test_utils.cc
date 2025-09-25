@@ -62,8 +62,6 @@ namespace ash::kiosk::test {
 
 namespace {
 
-const char kTestUrl[] = "https://www.test.com";
-
 const extensions::Extension* FindInExtensionRegistry(Profile& profile,
                                                      std::string_view app_id) {
   return extensions::ExtensionRegistry::Get(&profile)->GetInstalledExtension(
@@ -96,6 +94,34 @@ class SessionInitializedWaiter : public KioskAppManagerObserver {
       observation_{this};
 };
 
+// Waits for the browser window to be hidden or destroyed.
+class TestBrowserHiddenWaiter : public views::WidgetObserver {
+ public:
+  explicit TestBrowserHiddenWaiter(Browser* browser) {
+    EXPECT_TRUE(browser->window()->IsVisible());
+    widget_observation_.Observe(browser->GetBrowserView().GetWidget());
+  }
+
+  ~TestBrowserHiddenWaiter() override { widget_observation_.Reset(); }
+
+  [[nodiscard]] bool WaitUntilHidden() { return future_.Wait(); }
+
+ private:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
+    if (!visible) {
+      future_.SetValue();
+    }
+  }
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget_observation_.Reset();
+    future_.SetValue();
+  }
+
+  base::ScopedObservation<views::Widget, WidgetObserver> widget_observation_{
+      this};
+  base::test::TestFuture<void> future_;
+};
+
 content::WebContents* GetActiveWebContents(const Browser& browser) {
   return browser.tab_strip_model()->GetActiveWebContents();
 }
@@ -110,9 +136,10 @@ void AddWebContentsToBrowser(Browser& browser, Profile& profile) {
                                             AddTabTypes::ADD_ACTIVE);
 }
 
-void TriggerNavigation(content::WebContents* web_contents) {
+void TriggerNavigationToUrl(content::WebContents* web_contents,
+                            const GURL& url) {
   web_contents->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(GURL(kTestUrl)));
+      content::NavigationController::LoadURLParams(url));
 }
 
 }  // namespace
@@ -300,6 +327,10 @@ bool DidKioskCloseNewWindow() {
   return new_window_closed.Take();
 }
 
+bool DidKioskHideNewWindow(Browser* browser) {
+  return TestBrowserHiddenWaiter(browser).WaitUntilHidden();
+}
+
 void CloseAppWindow(const KioskApp& app) {
   switch (app.id().type) {
     case KioskAppType::kChromeApp: {
@@ -361,18 +392,20 @@ AccountId CreateDeviceLocalAccountId(std::string_view account_id,
       policy::GenerateDeviceLocalAccountUserId(account_id, type)));
 }
 
-Browser& CreateRegularBrowser(Profile& profile) {
+Browser& CreateRegularBrowser(Profile& profile, const GURL& url) {
   Browser::CreateParams params(&profile, /*user_gesture=*/true);
   Browser& browser = CHECK_DEREF(Browser::Create(params));
   browser.window()->Show();
 
   AddWebContentsToBrowser(browser, profile);
-  TriggerNavigation(GetActiveWebContents(browser));
+  TriggerNavigationToUrl(GetActiveWebContents(browser), url);
 
   return browser;
 }
 
-Browser& CreatePopupBrowser(Profile& profile, const std::string& app_name) {
+Browser& CreatePopupBrowser(Profile& profile,
+                            const std::string& app_name,
+                            const GURL& url) {
   Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
       app_name,
       /*trusted_source=*/true,
@@ -382,7 +415,7 @@ Browser& CreatePopupBrowser(Profile& profile, const std::string& app_name) {
   browser.window()->Show();
 
   AddWebContentsToBrowser(browser, profile);
-  TriggerNavigation(GetActiveWebContents(browser));
+  TriggerNavigationToUrl(GetActiveWebContents(browser), url);
 
   return browser;
 }

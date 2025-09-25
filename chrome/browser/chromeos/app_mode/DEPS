@@ -45,6 +45,7 @@ include_rules = [
   "+chrome/browser/ui/extensions/application_launch.h",
   "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/browser/ui/web_applications",
+  "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/test",

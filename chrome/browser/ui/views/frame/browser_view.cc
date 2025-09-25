@@ -1318,7 +1318,7 @@ void BrowserView::ShowInactive() {
 }
 
 void BrowserView::Hide() {
-  // Not implemented.
+  browser_widget_->Hide();
 }
 
 bool BrowserView::IsVisible() const {

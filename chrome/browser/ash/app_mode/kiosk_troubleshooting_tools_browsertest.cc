@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "ash/shell.h"
 #include "base/run_loop.h"
@@ -33,6 +34,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "url/gurl.h"
 
 using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
@@ -43,6 +45,7 @@ using kiosk::test::CreatePopupBrowser;
 using kiosk::test::CreateRegularBrowser;
 using kiosk::test::CurrentProfile;
 using kiosk::test::DidKioskCloseNewWindow;
+using kiosk::test::DidKioskHideNewWindow;
 using kiosk::test::WaitKioskLaunched;
 
 namespace {
@@ -146,7 +149,7 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
     CurrentProfile().GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed,
                                             true);
     Browser& popup_browser =
-        CreatePopupBrowser(CurrentProfile(), browser()->app_name());
+        CreatePopupBrowser(CurrentProfile(), browser()->app_name(), GURL());
     EXPECT_FALSE(DidKioskCloseNewWindow());
     return popup_browser;
   }
@@ -266,18 +269,6 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(DidKioskCloseNewWindow());
   EXPECT_TRUE(IsLastActiveBrowserResizable());
-}
-
-IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
-                       NewWindowDisallowedNoShow) {
-  // Explicitly open a new window to make sure it will be closed.
-  CreateRegularBrowser(CurrentProfile());
-  EXPECT_TRUE(DidKioskCloseNewWindow());
-
-  histogram.ExpectBucketCount(
-      chromeos::kKioskNewBrowserWindowHistogram,
-      chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
-  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
@@ -403,6 +394,27 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(nullptr, GetTaskManagerView());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewDisallowedWindowShouldBeClosedIfNavigationHappens) {
+  // Explicitly open a new window to make sure it will be closed.
+  CreateRegularBrowser(CurrentProfile(), GURL("https://www.test.com"));
+  EXPECT_TRUE(DidKioskCloseNewWindow());
+
+  histogram.ExpectBucketCount(
+      chromeos::kKioskNewBrowserWindowHistogram,
+      chromeos::KioskBrowserWindowType::kClosedRegularBrowser, 1);
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       NewDisallowedWindowShouldBeHiddenIfNoNavigationHappens) {
+  // Explicitly open a new window to make sure it will be hidden.
+  Browser& browser = CreateRegularBrowser(CurrentProfile(), GURL());
+  EXPECT_TRUE(DidKioskHideNewWindow(&browser));
+
+  histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 0);
 }
 
 }  // namespace ash

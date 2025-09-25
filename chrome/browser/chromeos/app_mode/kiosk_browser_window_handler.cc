@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -28,11 +29,13 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace chromeos {
 
@@ -75,7 +78,8 @@ void CloseBrowser(Browser* browser) {
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 
-class NavigationWaiter : content::WebContentsObserver {
+class NavigationWaiter : public content::WebContentsObserver,
+                         public views::WidgetObserver {
  public:
   NavigationWaiter(Browser* browser, base::OnceClosure callback)
       : browser_(browser), callback_(std::move(callback)) {
@@ -94,6 +98,9 @@ class NavigationWaiter : content::WebContentsObserver {
       LOG(WARNING)
           << "New browser with empty url detected, Waiting for navigation.";
       Observe(GetActiveWebContents(browser));
+      // Observe the browser's widget visibility changes if someone wants to
+      // show it in between.
+      widget_observation_.Observe(browser->GetBrowserView().GetWidget());
     } else {
       RunCallback();
     }
@@ -101,7 +108,6 @@ class NavigationWaiter : content::WebContentsObserver {
 
   NavigationWaiter(const NavigationWaiter&) = delete;
   NavigationWaiter& operator=(const NavigationWaiter&) = delete;
-
  private:
   // content::WebContentsObserver
   void DidStartNavigation(content::NavigationHandle* navigation) override {
@@ -109,11 +115,33 @@ class NavigationWaiter : content::WebContentsObserver {
   }
 
   void RunCallback() {
+    // The callback should be called only once.
+    if (callback_.is_null()) {
+      return;
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
   }
 
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget,
+                                 bool visibility) override {
+    // If the browser's widget visibility is changing before the
+    // navigation is started, no need to wait for navigation,
+    // proceed to the triaging of browser window immediately.
+    // This prevents other non-navigation events, such as
+    // subsequent tabs, from showing the window before a URL-based
+    // decision can be made.
+    RunCallback();
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget_observation_.Reset();
+  }
+
   raw_ptr<Browser> browser_;
+  base::ScopedObservation<views::Widget, WidgetObserver> widget_observation_{
+      this};
   base::OnceClosure callback_;
 };
 
@@ -144,8 +172,12 @@ KioskBrowserWindowHandler::~KioskBrowserWindowHandler() {
   BrowserList::RemoveObserver(this);
 }
 
-bool KioskBrowserWindowHandler::TriageNewBrowserWindow(Browser* browser) {
+bool KioskBrowserWindowHandler::TriageNewSettingsBrowserWindow(
+    Browser* browser) {
   url_waiters_.erase(browser);
+  // It is safe to assume that no other tabs are present in `browser`, because
+  // creating a second tab causes the browser window to be shown, which would
+  // have caused the window to be closed before getting here.
   std::string url_string = GetUrlOfActiveTab(browser);
 
   if (KioskSettingsNavigationThrottle::IsSettingsPage(url_string)) {
@@ -156,12 +188,23 @@ bool KioskBrowserWindowHandler::TriageNewBrowserWindow(Browser* browser) {
     return WINDOW_ALLOWED;
   }
 
+  base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
+                                KioskBrowserWindowType::kClosedRegularBrowser);
+  LOG(WARNING) << "Force close browser opened in kiosk session"
+               << ", url=" << url_string;
+  CloseBrowserAndSetTimer(browser);
+  on_browser_window_added_callback_.Run(/*is_closing=*/true);
+  return !WINDOW_ALLOWED;
+}
+
+bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
+    Browser* browser) {
   if (IsNewBrowserWindowAllowed(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedRegularBrowser);
-    LOG(WARNING) << "Open additional fullscreen browser window in kiosk session"
-                 << ", url=" << url_string;
+    LOG(WARNING)
+        << "Open additional fullscreen browser window in kiosk session";
     chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return WINDOW_ALLOWED;
@@ -185,12 +228,6 @@ bool KioskBrowserWindowHandler::TriageNewBrowserWindow(Browser* browser) {
     return WINDOW_ALLOWED;
   }
 
-  base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
-                                KioskBrowserWindowType::kClosedRegularBrowser);
-  LOG(WARNING) << "Force close browser opened in kiosk session"
-               << ", url=" << url_string;
-  CloseBrowserAndSetTimer(browser);
-  on_browser_window_added_callback_.Run(/*is_closing=*/true);
   return !WINDOW_ALLOWED;
 }
 
@@ -257,6 +294,12 @@ void KioskBrowserWindowHandler::OnBrowserAdded(Browser* browser) {
 }
 
 void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
+  // URL may not be properly loaded yet. Pre-triage without it.
+  // If the window is allowed to be shown, do not wait for navigation.
+  if (PreTriageNewBrowserWindowWithoutUrl(browser)) {
+    return;
+  }
+
   // Hide the window until it is triaged.
   browser->window()->Hide();
 
@@ -264,12 +307,13 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
   // This URL is required for our triaging, so we'll wait for it.
   url_waiters_[browser] = std::make_unique<NavigationWaiter>(
       browser, base::BindOnce(
-                   &KioskBrowserWindowHandler::OnBrowserNavigationStarted,
+                   &KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded,
                    weak_ptr_factory_.GetWeakPtr(), base::Unretained(browser)));
 }
 
-void KioskBrowserWindowHandler::OnBrowserNavigationStarted(Browser* browser) {
-  if (TriageNewBrowserWindow(browser)) {
+void KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded(
+    Browser* browser) {
+  if (TriageNewSettingsBrowserWindow(browser)) {
     browser->window()->Show();
   }
 }

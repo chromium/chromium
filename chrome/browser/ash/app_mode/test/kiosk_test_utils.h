@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "url/gurl.h"
 
 namespace ash::kiosk::test {
 
@@ -113,6 +114,9 @@ Browser* OpenA11ySettings(Profile& profile);
 // `KioskSystemSession` decides to close it.
 [[nodiscard]] bool DidKioskCloseNewWindow();
 
+// Waits for a browser window to be hidden.
+[[nodiscard]] bool DidKioskHideNewWindow(Browser* browser);
+
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);
 
@@ -130,11 +134,14 @@ void CachePolicy(const std::string& account_id,
 AccountId CreateDeviceLocalAccountId(std::string_view account_id,
                                      policy::DeviceLocalAccountType type);
 
-// Opens a new browser window including navigation to a test url.
-Browser& CreateRegularBrowser(Profile& profile);
+// Opens a new browser window including navigation to the provided `url`.
+Browser& CreateRegularBrowser(Profile& profile, const GURL& url);
 
-// opens a new popup browser window belonging to the provided `app_name`.
-Browser& CreatePopupBrowser(Profile& profile, const std::string& app_name);
+// Opens a new popup browser window navigating to `url` belonging to the
+// provided `app_name`.
+Browser& CreatePopupBrowser(Profile& profile,
+                            const std::string& app_name,
+                            const GURL& url);
 
 }  // namespace ash::kiosk::test
 
