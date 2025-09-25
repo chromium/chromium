@@ -310,6 +310,7 @@ void GpuChannelMessageFilter::Destroy() {
   image_decode_accelerator_stub_->Shutdown();
 
   gpu_channel_ = nullptr;
+  scheduler_ = nullptr;
 }
 
 void GpuChannelMessageFilter::AddRoute(int32_t route_id,

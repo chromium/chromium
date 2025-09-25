@@ -132,7 +132,12 @@ void ImageDecodeAcceleratorStub::Shutdown() {
   scheduler_->DestroySequence(sequence_);
 
   base::AutoLock lock(lock_);
+
+  // Clear out raw_ptr references to objects that may be destroyed on the main
+  // thread before this object is destroyed on the IO thread.
   channel_ = nullptr;
+  worker_ = nullptr;
+  scheduler_ = nullptr;
 }
 
 ImageDecodeAcceleratorStub::~ImageDecodeAcceleratorStub() {
