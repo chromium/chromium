@@ -550,12 +550,6 @@ class PeopleHandlerTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
-  // TODO(crbug.com/444621374): Fix the test to work with the feature flag
-  // enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
@@ -573,7 +567,7 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
                                PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT));
   handler_->HandleStartSignin(base::Value::List());
 
-  // Sync setup hands off control to the gaia login tab.
+  // The sign-in flow setup hands off control to the gaia login tab.
   EXPECT_EQ(
       nullptr,
       LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
