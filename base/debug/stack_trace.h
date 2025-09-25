@@ -109,6 +109,9 @@ class BASE_EXPORT StackTrace {
   // symbolized frames when printing a stack trace.
   static bool WillSymbolizeToStreamForTesting();
 
+  // Initialize features.
+  static void InitializeFeatures();
+
   // Copying and assignment are allowed with the default functions.
 
   // Gets an array of instruction pointer values. |*count| will be set to the
