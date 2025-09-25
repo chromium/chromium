@@ -64,7 +64,12 @@ export class SearchboxActionElement extends CrLitElement {
     };
   }
 
-  accessor action: Action;
+  accessor action: Action = {
+    a11yLabel: {data: []},
+    hint: {data: []},
+    iconPath: '',
+    suggestionContents: {data: []},
+  };
   accessor actionIndex: number = -1;
   accessor matchIndex: number = -1;
   override accessor ariaLabel: string = '';

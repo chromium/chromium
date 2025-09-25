@@ -14,7 +14,7 @@ import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/o
 import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
+import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getCss} from './searchbox_match.css.js';
 import {getHtml} from './searchbox_match.html.js';
@@ -42,7 +42,6 @@ type ActionEvent = CustomEvent<{
   event: MouseEvent | KeyboardEvent,
   actionIndex: number,
 }>;
-
 
 export interface SearchboxMatchElement {
   $: {
@@ -172,7 +171,7 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor hasImage: boolean = false;
   accessor isEntitySuggestion: boolean = false;
   accessor isRichSuggestion: boolean = false;
-  accessor match: AutocompleteMatch;
+  accessor match: AutocompleteMatch = createAutocompleteMatch();
   accessor matchIndex: number = -1;
   accessor sideType: SideType = SideType.kDefaultPrimary;
   accessor showThumbnail: boolean = false;

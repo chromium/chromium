@@ -153,7 +153,7 @@ export class SearchboxIconElement extends CrLitElement {
   accessor isWeatherAnswer: boolean = false;
   accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
   accessor maskImage: string = '';
-  accessor match: AutocompleteMatch;
+  accessor match: AutocompleteMatch|null = null;
   protected accessor iconStyle_: string = '';
   protected accessor iconSrc_: string = '';
   private accessor iconLoading_: boolean = false;
@@ -242,7 +242,7 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeIsAnswer_(): boolean {
-    return this.match && !!this.match.answer;
+    return !!this.match && !!this.match.answer;
   }
 
   private computeIsWeatherAnswer_(): boolean {
@@ -255,7 +255,7 @@ export class SearchboxIconElement extends CrLitElement {
 
   private computeShowIconImg_(): boolean {
     // Lens searchbox should not use icon URL.
-    return !this.isLensSearchbox_ && this.match && !!this.match.iconUrl.url &&
+    return !this.isLensSearchbox_ && !!this.match && !!this.match.iconUrl.url &&
         !this.iconLoading_;
   }
 
@@ -352,7 +352,7 @@ export class SearchboxIconElement extends CrLitElement {
   protected getContainerBgColor_(): string {
     // If the match has an image dominant color, show that color in place of the
     // image until it loads. This helps the image appear to load more smoothly.
-    return (this.imageLoading_ && this.match.imageDominantColor) ?
+    return (this.imageLoading_ && this.match?.imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${this.match.imageDominantColor}40` :
         'transparent';

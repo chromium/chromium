@@ -3,39 +3,8 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {AutocompleteMatch, AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-
-export function createAutocompleteMatch(): AutocompleteMatch {
-  return {
-    a11yLabel: {data: []},
-    actions: [],
-    allowedToBeDefaultMatch: false,
-    isSearchType: false,
-    isEnterpriseSearchAggregatorPeopleType: false,
-    swapContentsAndDescription: false,
-    supportsDeletion: false,
-    suggestionGroupId: -1,  // Indicates a missing suggestion group Id.
-    contents: {data: []},
-    contentsClass: [{offset: 0, style: 0}],
-    description: {data: []},
-    descriptionClass: [{offset: 0, style: 0}],
-    destinationUrl: {url: ''},
-    inlineAutocompletion: {data: []},
-    fillIntoEdit: {data: []},
-    iconPath: '',
-    iconUrl: {url: ''},
-    imageDominantColor: '',
-    imageUrl: '',
-    isNoncannedAimSuggestion: false,
-    removeButtonA11yLabel: {data: []},
-    type: '',
-    isRichSuggestion: false,
-    isWeatherAnswerSuggestion: null,
-    answer: null,
-    tailSuggestCommonPrefix: null,
-  };
-}
 
 export function createAutocompleteResult(
     modifiers: Partial<AutocompleteResult> = {}): AutocompleteResult {
