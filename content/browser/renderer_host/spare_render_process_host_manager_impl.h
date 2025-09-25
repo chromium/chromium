@@ -208,7 +208,13 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void OnMetricsHeartbeatTimerFired();
 
 #if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(
+      SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
+      CorrectThresholdLogic);
   void OnApplicationStateChange(base::android::ApplicationState state);
+
+  bool ShouldCreateSpareRendererWithAvailableMemory(
+      int available_memory_mb) const;
 #endif
 
   // Checks various conditions that could prevent an embedder from using the

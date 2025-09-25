@@ -925,6 +925,45 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
 
 #if BUILDFLAG(IS_ANDROID)
 
+class SpareRenderProcessHostManagerMemoryThresholdBrowserTest
+    : public SpareRenderProcessHostManagerTestBase {
+ public:
+  SpareRenderProcessHostManagerMemoryThresholdBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAndroidWarmUpSpareRendererWithTimeout,
+        {{"spare_renderer_available_memory_threshold_enabled", "true"},
+         {"large_memory_device_threshold_mb", "4200"},
+         {"limited_memory_device_available_memory_threshold_mb", "100"},
+         {"large_memory_device_available_memory_threshold_mb", "150"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
+                       CorrectThresholdLogic) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::MiB(2048));
+    EXPECT_FALSE(
+        spare_manager.ShouldCreateSpareRendererWithAvailableMemory(50));
+    EXPECT_TRUE(
+        spare_manager.ShouldCreateSpareRendererWithAvailableMemory(120));
+  }
+
+  {
+    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+        base::MiB(8192));
+    EXPECT_FALSE(
+        spare_manager.ShouldCreateSpareRendererWithAvailableMemory(120));
+    EXPECT_TRUE(
+        spare_manager.ShouldCreateSpareRendererWithAvailableMemory(180));
+  }
+}
+
 class AndroidSpareRendererProcessHostManagerTest
     : public SpareRenderProcessHostManagerTest {
  public:
@@ -932,6 +971,7 @@ class AndroidSpareRendererProcessHostManagerTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kAndroidWarmUpSpareRendererWithTimeout,
         {
+            {"spare_renderer_available_memory_threshold_enabled", "false"},
             {features::kAndroidSpareRendererKillWhenBackgrounded.name, "true"},
             {features::kAndroidSpareRendererOnlyForNavigation.name, "true"},
         });
