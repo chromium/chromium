@@ -45,6 +45,17 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
+FormData ValidForm() {
+  return test::GetFormData(
+      {.fields = {
+           {.label = u"Email",
+            .name = u"email",
+            .nonce = u"test_nonce",
+            .value = u"Triggering field (filled)",
+            .form_control_type = FormControlType::kInputEmail},
+       }});
+}
+
 }  // namespace
 
 class EmailVerifierDelegateTest : public testing::Test {
@@ -87,15 +98,8 @@ class EmailVerifierDelegateTest : public testing::Test {
 TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   base::test::ScopedFeatureList feature_list{::features::kFedCmDelegation};
 
-  // TODO(crbug.com/380367784): Add support for setting nonce in
-  // test::GetFormData() and use it here and other tests.
-  FormData form_data;
-  FormFieldData field;
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_nonce(u"test_nonce");
-  form_data.set_fields({field});
+  FormData form_data = ValidForm();
+
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -125,13 +129,8 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kFedCmDelegation);
 
-  FormData form_data;
-  FormFieldData field;
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_nonce(u"test_nonce");
-  form_data.set_fields({field});
+  FormData form_data = ValidForm();
+
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -150,13 +149,8 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
 TEST_F(EmailVerifierDelegateTest, NotFillAction) {
   base::test::ScopedFeatureList feature_list{::features::kFedCmDelegation};
 
-  FormData form_data;
-  FormFieldData field;
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_nonce(u"test_nonce");
-  form_data.set_fields({field});
+  FormData form_data = ValidForm();
+
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -207,13 +201,14 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
 TEST_F(EmailVerifierDelegateTest, NotEmailField) {
   base::test::ScopedFeatureList feature_list{::features::kFedCmDelegation};
 
-  FormData form_data;
-  FormFieldData field;
-  field.set_label(u"Name");
-  field.set_name(u"name");
-  field.set_form_control_type(FormControlType::kInputText);
-  field.set_nonce(u"test_nonce");
-  form_data.set_fields({field});
+  FormData form_data =
+      test::GetFormData({.fields = {
+                             {.label = u"Email",
+                              .name = u"email",
+                              .nonce = u"test_nonce",
+                              .value = u"Triggering field (filled)"},
+                         }});
+
   manager_->AddSeenForm(form_data, {NAME_FULL});
   FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
@@ -235,13 +230,8 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
 TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   base::test::ScopedFeatureList feature_list{::features::kFedCmDelegation};
 
-  FormData form_data;
-  FormFieldData field;
-  field.set_label(u"Email");
-  field.set_name(u"email");
-  field.set_form_control_type(FormControlType::kInputEmail);
-  field.set_nonce(u"test_nonce");
-  form_data.set_fields({field});
+  FormData form_data = ValidForm();
+
   manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form = manager_->FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
