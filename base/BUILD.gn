@@ -4962,6 +4962,7 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
+
   android_library("time_utils_java") {
     sources = [ "android/java/src/org/chromium/base/TimeUtils.java" ]
   }
@@ -5231,6 +5232,18 @@ if (is_android) {
     cpp_package_name = "org/chromium/base/library_loader"
   }
 
+  # These files would make more sense to be in //ui/android but are required by
+  # other files in //base.
+  android_library("ui_java") {
+    sources = [ "android/java/src/org/chromium/base/ui/KeyboardUtils.java" ]
+    deps = [
+      ":log_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+    ]
+  }
+
   android_library("library_loader_java") {
     srcjar_deps = [
       ":library_loader_java_enums_srcjar",
@@ -5439,6 +5452,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":ui_java",
       "//testing/android/instrumentation:test_runner_java",
       "//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",

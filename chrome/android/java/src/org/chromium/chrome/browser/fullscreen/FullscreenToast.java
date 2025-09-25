@@ -9,11 +9,11 @@ import android.view.Gravity;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.Toast.ToastPriority;
