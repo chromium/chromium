@@ -247,6 +247,9 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
           this.setState(WebUiState.kBeginLoad);
         }
         break;
+      case 'loadError':
+        this.setState(WebUiState.kError);
+        break;
     }
   }
 

@@ -53,7 +53,9 @@ export type PageType =
     // A error page that should be displayed.
     |'guestError'
     // An error page that indicates access loss.
-    |'guestCaaError';
+    |'guestCaaError'
+    // The page could not be loaded.
+    |'loadError';
 
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
@@ -299,9 +301,10 @@ export class WebviewController {
 
     this.destroyHost(WebClientState.UNINITIALIZED);
 
-    if (this.webview.contentWindow) {
+    const origin = new URL(url).origin;
+    if (this.webview.contentWindow && origin !== 'null') {
       this.host = new GlicApiHost(
-          this.browserProxy, this.webview.contentWindow, new URL(url).origin,
+          this.browserProxy, this.webview.contentWindow, origin,
           this.hostEmbedder);
       this.hostSubscriber = this.host.getWebClientState().subscribe(state => {
         if (state === WebClientState.RESPONSIVE) {
@@ -311,6 +314,11 @@ export class WebviewController {
       });
     }
     this.browserProxy.handler.webviewCommitted({url});
+
+    if (!this.host) {
+      this.delegate.webviewPageCommit('loadError');
+      return;
+    }
 
     // TODO(https://crbug.com/388328847): Remove when login issues are
     // resolved.

@@ -911,6 +911,15 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(url.pathname, '/glic/browser_tests/test.html');
   }
 
+  async testNavigateToAboutBlank() {
+    // Navigation to about:blank will destroy this test client, so the code
+    // below will first allow this test function to return, and then navigate.
+    (async () => {
+      await sleep(100);
+      location.href = 'about:blank';
+    })();
+  }
+
   async testCallingApiWhileHiddenRecordsMetrics() {
     assertDefined(this.host.createTab);
     await this.advanceToNextStep();
