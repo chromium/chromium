@@ -157,6 +157,12 @@ TEST(ScalingUtilTest, CalculateDisplayPlacementNoScaleRight) {
       CalculateDisplayPlacement(CreateDisplayInfo(0, 0, 800, 600, 1.0f),
                                 CreateDisplayInfo(800, -168, 1024, 768, 1.0f)));
 
+  // Top and bottom edge aligned.
+  EXPECT_OFFSET_EQ(
+      DisplayPlacement(DisplayPlacement::RIGHT, 0, DisplayPlacement::TOP_LEFT),
+      CalculateDisplayPlacement(CreateDisplayInfo(0, 0, 800, 600, 1.0f),
+                                CreateDisplayInfo(800, 0, 800, 600, 1.0f)));
+
   // Offset to the top
   EXPECT_OFFSET_EQ(
       DisplayPlacement(DisplayPlacement::RIGHT,
@@ -374,6 +380,12 @@ TEST(ScalingUtilTest, CalculateDisplayPlacement2xScale) {
                        DisplayPlacement::TOP_LEFT),
       CalculateDisplayPlacement(CreateDisplayInfo(100, 50, 800, 600, 1.0f),
                                 CreateDisplayInfo(900, 50, 1000, 700, 2.0f)));
+
+  // Side by side same height to the right.
+  EXPECT_OFFSET_EQ(
+      DisplayPlacement(DisplayPlacement::RIGHT, 0, DisplayPlacement::TOP_LEFT),
+      CalculateDisplayPlacement(CreateDisplayInfo(100, 50, 800, 600, 1.0f),
+                                CreateDisplayInfo(900, 50, 800, 600, 2.0f)));
 
   // Side-by-side to the left.
   EXPECT_OFFSET_EQ(

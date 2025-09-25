@@ -208,16 +208,16 @@ class HeadlessModeBrowserTestWithScreenInfo : public HeadlessModeBrowserTest {
   }
 };
 
-#define HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(TEST_NAME, SCREEEN_INFO) \
-  class HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME                     \
-      : public HeadlessModeBrowserTestWithScreenInfo {                        \
-   public:                                                                    \
-    std::string GetScreenInfo() override {                                    \
-      return SCREEEN_INFO;                                                    \
-    }                                                                         \
-  };                                                                          \
-                                                                              \
-  IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME,   \
+#define HEADLESS_MODE_BROWSER_TEST_WITH_SCREEN_INFO(TEST_NAME, SCREEEN_INFO) \
+  class HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME                    \
+      : public HeadlessModeBrowserTestWithScreenInfo {                       \
+   public:                                                                   \
+    std::string GetScreenInfo() override {                                   \
+      return SCREEEN_INFO;                                                   \
+    }                                                                        \
+  };                                                                         \
+                                                                             \
+  IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithScreenInfo_##TEST_NAME,  \
                          TEST_NAME)
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithScreenInfo,
@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest2ndScreen,
   EXPECT_TRUE(window->GetBoundsInScreen().Contains(kScreenCenter));
 }
 
-HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromScreenRect,
-                                             "{}{devicePixelRatio=2.0}") {
+HEADLESS_MODE_BROWSER_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromScreenRect,
+                                            "{}{devicePixelRatio=2.0}") {
   ASSERT_EQ(screen()->GetNumDisplays(), 2);
   ASSERT_EQ(screen()->GetAllDisplays()[0].device_scale_factor(), 1.f);
   ASSERT_EQ(screen()->GetAllDisplays()[1].device_scale_factor(), 2.f);
@@ -347,12 +347,12 @@ HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromScreenRect,
   const int kSystemFrameThickness = test::GetSystemFrameThickness();
   EXPECT_EQ(ui::GetFrameThicknessFromScreenRect(gfx::Rect(0, 0, 10, 20)),
             kSystemFrameThickness);
-  EXPECT_EQ(ui::GetFrameThicknessFromScreenRect(gfx::Rect(800, 600, 10, 20)),
+  EXPECT_EQ(ui::GetFrameThicknessFromScreenRect(gfx::Rect(800, 0, 10, 20)),
             kSystemFrameThickness * 2);
 }
 
-HEADLESS_MODE_PROTOCOL_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromWindow,
-                                             "{devicePixelRatio=2.0}") {
+HEADLESS_MODE_BROWSER_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromWindow,
+                                            "{devicePixelRatio=2.0}") {
   ASSERT_EQ(screen()->GetNumDisplays(), 1);
   ASSERT_EQ(screen()->GetAllDisplays()[0].device_scale_factor(), 2.f);
 

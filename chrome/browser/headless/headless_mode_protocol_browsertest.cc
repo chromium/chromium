@@ -330,15 +330,7 @@ HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
                             "shared/screen-details-multiple-screens.js")
 
-// TODO(crbug.com/441801025): This currently fails on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ScreenDetailsMultipleScreensScaled \
-  DISABLED_ScreenDetailsMultipleScreensScaled
-#else
-#define MAYBE_ScreenDetailsMultipleScreensScaled \
-  ScreenDetailsMultipleScreensScaled
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsMultipleScreensScaled,
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreensScaled,
                             "shared/screen-details-multiple-screens-scaled.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
