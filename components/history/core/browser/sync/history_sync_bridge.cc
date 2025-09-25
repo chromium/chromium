@@ -747,8 +747,7 @@ std::unique_ptr<syncer::DataBatch> HistorySyncBridge::GetAllDataForDebugging() {
 std::string HistorySyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entity_data.specifics.has_history())
-      << "EntityData does not have history specifics.";
+  CHECK(entity_data.specifics.has_history());
 
   const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
   return base::NumberToString(history.visit_time_windows_epoch_micros());
@@ -757,12 +756,20 @@ std::string HistorySyncBridge::GetClientTag(
 std::string HistorySyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(entity_data.specifics.has_history())
-      << "EntityData does not have history specifics.";
+  CHECK(entity_data.specifics.has_history());
 
   const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
   return HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
       history.visit_time_windows_epoch_micros());
+}
+
+bool HistorySyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(entity_data.specifics.has_history());
+
+  const sync_pb::HistorySpecifics& history = entity_data.specifics.history();
+  return history.visit_time_windows_epoch_micros() > 0;
 }
 
 syncer::ConflictResolution HistorySyncBridge::ResolveConflict(
