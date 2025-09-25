@@ -99,6 +99,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
       {"turnOnSyncHistoryPromoDesc", IDS_HISTORY_SYNC_HISTORY_PROMO_DESC},
+      {"syncHistoryPromoBodySignedOut",
+        IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT},
+      {"syncHistoryPromoBodyPendingSignIn",
+       IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN},
       {"turnOnSignedInSyncHistoryPromo",
        IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO},
   };
@@ -108,6 +112,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                              IDS_HISTORY_SYNC_HISTORY_BUTTON);
   source->AddLocalizedString("turnOnSignedInSyncHistoryPromoDesc",
                              IDS_HISTORY_SIGNED_IN_SYNC_HISTORY_PROMO_DESC);
+  source->AddLocalizedString(
+      "syncHistoryPromoBodySignInSyncOff",
+      IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF);
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 
