@@ -783,6 +783,9 @@ BASE_FEATURE(kOnDeviceWebSpeech,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
+// Enables on-device speech recognition using on-device Gemini Nano.
+BASE_FEATURE(kOnDeviceWebSpeechGeminiNano, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, base::FEATURE_ENABLED_BY_DEFAULT);
 
