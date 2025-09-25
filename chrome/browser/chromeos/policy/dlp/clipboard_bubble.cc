@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -118,7 +119,12 @@ END_METADATA
 ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
-  layer()->SetBackgroundBlur(kBubbleBlurRadius);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(kBubbleBlurRadius);
+    layer()->SetBackdropFilterQuality(
+        ash::ColorProvider::kBackgroundBlurQuality);
+  }
+
   layer()->SetRoundedCornerRadius(kCornerRadii);
 
   // Add the managed icon.
@@ -190,8 +196,10 @@ ClipboardBubbleView::~ClipboardBubbleView() = default;
 
 void ClipboardBubbleView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const SkColor background_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated);
+  const SkColor background_color = GetColorProvider()->GetColor(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   layer()->SetColor(background_color);
   label_->SetDisplayedOnBackgroundColor(background_color);
 }
