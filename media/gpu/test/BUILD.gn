@@ -60,7 +60,7 @@ if (enable_av1_decoder &&
       "//testing/gtest",
     ]
 
-    if (use_v4l2_codec || use_vaapi) {
+    if (use_linux_video_acceleration) {
       deps += [ "//sandbox/linux:sandbox_services" ]
     }
 

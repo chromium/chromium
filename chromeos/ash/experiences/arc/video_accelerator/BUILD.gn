@@ -6,7 +6,7 @@ import("//media/gpu/args.gni")
 
 assert(is_chromeos)
 
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   static_library("video_accelerator") {
     sources = [
       "gpu_arc_video_decode_accelerator.cc",
@@ -56,7 +56,7 @@ source_set("common") {
     "//ui/ozone",
   ]
 
-  if (use_v4l2_codec || use_vaapi) {
+  if (use_linux_video_acceleration) {
     deps += [ "//media/gpu/chromeos" ]
   }
 }

@@ -150,7 +150,7 @@ source_set("mjpeg_decode_accelerator_service_unittest") {
   ]
 }
 
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   test("jpeg_encode_accelerator_unittest") {
     deps = [
       ":jpeg_encode_accelerator",

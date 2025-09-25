@@ -362,7 +362,7 @@ viz_component("service") {
       "//media/mojo/services",
     ]
 
-    if (use_v4l2_codec || use_vaapi) {
+    if (use_linux_video_acceleration) {
       deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }

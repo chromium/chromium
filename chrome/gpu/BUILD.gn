@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
@@ -36,7 +37,7 @@ static_library("gpu") {
       "//services/service_manager/public/cpp",
       "//ui/ozone",
     ]
-    if (use_v4l2_codec || use_vaapi) {
+    if (use_linux_video_acceleration) {
       deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
