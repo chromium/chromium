@@ -17,6 +17,7 @@
 
 // These should gradually replace values in view_ids.h.
 // Please keep this list alphabetized.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kActionItemZoomElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAiModePageActionIconElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
@@ -181,8 +182,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kTopContainerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kUserNotesSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripRegionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kWebUIIPHDemoElementIdentifier);
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kActionItemZoomElementId);
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kBrowserThemeChangedEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kLensSidePanelSearchBoxFocusedEventId);
