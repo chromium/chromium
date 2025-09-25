@@ -140,7 +140,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   //  `task_id` identifies the ID of the active actor tool.
   void CreatePageStabilityMonitor(
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-      int32_t task_id) override;
+      const actor::TaskId& task_id) override;
 #endif
 
   // Initialize a |phishing_classifier_delegate_|.

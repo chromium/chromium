@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
@@ -23,7 +24,7 @@ namespace actor {
 class MouseMoveTool : public ToolBase {
  public:
   MouseMoveTool(content::RenderFrame& frame,
-                Journal::TaskId task_id,
+                TaskId task_id,
                 Journal& journal,
                 mojom::MouseMoveActionPtr action,
                 mojom::ToolTargetPtr target,

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
 
 namespace content {
@@ -20,7 +21,7 @@ namespace actor {
 class ScriptTool : public ToolBase {
  public:
   ScriptTool(content::RenderFrame& frame,
-             Journal::TaskId task_id,
+             TaskId task_id,
              Journal& journal,
              mojom::ToolTargetPtr target,
              mojom::ObservedToolTargetPtr observed_target,

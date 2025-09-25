@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -24,7 +25,7 @@ namespace actor {
 class ScrollTool : public ToolBase {
  public:
   ScrollTool(content::RenderFrame& frame,
-             Journal::TaskId task_id,
+             TaskId task_id,
              Journal& journal,
              mojom::ScrollActionPtr action,
              mojom::ToolTargetPtr target,

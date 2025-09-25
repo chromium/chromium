@@ -8,6 +8,7 @@
 #include <set>
 
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/common/actor/task_id.h"
 
 namespace actor {
 
@@ -25,13 +26,13 @@ class AggregatedJournalSerializer : public AggregatedJournal::Observer {
   // The subclass should call this when they are ready to accept data.
   void InitImpl();
   void WriteTracePreamble();
-  void ObservedTaskId(int32_t task_id);
+  void ObservedTaskId(TaskId task_id);
 
   // Subclasses should implement this to receive generated data.
   virtual void WriteTracePacket(std::vector<uint8_t> message) = 0;
 
  private:
-  std::set<int32_t> observed_task_ids_;
+  std::set<TaskId> observed_task_ids_;
   base::SafeRef<AggregatedJournal> journal_;
   size_t sequence_id_ = 1;
 };

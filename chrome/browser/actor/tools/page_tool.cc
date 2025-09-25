@@ -374,7 +374,7 @@ void PageTool::Invoke(InvokeCallback callback) {
 
   invocation->observed_target = std::move(observed_target_);
 
-  invocation->task_id = task_id().value();
+  invocation->task_id = task_id();
 
   // ToolRequest params are checked for validity at creation.
   CHECK(invocation->action);

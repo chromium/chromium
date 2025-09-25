@@ -19,7 +19,7 @@
 namespace actor {
 
 NoOpTool::NoOpTool(content::RenderFrame& frame,
-                   Journal::TaskId task_id,
+                   TaskId task_id,
                    Journal& journal,
                    mojom::ToolTargetPtr target,
                    mojom::ObservedToolTargetPtr observed_target)

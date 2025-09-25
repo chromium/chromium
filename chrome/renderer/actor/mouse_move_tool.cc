@@ -39,7 +39,7 @@ blink::WebMouseEvent CreateMouseEvent(blink::WebInputEvent::Type event_type,
 namespace actor {
 
 MouseMoveTool::MouseMoveTool(content::RenderFrame& frame,
-                             Journal::TaskId task_id,
+                             TaskId task_id,
                              Journal& journal,
                              mojom::MouseMoveActionPtr action,
                              mojom::ToolTargetPtr target,

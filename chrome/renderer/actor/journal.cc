@@ -62,7 +62,7 @@ void Journal::Bind(mojo::PendingAssociatedRemote<mojom::JournalClient> client) {
   client_.reset_on_disconnect();
 }
 
-void Journal::Log(int32_t task_id,
+void Journal::Log(TaskId task_id,
                   std::string_view event,
                   std::vector<mojom::JournalDetailsPtr> details) {
   ACTOR_LOG() << event << ": " << details;

@@ -5,8 +5,6 @@
 #ifndef CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 #define CHROME_RENDERER_ACTOR_PAGE_STABILITY_MONITOR_H_
 
-#include <stdint.h>
-
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -15,6 +13,7 @@
 #include "base/task/delayed_task_handle.h"
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/journal.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,7 +39,7 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // supports it.
   PageStabilityMonitor(content::RenderFrame& frame,
                        bool supports_paint_stability,
-                       int32_t task_id,
+                       TaskId task_id,
                        Journal& journal);
 
   ~PageStabilityMonitor() override;
@@ -169,7 +168,7 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
 
-  int32_t task_id_;
+  TaskId task_id_;
 
   base::raw_ref<Journal> journal_;
 

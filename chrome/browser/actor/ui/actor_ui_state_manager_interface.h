@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_INTERFACE_H_
 
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/buildflags.h"
 
 namespace actor::ui {

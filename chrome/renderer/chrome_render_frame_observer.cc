@@ -638,7 +638,7 @@ void ChromeRenderFrameObserver::StartActorJournal(
 
 void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
     mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-    int32_t task_id) {
+    const actor::TaskId& task_id) {
   if (features::kActorGeneralPageStabilityMode.Get() ==
       features::ActorGeneralPageStabilityMode::kDisabled) {
     return;

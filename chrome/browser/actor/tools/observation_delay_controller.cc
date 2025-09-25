@@ -10,9 +10,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/navigation_handle.h"
@@ -51,8 +51,7 @@ ObservationDelayController::ObservationDelayController(
         &chrome_render_frame);
 
     chrome_render_frame->CreatePageStabilityMonitor(
-        page_stability_monitor_remote_.BindNewPipeAndPassReceiver(),
-        task_id.value());
+        page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id);
     page_stability_monitor_remote_.set_disconnect_handler(
         base::BindOnce(&ObservationDelayController::OnMonitorDisconnected,
                        base::Unretained(this)));

@@ -30,7 +30,7 @@ using blink::WebSelectElement;
 using blink::WebString;
 
 SelectTool::SelectTool(content::RenderFrame& frame,
-                       Journal::TaskId task_id,
+                       TaskId task_id,
                        Journal& journal,
                        mojom::SelectActionPtr action,
                        mojom::ToolTargetPtr target,

@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -28,7 +29,7 @@ class PaintStabilityMonitorTest : public ChromeRenderViewTest {
  public:
   PaintStabilityMonitorTest()
       : journal_entry_(journal_.CreatePendingAsyncEntry(
-            /*task_id=*/100,
+            /*task_id=*/TaskId(100),
             "PaintStabilityMonitorTest",
             {})) {
     feature_list_.InitAndEnableFeatureWithParameters(

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ACTOR_SITE_POLICY_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/actor/task_id.h"
+#include "chrome/common/actor/task_id.h"
 
 namespace tabs {
 class TabInterface;

@@ -8,8 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "extensions/browser/extension_function.h"
 

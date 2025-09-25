@@ -12,11 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;

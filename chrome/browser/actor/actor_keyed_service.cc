@@ -20,7 +20,6 @@
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/task_id.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace {

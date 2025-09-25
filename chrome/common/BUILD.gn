@@ -357,6 +357,7 @@ static_library("common_lib") {
       "actor/actor_logging.h",
       "actor/journal_details_builder.cc",
       "actor/journal_details_builder.h",
+      "actor/task_id.h",
       "read_anything/read_anything_util.cc",
       "read_anything/read_anything_util.h",
     ]
@@ -688,13 +689,28 @@ mojom("mojo_bindings") {
     sources += [ "sandbox_status_extension_android.mojom" ]
   } else {
     sources += [ "actor.mojom" ]
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "actor.mojom.TaskId"
+            cpp = "::actor::TaskId"
+          },
+        ]
+        traits_headers = [
+          "actor_mojom_traits.h",
+          "actor/task_id.h",
+        ]
+        traits_public_deps = [ "//base" ]
+      },
+    ]
   }
 
   if (is_mac) {
     sources += [ "mac/app_shim.mojom" ]
     deps +=
         [ "//components/metrics/public/mojom:histogram_fetcher_mojo_bindings" ]
-    cpp_typemaps = [
+    cpp_typemaps += [
       {
         types = [
           {

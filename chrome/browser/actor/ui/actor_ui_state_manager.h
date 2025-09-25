@@ -8,8 +8,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/common/actor/task_id.h"
 
 namespace tabs {
 class TabInterface;

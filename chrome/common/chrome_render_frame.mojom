@@ -125,5 +125,6 @@ interface ChromeRenderFrame {
   // `task_id` identifies the ID of the active actor tool.
   [EnableIfNot=is_android]
   CreatePageStabilityMonitor(
-    pending_receiver<actor.mojom.PageStabilityMonitor> monitor, int32 task_id);
+    pending_receiver<actor.mojom.PageStabilityMonitor> monitor,
+    actor.mojom.TaskId task_id);
 };

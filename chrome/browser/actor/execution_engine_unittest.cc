@@ -107,7 +107,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       override {}
   void CreatePageStabilityMonitor(
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-      int32_t task_id) override {}
+      const TaskId& task_id) override {}
 
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {

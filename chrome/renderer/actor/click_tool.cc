@@ -39,7 +39,7 @@ using ::blink::WebMouseEvent;
 using ::blink::WebNode;
 
 ClickTool::ClickTool(content::RenderFrame& frame,
-                     Journal::TaskId task_id,
+                     TaskId task_id,
                      Journal& journal,
                      mojom::ClickActionPtr action,
                      mojom::ToolTargetPtr target,

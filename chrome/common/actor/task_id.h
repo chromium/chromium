@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_TASK_ID_H_
-#define CHROME_BROWSER_ACTOR_TASK_ID_H_
+#ifndef CHROME_COMMON_ACTOR_TASK_ID_H_
+#define CHROME_COMMON_ACTOR_TASK_ID_H_
 
 #include "base/types/id_type.h"
 
@@ -15,4 +15,4 @@ static_assert(TaskId(0).is_null(), "0 must be a null TaskId");
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_TASK_ID_H_
+#endif  // CHROME_COMMON_ACTOR_TASK_ID_H_

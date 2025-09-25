@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/journal.h"
 #include "third_party/blink/public/web/web_node.h"
 
@@ -26,7 +27,7 @@ class ToolBase {
  public:
   using ToolFinishedCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   ToolBase(content::RenderFrame& frame,
-           Journal::TaskId task_id,
+           TaskId task_id,
            Journal& journal,
            mojom::ToolTargetPtr target,
            mojom::ObservedToolTargetPtr observed_target);
@@ -75,7 +76,7 @@ class ToolBase {
   // Raw ref since this is owned by ToolExecutor whose lifetime is tied to
   // RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
-  Journal::TaskId task_id_;
+  TaskId task_id_;
   base::raw_ref<Journal> journal_;
   mojom::ToolTargetPtr target_;
   mojom::ObservedToolTargetPtr observed_target_;

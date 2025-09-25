@@ -31,7 +31,7 @@ using ::blink::mojom::EventType;
 
 DragAndReleaseTool::DragAndReleaseTool(
     content::RenderFrame& frame,
-    Journal::TaskId task_id,
+    TaskId task_id,
     Journal& journal,
     mojom::DragAndReleaseActionPtr action,
     mojom::ToolTargetPtr target,

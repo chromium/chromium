@@ -57,7 +57,7 @@ base::TimeDelta GetMainThreadTimeoutDelay() {
 
 PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
                                            bool supports_paint_stability,
-                                           int32_t task_id,
+                                           TaskId task_id,
                                            Journal& journal)
     : RenderFrameObserver(&frame),
       paint_stability_monitor_(supports_paint_stability

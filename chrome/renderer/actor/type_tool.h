@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -30,7 +31,7 @@ class Journal;
 class TypeTool : public ToolBase {
  public:
   TypeTool(content::RenderFrame& frame,
-           Journal::TaskId task_id,
+           TaskId task_id,
            Journal& journal,
            mojom::TypeActionPtr action,
            mojom::ToolTargetPtr target,

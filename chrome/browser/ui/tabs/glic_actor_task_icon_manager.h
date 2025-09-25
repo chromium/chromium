@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_H_
 #define CHROME_BROWSER_UI_TABS_GLIC_ACTOR_TASK_ICON_MANAGER_H_
 
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace actor {

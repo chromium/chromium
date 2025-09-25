@@ -377,10 +377,15 @@ enum ActionResultCode {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
 
+// The task ID associated with the tool invocation.
+struct TaskId {
+  int32 id;
+};
+
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {
   // The task ID owning this invocation.
-  int32 task_id;
+  TaskId task_id;
 
   // The action to carry out in this invocation.
   ToolAction action;
@@ -439,7 +444,7 @@ struct JournalEntry {
   JournalEntryType type;
 
   // The task ID associated with this entry.
-  int32 task_id;
+  TaskId task_id;
 
   // The track the event should occur on.
   JournalTrack track;

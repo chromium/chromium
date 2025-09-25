@@ -175,7 +175,6 @@ source_set("types") {
   sources = [
     "shared_types.cc",
     "shared_types.h",
-    "task_id.h",
   ]
   public_deps = [
     "//base",

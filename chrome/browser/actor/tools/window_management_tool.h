@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {

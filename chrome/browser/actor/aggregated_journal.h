@@ -17,8 +17,8 @@
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
 

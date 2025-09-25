@@ -142,7 +142,7 @@ TypeTool::KeyParams::~KeyParams() = default;
 TypeTool::KeyParams::KeyParams(const KeyParams& other) = default;
 
 TypeTool::TypeTool(content::RenderFrame& frame,
-                   Journal::TaskId task_id,
+                   TaskId task_id,
                    Journal& journal,
                    mojom::TypeActionPtr action,
                    mojom::ToolTargetPtr target,

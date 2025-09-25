@@ -10,8 +10,8 @@
 #include <variant>
 
 #include "base/types/expected.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"

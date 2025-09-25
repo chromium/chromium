@@ -11,9 +11,9 @@
 #include <variant>
 
 #include "chrome/browser/actor/shared_types.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 

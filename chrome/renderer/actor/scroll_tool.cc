@@ -36,7 +36,7 @@ constexpr base::TimeDelta kSmoothScrollDelay = base::Milliseconds(700);
 }  // namespace
 
 ScrollTool::ScrollTool(content::RenderFrame& frame,
-                       Journal::TaskId task_id,
+                       TaskId task_id,
                        Journal& journal,
                        mojom::ScrollActionPtr action,
                        mojom::ToolTargetPtr target,

@@ -10,9 +10,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
