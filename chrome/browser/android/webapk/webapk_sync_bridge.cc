@@ -510,6 +510,11 @@ std::string WebApkSyncBridge::GetStorageKey(
   return GetClientTag(entity_data);
 }
 
+bool WebApkSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return !entity_data.specifics.web_apk().manifest_id().empty();
+}
+
 void WebApkSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   database_.DeleteAllDataAndMetadata(base::DoNothing());
