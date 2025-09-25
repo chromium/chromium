@@ -63,7 +63,6 @@ const char kPageHtmlWithButton[] = "<html><body>"
 }  // namespace
 
 struct FeatureParam {
-  bool support_simulated_click;
   bool test_simulated_click;
 };
 
@@ -74,11 +73,6 @@ class ChooseFileJavaScriptFeatureTest
  protected:
   ChooseFileJavaScriptFeatureTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {
-    if (GetParam().support_simulated_click) {
-      feature_list_.InitAndEnableFeature(kIOSChooseFromDriveSimulatedClick);
-    } else {
-      feature_list_.InitAndDisableFeature(kIOSChooseFromDriveSimulatedClick);
-    }
   }
 
   void SetUp() override {
@@ -446,9 +440,5 @@ TEST_P(ChooseFileJavaScriptFeatureTest, TestResetLastChooseFileEventMimeTypes) {
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     ChooseFileJavaScriptFeatureTest,
-    testing::Values(FeatureParam{/* support_simulated_click= */ false,
-                                 /* test_simulated_click= */ false},
-                    FeatureParam{/* support_simulated_click= */ true,
-                                 /* test_simulated_click= */ false},
-                    FeatureParam{/* support_simulated_click= */ true,
-                                 /* test_simulated_click= */ true}));
+    testing::Values(FeatureParam{/* test_simulated_click= */ false},
+                    FeatureParam{/* test_simulated_click= */ true}));

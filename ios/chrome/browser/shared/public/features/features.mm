@@ -394,9 +394,6 @@ TipsSafeBrowsingExperimentType TipsSafeBrowsingExperimentTypeEnabled() {
 
 BASE_FEATURE(kIOSChooseFromDrive, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSChooseFromDriveSimulatedClick,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

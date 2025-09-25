@@ -22,7 +22,6 @@ source_set("choose_file") {
   deps = [
     ":choose_file_file_utils",
     ":choose_file_js",
-    ":choose_file_legacy_js",
     "//base",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
@@ -84,15 +83,6 @@ compile_ts("choose_file_utils_js") {
 optimize_ts("choose_file_js") {
   visibility = [ ":choose_file" ]
   sources = [ "resources/choose_file.ts" ]
-  deps = [
-    ":choose_file_utils_js",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
-}
-
-optimize_ts("choose_file_legacy_js") {
-  visibility = [ ":choose_file" ]
-  sources = [ "resources/choose_file_legacy.ts" ]
   deps = [
     ":choose_file_utils_js",
     "//ios/web/public/js_messaging:util_scripts",

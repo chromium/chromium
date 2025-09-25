@@ -808,12 +808,6 @@ const char kIOSChooseFromDriveName[] = "IOS Choose from Drive";
 const char kIOSChooseFromDriveDescription[] =
     "Enables the Choose from Drive feature on iOS.";
 
-const char kIOSChooseFromDriveSimulatedClickName[] =
-    "IOS Choose from Drive (simulated clicks)";
-const char kIOSChooseFromDriveSimulatedClickDescription[] =
-    "Enables support for simulated clicks in the Choose from Drive feature on "
-    "iOS.";
-
 const char kIOSManageAccountStorageName[] = "Allow managing Account storage.";
 const char kIOSManageAccountStorageDescription[] =
     "Add entry points to manage Google One account storage.";

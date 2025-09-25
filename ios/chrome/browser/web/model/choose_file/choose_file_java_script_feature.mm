@@ -17,7 +17,6 @@
 
 namespace {
 const char kChooseFileScript[] = "choose_file";
-const char kChooseFileLegacyScript[] = "choose_file_legacy";
 const char kChooseFileScriptName[] = "ChooseFileHandler";
 
 // The type of attributes of the input element.
@@ -118,30 +117,12 @@ std::vector<std::string> ParseAttributeFromValue(
   return {};
 }
 
-// Returns the appropriate content world for ChooseFileJavaScriptFeature.
-web::ContentWorld GetContentWorld() {
-  if (base::FeatureList::IsEnabled(kIOSChooseFromDriveSimulatedClick)) {
-    return web::ContentWorld::kPageContentWorld;
-  } else {
-    return web::ContentWorld::kIsolatedWorld;
-  }
-}
-
-// Returns the appropriate script for ChooseFileJavaScriptFeature.
-std::string GetChooseFileScript() {
-  if (base::FeatureList::IsEnabled(kIOSChooseFromDriveSimulatedClick)) {
-    return kChooseFileScript;
-  } else {
-    return kChooseFileLegacyScript;
-  }
-}
-
 }  // namespace
 
 ChooseFileJavaScriptFeature::ChooseFileJavaScriptFeature()
-    : JavaScriptFeature(GetContentWorld(),
+    : JavaScriptFeature(web::ContentWorld::kPageContentWorld,
                         {FeatureScript::CreateWithFilename(
-                            GetChooseFileScript(),
+                            kChooseFileScript,
                             FeatureScript::InjectionTime::kDocumentEnd,
                             FeatureScript::TargetFrames::kAllFrames)}) {}
 
