@@ -21,6 +21,7 @@ DEFAULT_EXTENSIONS = [
     'build_information',
     'depot_tools',
     'landmines',
+    'test_landmines',
 ]
 
 
@@ -43,11 +44,17 @@ def _install_extensions(extensions: Collection[str] | None = None, ) -> None:
     # The installation script should identify the working tree as the "repo
     # root", so use the copy in the working tree with the CWD set
     # appropriately for subprocesses like `git`.
+    if not extensions:
+        return
+
     logging.info('Installing extensions: %s', extensions)
     command = [
         sys.executable,
         pathlib.Path('agents', 'extensions', 'install.py'),
+        '--extra-extensions-dir',
+        pathlib.Path('agents', 'testing', 'extensions'),
         'add',
+        '--copy',
         *extensions,
     ]
     subprocess.check_call(command)

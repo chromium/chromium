@@ -46,12 +46,17 @@ def get_project_root() -> Path | None:
         return None
 
 
-def get_extensions_dirs(project_root: Path | None) -> list[Path]:
+def get_extensions_dirs(
+        project_root: Path | None,
+        extra_extensions_dirs: list[Path] | None = None) -> list[Path]:
     """Returns a list of all extension directories."""
     if not project_root:
         return []
 
     extensions_dirs = []
+    if extra_extensions_dirs:
+        extensions_dirs.extend(extra_extensions_dirs)
+
     primary_extensions_dir = project_root / 'agents' / 'extensions'
     if primary_extensions_dir.exists():
         extensions_dirs.append(primary_extensions_dir)
@@ -234,6 +239,14 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(
         description='Install and manage extensions.')
+    parser.add_argument(
+        '--extra-extensions-dir',
+        action='append',
+        type=Path,
+        default=[],
+        help='Path to a directory containing extensions. Can be specified '
+        'multiple times.',
+    )
     subparsers = parser.add_subparsers(
         dest='command',
         help='Available commands.',
@@ -252,9 +265,11 @@ def main() -> None:
         action='store_true',
         help='Skip any interactive prompts.',
     )
-    add_parser.add_argument('extensions',
-                            nargs='+',
-                            help='A list of extension directory names to add.')
+    add_parser.add_argument(
+        'extensions',
+        nargs='+',
+        help='A list of extension directory names to add.',
+    )
 
     update_parser = subparsers.add_parser('update', help='Update extensions.')
     update_parser.add_argument(
@@ -297,7 +312,8 @@ def main() -> None:
 
     for extension in extensions_to_process:
         if args.command == 'add':
-            source_dirs = get_extensions_dirs(project_root)
+            source_dirs = get_extensions_dirs(
+                project_root, extra_extensions_dirs=args.extra_extensions_dir)
             source_dir = find_extensions_dir_for_extension(
                 extension, source_dirs)
             if not source_dir:

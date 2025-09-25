@@ -30,6 +30,10 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.install_script_path = self.source_extensions_dir / 'install.py'
         self.fs.create_file(self.install_script_path)
 
+        self.testing_extensions_dir = (self.project_root / 'agents' /
+                                       'testing' / 'extensions')
+        self.fs.create_dir(self.testing_extensions_dir)
+
         self.internal_extensions_dir = (self.project_root / 'internal' /
                                         'agents' / 'extensions')
         self.fs.create_dir(self.internal_extensions_dir)
@@ -40,6 +44,13 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         self.fs.create_file(
             self.extension1_dir / 'gemini-extension.json',
             contents='{"name": "sample_1", "version": "1.0.0"}',
+        )
+
+        self.test_extension_dir = self.testing_extensions_dir / 'test_sample'
+        self.fs.create_dir(self.test_extension_dir)
+        self.fs.create_file(
+            self.test_extension_dir / 'gemini-extension.json',
+            contents='{"name": "test_sample", "version": "1.0.0"}',
         )
 
         self.mock_run_command_patcher = unittest.mock.patch(
@@ -72,11 +83,28 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             'internal_ext', extensions_dirs)
         self.assertEqual(ext_dir, self.internal_extensions_dir)
 
+        # Extension in testing directory
+        extensions_dirs = install.get_extensions_dirs(
+            self.project_root,
+            extra_extensions_dirs=[self.testing_extensions_dir])
+        ext_dir = install.find_extensions_dir_for_extension(
+            'test_sample', extensions_dirs)
+        self.assertEqual(ext_dir, self.testing_extensions_dir)
+
     def test_get_extensions_dirs(self):
         """Tests that get_extensions_dirs returns correct directories."""
+        # By default, test extensions should not be included
         dirs = install.get_extensions_dirs(self.project_root)
         self.assertIn(self.source_extensions_dir, dirs)
         self.assertIn(self.internal_extensions_dir, dirs)
+        self.assertNotIn(self.testing_extensions_dir, dirs)
+
+        dirs = install.get_extensions_dirs(
+            self.project_root,
+            extra_extensions_dirs=[self.testing_extensions_dir])
+        self.assertIn(self.source_extensions_dir, dirs)
+        self.assertIn(self.internal_extensions_dir, dirs)
+        self.assertIn(self.testing_extensions_dir, dirs)
 
     def test_get_extensions_dirs_no_project_root(self):
         """Tests get_extensions_dirs() when no project root is found."""
@@ -126,6 +154,31 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             'gemini', 'extensions', 'link',
             str(self.source_extensions_dir / 'sample_1')
         ])
+
+    @unittest.mock.patch('install.get_project_root')
+    def test_add_test_extension(self, mock_get_project_root):
+        """Tests add command with a test extension."""
+        mock_get_project_root.return_value = self.project_root
+        with unittest.mock.patch('sys.argv', [
+                'install.py', '--extra-extensions-dir',
+                str(self.testing_extensions_dir), 'add', 'test_sample'
+        ]):
+            install.main()
+        self.mock_run_command.assert_called_once_with([
+            'gemini', 'extensions', 'link',
+            str(self.testing_extensions_dir / 'test_sample')
+        ])
+
+    @unittest.mock.patch('install.get_project_root')
+    def test_add_test_extension_without_flag_fails(self,
+                                                   mock_get_project_root):
+        """Tests add command with a test extension."""
+        mock_get_project_root.return_value = self.project_root
+        with unittest.mock.patch('sys.argv',
+                                 ['install.py', 'add', 'test_sample']):
+            with self.assertRaises(SystemExit):
+                install.main()
+
 
     @unittest.mock.patch('install.get_project_root')
     def test_add_invalid_extension(self, mock_get_project_root):
