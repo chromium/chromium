@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
@@ -242,6 +243,7 @@ static_library("test_support") {
   deps = [
     "//ash/constants",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",

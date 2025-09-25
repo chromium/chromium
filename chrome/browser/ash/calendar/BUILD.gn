@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/prefs",
     "//chrome/browser/web_applications",

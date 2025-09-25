@@ -142,6 +142,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode:test_support",
     "//chrome/browser/ash/login/users:test_support",

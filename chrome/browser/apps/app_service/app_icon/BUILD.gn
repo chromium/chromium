@@ -169,6 +169,7 @@ source_set("test_support") {
   deps = [
     ":app_icon",
     "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//skia",

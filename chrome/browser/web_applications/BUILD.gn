@@ -1007,6 +1007,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",

@@ -442,6 +442,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc/fileapi",

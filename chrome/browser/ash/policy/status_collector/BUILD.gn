@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/child_accounts",

@@ -95,5 +95,9 @@ static_library("keyed_service") {
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
     "//printing/buildflags",
+
+    # Currently ArcApps is a KeyedService.
+    # TODO(crbug.com/442761233): Resolve the dependency.
+    "//chrome/browser/apps/app_service/publishers",
   ]
 }

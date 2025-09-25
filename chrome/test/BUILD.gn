@@ -279,6 +279,7 @@ static_library("test_support") {
 
   if (!is_android) {
     public_deps += [ "//chrome/renderer:process_state" ]
+    deps += [ "//chrome/browser/apps/app_service/publishers" ]
   }
 
   if (enable_dice_support) {
@@ -2355,6 +2356,7 @@ if (!is_android) {
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service/app_icon",
+      "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autocomplete:browser_tests",
@@ -8534,7 +8536,9 @@ test("unit_tests") {
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service:unit_tests",
       "//chrome/browser/apps/app_service/app_icon",
+      "//chrome/browser/apps/app_service/app_icon:unit_tests",
       "//chrome/browser/apps/app_service/app_icon:util",
+      "//chrome/browser/apps/app_service/publishers:unit_tests",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/apps/link_capturing:unit_tests",
@@ -8890,6 +8894,7 @@ test("unit_tests") {
       "//chrome/browser:global_features",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/accessibility/media_app/test:test_support",
+      "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/app_service",
@@ -11306,6 +11311,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service/app_icon",
+      "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/apps/link_capturing:test_support",
       "//chrome/browser/autocomplete",

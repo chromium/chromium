@@ -4323,6 +4323,7 @@ static_library("browser") {
       "//chrome/browser/actor:impl",
       "//chrome/browser/actor/ui",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/app_service/publishers",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging",
       "//chrome/browser/badging:impl",
@@ -4559,6 +4560,10 @@ static_library("browser") {
 
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
+
+      # TODO(crbug.com/441649482): Remove this circular dependency with cleaning up
+      # - c/b/apps/app_service/publishers.
+      "//chrome/browser/apps/app_service/publishers",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
