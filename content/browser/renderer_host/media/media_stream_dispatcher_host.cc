@@ -52,6 +52,7 @@ namespace content {
 namespace {
 
 using ::blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::MediaStreamRequestResult;
 
 void BindMediaStreamDeviceObserverReceiver(
     GlobalRenderFrameHostId render_frame_host_id,
@@ -359,10 +360,18 @@ void MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread(
         result_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  RenderFrameHostImpl* const render_frame_host =
+      RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (!render_frame_host || !render_frame_host->IsActive()) {
+    std::move(result_callback)
+        .Run(base::unexpected(MediaStreamRequestResult::INVALID_STATE));
+    return;
+  }
+
   if (request_all_screens) {
     CheckRequestAllScreensAllowed(std::move(get_salt_and_origin_cb),
                                   std::move(result_callback),
-                                  render_frame_host_id);
+                                  render_frame_host);
     return;
   }
 
@@ -376,15 +385,12 @@ void MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
         get_salt_and_origin_cb,
     base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
         result_callback,
-    GlobalRenderFrameHostId render_frame_host_id) {
+    RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_frame_host_id);
-  if (!render_frame_host) {
-    CheckStreamsPermissionResultReceived(std::move(get_salt_and_origin_cb),
-                                         std::move(result_callback),
-                                         /*result=*/false);
+  if (!render_frame_host || !render_frame_host->IsActive()) {
+    std::move(result_callback)
+        .Run(base::unexpected(MediaStreamRequestResult::INVALID_STATE));
     return;
   }
 
@@ -401,8 +407,7 @@ void MediaStreamDispatcherHost::CheckStreamsPermissionResultReceived(
     bool result) {
   if (!result) {
     std::move(result_callback)
-        .Run({.request_allowed = false,
-              .salt_and_origin = MediaDeviceSaltAndOrigin::Empty()});
+        .Run(base::unexpected(MediaStreamRequestResult::PERMISSION_DENIED));
     return;
   }
 
@@ -410,8 +415,7 @@ void MediaStreamDispatcherHost::CheckStreamsPermissionResultReceived(
       [](base::OnceCallback<void(GenerateStreamsUIThreadCheckResult)>
              result_callback,
          const MediaDeviceSaltAndOrigin& salt_and_origin) {
-        std::move(result_callback)
-            .Run({.request_allowed = true, .salt_and_origin = salt_and_origin});
+        std::move(result_callback).Run(salt_and_origin);
       },
       std::move(result_callback));
   std::move(get_salt_and_origin_cb).Run(std::move(got_salt_and_origin));
@@ -448,7 +452,7 @@ void MediaStreamDispatcherHost::CancelAllRequests() {
 
   for (auto& pending_request : pending_requests_) {
     std::move(pending_request->callback)
-        .Run(blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+        .Run(MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
              /*label=*/std::string(),
              /*stream_devices_set=*/nullptr,
              /*pan_tilt_zoom_allowed=*/false);
@@ -469,7 +473,7 @@ void MediaStreamDispatcherHost::GenerateStreams(
   const std::optional<bad_message::BadMessageReason> bad_message =
       ValidateControlsForGenerateStreams(controls);
   if (bad_message.has_value()) {
-    ReceivedBadMessage(render_frame_host_id_.child_id, bad_message.value());
+    ReceivedBadMessage(render_frame_host_id_.child_id, *bad_message);
     return;
   }
 
@@ -495,25 +499,21 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
     GenerateStreamsUIThreadCheckResult ui_check_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!ui_check_result.request_allowed) {
-    std::move(callback).Run(
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-        /*label=*/std::string(),
-        /*stream_devices_set=*/nullptr,
-        /*pan_tilt_zoom_allowed=*/false);
+  if (!ui_check_result.has_value()) {
+    std::move(callback).Run(ui_check_result.error(),
+                            /*label=*/std::string(),
+                            /*stream_devices_set=*/nullptr,
+                            /*pan_tilt_zoom_allowed=*/false);
     return;
   }
 
-  MediaDeviceSaltAndOrigin salt_and_origin =
-      std::move(ui_check_result.salt_and_origin);
-  ui_check_result = {.salt_and_origin = MediaDeviceSaltAndOrigin::Empty()};
+  MediaDeviceSaltAndOrigin salt_and_origin = std::move(*ui_check_result);
   if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
                                            salt_and_origin.origin())) {
-    std::move(callback).Run(
-        blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
-        /*label=*/std::string(),
-        /*stream_devices_set=*/nullptr,
-        /*pan_tilt_zoom_allowed=*/false);
+    std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
+                            /*label=*/std::string(),
+                            /*stream_devices_set=*/nullptr,
+                            /*pan_tilt_zoom_allowed=*/false);
     return;
   }
 
@@ -778,8 +778,7 @@ void MediaStreamDispatcherHost::GetOpenDevice(
     ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE);
 
-    std::move(callback).Run(
-        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
+    std::move(callback).Run(MediaStreamRequestResult::NOT_SUPPORTED, nullptr);
     return;
   }
   // TODO(crbug.com/40058526): Decide whether we need to have another
@@ -806,9 +805,8 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!MediaStreamManager::IsOriginAllowed(render_frame_host_id_.child_id,
                                            salt_and_origin.origin())) {
-    std::move(callback).Run(
-        blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
-        nullptr);
+    std::move(callback).Run(MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
+                            nullptr);
     return;
   }
 
