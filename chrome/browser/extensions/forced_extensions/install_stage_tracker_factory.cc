@@ -6,6 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

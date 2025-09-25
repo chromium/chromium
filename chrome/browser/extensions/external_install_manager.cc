@@ -16,6 +16,7 @@
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
@@ -32,6 +33,8 @@ using ExternalInstallErrorType = extensions::ExternalInstallErrorDesktop;
 
 using ExternalInstallErrorType = extensions::ExternalInstallErrorAndroid;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
