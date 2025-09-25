@@ -1559,8 +1559,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // higher z-order).
   const View::Views& GetViewsWithLayersInZOrder();
 
-  // If a descendent of |root_view_| is focused, then clear the focus.
-  void ClearFocusFromWidget();
+  // Called when the focus manager will be destroyed, or detached.  If a
+  // descendent of |root_view_| is focused, then clear the focus.  If this is a
+  // child widget, it will notify `WillClearFocusManager` as they will lose the
+  // access to focus manager during destruction.
+  void ClearFocusManagerFromWidget();
 
   // Notifies the parent that a window-modal child's visibility changed.
   // This function is a no-op if the parent does not exist or if this widget is

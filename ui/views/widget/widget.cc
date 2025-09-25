@@ -723,7 +723,7 @@ void Widget::NotifyNativeViewHierarchyWillChange() {
   // |FocusManager::ViewRemoved()| calls are fouled.  We clear focus here
   // to avoid these redundant steps and to avoid accessing deleted views
   // that may have been in focus.
-  ClearFocusFromWidget();
+  ClearFocusManagerFromWidget();
   native_widget_->OnNativeViewHierarchyWillChange();
 }
 
@@ -964,7 +964,7 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   widget_closed_ = true;
   closed_reason_ = closed_reason;
   SaveWindowPlacement();
-  ClearFocusFromWidget();
+  ClearFocusManagerFromWidget();
 
   ax_mode_observation_.Reset();
 
@@ -2496,7 +2496,6 @@ internal::RootView* Widget::CreateRootView() {
 }
 
 void Widget::DestroyRootView() {
-  ClearFocusFromWidget();
   NotifyWillRemoveView(root_view_.get());
   non_client_view_ = nullptr;
   // Remove all children before the unique_ptr reset so that
@@ -2678,12 +2677,18 @@ void Widget::UnlockPaintAsActive() {
   }
 }
 
-void Widget::ClearFocusFromWidget() {
+void Widget::ClearFocusManagerFromWidget() {
   FocusManager* focus_manager = GetFocusManager();
   // We are being removed from a window hierarchy.  Treat this as
   // the root_view_ being removed.
   if (focus_manager) {
     focus_manager->ViewRemoved(root_view_.get());
+    CHECK(root_view_);
+    // Also notify the view tree in the child widget
+    // to perform actions when focus is cleared.
+    if (!is_top_level()) {
+      root_view_->PropagateWillClearFocusManager();
+    }
   }
 }
 
@@ -2714,9 +2719,7 @@ void Widget::HandleWidgetDestroying() {
   if (native_widget_destroyed_) {
     return;
   }
-  if (GetFocusManager() && root_view_) {
-    GetFocusManager()->ViewRemoved(root_view_.get());
-  }
+  ClearFocusManagerFromWidget();
   if (parent_) {
     parent_->OnChildRemoved(this);
   }
