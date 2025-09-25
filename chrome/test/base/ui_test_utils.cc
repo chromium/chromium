@@ -670,6 +670,19 @@ Browser* GetBrowserNotInSet(
                             : nullptr;
 }
 
+std::vector<BrowserWindowInterface*> FindMatchingBrowsers(
+    BrowserMatcher matcher) {
+  std::vector<BrowserWindowInterface*> browser_matches;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (matcher(browser)) {
+          browser_matches.push_back(browser);
+        }
+        return true;  // Continue iterating.
+      });
+  return browser_matches;
+}
+
 namespace {
 
 void GetCookieCallback(base::RepeatingClosure callback,

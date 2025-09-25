@@ -378,6 +378,11 @@ void SendToOmniboxAndSubmit(
 Browser* GetBrowserNotInSet(
     const std::set<BrowserWindowInterface*>& excluded_browsers);
 
+// Returns a list of browsers for which `matcher` returns true.
+using BrowserMatcher = base::FunctionRef<bool(BrowserWindowInterface*)>;
+std::vector<BrowserWindowInterface*> FindMatchingBrowsers(
+    BrowserMatcher matcher);
+
 // Gets the size and value of the cookie string for |url| in the given tab.
 // Can be called from any thread.
 void GetCookies(const GURL& url,

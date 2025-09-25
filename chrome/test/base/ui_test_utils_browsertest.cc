@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+
+#include "base/containers/contains.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -39,4 +43,41 @@ IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, OpenTwoTabsInBackground) {
   NavigateToURLWithDisposition(browser(), url3,
                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+IN_PROC_BROWSER_TEST_F(UITestUtilsBrowserTest, FindMatchingBrowsers) {
+  BrowserWindowInterface* const regular_browser1 = browser();
+  BrowserWindowInterface* const regular_browser2 =
+      CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const incognito_browser = CreateIncognitoBrowser();
+
+  // All browsers.
+  auto all_browsers = ui_test_utils::FindMatchingBrowsers(
+      [](BrowserWindowInterface*) { return true; });
+  EXPECT_EQ(3u, all_browsers.size());
+  EXPECT_TRUE(base::Contains(all_browsers, regular_browser1));
+  EXPECT_TRUE(base::Contains(all_browsers, regular_browser2));
+  EXPECT_TRUE(base::Contains(all_browsers, incognito_browser));
+
+  // No browsers.
+  auto no_browsers = ui_test_utils::FindMatchingBrowsers(
+      [](BrowserWindowInterface*) { return false; });
+  EXPECT_TRUE(no_browsers.empty());
+
+  // Incognito browsers.
+  auto incognito_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetProfile()->IsIncognitoProfile();
+      });
+  EXPECT_EQ(1u, incognito_browsers.size());
+  EXPECT_EQ(incognito_browser, incognito_browsers[0]);
+
+  // Regular browsers.
+  auto regular_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return !browser->GetProfile()->IsIncognitoProfile();
+      });
+  EXPECT_EQ(2u, regular_browsers.size());
+  EXPECT_TRUE(base::Contains(regular_browsers, regular_browser1));
+  EXPECT_TRUE(base::Contains(regular_browsers, regular_browser2));
 }
