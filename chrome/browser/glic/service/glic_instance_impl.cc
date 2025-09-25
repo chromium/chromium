@@ -8,6 +8,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
@@ -189,6 +190,25 @@ void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
         callback) {
   service_->GetZeroStateSuggestionsAndSubscribe(has_active_subscription,
                                                 options, std::move(callback));
+}
+void GlicInstanceImpl::PrepareForOpen() {
+  GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
+      ->fre_controller()
+      .MaybePreconnect();
+
+  // TODO(crbug.com/444463509): Update this when we have per-instance
+  // sharing managers set up without auto-focus.
+  auto* active_web_contents =
+      sharing_manager().GetFocusedTabData().focus()
+          ? sharing_manager().GetFocusedTabData().focus()->GetContents()
+          : nullptr;
+  contextual_cueing::ContextualCueingService* contextual_cueing_service =
+      contextual_cueing::ContextualCueingServiceFactory::GetForProfile(
+          profile_);
+  if (contextual_cueing_service && active_web_contents) {
+    contextual_cueing_service->PrepareToFetchContextualGlicZeroStateSuggestions(
+        active_web_contents);
+  }
 }
 
 void GlicInstanceImpl::DisassociateFromTab(tabs::TabInterface* tab) {

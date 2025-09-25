@@ -116,10 +116,6 @@ class GlicKeyedService : public KeyedService,
   // manager.
   void CloseUI();
 
-  // The user has performed an action suggesting that they made open the UI
-  // soon.
-  void PrepareForOpen();
-
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
@@ -204,6 +200,7 @@ class GlicKeyedService : public KeyedService,
   void RegisterConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::RegisterConversationCallback callback) override;
+  void PrepareForOpen() override;
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 

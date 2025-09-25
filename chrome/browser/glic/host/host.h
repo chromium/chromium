@@ -108,10 +108,12 @@ class Host : public GlicSharingManagerProvider {
         const mojom::ZeroStateSuggestionsOptions& options,
         mojom::WebClientHandler::GetZeroStateSuggestionsAndSubscribeCallback
             callback) = 0;
-    
+
     virtual void RegisterConversation(
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::RegisterConversationCallback callback) = 0;
+
+    virtual void PrepareForOpen() = 0;
   };
 
   class Observer : public base::CheckedObserver {

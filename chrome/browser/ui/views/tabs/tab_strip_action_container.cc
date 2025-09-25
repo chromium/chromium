@@ -583,7 +583,10 @@ void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* profile = tab_strip_controller_->GetProfile();
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  glic_service->PrepareForOpen();
+  if (auto* instance = glic_service->GetInstanceForActiveTab(
+          tab_strip_controller_->GetBrowserWindowInterface())) {
+    instance->host().instance_delegate().PrepareForOpen();
+  }
 }
 
 void TabStripActionContainer::OnGlicButtonMouseDown() {
