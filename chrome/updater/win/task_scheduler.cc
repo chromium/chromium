@@ -20,7 +20,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -914,16 +913,15 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return nullptr;
     }
 
-    // crbug.com/434269515 - calling ITaskService::Connect crashes when the
-    // current user is empty. This appears to be an unconfirmed bug in Windows.
+    // Calling ITaskService::Connect crashes when the current user is empty.
+    // This is correlated with a Windows update followed by a computer
+    // restart (crbug.com/434269515).
     const std::wstring current_user = [] {
       base::win::ScopedBstr user_name;
       return GetCurrentUser(user_name) ? std::wstring(user_name.Get())
                                        : std::wstring();
     }();
-    VLOG(2) << "Current user: " << current_user;
     if (current_user.empty()) {
-      base::debug::DumpWithoutCrashing();
       return nullptr;
     }
     hr = task_service->Connect(base::win::ScopedVariant::kEmptyVariant,
