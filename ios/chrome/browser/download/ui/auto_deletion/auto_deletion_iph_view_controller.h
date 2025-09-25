@@ -7,13 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
-
 @protocol AutoDeletionMutator;
 class Browser;
 
 // The UIViewController that manages the Auto-deletion IPH's view.
-@interface AutoDeletionIPHViewController : ConfirmationAlertViewController
+@interface AutoDeletionIPHViewController : UIViewController
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)name
