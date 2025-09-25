@@ -651,8 +651,73 @@ class CheckVirtualSuiteTest(unittest.TestCase):
                                  'Virtual suite name "test" has no owner.')
         self.assertEqual(len(res2), 1)
 
+    def test_check_virtual_test_suites_formatting_unsorted(self):
+        """Tests that unsorted virtual test suites are detected."""
+        fs = self.host.filesystem
+        path = fs.join(self.port.web_tests_dir(), 'VirtualTestSuites')
+
+        fs.write_text_file(
+            path,
+            json.dumps([{
+                'prefix': 'z-last',
+                'platforms': ['Linux'],
+                'bases': ['test'],
+                'args': ['--z-last'],
+            }, {
+                'prefix': 'a-first',
+                'platforms': ['Linux'],
+                'bases': ['test'],
+                'args': ['--a-first'],
+            }]))
+        res = lint_test_expectations.check_virtual_test_suites_formatting(
+            self.port)
+        self.assertEqual(len(res), 1)
+        self.assertIn('not sorted alphabetically', res[0])
+
+    def test_check_virtual_test_suites_formatting_indentation(self):
+        """Tests that incorrect indentation is detected."""
+        fs = self.host.filesystem
+        path = fs.join(self.port.web_tests_dir(), 'VirtualTestSuites')
+
+        fs.write_text_file(path, '[\n    {\n"prefix": "a-first"\n    }\n]\n')
+        res = lint_test_expectations.check_virtual_test_suites_formatting(
+            self.port)
+        self.assertEqual(len(res), 1)
+        self.assertIn('incorrect indentation', res[0])
+
+    def test_check_virtual_test_suites_formatting_correct(self):
+        """Tests that a correctly formatted file produces no errors."""
+        fs = self.host.filesystem
+        path = fs.join(self.port.web_tests_dir(), 'VirtualTestSuites')
+
+        fs.write_text_file(
+            path,
+            json.dumps([
+                'header comment',
+                {
+                    'prefix': 'a-first',
+                    'platforms': ['Linux'],
+                    'bases': ['test'],
+                    'args': ['--a-first'],
+                },
+                'comment between',
+                {
+                    'prefix': 'z-last',
+                    'platforms': ['Linux'],
+                    'bases': ['test'],
+                    'args': ['--z-last'],
+                },
+                'footer comment',
+            ],
+                       indent=2) + '\n')
+        res = lint_test_expectations.check_virtual_test_suites_formatting(
+            self.port)
+        self.assertEqual(len(res), 0)
+
 
 @patch.object(lint_test_expectations, 'check_virtual_test_suites',
+              lambda port: [])
+@patch.object(lint_test_expectations, 'check_virtual_test_suites_formatting',
               lambda port: [])
 @patch.object(lint_test_expectations, 'check_test_lists', lambda port: [])
 class MainTest(unittest.TestCase):

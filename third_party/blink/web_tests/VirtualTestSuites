@@ -1,6 +1,6 @@
 [
   "Top-level string entries are treated as comments.",
-
+  "",
   "Each object entry defines a virtual suite with the following fields:       ",
   " prefix: The name of the virtual suite. A virtual test name will be like   ",
   "     virtual/<prefix>/<base-test-name>.                                    ",
@@ -23,11 +23,12 @@
   " expires: An expiration date formatted as either `%b %d, %Y` (Jan 1, 2000) ",
   "     or `%B %d, %Y` (January 1, 2000). If the suite is not supposed to     ",
   "     expire, use `never`. A bug will be filed for removing expired suites. ",
-
+  "",
   "Note: for VTS includes wpt_internal tests, please also list them in",
   "content_shell.filter so that they can be run in blink_wpt_tests step.",
   "TODO(crbug.com/380755410): Find a way to do this systematically.",
-
+  "",
+  "__BEGIN_SUITES__",
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
@@ -237,6 +238,35 @@
     "expires": "Jan 1, 2026"
   },
   {
+    "prefix": "computed-width-values-depend-on-style-values",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/border-width.html",
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/outline-width.html",
+      "fast/replaced/no-focus-ring-object.html",
+      "fast/replaced/no-focus-ring-embed.html",
+      "external/wpt/css/css-gaps/parsing",
+      "fast/css/getComputedStyle/getComputedStyle-column-rule.html",
+      "fast/css/getComputedStyle/getComputedStyle-outline-shorthand.html",
+      "external/wpt/css/css-multicol/animation/column-rule-width-interpolation.html",
+      "external/wpt/css/css-multicol/parsing/",
+      "external/wpt/css/css-ui/parsing/canonical-order-outline-sub-properties-001.html",
+      "external/wpt/css/css-ui/parsing/outline-width-computed.html",
+      "external/wpt/css/cssom/cssom-getPropertyValue-common-checks.html"
+    ],
+    "args": [
+      "--disable-blink-features=DecoupleComputedBorderWidthFromStyle",
+      "--disable-blink-features=DecoupleResolvedColumnRuleWidthFromStyle"
+    ],
+    "expires": "Apr 30, 2026",
+    "owners": [
+      "samomekarajr@microsoft.com",
+      "kbabbitt@microsoft.com"
+    ]
+  },
+  {
     "prefix": "controls-refresh-hc",
     "owners": [
       "masonf@chromium.org",
@@ -382,7 +412,9 @@
   },
   {
     "prefix": "css-gap-decorations-disabled",
-    "platforms": ["Linux"],
+    "platforms": [
+      "Linux"
+    ],
     "bases": [
       "animations/interpolation/webkit-column-rule-color-interpolation.html",
       "animations/interpolation/webkit-column-rule-width-interpolation.html",
@@ -394,32 +426,17 @@
       "external/wpt/css/css-multicol/multicol-nested-column-rule-002.html",
       "external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html",
       "external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html",
-      "external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html"],
-    "args": ["--disable-blink-features=CSSGapDecoration"],
-    "expires": "June 1, 2026",
-    "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com", "javiercon@microsoft.com"]
-  },
-  {
-    "prefix": "computed-width-values-depend-on-style-values",
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/border-width.html",
-      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/outline-width.html",
-      "fast/replaced/no-focus-ring-object.html",
-      "fast/replaced/no-focus-ring-embed.html",
-      "external/wpt/css/css-gaps/parsing",
-      "fast/css/getComputedStyle/getComputedStyle-column-rule.html",
-      "fast/css/getComputedStyle/getComputedStyle-outline-shorthand.html",
-      "external/wpt/css/css-multicol/animation/column-rule-width-interpolation.html",
-      "external/wpt/css/css-multicol/parsing/",
-      "external/wpt/css/css-ui/parsing/canonical-order-outline-sub-properties-001.html",
-      "external/wpt/css/css-ui/parsing/outline-width-computed.html",
-      "external/wpt/css/cssom/cssom-getPropertyValue-common-checks.html"
+      "external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html"
     ],
-    "args": ["--disable-blink-features=DecoupleComputedBorderWidthFromStyle",
-             "--disable-blink-features=DecoupleResolvedColumnRuleWidthFromStyle"],
-    "expires": "Apr 30, 2026",
-    "owners": ["samomekarajr@microsoft.com", "kbabbitt@microsoft.com"]
+    "args": [
+      "--disable-blink-features=CSSGapDecoration"
+    ],
+    "expires": "June 1, 2026",
+    "owners": [
+      "samomekarajr@microsoft.com",
+      "almaher@microsoft.com",
+      "javiercon@microsoft.com"
+    ]
   },
   {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
@@ -580,25 +597,6 @@
       "--disable-features=TrackingProtection3pcd"
     ],
     "expires": "never"
-  },
-  {
-    "prefix": "file-system-access-write-mode",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/file-system-access",
-      "external/wpt/fs"
-    ],
-    "args": [
-      "--enable-features=FileSystemAccessWriteMode"
-    ],
-    "expires": "Sep 10, 2026",
-    "owners": [
-      "mych@chromium.org"
-    ]
   },
   {
     "prefix": "delay-async-when-lcp-in-html",
@@ -839,7 +837,6 @@
     ],
     "expires": "Nov 29, 2025"
   },
-
   "The elastic-overscroll virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {
@@ -877,6 +874,27 @@
       "--disable-features=RemovePurposeHeaderForPrefetch"
     ],
     "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "enable-shared-worker-bfcache",
+    "owners": [
+      "annasato@chromium.org"
+    ],
+    "platforms": [
+      "Mac",
+      "Win",
+      "Linux"
+    ],
+    "bases": [
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=BFCacheWithSharedWorker"
+    ],
+    "expires": "Jun 10, 2026"
   },
   {
     "prefix": "enable-system-cursor-size-for-svg",
@@ -1001,18 +1019,18 @@
     "expires": "Aug 1, 2026"
   },
   {
-    "prefix": "fedcm-well-known-validation",
+    "prefix": "fedcm-register",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/fedcm/fedcm-well-known-validation/"
+      "external/wpt/fedcm/fedcm-register/"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
+      "--enable-features=FedCmIdPregistration"
     ],
     "owners": [
       "npm@chromium.org",
@@ -1043,18 +1061,18 @@
     "expires": "Aug 1, 2026"
   },
   {
-    "prefix": "fedcm-register",
+    "prefix": "fedcm-well-known-validation",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/fedcm/fedcm-register/"
+      "external/wpt/fedcm/fedcm-well-known-validation/"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=FedCmIdPregistration"
+      "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
     ],
     "owners": [
       "npm@chromium.org",
@@ -1117,6 +1135,25 @@
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"
     ],
     "expires": "Jan 9, 2026"
+  },
+  {
+    "prefix": "file-system-access-write-mode",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/file-system-access",
+      "external/wpt/fs"
+    ],
+    "args": [
+      "--enable-features=FileSystemAccessWriteMode"
+    ],
+    "expires": "Sep 10, 2026",
+    "owners": [
+      "mych@chromium.org"
+    ]
   },
   {
     "prefix": "first-party-sets",
@@ -2922,6 +2959,26 @@
     "expires": "Jun 1, 2026"
   },
   {
+    "prefix": "script-src-hashes-v1-enabled",
+    "owners": [
+      "carlosil@chromium.org",
+      "meacer@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/content-security-policy/unsafe-eval/tentative",
+      "external/wpt/content-security-policy/script-src/tentative"
+    ],
+    "args": [
+      "--enable-features=ScriptSrcHashesV1"
+    ],
+    "expires": "Nov 1, 2025"
+  },
+  {
     "prefix": "select-audio-output",
     "platforms": [
       "Linux",
@@ -4066,8 +4123,13 @@
   },
   {
     "prefix": "soft-navs-pre-paint-attribution-disabled",
-    "owners": ["shaseley@google.com", "mmocny@google.com"],
-    "platforms": ["Linux"],
+    "owners": [
+      "shaseley@google.com",
+      "mmocny@google.com"
+    ],
+    "platforms": [
+      "Linux"
+    ],
     "bases": [
       "external/wpt/soft-navigation-heuristics/"
     ],
@@ -4222,21 +4284,6 @@
       "--enable-blink-features=Svg2Cascade"
     ],
     "expires": "Dec 1, 2025"
-  },
-  {
-    "prefix": "enable-shared-worker-bfcache",
-    "owners": ["annasato@chromium.org"],
-    "platforms": ["Mac", "Win", "Linux"],
-    "bases": [
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=BFCacheWithSharedWorker"
-    ],
-    "expires": "Jun 10, 2026"
   },
   {
     "prefix": "target-device-scale-factor-2",
@@ -5764,28 +5811,12 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "script-src-hashes-v1-enabled",
-    "owners": [
-      "carlosil@chromium.org",
-      "meacer@chromium.org"
-    ],
+    "prefix": "xslt-disabled",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
-    "bases": [
-      "external/wpt/content-security-policy/unsafe-eval/tentative",
-      "external/wpt/content-security-policy/script-src/tentative"
-    ],
-    "args": [
-      "--enable-features=ScriptSrcHashesV1"
-    ],
-    "expires": "Nov 1, 2025"
-  },
-  {
-    "prefix": "xslt-disabled",
-    "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
       "fast/parser",
@@ -5798,7 +5829,9 @@
       "svg/custom/invalid-xslt-crash.svg",
       "external/wpt/fetch/metadata/xslt.https.sub.html"
     ],
-    "args": [ "--disable-blink-features=XSLT" ],
+    "args": [
+      "--disable-blink-features=XSLT"
+    ],
     "owners": [
       "masonf@chromium.org"
     ],

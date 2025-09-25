@@ -39,11 +39,13 @@ from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.style import virtual_suites_formatter
 from blinkpy.web_tests.command_line import platform_options
-from blinkpy.web_tests.models.test_expectations import (TestExpectations,
-                                                        ParseError)
+from blinkpy.web_tests.models.test_expectations import ParseError
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
+
 
 _log = logging.getLogger(__name__)
 
@@ -191,8 +193,8 @@ def _check_not_slow_and_timeout(host, port, path, expectations,
                                 all_test_expectations):
     # only do check for web tests, so that we don't impact test coverage
     # for other test suites
-    if (not path.endswith('TestExpectations') and
-        not path.endswith('SlowTests')):
+    if (not path.endswith('TestExpectations')
+            and not path.endswith('SlowTests')):
         return []
     # Not all default expectation files could be parsed, so this check cannot
     # run.
@@ -275,8 +277,7 @@ def _check_expectations(host, port, path, test_expectations,
     # Check for original expectation lines (from get_updated_lines) instead of
     # expectations filtered for the current port (test_expectations).
     expectations = test_expectations.get_updated_lines(path)
-    failures, warnings = _check_test_existence(
-        host, port, path, expectations)
+    failures, warnings = _check_test_existence(host, port, path, expectations)
     failures.extend(_check_directory_glob(host, port, path, expectations))
     failures.extend(
         _check_not_slow_and_timeout(host, port, path, expectations,
@@ -305,6 +306,29 @@ def _check_stable_webexposed_not_disabled(host, path, expectations):
                     "because it protects against API changes.".format(
                         host.filesystem.basename(path), exp.lineno, exp.to_string())
             failures.append(error)
+
+    return failures
+
+
+def check_virtual_test_suites_formatting(port: Port) -> List[str]:
+    """Checks the VirtualTestSuites file is correctly formatted."""
+    failures = []
+    virtual_test_suites_path = port.host.filesystem.join(
+        port.web_tests_dir(), 'VirtualTestSuites')
+    try:
+        content = port.host.filesystem.read_text_file(virtual_test_suites_path)
+        json_content = json.loads(content)
+    except (IOError, json.JSONDecodeError) as e:
+        failures.append(f'Could not read or parse VirtualTestSuites: {e}')
+        return failures
+
+    expected_content = virtual_suites_formatter.format_json_with_comments(
+        json_content)
+    if content != expected_content:
+        failures.append(
+            'VirtualTestSuites is not sorted alphabetically by prefix or has '
+            'incorrect indentation. Please run '
+            '`third_party/blink/tools/format_virtual_test_suites.py` to fix.')
 
     return failures
 
@@ -456,6 +480,7 @@ def run_checks(host, options):
     port = host.port_factory.get(options=options)
     failures, warnings = lint(port)
     failures.extend(check_virtual_test_suites(port))
+    failures.extend(check_virtual_test_suites_formatting(port))
     failures.extend(check_test_lists(port))
 
     if options.json:
@@ -482,19 +507,18 @@ def run_checks(host, options):
 
 
 def main(argv, stderr, host=None):
-    parser = optparse.OptionParser(
-        option_list=platform_options(use_globs=True))
+    parser = optparse.OptionParser(option_list=platform_options(
+        use_globs=True))
     parser.add_option('--json', help='Path to JSON output file')
     parser.add_option(
         '--verbose',
         action='store_true',
         default=False,
         help='log extra details that may be helpful when debugging')
-    parser.add_option(
-        '--additional-expectations',
-        action='append',
-        default=[],
-        help='paths to additional expectation files to lint.')
+    parser.add_option('--additional-expectations',
+                      action='append',
+                      default=[],
+                      help='paths to additional expectation files to lint.')
 
     options, _ = parser.parse_args(argv)
 
