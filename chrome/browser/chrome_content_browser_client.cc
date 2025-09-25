@@ -1593,6 +1593,7 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
     context_params->bound_network = bound_network;
     context_params->cert_verifier_params = content::GetCertVerifierParams(
         cert_verifier::mojom::CertVerifierCreationParams::New());
+    context_params->enable_domain_reliability = false;
     ConfigureNetworkContextParams(
         browser_context, true, base::FilePath(), context_params.get(),
         cert_verifier::mojom::CertVerifierCreationParams::New().get());
