@@ -1303,6 +1303,16 @@ Response TargetHandler::CreateTarget(
   }
 
   if (hidden.value_or(false)) {
+    // Hidden target can be created only when remote debugging is enabled.
+    DevToolsManagerDelegate* delegate =
+        DevToolsManager::GetInstance()->delegate();
+    if (!delegate || delegate
+                         ->RemoteDebuggingTargets(
+                             DevToolsManagerDelegate::TargetType::kFrame)
+                         .empty()) {
+      return protocol::Response::ServerError(
+          "Hidden target can be created only when remote debugging is enabled");
+    }
     if (for_tab.value_or(false)) {
       return protocol::Response::InvalidParams(
           "Hidden target cannot be created for tab");
