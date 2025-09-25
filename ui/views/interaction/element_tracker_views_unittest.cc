@@ -209,6 +209,26 @@ TEST_F(ElementTrackerViewsTest,
   EXPECT_EQ(button, watcher.last_view());
 }
 
+// This is a regression test for a crash crbug.com/446756569.
+TEST_F(ElementTrackerViewsTest, ViewRemovedOnHide) {
+  ElementEventWatcher watcher(kTestElementID, context(),
+                              ElementEventType::kHidden);
+  auto button_ptr = std::make_unique<LabelButton>();
+  button_ptr->SetProperty(kElementIdentifierKey, kTestElementID);
+  auto* const button = widget_->SetContentsView(std::move(button_ptr));
+  EXPECT_EQ(0, watcher.event_count());
+
+  ui::ElementTracker::Subscription sub =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          kTestElementID, context(),
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement* e) { widget_->Close(); }));
+
+  button->SetVisible(false);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(button, watcher.last_view());
+}
+
 TEST_F(ElementTrackerViewsTest, SettingIDOnVisibleViewSendsNotification) {
   ElementEventWatcher watcher(kTestElementID, context(),
                               ElementEventType::kShown);

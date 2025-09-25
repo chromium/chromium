@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -169,6 +170,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
         : view(v), context(initial_context) {}
     bool visible() const { return static_cast<bool>(element); }
     const raw_ptr<View> view;
+    bool notifying_hidden = false;
     ui::ElementContext context;
     std::unique_ptr<TrackedElementViews> element;
   };
@@ -224,9 +226,14 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
       ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(
           data.element.get());
     } else if (!visible && was_visible) {
-      ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
-          data.element.get());
-      data.element.reset();
+      // Stop reentrance with notifying_hidden. A double call on
+      // NotifyElementHidden will crash.
+      if (!data.notifying_hidden) {
+        base::AutoReset<bool> auto_reset(&data.notifying_hidden, true);
+        ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
+            data.element.get());
+        data.element.reset();
+      }
     } else if (visible) {
       CHECK_EQ(data.context, old_context)
           << "We should always get a removed-from-widget notification before "
