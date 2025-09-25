@@ -5996,6 +5996,24 @@
             ]
         }
     ],
+    "ChromnientUploadChunking": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayUploadChunking"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClampAutoScaling": [
         {
             "platforms": [
