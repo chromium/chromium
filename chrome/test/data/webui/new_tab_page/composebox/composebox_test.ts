@@ -1126,6 +1126,53 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
   });
 
+  test('composebox does not show verbatim match', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add zps input.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing());
+
+    let matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(2, matchEls.length);
+    let matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+    // First match shows for zps.
+    assertStyle(matchEl, 'display', 'block');
+
+    // Add typed input
+    composeboxElement.$.input.value = 'awesome';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          input: stringToMojoString16('awesome'),
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing());
+
+    matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(2, matchEls.length);
+    matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+    // Verbatim match does not show for typed suggest.
+    assertStyle(matchEl, 'display', 'none');
+  });
+
   test('delete button removes match', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
     createComposeboxElement();

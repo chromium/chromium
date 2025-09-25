@@ -18,3 +18,7 @@
 :host([hidden]) {
   display: none;
 }
+
+ntp-composebox-match[hidden] {
+  display: none;
+}

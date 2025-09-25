@@ -4,6 +4,7 @@
 
 import './composebox_match.js';
 
+import {assert} from '//resources/js/assert.js';
 import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -118,6 +119,21 @@ export class ComposeboxDropdownElement extends CrLitElement {
    */
   protected isLastMatch_(index: number): boolean {
     return index === this.result?.matches?.length! - 1;
+  }
+
+  /**
+   * Hides the match if its a verbatim match. This match should be hidden
+   * for all typed suggestions. It will still be "selected" when the
+   * autocomplete result changes, and the user can still navigate to this
+   * verbatim match by navigating to the input text. Zero suggest does not
+   * have verbatim matches.
+   */
+  protected hideVerbatimMatch_(index: number): boolean {
+    assert(this.result);
+    if (!mojoString16ToString(this.result.input)) {
+      return false;
+    }
+    return index === 0;
   }
 
   protected computeAriaLabel_(match: AutocompleteMatch): string {
