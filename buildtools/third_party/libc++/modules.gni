@@ -134,38 +134,22 @@ if (use_clang_modules) {
         modulemap = "$sdk_path/usr/include/DarwinBasic.modulemap"
       }
     }
-
-    if (xcode_version_int >= 2600) {
-      template("DarwinFoundation1_module") {
-        clang_module(target_name) {
-          forward_variables_from(invoker, "*")
-          modulemap = "$sdk_path/usr/include/DarwinFoundation1.modulemap"
-        }
+    template("DarwinFoundation1_module") {
+      clang_module(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$sdk_path/usr/include/DarwinFoundation1.modulemap"
       }
-      template("DarwinFoundation2_module") {
-        clang_module(target_name) {
-          forward_variables_from(invoker, "*")
-          modulemap = "$sdk_path/usr/include/DarwinFoundation2.modulemap"
-        }
+    }
+    template("DarwinFoundation2_module") {
+      clang_module(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$sdk_path/usr/include/DarwinFoundation2.modulemap"
       }
-      template("DarwinFoundation3_module") {
-        clang_module(target_name) {
-          forward_variables_from(invoker, "*")
-          modulemap = "$sdk_path/usr/include/DarwinFoundation3.modulemap"
-        }
-      }
-    } else {
-      template("DarwinFoundation_module") {
-        clang_module(target_name) {
-          forward_variables_from(invoker, "*")
-          modulemap = "$sdk_path/usr/include/DarwinFoundation.modulemap"
-        }
-      }
-      template("c_standard_library_module") {
-        clang_module(target_name) {
-          forward_variables_from(invoker, "*")
-          modulemap = "$sdk_path/usr/include/c_standard_library.modulemap"
-        }
+    }
+    template("DarwinFoundation3_module") {
+      clang_module(target_name) {
+        forward_variables_from(invoker, "*")
+        modulemap = "$sdk_path/usr/include/DarwinFoundation3.modulemap"
       }
     }
   } else {
