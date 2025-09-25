@@ -27,20 +27,20 @@
 
 namespace glic {
 
-const mojom::PanelState& DummyHostDelegate::GetPanelState() const {
+const mojom::PanelState& EmptyEmbedderDelegate::GetPanelState() const {
   return panel_state_;
 }
-bool DummyHostDelegate::IsShowing() const {
+bool EmptyEmbedderDelegate::IsShowing() const {
   return true;
 }
 
-void DummyHostDelegate::Resize(const gfx::Size& size,
-                               base::TimeDelta duration,
-                               base::OnceClosure callback) {
+void EmptyEmbedderDelegate::Resize(const gfx::Size& size,
+                                   base::TimeDelta duration,
+                                   base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void DummyHostDelegate::SwitchConversation(
+void EmptyEmbedderDelegate::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   std::move(callback).Run(std::nullopt);
@@ -66,7 +66,7 @@ Host::Host(Profile* profile,
       sharing_manager_provider_(sharing_manager_provider) {}
 Host::~Host() = default;
 
-void Host::Initialize(Delegate* delegate) {
+void Host::Initialize(EmbedderDelegate* delegate) {
   delegate_ = delegate;
 }
 
@@ -447,7 +447,7 @@ HostManager::HostManager(Profile* profile,
                          base::WeakPtr<GlicWindowController> window_controller)
     : profile_(profile),
       window_controller_(window_controller),
-      dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {}
+      empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()) {}
 
 HostManager::~HostManager() = default;
 
@@ -515,7 +515,7 @@ Host* HostManager::WebUIPageHandlerAdded(GlicPageHandler* page_handler) {
 
   tab_hosts_.push_back(std::make_unique<Host>(profile_));
   Host& new_host = *tab_hosts_.back();
-  new_host.Initialize(dummy_host_delegate_.get());
+  new_host.Initialize(empty_embedder_delegate_.get());
   new_host.WebUIPageHandlerAdded(page_handler);
   return &new_host;
 }

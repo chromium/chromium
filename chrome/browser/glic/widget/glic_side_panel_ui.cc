@@ -46,7 +46,7 @@ std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
 
 GlicSidePanelUi::~GlicSidePanelUi() = default;
 
-Host::Delegate* GlicSidePanelUi::GetHostDelegate() {
+Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
   return this;
 }
 

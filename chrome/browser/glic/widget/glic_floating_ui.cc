@@ -19,7 +19,7 @@ std::unique_ptr<views::View> GlicFloatingUi::CreateView() {
   return std::make_unique<views::View>();
 }
 
-Host::Delegate* GlicFloatingUi::GetHostDelegate() {
+Host::EmbedderDelegate* GlicFloatingUi::GetHostEmbedderDelegate() {
   return this;
 }
 

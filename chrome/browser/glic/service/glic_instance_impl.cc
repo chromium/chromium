@@ -312,7 +312,7 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   auto inactive_embedder = old_embedder->CreateInactiveEmbedder();
   // Avoids use-after-free bugs. This is a temporary fix until swapping
   // delegates is properly supported (crbug.com/446219126).
-  host_.Initialize(inactive_embedder.get()->GetHostDelegate());
+  host_.Initialize(inactive_embedder.get()->GetHostEmbedderDelegate());
   it->second.embedder = std::move(inactive_embedder);
   active_embedder_key_.reset();
 }
@@ -339,13 +339,13 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
 
   auto* embedder_ptr = new_entry.embedder.get();
   // Avoid use-after-free.
-  host_.Initialize(embedder_ptr->GetHostDelegate());
+  host_.Initialize(embedder_ptr->GetHostEmbedderDelegate());
   embedders_.insert_or_assign(key, std::move(new_entry));
   return embedder_ptr;
 }
 
 void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
-  Host::Delegate* delegate = embedder->GetHostDelegate();
+  Host::EmbedderDelegate* delegate = embedder->GetHostEmbedderDelegate();
   if (!delegate) {
     return;
   }

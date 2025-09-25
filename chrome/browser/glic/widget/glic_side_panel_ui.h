@@ -24,7 +24,7 @@ namespace glic {
 
 // Implementation of GlicUiEmbedder for side panel UIs.
 class GlicSidePanelUi : public GlicUiEmbedder,
-                        public Host::Delegate,
+                        public Host::EmbedderDelegate,
                         public GlicSidePanelCoordinator::StateObserver {
  public:
   GlicSidePanelUi(Profile* profile,
@@ -33,12 +33,12 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   ~GlicSidePanelUi() override;
 
   // GlicUiEmbedder:
-  Host::Delegate* GetHostDelegate() override;
+  Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show() override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
-  // Host::Delegate:
+  // Host::EmbedderDelegate:
   const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,

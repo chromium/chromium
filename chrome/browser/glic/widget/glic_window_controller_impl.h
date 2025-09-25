@@ -57,7 +57,7 @@ class GlicWindowControllerImpl
     : public display::DisplayObserver,
       public GlicWindowController,
       public views::WidgetObserver,
-      public Host::Delegate,
+      public Host::EmbedderDelegate,
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost,
@@ -130,7 +130,7 @@ class GlicWindowControllerImpl
   void OnWidgetUserResizeStarted() override;
   void OnWidgetUserResizeEnded() override;
 
-  // Host::Delegate implementation
+  // Host::EmbedderDelegate implementation
   const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,

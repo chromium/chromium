@@ -32,7 +32,7 @@ class GlicUiEmbedder {
   virtual ~GlicUiEmbedder() = default;
 
   // Returns the Host::Delegate if this embedder uses one.
-  virtual Host::Delegate* GetHostDelegate() = 0;
+  virtual Host::EmbedderDelegate* GetHostEmbedderDelegate() = 0;
 
   // Show the glic UI.
   virtual void Show() = 0;

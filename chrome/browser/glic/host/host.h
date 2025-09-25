@@ -34,9 +34,9 @@ class WebUIContentsContainer;
 // TODO(crbug.com/409332639): Better encapsulate details here.
 class Host : public GlicSharingManagerProvider {
  public:
-  class Delegate {
+  class EmbedderDelegate {
    public:
-    virtual ~Delegate() = default;
+    virtual ~EmbedderDelegate() = default;
     // Returns the current panel state.
     virtual const mojom::PanelState& GetPanelState() const = 0;
 
@@ -145,7 +145,7 @@ class Host : public GlicSharingManagerProvider {
   ~Host() override;
   Host& operator=(const Host&) = delete;
 
-  void Initialize(Delegate* delegate);
+  void Initialize(EmbedderDelegate* delegate);
 
   struct PanelWillOpenOptions {
     PanelWillOpenOptions();
@@ -331,7 +331,7 @@ class Host : public GlicSharingManagerProvider {
   raw_ptr<InstanceDelegate> instance_delegate_;
 
   // Null before `Initialize()` and after `Shutdown()`.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<EmbedderDelegate> delegate_;
   base::ObserverList<Observer> observers_;
 
   // The invocation source if the panel is open. nullopt while the panel is
@@ -354,9 +354,9 @@ class Host : public GlicSharingManagerProvider {
 
 // A Host::Delegate which does nothing. For chrome://glic tabs or inactive
 // embedders.
-class DummyHostDelegate : public Host::Delegate {
+class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
  public:
-  ~DummyHostDelegate() override = default;
+  ~EmptyEmbedderDelegate() override = default;
   const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
@@ -410,7 +410,7 @@ class HostManager {
   std::vector<Host*> GetPrimaryHosts();
   raw_ptr<Profile> profile_;
   base::WeakPtr<GlicWindowController> window_controller_;
-  std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
+  std::unique_ptr<EmptyEmbedderDelegate> empty_embedder_delegate_;
   // Hosts for any unclaimed page handlers, which is approximately limited to
   // chrome://glic in tabs. These are only important for developers, and do not
   // need to be fully functional.

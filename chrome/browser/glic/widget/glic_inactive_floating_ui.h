@@ -21,7 +21,7 @@ class GlicInactiveFloatingUi : public GlicUiEmbedder {
   ~GlicInactiveFloatingUi() override;
 
   // GlicUiEmbedder:
-  Host::Delegate* GetHostDelegate() override;
+  Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show() override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;

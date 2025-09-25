@@ -15,18 +15,18 @@
 namespace glic {
 
 // A stub implementation of GlicUiEmbedder for floating UIs.
-class GlicFloatingUi : public GlicUiEmbedder, public Host::Delegate {
+class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
  public:
   GlicFloatingUi();
   ~GlicFloatingUi() override;
 
   // GlicUiEmbedder:
-  Host::Delegate* GetHostDelegate() override;
+  Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show() override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
-  // Host::Delegate:
+  // Host::EmbedderDelegate:
   const mojom::PanelState& GetPanelState() const override;
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,

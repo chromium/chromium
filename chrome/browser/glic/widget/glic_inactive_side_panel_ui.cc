@@ -22,7 +22,7 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     base::WeakPtr<tabs::TabInterface> tab)
-    : dummy_host_delegate_(std::make_unique<DummyHostDelegate>()) {
+    : empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()) {
   if (tab && tab->GetTabFeatures()) {
     auto* glic_side_panel_coordinator =
         tab->GetTabFeatures()->glic_side_panel_coordinator();
@@ -38,8 +38,8 @@ std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
 
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 
-Host::Delegate* GlicInactiveSidePanelUi::GetHostDelegate() {
-  return dummy_host_delegate_.get();
+Host::EmbedderDelegate* GlicInactiveSidePanelUi::GetHostEmbedderDelegate() {
+  return empty_embedder_delegate_.get();
 }
 
 void GlicInactiveSidePanelUi::Show() {
