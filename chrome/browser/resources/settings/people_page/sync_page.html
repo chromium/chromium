@@ -70,7 +70,8 @@
     </style>
 
   <settings-subpage page-title="$i18n{syncPageTitle}"
-      learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+      learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}"
+      route-path$="[[routePath]]">
 <if expr="not is_chromeos">
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus_.syncSystemEnabled)]]">

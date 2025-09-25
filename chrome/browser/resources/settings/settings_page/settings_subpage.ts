@@ -64,6 +64,10 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     return 'settings-subpage';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   static get properties() {
     return {
       pageTitle: String,
@@ -283,10 +287,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
     return field.getSearchInput() === field.shadowRoot.activeElement;
-  }
-
-  static get template() {
-    return getTemplate();
   }
 }
 

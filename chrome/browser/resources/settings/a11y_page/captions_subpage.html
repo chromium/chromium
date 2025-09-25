@@ -21,7 +21,7 @@
     text-align: center;
   }
 </style>
-<settings-subpage page-title="$i18n{captionsTitle}">
+<settings-subpage page-title="$i18n{captionsTitle}" route-path$="[[routePath]]">
 <template is="dom-if" if="[[enableLiveCaption_]]">
   <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
 </template>

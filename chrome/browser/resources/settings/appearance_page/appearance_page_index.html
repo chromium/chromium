@@ -7,10 +7,12 @@
 
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
-  <settings-appearance-page slot="view" id="parent" prefs="{{prefs}}">
+  <settings-appearance-page slot="view" id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.APPEARANCE.path]]">
   </settings-appearance-page>
 
   <settings-appearance-fonts-page slot="view" id="fonts"
-      data-parent-view-id="parent" prefs="{{prefs}}">
+      data-parent-view-id="parent" prefs="{{prefs}}"
+      route-path$="[[routes_.FONTS.path]]">
   </settings-appearance-fonts-page>
 </cr-view-manager>

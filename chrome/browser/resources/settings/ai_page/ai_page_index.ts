@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
-import type {Route} from '../router.js';
+import type {Route, SettingsRoutes} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
 
@@ -53,6 +53,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   static get properties() {
     return {
       prefs: Object,
+
+      routes_: {
+        type: Object,
+        value: () => routes,
+      },
 
       // <if expr="enable_glic">
       showGlicSettings_: {
@@ -89,6 +94,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   }
 
   declare prefs: {[key: string]: any};
+  declare private routes_: SettingsRoutes;
   // <if expr="enable_glic">
   declare private showGlicSettings_: boolean;
   // </if>

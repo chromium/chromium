@@ -31,7 +31,7 @@
   }
 </style>
 
-<settings-subpage page-title="$i18n{glicPageTitle}">
+<settings-subpage page-title="$i18n{glicPageTitle}" route-path$="[[routePath]]">
   <template is="dom-if" if="[[disallowedByAdmin_]]" restamp>
     <div class="section">
       <cr-icon icon="cr:domain"></cr-icon>
