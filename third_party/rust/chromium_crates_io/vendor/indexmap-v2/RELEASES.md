@@ -1,5 +1,9 @@
 # Releases
 
+## 2.11.4 (2025-09-18)
+
+- Updated the `hashbrown` dependency to a range allowing 0.15 or 0.16.
+
 ## 2.11.3 (2025-09-15)
 
 - Make the minimum `serde` version only apply when "serde" is enabled.

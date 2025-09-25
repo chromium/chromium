@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "indexmap"
-version = "2.11.3"
+version = "2.11.4"
 build = false
 autolib = false
 autobins = false
@@ -34,6 +34,11 @@ categories = [
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/indexmap-rs/indexmap"
 
+[package.metadata.release]
+allow-branch = ["main"]
+sign-tag = true
+tag-name = "{{version}}"
+
 [package.metadata.docs.rs]
 features = [
     "arbitrary",
@@ -47,11 +52,6 @@ rustdoc-args = [
     "--cfg",
     "docsrs",
 ]
-
-[package.metadata.release]
-allow-branch = ["main"]
-sign-tag = true
-tag-name = "{{version}}"
 
 [features]
 default = ["std"]
@@ -106,7 +106,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.hashbrown]
-version = "0.15.0"
+version = ">= 0.15.0, < 0.17.0"
 default-features = false
 
 [dependencies.quickcheck]

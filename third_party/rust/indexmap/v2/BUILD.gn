@@ -49,7 +49,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."
   cargo_pkg_repository = "https://github.com/indexmap-rs/indexmap"
-  cargo_pkg_version = "2.11.3"
+  cargo_pkg_version = "2.11.4"
 
   allow_unsafe = true
 
