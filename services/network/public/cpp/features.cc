@@ -545,7 +545,7 @@ BASE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCSPScriptSrcV2, "ScriptSrcV2", base::FEATURE_DISABLED_BY_DEFAULT);
 
