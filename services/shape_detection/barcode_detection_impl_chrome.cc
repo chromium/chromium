@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
+#include "services/shape_detection/features.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom-shared.h"
 #include "services/shape_detection/shape_detection_library_holder.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -168,9 +170,11 @@ void BarcodeDetectionImplChrome::Detect(
   const auto* holder = ShapeDetectionLibraryHolder::GetInstance();
   // Holder should be valid if it passed pre-sandbox initialization.
   CHECK(holder);
-  holder->api().DetectBarcodes(width, height, luminances.data(),
-                               expected_formats_, &detection_results,
-                               &num_results);
+  holder->api().DetectBarcodesWithFallback(
+      width, height, luminances.data(), expected_formats_,
+      base::FeatureList::IsEnabled(
+          features::kBarhopperAztecRefineTransformFallback),
+      &detection_results, &num_results);
 
   // SAFTY: `detection_results` was allocated with `num_results` by
   // ChromeShapeDetectionAPI.
