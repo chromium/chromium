@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/device_event_log/device_event_log.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_report_type.h"
 #include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -158,6 +159,11 @@ bool HidConnection::IsReportProtected(uint8_t report_id,
     // with a usage from the FIDO usage page. FIDO reports are normally blocked
     // by the HID blocklist.
     if (allow_fido_reports_) {
+      // Allow all reports on known HID security keys.
+      if (HidBlocklist::IsKnownSecurityKey(device.vendor_id,
+                                           device.product_id)) {
+        return false;
+      }
       auto* collection_info =
           FindCollectionWithReport(device, report_id, report_type);
       if (collection_info &&

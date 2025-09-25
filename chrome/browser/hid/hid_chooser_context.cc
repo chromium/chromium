@@ -29,6 +29,7 @@
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
@@ -538,10 +539,8 @@ bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
 
 bool HidChooserContext::IsKnownSecurityKey(
     const device::mojom::HidDeviceInfo& device) {
-  static constexpr uint16_t kVendorGoogle = 0x18d1;
-  static constexpr uint16_t kProductTitan = 0x5026;
-  return device.vendor_id == kVendorGoogle &&
-         device.product_id == kProductTitan;
+  return device::HidBlocklist::IsKnownSecurityKey(device.vendor_id,
+                                                  device.product_id);
 }
 
 void HidChooserContext::AddDeviceObserver(DeviceObserver* observer) {
