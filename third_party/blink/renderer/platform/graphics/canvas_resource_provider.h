@@ -328,8 +328,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  virtual int NumInflightResourcesForTesting() const { return 0; }
-
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 
@@ -513,9 +511,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return unused_resources_reclaim_timer_.IsRunning();
   }
-  int NumInflightResourcesForTesting() const override {
-    return num_inflight_resources_;
-  }
+  int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;
