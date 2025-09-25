@@ -153,6 +153,14 @@ void AccessibilityControllerClient::SilenceSpokenFeedback() {
   content::TtsController::GetInstance()->Stop();
 }
 
+void AccessibilityControllerClient::OnTwoFingerTouchStart() {
+  AccessibilityManager::Get()->OnTwoFingerTouchStart();
+}
+
+void AccessibilityControllerClient::OnTwoFingerTouchStop() {
+  AccessibilityManager::Get()->OnTwoFingerTouchStop();
+}
+
 bool AccessibilityControllerClient::ShouldToggleSpokenFeedbackViaTouch() const {
   return AccessibilityManager::Get()->ShouldToggleSpokenFeedbackViaTouch();
 }
