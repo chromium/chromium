@@ -48,8 +48,12 @@ void UsageHistoryInformation::RecordUseDate(base::Time time) {
 }
 
 double UsageHistoryInformation::GetRankingScore(base::Time current_time) const {
+  // Usually `use_count_ >= 1`, but it's not guaranteed because the value may
+  // come directly from the (possibly corrupted) database. To avoid division by
+  // zero, we enforce that `use_count >= 1`.
+  size_t use_count = use_count_ > 0 ? use_count_ : 1;
   return -log(static_cast<double>(GetDaysSinceLastUse(current_time)) + 2) /
-         log(use_count_ + 1);
+         log(static_cast<double>(use_count) + 1);
 }
 
 void UsageHistoryInformation::MergeUseDates(
@@ -76,14 +80,26 @@ bool UsageHistoryInformation::HasGreaterRankingThan(
 }
 
 bool UsageHistoryInformation::CompareRankingScores(
-    double score,
-    double other_score,
-    base::Time other_use_date) const {
-  const double kEpsilon = 0.00001;
-  if (std::fabs(score - other_score) > kEpsilon) {
-    return score > other_score;
+    double lhs_score,
+    double rhs_score,
+    base::Time rhs_use_date) const {
+  // We use rounded values to express near equivalence.
+  //
+  // We cannot use `std::fabs(x - y) < kEpsilon` because that'd break
+  // transitivity of equivalence, which is required by std::sort().
+  //
+  // We don't need to worry about overflows because the maximum absolute values
+  // of the scores are
+  //   std::log(std::numeric_limits<double>::max()) / std::log(2)
+  // which is ~1023.
+  static constexpr double kEpsilon = 0.00001;
+  const int32_t lhs_score_rounded = std::lround(lhs_score / kEpsilon);
+  const int32_t rhs_score_rounded = std::lround(rhs_score / kEpsilon);
+
+  if (lhs_score_rounded != rhs_score_rounded) {
+    return lhs_score_rounded > rhs_score_rounded;
   }
-  return use_date() > other_use_date;
+  return use_date() > rhs_use_date;
 }
 
 }  // namespace autofill

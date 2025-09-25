@@ -8,6 +8,7 @@
 #include <ranges>
 #include <variant>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -474,21 +475,30 @@ bool EntityInstance::FrecencyOrder::operator()(
   // At days_since_last_use = 0, use_count = 0, the score is -1.
   // As days_since_last_use increases, the score becomes more negative.
   // As use_count increases, the score approaches 0.
-  auto get_ranking_score = [&](const EntityInstance& entity) {
+  auto get_ranking_score = [&](const EntityInstance& entity) -> double {
     int days_since_last_use = std::max(0, (now_ - entity.use_date()).InDays());
     // The numerator punishes old usages, since as days_since_last_use
     // grows, the score becomes smaller (note the negative sign). The
     // denominator softens this penalty by making it smaller the more often a
     // user has used an entity.
     return -log(static_cast<double>(days_since_last_use) + 2) /
-           log(entity.use_count() + 2);
+           log(static_cast<double>(entity.use_count()) + 2);
   };
 
-  const double lhs_score = get_ranking_score(lhs);
-  const double rhs_score = get_ranking_score(rhs);
+  // We use rounded values to express near equivalence.
+  //
+  // We cannot use `std::fabs(x - y) < kEpsilon` because that'd break
+  // transitivity of equivalence, which is required by std::sort().
+  //
+  // We don't need to worry about overflows because the maximum absolute value
+  // of get_ranking_score() is
+  //   std::log(std::numeric_limits<double>::max()) / std::log(2)
+  // which is ~1023.
+  static constexpr double kEpsilon = 0.00001;
+  const int32_t lhs_score = std::lround(get_ranking_score(lhs) / kEpsilon);
+  const int32_t rhs_score = std::lround(get_ranking_score(rhs) / kEpsilon);
 
-  const double kEpsilon = 0.00001;
-  if (std::fabs(lhs_score - rhs_score) > kEpsilon) {
+  if (lhs_score != rhs_score) {
     return lhs_score > rhs_score;
   }
   return lhs.use_date() > rhs.use_date();
