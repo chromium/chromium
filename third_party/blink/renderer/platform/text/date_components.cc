@@ -484,9 +484,11 @@ bool DateComponents::SetWeek(int year, int week_number) {
 
 double DateComponents::MillisecondsSinceEpochForTime() const {
   DCHECK(type_ == kTime || type_ == kDateTimeLocal);
-  return ((hour_ * kMinutesPerHour + minute_) * kSecondsPerMinute + second_) *
-             kMsPerSecond +
-         millisecond_;
+  base::TimeDelta time = base::Hours(hour_);
+  time += base::Minutes(minute_);
+  time += base::Seconds(second_);
+  time += base::Milliseconds(millisecond_);
+  return time.InMillisecondsF();
 }
 
 double DateComponents::MillisecondsSinceEpoch() const {
