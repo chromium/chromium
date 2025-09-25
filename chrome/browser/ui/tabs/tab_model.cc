@@ -30,6 +30,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/views/widget/native_widget.h"
@@ -109,11 +110,9 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
     did_enter_foreground_callback_list_.Notify(this);
   }
 
-  // Being detached is equivalent to being in the background. So after
-  // detachment, if the tab is in the foreground, we must send a notification.
-  if (IsVisible()) {
-    did_become_visible_callback_list_.Notify(this);
-  }
+  // Set up visibility observers.
+  WebContentsObserver::Observe(contents_);
+  OnVisibilityChanged(contents_->GetVisibility());
 }
 
 void TabModel::OnRemovedFromModel() {
@@ -135,6 +134,9 @@ void TabModel::OnRemovedFromModel() {
   // mechanisms that were handling that.
   // TODO(tbergquist): Decide whether to stick with this approach or not.
   blocked_ = false;
+
+  // Remove visibility observers.
+  WebContentsObserver::Observe(nullptr);
 }
 
 TabCollection* TabModel::GetParentCollection(
@@ -233,7 +235,7 @@ base::CallbackListSubscription TabModel::RegisterWillDeactivate(
 }
 
 bool TabModel::IsVisible() const {
-  return contents_->GetVisibility() != content::Visibility::HIDDEN;
+  return visible_;
 }
 
 bool TabModel::IsSelected() const {
@@ -340,12 +342,17 @@ void TabModel::OnTabStripModelChanged(
 
   if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
-    did_become_visible_callback_list_.Notify(this);
     return;
-  } else if (IsSplit() && selection.new_tab->GetSplit() == GetSplit()) {
-    // The inactive tab in a split also becomes visible.
+  }
+}
+
+void TabModel::OnVisibilityChanged(content::Visibility visibility) {
+  const bool new_visible =
+      contents_->GetVisibility() != content::Visibility::HIDDEN;
+  const bool became_visible = new_visible && !visible_;
+  visible_ = new_visible;
+  if (became_visible) {
     did_become_visible_callback_list_.Notify(this);
-    return;
   }
 }
 

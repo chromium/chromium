@@ -176,33 +176,24 @@ TEST_F(TabModelTest, SplitViewVisibleAndActiveCallbacks) {
                           split_tabs::SplitTabCreatedSource::kToolbarButton);
   tab_strip.ActivateTabAt(2);
 
-  // Set up subscriptions for visible and active.
+  // Set up subscriptions for activation. Note that visibility is tested in
+  // browser tests.
   std::vector<base::CallbackListSubscription> subscriptions;
 
   RepeatingTabCallback did_tab_0_activate_callback;
   EXPECT_CALL(did_tab_0_activate_callback, Run).Times(1);
   subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidActivate(
       did_tab_0_activate_callback.Get()));
-  RepeatingTabCallback did_tab_0_become_visible_callback;
-  EXPECT_CALL(did_tab_0_become_visible_callback, Run).Times(1);
-  subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidBecomeVisible(
-      did_tab_0_become_visible_callback.Get()));
 
   RepeatingTabCallback did_tab_1_activate_callback;
   EXPECT_CALL(did_tab_1_activate_callback, Run).Times(0);
   subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidActivate(
       did_tab_1_activate_callback.Get()));
-  RepeatingTabCallback did_tab_1_become_visible_callback;
-  EXPECT_CALL(did_tab_1_become_visible_callback, Run).Times(1);
-  subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidBecomeVisible(
-      did_tab_1_become_visible_callback.Get()));
 
   // Activate a tab in the split and confirm expectations.
   tab_strip.ActivateTabAt(0);
   testing::Mock::VerifyAndClearExpectations(&did_tab_0_activate_callback);
-  testing::Mock::VerifyAndClearExpectations(&did_tab_0_become_visible_callback);
   testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
-  testing::Mock::VerifyAndClearExpectations(&did_tab_1_become_visible_callback);
 }
 
 }  // namespace tabs

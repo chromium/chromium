@@ -658,6 +658,7 @@ if (!is_android) {
       "tab_dialog_manager_browsertest.cc",
       "tab_list_bridge_browsertest.cc",
       "tab_menu_model_browsertest.cc",
+      "tab_model_browsertest.cc",
       "tab_renderer_data_browsertest.cc",
       "tab_strip_model_browsertest.cc",
     ]

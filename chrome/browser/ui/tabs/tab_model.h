@@ -16,6 +16,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -29,7 +30,9 @@ namespace tabs {
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public TabInterface, public TabStripModelObserver {
+class TabModel final : public TabInterface,
+                       public TabStripModelObserver,
+                       public content::WebContentsObserver {
  public:
   // Conceptually, tabs should always be a part of a normal window. There are
   // currently 2 cases where they are not:
@@ -198,6 +201,9 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
   // TODO(https://crbug.com/346692548): This will not be necessary once
   // soon_to_be_owning_model_ is removed. TabInterface logic can only be invoked
   // in contexts where a model exists.
@@ -235,6 +241,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;
+  bool visible_ = false;
   // TODO(crbug.com/392951786): Remove this property, and instead determine a
   // tab's split status based on whether it is part of a split tab collection.
   std::optional<split_tabs::SplitTabId> split_ = std::nullopt;
