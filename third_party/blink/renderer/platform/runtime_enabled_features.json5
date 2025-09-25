@@ -2799,17 +2799,12 @@
       status: {"Android": "stable"},
       base_feature: "none",
     },
-
     {
       // Improved retargeting behavior of ToggleEvent.source and
       // CommandEvent.source to match Event.relatedTarget.
       // crbug.com/420639769
       // Enabled in M142, can be removed in M144.
       name: "ImprovedSourceRetargeting",
-      status: "stable",
-    },
-    {
-      name: "IncludeTransformsForLayerXandLayerY",
       status: "stable",
     },
     {
