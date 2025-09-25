@@ -1635,34 +1635,38 @@ void CanvasResourceProvider::EnsureSkiaCanvas() {
 
 CanvasResourceProvider::CanvasImageProvider*
 CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
-  if (!canvas_image_provider_) {
-    if (IsAccelerated()) {
-      // Callsites are responsible for checking this before invoking this
-      // method.
-      CHECK(context_provider_wrapper_);
-    }
+  if (canvas_image_provider_) {
+    return canvas_image_provider_.get();
+  }
 
-    // Create an ImageDecodeCache for half float images only if the canvas is
-    // using half float back storage.
-    cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-      cache_f16 =
-          IsAccelerated()
-              ? context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                    kRGBA_F16_SkColorType)
-              : &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-    }
+  if (IsAccelerated()) {
+    // Callsites are responsible for checking this before invoking this
+    // method.
+    CHECK(context_provider_wrapper_);
+  }
 
-    cc::ImageDecodeCache* cache_rgba8 =
+  // Create an ImageDecodeCache for half float images only if the canvas is
+  // using half float back storage.
+  cc::ImageDecodeCache* cache_f16 = nullptr;
+  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+    cache_f16 =
         IsAccelerated()
             ? context_provider_wrapper_->ContextProvider().ImageDecodeCache(
-                  kN32_SkColorType)
-            : &Image::SharedCCDecodeCache(kN32_SkColorType);
-    canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-        cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-        IsAccelerated() ? cc::PlaybackImageProvider::RasterMode::kGpu
-                        : cc::PlaybackImageProvider::RasterMode::kSoftware);
+                  kRGBA_F16_SkColorType)
+            : &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
   }
+
+  cc::ImageDecodeCache* cache_rgba8 =
+      IsAccelerated()
+          ? context_provider_wrapper_->ContextProvider().ImageDecodeCache(
+                kN32_SkColorType)
+          : &Image::SharedCCDecodeCache(kN32_SkColorType);
+
+  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+      IsAccelerated() ? cc::PlaybackImageProvider::RasterMode::kGpu
+                      : cc::PlaybackImageProvider::RasterMode::kSoftware);
+
   return canvas_image_provider_.get();
 }
 
