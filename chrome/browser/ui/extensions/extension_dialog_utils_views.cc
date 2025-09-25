@@ -43,6 +43,11 @@ void ShowModalDialog(gfx::NativeWindow parent,
   constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
 }
 
+void ShowWebModalDialog(content::WebContents* web_contents,
+                        std::unique_ptr<ui::DialogModel> dialog_model) {
+  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+}
+
 void ShowDialog(gfx::NativeWindow parent,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model) {

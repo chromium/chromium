@@ -13,9 +13,13 @@
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_ui_types.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace ui {
 class DialogModel;
-}
+}  // namespace ui
 
 class Browser;
 class ExtensionsToolbarContainer;
@@ -38,6 +42,10 @@ void ShowDialog(gfx::NativeWindow parent,
 // Shows a modal dialog constructed from `dialog_model` on the `parent` window.
 void ShowModalDialog(gfx::NativeWindow parent,
                      std::unique_ptr<ui::DialogModel> dialog_model);
+
+// Shows a modal dialog constructed from `dialog_model` on `web_contents`.
+void ShowWebModalDialog(content::WebContents* web_contents,
+                        std::unique_ptr<ui::DialogModel> dialog_model);
 
 #if defined(TOOLKIT_VIEWS)
 // Shows the dialog constructed from `dialog_model` for `extension_ids` and

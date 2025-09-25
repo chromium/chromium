@@ -6,6 +6,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -147,7 +148,7 @@ void ShowExtensionInstallFrictionDialog(
                         /*id=*/kExtensionInstallFrictionLearnMoreLink)
           .Build();
 
-  constrained_window::ShowWebModal(std::move(dialog), web_contents);
+  ShowWebModalDialog(web_contents, std::move(dialog));
 }
 
 }  // namespace extensions
