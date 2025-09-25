@@ -660,6 +660,7 @@ crbug.com/630800 [ angle-opengl intel mac ] conformance2/rendering/framebuffer-c
 crbug.com/630800 [ angle-opengl intel mac ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1289803 [ angle-opengl arch-x86_64 mac ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Failure ]
 crbug.com/407622671 [ amd-0x7340 asan graphite-disabled mac ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
+crbug.com/407622671 [ intel-0x3e9b asan graphite-disabled mac ] deqp/functional/gles3/clipping.html [ RetryOnFailure ]
 
 ## Mac AMD ##
 
