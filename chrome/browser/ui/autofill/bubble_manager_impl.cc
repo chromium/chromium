@@ -118,16 +118,24 @@ void BubbleManagerImpl::RequestShowController(
   }
 
   if (force_show ||
-      ShouldReplaceExistingBubble(controller_weak_ptr->GetBubbleType())) {
+      ShouldReplaceExistingBubble(controller_to_show.GetBubbleType())) {
+    base::UmaHistogramEnumeration("Autofill.Bubble.Show.Preemption",
+                                  controller_to_show.GetBubbleType());
     HideActiveBubbleForPreemption();
-
-    // Immediately show the new, preempting bubble.
     ShowAndSetCurrentActive(controller_weak_ptr);
-  } else {
-    // New bubble has lower or equal priority, or the active bubble is hovered;
-    // queue it.
-    AddToPendingQueue(controller_weak_ptr);
+    return;
   }
+
+  // Queue the bubble. Log the reason for queuing.
+  if (active_bubble_controller_->IsMouseHovered()) {
+    base::UmaHistogramEnumeration("Autofill.Bubble.Queue.AddedDueToHover",
+                                  controller_to_show.GetBubbleType());
+  } else {
+    base::UmaHistogramEnumeration(
+        "Autofill.Bubble.Queue.AddedDueToActiveBubble",
+        controller_to_show.GetBubbleType());
+  }
+  AddToPendingQueue(controller_weak_ptr);
 }
 
 void BubbleManagerImpl::ShowAndSetCurrentActive(
@@ -176,10 +184,23 @@ void BubbleManagerImpl::AddToPendingQueue(
   if (it != pending_bubbles_queue_.end()) {
     // If a bubble of the same type exists, erase it before inserting the new
     // one if the controller says so or if it has timed out.
-    if (ShouldAlwaysPreemptSameType(new_bubble_type) ||
-        (now - it->time_added) > kPendingRequestTimeout) {
+    const bool bubble_has_timed_out =
+        (now - it->time_added) > kPendingRequestTimeout;
+    if (ShouldAlwaysPreemptSameType(new_bubble_type) || bubble_has_timed_out) {
+      if (bubble_has_timed_out) {
+        if (it->controller) {
+          base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
+                                        it->controller->GetBubbleType());
+        }
+      } else {
+        base::UmaHistogramEnumeration("Autofill.Bubble.Queue.Replaced",
+                                      new_bubble_type);
+      }
       pending_bubbles_queue_.erase(it);
       pending_bubbles_queue_.insert(PendingRequest(controller, now, priority));
+    } else {
+      base::UmaHistogramEnumeration("Autofill.Bubble.Queue.Discarded",
+                                    new_bubble_type);
     }
   } else {
     // No bubble of this type exists, just insert it.
@@ -198,6 +219,14 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
 
   // Clean up any stale pointers and timed out bubbles.
   const base::TimeTicks now = base::TimeTicks::Now();
+  std::ranges::for_each(pending_bubbles_queue_, [&now](const auto& request) {
+    if (request.controller &&
+        (now - request.time_added) > kPendingRequestTimeout) {
+      // Log timed-out bubbles.
+      base::UmaHistogramEnumeration("Autofill.Bubble.Queue.TimedOut",
+                                    request.controller->GetBubbleType());
+    }
+  });
   std::erase_if(pending_bubbles_queue_, [&now](const auto& request) {
     return !request.controller ||
            (now - request.time_added) > kPendingRequestTimeout;
@@ -211,6 +240,8 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
   auto next_controller_to_show = pending_bubbles_queue_.begin()->controller;
   pending_bubbles_queue_.erase(pending_bubbles_queue_.begin());
 
+  base::UmaHistogramEnumeration("Autofill.Bubble.Queue.ShownFromQueue",
+                                next_controller_to_show->GetBubbleType());
   // Show the next bubble from the queue.
   ShowAndSetCurrentActive(next_controller_to_show);
 }
@@ -264,7 +295,6 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
   if (active_bubble_controller_->IsMouseHovered()) {
     return false;
   }
-
   const BubbleType active_bubble_type =
       active_bubble_controller_->GetBubbleType();
 

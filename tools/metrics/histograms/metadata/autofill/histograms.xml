@@ -2129,13 +2129,81 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Issuer" variants="Autofill.BnplIssuer"/>
 </histogram>
 
+<histogram name="Autofill.Bubble.Queue.AddedDueToActiveBubble"
+    enum="AutofillBubbleType" expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when a bubble is added to the queue because another bubble was
+    active. It counts the bubbles that were queued because of a higher priority
+    bubble that is currently showing. This metric is recorded when a bubble
+    requests to show.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.AddedDueToHover"
+    enum="AutofillBubbleType" expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when a bubble is added to the queue because the user was hovering
+    over the active bubble. This metric is recorded when a bubble requests to
+    show.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.Discarded" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the count of bubbles that are not added to the queue because a
+    non-timed-out, non-preemptible bubble of the same type is already pending.
+    This metric is recorded when a bubble requests to show.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.Replaced" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when a bubble in the queue is replaced by a new bubble of the same
+    type due to the bubble type's immediate preemption policy (e.g., for
+    passwords), not due to a timeout. This metric is recorded once a bubble is
+    hidden and the pending queue of bubbles is cleaned up.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.ShownFromQueue"
+    enum="AutofillBubbleType" expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs, per bubble type, when a bubble from the queue is shown to the user.
+    This metric is recorded when the bubble is shown.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Queue.TimedOut" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when a bubble is erased from the queue because it has exceeded its
+    timeout. This can occur during general queue cleanup or when a new bubble of
+    the same type replaces the timed-out one.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Bubble.RequestShow" enum="AutofillBubbleType"
     expires_after="2026-04-22">
   <owner>vidhanj@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    This metric tracks the total volume of all bubble-show attempts per bubble
-    type. Logged when the bubble requests to be show.
+    This metric tracks the count all bubble-show attempts per bubble type.
+    Logged when the bubble requests to show and recorded when a bubble requests
+    to show.
   </summary>
 </histogram>
 
@@ -2145,8 +2213,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logged when the bubble requests to be shown but no other bubble is active,
-    leading to the bubble being shown immediately. This metric tracks the total
-    volume of bubbles that were directly shown per bubble type.
+    leading to the bubble being shown immediately. This metric tracks the count
+    of bubbles that were directly shown.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.Show.Preemption" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged when a new bubble successfully hides and replaces an active bubble.
+    It tells the count of bubbles that were shown while hiding another actively
+    shown bubble per bubble type.
   </summary>
 </histogram>
 

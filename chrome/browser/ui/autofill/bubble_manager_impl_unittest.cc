@@ -197,6 +197,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
   histogram_tester_.ExpectTotalCount("Autofill.Bubble.RequestShow", 2);
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.NoActiveBubble",
                                        BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.Preemption",
+                                       BubbleType::kSaveUpdateCard, 1);
 }
 
 // Test that hiding the active bubble shows the next highest-priority one from
@@ -229,6 +231,8 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
 
   EXPECT_FALSE(card_controller->IsShowingBubble());
   EXPECT_TRUE(address_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.ShownFromQueue",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Tests that when a high priority bubble is shown, the lower priority bubbles
@@ -290,6 +294,9 @@ TEST_F(BubbleManagerImplTest, RequestShow_LowerPriority_QueuesRequest) {
 
   EXPECT_TRUE(card_controller->IsShowingBubble());
   EXPECT_FALSE(address_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.Bubble.Queue.AddedDueToActiveBubble",
+      BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that a bubble with a preempt-same-type policy replaces an existing one.
@@ -348,6 +355,8 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
   bubble_manager().OnBubbleHiddenByController(*address_controller_1,
                                               /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_2->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.Discarded",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that a pending request replaces an older one of the same type after
@@ -382,6 +391,8 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
   bubble_manager().OnBubbleHiddenByController(*address_controller_2,
                                               /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.TimedOut",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that a new bubble with a preempt policy always replaces a pending one.
@@ -414,6 +425,8 @@ TEST_F(BubbleManagerImplTest,
   bubble_manager().OnBubbleHiddenByController(*password_controller_2,
                                               /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.Replaced",
+                                       BubbleType::kPassword, 1);
 }
 
 // Test that a higher-priority bubble does NOT preempt a lower-priority one if
@@ -442,6 +455,8 @@ TEST_F(BubbleManagerImplTest,
 
   EXPECT_TRUE(address_controller->IsShowingBubble());
   EXPECT_FALSE(card_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.AddedDueToHover",
+                                       BubbleType::kSaveUpdateCard, 1);
 }
 
 // Test that HasPendingBubble returns false when no bubble is pending.
@@ -504,6 +519,37 @@ TEST_F(BubbleManagerImplTest,
   // Now, checking for the bubble should return false because it has timed out.
   EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
       address_controller->GetBubbleType()));
+}
+
+// Test that a bubble is timed out from the queue.
+TEST_F(BubbleManagerImplTest, ProcessPendingBubbles_TimedOut) {
+  std::unique_ptr<MockBubbleController> password_controller =
+      CreateController(BubbleType::kPassword);
+  std::unique_ptr<MockBubbleController> address_controller =
+      CreateController(BubbleType::kSaveUpdateAddress);
+
+  // Show a high-priority bubble.
+  EXPECT_CALL(*password_controller, ShowBubble());
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+
+  // Queue the address bubble and confirm it's pending.
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
+      address_controller->GetBubbleType()));
+
+  // Fast forward time past the timeout.
+  FastForwardBy(base::Seconds(3601));
+
+  // Hiding the current bubble will trigger processing the pending bubbles.
+  // The address bubble should be timed out and not shown.
+  EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
+
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Queue.TimedOut",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that a force_show request preempts a higher-priority active bubble.
