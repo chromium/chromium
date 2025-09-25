@@ -51,98 +51,72 @@ bool DoesServiceExistForProfile(Profile* profile) {
 
 struct BoundSessionCookieRefreshServiceFactoryTestParams {
   std::string test_name;
-  std::vector<FeatureRefAndParams> enabled_features;
+  std::vector<FeatureRef> enabled_features;
   std::vector<FeatureRef> disabled_features;
   std::optional<bool> feature_policy_value;
-  std::optional<switches::EnableBoundSessionCredentialsDiceSupport>
-      expected_support;  // std::nullopt means no support at all.
+  bool is_service_expected = false;
   ~BoundSessionCookieRefreshServiceFactoryTestParams() = default;
 };
 
 const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
     {
-        "EnabledWithDefaultDiceSupport",
-        {{switches::kEnableBoundSessionCredentials, {}}},
+        "Enabled",
+        {switches::kEnableBoundSessionCredentials},
         {},
         std::nullopt,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
-    },
-    {
-        "EnabledForNonDiceProfiles",
-        {{switches::kEnableBoundSessionCredentials,
-          {{"dice-support", "disabled"}}}},
-        {},
-        std::nullopt,
-        switches::EnableBoundSessionCredentialsDiceSupport::kDisabled,
-    },
-    {
-        "EnabledForAllProfiles",
-        {{switches::kEnableBoundSessionCredentials,
-          {{"dice-support", "enabled"}}}},
-        {},
-        std::nullopt,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "Default",
         {},
         {},
         std::nullopt,
-        BUILDFLAG(IS_WIN)
-            ? switches::EnableBoundSessionCredentialsDiceSupport::kEnabled
-            : std::optional<
-                  switches::EnableBoundSessionCredentialsDiceSupport>(),
+        BUILDFLAG(IS_WIN),
     },
     {
         "Disabled",
         {},
         {switches::kEnableBoundSessionCredentials},
         std::nullopt,
-        BUILDFLAG(IS_WIN)
-            ? switches::EnableBoundSessionCredentialsDiceSupport::kEnabled
-            : std::optional<
-                  switches::EnableBoundSessionCredentialsDiceSupport>(),
+        BUILDFLAG(IS_WIN),
     },
     {
         "DisabledByPolicy",
-        {{switches::kEnableBoundSessionCredentials, {}}},
+        {switches::kEnableBoundSessionCredentials},
         {},
         false,
-        BUILDFLAG(IS_WIN)
-            ? switches::EnableBoundSessionCredentialsDiceSupport::kEnabled
-            : std::optional<
-                  switches::EnableBoundSessionCredentialsDiceSupport>(),
+        BUILDFLAG(IS_WIN),
     },
     {
         "EnabledByPolicy",
         {},
         {switches::kEnableBoundSessionCredentials},
         true,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "DisabledWithExtrasEnabled",
-        {{kEnableBoundSessionCredentialsWsbetaBypass, {}},
-         {kEnableBoundSessionCredentialsContinuity, {}}},
+        {kEnableBoundSessionCredentialsWsbetaBypass,
+         kEnableBoundSessionCredentialsContinuity},
         {switches::kEnableBoundSessionCredentials},
         false,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "DisabledWithWsbetaEnabled",
-        {{kEnableBoundSessionCredentialsWsbetaBypass, {}}},
+        {kEnableBoundSessionCredentialsWsbetaBypass},
         {switches::kEnableBoundSessionCredentials,
          kEnableBoundSessionCredentialsContinuity},
         false,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "DisabledWithContinuityEnabled",
-        {{kEnableBoundSessionCredentialsContinuity, {}}},
+        {kEnableBoundSessionCredentialsContinuity},
         {switches::kEnableBoundSessionCredentials,
          kEnableBoundSessionCredentialsWsbetaBypass},
         false,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "DisabledWithExtrasDisabled",
@@ -151,23 +125,23 @@ const BoundSessionCookieRefreshServiceFactoryTestParams kTestCases[] = {
          kEnableBoundSessionCredentialsWsbetaBypass,
          kEnableBoundSessionCredentialsContinuity},
         std::nullopt,
-        std::nullopt,
+        false,
     },
     {
         "EnabledWithExtrasDisabled",
-        {{switches::kEnableBoundSessionCredentials, {}}},
+        {switches::kEnableBoundSessionCredentials},
         {kEnableBoundSessionCredentialsWsbetaBypass,
          kEnableBoundSessionCredentialsContinuity},
         std::nullopt,
-        switches::EnableBoundSessionCredentialsDiceSupport::kEnabled,
+        true,
     },
     {
         "DisabledByKillSwitch",
-        {{switches::kBoundSessionCredentialsKillSwitch, {}},
-         {switches::kEnableBoundSessionCredentials, {}}},
+        {switches::kBoundSessionCredentialsKillSwitch,
+         switches::kEnableBoundSessionCredentials},
         {},
         true,
-        std::nullopt,
+        false,
     },
 };
 
@@ -177,8 +151,8 @@ class BoundSessionCookieRefreshServiceFactoryTest
     : public TestWithParam<BoundSessionCookieRefreshServiceFactoryTestParams> {
  public:
   BoundSessionCookieRefreshServiceFactoryTest() {
-    feature_list.InitWithFeaturesAndParameters(GetParam().enabled_features,
-                                               GetParam().disabled_features);
+    feature_list.InitWithFeatures(GetParam().enabled_features,
+                                  GetParam().disabled_features);
   }
 
   void CreateProfile(bool otr_profile = false) {
@@ -199,14 +173,7 @@ class BoundSessionCookieRefreshServiceFactoryTest
     }
   }
 
-  bool ShouldServiceExistDiceEnabled() {
-    return GetParam().expected_support ==
-           switches::EnableBoundSessionCredentialsDiceSupport::kEnabled;
-  }
-
-  bool ShouldServiceExistAccountConsistencyDisabled() {
-    return GetParam().expected_support.has_value();
-  }
+  bool ShouldServiceExist() { return GetParam().is_service_expected; }
 
   TestingProfile* original_profile() { return original_profile_.get(); }
   TestingProfile* otr_profile() { return otr_profile_.get(); }
@@ -248,7 +215,7 @@ TEST_P(BoundSessionCookieRefreshServiceFactoryTest, RegularProfileDiceEnabled) {
       AccountConsistencyModeManager::GetMethodForProfile(original_profile()),
       signin::AccountConsistencyMethod::kDice);
 
-  EXPECT_EQ(ShouldServiceExistDiceEnabled(),
+  EXPECT_EQ(ShouldServiceExist(),
             DoesServiceExistForProfile(original_profile()));
 }
 
@@ -262,7 +229,7 @@ TEST_P(BoundSessionCookieRefreshServiceFactoryTest,
   ASSERT_EQ(
       AccountConsistencyModeManager::GetMethodForProfile(original_profile()),
       signin::AccountConsistencyMethod::kDisabled);
-  EXPECT_EQ(ShouldServiceExistAccountConsistencyDisabled(),
+  EXPECT_EQ(ShouldServiceExist(),
             DoesServiceExistForProfile(original_profile()));
 }
 
@@ -271,8 +238,7 @@ TEST_P(BoundSessionCookieRefreshServiceFactoryTest, OTRProfile) {
   ASSERT_TRUE(otr_profile()->IsOffTheRecord());
   ASSERT_EQ(AccountConsistencyModeManager::GetMethodForProfile(otr_profile()),
             signin::AccountConsistencyMethod::kDisabled);
-  EXPECT_EQ(ShouldServiceExistAccountConsistencyDisabled(),
-            DoesServiceExistForProfile(otr_profile()));
+  EXPECT_EQ(ShouldServiceExist(), DoesServiceExistForProfile(otr_profile()));
 }
 
 TEST(BoundSessionCookieRefreshServiceFactoryTestNullUnexportableKeyService,

@@ -131,20 +131,6 @@ BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableBoundSessionCredentials);
-// This parameter is applicable only to the platforms that use DICE as an
-// account consistency protocol.
-enum class EnableBoundSessionCredentialsDiceSupport {
-  // Device bound session credentials are enabled only in profiles that have
-  // account consistency disabled (Incognito, Chrome Sign-In disabled in
-  // Settings).
-  kDisabled,
-  // Device bound session credentials are enabled in all profiles, including
-  // DICE-enabled profiles.
-  kEnabled,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
-    kEnableBoundSessionCredentialsDiceSupport;
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<std::string>
     kEnableBoundSessionCredentialsExclusiveRegistrationPath;
