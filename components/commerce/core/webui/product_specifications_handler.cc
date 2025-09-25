@@ -10,6 +10,7 @@
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/webui/webui_utils.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 
 namespace commerce {

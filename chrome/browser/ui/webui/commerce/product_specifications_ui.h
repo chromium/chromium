@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_COMMERCE_PRODUCT_SPECIFICATIONS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_COMMERCE_PRODUCT_SPECIFICATIONS_UI_H_
 
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
-#include "components/commerce/core/webui/product_specifications_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -28,6 +30,7 @@ class ColorChangeHandler;
 
 namespace commerce {
 
+class ProductSpecificationsHandler;
 class ShoppingServiceHandler;
 
 // This UI is used for both product specifications page and disclosure dialog.
