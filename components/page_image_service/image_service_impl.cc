@@ -20,7 +20,6 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/image_service_consent_helper.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/search_engines/search_engine_type.h"
@@ -199,15 +198,9 @@ base::WeakPtr<ImageService> ImageServiceImpl::GetWeakPtr() {
 }
 
 void ImageServiceImpl::FetchImageFor(mojom::ClientId client_id,
-                                 const GURL& page_url,
-                                 const mojom::Options& options,
-                                 ResultCallback callback) {
-  if (!base::FeatureList::IsEnabled(kImageService)) {
-    // In general this should never happen, because each UI should have its own
-    // feature gate, but this is just so we have a whole-service killswitch.
-    return std::move(callback).Run(GURL());
-  }
-
+                                     const GURL& page_url,
+                                     const mojom::Options& options,
+                                     ResultCallback callback) {
   GetConsentToFetchImage(
       client_id,
       base::BindOnce(&ImageServiceImpl::OnConsentResult, weak_factory_.GetWeakPtr(),

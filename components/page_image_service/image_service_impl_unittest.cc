@@ -23,7 +23,6 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -77,8 +76,6 @@ class ImageServiceImplTest : public testing::Test {
   ImageServiceImplTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kImageService}, {});
-
     remote_suggestions_service_ = std::make_unique<RemoteSuggestionsService>(
         /*document_suggestions_service=*/nullptr,
         /*enterprise_search_aggregator_suggestions_service=*/nullptr,
@@ -110,7 +107,6 @@ class ImageServiceImplTest : public testing::Test {
   ImageServiceImplTest& operator=(const ImageServiceImplTest&) = delete;
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

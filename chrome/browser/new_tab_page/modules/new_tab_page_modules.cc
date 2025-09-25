@@ -17,7 +17,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_clusters/core/features.h"
-#include "components/page_image_service/features.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
