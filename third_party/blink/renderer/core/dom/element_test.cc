@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -890,6 +891,64 @@ TEST_F(ElementTest, ParseFocusgroupAttrGrid) {
   EXPECT_EQ(e14_flags, (FocusgroupFlags::kGrid | FocusgroupFlags::kWrapBlock |
                         FocusgroupFlags::kRowFlow));
   EXPECT_EQ(e15_flags, (FocusgroupFlags::kInline | FocusgroupFlags::kBlock));
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrOptOutNone) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=a focusgroup=none></div>
+    <div id=b focusgroup="none inline"></div>
+    <div id=c focusgroup></div>
+  )HTML");
+
+  auto* a = document.getElementById(AtomicString("a"));
+  auto* b = document.getElementById(AtomicString("b"));
+  auto* c = document.getElementById(AtomicString("c"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(c);
+
+  FocusgroupFlags a_flags = a->GetFocusgroupFlags();
+  FocusgroupFlags b_flags = b->GetFocusgroupFlags();
+  FocusgroupFlags c_flags = c->GetFocusgroupFlags();
+
+  EXPECT_EQ(a_flags, FocusgroupFlags::kOptOut);
+  EXPECT_FALSE(focusgroup::IsActualFocusgroup(a_flags));
+
+  // 'none' combined with other tokens should still opt-out (others ignored).
+  EXPECT_EQ(b_flags, FocusgroupFlags::kOptOut);
+  EXPECT_FALSE(focusgroup::IsActualFocusgroup(b_flags));
+
+  EXPECT_TRUE(focusgroup::IsActualFocusgroup(c_flags));
+  EXPECT_NE(c_flags, FocusgroupFlags::kNone);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrNoMemoryToken) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=a focusgroup="no-memory"></div>
+    <div id=b focusgroup="inline no-memory"></div>
+  )HTML");
+
+  auto* a = document.getElementById(AtomicString("a"));
+  auto* b = document.getElementById(AtomicString("b"));
+  ASSERT_TRUE(a);
+  ASSERT_TRUE(b);
+
+  FocusgroupFlags a_flags = a->GetFocusgroupFlags();
+  FocusgroupFlags b_flags = b->GetFocusgroupFlags();
+
+  // Default axes (inline+block) plus no-memory.
+  EXPECT_TRUE(focusgroup::IsActualFocusgroup(a_flags));
+  EXPECT_TRUE(a_flags & FocusgroupFlags::kInline);
+  EXPECT_TRUE(a_flags & FocusgroupFlags::kBlock);
+  EXPECT_TRUE(a_flags & FocusgroupFlags::kNoMemory);
+
+  // Explicit inline axis only + no-memory.
+  EXPECT_TRUE(focusgroup::IsActualFocusgroup(b_flags));
+  EXPECT_TRUE(b_flags & FocusgroupFlags::kInline);
+  EXPECT_FALSE(b_flags & FocusgroupFlags::kBlock);
+  EXPECT_TRUE(b_flags & FocusgroupFlags::kNoMemory);
 }
 
 TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {

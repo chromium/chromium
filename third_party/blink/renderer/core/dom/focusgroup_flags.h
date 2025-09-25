@@ -18,16 +18,37 @@ class Element;
 
 namespace focusgroup {
 
-enum FocusgroupFlags : uint8_t {
-  kNone = 0,
-  kExtend = 1 << 0,
-  kInline = 1 << 1,
-  kBlock = 1 << 2,
-  kGrid = 1 << 3,
-  kWrapInline = 1 << 4,
-  kWrapBlock = 1 << 5,
-  kRowFlow = 1 << 6,
-  kColFlow = 1 << 7,
+enum FocusgroupFlags : uint16_t {
+  kNone = 0,  // No focusgroup behavior (default / sentinel).
+
+  // Primary navigation axis:
+  kInline = 1 << 0,  // Constrain directional focus navigation to inline axis.
+  kBlock = 1 << 1,   // Constrain directional focus navigation to block axis.
+
+  // Signals 2D navigation intent. Behavior gated on FocusgroupGrid
+  // runtime feature.
+  kGrid = 1 << 2,
+
+  // Boundary wrap behaviors (both set for non-grid wrap):
+  kWrapInline =
+      1 << 3,  // Wrap at inline edge (continue from opposite inline edge).
+  kWrapBlock =
+      1 << 4,  // Wrap at block edge (continue from opposite block edge).
+
+  // Flow ordering hints (Grid only):
+  kRowFlow = 1 << 5,  // Row-major traversal preference.
+  kColFlow = 1 << 6,  // Column-major traversal preference.
+
+  // Explicit opt-out for descendants of a focusgroup that do not wish to
+  // participate:
+  kOptOut = 1 << 7,
+
+  // Memory behavior override disables history-based focus restoration:
+  kNoMemory = 1 << 8,
+
+  // Deprecated. Will be removed when opt-out behavior is implemented.
+  // Placed last for easy identification; its bit may be recycled after removal.
+  kExtend = 1 << 9,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
@@ -60,6 +81,10 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
 
 // Exported helper for tests and logging to obtain a string form.
 CORE_EXPORT String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags);
+
+// Returns true if the parsed flags represent an actual focusgroup (i.e. not
+// the empty sentinel and not explicitly opted out via kOptOut).
+CORE_EXPORT bool IsActualFocusgroup(FocusgroupFlags flags);
 }  // namespace focusgroup
 
 // The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.
