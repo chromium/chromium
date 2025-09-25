@@ -24,6 +24,7 @@ static_library("boca") {
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
     "retriable_request_sender.h",
+    "shared_crd_session_wrapper.h",
     "util.cc",
     "util.h",
   ]

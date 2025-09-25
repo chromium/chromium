@@ -14,6 +14,8 @@ static_library("boca") {
     "boca_manager.h",
     "boca_manager_factory.cc",
     "boca_manager_factory.h",
+    "shared_crd_session_wrapper_impl.cc",
+    "shared_crd_session_wrapper_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -26,6 +28,8 @@ static_library("boca") {
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/boca/spotlight",
     "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/policy/remote_commands/crd/public",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/browser/ash/settings",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",

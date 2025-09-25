@@ -74,6 +74,11 @@ std::string BocaAppClient::GetSchoolToolsServerBaseUrl() {
 // Implemented in boca_app_client_impl.cc
 void BocaAppClient::OpenFeedbackDialog() {}
 
+std::unique_ptr<SharedCrdSessionWrapper>
+BocaAppClient::CreateSharedCrdSessionWrapper() {
+  return nullptr;
+}
+
 void BocaAppClient::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   // Remove observer here as boca_app_client detroys pretty-late(post
