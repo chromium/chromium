@@ -70,8 +70,10 @@ void SaveAndFillManagerImpl::OnSuggestionOffered() {
 
 void SaveAndFillManagerImpl::MaybeAddStrikeForSaveAndFill() {
   if (save_and_fill_suggestion_offered_ &&
-      !save_and_fill_suggestion_selected_) {
+      !save_and_fill_suggestion_selected_ &&
+      !has_logged_strikes_for_form_submission_) {
     GetSaveAndFillStrikeDatabase()->AddStrike();
+    has_logged_strikes_for_form_submission_ = true;
   }
 }
 

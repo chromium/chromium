@@ -765,6 +765,10 @@ TEST_F(SaveAndFillManagerImplTest,
   save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
 
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
+
+  // Verifies that calling it again won't log another strike.
+  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
+  EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
 
 // Verify that no strike is added if the suggestion was offered and accepted by

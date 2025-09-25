@@ -155,6 +155,11 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   bool save_and_fill_suggestion_offered_ = false;
   // True if the user accepted the Save and Fill suggestion.
   bool save_and_fill_suggestion_selected_ = false;
+  // True if any strike has been logged for form submission in this session.
+  // Note this variable is not reset once set to true, meaning that a
+  // SaveAndFillManagerImpl instance only adds at most one strike for cases
+  // where a Save-and-Fill suggestion is shown but not accepted.
+  bool has_logged_strikes_for_form_submission_ = false;
 
   LoggingContext logging_context_;
 
