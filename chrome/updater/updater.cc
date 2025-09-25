@@ -118,6 +118,22 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   InitializeCrashReporting(updater_scope);
 
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  if (!com_initializer.Succeeded()) {
+    PLOG(ERROR) << "Failed to initialize COM";
+    return kErrorComInitializationFailed;
+  }
+
+  // Failing to disable COM exception handling is a critical error.
+  CHECK(SUCCEEDED(DisableCOMExceptionHandling()))
+      << "Failed to disable COM exception handling.";
+
+  base::win::RegisterInvalidParamHandler();
+  VLOG(1) << GetUACState();
+#endif
+
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(base::BindOnce([] {
     // For the updater, it is important to join all threads before `UpdaterMain`
@@ -131,21 +147,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     thread_pool->JoinForTesting();  // IN-TEST
     base::ThreadPoolInstance::Set(nullptr);
   }));
-
-#if BUILDFLAG(IS_WIN)
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
-  if (!com_initializer.Succeeded()) {
-    PLOG(ERROR) << "Failed to initialize COM";
-    return kErrorComInitializationFailed;
-  }
-
-  // Failing to disable COM exception handling is a critical error.
-  CHECK(SUCCEEDED(DisableCOMExceptionHandling()))
-      << "Failed to disable COM exception handling.";
-  base::win::RegisterInvalidParamHandler();
-  VLOG(1) << GetUACState();
-#endif
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,
   // and reports the crash.
