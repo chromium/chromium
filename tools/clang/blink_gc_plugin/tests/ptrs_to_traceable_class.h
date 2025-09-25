@@ -27,29 +27,37 @@ class Traceable {
 class OffGCedHeap {
  public:
   explicit OffGCedHeap(Traceable* traceable)
-      : raw_ptr(traceable), ref_ptr(*traceable) {
+      : raw_ptr(traceable), const_raw_ptr(traceable), ref_ptr(*traceable) {
     (void)raw_ptr;
+    (void)const_raw_ptr;
     (void)ref_ptr;
+    (void)vector;
   }
 
  private:
   Traceable* raw_ptr;
+  const Traceable* const_raw_ptr;
   Traceable& ref_ptr;
   std::unique_ptr<Traceable> unique;
+  std::vector<Traceable*> vector;
 };
 
 class OnGCedHeap : public GarbageCollected<OnGCedHeap> {
  public:
   explicit OnGCedHeap(Traceable* traceable)
-      : raw_ptr(traceable), ref_ptr(*traceable) {
+      : raw_ptr(traceable), const_raw_ptr(traceable), ref_ptr(*traceable) {
     (void)raw_ptr;
+    (void)const_raw_ptr;
     (void)ref_ptr;
+    (void)vector;
   }
 
  private:
   Traceable* raw_ptr;
+  const Traceable* const_raw_ptr;
   Traceable& ref_ptr;
   std::unique_ptr<Traceable> unique;
+  std::vector<Traceable*> vector;
 };
 
 }  // namespace blink

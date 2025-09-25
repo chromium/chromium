@@ -22,6 +22,8 @@ class WithCollections : public GarbageCollected<WithCollections> {
     (void)map_value_untraced_;
     (void)vector_pair_;
     (void)ignored_set_;
+    (void)span_;
+    (void)span_ptr_;
 
     for (int i = 0; i < 4; ++i) {
       v->Trace(array_[i]);
@@ -55,6 +57,8 @@ class WithCollections : public GarbageCollected<WithCollections> {
   std::map<const Member<Base>, int> map_const_;
   std::vector<std::pair<Member<Base>, int>> vector_pair_;
   std::array<Member<Base>, 4> array_;
+  std::span<Member<Base>, 4> span_;
+  std::span<Member<Base>*, 4> span_ptr_;
 
   // Bad WTF collections:
   HashSet<Member<Base>> wtf_hash_set_;
@@ -86,10 +90,16 @@ class StackAllocated {
   STACK_ALLOCATED();
 
  public:
-  StackAllocated() { (void)array_; }
+  StackAllocated() {
+    (void)array_;
+    (void)span_;
+    (void)span_ptr_;
+  }
 
  private:
   std::array<Member<Base>, 4> array_;
+  std::span<Base, 4> span_;
+  std::span<Base*, 4> span_ptr_;
 };
 
 void DisallowedUseOfCollections() {
@@ -110,6 +120,10 @@ void DisallowedUseOfCollections() {
   (void)map_const;
   std::vector<std::pair<Member<Base>, int>> vector_pair;
   (void)vector_pair;
+  std::span<Base, 4> span_;
+  (void)span_;
+  std::span<Base*, 4> span_ptr_;
+  (void)span_ptr_;
 
   // Bad WTF collections:
   HashSet<Member<Base>> wtf_hash_set;

@@ -118,6 +118,12 @@ class DiagnosticsReporter {
   void CollectionOfGCed(const clang::Expr* expr,
                         const clang::CXXRecordDecl* collection,
                         const clang::CXXRecordDecl* gc_type);
+  void CollectionOfTraceable(const clang::Decl* decl,
+                             const clang::CXXRecordDecl* collection,
+                             const clang::CXXRecordDecl* traceable);
+  void CollectionOfTraceable(const clang::Expr* expr,
+                             const clang::CXXRecordDecl* collection,
+                             const clang::CXXRecordDecl* traceable);
   void CollectionOfMembers(const clang::Decl* decl,
                            const clang::CXXRecordDecl* collection,
                            const clang::CXXRecordDecl* gc_type);
@@ -217,6 +223,7 @@ class DiagnosticsReporter {
   unsigned diag_raw_ptr_or_ref_new_expr_used_with_gc_;
   unsigned diag_variant_used_with_gc_;
   unsigned diag_collection_of_gced_;
+  unsigned diag_collection_of_traceable_;
   unsigned diag_collection_of_members_;
 };
 

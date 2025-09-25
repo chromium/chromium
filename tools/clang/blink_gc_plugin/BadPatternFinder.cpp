@@ -44,7 +44,7 @@ TypeMatcher MemberType() {
 }
 
 TypeMatcher TraceableType() {
-  auto has_gc_base = hasCanonicalType(hasDeclaration(
+  auto has_trace_method = hasCanonicalType(hasDeclaration(
       cxxRecordDecl(
           hasMethod(cxxMethodDecl(
               hasName("Trace"), isConst(), parameterCountIs(1),
@@ -53,8 +53,8 @@ TypeMatcher TraceableType() {
                          hasDeclaration(cxxRecordDecl(isSameOrDerivedFrom(
                              hasName("cppgc::Visitor")))))))))))))
           .bind("traceable")));
-  return anyOf(has_gc_base,
-               hasCanonicalType(arrayType(hasElementType(has_gc_base))));
+  return anyOf(has_trace_method,
+               hasCanonicalType(arrayType(hasElementType(has_trace_method))));
 }
 
 class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
@@ -96,7 +96,9 @@ bool IsOnStack(const clang::Decl* decl, RecordCache& record_cache) {
   const clang::CXXRecordDecl* parent_decl =
       dyn_cast<const clang::CXXRecordDecl>(field_decl->getParent());
   assert(parent_decl);
-  return record_cache.Lookup(parent_decl)->IsStackAllocated();
+  RecordInfo* record_info = record_cache.Lookup(parent_decl);
+  assert(record_info);
+  return record_info->IsStackAllocated();
 }
 
 class OptionalOrRawPtrToGCedMatcher : public MatchFinder::MatchCallback {
@@ -216,46 +218,49 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
       : diagnostics_(diagnostics), record_cache_(record_cache) {}
 
   void Register(MatchFinder& match_finder) {
-    auto gced_ptr_or_ref =
-        anyOf(GarbageCollectedType(),
-              pointerType(pointee(GarbageCollectedType())).bind("ptr"),
-              referenceType(pointee(GarbageCollectedType())).bind("ptr"));
-    auto gced_ptr_ref_or_pair =
-        anyOf(gced_ptr_or_ref,
+    auto gced_or_member_or_traceable =
+        anyOf(GarbageCollectedType(), MemberType(), TraceableType());
+    auto object_ptr_or_ref =
+        anyOf(gced_or_member_or_traceable,
+              pointerType(pointee(gced_or_member_or_traceable)).bind("ptr"),
+              referenceType(pointee(gced_or_member_or_traceable)).bind("ptr"));
+    auto object_ptr_ref_or_pair =
+        anyOf(object_ptr_or_ref,
               hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
                   hasName("::std::pair"),
-                  hasAnyTemplateArgument(refersToType(gced_ptr_or_ref)))))));
-    auto member_ptr_or_ref =
-        anyOf(MemberType(), pointerType(pointee(MemberType())),
-              referenceType(pointee(MemberType())));
-    auto member_ptr_ref_or_pair =
-        anyOf(member_ptr_or_ref,
-              hasCanonicalType(hasDeclaration((classTemplateSpecializationDecl(
-                  hasName("::std::pair"),
-                  hasAnyTemplateArgument(refersToType(member_ptr_or_ref)))))));
-    auto gced_or_member = anyOf(gced_ptr_ref_or_pair, member_ptr_ref_or_pair);
+                  hasAnyTemplateArgument(refersToType(object_ptr_or_ref)))))));
     auto has_wtf_collection_name =
         hasAnyName("::blink::Vector", "::blink::Deque", "::blink::HashSet",
                    "::blink::LinkedHashSet", "::blink::HashCountedSet",
                    "::blink::HashMap");
-    auto has_std_collection_name =
-        hasAnyName("::std::vector", "::std::map", "::std::unordered_map",
-                   "::std::set", "::std::unordered_set", "::std::array");
+    auto has_std_collection_name = hasAnyName(
+        "::std::vector", "::std::map", "::std::unordered_map", "::std::set",
+        "::std::unordered_set", "::std::array", "::std::span", "::base::span");
+    auto has_gced_collection_name = hasAnyName(
+        "::blink::BasicHeapVector", "::blink::BasicHeapDeque",
+        "::blink::BasicHeapHashSet", "::blink::BasicHeapLinkedHashSet",
+        "::blink::BasicHeapHashCountedSet", "::blink::BasicHeapHashMap",
+        "::blink::GCedHeapLinkedStack");
     auto partition_allocator = hasCanonicalType(
         hasDeclaration(cxxRecordDecl(hasName("::blink::PartitionAllocator"))));
     auto wtf_collection_decl =
         classTemplateSpecializationDecl(
             has_wtf_collection_name,
-            hasAnyTemplateArgument(refersToType(gced_or_member)),
+            hasAnyTemplateArgument(refersToType(object_ptr_ref_or_pair)),
             hasAnyTemplateArgument(refersToType(partition_allocator)))
             .bind("collection");
     auto std_collection_decl =
         classTemplateSpecializationDecl(
             has_std_collection_name,
-            hasAnyTemplateArgument(refersToType(gced_or_member)))
+            hasAnyTemplateArgument(refersToType(object_ptr_ref_or_pair)))
             .bind("collection");
-    auto any_collection = hasType(hasCanonicalType(
-        hasDeclaration(anyOf(wtf_collection_decl, std_collection_decl))));
+    auto gced_collection_decl =
+        classTemplateSpecializationDecl(
+            has_gced_collection_name,
+            hasAnyTemplateArgument(refersToType(object_ptr_ref_or_pair)))
+            .bind("gced_collection");
+    auto any_collection = hasType(hasCanonicalType(hasDeclaration(anyOf(
+        wtf_collection_decl, std_collection_decl, gced_collection_decl))));
     auto collection_field = fieldDecl(any_collection).bind("bad_decl");
     auto collection_var = varDecl(any_collection).bind("bad_decl");
     auto collection_new_expression =
@@ -268,41 +273,70 @@ class CollectionOfGarbageCollectedMatcher : public MatchFinder::MatchCallback {
   void run(const MatchFinder::MatchResult& result) override {
     auto* collection =
         result.Nodes.getNodeAs<clang::CXXRecordDecl>("collection");
+    auto* gced_collection =
+        result.Nodes.getNodeAs<clang::CXXRecordDecl>("gced_collection");
+    assert(collection || gced_collection);
     auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
     auto* member = result.Nodes.getNodeAs<clang::CXXRecordDecl>("member");
-    assert(gc_type || member);
+    auto* traceable = result.Nodes.getNodeAs<clang::CXXRecordDecl>("traceable");
+    assert(gc_type || member || traceable);
+    if (gced_collection) {
+      if ((member || traceable) &&
+          !result.Nodes.getNodeAs<clang::Type>("ptr")) {
+        // GCed collection of members or traceables are allowed.
+        return;
+      }
+    }
+    auto* collection_declaration = collection ? collection : gced_collection;
     if (auto* bad_decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl")) {
       if (Config::IsIgnoreAnnotated(bad_decl)) {
         return;
       }
-      if (collection->getNameAsString() == "array") {
-        if (member) {
-          // std::array of Members is fine as long as it is traced (which is
-          // enforced by another checker).
+      if (collection) {
+        if ((collection->getNameAsString() == "array") &&
+            (member || (traceable && !gc_type)) &&
+            !result.Nodes.getNodeAs<clang::Type>("ptr")) {
+          // arrays  of Members and traceables are fine as long as they are
+          // traced (which is enforced by another checker).
           return;
         }
-        if (result.Nodes.getNodeAs<clang::Type>("ptr") &&
+        if ((collection->getNameAsString() == "array") &&
+            result.Nodes.getNodeAs<clang::Type>("ptr") &&
             IsOnStack(bad_decl, record_cache_)) {
-          // On stack std::array of raw pointers to GCed type is allowed.
+          // On stack arrays of pointers to GCed or member types are allowed.
           // Note: this may miss cases of std::array<std::pair<GCed, GCed*>>,
           // but such cases don't currently exist in the codebase.
           return;
         }
+        if (collection->getNameAsString() == "span" &&
+            IsOnStack(bad_decl, record_cache_)) {
+          // On stack spans are allowed
+          return;
+        }
       }
       if (gc_type) {
-        diagnostics_.CollectionOfGCed(bad_decl, collection, gc_type);
+        diagnostics_.CollectionOfGCed(
+            bad_decl, collection ? collection : gced_collection, gc_type);
+      } else if (traceable) {
+        diagnostics_.CollectionOfTraceable(
+            bad_decl, collection ? collection : gced_collection, traceable);
       } else {
         assert(member);
-        diagnostics_.CollectionOfMembers(bad_decl, collection, member);
+        diagnostics_.CollectionOfMembers(
+            bad_decl, collection ? collection : gced_collection, member);
       }
     } else {
       auto* bad_new = result.Nodes.getNodeAs<clang::Expr>("bad_new");
       assert(bad_new);
       if (gc_type) {
-        diagnostics_.CollectionOfGCed(bad_new, collection, gc_type);
+        diagnostics_.CollectionOfGCed(bad_new, collection_declaration, gc_type);
+      } else if (traceable) {
+        diagnostics_.CollectionOfTraceable(bad_new, collection_declaration,
+                                           traceable);
       } else {
         assert(member);
-        diagnostics_.CollectionOfMembers(bad_new, collection, member);
+        diagnostics_.CollectionOfMembers(bad_new, collection_declaration,
+                                         member);
       }
     }
   }

@@ -14,4 +14,7 @@ class HeapObject : public GarbageCollected<HeapObject> {
 ./raw_ptr_to_gc_managed_class.h:29:5: note: [blink-gc] Raw pointer field 'm_objs' to a GC managed class declared here:
     HeapVector<HeapObject*> m_objs;
     ^
-2 warnings generated.
+./raw_ptr_to_gc_managed_class.h:29:5: warning: [blink-gc] Disallowed collection 'BasicHeapVector<blink::internal::HeapCollectionType::kDisallowNew, blink::HeapObject *, 0>' found; 'HeapObject' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
+    HeapVector<HeapObject*> m_objs;
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3 warnings generated.

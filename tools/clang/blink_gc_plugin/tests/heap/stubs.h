@@ -204,6 +204,8 @@ template <typename T>
 class optional {};
 template <class... Ts>
 class variant {};
+template <typename Elem, size_t N>
+class span {};
 
 }  // namespace std
 
