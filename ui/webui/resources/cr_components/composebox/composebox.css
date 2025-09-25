@@ -327,9 +327,15 @@
 }
 
 
+#contextMenuContainer {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding-inline-start: 8px;
+}
+
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  margin-inline-start: 6px;
 }
 
 #uploadContainer {
@@ -647,4 +653,54 @@
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 8px;
   margin-bottom: 10px;
+}
+
+#deepSearchButton {
+  align-items: center;
+  background-color:
+    var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+  border: none;
+  color: var(--color-new-tab-page-composebox-upload-button);
+  display: flex;
+  font-size: 13px;
+  gap: 2px;
+  height: 36px;
+  justify-content: center;
+  padding-bottom: 6px;
+  padding-inline: 8px 12px;
+  padding-top: 6px;
+  width: 126px;
+}
+
+#deepSearchButton .icon-container {
+  align-items: center;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  position: relative;
+  width: 24px;
+}
+
+#deepSearchButton .deep-search-icon,
+#deepSearchButton .close-icon {
+  height: 16px;
+  position: absolute;
+  transition: opacity 150ms;
+  width: 16px;
+}
+
+#deepSearchButton .deep-search-icon {
+  padding-top: 3px;
+}
+
+#deepSearchButton .close-icon {
+  opacity: 0;
+}
+
+#deepSearchButton:hover .close-icon {
+  opacity: 1;
+}
+
+#deepSearchButton:hover .deep-search-icon {
+  opacity: 0;
 }

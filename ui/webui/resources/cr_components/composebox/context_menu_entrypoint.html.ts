@@ -49,6 +49,13 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.i18n('uploadFile')}
     </button>
+    ${this.showDeepSearch_ ?
+    html`<hr/>
+    <button id="deepSearch" class="dropdown-item"
+        @click="${this.onDeepSearchClick_}">
+      <cr-icon icon="composebox:deepSearch"></cr-icon>
+      Deep Search
+    </button>` : ''}
   </cr-action-menu>
 <!--_html_template_end_-->`;
   // clang-format off

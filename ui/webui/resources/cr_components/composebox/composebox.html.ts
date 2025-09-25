@@ -70,16 +70,29 @@ export function getHtml(this: ComposeboxElement) {
           ?hidden="${!this.showDropdown_}">
       </ntp-composebox-dropdown>
     ${this.contextMenuEnabled_ ? html`
-      <composebox-context-menu-entrypoint id="contextEntrypoint"
-          class="upload-icon no-overlap"
-          .tabSuggestions="${this.tabSuggestions_}"
-          @open-image-upload="${this.openImageUpload_}"
-          @open-file-upload="${this.openFileUpload_}"
-          @add-tab-context="${this.addTabContext_}"
-          @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
-          ?inputs-disabled="${this.inputsDisabled_}"
-          ?show-entrypoint-description="${this.showContextMenuDescription_}">
-      </composebox-context-menu-entrypoint>
+      <div id="contextMenuContainer">
+        <composebox-context-menu-entrypoint id="contextEntrypoint"
+            class="upload-icon no-overlap"
+            .tabSuggestions="${this.tabSuggestions_}"
+            @open-image-upload="${this.openImageUpload_}"
+            @open-file-upload="${this.openFileUpload_}"
+            @add-tab-context="${this.addTabContext_}"
+            @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
+            @deep-search-click="${this.onDeepSearchClick_}"
+            ?inputs-disabled="${this.inputsDisabled_}"
+            ?show-entrypoint-description="${this.showContextMenuDescription_}">
+        </composebox-context-menu-entrypoint>
+      ${this.inDeepSearchMode_ ? html`
+        <cr-button id="deepSearchButton" class="upload-icon no-overlap"
+            @click="${this.onDeepSearchClick_}">
+          <div class="icon-container" slot="prefix-icon">
+            <cr-icon class="deep-search-icon" icon="composebox:deepSearch">
+            </cr-icon>
+            <cr-icon class="close-icon" icon="cr:close"></cr-icon>
+          </div>
+          <div>Deep Search</div>
+        </cr-button>` : ''}
+      </div>
     ` : html`
       <div id="uploadContainer" class="icon-fade">
           <cr-icon-button

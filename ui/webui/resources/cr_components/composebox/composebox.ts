@@ -151,6 +151,10 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      inDeepSearchMode_ : {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
@@ -192,6 +196,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor composeboxShowPdfUpload_: boolean =
       loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected accessor showFileCarousel_: boolean = false;
+  protected accessor inDeepSearchMode_: boolean = false;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
   private maxFileCount_: number =
@@ -556,7 +561,9 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onDeepSearchClick_() {
-    this.pageHandler_.setDeepSearchMode(true);
+    this.inputsDisabled_ = !this.inputsDisabled_;
+    this.inDeepSearchMode_ = !this.inDeepSearchMode_;
+    this.pageHandler_.setDeepSearchMode(this.inDeepSearchMode_);
   }
 
   // Sets the input property to compute the cancel button title without using

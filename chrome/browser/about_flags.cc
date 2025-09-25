@@ -1676,6 +1676,7 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"ShowContextMenu", "true"},
 };
 const FeatureEntry::FeatureParam kShowToolsAndModels[] = {
+    {"ShowContextMenu", "true"},
     {"ShowToolsAndModels", "true"},
 };
 
@@ -1698,7 +1699,7 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show Contextual Input Menu and ZPS 5 File Limit",
      kComposeboxShowContextMenuAndZpsMultiFile,
      std::size(kComposeboxShowContextMenuAndZpsMultiFile), nullptr},
-    {"- Show Tools and Models Picker", kShowToolsAndModels,
+    {"- Show Context Menu with Tools and Models", kShowToolsAndModels,
      std::size(kShowToolsAndModels), nullptr},
 };
 

@@ -17,6 +17,7 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
@@ -49,12 +50,18 @@ export class ContextMenuEntrypointElement extends
       inputsDisabled: {type: Boolean},
       showEntrypointDescription: {type: Boolean},
       tabSuggestions: {type: Array},
+      showDeepSearch_ : {
+        reflect: true,
+        type: Boolean,
+      },
     };
   }
 
   accessor inputsDisabled: boolean = false;
   accessor showEntrypointDescription: boolean;
   accessor tabSuggestions: TabInfo[] = [];
+  protected accessor showDeepSearch_: boolean =
+      loadTimeData.getBoolean('composeboxShowDeepSearchButton');
 
   constructor() {
     super();
@@ -95,6 +102,12 @@ export class ContextMenuEntrypointElement extends
 
   protected openFileUpload() {
     this.fire('open-file-upload');
+    this.$.menu.close();
+  }
+
+  protected onDeepSearchClick_() {
+    this.inputsDisabled = !this.inputsDisabled;
+    this.fire('deep-search-click');
     this.$.menu.close();
   }
 }
