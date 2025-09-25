@@ -202,6 +202,11 @@ void LensSearchContextualizationController::GetPageContextualization(
 
 void LensSearchContextualizationController::TryUpdatePageContextualization(
     OnPageContextUpdatedCallback callback) {
+  if (state_ == State::kInitializing) {
+    // Will be called again by OnInitialPageContextEligibilityFetched when the
+    // controller finishes initializing.
+    return;
+  }
   if (state_ == State::kOff) {
     // TODO(crbug.com/418825720): The viewport screenshot should be only be set
     // in this controller in the future.
