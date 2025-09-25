@@ -39,6 +39,20 @@
 #include "ui/views/view_class_properties.h"
 
 namespace glic {
+namespace {
+
+bool ShouldShowLabel() {
+  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations) &&
+         features::kGlicEntrypointVariationsShowLabel.Get();
+}
+
+std::u16string GetLabelText() {
+  return ShouldShowLabel()
+             ? l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_LABEL)
+             : std::u16string();
+}
+
+}  // namespace
 
 GlicButton::GlicButton(TabStripController* tab_strip_controller,
                        PressedCallback pressed_callback,
@@ -50,7 +64,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
     : TabStripNudgeButton(tab_strip_controller,
                           std::move(pressed_callback),
                           std::move(close_pressed_callback),
-                          tooltip,
+                          GetLabelText(),
                           kGlicNudgeButtonElementId,
                           Edge::kNone,
                           icon,
@@ -71,7 +85,7 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
   UpdateColors();
 
   SetVisible(true);
-  SetText(base::UTF8ToUTF16(std::string()));
+  SetIsShowingNudge(false);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -94,6 +108,14 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 }
 
 GlicButton::~GlicButton() = default;
+
+void GlicButton::SetNudgeLabel(std::string label) {
+  SetText(base::UTF8ToUTF16(label));
+}
+
+void GlicButton::RestoreDefaultLabel() {
+  SetText(GetLabelText());
+}
 
 void GlicButton::OnFreWebUiStateChanged(mojom::FreWebUiState new_state) {
   UpdateTooltipText();
@@ -118,11 +140,13 @@ void GlicButton::UpdateTooltipText() {
 
 void GlicButton::SetIsShowingNudge(bool is_showing) {
   if (is_showing) {
+    SetCloseButtonVisible(true);
     SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
     AnnounceNudgeShown();
   } else {
+    SetCloseButtonVisible(false);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
-    SetText(base::UTF8ToUTF16(std::string()));
+    RestoreDefaultLabel();
   }
   is_showing_nudge_ = is_showing;
   PreferredSizeChanged();
@@ -136,8 +160,7 @@ gfx::Size GlicButton::CalculatePreferredSize(
   const int height = TabStripControlButton::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
-  // Set collapsed size to a square.
-  const int collapsed_width = height;
+  const int collapsed_width = std::max(initial_width_, height);
   const int width = std::lerp(collapsed_width, full_width, GetWidthFactor());
 
   return gfx::Size(width, height);
@@ -193,12 +216,23 @@ void GlicButton::ExecuteCommand(int command_id, int event_flags) {
   profile_prefs()->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, false);
 }
 
+void GlicButton::SetText(std::u16string_view text) {
+  TabStripNudgeButton::SetText(text);
+}
+
 bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton() && mouse_down_callback_) {
     mouse_down_callback_.Run();
     return true;
   }
   return false;
+}
+
+void GlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  if (!initial_width_) {
+    initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
+  }
+  TabStripNudgeButton::OnBoundsChanged(previous_bounds);
 }
 
 bool GlicButton::IsContextMenuShowingForTest() {

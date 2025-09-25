@@ -10,10 +10,11 @@
 class GlicNudgeDelegate {
  public:
   virtual ~GlicNudgeDelegate() = 0;
-  // Called when the glic nudge UI needs to be triggered, or to be turned off.
-  // When the UI needs to be shown `label' holds the nudge label. When the nudge
-  // UI should be turned off, `label` is empty.
+  // Called when the glic nudge UI needs to be triggered. `label' holds the
+  // nudge label.
   virtual void OnTriggerGlicNudgeUI(std::string label) = 0;
+  // Called when the glic nudge UI needs to be hidden.
+  virtual void OnHideGlicNudgeUI() = 0;
   // Called when we want to check if the UI is currently showing.
   virtual bool GetIsShowingGlicNudge() = 0;
 };

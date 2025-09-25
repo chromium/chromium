@@ -136,6 +136,7 @@ class TabStripActionContainer : public views::View,
 
   // GlicNudgeDelegate:
   void OnTriggerGlicNudgeUI(std::string label) override;
+  void OnHideGlicNudgeUI() override;
   bool GetIsShowingGlicNudge() override;
 
   // GlicButtonControllerDelegate:

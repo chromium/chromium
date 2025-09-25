@@ -310,4 +310,9 @@
   <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
     Unpin
   </message>
+
+  <!-- Gemini tab strip button label -->
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+    Gemini
+  </message>
 </grit-part>

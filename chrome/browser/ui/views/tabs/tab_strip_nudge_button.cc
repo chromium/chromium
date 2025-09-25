@@ -25,9 +25,20 @@ namespace {
 constexpr int kTabStripNudgeCornerRadius = 10;
 constexpr int kTabStripNudgeFlatCornerRadius = 4;
 constexpr int kTabStripNudgeIconMargin = 6;
-constexpr int kTabStripNudgeLabelMargin = 4;
+constexpr int kTabStripNudgeLabelLeftMargin = 4;
+constexpr int kTabStripNudgeLabelRightMargin = 12;
 constexpr int kTabStripNudgeCloseButtonMargin = 8;
 constexpr int kTabStripNudgeCloseButtonSize = 16;
+
+constexpr gfx::Insets GetLabelInsets(bool show_close_button) {
+  return show_close_button
+             ? gfx::Insets().set_left(kTabStripNudgeLabelLeftMargin)
+             :
+             // Set a right margin on the label when the close button is hidden.
+             gfx::Insets().set_left_right(kTabStripNudgeLabelLeftMargin,
+                                          kTabStripNudgeLabelRightMargin);
+}
+
 }  // namespace
 
 TabStripNudgeButton::TabStripNudgeButton(
@@ -60,15 +71,7 @@ TabStripNudgeButton::TabStripNudgeButton(
 
   SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
   label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-
-  const gfx::Insets label_margin =
-      show_close_button
-          ? gfx::Insets().set_left(kTabStripNudgeLabelMargin)
-          :
-          // Set a right margin on the label when the close button is hidden.
-          gfx::Insets().set_left_right(kTabStripNudgeLabelMargin,
-                                       kTabStripNudgeCloseButtonMargin);
-  label()->SetProperty(views::kMarginsKey, label_margin);
+  label()->SetProperty(views::kMarginsKey, GetLabelInsets(show_close_button));
 
   SetForegroundFrameActiveColorId(kColorTabSearchButtonCRForegroundFrameActive);
   SetForegroundFrameInactiveColorId(
@@ -89,7 +92,9 @@ TabStripNudgeButton::TabStripNudgeButton(
 TabStripNudgeButton::~TabStripNudgeButton() = default;
 
 void TabStripNudgeButton::SetOpacity(float factor) {
-  label()->layer()->SetOpacity(factor);
+  if (label()->layer()) {
+    label()->layer()->SetOpacity(factor);
+  }
   close_button_->layer()->SetOpacity(factor);
 }
 void TabStripNudgeButton::SetWidthFactor(float factor) {
@@ -167,6 +172,12 @@ void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
     SetFocusBehavior(FocusBehavior::NEVER);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
   }
+}
+
+void TabStripNudgeButton::SetCloseButtonVisible(bool visible) {
+  close_button_->SetVisible(visible);
+  label()->SetProperty(views::kMarginsKey,
+                       GetLabelInsets(/*show_close_button=*/visible));
 }
 
 void TabStripNudgeButton::SetCloseButtonFocusBehavior(

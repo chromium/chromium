@@ -564,7 +564,7 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   }
 
   ExecuteHideTabStripNudge(glic_button_);
-  glic_button_->SetText(std::u16string());
+  glic_button_->RestoreDefaultLabel();
   // Reset state manually since there wont be a mouse up event as the animation
   // moves the button out of the way.
   glic_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
@@ -576,7 +576,7 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
-  glic_button_->SetText(std::u16string());
+  glic_button_->RestoreDefaultLabel();
 }
 
 void TabStripActionContainer::OnGlicButtonHovered() {
@@ -640,12 +640,21 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 
   CHECK(glic_button_);
   if (!label.empty()) {
-    glic_button_->SetText(base::UTF8ToUTF16(label));
+    glic_button_->SetNudgeLabel(std::move(label));
     ShowTabStripNudge(glic_button_);
-  } else {
-    HideTabStripNudge(glic_button_);
-    glic_button_->SetText(base::UTF8ToUTF16(label));
   }
+
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+void TabStripActionContainer::OnHideGlicNudgeUI() {
+#if BUILDFLAG(ENABLE_GLIC)
+
+  CHECK(glic_button_);
+  HideTabStripNudge(glic_button_);
+  glic_button_->RestoreDefaultLabel();
 
 #else
   NOTREACHED();

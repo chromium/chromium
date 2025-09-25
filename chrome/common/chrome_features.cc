@@ -723,6 +723,10 @@ extern const base::FeatureParam<std::string> kGlicCaaLinkUrl{
 extern const base::FeatureParam<std::string> kGlicCaaLinkText{
     &kGlicCaaGuestError, "glic-caa-link-text", "gemini.google.com"};
 
+BASE_FEATURE(kGlicEntrypointVariations, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicEntrypointVariationsShowLabel{
+    &kGlicEntrypointVariations, "glic-entrypoint-variations-show-label", false};
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 // Force Privacy Guide to be available even if it would be unavailable

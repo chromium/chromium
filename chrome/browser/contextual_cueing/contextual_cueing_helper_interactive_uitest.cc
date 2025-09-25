@@ -53,6 +53,7 @@ class FakeGlicNudgeDelegate : public GlicNudgeDelegate {
       future_.SetValue();
     }
   }
+  void OnHideGlicNudgeUI() override { last_nudge_label_ = ""; }
   bool GetIsShowingGlicNudge() override { return !last_nudge_label_.empty(); }
   void WaitUntilValidNudge() { future_.Get(); }
   std::string last_nudge_label_;
