@@ -204,6 +204,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       number_of_challenges_++;
       if (number_of_challenges_ < kMaxChallenges) {
         AttemptChallengeSigning();
+        // `this` may be deleted.
         return;
       } else {
         RunCallback(RegistrationResult(
@@ -238,6 +239,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
+      // `this` may be deleted.
       std::move(callback).Run(nullptr, g_mock_fetcher->Run());
       return;
     }
@@ -252,6 +254,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                                  GetWeakPtr(),
                                  registration_params.TakeChallenge(),
                                  registration_params.TakeAuthorization())));
+    // `this` may be deleted.
   }
 
   void StartFetchWithFederatedKey(
@@ -261,6 +264,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
+      // `this` may be deleted.
       std::move(callback).Run(nullptr, g_mock_fetcher->Run());
       return;
     }
@@ -274,6 +278,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (!features::kDeviceBoundSessionsCheckFederatedRegistration.Get()) {
       StartFetch(request_params.TakeChallenge(),
                  request_params.TakeAuthorization());
+      // `this` may be deleted.
       return;
     }
 
@@ -296,29 +301,23 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void StartFetchWithExistingKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_id,
+      unexportable_keys::UnexportableKeyId key_id,
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
       std::move(callback).Run(nullptr, g_mock_fetcher->Run());
-      return;
-    }
-
-    if (!key_id.has_value()) {
-      std::move(callback).Run(
-          nullptr,
-          RegistrationResult(SessionError{SessionError::ErrorType::kKeyError}));
+      // `this` may be deleted.
       return;
     }
 
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
 
-    key_id_ = *key_id;
+    key_id_ = key_id;
 
     StartFetch(request_params.TakeChallenge(),
                request_params.TakeAuthorization());
+    // `this` may be deleted.
   }
 
  private:
@@ -401,6 +400,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     StartFetch(std::move(challenge), std::move(authorization));
+    // `this` may be deleted.
   }
 
   SessionError::ErrorType OnRelyingPartyWellKnownRequestCompleteInternal() {
@@ -446,6 +446,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         current_authorization_, session_identifier_,
         base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                        GetWeakPtr()));
+    // `this` may be deleted.
   }
 
   void OnRegistrationTokenCreated(
@@ -455,6 +456,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       number_of_signing_failures_++;
       if (number_of_signing_failures_ < kMaxSigningFailures) {
         AttemptChallengeSigning();
+        // `this` may be deleted.
         return;
       } else {
         RunCallback(RegistrationResult(
@@ -506,6 +508,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // TODO(crbug.com/438783634): Handle if session identifiers don't match
     const std::string& challenge = (*challenge_params)[0].challenge();
     StartFetch(challenge, std::nullopt);
+    // `this` may be deleted.
   }
 
   void OnRequestComplete() {
@@ -521,7 +524,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (url_fetcher_->net_error() != OK) {
       RunCallback(
           RegistrationResult(SessionError{SessionError::ErrorType::kNetError}));
-      // *this is deleted here.
+      // `this` may be deleted.
       return;
     }
 
@@ -535,37 +538,37 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           device_bound_sessions::SessionChallengeParam::CreateIfValid(
               fetcher_endpoint_, headers);
       OnChallengeNeeded(std::move(challenge_params));
-      // *this is preserved here.
+      // `this` may be deleted.
       return;
     }
 
     if (response_code < 200) {
       RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kPersistentHttpError}));
-      // *this is deleted here
+      // `this` may be deleted.
       return;
     } else if (response_code == 407) {
       // Proxy errors are treated as network errors
       RunCallback(
           RegistrationResult(SessionError{SessionError::ErrorType::kNetError}));
-      // *this is deleted here
+      // `this` may be deleted.
       return;
     } else if (300 <= response_code && response_code < 500) {
       RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kPersistentHttpError}));
-      // *this is deleted here
+      // `this` may be deleted.
       return;
     } else if (response_code >= 500) {
       RunCallback(RegistrationResult(
           SessionError{SessionError::ErrorType::kTransientHttpError}));
-      // *this is deleted here
+      // `this` may be deleted.
       return;
     }
 
     if (url_fetcher_->data_received().empty()) {
       RunCallback(
           RegistrationResult(RegistrationResult::NoSessionConfigChange()));
-      // *this is deleted here.
+      // `this` may be deleted.
       return;
     }
 
@@ -575,7 +578,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                                     url_fetcher_->data_received());
     if (!params_or_error.has_value()) {
       RunCallback(RegistrationResult(std::move(params_or_error).error()));
-      // *this is deleted here.
+      // `this` may be deleted.
       return;
     }
 
@@ -583,7 +586,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         Session::CreateIfValid(params_or_error.value());
     if (!session_or_error.has_value()) {
       RunCallback(RegistrationResult(std::move(session_or_error).error()));
-      // *this is deleted here.
+      // `this` may be deleted.
       return;
     }
 
@@ -596,7 +599,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
                                  FirstPartySetMetadata())) {
       RunCallback(RegistrationResult{
           SessionError{SessionError::ErrorType::kBoundCookieSetForbidden}});
-      // *this is deleted here.
+      // `this` may be deleted.
       return;
     }
 
@@ -633,14 +636,14 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
 
     RunCallback(RegistrationResult(std::move(session_or_error)));
-    // *this is deleted here
+    // `this` may be deleted.
   }
 
   void OnSubdomainRegistrationWellKnownRequestComplete(
       std::unique_ptr<Session> session) {
     RunCallback(OnSubdomainRegistrationWellKnownRequestCompleteInternal(
         std::move(session)));
-    // *this is deleted here.
+    // `this` may be deleted.
   }
 
   RegistrationResult OnSubdomainRegistrationWellKnownRequestCompleteInternal(
@@ -681,6 +684,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void RunCallback(RegistrationResult registration_result) {
     AddNetLogResult(registration_result);
     std::move(callback_).Run(this, std::move(registration_result));
+    // `this` may be deleted.
   }
 
   void AddNetLogResult(const RegistrationResult& registration_result) {

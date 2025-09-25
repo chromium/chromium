@@ -75,8 +75,7 @@ class NET_EXPORT RegistrationFetcher {
   // will be called with a std::nullopt.
   virtual void StartFetchWithExistingKey(
       RegistrationRequestParam& request_params,
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_id,
+      unexportable_keys::UnexportableKeyId key_id,
       RegistrationCompleteCallback callback) = 0;
 
   // Starts the network request to the DBSC registration endpoint for a

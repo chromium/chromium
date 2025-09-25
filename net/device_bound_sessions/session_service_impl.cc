@@ -177,9 +177,11 @@ void SessionServiceImpl::RegisterBoundSession(
     fetcher_raw->StartFetchWithFederatedKey(
         request_params, *federated_provider_session->unexportable_key_id(),
         *provider_url, std::move(callback));
+    // `fetcher_raw` may be deleted.
   } else {
     fetcher_raw->StartCreateTokenAndFetch(request_params, supported_algos,
                                           std::move(callback));
+    // `fetcher_raw` may be deleted.
   }
 }
 
@@ -736,6 +738,7 @@ void SessionServiceImpl::RefreshSessionInternal(
   registration_fetchers_.insert(std::move(fetcher));
   fetcher_raw->StartFetchWithExistingKey(registration_param, key_id,
                                          std::move(callback));
+  // `fetcher_raw` may be deleted.
 }
 
 bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {

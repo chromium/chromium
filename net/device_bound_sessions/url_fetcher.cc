@@ -71,7 +71,7 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
   net_error_ = net_error;
   if (net_error != OK) {
     std::move(callback_).Run();
-    // *this may be deleted here.
+    // `this` may be deleted.
     return;
   }
 
@@ -80,7 +80,7 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
 
   if (response_code < 200 || response_code >= 300) {
     std::move(callback_).Run();
-    // *this may be deleted here.
+    // `this` may be deleted.
     return;
   }
 
@@ -88,10 +88,12 @@ void URLFetcher::OnResponseStarted(URLRequest* request, int net_error) {
   int bytes_read_or_error = request->Read(buf_.get(), kBufferSize);
   if (bytes_read_or_error >= 0) {
     OnReadCompleted(request, bytes_read_or_error);
+    // `this` may be deleted.
+    return;
   } else if (bytes_read_or_error != ERR_IO_PENDING) {
     net_error_ = bytes_read_or_error;
     std::move(callback_).Run();
-    // *this may be deleted here.
+    // `this` may be deleted.
     return;
   }
 }
@@ -112,7 +114,7 @@ void URLFetcher::OnReadCompleted(URLRequest* request, int bytes_read_or_error) {
 
   if (bytes_read_or_error != ERR_IO_PENDING) {
     std::move(callback_).Run();
-    // *this may be deleted here.
+    // `this` may be deleted.
     return;
   }
 }
