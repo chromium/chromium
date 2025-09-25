@@ -497,21 +497,6 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
   }
 };
 
-class OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest
-    : public OptimizationGuideKeyedServiceBrowserTest {
- public:
-  OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kOptimizationGuideOnDeviceModel, {}},
-        },
-        {features::kLogOnDeviceMetricsOnStartup});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
@@ -1116,6 +1101,22 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 0);
 }
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+class OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kOptimizationGuideOnDeviceModel, {}},
+        },
+        {features::kLogOnDeviceMetricsOnStartup});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(
     OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest,
     PerformanceClassOnlyComputedOnce) {
@@ -1208,6 +1209,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 #endif
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.

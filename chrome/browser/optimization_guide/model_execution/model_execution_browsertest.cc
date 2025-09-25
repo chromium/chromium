@@ -113,9 +113,6 @@ class ScopedSetMetricsConsent {
   const bool consent_;
 };
 
-constexpr float kTestDefaultTemperature = 0.9;
-constexpr uint32_t kTestDefaultTopK = 7;
-
 }  // namespace
 
 class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
@@ -665,35 +662,20 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
       0);
 }
 
-// TODO(crbug.com/388544208): Flaky on linux-win-cross-rel.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
-  DISABLED_GetOnDeviceModelEligibilityModelNotEligible
-#else
-#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
-  GetOnDeviceModelEligibilityModelNotEligible
-#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       MAYBE_GetOnDeviceModelEligibilityModelNotEligible) {
-  // The CPU backend can be used when the GPU is unavailable.
-  const auto expected_elibility =
-      on_device_model::IsCpuCapable()
-          ? OnDeviceModelEligibilityReason::kModelToBeInstalled
-          : OnDeviceModelEligibilityReason::kModelNotEligible;
-  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
-            expected_elibility);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ModelExecutionEnabledBrowserTest,
-    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+                       GetOnDeviceModelEligibilityExecutionDisabled) {
   EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kSuccess);
 }
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
 class OnDeviceModelExecutionEnabledBrowserTest
     : public ModelExecutionEnabledBrowserTest {
  public:
+  static constexpr float kTestDefaultTemperature = 0.9;
+  static constexpr uint32_t kTestDefaultTopK = 7;
+
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
@@ -711,12 +693,13 @@ class OnDeviceModelExecutionEnabledBrowserTest
             kGetFreeDiskSpaceWithUserVisiblePriorityTask);
   }
 
-  OptimizationGuideGlobalState* broker_state() {
+  ModelBrokerState* broker_state() {
     // Ensure keyed service is created, which should create and hold state.
     GetOptimizationGuideKeyedService();
     return &g_browser_process->GetFeatures()
                 ->optimization_guide_global_feature()
-                ->Get();
+                ->Get()
+                .model_broker_state();
   }
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
@@ -812,6 +795,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
   EXPECT_EQ(sampling_config->default_top_k, kTestDefaultTopK);
   EXPECT_EQ(sampling_config->default_temperature, kTestDefaultTemperature);
 }
+
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 class ModelExecutionInternalsPageBrowserTest
     : public ModelExecutionEnabledBrowserTest {
@@ -1048,7 +1033,6 @@ class ModelExecutionEnterprisePolicyBrowserTest
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
-
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;

@@ -61,7 +61,6 @@ class ModelQualityLogsUploaderService;
 class ModelValidatorKeyedService;
 class OnDeviceAssetManager;
 class OnDeviceModelAvailabilityObserver;
-class OnDeviceModelComponentStateManager;
 class OptimizationGuideStore;
 class OptimizationGuideKeyedServiceBrowserTest;
 class PredictionManagerBrowserTestBase;
@@ -310,16 +309,15 @@ class OptimizationGuideKeyedService
   }
 
   optimization_guide::PredictionManager* GetPredictionManager() {
-    return &optimization_guide_global_state_->prediction_manager();
+    return &GetGlobalState().prediction_manager();
   }
 
   optimization_guide::OptimizationGuideGlobalState& GetGlobalState() {
+    if (!optimization_guide_global_state_) {
+      optimization_guide_global_state_ =
+          optimization_guide::OptimizationGuideGlobalState::CreateOrGet();
+    }
     return *optimization_guide_global_state_;
-  }
-
-  optimization_guide::OnDeviceModelComponentStateManager*
-  GetComponentManager() {
-    return &optimization_guide_global_state_->component_state_manager();
   }
 
   optimization_guide::ModelExecutionManager* GetModelExecutionManager() {
@@ -377,7 +375,7 @@ class OptimizationGuideKeyedService
   // Gets the possible capabilities that this device can support. This can be
   // used to get all the capabilities this device supports before downloading
   // the model. This will be a superset of GetOnDeviceCapabilities().
-  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
+  on_device_model::Capabilities GetPossibleOnDeviceCapabilities();
 
   raw_ptr<content::BrowserContext> browser_context_;
 

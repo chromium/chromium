@@ -51,5 +51,8 @@ component("types") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "USE_CHROMEOS_MODEL_SERVICE=$use_chromeos_model_service" ]
+  flags = [
+    "USE_ON_DEVICE_MODEL_SERVICE=$use_on_device_model_service",
+    "USE_CHROMEOS_MODEL_SERVICE=$use_chromeos_model_service",
+  ]
 }

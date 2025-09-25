@@ -73,6 +73,7 @@ on_device_model::ModelAssets LoadModelAssets(const base::FilePath& model_path) {
   return on_device_model::LoadModelAssets(model_paths);
 }
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 base::flat_map<std::string, std::string> GetCriteria(
     const optimization_guide::OnDeviceModelComponentStateManager::DebugState&
         debug_state) {
@@ -145,6 +146,7 @@ mojom::BaseModelInfoPtr GetBaseModelInfo(
       g_browser_process->GetFeatures()
           ->optimization_guide_global_feature()
           ->Get()
+          .model_broker_state()
           .service_controller()
           .GetPerformanceHint();
   switch (performance_hint) {
@@ -165,6 +167,7 @@ mojom::BaseModelInfoPtr GetBaseModelInfo(
   }
   return info;
 }
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 }  // namespace
 
@@ -298,10 +301,11 @@ void PageHandler::GetDeviceAndPerformanceInfo(
 }
 
 void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
-  auto* component_manager =
-      optimization_guide_keyed_service_->GetComponentManager();
-  auto debug_state =
-      component_manager->GetDebugState(base::PassKey<PageHandler>());
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  auto debug_state = optimization_guide_keyed_service_->GetGlobalState()
+                         .model_broker_state()
+                         .component_state_manager()
+                         .GetDebugState(base::PassKey<PageHandler>());
 
   if (!debug_state.state_) {
     std::move(callback).Run(std::nullopt);
@@ -309,6 +313,9 @@ void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
   }
 
   std::move(callback).Run(debug_state.state_->GetInstallDirectory());
+#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  std::move(callback).Run(std::nullopt);
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 
 void PageHandler::OnLogMessageAdded(
@@ -327,10 +334,11 @@ void PageHandler::OnLogMessageAdded(
 void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   auto data = mojom::PageData::New();
 
-  auto* component_manager =
-      optimization_guide_keyed_service_->GetComponentManager();
-  auto debug_state =
-      component_manager->GetDebugState(base::PassKey<PageHandler>());
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  auto& model_broker_state =
+      optimization_guide_keyed_service_->GetGlobalState().model_broker_state();
+  auto debug_state = model_broker_state.component_state_manager().GetDebugState(
+      base::PassKey<PageHandler>());
 
   data->base_model = mojom::BaseModelState::New();
   data->base_model->state =
@@ -356,14 +364,6 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
       optimization_guide::features::GetOnDeviceModelCrashCountBeforeDisable();
 
   // Get data on feature adaptations.
-  optimization_guide::OnDeviceModelServiceController& controller =
-      *optimization_guide_keyed_service_->GetModelExecutionManager()
-           ->GetOnDeviceModelServiceController();
-  optimization_guide::UsageTracker& usage_tracker =
-      g_browser_process->GetFeatures()
-          ->optimization_guide_global_feature()
-          ->Get()
-          .usage_tracker();
   for (const auto feature : optimization_guide::kAllModelBasedCapabilityKeys) {
     if (!optimization_guide::features::internal::
             GetOptimizationTargetForCapability(feature)) {
@@ -373,9 +373,11 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
     feature_adaptation_info->feature_name = base::ToString(feature);
     feature_adaptation_info->feature_key = static_cast<int32_t>(feature);
     feature_adaptation_info->is_recently_used =
-        usage_tracker.WasOnDeviceEligibleFeatureRecentlyUsed(feature);
+        model_broker_state.usage_tracker()
+            .WasOnDeviceEligibleFeatureRecentlyUsed(feature);
     feature_adaptation_info->version =
-        controller.GetFeatureMetadata(feature)
+        model_broker_state.service_controller()
+            .GetFeatureMetadata(feature)
             .transform(
                 &optimization_guide::OnDeviceModelAdaptationMetadata::version)
             .value_or(0);
@@ -394,6 +396,10 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
     OnReceivedModelInfoForPageData(std::move(callback), std::move(data),
                                    /*model_info=*/nullptr);
   }
+#else   // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  OnReceivedModelInfoForPageData(std::move(callback), std::move(data),
+                                 /*model_info=*/nullptr);
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 
 void PageHandler::OnReceivedModelInfoForPageData(

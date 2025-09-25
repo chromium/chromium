@@ -38,6 +38,7 @@ namespace optimization_guide {
 
 namespace {
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 class OnDeviceModelComponentStateManagerDelegate
     : public OnDeviceModelComponentStateManager::Delegate {
  public:
@@ -97,11 +98,6 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 };
 
-base::WeakPtr<OptimizationGuideGlobalState>& GetInstance() {
-  static base::NoDestructor<base::WeakPtr<OptimizationGuideGlobalState>> instance;
-  return *instance.get();
-}
-
 void LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         pending_receiver) {
@@ -112,6 +108,13 @@ void LaunchService(
       content::ServiceProcessHost::Options()
           .WithDisplayName("On-Device Model Service")
           .Pass());
+}
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
+base::WeakPtr<OptimizationGuideGlobalState>& GetInstance() {
+  static base::NoDestructor<base::WeakPtr<OptimizationGuideGlobalState>>
+      instance;
+  return *instance.get();
 }
 
 base::FilePath GetBaseStoreDir() {
@@ -146,6 +149,7 @@ class ChromeOnDeviceModelServiceController final {
   }
 };
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 // Registers a field trial once the model is ready.
 class ChromeModelComponentStateManagerObserver final
     : public OnDeviceModelComponentStateManager::Observer {
@@ -172,28 +176,34 @@ class ChromeModelComponentStateManagerObserver final
                           OnDeviceModelComponentStateManager::Observer>
       observation_{this};
 };
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 OptimizationGuideGlobalState::OptimizationGuideGlobalState()
-    : model_broker_state_(
-          g_browser_process->local_state(),
-          std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
-          base::BindRepeating(&LaunchService)),
-      prediction_model_store_(*g_browser_process->local_state()),
+    : prediction_model_store_(*g_browser_process->local_state()),
       prediction_manager_(&prediction_model_store_,
                           g_browser_process->shared_url_loader_factory(),
                           g_browser_process->local_state(),
                           g_browser_process->GetApplicationLocale(),
                           OptimizationGuideLogger::GetInstance(),
-                          base::BindRepeating(&unzip::LaunchUnzipper)) {
+                          base::BindRepeating(&unzip::LaunchUnzipper))
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+      ,
+      model_broker_state_(
+          g_browser_process->local_state(),
+          std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
+          base::BindRepeating(&LaunchService))
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+{
   prediction_model_store_.Initialize(GetBaseStoreDir());
   prediction_manager_.MaybeInitializeModelDownloads(
       profile_download_service_tracker_, g_browser_process->local_state());
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   // Register an observer on the component state manager after it is created but
   // before it has start up.
   component_state_manager_observer_ =
       std::make_unique<ChromeModelComponentStateManagerObserver>(
-          component_state_manager().GetWeakPtr());
+          model_broker_state_.component_state_manager().GetWeakPtr());
 
   model_broker_state_.Init();
   model_broker_state_.performance_classifier()
@@ -201,13 +211,16 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
   model_broker_state_.performance_classifier().ScheduleEvaluation();
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 
-scoped_refptr<OptimizationGuideGlobalState> OptimizationGuideGlobalState::CreateOrGet() {
+scoped_refptr<OptimizationGuideGlobalState>
+OptimizationGuideGlobalState::CreateOrGet() {
   base::WeakPtr<OptimizationGuideGlobalState>& instance = GetInstance();
   if (!instance) {
-    auto new_instance = base::WrapRefCounted(new OptimizationGuideGlobalState());
+    auto new_instance =
+        base::WrapRefCounted(new OptimizationGuideGlobalState());
     instance = new_instance->weak_ptr_factory_.GetWeakPtr();
     return new_instance;
   }
