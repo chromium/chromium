@@ -68,6 +68,11 @@ BASE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// When enabled, the second line string in a BNPL suggestion is updated to
+// include the issuer names for better brand recognition.
+BASE_FEATURE(kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card benefits offered by American Express will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress,

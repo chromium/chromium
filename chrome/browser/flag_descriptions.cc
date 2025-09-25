@@ -744,6 +744,14 @@ const char kAutofillEnableBuyNowPayLaterSyncingDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+const char
+    kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineStringName[] =
+        "Enable issuer names in the second line of a BNPL suggestion";
+const char
+    kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineStringDescription
+        [] = "When enabled, the second line of a BNPL suggestion is updated to "
+             "include the issuer names for better brand recognition.";
+
 const char kAutofillEnableCvcStorageAndFillingName[] =
     "Enable CVC storage and filling for payments autofill";
 const char kAutofillEnableCvcStorageAndFillingDescription[] =

@@ -8794,6 +8794,8 @@ from previous Chrome versions.
   <int value="-1925106340" label="CameraSystemWebApp:disabled"/>
   <int value="-1924837577"
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:enabled"/>
+  <int value="-1923794446"
+      label="AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString:disabled"/>
   <int value="-1923751382" label="HelpAppAppDetailPage:disabled"/>
   <int value="-1922891513" label="RemoveSearchReadyOmnibox:enabled"/>
   <int value="-1922176861"
@@ -12790,6 +12792,8 @@ from previous Chrome versions.
   <int value="-495265247" label="FedCmWithoutWellKnownEnforcement:enabled"/>
   <int value="-494722408" label="ContentSuggestionsLargeThumbnail:enabled"/>
   <int value="-494595710" label="LargeFaviconFromGoogle:disabled"/>
+  <int value="-493703626"
+      label="AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString:enabled"/>
   <int value="-493551777" label="StaleWhileRevalidate2:disabled"/>
   <int value="-492972850" label="SettingsAppNotificationSettings:disabled"/>
   <int value="-492864618" label="NTPForeignSessionsSuggestions:disabled"/>

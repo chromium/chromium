@@ -13267,6 +13267,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kUnicornChromeActivityReporting)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"autofill-enable-buy-now-pay-later-updated-suggestion-second-line-string",
+     flag_descriptions::
+         kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineStringName,
+     flag_descriptions::
+         kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineStringDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
