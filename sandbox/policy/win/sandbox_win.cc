@@ -768,15 +768,17 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
 
   DWORD granted_access;
   BOOL granted_access_status;
+  const base::FilePath program = command_line.GetProgram();
   bool access_check =
       config->GetAppContainer()->AccessCheck(
-          command_line.GetProgram().value().c_str(),
-          base::win::SecurityObjectType::kFile, GENERIC_READ | GENERIC_EXECUTE,
-          &granted_access, &granted_access_status) &&
+          program.value().c_str(), base::win::SecurityObjectType::kFile,
+          GENERIC_READ | GENERIC_EXECUTE, &granted_access,
+          &granted_access_status) &&
       granted_access_status;
   if (!access_check) {
-    PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "
-                   "permissions are valid. See https://bit.ly/31yqMJR.";
+    PLOG(ERROR) << "Sandbox cannot access executable " << program
+                << ". Check filesystem permissions are valid. See "
+                   "https://bit.ly/31yqMJR.";
     return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;
   }
 
