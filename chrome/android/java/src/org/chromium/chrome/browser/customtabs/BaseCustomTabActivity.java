@@ -1396,6 +1396,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             getAuthTabVerifier(),
                             getBrowserControlsManager(),
                             this::isShowingWebAppHeaderButtons,
+                            this::isShowingHeaderAsOverlay,
                             mRootUiCoordinator.getExclusiveAccessManager());
         }
         return mDelegateFactory;
@@ -1570,5 +1571,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             return false;
         }
         return webAppHeaderLayoutCoordinator.isShowingButtons();
+    }
+
+    private boolean isShowingHeaderAsOverlay() {
+        if (!WebAppHeaderUtils.isWindowControlsOverlayEnabled(getIntentDataProvider())) {
+            return false;
+        }
+
+        if (mBaseCustomTabRootUiCoordinator.getWebAppHeaderLayoutCoordinator() == null) {
+            return false;
+        }
+
+        return mBaseCustomTabRootUiCoordinator.isShowingHeaderAsOverlay();
     }
 }

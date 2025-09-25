@@ -146,6 +146,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull Runnable mOpenInBrowserRunnable;
     private @Nullable WebAppHeaderLayoutCoordinator mWebAppHeaderLayoutCoordinator;
     private final Supplier<BrowserServicesThemeColorProvider> mWebAppThemeColorProvider;
+    private boolean mHeaderAsOverlay;
 
     // TODO(crbug.com/402213312): This can be NonNull once the flag is enabled by default.
     private @Nullable CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
@@ -737,7 +738,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     org.chromium.chrome.browser.web_app_header.R.id.web_app_header_layout);
         }
 
+        mHeaderAsOverlay = headerAsOverlay;
         contentView.setLayoutParams(layoutParams);
+    }
+
+    boolean isShowingHeaderAsOverlay() {
+        return mHeaderAsOverlay;
     }
 
     @Override

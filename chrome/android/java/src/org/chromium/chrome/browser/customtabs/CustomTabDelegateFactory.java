@@ -210,6 +210,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final @DisplayMode.EnumType int mDisplayMode;
         private final boolean mShouldEnableEmbeddedMediaExperience;
         private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
+        private final Supplier<Boolean> mHeaderAsOverlaySupplier;
 
         /** See {@link TabWebContentsDelegateAndroid}. */
         public CustomTabWebContentsDelegate(
@@ -229,6 +230,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<Boolean> headerControlsVisibilitySupplier,
+                Supplier<Boolean> headerAsOverlaySupplier,
                 @Nullable ExclusiveAccessManager exclusiveAccessManager) {
             super(
                     tab,
@@ -249,6 +251,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mDisplayMode = displayMode;
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
             mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
+            mHeaderAsOverlaySupplier = headerAsOverlaySupplier;
         }
 
         @Override
@@ -284,12 +287,24 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public @DisplayMode.EnumType int getDisplayMode() {
-            // Depending on the customizable caption bar area, minimal UI controls may not
-            // be supported even if the resolved display mode is `minimal-ui`. If the controls
-            // are not visible it is inaccurate for the display mode to be `minimal-ui` so
-            // we need to use `standalone`.
+            // A page using `window-controls-overlay` and `minimal-ui` display modes expects certain
+            // UI features to be in the web app header. If these features cannot be rendred for
+            // whatever reason (e.g. desktop window is too small) then it is not accurate to set the
+            // `display-mode` media query to these display modes.
+
+            // If the manifest display mode is `minimal-ui` but the minimal UI controls
+            // (back/refresh) are not actually rendered, then it is more accurate to to say the page
+            // is being rendered in `standalone` mode.
             if (mDisplayMode == DisplayMode.MINIMAL_UI
                     && !mHeaderControlsVisibilitySupplier.get()) {
+                return DisplayMode.STANDALONE;
+            }
+
+            // If the manifest display mode is `window-controls-overlay` but the web app header is
+            // not being rendered as an overaly, then it is more accurate to to say the page is
+            // being rendered in `standalone` mode.
+            if (mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
+                    && !mHeaderAsOverlaySupplier.get()) {
                 return DisplayMode.STANDALONE;
             }
 
@@ -349,6 +364,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final AuthTabVerifier mAuthTabVerifier;
     private final boolean mContextMenuEnabled;
     private final Supplier<Boolean> mHeaderControlsVisibilitySupplier;
+    private final Supplier<Boolean> mHeaderAsOverlaySupplier;
 
     private @Nullable TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
     private @Nullable ExternalNavigationDelegateImpl mNavigationDelegate;
@@ -402,6 +418,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             AuthTabVerifier authTabVerifier,
             BrowserControlsManager browserControlsManager,
             Supplier<Boolean> headerControlsVisibilitySupplier,
+            Supplier<Boolean> headerAsOverlaySupplier,
             @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mIntentDataProvider = intentDataProvider;
         if (mIntentDataProvider != null) {
@@ -438,6 +455,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mAuthTabVerifier = authTabVerifier;
         mBrowserControlsManager = browserControlsManager;
         mHeaderControlsVisibilitySupplier = headerControlsVisibilitySupplier;
+        mHeaderAsOverlaySupplier = headerAsOverlaySupplier;
         mExclusiveAccessManager = exclusiveAccessManager;
     }
 
@@ -466,6 +484,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 null,
                 null,
+                () -> false,
                 () -> false,
                 null);
     }
@@ -514,6 +533,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mCompositorViewHolderSupplier,
                         mModalDialogManagerSupplier,
                         mHeaderControlsVisibilitySupplier,
+                        mHeaderAsOverlaySupplier,
                         mExclusiveAccessManager);
         return mWebContentsDelegateAndroid;
     }
