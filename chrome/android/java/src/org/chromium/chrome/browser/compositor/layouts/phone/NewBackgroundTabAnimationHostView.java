@@ -277,7 +277,7 @@ public class NewBackgroundTabAnimationHostView extends FrameLayout implements Ru
     }
 
     /* package */ @AnimationType
-    int getAnimationTypeForTesting() {
+    int getAnimationType() {
         return mAnimationType;
     }
 }

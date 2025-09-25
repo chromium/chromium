@@ -123,6 +123,8 @@ public class NewTabAnimationLayoutUnitTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Float> mNtpSearchBoxTransitionPercentageSupplier =
+            new ObservableSupplierImpl<>(0f);
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
@@ -175,6 +177,8 @@ public class NewTabAnimationLayoutUnitTest {
         when(mBrowserVisibilityDelegate.showControlsPersistent())
                 .thenAnswer(invocation -> mToken++);
         when(mToolbarManager.getCustomTabCount()).thenReturn(mCustomTabCount);
+        when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
+                .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
         mCompositorViewHolderSupplier.set(mCompositorViewHolder);
         mScrimVisibilitySupplier.set(false);
         doAnswer(

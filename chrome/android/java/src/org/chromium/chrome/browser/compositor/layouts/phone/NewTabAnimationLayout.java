@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
+import org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView.AnimationType;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -119,6 +120,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param compositorViewHolderSupplier Supplier to the {@link CompositorViewHolder} instance.
      * @param animationHostView The host view for animations.
      * @param toolbarManager The {@link ToolbarManager} instance.
+     * @param browserControlsManager The {@link BrowserControlsManager} instance.
      * @param scrimVisibilitySupplier Supplier for the Scrim visibility.
      */
     public NewTabAnimationLayout(
@@ -682,6 +684,8 @@ public class NewTabAnimationLayout extends Layout {
         mCompositorViewHolder.getGlobalVisibleRect(compositorViewRect);
         boolean isTopToolbar =
                 isRegularNtp || ToolbarPositionController.shouldShowToolbarOnTop(animationTab);
+        ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
+                mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
 
         mBackgroundHostView.setUpAnimation(
                 tabSwitcherButton,
@@ -693,7 +697,7 @@ public class NewTabAnimationLayout extends Layout {
                 toolbarPosition[1],
                 compositorViewRect.top,
                 compositorViewRect.left,
-                mToolbarManager.getNtpTransitionPercentage());
+                ntpSearchBoxTransitionPercentageSupplier.get());
 
         // {@link View#INVISIBLE} is needed to generate the geometry information.
         mBackgroundHostView.setVisibility(View.INVISIBLE);
@@ -716,12 +720,18 @@ public class NewTabAnimationLayout extends Layout {
                     mAnimationRunnable = null;
                     mTimeoutRunnable = null;
                     assumeNonNull(mTabModelSelector);
+                    assumeNonNull(mBackgroundHostView);
+                    @AnimationType int animationType = mBackgroundHostView.getAnimationType();
+                    boolean shouldObserveNtp =
+                            isRegularNtp && animationType == AnimationType.DEFAULT;
                     AnimationInterruptor interruptor =
                             new AnimationInterruptor(
                                     mLayoutStateProvider,
                                     mTabModelSelector.getCurrentTabSupplier(),
                                     animationTab,
                                     mScrimVisibilitySupplier,
+                                    ntpSearchBoxTransitionPercentageSupplier,
+                                    shouldObserveNtp,
                                     this::forceAnimationToFinish);
                     assumeNonNull(mBackgroundHostView);
                     mTabCreatedBackgroundAnimation = mBackgroundHostView.getAnimatorSet(x, y);

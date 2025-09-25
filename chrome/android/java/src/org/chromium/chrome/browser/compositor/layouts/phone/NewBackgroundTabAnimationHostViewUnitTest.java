@@ -371,7 +371,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
             @NewBackgroundTabAnimationHostView.AnimationType int animationType,
             int tabCount,
             int leftMargin) {
-        assertEquals(animationType, mHostView.getAnimationTypeForTesting());
+        assertEquals(animationType, mHostView.getAnimationType());
         assertEquals(tabCount, mFakeTabSwitcherButton.getTabCountForTesting());
 
         FrameLayout.LayoutParams params =

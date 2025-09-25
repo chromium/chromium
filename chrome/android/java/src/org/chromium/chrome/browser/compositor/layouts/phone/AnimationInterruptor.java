@@ -56,12 +56,15 @@ class AnimationInterruptor implements Destroyable {
             };
 
     private final Callback<Boolean> mScrimVisibilityObserver = this::onScrimVisibilityChanged;
+    private final Callback<Float> mNtpSearchBoxTransitionObserver =
+            this::onNtpSearchBoxTransitionPercentageChanged;
 
     private final LayoutStateProvider mLayoutStateProvider;
     private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     private final Tab mAnimationTab;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ObservableSupplier<Boolean> mContextMenuVisibilitySupplier;
+    private final ObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier;
 
     private @Nullable Runnable mInterruptAnimationRunnable;
 
@@ -69,6 +72,11 @@ class AnimationInterruptor implements Destroyable {
      * @param layoutStateProvider To determine when layout states change.
      * @param currentTabSupplier To determine when a tab switch happens.
      * @param animationTab To observe for navigations.
+     * @param scrimVisibilitySupplier Supplier for scrim visibility changes.
+     * @param ntpSearchBoxTransitionPercentageSupplier Supplier for NTP search box transition
+     *     percentage changes.
+     * @param isRegularNtp True if the animation is for a new tab from a regular NTP. This is used
+     *     to determine whether to observe NTP search box transition changes.
      * @param interruptAnimationRunnable Invoked when the animation should be interrupted.
      */
     AnimationInterruptor(
@@ -76,11 +84,14 @@ class AnimationInterruptor implements Destroyable {
             ObservableSupplier<@Nullable Tab> currentTabSupplier,
             Tab animationTab,
             ObservableSupplier<Boolean> scrimVisibilitySupplier,
+            ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier,
+            boolean isRegularNtp,
             Runnable interruptAnimationRunnable) {
         mLayoutStateProvider = layoutStateProvider;
         mCurrentTabSupplier = currentTabSupplier;
         mAnimationTab = animationTab;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
+        mNtpSearchBoxTransitionPercentageSupplier = ntpSearchBoxTransitionPercentageSupplier;
         TabContextMenuData data = TabContextMenuData.getForTab(animationTab);
         if (data == null) {
             mContextMenuVisibilitySupplier = new ObservableSupplierImpl<>(false);
@@ -94,6 +105,10 @@ class AnimationInterruptor implements Destroyable {
         mAnimationTab.addObserver(mTabObserver);
         mScrimVisibilitySupplier.addSyncObserver(mScrimVisibilityObserver);
         mContextMenuVisibilitySupplier.addSyncObserver(mScrimVisibilityObserver);
+
+        if (isRegularNtp) {
+            mNtpSearchBoxTransitionPercentageSupplier.addObserver(mNtpSearchBoxTransitionObserver);
+        }
     }
 
     @Override
@@ -104,6 +119,7 @@ class AnimationInterruptor implements Destroyable {
         mAnimationTab.removeObserver(mTabObserver);
         mScrimVisibilitySupplier.removeObserver(mScrimVisibilityObserver);
         mContextMenuVisibilitySupplier.removeObserver(mScrimVisibilityObserver);
+        mNtpSearchBoxTransitionPercentageSupplier.removeObserver(mNtpSearchBoxTransitionObserver);
     }
 
     private void onCurrentTabChanged(@Nullable Tab tab) {
@@ -114,6 +130,10 @@ class AnimationInterruptor implements Destroyable {
     private void onScrimVisibilityChanged(Boolean visible) {
         if (!Boolean.TRUE.equals(visible)) return;
         interruptAnimation();
+    }
+
+    private void onNtpSearchBoxTransitionPercentageChanged(float percentage) {
+        if (percentage > 0f) interruptAnimation();
     }
 
     private void interruptAnimation() {

@@ -394,12 +394,13 @@ public class ToolbarManager
 
     private CustomTabCount mCustomTabCount;
     private int mIncognitoNtpViewIdForA11y = View.NO_ID;
-    private float mNtpSearchBoxScrollPercentage;
     private OverscrollGlowCoordinator mOverscrollGlowCoordinator;
     private final NewTabPageDelegate mNtpDelegate;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final ObservableSupplierImpl<Float> mNtpSearchBoxTransitionPercentageSupplier =
+            new ObservableSupplierImpl<>(0f);
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1984,9 +1985,9 @@ public class ToolbarManager
         }
     }
 
-    /** Returns the NTP toolbar transition percentage for the search box to cover the toolbar. */
-    public float getNtpTransitionPercentage() {
-        return mNtpSearchBoxScrollPercentage;
+    /** Returns a supplier that provides the NTP search box transition percentage. */
+    public ObservableSupplier<Float> getNtpSearchBoxTransitionPercentageSupplier() {
+        return mNtpSearchBoxTransitionPercentageSupplier;
     }
 
     /** Returns the {@link CustomTabCount} object to overwrite the tab count in the toolbar. */
@@ -2044,13 +2045,13 @@ public class ToolbarManager
             NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
             if (mVisibleNtp != null) {
                 mVisibleNtp.setSearchBoxScrollListener(null);
-                mNtpSearchBoxScrollPercentage = 0f;
+                mNtpSearchBoxTransitionPercentageSupplier.set(0f);
             }
             mVisibleNtp = newVisibleNtp;
             if (mVisibleNtp != null && shouldUpdateListener()) {
                 mVisibleNtp.setSearchBoxScrollListener(
                         (fraction) -> {
-                            mNtpSearchBoxScrollPercentage = fraction;
+                            mNtpSearchBoxTransitionPercentageSupplier.set(fraction);
                             scrollCallback.onResult(fraction);
                         });
             }
