@@ -2982,7 +2982,7 @@ web_modal::WebContentsModalDialogHost* Browser::GetWebContentsModalDialogHost(
   return window_->GetWebContentsModalDialogHostFor(web_contents);
 }
 
-void Browser::OnWebContentsModalDialogShown(
+void Browser::OnWebContentsModalDialogFirstShown(
     content::WebContents* web_contents) {
   // Check that the WebContents isn't already active to avoid re-entrancy in
   // TabStripModel when activating a tab triggers a dialog to show.

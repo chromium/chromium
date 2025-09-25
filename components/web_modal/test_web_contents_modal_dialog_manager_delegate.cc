@@ -31,8 +31,8 @@ bool TestWebContentsModalDialogManagerDelegate::IsWebContentsVisible(
   return web_contents_visible_;
 }
 
-void TestWebContentsModalDialogManagerDelegate::OnWebContentsModalDialogShown(
-    content::WebContents* web_contents) {
+void TestWebContentsModalDialogManagerDelegate::
+    OnWebContentsModalDialogFirstShown(content::WebContents* web_contents) {
   web_contents_activated_ = true;
 }
 

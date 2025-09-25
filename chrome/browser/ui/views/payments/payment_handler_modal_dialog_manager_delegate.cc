@@ -61,8 +61,8 @@ bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(
   return platform_util::IsVisible(web_contents->GetNativeView());
 }
 
-void PaymentHandlerModalDialogManagerDelegate::OnWebContentsModalDialogShown(
-    content::WebContents* web_contents) {
+void PaymentHandlerModalDialogManagerDelegate::
+    OnWebContentsModalDialogFirstShown(content::WebContents* web_contents) {
   if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
     return;
   }

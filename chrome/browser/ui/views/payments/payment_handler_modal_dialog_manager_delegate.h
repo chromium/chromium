@@ -50,7 +50,7 @@ class PaymentHandlerModalDialogManagerDelegate
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
       content::WebContents* web_contents) override;
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
-  void OnWebContentsModalDialogShown(
+  void OnWebContentsModalDialogFirstShown(
       content::WebContents* web_contents) override;
 
  private:

@@ -35,7 +35,7 @@ class TestWebContentsModalDialogManagerDelegate
 
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
-  void OnWebContentsModalDialogShown(
+  void OnWebContentsModalDialogFirstShown(
       content::WebContents* web_contents) override;
 
   void set_web_contents_visible(bool visible) {
