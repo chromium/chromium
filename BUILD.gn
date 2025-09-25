@@ -371,13 +371,6 @@ group("gn_all") {
       ]
     }
 
-    # Allow building md5sum tool for other OSes (android is added below).
-    # For Windows, see: crbug.com/1090428.
-    # TODO(cavalcantii): move it out of 'android' folder.
-    if (!is_win) {
-      deps += [ "//tools/android/md5sum" ]
-    }
-
     if (is_android) {
       deps += [
         "//base:base_junit_tests",
@@ -404,11 +397,6 @@ group("gn_all") {
         "//third_party/jni_zero:jni_zero_tests",
         "//third_party/r8:custom_d8_java",
         "//tools/android:android_tools",
-        "//tools/android:memconsumer",
-        "//tools/android:push_apps_to_background",
-        "//tools/android/audio_focus_grabber:audio_focus_grabber_apk",
-        "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
-        "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
         "//tools/cygprofile:generate_orderfile_android_trichrome_chrome_bundle",
         "//tools/pgo:generate_profile_android_trichrome_chrome_bundle",
         "//ui:ui_junit_tests",
