@@ -9,6 +9,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -26,7 +27,7 @@ ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::EventType::kMousePressed,
                                              0);
 
 constexpr char kHistogramName[] = "Tab.GroupingTransition";
-}
+}  // namespace
 
 class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
  public:
@@ -301,4 +302,84 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripControllerTestAddTabActiveGroupEnabled,
   EXPECT_EQ(std::nullopt, tab_strip_model()->GetTabGroupForTab(8));
 
   WaitForTabSyncServiceInitialization();
+}
+
+class BrowserTabStripControllerTestToggleTabGroupCollapsedState
+    : public BrowserTabStripControllerTestAddTabActiveGroupEnabled {
+ public:
+  BrowserTabStripControllerTestToggleTabGroupCollapsedState() = default;
+  ~BrowserTabStripControllerTestToggleTabGroupCollapsedState() override =
+      default;
+};
+
+// Active tab is in the group, next available tab exists outside group
+IN_PROC_BROWSER_TEST_F(
+    BrowserTabStripControllerTestToggleTabGroupCollapsedState,
+    CollapseWithActiveTabInGroupAndNextAvailable) {
+  // Create tabs and a group
+  ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
+  controller()->CreateNewTab();              // 1
+  controller()->CreateNewTab();              // 2
+  // Tabs [0, 1] in group
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0, 1});
+  // Active tab in group
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  int next_available_index = 2;  // Tab 2 is outside group
+
+  // Expect: group is collapsed, active tab switched to next available tab.
+  controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+
+  // Verify active tab switched to the next available tab outside group
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), next_available_index);
+  EXPECT_TRUE(controller()->IsGroupCollapsed(group));
+}
+
+// Active tab is in the group, no available tab outside group
+IN_PROC_BROWSER_TEST_F(
+    BrowserTabStripControllerTestToggleTabGroupCollapsedState,
+    CollapseWithActiveTabInGroupAndNoNextAvailable) {
+  // Only tab in group
+  ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0});
+  // Active tab in group
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Expect: group collapse is cancelled temporarily, new tab is created outside
+  // group and activated.
+  controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+
+  // Verify a new tab was created
+  EXPECT_EQ(tab_strip_model()->count(), 2);
+  // Verify new tab is active and outside the group
+  EXPECT_EQ(tab_strip_model()->active_index(), 1);
+  EXPECT_FALSE(tab_strip_model()->GetTabGroupForTab(1).has_value());
+  // Group should not be collapsed yet because we switched to a new tab
+  EXPECT_TRUE(controller()->IsGroupCollapsed(group));
+}
+
+// Active tab is NOT in the group
+IN_PROC_BROWSER_TEST_F(
+    BrowserTabStripControllerTestToggleTabGroupCollapsedState,
+    CollapseWithActiveTabOutsideGroup) {
+  // Create tabs and a group
+  ASSERT_EQ(tab_strip_model()->count(), 1);  // 0
+  controller()->CreateNewTab();              // 1
+  // Tab 0 in group
+  const tab_groups::TabGroupId group = tab_strip_model()->AddToNewGroup({0});
+  // Active tab outside group
+  tab_strip_model()->ActivateTabAt(1);
+
+  // Expect: re-activate the active tab to clear any selection and collapse
+  // group
+  controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+
+  // Active tab should remain the same
+  EXPECT_EQ(tab_strip_model()->active_index(), 1);
+  // Verify active tab should not in the group
+  EXPECT_FALSE(tab_strip_model()->GetTabGroupForTab(1).has_value());
+  // Group should be collapsed
+  EXPECT_TRUE(controller()->IsGroupCollapsed(group));
 }

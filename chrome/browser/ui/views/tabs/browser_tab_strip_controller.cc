@@ -555,7 +555,12 @@ void BrowserTabStripController::ToggleTabGroupCollapsedState(
       } else {
         // Create a new tab that will automatically be activated
         should_toggle_group = false;
-        CreateNewTab();
+        // We intentionally do not call CreateNewTab() here because it
+        // respects the IsNewTabAddsToActiveGroupEnabled() feature, which would
+        // add the new tab to the same group as the currently active tab.
+        // In the "collapse group" scenario, we want the new tab to be created
+        // outside of any group to avoid it being collapsed immediately.
+        model_->delegate()->AddTabAt(GURL(), -1, true);
       }
     } else {
       // If the active tab is not in the group that is toggling to collapse,
