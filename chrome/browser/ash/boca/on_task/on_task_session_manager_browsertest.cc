@@ -630,7 +630,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl1));
 
-  // Navigate the active tab to the new url.
+  // Navigate the active tab to the new url. Wait for pending tasks to finish
+  // before attempting another navigation to ensure nav restrictions are applied
+  // on the tab.
+  content::RunAllTasksUntilIdle();
   const GURL same_domain_url(
       embedded_test_server()->GetURL("test1.com", "/test/new_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, same_domain_url));
@@ -670,7 +673,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             GURL(kTestUrl1));
 
-  // Navigate the active tab to the new url.
+  // Navigate the active tab to the new url. Wait for pending tasks to finish
+  // before attempting another navigation to ensure nav restrictions are applied
+  // on the tab.
+  content::RunAllTasksUntilIdle();
   const GURL one_level_url(
       embedded_test_server()->GetURL("/test/new_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, one_level_url));
