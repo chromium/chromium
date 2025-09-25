@@ -2090,98 +2090,118 @@ TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
 // a local run, manually verified and hardcoded in the test with acceptable 15px
 // error, as on different machines the popup geometry/location slightly vary.
 #if BUILDFLAG(IS_LINUX)
-TEST_F(PopupViewViewsTest, PopupPositioning) {
+
+struct PopupPositioningTestCase {
+  const gfx::Size web_contents_bounds;
+  const gfx::PointF element_position;
+  const std::vector<SuggestionType> suggestions;
+  const gfx::Rect expected_popup_bounds;
+  std::string test_name;
+};
+
+const std::vector<SuggestionType> kSmallPopupSuggestions(
+    2,
+    SuggestionType::kAutocompleteEntry);
+const std::vector<SuggestionType> kLargePopupSuggestions(
+    10,
+    SuggestionType::kAutocompleteEntry);
+
+const gfx::Size kSmallWebContents = {300, 300};
+const gfx::Size kBigWebContents = {1000, 1000};
+
+const PopupPositioningTestCase kPopupPositioningTestCases[]{
+    {kBigWebContents,
+     {0, 0},
+     kSmallPopupSuggestions,
+     {25, 26, 164, 138},
+     "LargeWindowTopLeftElementSmallPopup"},
+    {kBigWebContents,
+     {0, 975},
+     kSmallPopupSuggestions,
+     {25, 840, 164, 134},
+     "LargeWindowBottomLeftElementSmallPopup"},
+    {kBigWebContents,
+     {500, 500},
+     kSmallPopupSuggestions,
+     {525, 526, 164, 138},
+     "LargeWindowCenterElementSmallPopup"},
+    {kBigWebContents,
+     {900, 0},
+     kSmallPopupSuggestions,
+     {832, 26, 164, 138},
+     "LargeWindowTopRightElementSmallPopup"},
+    {kBigWebContents,
+     {900, 975},
+     kSmallPopupSuggestions,
+     {832, 840, 164, 134},
+     "LargeWindowBottomRightElementSmallPopup"},
+    {kSmallWebContents,
+     {0, 0},
+     kSmallPopupSuggestions,
+     {25, 26, 164, 138},
+     "SmallWindowTopLeftElementSmallPopup"},
+    {kSmallWebContents,
+     {0, 0},
+     kLargePopupSuggestions,
+     {100, -10, 183, 308},
+     "SmallWindowTopLeftElementLargePopup"},
+    {kSmallWebContents,
+     {0, 140},
+     kLargePopupSuggestions,
+     {100, -2, 183, 308},
+     "SmallWindowLeftElementLargePopup"},
+    {kSmallWebContents,
+     {150, 0},
+     kLargePopupSuggestions,
+     {117, 26, 179, 288},
+     "SmallWindowTopElementLargePopup"},
+    {kSmallWebContents,
+     {150, 275},
+     kLargePopupSuggestions,
+     {117, -10, 179, 284},
+     "SmallWindowBottomElementLargePopup"},
+    {kSmallWebContents,
+     {200, 275},
+     kLargePopupSuggestions,
+     {17, 6, 183, 308},
+     "SmallWindowBottomRightElementLargePopup"},
+};
+class PopupPositioningTest
+    : public PopupViewViewsTest,
+      public ::testing::WithParamInterface<PopupPositioningTestCase> {};
+
+TEST_P(PopupPositioningTest, All) {
   ResizeTestScreen(1920, 1080);
 
-  constexpr gfx::Size kSmallWindow(300, 300);
-  constexpr gfx::Size kLargeWindow(1000, 1000);
+  const PopupPositioningTestCase& test_case = GetParam();
+
+  ResizeWebContents(gfx::Rect(test_case.web_contents_bounds));
   constexpr gfx::SizeF kElementSize(100, 25);
-  constexpr gfx::PointF kLargeWindowTopLeftElement(0, 0);
-  constexpr gfx::PointF kLargeWindowBottomLeftElement(0, 975);
-  constexpr gfx::PointF kLargeWindowCenterElement(500, 500);
-  constexpr gfx::PointF kLargeWindowTopRightElement(900, 0);
-  constexpr gfx::PointF kLargeWindowBottomRightElement(900, 975);
-  constexpr gfx::PointF kSmallWindowTopLeftElement(0, 0);
-  constexpr gfx::PointF kSmallWindowLeftElement(0, 140);
-  constexpr gfx::PointF kSmallWindowTopElement(150, 0);
-  constexpr gfx::PointF kSmallWindowBottomElement(150, 275);
-  constexpr gfx::PointF kSmallWindowBottomRightElement(200, 275);
-  const std::vector<SuggestionType> kSmallPopupSuggestions(
-      2, SuggestionType::kAutocompleteEntry);
-  const std::vector<SuggestionType> kLargePopupSuggestions(
-      10, SuggestionType::kAutocompleteEntry);
+  controller().set_element_bounds(
+      gfx::RectF(test_case.element_position, kElementSize) +
+      web_contents().GetContainerBounds().OffsetFromOrigin());
 
-  struct TestCase {
-    const gfx::Size web_contents_bounds;
-    const gfx::PointF element_position;
-    const std::vector<SuggestionType> suggestions;
-    const gfx::Rect expected_popup_bounds;
-  } test_cases[]{
-      {kLargeWindow,
-       kLargeWindowTopLeftElement,
-       kSmallPopupSuggestions,
-       {25, 26, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowBottomLeftElement,
-       kSmallPopupSuggestions,
-       {25, 840, 164, 134}},
-      {kLargeWindow,
-       kLargeWindowCenterElement,
-       kSmallPopupSuggestions,
-       {525, 526, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowTopRightElement,
-       kSmallPopupSuggestions,
-       {832, 26, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowBottomRightElement,
-       kSmallPopupSuggestions,
-       {832, 840, 164, 134}},
-      {kSmallWindow,
-       kSmallWindowTopLeftElement,
-       kSmallPopupSuggestions,
-       {25, 26, 164, 138}},
-      {kSmallWindow,
-       kSmallWindowTopLeftElement,
-       kLargePopupSuggestions,
-       {100, -10, 183, 308}},
-      {kSmallWindow,
-       kSmallWindowLeftElement,
-       kLargePopupSuggestions,
-       {100, -2, 183, 308}},
-      {kSmallWindow,
-       kSmallWindowTopElement,
-       kLargePopupSuggestions,
-       {117, 26, 179, 288}},
-      {kSmallWindow,
-       kSmallWindowBottomElement,
-       kLargePopupSuggestions,
-       {117, -10, 179, 284}},
-      {kSmallWindow,
-       kSmallWindowBottomRightElement,
-       kLargePopupSuggestions,
-       {17, 6, 183, 308}},
-  };
-  for (const auto& test_case : test_cases) {
-    ResizeWebContents(gfx::Rect(test_case.web_contents_bounds));
-    controller().set_element_bounds(
-        gfx::RectF(test_case.element_position, kElementSize) +
-        web_contents().GetContainerBounds().OffsetFromOrigin());
+  CreateAndShowView(test_case.suggestions);
 
-    CreateAndShowView(test_case.suggestions);
-
-    const gfx::Rect& expected = test_case.expected_popup_bounds;
-    const gfx::Rect& actual = widget().GetWindowBoundsInScreen();
-    // The exact position and size varies on different machines (e.g. because of
-    // different available fonts) and this comparison relaxation is to mitigate
-    // slightly different dimensions.
-    const int kPxError = 15;
-    EXPECT_NEAR(expected.x(), actual.x(), kPxError);
-    EXPECT_NEAR(expected.y(), actual.y(), kPxError);
-    EXPECT_NEAR(expected.width(), actual.width(), kPxError);
-    EXPECT_NEAR(expected.height(), actual.height(), kPxError);
-  }
+  const gfx::Rect& expected = test_case.expected_popup_bounds;
+  const gfx::Rect& actual = widget().GetWindowBoundsInScreen();
+  // The exact position and size varies on different machines (e.g. because of
+  // different available fonts) and this comparison relaxation is to mitigate
+  // slightly different dimensions.
+  const int kPxError = 15;
+  EXPECT_NEAR(expected.x(), actual.x(), kPxError);
+  EXPECT_NEAR(expected.y(), actual.y(), kPxError);
+  EXPECT_NEAR(expected.width(), actual.width(), kPxError);
+  EXPECT_NEAR(expected.height(), actual.height(), kPxError);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PopupPositioningTest,
+    testing::ValuesIn(kPopupPositioningTestCases),
+    [](const testing::TestParamInfo<PopupPositioningTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 #endif  // BUILDFLAG(IS_LINUX)
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
