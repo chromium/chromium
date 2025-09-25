@@ -105,9 +105,9 @@ export class SearchboxDropdownElement extends CrLitElement {
 
   accessor canShowSecondarySide: boolean = false;
   accessor hadSecondarySide: boolean = false;
-  accessor hasSecondarySide: boolean;
-  accessor hasEmptyInput: boolean;
-  accessor result: AutocompleteResult;
+  accessor hasSecondarySide: boolean = false;
+  accessor hasEmptyInput: boolean = false;
+  accessor result: AutocompleteResult|null = null;
   accessor selectedMatchIndex: number = -1;
   accessor showThumbnail: boolean = false;
   private accessor showSecondarySide_: boolean = false;
@@ -119,14 +119,6 @@ export class SearchboxDropdownElement extends CrLitElement {
   constructor() {
     super();
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -284,7 +276,7 @@ export class SearchboxDropdownElement extends CrLitElement {
   }
 
   private computeHasEmptyInput_(): boolean {
-    return this.result && decodeString16(this.result.input) === '';
+    return !!this.result && decodeString16(this.result.input) === '';
   }
 
   protected isSelected_(match: AutocompleteMatch): boolean {

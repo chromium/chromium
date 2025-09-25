@@ -44,11 +44,11 @@ export class SearchboxThumbnailElement extends CrLitElement {
   }
 
   // The URL of the thumbnail to display.
-  protected accessor thumbnailUrl_: string;
+  protected accessor thumbnailUrl_: string = '';
   // Whether the user can delete the thumbnail.
-  protected accessor isDeletable_: boolean;
+  protected accessor isDeletable_: boolean = false;
   // Whether to enable thumbnail sizing tweaks.
-  private accessor enableThumbnailSizingTweaks_: boolean =
+  protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
 
   //============================================================================

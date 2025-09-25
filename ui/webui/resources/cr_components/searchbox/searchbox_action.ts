@@ -67,10 +67,10 @@ export class SearchboxActionElement extends CrLitElement {
   accessor action: Action;
   accessor actionIndex: number = -1;
   accessor matchIndex: number = -1;
-  override accessor ariaLabel: string;
-  protected accessor hintHtml_: TrustedHTML;
-  protected accessor tooltip_: string;
-  protected accessor actionIconStyle_: string;
+  override accessor ariaLabel: string = '';
+  protected accessor hintHtml_: TrustedHTML = window.trustedTypes!.emptyHTML;
+  protected accessor tooltip_: string = '';
+  protected accessor actionIconStyle_: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', (event) => this.onActionClick_(event));

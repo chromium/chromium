@@ -145,20 +145,20 @@ export class SearchboxIconElement extends CrLitElement {
     };
   }
 
-  accessor backgroundImage: string;
+  accessor backgroundImage: string = '';
   accessor defaultIcon: string = '';
-  accessor hasIconContainerBackground: boolean;
+  accessor hasIconContainerBackground: boolean = false;
   accessor inSearchbox: boolean = false;
-  accessor isAnswer: boolean;
-  accessor isWeatherAnswer: boolean;
-  accessor isEnterpriseSearchAggregatorPeopleType: boolean;
-  accessor maskImage: string;
+  accessor isAnswer: boolean = false;
+  accessor isWeatherAnswer: boolean = false;
+  accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
+  accessor maskImage: string = '';
   accessor match: AutocompleteMatch;
-  protected accessor iconStyle_: string;
-  protected accessor iconSrc_: string;
+  protected accessor iconStyle_: string = '';
+  protected accessor iconSrc_: string = '';
   private accessor iconLoading_: boolean = false;
-  protected accessor showIconImg_: boolean;
-  protected accessor imageSrc_: string;
+  protected accessor showIconImg_: boolean = false;
+  protected accessor imageSrc_: string = '';
   private accessor imageLoading_: boolean = false;
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');

@@ -11,8 +11,8 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -167,31 +167,33 @@ export class SearchboxMatchElement extends CrLitElement {
     };
   }
 
-  override accessor ariaLabel: string;
-  accessor hasAction: boolean;
-  accessor hasImage: boolean;
-  accessor isEntitySuggestion: boolean;
-  accessor isRichSuggestion: boolean;
+  override accessor ariaLabel: string = '';
+  accessor hasAction: boolean = false;
+  accessor hasImage: boolean = false;
+  accessor isEntitySuggestion: boolean = false;
+  accessor isRichSuggestion: boolean = false;
   accessor match: AutocompleteMatch;
   accessor matchIndex: number = -1;
-  accessor sideType: SideType;
-  accessor showThumbnail: boolean;
-  accessor showEllipsis: boolean;
+  accessor sideType: SideType = SideType.kDefaultPrimary;
+  accessor showThumbnail: boolean = false;
+  accessor showEllipsis: boolean = false;
   private accessor isTopChromeSearchbox_: boolean =
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
   private accessor forceHideEllipsis_: boolean =
       loadTimeData.getBoolean('forceHideEllipsis');
-  protected accessor contentsHtml_: TrustedHTML;
-  protected accessor descriptionHtml_: TrustedHTML;
-  private accessor enableCsbMotionTweaks_: boolean =
+  protected accessor contentsHtml_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
+  protected accessor descriptionHtml_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
+  protected accessor enableCsbMotionTweaks_: boolean =
       loadTimeData.getBoolean('enableCsbMotionTweaks');
-  protected accessor removeButtonAriaLabel_: string;
+  protected accessor removeButtonAriaLabel_: string = '';
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
-  protected accessor separatorText_: string;
-  protected accessor tailSuggestPrefix_: string;
+  protected accessor separatorText_: string = '';
+  protected accessor tailSuggestPrefix_: string = '';
 
   private pageHandler_: PageHandlerInterface;
 

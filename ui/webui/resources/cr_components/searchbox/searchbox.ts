@@ -130,10 +130,7 @@ export class SearchboxElement extends SearchboxElementBase {
       },
 
       /** The aria description to include on the input element. */
-      searchboxAriaDescription: {
-        type: String,
-        value: '',
-      },
+      searchboxAriaDescription: {type: String},
 
       /** Whether the Google Lens icon should be visible in the searchbox. */
       searchboxLensSearchEnabled: {
@@ -253,50 +250,50 @@ export class SearchboxElement extends SearchboxElementBase {
     };
   }
 
-  accessor canShowSecondarySide: boolean;
-  accessor colorSourceIsBaseline: boolean;
+  accessor canShowSecondarySide: boolean = false;
+  accessor colorSourceIsBaseline: boolean = false;
   accessor dropdownIsVisible: boolean = false;
-  accessor hadSecondarySide: boolean;
-  accessor hasSecondarySide: boolean;
-  accessor isDark: boolean;
+  accessor hadSecondarySide: boolean = false;
+  accessor hasSecondarySide: boolean = false;
+  accessor isDark: boolean = false;
   accessor matchSearchbox: boolean =
       loadTimeData.getBoolean('searchboxMatchSearchboxTheme');
-  accessor searchboxAriaDescription: string;
+  accessor searchboxAriaDescription: string = '';
   accessor searchboxLensSearchEnabled: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor showNextRealbox: boolean;
-  accessor composeboxEnabled: boolean;
-  accessor composeButtonEnabled: boolean;
-  accessor showThumbnail: boolean;
-  protected accessor inputAriaLive_: string;
+  accessor showNextRealbox: boolean = false;
+  accessor composeboxEnabled: boolean = false;
+  accessor composeButtonEnabled: boolean = false;
+  accessor showThumbnail: boolean = false;
+  protected accessor inputAriaLive_: string = '';
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
-  private accessor enableThumbnailSizingTweaks_: boolean =
+  protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
   private accessor isDeletingInput_: boolean = false;
   private accessor queryAutocompleteOnEmptyInput_: boolean =
       loadTimeData.getBoolean('queryAutocompleteOnEmptyInput');
   private accessor lastIgnoredEnterEvent_: KeyboardEvent|null = null;
   private accessor lastInput_: Input = {text: '', inline: ''};
-  private accessor lastQueriedInput_: string|null;
+  private accessor lastQueriedInput_: string|null = null;
   private accessor pastedInInput_: boolean = false;
-  private accessor placeholderText: string;
+  private accessor placeholderText: string = '';
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
-  protected accessor result_: AutocompleteResult|null;
-  protected accessor selectedMatch_: AutocompleteMatch|null;
+  protected accessor result_: AutocompleteResult|null = null;
+  protected accessor selectedMatch_: AutocompleteMatch|null = null;
   protected accessor selectedMatchIndex_: number = -1;
   protected accessor thumbnailUrl_: string = '';
   protected accessor isThumbnailDeletable_: boolean = false;
-  private accessor useWebkitSearchIcons_: boolean;
+  private accessor useWebkitSearchIcons_: boolean = false;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
