@@ -186,9 +186,16 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
     "ContextMenuMaxTabSuggestions",
     5);
 
-const base::FeatureParam<bool> kShowNextRealbox(&kNtpComposebox,
-                                                "ShowNextRealbox",
-                                                false);
+const base::FeatureParam<RealboxLayoutMode>::Option
+    kRealboxLayoutModeOptions[] = {
+        {RealboxLayoutMode::kDefault, kRealboxLayoutModeDefault},
+        {RealboxLayoutMode::kTall, kRealboxLayoutModeTall},
+        {RealboxLayoutMode::kCompact, kRealboxLayoutModeCompact}};
+const base::FeatureParam<RealboxLayoutMode> kRealboxLayoutMode(
+    &kNtpComposebox,
+    "RealboxLayoutMode",
+    RealboxLayoutMode::kDefault,
+    &kRealboxLayoutModeOptions);
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 
@@ -203,5 +210,17 @@ FeatureConfig::FeatureConfig(FeatureConfig&&) = default;
 FeatureConfig& FeatureConfig::operator=(const FeatureConfig&) = default;
 FeatureConfig& FeatureConfig::operator=(FeatureConfig&&) = default;
 FeatureConfig::~FeatureConfig() = default;
+
+std::string_view RealboxLayoutModeToString(
+    RealboxLayoutMode realbox_layout_mode) {
+  switch (realbox_layout_mode) {
+    case RealboxLayoutMode::kDefault:
+      return kRealboxLayoutModeDefault;
+    case RealboxLayoutMode::kTall:
+      return kRealboxLayoutModeTall;
+    case RealboxLayoutMode::kCompact:
+      return kRealboxLayoutModeCompact;
+  }
+}
 
 }  // namespace ntp_composebox

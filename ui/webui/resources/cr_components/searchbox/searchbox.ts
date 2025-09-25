@@ -148,8 +148,8 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
 
-      showNextRealbox: {
-        type: Boolean,
+      realboxLayoutMode: {
+        type: String,
         reflect: true,
       },
 
@@ -265,7 +265,8 @@ export class SearchboxElement extends SearchboxElementBase {
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor showNextRealbox: boolean = false;
+  accessor realboxLayoutMode: string =
+      loadTimeData.getString('realboxLayoutMode');
   accessor composeboxEnabled: boolean = false;
   accessor composeButtonEnabled: boolean = false;
   accessor showThumbnail: boolean = false;
@@ -304,9 +305,6 @@ export class SearchboxElement extends SearchboxElementBase {
   constructor() {
     performance.mark('realbox-creation-start');
     super();
-
-    this.showNextRealbox = loadTimeData.valueExists('showNextRealbox') &&
-        loadTimeData.getBoolean('showNextRealbox');
 
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;

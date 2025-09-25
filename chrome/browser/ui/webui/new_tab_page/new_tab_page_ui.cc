@@ -559,7 +559,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      ntp_composebox::kShowComposeboxZps.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
                      ntp_composebox::kShowComposeboxTypedSuggest.Get());
-  source->AddBoolean("showNextRealbox", ntp_composebox::kShowNextRealbox.Get());
+  source->AddString(
+      "realboxLayoutMode",
+      ntp_composebox::RealboxLayoutModeToString(
+          ntp_composebox::kRealboxLayoutMode.Get()));
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowContextMenuDescription",
