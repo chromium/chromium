@@ -6275,6 +6275,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5666" label="OverscrollBehaviorWithOverflowHidden"/>
   <int value="5667" label="WebCodecsAv1EncodingWithQP"/>
   <int value="5668" label="ExternalSVGDocumentResources"/>
+  <int value="5669" label="IndexedDBGetAllRecords"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
 
@@ -269,6 +271,11 @@ IDBRequest* IDBObjectStore::getAllRecords(ScriptState* script_state,
                                           ExceptionState& exception_state) {
   TRACE_EVENT1("IndexedDB", "IDBObjectStore::getAllRecordsRequestSetup",
                "store_name", metadata_->name.Utf8());
+
+  // Explicitly count `kIndexedDBGetAllRecords` usage because the IDL definition
+  // for `getAllRecords()` already has a [Measure] recording `kIndexedDBRead`.
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kIndexedDBGetAllRecords);
 
   return CreateGetAllRequest(
       IDBRequest::TypeForMetrics::kObjectStoreGetAllRecords, script_state,
