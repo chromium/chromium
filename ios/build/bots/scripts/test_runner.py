@@ -997,6 +997,8 @@ class DeviceTestRunner(TestRunner):
       test_cases: List of tests to be included in the test run. None or [] to
         include all tests.
       xctest: Whether or not this is an XCTest.
+      exception_checker: (ExceptionChecker) an exception checker that checks
+        log lines for infra related issues and raises them as exceptions.
 
     Raises:
       AppNotFoundError: If the given app does not exist.
@@ -1005,6 +1007,9 @@ class DeviceTestRunner(TestRunner):
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
     super(DeviceTestRunner, self).__init__(app_path, out_dir, **kwargs)
+
+    self.exception_checker = kwargs.get(
+        'exception_checker', exception_utils.DeviceExceptionChecker())
 
     self.udid = subprocess.check_output(['idevice_id',
                                          '--list']).decode('utf-8').rstrip()

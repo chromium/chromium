@@ -8,6 +8,14 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 
+class DeviceSetupNotCompleteError(Exception):
+  """Device setup isn't complete"""
+
+  def __init__(self):
+    super(DeviceSetupNotCompleteError,
+          self).__init__('Device setup isn\'t complete')
+
+
 class ExceptionChecker:
   """Base class containing log exception checking common to device & simulator"""
   exceptions: list[Exception]
@@ -37,3 +45,15 @@ class ExceptionChecker:
 
       LOGGER.info('Raising first exception encountered')
       raise self.exceptions[0]
+
+
+class DeviceExceptionChecker(ExceptionChecker):
+  """Contains device specific log exception checking."""
+
+  def check_line(self, line: str):
+
+    # Check line for exceptions from base class first.
+    super().check_line(line)
+
+    if 'Device setup is not yet complete'.upper() in line.upper():
+      self.exceptions.append(DeviceSetupNotCompleteError())
