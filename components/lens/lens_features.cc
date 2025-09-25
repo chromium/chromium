@@ -103,6 +103,8 @@ BASE_FEATURE(kLensOverlayForceEmptyCsbQuery, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensSidePanelEnableWebviewResults,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1025,6 +1027,10 @@ bool GetSidePanelGhostLoaderDisabledForAim() {
 bool GetShouldComposeboxContextualizeOnFocus() {
   return base::FeatureList::IsEnabled(kLensSearchAimM3) &&
          kContextualizeOnFocus.Get();
+}
+
+bool GetAimSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kLensAimSuggestions);
 }
 
 bool ShouldCloseOverlayOnAimTransition() {

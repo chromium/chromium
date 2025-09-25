@@ -120,6 +120,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableWebviewResults",
       lens::features::IsLensSidePanelWebviewResultsEnabled());
+  html_source->AddBoolean("enableLensAimSuggestions",
+                          lens::features::GetAimSuggestionsEnabled());
 
   // Aim M3 flags
   const bool aim_enabled = lens::IsAimM3Enabled(Profile::FromWebUI(web_ui));
@@ -159,10 +161,11 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddString("composeboxAttachmentFileTypes", "");
   html_source->AddInteger("composeboxFileMaxSize", 0);
   html_source->AddInteger("composeboxFileMaxCount", 0);
-  // Disable ZPS.
-  html_source->AddBoolean("composeboxShowZps", false);
   // Disable typed suggest.
   html_source->AddBoolean("composeboxShowTypedSuggest", false);
+  // Enable ZPS if suggestions are enabled.
+  html_source->AddBoolean("composeboxShowZps",
+                          lens::features::GetAimSuggestionsEnabled());
   // Disable image context suggestions.
   html_source->AddBoolean("composeboxShowImageSuggest", false);
   // Disable context menu and related features.

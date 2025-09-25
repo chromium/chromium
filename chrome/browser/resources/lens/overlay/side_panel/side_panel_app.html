@@ -252,6 +252,11 @@
     width: 100%;
   }
 
+  /* Hide the gradient fog when the dropdown is visible. */
+  #composeboxContainer:has(#composebox[show-dropdown_][expanded_])::before {
+    display: none;
+  }
+
   /* Show the composebox when enabled and not on the error page.
    * Disabling when the error page is visible is a temporary fix since the
    * remote UI is not loaded in to receive our messages. crbug.com/439862805 */
@@ -259,6 +264,7 @@
     align-items: center;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
   }
 
   #floatingG {
@@ -288,6 +294,13 @@
   #aimHeaderLogo {
     position: absolute;
   }
+
+  :host([enable-lens-aim-suggestions]) #composeboxContainer:has(ntp-composebox[show-dropdown_][expanded_]) {
+    background-color: var(--search-background-color);
+    pointer-events: auto;
+    inset-block-start: var(--aim-header-height);
+  }
+
 
   #composebox {
     --expanded-border-radius: 24px;
@@ -341,6 +354,23 @@
   }
 
   #composebox::part(label) {
+    display: none;
+  }
+
+  :host([enable-lens-aim-suggestions]) #composebox::part(dropdown) {
+    background-color: var(--search-background-color);
+    /* Stack the dropdown on top of the other elements in the composebox. */
+    order: -1;
+    width: 100%;
+    z-index: 4;
+    position: fixed;
+    flex-direction: column-reverse;
+    bottom: 0;
+    transform: translateY(calc(-1 * (var(--composebox-height) + 30px)));
+  }
+
+  :host(:not([enable-lens-aim-suggestions])) #composebox::part(dropdown),
+  #composebox:not([expanded_])::part(dropdown) {
     display: none;
   }
 
@@ -482,5 +512,11 @@
 </cr-toast>
 
 <div id="composeboxContainer">
-  <ntp-composebox id="composebox" is-collapsible hide-file-inputs_> </ntp-composebox>
+  <ntp-composebox
+    id="composebox"
+    is-collapsible
+    hide-file-inputs_
+    style$="--composebox-height: [[composeboxHeight_]]px;"
+  >
+  </ntp-composebox>
 </div>

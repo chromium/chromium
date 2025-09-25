@@ -60,6 +60,7 @@ export function getHtml(this: ComposeboxElement) {
       <div class="carousel-divider"></div>` : ''}
       <ntp-composebox-dropdown
           id="matches"
+          part="dropdown"
           role="listbox"
           .result="${this.result_}"
           .selectedMatchIndex="${this.selectedMatchIndex_}"

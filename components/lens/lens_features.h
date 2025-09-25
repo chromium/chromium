@@ -810,6 +810,10 @@ extern bool GetSidePanelGhostLoaderDisabledForAim();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetShouldComposeboxContextualizeOnFocus();
 
+// Whether lens should show AIM suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSuggestionsEnabled();
+
 // Whether to close the overlay when the user transitions to the AIM UI.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldCloseOverlayOnAimTransition();

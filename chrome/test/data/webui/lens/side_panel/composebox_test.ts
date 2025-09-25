@@ -309,6 +309,147 @@ suite('Composebox', () => {
     assertFalse(isTrulyVisible(cancelButton));
   });
 
+  test('HidesDropdownWhenDisabled', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: false,
+      composeboxShowZps: false,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+
+    // Focus input to expand composebox.
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send suggestions to the composebox.
+    const matches =
+        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Verify dropdown is not visible.
+    assertFalse(isVisible(dropdown));
+  });
+
+  test('ShowsDropdownWhenEnabled', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+      composeboxShowZps: true,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+
+
+    // Focus input to expand composebox.
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send suggestions to the composebox.
+    const matches =
+        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Verify dropdown is not visible.
+    assertTrue(isVisible(dropdown));
+  });
+
+  test('RendersSuggestionsAboveComposebox', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+      composeboxShowZps: true,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    // Focus input to expand composebox and show dropdown.
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send suggestions to the composebox.
+    const matches =
+        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Verify dropdown is visible and above composebox.
+    assertTrue(isVisible(dropdown));
+    const composeboxRect = animatedElement.getBoundingClientRect();
+    const dropdownRect = dropdown.getBoundingClientRect();
+    assertTrue(dropdownRect.bottom <= composeboxRect.top);
+  });
+
+  test('DropdownHidesOnEmptySuggestions', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+      composeboxShowZps: true,
+    });
+    const composebox = await setupTest();
+    const dropdown =
+        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+    assertTrue(!!dropdown);
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    // Focus input to expand composebox.
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send suggestions to the composebox and assert dropdown is visible.
+    const matches =
+        [createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')})];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+    assertTrue(isVisible(dropdown));
+
+    // Send empty suggestions and assert dropdown is hidden.
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches: []}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+    assertFalse(isVisible(dropdown));
+  });
+
   test('TabbingOrder', async () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
@@ -440,5 +581,51 @@ suite('Composebox', () => {
     assertEquals(matchIndex, 0);
     assertEquals(
         url.url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);
+  });
+
+  test('SelectingMatchPopulatesComposebox', async () => {
+    loadTimeData.overrideValues({
+      enableAimSearchbox: true,
+      enableLensAimSuggestions: true,
+    });
+    const composebox = await setupTest();
+    const input =
+        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    assertTrue(!!input);
+
+    // Focus input to expand composebox.
+    input.focus();
+    const animatedElement =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!animatedElement);
+    await getTransitionEndPromise(animatedElement, 'max-height');
+
+    // Send suggestions to the composebox.
+    const matches = [
+      createSearchMatch({fillIntoEdit: stringToMojoString16('match 1')}),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('match 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({matches}));
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(composebox);
+
+    // Pressing ArrowDown should select the first item and populate the input.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+    assertEquals(input.value, 'match 1');
+
+    // Pressing ArrowDown again should select the second item.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+    assertEquals(input.value, 'match 2');
+
+    // Pressing ArrowUp should select the first item again.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
+    await waitAfterNextRender(composebox);
+    assertEquals(input.value, 'match 1');
   });
 });
