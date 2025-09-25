@@ -2,5 +2,4 @@ include_rules = [
   "+components/language_detection/core",
   "+components/translate/core/language_detection",
   "+third_party/rust/chromium_crates_io/vendor/llguidance-v1/llguidance.h",
-  "+third_party/xnnpack",
 ]
