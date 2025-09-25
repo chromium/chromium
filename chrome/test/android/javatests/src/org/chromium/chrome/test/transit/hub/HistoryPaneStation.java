@@ -19,6 +19,7 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.history.HistoryItemView;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -92,8 +93,15 @@ public class HistoryPaneStation extends HubBaseStation {
 
         /** Open the history search. */
         public HistorySearchFacility openSearch(boolean isLLFDevice) {
-            if (isLLFDevice) return noopTo().enterFacility(new HistorySearchFacility());
-            return searchButtonElement.clickTo().enterFacility(new HistorySearchFacility());
+            if (isLLFDevice) {
+                return noopTo().enterFacility(new HistorySearchFacility());
+            } else {
+                SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
+                HistorySearchFacility historySearch = new HistorySearchFacility();
+                searchButtonElement.clickTo().enterFacilities(softKeyboard, historySearch);
+                softKeyboard.close();
+                return historySearch;
+            }
         }
     }
 

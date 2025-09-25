@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.base.test.transit.Triggers.noopTo;
 
 import androidx.test.filters.MediumTest;
 
@@ -34,6 +35,7 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
+import org.chromium.ui.test.transit.SoftKeyboardCondition;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -116,6 +118,11 @@ public class HistoryPaneTest {
         // Verify that "One" is displayed as a match.
         history.expectEntry("One");
         history.expectNoEntry("Two");
+
+        noopTo().waitFor(
+                        new SoftKeyboardCondition(
+                                historyPaneStation.getActivityElement(),
+                                /* expectShowing= */ false));
     }
 
     @Test
