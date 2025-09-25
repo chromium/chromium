@@ -26,7 +26,7 @@ class Position;
 
 namespace observation {
 
-class TabStripApiObserver;
+class TabStripApiBatchedObserver;
 
 }  // namespace observation
 
@@ -62,8 +62,10 @@ class TabStripService {
   UpdateTabGroupVisual(const tabs_api::NodeId& id,
                        const tab_groups::TabGroupVisualData& visual_data) = 0;
 
-  virtual void AddObserver(observation::TabStripApiObserver* observer) = 0;
-  virtual void RemoveObserver(observation::TabStripApiObserver* observer) = 0;
+  virtual void AddObserver(
+      observation::TabStripApiBatchedObserver* observer) = 0;
+  virtual void RemoveObserver(
+      observation::TabStripApiBatchedObserver* observer) = 0;
 };
 
 }  // namespace tabs_api

@@ -14,7 +14,7 @@ namespace tabs_api {
 
 namespace observation {
 
-class TabStripApiObserver;
+class TabStripApiBatchedObserver;
 
 }  // namespace observation
 
@@ -26,9 +26,9 @@ class EventBroadcaster {
   EventBroadcaster& operator=(EventBroadcaster&) = delete;
   ~EventBroadcaster() = default;
 
-  void Broadcast(
-      const base::ObserverList<observation::TabStripApiObserver>& targets,
-      const std::vector<events::Event>& event);
+  void Broadcast(const base::ObserverList<
+                     observation::TabStripApiBatchedObserver>& targets,
+                 const std::vector<events::Event>& event);
 };
 
 }  // namespace tabs_api

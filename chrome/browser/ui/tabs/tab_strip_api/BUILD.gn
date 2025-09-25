@@ -181,6 +181,7 @@ source_set("unit_tests") {
     ":tab_strip_api",
     "converters:unit_tests",
     "events:unit_tests",
+    "observation:unit_tests",
     "testing",
     "types:unit_tests",
     "utilities:unit_tests",

@@ -5,15 +5,30 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_OBSERVATION_TAB_STRIP_API_OBSERVER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_OBSERVATION_TAB_STRIP_API_OBSERVER_H_
 
-#include "base/observer_list_types.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api_events.mojom.h"
 
 namespace tabs_api::observation {
 
-class TabStripApiObserver : public base::CheckedObserver {
+class TabStripApiObserver : public TabStripApiBatchedObserver {
  public:
+  TabStripApiObserver() = default;
   ~TabStripApiObserver() override = default;
 
-  virtual void OnTabEvents(const std::vector<mojom::TabsEventPtr>& events) = 0;
+  virtual void OnTabsCreated(
+      const mojom::OnTabsCreatedEventPtr& tabs_created_event) = 0;
+  virtual void OnTabsClosed(
+      const mojom::OnTabsClosedEventPtr& tabs_closed_event) = 0;
+  virtual void OnNodeMoved(
+      const mojom::OnNodeMovedEventPtr& node_moved_event) = 0;
+  virtual void OnDataChanged(
+      const mojom::OnDataChangedEventPtr& data_changed_event) = 0;
+  virtual void OnCollectionCreated(
+      const mojom::OnCollectionCreatedEventPtr& collection_created_event) = 0;
+
+  // Dispatch to virtual methods.
+  void OnTabEvents(const std::vector<mojom::TabsEventPtr>& events) override;
 };
 
 }  // namespace tabs_api::observation

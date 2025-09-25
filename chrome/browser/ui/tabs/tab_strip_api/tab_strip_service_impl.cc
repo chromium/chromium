@@ -374,12 +374,12 @@ TabStripServiceImpl::UpdateTabGroupVisual(
 }
 
 void TabStripServiceImpl::AddObserver(
-    observation::TabStripApiObserver* observer) {
+    observation::TabStripApiBatchedObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void TabStripServiceImpl::RemoveObserver(
-    observation::TabStripApiObserver* observer) {
+    observation::TabStripApiBatchedObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 

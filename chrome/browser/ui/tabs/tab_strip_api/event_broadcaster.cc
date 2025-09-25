@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 
 namespace tabs_api {
 
@@ -47,7 +47,8 @@ std::vector<mojom::TabsEventPtr> Transform(
 }
 
 void EventBroadcaster::Broadcast(
-    const base::ObserverList<observation::TabStripApiObserver>& observers,
+    const base::ObserverList<observation::TabStripApiBatchedObserver>&
+        observers,
     const std::vector<events::Event>& events) {
   for (auto& observer : observers) {
     observer.OnTabEvents(Transform(events));

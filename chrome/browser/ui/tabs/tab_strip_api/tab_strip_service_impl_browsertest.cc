@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
@@ -38,7 +38,7 @@
 // TODO(ffred): this is actually a e2e test. We should break up the tests into
 // integration (sync API) and e2e (mojo stuff).
 class ReallyVerySimpleSyncObserver
-    : public tabs_api::observation::TabStripApiObserver {
+    : public tabs_api::observation::TabStripApiBatchedObserver {
  public:
   ReallyVerySimpleSyncObserver() = default;
   ~ReallyVerySimpleSyncObserver() override = default;
@@ -247,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
   auto* service = tab_strip_service_mojo_handler_->GetTabStripService();
 
-  class ReallyBadObserver : public tabs_api::observation::TabStripApiObserver {
+  class ReallyBadObserver
+      : public tabs_api::observation::TabStripApiBatchedObserver {
    public:
     explicit ReallyBadObserver(tabs_api::TabStripService* service)
         : service_(service) {}
