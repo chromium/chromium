@@ -230,7 +230,8 @@ void DomDistillerViewerSource::StartDataRequest(
   if (remainder) {
     double scale = 1.0;
     if (base::StringToDouble(*remainder, &scale)) {
-      dom_distiller_service_->GetDistilledPagePrefs()->SetFontScaling(scale);
+      dom_distiller_service_->GetDistilledPagePrefs()->SetUserPrefFontScaling(
+          scale);
     }
   }
 

@@ -27,6 +27,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -280,9 +281,10 @@ public class ReaderModePrefsView extends LinearLayout
         // If user has previous preference saved at a non-step size interval, need to adjust to
         // closest increment.
         scaling =
-                Math.max(
+                MathUtils.clamp(
                         (Math.round(scaling / FONT_SCALE_STEP_SIZE) * FONT_SCALE_STEP_SIZE),
-                        FONT_SCALE_LOWER_BOUND);
+                        FONT_SCALE_LOWER_BOUND,
+                        FONT_SCALE_UPPER_BOUND);
 
         mFontScalingSlider.setValue(scaling);
 

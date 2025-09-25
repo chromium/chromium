@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
@@ -380,8 +381,10 @@ const std::string GetDistilledPageFontFamilyJs(mojom::FontFamily font_family) {
   return "useFontFamily('" + GetJsFontFamily(font_family) + "');";
 }
 
-const std::string GetDistilledPageFontScalingJs(float scaling) {
-  return "useFontScaling(" + base::NumberToString(scaling) + ");";
+const std::string GetDistilledPageFontScalingJs(float scaling,
+                                                bool restore_center) {
+  return "useFontScaling(" + base::NumberToString(scaling) + ", " +
+         base::ToString(restore_center) + ");";
 }
 
 const std::string SetDistilledPageBaseFontSize(float baseFontSize) {

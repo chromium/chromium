@@ -130,7 +130,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontFamilyChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs_->SetFontScaling(2.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(2.0);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),

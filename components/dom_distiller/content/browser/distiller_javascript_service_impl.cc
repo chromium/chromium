@@ -49,8 +49,9 @@ void DistillerJavaScriptServiceImpl::HandleStoreFontScalingPref(
     return;
   }
 
-  distiller_service_weak_ptr_.get()->GetDistilledPagePrefs()->SetFontScaling(
-      font_scale);
+  distiller_service_weak_ptr_.get()
+      ->GetDistilledPagePrefs()
+      ->SetUserPrefFontScaling(font_scale);
 }
 
 void CreateDistillerJavaScriptService(

@@ -26,21 +26,21 @@ class ReaderModeFontSizeUtilsTest : public PlatformTest {
 
 // Tests that IncreaseReaderModeFontSize increases the font size.
 TEST_F(ReaderModeFontSizeUtilsTest, IncreaseFontSize) {
-  distilled_page_prefs_->SetFontScaling(1.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.0);
   IncreaseReaderModeFontSize(distilled_page_prefs_.get());
   EXPECT_GT(distilled_page_prefs_->GetFontScaling(), 1.0);
 }
 
 // Tests that DecreaseReaderModeFontSize decreases the font size.
 TEST_F(ReaderModeFontSizeUtilsTest, DecreaseFontSize) {
-  distilled_page_prefs_->SetFontScaling(1.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.0);
   DecreaseReaderModeFontSize(distilled_page_prefs_.get());
   EXPECT_LT(distilled_page_prefs_->GetFontScaling(), 1.0);
 }
 
 // Tests that ResetReaderModeFontSize resets the font size to 1.0.
 TEST_F(ReaderModeFontSizeUtilsTest, ResetFontSize) {
-  distilled_page_prefs_->SetFontScaling(1.5);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.5);
   ResetReaderModeFontSize(distilled_page_prefs_.get());
   EXPECT_EQ(distilled_page_prefs_->GetFontScaling(), 1.0);
 }
@@ -48,26 +48,26 @@ TEST_F(ReaderModeFontSizeUtilsTest, ResetFontSize) {
 // Tests that CanIncreaseReaderModeFontSize returns false at the max font size
 // and true otherwise.
 TEST_F(ReaderModeFontSizeUtilsTest, CanIncreaseFontSize) {
-  distilled_page_prefs_->SetFontScaling(2.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(2.0);
   EXPECT_FALSE(CanIncreaseReaderModeFontSize(distilled_page_prefs_.get()));
-  distilled_page_prefs_->SetFontScaling(1.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.0);
   EXPECT_TRUE(CanIncreaseReaderModeFontSize(distilled_page_prefs_.get()));
 }
 
 // Tests that CanDecreaseReaderModeFontSize returns false at the min font size
 // and true otherwise.
 TEST_F(ReaderModeFontSizeUtilsTest, CanDecreaseFontSize) {
-  distilled_page_prefs_->SetFontScaling(0.5);
+  distilled_page_prefs_->SetUserPrefFontScaling(0.5);
   EXPECT_FALSE(CanDecreaseReaderModeFontSize(distilled_page_prefs_.get()));
-  distilled_page_prefs_->SetFontScaling(1.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.0);
   EXPECT_TRUE(CanDecreaseReaderModeFontSize(distilled_page_prefs_.get()));
 }
 
 // Tests that CanResetReaderModeFontSize returns false when the font size is at
 // the default and true otherwise.
 TEST_F(ReaderModeFontSizeUtilsTest, CanResetFontSize) {
-  distilled_page_prefs_->SetFontScaling(1.0);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.0);
   EXPECT_FALSE(CanResetReaderModeFontSize(distilled_page_prefs_.get()));
-  distilled_page_prefs_->SetFontScaling(1.5);
+  distilled_page_prefs_->SetUserPrefFontScaling(1.5);
   EXPECT_TRUE(CanResetReaderModeFontSize(distilled_page_prefs_.get()));
 }

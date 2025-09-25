@@ -59,8 +59,15 @@ class DistilledPagePrefs {
   mojom::Theme GetTheme();
 
   // Sets the user's preference for the font size scaling of distilled pages.
-  void SetFontScaling(float scaling);
-  // Returns the user's preference for the font size scaling of distilled pages.
+  void SetUserPrefFontScaling(float scaling);
+
+  // Sets default font scaling, used when user's preference for font scaling is
+  // not set. This will be aligned with the default zoom.
+  void SetDefaultFontScaling(float scaling);
+
+  // Returns the font size scaling of distilled pages. If user's preference for
+  // font size scaling is set, it will return the user's preference. Otherwise,
+  // it will return the value of default_font_scaling_.
   float GetFontScaling();
 
   void AddObserver(Observer* obs);
@@ -79,6 +86,7 @@ class DistilledPagePrefs {
   base::ObserverList<Observer> observers_;
 
   mojom::Theme default_theme_ = mojom::Theme::kLight;
+  float default_font_scaling_ = 1.0f;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
 };

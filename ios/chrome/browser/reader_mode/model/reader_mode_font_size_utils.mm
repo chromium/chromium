@@ -16,7 +16,7 @@ void IncreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
   auto it =
       std::upper_bound(multipliers.begin(), multipliers.end(), current_scale);
   if (it != multipliers.end()) {
-    prefs->SetFontScaling(*it);
+    prefs->SetUserPrefFontScaling(*it);
   }
 }
 
@@ -26,12 +26,12 @@ void DecreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
   auto it =
       std::lower_bound(multipliers.begin(), multipliers.end(), current_scale);
   if (it != multipliers.begin()) {
-    prefs->SetFontScaling(*(--it));
+    prefs->SetUserPrefFontScaling(*(--it));
   }
 }
 
 void ResetReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {
-  prefs->SetFontScaling(1.0);
+  prefs->SetUserPrefFontScaling(1.0);
 }
 
 bool CanIncreaseReaderModeFontSize(dom_distiller::DistilledPagePrefs* prefs) {

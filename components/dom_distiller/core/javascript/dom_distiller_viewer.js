@@ -432,7 +432,7 @@ class FontSizeSlider {
     this.update(this.element.value);
   }
   // TODO(meredithl): validate |scale| and snap to nearest supported font size.
-  useFontScaling(scale) {
+  useFontScaling(scale, restoreCenter = true) {
     this.element.value = this.fontSizeScale.indexOf(scale);
     document.documentElement.style.fontSize = scale * this.baseSize + 'px';
     this.update(this.element.value);
@@ -712,13 +712,17 @@ class Pincher {
     };
   }
 
-  useFontScaling(scaling) {
-    this.saveCenter_({x: window.innerWidth / 2, y: window.innerHeight / 2});
+  useFontScaling(scaling, restoreCenter = true) {
+    if (restoreCenter) {
+      this.saveCenter_({x: window.innerWidth / 2, y: window.innerHeight / 2});
+    }
     this.shiftX = 0;
     this.shiftY = 0;
     document.documentElement.style.fontSize = scaling * this.baseSize + 'px';
     this.clampedScale = scaling;
-    this.restoreCenter_();
+    if (restoreCenter) {
+      this.restoreCenter_();
+    }
   }
 
   useBaseFontSize(size) {
@@ -748,18 +752,23 @@ function useBaseFontSize(size) {
   }
 }
 
-function useFontScaling(scale) {
+function useFontScaling(scale, restoreCenter = true) {
   if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-    pincher.useFontScaling(scale);
+    pincher.useFontScaling(scale, restoreCenter);
   } else {
-    fontSizeSlider.useFontScaling(scale);
+    fontSizeSlider.useFontScaling(scale, restoreCenter);
   }
 }
 
-// Finds a paragraph with `innerText` matching `hash` and `charCount`, then
-// scrolls to that paragraph with the provided `progress` corresponding to the
-// location to scroll to wrt. that paragraph, 0 being the top of that paragraph,
-// 1 being the bottom.
+/**
+ * Finds a paragraph with `innerText` matching `hash` and `charCount`, then
+ * scrolls to that paragraph with the provided `progress` corresponding to the
+ * location to scroll to wrt. that paragraph, 0 being the top of that
+ * paragraph, 1 being the bottom.
+ * @param {number} hash The hash of the paragraph's innerText.
+ * @param {number} charCount The character count of the paragraph's innerText.
+ * @param {number} progress The scroll progress within the paragraph (0-1).
+ */
 function scrollToParagraphByHash(hash, charCount, progress) {
   const targetHash = hash;
   const targetCharCount = charCount;

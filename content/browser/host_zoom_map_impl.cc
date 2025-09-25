@@ -310,7 +310,7 @@ void HostZoomMapImpl::SetZoomLevelForHostAndScheme(const std::string& scheme,
                                                    double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // No last_modified timestamp for scheme and host because they are
-  // not persistet and are used for special cases only.
+  // not persistent and are used for special cases only.
   scheme_host_zoom_levels_[scheme][host].level = level;
 
   SendZoomLevelChange(scheme, host);

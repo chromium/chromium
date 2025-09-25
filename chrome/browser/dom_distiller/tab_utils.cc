@@ -28,6 +28,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -54,7 +55,7 @@ using dom_distiller::ViewRequestDelegate;
 // distillation fininishes, and makes it to the cache. An optional callback can
 // be provided which will be called when the article content is ready. The
 // callback will be invoked with false if the object is destroyed before the
-//callback is invoked.
+// callback is invoked.
 class SelfDeletingRequestDelegate : public ViewRequestDelegate,
                                     public content::WebContentsObserver {
  public:
@@ -167,6 +168,16 @@ void StartNavigationToDistillerViewer(content::WebContents* web_contents,
   content::NavigationController::LoadURLParams params(viewer_url);
   params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   web_contents->GetController().LoadURLWithParams(params);
+#if BUILDFLAG(IS_ANDROID)
+  // Ensure that the distilled page does not apply the default accessibility
+  // zoom by setting explicit zoom for the distiller URL.
+  content::HostZoomMap* host_zoom_map =
+      content::HostZoomMap::GetForWebContents(web_contents);
+  if (host_zoom_map) {
+    host_zoom_map->SetZoomLevelForHostAndScheme(viewer_url.scheme(),
+                                                viewer_url.host(), 0.0);
+  }
+#endif
 }
 
 void MaybeStartDistillation(

@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -72,6 +73,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -323,6 +325,62 @@ public class ReaderModeTest implements CustomMainActivityStart {
         waitForDistillation(PAGE_TITLE, tab);
 
         doTestSettingPreferences(mDownloadTestRule.getActivity(), tab);
+    }
+
+    @Test
+    @MediumTest
+    public void testZoomLevelPrefsCallbackUpdatesFontScaling() throws TimeoutException {
+        final DistilledPagePrefs distilledPagePrefs = getDistilledPagePrefs();
+
+        // Check that the initial font scaling is tied to the default zoom level.
+        final double initialZoomLevel =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                HostZoomMap.getDefaultZoomLevel(
+                                        mDownloadTestRule.getActivityTab().getProfile()));
+        final float initialZoomFactor = (float) Math.pow(1.2, initialZoomLevel);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            initialZoomFactor, distilledPagePrefs.getFontScaling(), 0.001f);
+                });
+
+        // Change the default zoom level and ensure the distilled page prefs are
+        // updated to reflect the change.
+        final double newZoomLevel = 2.0;
+        final float newZoomFactor = (float) Math.pow(1.2, newZoomLevel);
+
+        final CallbackHelper fontScalingChangedCallback = new CallbackHelper();
+        DistilledPagePrefs.Observer observer =
+                new DistilledPagePrefs.Observer() {
+                    @Override
+                    public void onChangeTheme(int theme) {}
+
+                    @Override
+                    public void onChangeFontFamily(int font) {}
+
+                    @Override
+                    public void onChangeFontScaling(float fontScaling) {
+                        if (Math.abs(fontScaling - newZoomFactor) < 0.001f) {
+                            fontScalingChangedCallback.notifyCalled();
+                        }
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> distilledPagePrefs.addObserver(observer));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HostZoomMap.setDefaultZoomLevel(
+                            mDownloadTestRule.getActivityTab().getProfile(), newZoomLevel);
+                });
+
+        fontScalingChangedCallback.waitForCallback(0);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(newZoomFactor, distilledPagePrefs.getFontScaling(), 0.001f);
+                    distilledPagePrefs.removeObserver(observer);
+                });
     }
 
     /**

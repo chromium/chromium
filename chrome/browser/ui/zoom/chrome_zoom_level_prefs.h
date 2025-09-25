@@ -49,6 +49,7 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
 
   void SetDefaultZoomLevelPref(double level);
   double GetDefaultZoomLevelPref() const;
+  double GetDefaultZoomFactor() const;
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 

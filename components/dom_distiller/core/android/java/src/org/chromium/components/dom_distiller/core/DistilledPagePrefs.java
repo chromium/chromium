@@ -129,7 +129,7 @@ public class DistilledPagePrefs {
     }
 
     public void setFontScaling(float scaling) {
-        DistilledPagePrefsJni.get().setFontScaling(mDistilledPagePrefsAndroid, scaling);
+        DistilledPagePrefsJni.get().setUserPrefFontScaling(mDistilledPagePrefsAndroid, scaling);
     }
 
     public float getFontScaling() {
@@ -150,7 +150,7 @@ public class DistilledPagePrefs {
 
         int getTheme(long nativeDistilledPagePrefsAndroid);
 
-        void setFontScaling(long nativeDistilledPagePrefsAndroid, float scaling);
+        void setUserPrefFontScaling(long nativeDistilledPagePrefsAndroid, float scaling);
 
         float getFontScaling(long nativeDistilledPagePrefsAndroid);
 

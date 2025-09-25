@@ -106,6 +106,10 @@ double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
   return default_zoom_level_dictionary.FindDouble(partition_key_).value_or(0.0);
 }
 
+double ChromeZoomLevelPrefs::GetDefaultZoomFactor() const {
+  return blink::ZoomLevelToZoomFactor(GetDefaultZoomLevelPref());
+}
+
 base::CallbackListSubscription
 ChromeZoomLevelPrefs::RegisterDefaultZoomLevelCallback(
     base::RepeatingClosure callback) {

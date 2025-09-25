@@ -158,9 +158,10 @@ TEST_F(DomDistillerViewerTest, TestGetDistilledPageFontFamilyJsOutput) {
 }
 
 TEST_F(DomDistillerViewerTest, TestGetDistilledPageFontScalingJsOutput) {
-  std::string kJsFontScaling = "useFontScaling(5);";
-  EXPECT_EQ(kJsFontScaling.compare(viewer::GetDistilledPageFontScalingJs(5)),
-            0);
+  std::string kJsFontScaling = "useFontScaling(5, false);";
+  EXPECT_EQ(
+      kJsFontScaling.compare(viewer::GetDistilledPageFontScalingJs(5, false)),
+      0);
 }
 
 TEST_F(DomDistillerViewerTest, TestGetAddToPageJsEmptyDisplaysDefault) {
