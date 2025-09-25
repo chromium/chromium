@@ -206,16 +206,6 @@ void BackForwardCachePageLoadMetricsObserver::
     builder.SetNavigationToFirstPaintAfterBackForwardCacheRestore(
         first_paint.InMilliseconds());
     builder.Record(ukm::UkmRecorder::Get());
-
-    if (base::FeatureList::IsEnabled(
-            page_load_metrics::features::
-                kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstPaint, base::TimeDelta{});
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaint,
-                          base::TimeDelta{});
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
-                          base::TimeDelta{});
-    }
   }
 }
 
@@ -287,13 +277,6 @@ void BackForwardCachePageLoadMetricsObserver::
     builder.SetFirstInputDelayAfterBackForwardCacheRestore(
         first_input_delay.value().InMilliseconds());
     builder.Record(ukm::UkmRecorder::Get());
-
-    if (base::FeatureList::IsEnabled(
-            page_load_metrics::features::
-                kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstInputDelay,
-                          base::TimeDelta{});
-    }
   }
 }
 
@@ -466,17 +449,6 @@ void BackForwardCachePageLoadMetricsObserver::
   }
 
   builder.Record(ukm::UkmRecorder::Get());
-
-  if (base::FeatureList::IsEnabled(
-          page_load_metrics::features::
-              kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
-        page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
-    base::UmaHistogramCounts100(
-        "PageLoad.LayoutInstability.CumulativeShiftScore",
-        page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
-  }
 }
 
 void BackForwardCachePageLoadMetricsObserver::
