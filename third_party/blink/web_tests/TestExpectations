@@ -3238,7 +3238,7 @@ crbug.com/431030815 [ Mac14 ] external/wpt/IndexedDB/nested-cloning-large-multip
 crbug.com/431038524 [ Mac14 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?2001-3000 [ Timeout ]
 crbug.com/431031177 [ Win10.20h2 ] external/wpt/bluetooth/bidi/device/gattserverdisconnected-event/disconnected_gc.https.window.html [ Pass Timeout ]
 crbug.com/431031177 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Pass Timeout ]
-crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Pass Timeout ]
+crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/data-prefix-and-mask-size.https.window.html [ Pass Failure Timeout ]
 crbug.com/431031177 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-get-different-service-after-reconnection-with-uuid.https.window.html [ Pass Timeout ]
 crbug.com/431036875 [ Mac12 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
 crbug.com/431036875 [ Mac14 ] external/wpt/content-security-policy/report-hash/default-src.https.window.html [ Timeout ]
