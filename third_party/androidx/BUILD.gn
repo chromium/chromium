@@ -1600,8 +1600,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_java") {
-    aar_path =
-        "../androidx/cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_window_window/window-1.5.0.aar"
     info_path = "../androidx/committed/libs/androidx_window_window/androidx_window_window.info"
     enable_bytecode_checks = false
     deps = [
@@ -3424,7 +3423,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_room_room_common_jvm_java") {
-    jar_path = "../androidx/cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.8.0.jar"
+    jar_path = "../androidx/cipd/libs/androidx_room_room_common_jvm/room-common-jvm-2.8.1.jar"
     output_name = "androidx_room_room_common_jvm"
     supports_android = true
     requires_android = true
@@ -3710,7 +3709,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_window_window_core_android/window-core.aar"
     info_path = "../androidx/committed/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
     enable_bytecode_checks = false
 
