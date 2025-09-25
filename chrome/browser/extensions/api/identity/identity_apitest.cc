@@ -842,15 +842,17 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
       "test@example.com", signin::ConsentLevel::kSignin);
   std::optional<api::identity::ProfileUserInfo> info =
       RunGetProfileUserInfoWithEmail();
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the unconsented primary account is always returned.
-  EXPECT_EQ("test@example.com", info->email);
-  EXPECT_EQ("gaia_id_for_test_example.com", info->id);
-#else
-  // On Desktop and ChromeOS, the unconsented primary account is not returned.
-  EXPECT_TRUE(info->email.empty());
-  EXPECT_TRUE(info->id.empty());
-#endif
+  // The account is only returned if extensions are syncing. Whether or not
+  // extensions sync upon sign-in depends on
+  // `kReplaceSyncPromosWithSignInPromos`.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_EQ("test@example.com", info->email);
+    EXPECT_EQ("gaia_id_for_test_example.com", info->id);
+  } else {
+    EXPECT_TRUE(info->email.empty());
+    EXPECT_TRUE(info->id.empty());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
