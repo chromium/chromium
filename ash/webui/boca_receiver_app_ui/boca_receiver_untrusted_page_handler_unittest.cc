@@ -192,7 +192,7 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
     ON_CALL(handler_delegate_, IsAppEnabled).WillByDefault(Return(true));
 
     url_loader_factory_.AddResponse(register_url_.spec(),
-                                    R"({"receiver_id": "AB12"})");
+                                    R"({"receiverId": "AB12"})");
     auto mock_remoting_client =
         std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
     remoting_client_ = mock_remoting_client.get();

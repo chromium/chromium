@@ -21,7 +21,7 @@ namespace ash::boca_receiver {
 namespace {
 
 constexpr std::string_view kFcmTokenKey = "token";
-constexpr std::string_view kReceiverIdKey = "receiver_id";
+constexpr std::string_view kReceiverIdKey = "receiverId";
 
 }  // namespace
 

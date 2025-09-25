@@ -46,7 +46,7 @@ TEST(RegisterReceiverRequestTest, OnSuccess) {
                        response_body = std::move(response);
                      }));
   base::Value::Dict response_dict;
-  response_dict.Set("receiver_id", kReceiverId);
+  response_dict.Set("receiverId", kReceiverId);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
   ASSERT_TRUE(response_body.has_value());
