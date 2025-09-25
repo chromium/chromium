@@ -91,7 +91,7 @@ BASE_FEATURE(kDisableOffstoreForceInstalledExtensionsInLowTrustEnviroment,
 // Disables force-installed extensions in low trust environments when
 // greylisted.
 BASE_FEATURE(kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
