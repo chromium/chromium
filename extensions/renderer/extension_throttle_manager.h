@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -37,6 +38,10 @@ namespace extensions {
 // are registered, and does garbage collection from time to time in order to
 // clean out outdated entries. URL ID consists of lowercased scheme, host, port
 // and path. All URLs converted to the same ID will share the same entry.
+//
+// ExtensionThrottleManager can be destructed before ExtensionURLLoaderThrottle
+// even though it is an explicit constructor argument. In that case, the
+// throttle will have no effect (failing open).
 class ExtensionThrottleManager {
  public:
   ExtensionThrottleManager();
@@ -77,6 +82,26 @@ class ExtensionThrottleManager {
                              std::unique_ptr<ExtensionThrottleEntry> entry);
 
   int GetNumberOfEntriesForTests() const { return url_entries_.size(); }
+
+  // Observe extension throttle manager.
+  class ExtensionThrottleManagerObserver : public base::CheckedObserver {
+   public:
+    ExtensionThrottleManagerObserver() = default;
+
+    virtual void OnExtensionThrottleManagerDestruct(
+        ExtensionThrottleManager* manager) {}
+
+   protected:
+    ~ExtensionThrottleManagerObserver() override = default;
+  };
+
+  void AddObserver(ExtensionThrottleManagerObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(ExtensionThrottleManagerObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
  protected:
   // Method that allows us to transform a URL into an ID that can be used in our
@@ -131,6 +156,9 @@ class ExtensionThrottleManager {
 
   // Used to synchronize all public methods.
   base::Lock lock_;
+
+  // Observers of `ExtensionThrottleManager`.
+  base::ObserverList<ExtensionThrottleManagerObserver> observers_;
 };
 
 }  // namespace extensions
