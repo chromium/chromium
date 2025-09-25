@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -61,16 +62,39 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
             << ") - " << message;
   };
 
-  // Check eligibility of this request.
-  if (!ip_protection_core_->IsMdlPopulated()) {
-    vlog("proxy allow list not populated");
-    return ProxyResolutionResult::kMdlNotPopulated;
-  } else if (!ip_protection_core_->RequestShouldBeProxied(
-                 url, network_anonymization_key)) {
-    vlog("proxy allow list did not match");
-    return ProxyResolutionResult::kNoMdlMatch;
-  } else {
-    vlog("proxy allow list matched");
+  bool is_unconditional_match = false;
+  if (std::string domain_list_str =
+          net::features::kIpPrivacyUnconditionalProxyDomainList.Get();
+      !domain_list_str.empty()) {
+    std::vector<std::string> domain_list = base::SplitString(
+        domain_list_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::optional<net::SchemefulSite> top_frame_site =
+        network_anonymization_key.GetTopFrameSite();
+    if (top_frame_site.has_value()) {
+      for (const auto& domain : domain_list) {
+        // SchemefulSite normalizes to eTLD+1 using the Public Suffix List.
+        std::string registrable_domain = top_frame_site->GetURL().host();
+        if (registrable_domain == domain) {
+          vlog("unconditional proxy domain matched");
+          is_unconditional_match = true;
+          break;
+        }
+      }
+    }
+  }
+
+  if (!is_unconditional_match) {
+    // Check eligibility of this request.
+    if (!ip_protection_core_->IsMdlPopulated()) {
+      vlog("proxy allow list not populated");
+      return ProxyResolutionResult::kMdlNotPopulated;
+    } else if (!ip_protection_core_->RequestShouldBeProxied(
+                   url, network_anonymization_key)) {
+      vlog("proxy allow list did not match");
+      return ProxyResolutionResult::kNoMdlMatch;
+    } else {
+      vlog("proxy allow list matched");
+    }
   }
 
   result->set_is_mdl_match(true);
@@ -134,7 +158,13 @@ void IpProtectionProxyDelegate::OnResolveProxy(
     net::ProxyInfo* result) {
   ProxyResolutionResult resolution_result =
       ClassifyRequest(url, network_anonymization_key, result);
-  Telemetry().ProxyResolution(resolution_result);
+  // Don't emit the ProxyResolution metric if unconditional proxying is enabled,
+  // since it can skew common IPP analyses.
+  // TODO(crbug.com/447391924) - Rework this metric so we can support
+  // unconditional proxying as well.
+  if (net::features::kIpPrivacyUnconditionalProxyDomainList.Get().empty()) {
+    Telemetry().ProxyResolution(resolution_result);
+  }
 
   const std::optional<net::SchemefulSite>& top_frame_site =
       network_anonymization_key.GetTopFrameSite();

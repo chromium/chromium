@@ -1374,6 +1374,145 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyPRTIntegration) {
       << "revealed token value is not in starting plaintexts";
 }
 
+TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_UnconditionalProxy_Match) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUnconditionalProxyDomainList.name,
+        "top.com"}});
+
+  // The MDL is empty, so no request would be proxied without the unconditional
+  // proxy feature.
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateSameSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_TRUE(result.is_for_ip_protection());
+  histogram_tester_.ExpectTotalCount(kProxyResolutionHistogram, 0);
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnResolveProxy_UnconditionalProxy_Match_Subdomain) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUnconditionalProxyDomainList.name,
+        "top.com"}});
+
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(
+      GURL(kHttpsUrl),
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(GURL("https://subdomain.top.com"))),
+      "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_TRUE(result.is_for_ip_protection());
+  histogram_tester_.ExpectTotalCount(kProxyResolutionHistogram, 0);
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnResolveProxy_UnconditionalProxy_Match_PublicSuffix) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUnconditionalProxyDomainList.name,
+        "top.co.uk"}});
+
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateSameSite(
+                               net::SchemefulSite(GURL("https://top.co.uk"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_TRUE(result.is_for_ip_protection());
+  histogram_tester_.ExpectTotalCount(kProxyResolutionHistogram, 0);
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnResolveProxy_UnconditionalProxy_NoMatch_NoMdlMatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUnconditionalProxyDomainList.name,
+        "nottop.com"}});
+
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+  histogram_tester_.ExpectTotalCount(kProxyResolutionHistogram, 0);
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnResolveProxy_UnconditionalProxy_NoMatch_MdlMatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy,
+      {{net::features::kIpPrivacyUnconditionalProxyDomainList.name,
+        "nottop.com"}});
+
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto masked_domain_list_manager = CreateMdlManager(first_party_map);
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->SetProxyList({MakeChain({"proxya", "proxyb"})});
+  auto delegate = CreateDelegate(ipp_core.get());
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_FALSE(result.is_direct());
+  EXPECT_TRUE(result.is_for_ip_protection());
+  histogram_tester_.ExpectTotalCount(kProxyResolutionHistogram, 0);
+}
+
 TEST_F(IpProtectionProxyDelegateTest, OnSuccessfulRequestAfterFailures) {
   auto check = [this](std::string_view name,
                       const net::ProxyRetryInfoMap& proxy_retry_info_map,
@@ -1779,6 +1918,7 @@ TEST_F(
                                                 base::DoNothing()),
               IsOk());
 }
+
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyBypassesWhenSet) {
   // Enable the feature flag required for the bypass logic.
   base::test::ScopedFeatureList scoped_feature_list;
