@@ -418,9 +418,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                             base::Time end_time);
 
   // Same as the above, but for the given origin instead of host.
-  HistoryLastVisitResult GetLastVisitToOrigin(const url::Origin& origin,
-                                              base::Time begin_time,
-                                              base::Time end_time);
+  HistoryLastVisitResult GetLastVisitToOrigin(
+      const url::Origin& origin,
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits.

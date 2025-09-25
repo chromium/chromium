@@ -467,6 +467,7 @@ class HistoryService : public KeyedService,
       const url::Origin& origin,
       base::Time begin_time,
       base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits,
       GetLastVisitCallback callback,
       base::CancelableTaskTracker* tracker);
 

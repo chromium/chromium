@@ -132,6 +132,7 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
   url::Origin last_committed_origin = metrics_data->last_committed_origin;
   history_service_->GetLastVisitToOrigin(
       last_committed_origin, base::Time(), base::Time::Now() - base::Hours(4),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
@@ -171,6 +172,7 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
   url::Origin last_committed_origin = metrics_data->last_committed_origin;
   history_service_->GetLastVisitToOrigin(
       last_committed_origin, base::Time(), base::Time::Now() - base::Days(1),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThanADayAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
@@ -281,6 +283,7 @@ void SiteProtectionMetricsObserver::OnGotHighConfidenceAllowlistResult(
     url::Origin last_committed_origin = metrics_data->last_committed_origin;
     history_service_->GetLastVisitToOrigin(
         last_committed_origin, base::Time(), *last_visit_time - base::Days(1),
+        history::VisitQuery404sPolicy::kInclude404s,
         base::BindOnce(&SiteProtectionMetricsObserver::
                            OnGotVisitToOriginOlderThanADayPriorToPreviousVisit,
                        weak_factory_.GetWeakPtr(), std::move(metrics_data)),

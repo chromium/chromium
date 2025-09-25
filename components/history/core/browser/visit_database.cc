@@ -1157,10 +1157,12 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
   return statement.Succeeded();
 }
 
-bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
-                                         base::Time begin_time,
-                                         base::Time end_time,
-                                         base::Time* last_visit) {
+bool VisitDatabase::GetLastVisitToOrigin(
+    const url::Origin& origin,
+    base::Time begin_time,
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits,
+    base::Time* last_visit) {
   if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
                            origin.scheme() == url::kHttpsScheme)) {
     return false;
@@ -1169,18 +1171,33 @@ bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,
   std::pair<std::string, std::string> origin_bounds =
       GetOriginSearchBounds(origin.GetURL());
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "  v.visit_time "
-      "FROM visits v INNER JOIN urls u ON v.url = u.id "
-      "WHERE "
-      "  u.url >= ? AND "
-      "  u.url < ? AND "
-      "  v.visit_time >= ? AND "
-      "  v.visit_time < ? "
-      "ORDER BY v.visit_time DESC "
-      "LIMIT 1"));
+  sql::Statement statement;
+  switch (policy_for_404_visits) {
+    case VisitQuery404sPolicy::kInclude404s:
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT v.visit_time "
+          "FROM visits v INNER JOIN urls u ON v.url=u.id "
+          "WHERE "
+          "  u.url>=? AND u.url<? AND "
+          "  v.visit_time>=? AND v.visit_time<? "
+          "ORDER BY v.visit_time DESC "
+          "LIMIT 1"));
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      statement.Assign(GetDB().GetCachedStatement(
+          SQL_FROM_HERE,
+          "SELECT v.visit_time "
+          "FROM visits v INNER JOIN urls u ON v.url=u.id "
+          "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
+          "WHERE "
+          "  u.url>=? AND u.url<? AND "
+          "  v.visit_time>=? AND v.visit_time<? AND "
+          "  (ca.response_code IS NULL OR ca.response_code!=404) "
+          "ORDER BY v.visit_time DESC "
+          "LIMIT 1"));
+      break;
+  }
   statement.BindString(0, origin_bounds.first);
   statement.BindString(1, origin_bounds.second);
   statement.BindTime(2, begin_time);

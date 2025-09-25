@@ -252,6 +252,7 @@ class VisitDatabase {
   bool GetLastVisitToOrigin(const url::Origin& origin,
                             base::Time begin_time,
                             base::Time end_time,
+                            VisitQuery404sPolicy policy_for_404_visits,
                             base::Time* last_visit);
 
   // Gets counts for total visits and days visited for pages matching `host`'s

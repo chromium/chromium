@@ -1137,16 +1137,17 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
 
 TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_BadURL) {
   base::Time last_visit;
-  EXPECT_FALSE(GetLastVisitToOrigin(url::Origin(), base::Time::Min(),
-                                    base::Time::Max(), &last_visit));
+  EXPECT_FALSE(
+      GetLastVisitToOrigin(url::Origin(), base::Time::Min(), base::Time::Max(),
+                           VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, base::Time());
 }
 
 TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_NonHttpURL) {
   base::Time last_visit;
-  EXPECT_FALSE(GetLastVisitToOrigin(url::Origin::Create(GURL("ftp://host/")),
-                                    base::Time::Min(), base::Time::Max(),
-                                    &last_visit));
+  EXPECT_FALSE(GetLastVisitToOrigin(
+      url::Origin::Create(GURL("ftp://host/")), base::Time::Min(),
+      base::Time::Max(), VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, base::Time());
 }
 
@@ -1154,7 +1155,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_NoVisits) {
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToOrigin(
       url::Origin::Create(GURL("https://www.chromium.org")), base::Time::Min(),
-      base::Time::Max(), &last_visit));
+      base::Time::Max(), VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, base::Time());
 }
 
@@ -1182,7 +1183,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_VisitsOutsideRange) {
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToOrigin(
       url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
-      end_time, &last_visit));
+      end_time, VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, base::Time());
 }
 
@@ -1210,7 +1211,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_EndTimeNotIncluded) {
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToOrigin(
       url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
-      end_time, &last_visit));
+      end_time, VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, begin_time);
 }
 
@@ -1238,8 +1239,93 @@ TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_SameOriginOnly) {
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToOrigin(
       url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
-      end_time, &last_visit));
+      end_time, VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_MostRecentVisitTime) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::Hours(1);
+
+  VisitRow row1{AddURL(URLRow(GURL("https://chromium.org/"))),
+                begin_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false,
+                0};
+  AddVisit(&row1, SOURCE_BROWSED);
+  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org/"))),
+                begin_time + base::Minutes(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false,
+                0};
+  AddVisit(&row2, SOURCE_BROWSED);
+  VisitRow row3{AddURL(URLRow(GURL("https://www.chromium.org/"))),
+                begin_time + base::Minutes(2),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false,
+                0};
+  AddVisit(&row3, SOURCE_BROWSED);
+
+  base::Time last_visit;
+  EXPECT_TRUE(GetLastVisitToOrigin(
+      url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
+      end_time, VisitQuery404sPolicy::kInclude404s, &last_visit));
+  EXPECT_EQ(last_visit, begin_time + base::Minutes(2));
+}
+
+TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_PolicyFor404Visits) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::Hours(1);
+  VisitContextAnnotations context_annotations_200;
+  context_annotations_200.on_visit = {.response_code = 200};
+  VisitContextAnnotations context_annotations_404;
+  context_annotations_404.on_visit = {.response_code = 404};
+
+  // Add two visits to the same origin. The more recent one is a 404, and the
+  // older one is a 200.
+  VisitRow row1{AddURL(URLRow(GURL("https://chromium.org/"))),
+                begin_time,
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false,
+                0};
+  row1.visit_id = AddVisit(&row1, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(row1.visit_id, context_annotations_200);
+  VisitRow row2{AddURL(URLRow(GURL("https://chromium.org/"))),
+                begin_time + base::Minutes(1),
+                0,
+                ui::PageTransitionFromInt(0),
+                0,
+                false,
+                0};
+  row2.visit_id = AddVisit(&row2, SOURCE_BROWSED);
+  AddContextAnnotationsForVisit(row2.visit_id, context_annotations_404);
+
+  base::Time last_visit;
+  // When including 404s, the most recent visit to the origin is the 404 visit.
+  EXPECT_TRUE(GetLastVisitToOrigin(
+      url::Origin::Create(GURL("https://chromium.org")), begin_time, end_time,
+      VisitQuery404sPolicy::kInclude404s, &last_visit));
+  EXPECT_EQ(last_visit, row2.visit_time);
+  // When excluding 404s, the most recent visit to the origin is the 200 visit.
+  EXPECT_TRUE(GetLastVisitToOrigin(
+      url::Origin::Create(GURL("https://chromium.org")), begin_time, end_time,
+      VisitQuery404sPolicy::kExclude404s, &last_visit));
+  EXPECT_EQ(last_visit, row1.visit_time);
+  // When excluding 404s with a time window that includes only the 404 visit,
+  // the call succeeds but returns no timestamp.
+  EXPECT_TRUE(
+      GetLastVisitToOrigin(url::Origin::Create(GURL("https://chromium.org")),
+                           begin_time + base::Seconds(1), end_time,
+                           VisitQuery404sPolicy::kExclude404s, &last_visit));
+  EXPECT_EQ(last_visit, base::Time());
 }
 
 TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentScheme) {
@@ -1334,42 +1420,6 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentPorts) {
   EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org:8080").host(),
                                  begin_time, end_time, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
-}
-
-TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_MostRecentVisitTime) {
-  base::Time begin_time = base::Time::Now();
-  base::Time end_time = begin_time + base::Hours(1);
-
-  VisitRow row1{AddURL(URLRow(GURL("https://chromium.org/"))),
-                begin_time,
-                0,
-                ui::PageTransitionFromInt(0),
-                0,
-                false,
-                0};
-  AddVisit(&row1, SOURCE_BROWSED);
-  VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org/"))),
-                begin_time + base::Minutes(1),
-                0,
-                ui::PageTransitionFromInt(0),
-                0,
-                false,
-                0};
-  AddVisit(&row2, SOURCE_BROWSED);
-  VisitRow row3{AddURL(URLRow(GURL("https://www.chromium.org/"))),
-                begin_time + base::Minutes(2),
-                0,
-                ui::PageTransitionFromInt(0),
-                0,
-                false,
-                0};
-  AddVisit(&row3, SOURCE_BROWSED);
-
-  base::Time last_visit;
-  EXPECT_TRUE(GetLastVisitToOrigin(
-      url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
-      end_time, &last_visit));
-  EXPECT_EQ(last_visit, begin_time + base::Minutes(2));
 }
 
 // TODO(crbug.com/40940281): Test is failing.

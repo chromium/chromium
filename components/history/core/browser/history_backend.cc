@@ -2145,10 +2145,11 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
 HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
     const url::Origin& origin,
     base::Time begin_time,
-    base::Time end_time) {
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   base::Time last_visit;
   return {db_ && db_->GetLastVisitToOrigin(origin, begin_time, end_time,
-                                           &last_visit),
+                                           policy_for_404_visits, &last_visit),
           last_visit};
 }
 
