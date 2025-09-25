@@ -245,23 +245,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   LayoutUnit tallest_unbreakable_block_size_;
   bool is_constrained_by_outer_fragmentation_context_ = false;
 
-  // This is used to determine whether we need to add new intersections for
-  // the edge of the container and the column gaps, or whether we need to
-  // modify the last intersection in each column gap. For instance, if we have
-  // a row of columns with fewer columns than the previous row.
-  bool need_to_add_final_intersections_to_column_gaps_ = false;
-  wtf_size_t num_columns_in_last_processed_row_ = 0;
-
-  Vector<GapIntersectionList> column_gaps_;
-  Vector<GapIntersectionList> row_gaps_;
-
   LayoutUnit column_gap_size_;
   LayoutUnit row_gap_size_;
 
-  // TODO(crbug.com/436140061): The following are for the optimized version of
-  // GapDecorations. Once the optimized version is implemented, we can remove
-  // all the other unused methods and members from the old version.
-  //
   //`main_gaps_` are the row gaps, while `cross_gaps_` are the column gaps.
   Vector<MainGap> main_gaps_;
   Vector<CrossGap> cross_gaps_;
