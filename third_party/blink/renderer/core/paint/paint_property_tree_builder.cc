@@ -1578,8 +1578,7 @@ static bool NeedsEffectForViewTransition(const LayoutObject& object) {
 // promotion to render surfaces if possible to improve quality of
 // renerdering. See crbug.com/40084005.
 bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
-  if (!RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() ||
-      object_.IsLayoutReplaced()) {
+  if (object_.IsLayoutReplaced()) {
     return false;
   }
   if (object_.StyleRef().HasWillChangeTransformHint() ||

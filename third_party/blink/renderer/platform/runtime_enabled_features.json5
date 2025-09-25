@@ -4159,13 +4159,6 @@
       name: "RenderPriorityAttribute",
     },
     {
-      // Allocates a render surface for 2D scale transforms, to prevent
-      // composited pixel alignment issues. See
-      // https://crbug.com/40084005
-      name: "RenderSurfaceFor2DScaleTransform",
-      status: "stable",
-    },
-    {
       name: "ReportFirstFrameTimeAsRenderTime",
       status: "test",
     },
