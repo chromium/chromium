@@ -724,6 +724,16 @@ constexpr base::FeatureParam<int> kMinimumTypedCharactersToInvokeAimShortcut(
 
 // <- Aim shortcut for typed state
 
+#if BUILDFLAG(IS_ANDROID)
+// Omnibox Improvement for Large Form Factors
+
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFSwitchToTabChip{
+        &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", false};
+
+// <-- Omnibox Improvement for Large Form Factors
+#endif
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

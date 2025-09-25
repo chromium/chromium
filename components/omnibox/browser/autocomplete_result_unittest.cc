@@ -2195,6 +2195,40 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
   EXPECT_FALSE(result.match_at(2)->has_tab_match.value_or(false));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutocompleteResultTest, ConvertOpenTabMatches_AttachTabSwitchAction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxImprovementForLFF,
+      {{OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
+        "true"}});
+
+  AutocompleteResult result;
+  ACMatches matches;
+  AutocompleteMatch match;
+  match.destination_url = GURL("http://this-site-matches.com");
+  matches.push_back(match);
+  result.AppendMatches(matches);
+
+  // Have IsTabOpenWithURL() return true for the URL.
+  FakeAutocompleteProviderClient client;
+  static_cast<FakeTabMatcher&>(const_cast<TabMatcher&>(client.GetTabMatcher()))
+      .set_url_substring_match("matches");
+
+  result.ConvertOpenTabMatches(&client, nullptr);
+
+  ASSERT_TRUE(result.match_at(0)->has_tab_match.value_or(false));
+  ASSERT_EQ(result.match_at(0)->actions.size(), 1u);
+  auto* action = result.match_at(0)->actions[0].get();
+  EXPECT_EQ(action->ActionId(), OmniboxActionId::ACTION_IN_SUGGEST);
+  const auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action);
+  ASSERT_TRUE(action_in_suggest);
+  EXPECT_EQ(
+      action_in_suggest->template_action.action_type(),
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);
+}
+#endif
+
 TEST_F(AutocompleteResultTest, AttachesPedals) {
   FakeAutocompleteProviderClient client;
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -3348,7 +3382,15 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
        // ZPS
        {{}, {}, {}, {}},
        // Typed
-       {{ACTION_IN_SUGGEST}, {}, {}, {}}},
+#if BUILDFLAG(IS_ANDROID)
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}}
+#else
+       {{ACTION_IN_SUGGEST}, {}, {}, {}}
+#endif
+      },
       {"Actions are promoted over Pedals; positions dictate preference",
        {{ACTION_IN_SUGGEST, PEDAL},
         {ACTION_IN_SUGGEST, PEDAL},
@@ -3356,18 +3398,16 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
         {ACTION_IN_SUGGEST, PEDAL}},
        // ZPS
        {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-       // Typed
-       {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}},
-      {"Actions are promoted over History clusters; positions dictate "
-       "preference",
-       {{ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL},
-        {ACTION_IN_SUGGEST, PEDAL}},
-       // ZPS
-       {{PEDAL}, {PEDAL}, {PEDAL}, {}},
-       // Typed
-       {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}},
+  // Typed
+#if BUILDFLAG(IS_ANDROID)
+       {{ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST},
+        {ACTION_IN_SUGGEST}}
+#else
+       {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}
+#endif
+      },
   };
 
   // Crete matches following the `input_matches_and_actions` input.
