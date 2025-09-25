@@ -24,6 +24,8 @@ source_set("public") {
     "//components/sessions:session_id",
     "//url",
   ]
+
+  public_deps = [ ":feature_list" ]
 }
 
 source_set("unit_tests") {

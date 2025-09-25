@@ -4,10 +4,12 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 
 namespace contextual_tasks {
 
@@ -42,6 +44,10 @@ ContextualTasksContextControllerFactory::
 std::unique_ptr<KeyedService>
 ContextualTasksContextControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   contextual_tasks::ContextualTasksService* contextual_tasks_service =
       ContextualTasksServiceFactory::GetForProfile(profile);

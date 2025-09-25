@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "content/public/browser/browser_context.h"
 
 namespace contextual_tasks {
@@ -40,6 +42,9 @@ ContextualTasksServiceFactory::~ContextualTasksServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(kContextualTasks)) {
+    return nullptr;
+  }
   return std::make_unique<ContextualTasksServiceImpl>();
 }
 
