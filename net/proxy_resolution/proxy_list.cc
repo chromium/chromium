@@ -41,29 +41,29 @@ void ProxyList::Set(const std::string& proxy_uri_list) {
   while (str_tok.GetNext()) {
     ProxyChain chain =
         ProxyUriToProxyChain(str_tok.token_piece(), ProxyServer::SCHEME_HTTP);
-    AddProxyChain(chain);
+    AddProxyChain(std::move(chain));
   }
 }
 
-void ProxyList::SetSingleProxyChain(const ProxyChain& proxy_chain) {
+void ProxyList::SetSingleProxyChain(ProxyChain proxy_chain) {
   Clear();
-  AddProxyChain(proxy_chain);
+  AddProxyChain(std::move(proxy_chain));
 }
 
-void ProxyList::SetSingleProxyServer(const ProxyServer& proxy_server) {
+void ProxyList::SetSingleProxyServer(ProxyServer proxy_server) {
   Clear();
-  AddProxyServer(proxy_server);
+  AddProxyServer(std::move(proxy_server));
 }
 
-void ProxyList::AddProxyChain(const ProxyChain& proxy_chain) {
+void ProxyList::AddProxyChain(ProxyChain proxy_chain) {
   // Silently discard malformed inputs.
   if (proxy_chain.IsValid()) {
-    proxy_chains_.push_back(proxy_chain);
+    proxy_chains_.emplace_back(std::move(proxy_chain));
   }
 }
 
-void ProxyList::AddProxyServer(const ProxyServer& proxy_server) {
-  AddProxyChain(ProxyChain(proxy_server));
+void ProxyList::AddProxyServer(ProxyServer proxy_server) {
+  AddProxyChain(ProxyChain(std::move(proxy_server)));
 }
 
 void ProxyList::DeprioritizeBadProxyChains(

@@ -48,8 +48,8 @@ bool StructTraits<network::mojom::ProxyListDataView, net::ProxyList>::Read(
   if (!data.ReadProxies(&proxy_chains)) {
     return false;
   }
-  for (const auto& proxy_chain : proxy_chains) {
-    out_proxy_list->AddProxyChain(proxy_chain);
+  for (auto& proxy_chain : proxy_chains) {
+    out_proxy_list->AddProxyChain(std::move(proxy_chain));
   }
   return true;
 }

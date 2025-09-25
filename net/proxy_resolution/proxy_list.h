@@ -43,17 +43,17 @@ class NET_EXPORT_PRIVATE ProxyList {
   void Set(const std::string& proxy_uri_list);
 
   // Set the proxy list to a single entry, |proxy_chain|.
-  void SetSingleProxyChain(const ProxyChain& proxy_chain);
+  void SetSingleProxyChain(ProxyChain proxy_chain);
 
   // Set the proxy list to a single entry, a chain containing |proxy_server|.
-  void SetSingleProxyServer(const ProxyServer& proxy_server);
+  void SetSingleProxyServer(ProxyServer proxy_server);
 
   // Append a single proxy chain to the end of the proxy list.
-  void AddProxyChain(const ProxyChain& proxy_chain);
+  void AddProxyChain(ProxyChain proxy_chain);
 
   // Append a single proxy chain containing the given server to the end of the
   // proxy list.
-  void AddProxyServer(const ProxyServer& proxy_server);
+  void AddProxyServer(ProxyServer proxy_server);
 
   // De-prioritizes the proxy chains that are cached as not working but are
   // allowed to be reconsidered, by moving them to the end of the fallback list.

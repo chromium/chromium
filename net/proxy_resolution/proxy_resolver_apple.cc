@@ -334,10 +334,9 @@ int ProxyResolverApple::GetProxyForURL(
     ProxyChain proxy_chain =
         ProxyDictionaryToProxyChain(proxy_type, proxy_dictionary,
                                     kCFProxyHostNameKey, kCFProxyPortNumberKey);
-    if (!proxy_chain.IsValid()) {
-      continue;
-    }
 
+    // No need to check if `proxy_chain` is valid, as AddProxyChain() ignores
+    // invalid proxy chains.
     proxy_list.AddProxyChain(proxy_chain);
   }
 
