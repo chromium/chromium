@@ -7,6 +7,9 @@ source_set("browser_binding") {
   if (is_android) {
     deps = [ ":android" ]
   }
+  if (is_mac || is_win || is_linux) {
+    deps = [ ":desktop" ]
+  }
 }
 
 source_set("interface") {
@@ -118,6 +121,37 @@ if (is_android) {
     public_deps = [
       ":browser_bound_keys_deleter_factory",
       "//testing/gmock",
+    ]
+  }
+}
+
+if (is_mac || is_win || is_linux) {
+  source_set("desktop") {
+    visibility = [ ":*" ]
+    sources = [
+      "browser_bound_key_desktop.cc",
+      "browser_bound_key_desktop.h",
+    ]
+    deps = [
+      ":interface",
+      "//base",
+      "//crypto",
+    ]
+  }
+
+  source_set("desktop_unittests") {
+    testonly = true
+    sources = [ "browser_bound_key_desktop_unittest.cc" ]
+    deps = [
+      ":desktop",
+      ":interface",
+      "//base",
+      "//base/test:test_support",
+      "//components/unexportable_keys:test_support",
+      "//crypto",
+      "//crypto:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 }
