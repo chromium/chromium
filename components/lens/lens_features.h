@@ -139,6 +139,11 @@ BASE_DECLARE_FEATURE(kLensOverlayForceEmptyCsbQuery);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
 
+// Enables the zero state contextual searchbox feature which opens the SRP
+// immediately when entering Lens entry points.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchZeroStateCsb);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -959,6 +964,14 @@ extern bool IsLensOverlayForceEmptyCsbQueryEnabled();
 // Whether to use a webview for the results frame instead of an iframe.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSidePanelWebviewResultsEnabled();
+
+// Whether to enable zero state contextual suggest in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSearchZeroStateCsbEnabled();
+
+// The query text to use for zero state CSB in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetZeroStateCsbQuery();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

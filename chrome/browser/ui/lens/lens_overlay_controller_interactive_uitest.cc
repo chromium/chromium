@@ -1368,4 +1368,60 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
       EnsurePresent(kLensOverlayHomeworkPageActionIconElementId));
 }
 
+class LensOverlayControllerZeroStateCsbTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  LensOverlayControllerZeroStateCsbTest() = default;
+  ~LensOverlayControllerZeroStateCsbTest() override = default;
+  LensOverlayControllerZeroStateCsbTest(
+      const LensOverlayControllerStraightToSrpTest&) = delete;
+  void operator=(const LensOverlayControllerZeroStateCsbTest&) = delete;
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+            lens::features::kLensSearchZeroStateCsb,
+            {{"zero-state-csb-query", "csb zero state query"}})},
+        {});
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User opens lens overlay and the side panel opens with CSB results.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
+                       OpenLensOverlayOpensCsbResults) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  const DeepQuery kPathToSidePanelSearchboxInput{
+      "lens-side-panel-app",
+      "cr-searchbox",
+      "input",
+  };
+
+  // Helper function to check for specific text in an element.
+  auto CheckSearchboxValue = [](ui::ElementIdentifier web_contents_id,
+                                const DeepQuery& query,
+                                const std::string& expected_text) {
+    return CheckJsResultAt(
+        web_contents_id, query,
+        base::StringPrintf("el => el.value === '%s'", expected_text.c_str()));
+  };
+
+  RunTestSequence(
+      OpenLensOverlay(),
+      // Side panel should open.
+      InAnyContext(InstrumentNonTabWebView(
+                       kOverlaySidePanelWebViewId,
+                       LensOverlayController::kOverlaySidePanelWebViewId),
+                   WaitForWebContentsReady(kOverlaySidePanelWebViewId)),
+
+      // The CSB query in the side panel should say "csb zero state query"
+      InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
+                                        kPathToSidePanelSearchboxInput,
+                                        "csb zero state query")));
+}
+
+
 }  // namespace

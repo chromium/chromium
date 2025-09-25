@@ -9446,3 +9446,39 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ReshowOverlay) {
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_screenshot_.isNull());
 }
+
+class LensOverlayControllerZeroStateCsbTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensSearchZeroStateCsb, {{"zero-state-csb-query", "test_query"}}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
+                       OpenLensOverlayWithZeroStateCsbQuery) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to hidden and open the side panel.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  auto search_query = GetLoadedSearchQuery();
+  EXPECT_TRUE(search_query);
+  EXPECT_EQ(search_query->search_query_text_, "test_query");
+  EXPECT_EQ(search_query->lens_selection_type_,
+            lens::MULTIMODAL_SUGGEST_TYPEAHEAD);
+}

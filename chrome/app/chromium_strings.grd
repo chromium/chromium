@@ -2106,6 +2106,13 @@ Chromium is unable to recover your settings.
           desc="Default query for Lens searchbox to request help with the current page context.">
           help me with this
         </message>
+        <message name="IDS_LENS_CONTEXTUAL_SEARCH_ZERO_STATE_QUERY"
+          is_accessibility_with_no_ui="true"
+          desc="Default query for Lens searchbox to request help with the current page context in a low intent state.">
+          **Summarize:** In a single sentence under 30 words, describe the primary subject and purpose of the content in the screenshot.
+
+          **Suggest Questions:** Generate a bulleted list of 3-5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design, or its placement.
+        </message>
 
         <!-- AI Mode Strings -->
         <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT"

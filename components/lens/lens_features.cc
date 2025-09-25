@@ -105,6 +105,8 @@ BASE_FEATURE(kLensSidePanelEnableWebviewResults,
 
 BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSearchZeroStateCsb, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -534,6 +536,9 @@ constexpr base::FeatureParam<bool>
     kLensOverlayTextSelectionContextMenuEntrypointContextualize{
         &kLensOverlayTextSelectionContextMenuEntrypoint, "contextualize",
         false};
+
+constexpr base::FeatureParam<std::string> kZeroStateCsbQuery{
+    &kLensSearchZeroStateCsb, "zero-state-csb-query", ""};
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -1178,6 +1183,14 @@ bool IsLensOverlayForceEmptyCsbQueryEnabled() {
 
 bool IsLensSidePanelWebviewResultsEnabled() {
   return base::FeatureList::IsEnabled(kLensSidePanelEnableWebviewResults);
+}
+
+bool IsLensSearchZeroStateCsbEnabled() {
+  return base::FeatureList::IsEnabled(kLensSearchZeroStateCsb);
+}
+
+std::string GetZeroStateCsbQuery() {
+  return IsLensSearchZeroStateCsbEnabled() ? kZeroStateCsbQuery.Get() : "";
 }
 
 }  // namespace lens::features

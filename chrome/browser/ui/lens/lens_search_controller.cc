@@ -30,12 +30,14 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
@@ -152,6 +154,24 @@ void LensSearchController::OpenLensOverlay(
     IssueTextSearchRequest(
         lens::LensOverlayInvocationSource::kContentAreaContextMenuText,
         /*query_text=*/"",
+        /*additional_query_parameters=*/{},
+        // TODO(crbug.com/432490312): Match type here is likely not ideal.
+        // Investigate removing match type from this function.
+        AutocompleteMatchType::Type::SEARCH_SUGGEST,
+        /*is_zero_prefix_suggestion=*/false,
+        /*suppress_contextualization=*/false);
+    return;
+  }
+
+  if (lens::features::IsLensSearchZeroStateCsbEnabled()) {
+    std::string query_text =
+        lens::features::GetZeroStateCsbQuery().empty()
+            ? l10n_util::GetStringUTF8(
+                  IDS_LENS_CONTEXTUAL_SEARCH_ZERO_STATE_QUERY)
+            : lens::features::GetZeroStateCsbQuery();
+    IssueTextSearchRequest(
+        invocation_source,
+        /*query_text=*/query_text,
         /*additional_query_parameters=*/{},
         // TODO(crbug.com/432490312): Match type here is likely not ideal.
         // Investigate removing match type from this function.
