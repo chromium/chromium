@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -170,3 +171,34 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerBrowserTest,
   EXPECT_TRUE(IsDropTimerRunning());
 }
 #endif
+
+class MultiContentsViewDropTargetControllerNudgeBrowserTest
+    : public MultiContentsViewDropTargetControllerBrowserTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    std::vector<base::test::FeatureRefAndParams> features =
+        MultiContentsViewDropTargetControllerBrowserTest::GetEnabledFeatures();
+    features.push_back({features::kSideBySideDropTargetNudge, {}});
+    return features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewDropTargetControllerNudgeBrowserTest,
+                       DropTargetHidesWhenTabInserted) {
+  if (ShouldSkipTests()) {
+    return;
+  }
+
+  drop_target_view()->DisableAnimationsForTesting();
+
+  content::DropData drop_data;
+  drop_data.url = GURL("https://mail.google.com");
+  controller().OnWebContentsDragUpdate(drop_data, gfx::Point(30, 250), false);
+  ASSERT_TRUE(drop_target_view()->GetVisible());
+  ASSERT_EQ(MultiContentsDropTargetView::DropTargetState::kNudge,
+            drop_target_view()->state());
+
+  chrome::AddTabAt(browser(), GURL("https://mail.google.com"), -1, true);
+  EXPECT_FALSE(drop_target_view()->GetVisible());
+}

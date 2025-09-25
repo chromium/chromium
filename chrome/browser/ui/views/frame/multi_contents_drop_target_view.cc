@@ -254,7 +254,7 @@ void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
     // If starting a new "expand" animation, then update the starting width.
     animate_expand_starting_width_ = width();
   }
-  if (ShouldShowAnimation()) {
+  if (should_show_animations_for_testing_ && ShouldShowAnimation()) {
     if (should_be_open) {
       SetVisible(should_be_open);
       animation_.Show();
@@ -271,6 +271,10 @@ void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
 bool MultiContentsDropTargetView::ShouldShowAnimation() const {
   return gfx::Animation::ShouldRenderRichAnimation() &&
          !gfx::Animation::PrefersReducedMotion() && !should_suppress_animation_;
+}
+
+void MultiContentsDropTargetView::DisableAnimationsForTesting() {
+  should_show_animations_for_testing_ = false;
 }
 
 void MultiContentsDropTargetView::OnThemeChanged() {
