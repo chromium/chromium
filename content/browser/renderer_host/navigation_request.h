@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/navigation_policy_container_builder.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/browser/renderer_host/navigation_type.h"
+#include "content/browser/renderer_host/process_selection_deferring_condition_runner.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_status.h"
@@ -2645,6 +2646,21 @@ class CONTENT_EXPORT NavigationRequest
   // BeginNavigation(). See the comment on RunCommitDeferringConditions() for
   // details.
   std::unique_ptr<CommitDeferringConditionRunner> commit_deferrer_;
+
+  // A navigation gets assigned to a renderer process at two points during a
+  // navigation. However we may not have all of the process selection criteria
+  // resolved before the final selection is made. This
+  // `ProcessSelectionDeferringConditionRunner` lets us start checks early,
+  // restart checks on redirects, and provides an interface to finalize results
+  // after the response is received but before the final process selection is
+  // made. If the results are not ready at that time, the navigation is deferred
+  // until all conditions are resolved.
+  //
+  // `ProcessSelectionDeferringConditions` are not checked for prerendered page
+  // activations because those destinations have previously been assigned to a
+  // process.
+  std::unique_ptr<ProcessSelectionDeferringConditionRunner>
+      process_selection_deferrer_;
 
   // Indicates whether the navigation changed which NavigationEntry is current.
   bool subframe_entry_committed_ = false;

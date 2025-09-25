@@ -349,6 +349,8 @@ source_set("browser_sources") {
     "private_aggregation_data_model.h",
     "process_allocation_context.cc",
     "process_allocation_context.h",
+    "process_selection_deferring_condition.cc",
+    "process_selection_deferring_condition.h",
     "process_visibility_util.h",
     "provision_fetcher_factory.h",
     "provision_fetcher_impl.cc",

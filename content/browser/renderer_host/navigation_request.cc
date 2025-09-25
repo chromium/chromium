@@ -3177,10 +3177,17 @@ void NavigationRequest::StartNavigation() {
 
   // For prerendered page activation, CommitDeferringConditions have already run
   // at the beginning of the navigation, so we won't run them again.
+  // ProcessSelectionDeferringConditions also don't need to run for prerendered
+  // page activations because those have already selected a process.
   if (!IsPrerenderedPageActivation()) {
     commit_deferrer_ = CommitDeferringConditionRunner::Create(
         *this, CommitDeferringCondition::NavigationType::kOther,
         /*candidate_prerender_frame_tree_node_id=*/std::nullopt);
+    if (base::FeatureList::IsEnabled(
+            features::kProcessSelectionDeferringConditions)) {
+      process_selection_deferrer_ =
+          ProcessSelectionDeferringConditionRunner::Create(*this);
+    }
   }
 
   navigation_visible_to_embedder_ = true;
@@ -3690,6 +3697,11 @@ void NavigationRequest::OnRequestRedirected(
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
+  }
+
+  if (process_selection_deferrer_) {
+    // Start any process selection dependencies using the redirected URL.
+    process_selection_deferrer_->OnRequestRedirected();
   }
 
   // Compute the SiteInstance to use for the redirect and pass its
@@ -4695,9 +4707,19 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
-  SelectFrameHostForOnResponseStarted(std::move(url_loader_client_endpoints),
-                                      is_download,
-                                      std::move(subresource_loader_params));
+  if (process_selection_deferrer_) {
+    // When process selection deferral is enabled, give process selection
+    // dependencies the opportunity to defer before finalizing the selected
+    // process.
+    process_selection_deferrer_->WillSelectFinalProcess(base::BindOnce(
+        &NavigationRequest::SelectFrameHostForOnResponseStarted,
+        weak_factory_.GetWeakPtr(), std::move(url_loader_client_endpoints),
+        is_download, std::move(subresource_loader_params)));
+  } else {
+    SelectFrameHostForOnResponseStarted(std::move(url_loader_client_endpoints),
+                                        is_download,
+                                        std::move(subresource_loader_params));
+  }
 }
 
 void NavigationRequest::SelectFrameHostForOnResponseStarted(
