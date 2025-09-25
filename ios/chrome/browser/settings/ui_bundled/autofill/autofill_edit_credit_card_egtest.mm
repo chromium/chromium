@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/ios/ios_util.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -13,6 +14,9 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/third_party/earl_grey2/src/AppFramework/Matcher/GREYMatchers.h"
+#import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYElementMatcherBlock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -191,6 +195,146 @@ id<GREYMatcher> CvcTextField() {
          usingSearchAction:ScrollDown()
       onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
       performAction:grey_replaceText(cvc)];
+}
+
+@end
+
+@interface AutofillEditCreditCardCvcMetricTestCase : ChromeTestCase
+@end
+
+@implementation AutofillEditCreditCardCvcMetricTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableCvcStorageAndFilling);
+  return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+  [AutofillAppInterface setMandatoryReauthEnabled:YES];
+  [AutofillAppInterface clearCreditCardStore];
+}
+
+- (void)tearDownHelper {
+  [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearMockReauthenticationModule];
+  [super tearDownHelper];
+}
+
+// Helper to navigate to the edit screen for a given card
+- (void)navigateToEditCard:(NSString*)lastDigits cvcIsSaved:(BOOL)cvcIsSaved {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
+
+  // Construct the expected accessibility label
+  NSString* expectedLabel = lastDigits;
+  if (cvcIsSaved) {
+    expectedLabel = [expectedLabel stringByAppendingString:@" | CVC saved"];
+  }
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(expectedLabel)]
+      performAction:grey_tap()];
+
+  // Tap the Edit button to proceed to the edit screen.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+}
+
+// Scrolls to CVC text field and types the string.
+- (void)typeCvc:(NSString*)cvc {
+  [[[EarlGrey selectElementWithMatcher:CvcTextField()]
+         usingSearchAction:ScrollDown()
+      onElementWithMatcher:chrome_test_util::AutofillCreditCardEditTableView()]
+      performAction:grey_replaceText(cvc)];
+}
+
+// Tests that the correct metric is logged when a CVC is added.
+- (void)testMetricCvcAdded {
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [self navigateToEditCard:lastDigits cvcIsSaved:NO];
+
+  base::UserActionTester userActionTester;
+  [self typeCvc:@"123"];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasAdded"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+}
+
+// Tests that the correct metric is logged when a card without a CVC is saved
+// without adding one.
+- (void)testMetricCvcLeftBlank {
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
+  [self navigateToEditCard:lastDigits cvcIsSaved:NO];
+
+  base::UserActionTester userActionTester;
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasAdded"));
+}
+
+// Tests that the correct metric is logged when a CVC is removed.
+- (void)testMetricCvcRemoved {
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCardWithCvc];
+  [self navigateToEditCard:lastDigits cvcIsSaved:YES];
+
+  base::UserActionTester userActionTester;
+  [self typeCvc:@""];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasRemoved"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUpdated"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+}
+
+// Tests that the correct metric is logged when a CVC is updated.
+- (void)testMetricCvcUpdated {
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCardWithCvc];
+  [self navigateToEditCard:lastDigits cvcIsSaved:YES];
+
+  base::UserActionTester userActionTester;
+  [self typeCvc:@"456"];
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUpdated"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasRemoved"));
+}
+
+// Tests that the correct metric is logged when a CVC is not changed.
+- (void)testMetricCvcUnchanged {
+  NSString* lastDigits = [AutofillAppInterface saveLocalCreditCardWithCvc];
+  [self navigateToEditCard:lastDigits cvcIsSaved:YES];
+
+  base::UserActionTester userActionTester;
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  EXPECT_EQ(1, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+  EXPECT_EQ(0, userActionTester.GetActionCount(
+                   "AutofillCreditCardsEditedAndCvcWasUpdated"));
 }
 
 @end

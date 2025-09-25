@@ -193,8 +193,10 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",
+    "//ios/third_party/earl_grey2:app_framework_shared_headers",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
+    "//testing/gtest",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
   ]

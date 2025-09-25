@@ -9,6 +9,7 @@
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -65,6 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation AutofillCreditCardEditTableViewController {
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;  // weak
   autofill::CreditCard _creditCard;
+  std::u16string _originalCVC;
 }
 
 #pragma mark - Initialization
@@ -77,6 +79,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     _personalDataManager = dataManager;
     _creditCard = creditCard;
+    _originalCVC = creditCard.cvc();
 
     [self setTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_CREDIT_CARD)];
   }
@@ -167,6 +170,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 item.autofillCreditCardUIType)),
             base::SysNSStringToUTF16(item.textFieldValue),
             GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      }
+    }
+    std::u16string newCVC = _creditCard.cvc();
+    if (_originalCVC.empty()) {
+      if (newCVC.empty()) {
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasLeftBlank"));
+      } else {
+        base::RecordAction(
+            base::UserMetricsAction("AutofillCreditCardsEditedAndCvcWasAdded"));
+      }
+    } else {
+      if (newCVC.empty()) {
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasRemoved"));
+      } else if (newCVC == _originalCVC) {
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUnchanged"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "AutofillCreditCardsEditedAndCvcWasUpdated"));
       }
     }
 
