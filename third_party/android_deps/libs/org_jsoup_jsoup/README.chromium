@@ -1,6 +1,6 @@
 Name: jsoup Java HTML Parser
 Short Name: jsoup
-URL: https://jsoup.org/
+URL: https://repo.maven.apache.org/maven2/org/jsoup/jsoup/1.15.1/jsoup-1.15.1.jar
 Version: 1.15.1
 Update Mechanism: Manual
 License: MIT
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 jsoup is a Java library for working with real-world HTML. It provides a very convenient API for fetching URLs and extracting and manipulating data, using the best of HTML5 DOM methods and CSS selectors. jsoup implements the WHATWG HTML5 specification, and parses HTML to the same DOM as modern browsers do.
+
+See also: https://jsoup.org/
+
 
 Local Modifications:
 No modifications.

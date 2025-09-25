@@ -1,6 +1,6 @@
 Name: Android Support Library Annotations
 Short Name: support-annotations
-URL: http://developer.android.com/tools/extras/support-library.html
+URL: https://dl.google.com/dl/android/maven2/com/android/support/support-annotations/28.0.0/support-annotations-28.0.0.jar
 Version: 28.0.0
 Update Mechanism: Manual
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs.
+
+See also: http://developer.android.com/tools/extras/support-library.html
+
 
 Local Modifications:
 No modifications.

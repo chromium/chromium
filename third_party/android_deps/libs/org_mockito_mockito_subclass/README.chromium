@@ -1,6 +1,6 @@
 Name: mockito-subclass
 Short Name: mockito-subclass
-URL: https://github.com/mockito/mockito
+URL: https://repo.maven.apache.org/maven2/org/mockito/mockito-subclass/5.19.0/mockito-subclass-5.19.0.jar
 Version: 5.19.0
 Update Mechanism: Manual
 License: MIT
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Mockito preconfigured subclass mock maker
+
+See also: https://github.com/mockito/mockito
+
 
 Local Modifications:
 No modifications.

@@ -1,6 +1,6 @@
 Name: com.android.tools.sdk-common
 Short Name: sdk-common
-URL: http://tools.android.com/
+URL: https://dl.google.com/dl/android/maven2/com/android/tools/sdk-common/30.2.0-beta01/sdk-common-30.2.0-beta01.jar
 Version: 30.2.0-beta01
 Update Mechanism: Manual
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 sdk-common library used by other Android tools libraries.
+
+See also: http://tools.android.com/
+
 
 Local Modifications:
 No modifications.

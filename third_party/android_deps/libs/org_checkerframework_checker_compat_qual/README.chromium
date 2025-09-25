@@ -1,6 +1,6 @@
 Name: Checker Qual
 Short Name: checker-compat-qual
-URL: https://checkerframework.org
+URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-compat-qual/2.5.5/checker-compat-qual-2.5.5.jar
 Version: 2.5.5
 Update Mechanism: Manual
 License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Checker Qual is the set of annotations (qualifiers) and supporting classes used by the Checker Framework to type check Java source code. Please see artifact: org.checkerframework:checker
+
+See also: https://checkerframework.org
+
 
 Local Modifications:
 No modifications.

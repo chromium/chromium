@@ -1,6 +1,6 @@
 Name: Kotlin Android Extensions Runtime
 Short Name: kotlin-android-extensions-runtime
-URL: https://kotlinlang.org/
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-android-extensions-runtime/1.9.22/kotlin-android-extensions-runtime-1.9.22.jar
 Version: 1.9.22
 Update Mechanism: Manual
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 Kotlin Android Extensions Runtime
+
+See also: https://kotlinlang.org/
+
 
 Local Modifications:
 No modifications.

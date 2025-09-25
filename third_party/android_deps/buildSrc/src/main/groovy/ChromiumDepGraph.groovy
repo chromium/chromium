@@ -30,10 +30,7 @@ class ChromiumDepGraph {
             androidx_datastore_datastore_preferences_external_protobuf: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/refs/heads/main/LICENSE',
                     licenseName: 'BSD'),
-            androidx_multidex_multidex: new PropertyOverride(
-                    url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
             com_android_extensions_xr_extensions_xr: new PropertyOverride(
-                    url: 'https://maven.google.com/web/index.html?q=xr#com.android.extensions.xr:extensions-xr',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache-2.0'),
             com_google_android_datatransport_transport_api: new PropertyOverride(
@@ -43,7 +40,6 @@ class ChromiumDepGraph {
             com_google_android_gms_play_services_location: new PropertyOverride(
                     description: 'Provides data about the device\'s physical location via gmscore.'),
             com_google_ar_impress: new PropertyOverride(
-                    url: 'https://maven.google.com/web/index.html?q=impress#com.google.ar:impress',
                     description: 'Impress shows GLTF models on XR devices, and provides advanced materials and rendering.\n'
                                + 'A dependency of https://developer.android.com/jetpack/androidx/releases/xr-scenecore.\n',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
@@ -56,7 +52,6 @@ class ChromiumDepGraph {
                     licenseName: 'Apache 2.0'),
             com_google_code_gson_gson: new PropertyOverride(
                     cpePrefix: 'cpe:/a:google:gson',
-                    url: 'https://github.com/google/gson',
                     description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
                     licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
                     licenseName: 'Apache 2.0'),
@@ -67,7 +62,6 @@ class ChromiumDepGraph {
                     // Depending on this fat jar pulls in a conflicting copy of protobuf library.
                     exclude: true),
             com_google_errorprone_error_prone_annotations: new PropertyOverride(
-                    url: 'https://github.com/google/error-prone/tree/master/annotations',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
                     description: 'ErrorProne Annotations.',),
@@ -94,7 +88,6 @@ class ChromiumDepGraph {
             com_google_firebase_firebase_messaging: new PropertyOverride(
                     description: 'Firebase Cloud Messaging SDK to send and receive push messages via FCM.'),
             com_google_guava_failureaccess: new PropertyOverride(
-                    url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),
             // This targets needs to conditionally support android. When no internal android override is defined, this
@@ -103,12 +96,10 @@ class ChromiumDepGraph {
             // use this one) but non-android targets still needs this guava target to exist.
             com_google_guava_guava: new PropertyOverride(
                     cpePrefix: 'cpe:/a:google:guava',
-                    url: 'https://github.com/google/guava',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0',
                     supportsAndroid: false),
             com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
-                    url: 'https://github.com/google/TestParameterInjector',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),
             com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
@@ -116,11 +107,9 @@ class ChromiumDepGraph {
                     licenseName: 'Apache 2.0'),
             org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
                     cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.72',
-                    url: 'https://github.com/bcgit/bc-java',
                     licensePath: 'licenses/Bouncy_Castle-2015.txt',
                     licenseName: 'MIT'),
             org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
-                    url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
                     description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
                             'signature violations of.',
                     licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
@@ -128,12 +117,10 @@ class ChromiumDepGraph {
                     licenseName: 'MIT'),
             com_google_protobuf_protobuf_lite: new PropertyOverride(
                     exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
-                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
                     licenseName: 'BSD'),
             com_google_protobuf_protobuf_javalite: new PropertyOverride(
                     cpePrefix: 'cpe:/a:google:protobuf-javalite',
-                    url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
                     licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
                     licenseName: 'BSD'),
             io_grpc_grpc_android: new PropertyOverride(
@@ -191,15 +178,12 @@ class ChromiumDepGraph {
                     licenseName: 'CDDL-1.0',
                     licensePath: 'licenses/CDDL-1.0.txt'),
             net_bytebuddy_byte_buddy: new PropertyOverride(
-                    url: 'https://github.com/raphw/byte-buddy',
                     licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
                     licenseName: 'Apache 2.0'),
             net_bytebuddy_byte_buddy_agent: new PropertyOverride(
-                    url: 'https://github.com/raphw/byte-buddy',
                     licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
                     licenseName: 'Apache 2.0'),
             net_bytebuddy_byte_buddy_android: new PropertyOverride(
-                    url: 'https://github.com/raphw/byte-buddy',
                     licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
                     licenseName: 'Apache 2.0'),
             org_checkerframework_checker_compat_qual: new PropertyOverride(
@@ -231,7 +215,6 @@ class ChromiumDepGraph {
                     licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
                     licenseName: 'The MIT License'),
             org_objenesis_objenesis: new PropertyOverride(
-                    url: 'http://objenesis.org/index.html',
                     licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
                     licenseName: 'Apache 2.0'),
             org_ow2_asm_asm: new PropertyOverride(
@@ -627,6 +610,16 @@ class ChromiumDepGraph {
         displayName = pomContent.name?.text()
         displayName = displayName ?: dependency.module.id.name
 
+        String url = pomContent.url?.text()
+        if (url) {
+          if (description) {
+            description += "\n\n"
+          } else {
+            description = ""
+          }
+          description += "See also: " + url + "\n"
+        }
+
         return customizeDep(new DependencyDescription(
                 id: id,
                 artifact: artifact,
@@ -642,7 +635,6 @@ class ChromiumDepGraph {
                 fileUrl: fileUrl,
                 repoUrl: repoUrl,
                 description: description,
-                url: pomContent.url?.text(),
                 displayName: displayName,
                 exclude: false,
                 cipdSuffix: DEFAULT_CIPD_SUFFIX,
@@ -689,15 +681,7 @@ class ChromiumDepGraph {
     }
 
     private DependencyDescription customizeDep(DependencyDescription dep) {
-        if (dep.id?.startsWith('com_google_android_')) {
-            // Many google dependencies don't set their URL, here is a good default.
-            dep.url = dep.url ?: 'https://developers.google.com/android/guides/setup'
-        } else if (dep.id?.startsWith('com_google_firebase_')) {
-            // Same as above for some firebase dependencies.
-            dep.url = dep.url ?: 'https://firebase.google.com'
-        } else if (dep.id?.startsWith('androidx_')) {
-            // Some androidx dependencies don't set their URL, here is a good default.
-            dep.url = dep.url ?: 'https://developer.android.com/jetpack/androidx'
+        if (dep.id?.startsWith('androidx_')) {
             // By default androidx dependencies' licenses are compatible with android.
             dep.licenseAndroidCompatible = true
         }
@@ -730,7 +714,6 @@ class ChromiumDepGraph {
             logger.debug("Using override properties for $dep.id")
             dep.with {
                 description = overrides.description ?: description
-                url = overrides.url ?: url
                 cipdSuffix = overrides.cipdSuffix ?: cipdSuffix
                 cpePrefix = overrides.cpePrefix ?: cpePrefix
                 if (overrides.exclude != null) {
@@ -878,11 +861,11 @@ class ChromiumDepGraph {
 
         String id
         ResolvedArtifact artifact
-        String group, name, version, extension, displayName, description, url
+        String group, name, version, extension, displayName, description
         List<LicenseSpec> licenses
         String fileName, fileUrl
         // |repoUrl| is the url to the repo that hosts this dep's artifact (|fileUrl|). Basically
-        // |fileUrl|.startsWith(|repoUrl|). |url| is the project homepage as supplied by the developer.
+        // |fileUrl|.startsWith(|repoUrl|).
         String repoUrl
         // The local directory name to store the files like artifact, license file, 3pp subdirectory, and etc. Must be
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
@@ -990,15 +973,11 @@ class ChromiumDepGraph {
     }
 
     static class LicenseSpec {
-
         String name, url, path
-
     }
 
     static class PropertyOverride {
-
         String description
-        String url
         String licenseName, licenseUrl, licensePath
         String cipdSuffix
         String cpePrefix
@@ -1009,7 +988,5 @@ class ChromiumDepGraph {
         Boolean exclude
         Boolean overrideLatest
         String versionFilter
-
     }
-
 }

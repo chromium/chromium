@@ -238,10 +238,12 @@ wnwen@chromium.org
         boolean securityCritical = dependency.supportsAndroid && dependency.isShipped
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
+        // Useing fileUrl as URL is required for vulnerability scanning.
+        // https://crbug.com/446990546
         return """\
 Name: ${dependency.displayName}
 Short Name: ${dependency.name}
-URL: ${dependency.url}
+URL: ${dependency.fileUrl}
 Version: ${dependency.version}
 Update Mechanism: ${(dependency.isAutorolled || dependency.isAndroidx) ? 'Autoroll' : 'Manual'}
 License: ${licenseString}
