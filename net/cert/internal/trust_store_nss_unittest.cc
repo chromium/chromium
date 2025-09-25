@@ -82,7 +82,19 @@ std::optional<unsigned> GetNSSTrustForCert(
     return std::nullopt;
   }
 
-  return SEC_GET_TRUST_FLAGS(&nss_cert_trust, trustSSL);
+  unsigned trust = SEC_GET_TRUST_FLAGS(&nss_cert_trust, trustSSL);
+  // For trusted CA certs, older versions of NSS (< 3.114) return
+  // `CERTDB_VALID_CA | CERTDB_TRUSTED_CA` while newer versions (>= 3.114)
+  // return `CERTDB_VALID_CA | CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA`.
+  // Remove the CERTDB_NS_TRUSTED_CA value here so that the test expectations
+  // work on both versions.
+  // If Chromium updates the minimum required NSS version to be >= 3.114, this
+  // hack can be removed and the tests updated to expect the new values.
+  if ((trust & (CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA)) ==
+      (CERTDB_TRUSTED_CA | CERTDB_NS_TRUSTED_CA)) {
+    trust &= ~CERTDB_NS_TRUSTED_CA;
+  }
+  return trust;
 }
 
 class TrustStoreNSSTestBase : public ::testing::Test {
