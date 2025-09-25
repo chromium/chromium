@@ -74,7 +74,7 @@ class MappableBufferTest : public testing::Test {
   }
 
   void CreateGpuMemoryBuffer(const gfx::Size& size,
-                             gfx::BufferFormat format,
+                             viz::SharedImageFormat format,
                              gfx::BufferUsage usage,
                              gfx::GpuMemoryBufferHandle* handle) {
     MappableBufferType::AllocateForTesting(size, format, usage, handle);
@@ -83,27 +83,27 @@ class MappableBufferTest : public testing::Test {
   std::unique_ptr<MappableBuffer> CreateMappableBufferFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) {
     switch (handle.type) {
       case gfx::SHARED_MEMORY_BUFFER:
         return MappableBufferSharedMemory::CreateFromHandleForTesting(
-            std::move(handle), size, viz::GetSharedImageFormat(format), usage);
+            std::move(handle), size, format, usage);
 #if BUILDFLAG(IS_MAC)
       case gfx::IO_SURFACE_BUFFER:
         return MappableBufferIOSurface::CreateFromHandleForTesting(
-            std::move(handle), size, viz::GetSharedImageFormat(format), usage);
+            std::move(handle), size, format, usage);
 #endif
 #if BUILDFLAG(IS_OZONE)
       case gfx::NATIVE_PIXMAP:
         return MappableBufferNativePixmap::CreateFromHandleForTesting(
             client_native_pixmap_factory_.get(), std::move(handle), size,
-            viz::GetSharedImageFormat(format), usage);
+            format, usage);
 #endif
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE:
-        return MappableBufferDXGI::CreateFromHandleForTesting(
-            std::move(handle), size, viz::GetSharedImageFormat(format));
+        return MappableBufferDXGI::CreateFromHandleForTesting(std::move(handle),
+                                                              size, format);
 #endif
       default:
         NOTREACHED();
@@ -187,7 +187,7 @@ TYPED_TEST_SUITE_P(MappableBufferTest);
 TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -201,11 +201,12 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   format, usage)) {
+                   buffer_format, usage)) {
         continue;
       }
 
@@ -227,7 +228,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -241,11 +242,12 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   format, usage)) {
+                   buffer_format, usage)) {
         continue;
       }
 
@@ -277,11 +279,12 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !TestFixture::gpu_memory_buffer_support()
              ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+                 buffer_format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -299,8 +302,6 @@ TYPED_TEST_P(MappableBufferTest, Map) {
             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE));
     ASSERT_TRUE(buffer);
 
-    const size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
-
     // Map buffer into user space.
     ASSERT_TRUE(buffer->Map());
 
@@ -311,16 +312,17 @@ TYPED_TEST_P(MappableBufferTest, Map) {
     buffer->Unmap();
 
     // Copy and compare mapped buffers.
-    for (size_t plane = 0; plane < num_planes; ++plane) {
+    for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
       const size_t row_size_in_bytes =
-          gfx::RowSizeForBufferFormat(kBufferSize.width(), format, plane);
+          viz::SharedMemoryRowSizeForSharedImageFormat(format, plane,
+                                                       kBufferSize.width())
+              .value_or(0);
       EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
       memset(data.data(), 0x2a + plane, row_size_in_bytes);
 
-      size_t height = kBufferSize.height() /
-                      gfx::SubsamplingFactorForBufferFormat(format, plane);
+      size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
         memcpy(static_cast<char*>(buffer->memory(plane)) +
                    y * buffer->stride(plane),
@@ -339,11 +341,12 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !TestFixture::gpu_memory_buffer_support()
              ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                 format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+                 buffer_format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
@@ -365,17 +368,18 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
     ASSERT_TRUE(buffer->Map());
 
     // Copy and compare mapped buffers.
-    size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
-    for (size_t plane = 0; plane < num_planes; ++plane) {
+    int num_planes = format.NumberOfPlanes();
+    for (int plane = 0; plane < num_planes; ++plane) {
       const size_t row_size_in_bytes =
-          gfx::RowSizeForBufferFormat(kBufferSize.width(), format, plane);
+          viz::SharedMemoryRowSizeForSharedImageFormat(format, plane,
+                                                       kBufferSize.width())
+              .value_or(0);
       EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
       memset(data.data(), 0x2a + plane, row_size_in_bytes);
 
-      size_t height = kBufferSize.height() /
-                      gfx::SubsamplingFactorForBufferFormat(format, plane);
+      size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
         memcpy(static_cast<char*>(buffer->memory(plane)) +
                    y * buffer->stride(plane),
@@ -391,15 +395,17 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
     // Remap the buffer, and compare again. It should contain the same data.
     ASSERT_TRUE(buffer->Map());
 
-    for (size_t plane = 0; plane < num_planes; ++plane) {
+    for (int plane = 0; plane < num_planes; ++plane) {
       const size_t row_size_in_bytes =
-          gfx::RowSizeForBufferFormat(kBufferSize.width(), format, plane);
+          viz::SharedMemoryRowSizeForSharedImageFormat(format, plane,
+                                                       kBufferSize.width())
+              .value_or(0);
+      EXPECT_GT(row_size_in_bytes, 0u);
 
       auto data = base::HeapArray<char>::Uninit(row_size_in_bytes);
       memset(data.data(), 0x2a + plane, row_size_in_bytes);
 
-      size_t height = kBufferSize.height() /
-                      gfx::SubsamplingFactorForBufferFormat(format, plane);
+      size_t height = format.GetPlaneSize(plane, kBufferSize).height();
       for (size_t y = 0; y < height; ++y) {
         EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
                                 y * buffer->stride(plane),
@@ -415,7 +421,7 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
   const gfx::Size kBufferSize(8, 8);
   const gfx::GpuMemoryBufferType kBufferType = TypeParam::kBufferType;
 
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
+  for (auto buffer_format : gfx::GetBufferFormatsForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
@@ -429,11 +435,12 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
         gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
     };
+    viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
     for (auto usage : usages) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !TestFixture::gpu_memory_buffer_support()
                ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                   format, usage)) {
+                   buffer_format, usage)) {
         continue;
       }
 

@@ -808,10 +808,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 
   gfx::GpuMemoryBufferHandle handle;
   MappableBufferSharedMemory::AllocateForTesting(
-      info.meta.size,
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          info.meta.format),
-      buffer_usage, &handle);
+      info.meta.size, info.meta.format, buffer_usage, &handle);
   auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
       std::move(handle), info.meta.size, info.meta.format, buffer_usage);
 

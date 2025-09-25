@@ -85,11 +85,10 @@ MappableBufferIOSurface::CreateFromHandleForTesting(
 // static
 base::OnceClosure MappableBufferIOSurface::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format);
-  *handle = gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(size, si_format));
+  *handle = gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(size, format));
   return base::DoNothing();
 }
 

@@ -41,7 +41,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferIOSurface
 
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gfx::GpuMemoryBufferHandle* handle);
 

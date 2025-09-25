@@ -76,15 +76,17 @@ MappableBufferNativePixmap::CreateFromHandle(
 // static
 base::OnceClosure MappableBufferNativePixmap::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
+  auto buffer_format =
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          format);
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
                ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
                                     buffer_format, usage);
-  viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
   if (!pixmap) {
     // https://crrev.com/c/5348599
     // In some format + usage combination the pixmap may be null. For example,

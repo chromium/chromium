@@ -115,10 +115,9 @@ MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
 // static
 base::OnceClosure MappableBufferSharedMemory::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat buffer_format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  viz::SharedImageFormat format = viz::GetSharedImageFormat(buffer_format);
   auto shared_memory_region = base::UnsafeSharedMemoryRegion::Create(
       viz::SharedMemorySizeForSharedImageFormat(format, size).value());
   CHECK(shared_memory_region.IsValid());

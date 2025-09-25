@@ -49,7 +49,7 @@ std::unique_ptr<MappableBufferDXGI> MappableBufferDXGI::CreateFromHandle(
 
 base::OnceClosure MappableBufferDXGI::AllocateForTesting(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   // This test only works with hardware rendering.
@@ -59,8 +59,8 @@ base::OnceClosure MappableBufferDXGI::AllocateForTesting(
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
 
-  DCHECK(format == gfx::BufferFormat::RGBA_8888 ||
-         format == gfx::BufferFormat::RGBX_8888);
+  DCHECK(format == viz::SinglePlaneFormat::kRGBA_8888 ||
+         format == viz::SinglePlaneFormat::kRGBX_8888);
   DCHECK(usage == gfx::BufferUsage::GPU_READ ||
          usage == gfx::BufferUsage::SCANOUT);
 
