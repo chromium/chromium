@@ -81,6 +81,7 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
 
 TEST_F(GlicFreControllerTest, DismissUninitialized) {
   base::UserActionTester tester;
+  glic_fre_controller().SetIsShowingDialogForTesting(true);
   glic_fre_controller().DismissFre(mojom::FreWebUiState::kUninitialized);
   // The FRE can be dismissed for many reasons that are not direct user actions.
   // When it is dismissed by a non-user action it is called with Panel type
@@ -91,6 +92,7 @@ TEST_F(GlicFreControllerTest, DismissUninitialized) {
 
 TEST_F(GlicFreControllerTest, DismissReady) {
   base::UserActionTester tester;
+  glic_fre_controller().SetIsShowingDialogForTesting(true);
   glic_fre_controller().DismissFre(mojom::FreWebUiState::kReady);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.ReadyPanelClosed"), 1);
@@ -98,6 +100,7 @@ TEST_F(GlicFreControllerTest, DismissReady) {
 
 TEST_F(GlicFreControllerTest, DismissOffline) {
   base::UserActionTester tester;
+  glic_fre_controller().SetIsShowingDialogForTesting(true);
   glic_fre_controller().DismissFre(mojom::FreWebUiState::kOffline);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.OfflinePanelClosed"), 1);
@@ -105,6 +108,7 @@ TEST_F(GlicFreControllerTest, DismissOffline) {
 
 TEST_F(GlicFreControllerTest, DismissLoading) {
   base::UserActionTester tester;
+  glic_fre_controller().SetIsShowingDialogForTesting(true);
   glic_fre_controller().DismissFre(mojom::FreWebUiState::kShowLoading);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.LoadingPanelClosed"), 1);
@@ -112,6 +116,7 @@ TEST_F(GlicFreControllerTest, DismissLoading) {
 
 TEST_F(GlicFreControllerTest, DismissError) {
   base::UserActionTester tester;
+  glic_fre_controller().SetIsShowingDialogForTesting(true);
   glic_fre_controller().DismissFre(mojom::FreWebUiState::kError);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.ErrorPanelClosed"), 1);

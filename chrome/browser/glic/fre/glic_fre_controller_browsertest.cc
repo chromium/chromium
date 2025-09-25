@@ -55,6 +55,12 @@ class GlicFreControllerBrowserTest : public NonInteractiveGlicTest {
     })) << "FRE dialog should have been shown";
   }
 
+  void WaitForFreInitialized() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return glic_fre_controller().IsShowingDialogAndStateInitialized();
+    })) << "FRE dialog should have been initialized";
+  }
+
   void WaitForFreClose() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return !glic_fre_controller().IsShowingDialog();
@@ -289,6 +295,39 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest, DoNotCrashOnBrowserClose) {
       "Glic.Fre.WidgetClosedReason",
       /*sample=*/views::Widget::ClosedReason::kUnspecified,
       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
+                       NoPanelClosedActionOnBrowserCloseBeforeShow) {
+  // Close the browser, which should not log a "panel closed" user action.
+  chrome::CloseAllBrowsers();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.ErrorPanelClosed"), 0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Fre.DisabledByAdminPanelClosed"),
+      0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.OfflinePanelClosed"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.LoadingPanelClosed"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.ReadyPanelClosed"), 0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Fre.UninitializedPanelClosed"),
+      0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
+                       PanelClosedActionOnBrowserCloseAfterShow) {
+  // Open the FRE dialog in a tab.
+  glic_fre_controller().ShowFreDialog(
+      browser(), mojom::InvocationSource::kTopChromeButton);
+  WaitForFreInitialized();
+
+  // Close the browser, which should not log a "panel closed" user action.
+  chrome::CloseAllBrowsers();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.LoadingPanelClosed"),
+            1);
 }
 
 }  // namespace

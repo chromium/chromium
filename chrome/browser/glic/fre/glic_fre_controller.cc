@@ -259,32 +259,36 @@ void GlicFreController::CloseWithReason(views::Widget::ClosedReason reason) {
 }
 
 void GlicFreController::DismissFre(mojom::FreWebUiState panel) {
-  switch (panel) {
-    case mojom::FreWebUiState::kError:
-      base::RecordAction(base::UserMetricsAction("Glic.Fre.ErrorPanelClosed"));
-      break;
-    case mojom::FreWebUiState::kDisabledByAdmin:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.DisabledByAdminPanelClosed"));
-      break;
-    case mojom::FreWebUiState::kOffline:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.OfflinePanelClosed"));
-      break;
-    case mojom::FreWebUiState::kBeginLoading:
-    case mojom::FreWebUiState::kShowLoading:
-    case mojom::FreWebUiState::kHoldLoading:
-    case mojom::FreWebUiState::kFinishLoading:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.LoadingPanelClosed"));
-      break;
-    case mojom::FreWebUiState::kReady:
-      base::RecordAction(base::UserMetricsAction("Glic.Fre.ReadyPanelClosed"));
-      break;
-    case mojom::FreWebUiState::kUninitialized:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.UninitializedPanelClosed"));
-      break;
+  if (IsShowingDialog()) {
+    switch (panel) {
+      case mojom::FreWebUiState::kError:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.ErrorPanelClosed"));
+        break;
+      case mojom::FreWebUiState::kDisabledByAdmin:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.DisabledByAdminPanelClosed"));
+        break;
+      case mojom::FreWebUiState::kOffline:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.OfflinePanelClosed"));
+        break;
+      case mojom::FreWebUiState::kBeginLoading:
+      case mojom::FreWebUiState::kShowLoading:
+      case mojom::FreWebUiState::kHoldLoading:
+      case mojom::FreWebUiState::kFinishLoading:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.LoadingPanelClosed"));
+        break;
+      case mojom::FreWebUiState::kReady:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.ReadyPanelClosed"));
+        break;
+      case mojom::FreWebUiState::kUninitialized:
+        base::RecordAction(
+            base::UserMetricsAction("Glic.Fre.UninitializedPanelClosed"));
+        break;
+    }
   }
   web_contents_ = nullptr;
   source_browser_ = nullptr;
@@ -544,6 +548,9 @@ void GlicFreController::LogWebUiLoadComplete() {
 }
 
 bool GlicFreController::IsShowingDialog() const {
+  if (is_showing_dialog_for_testing_.has_value()) {
+    return is_showing_dialog_for_testing_.value();
+  }
   return !!fre_widget_;
 }
 

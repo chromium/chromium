@@ -145,6 +145,10 @@ class GlicFreController {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void SetIsShowingDialogForTesting(bool is_showing) {
+    is_showing_dialog_for_testing_ = is_showing;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
                            UpdateLauncherOnFreCompletion);
@@ -194,6 +198,8 @@ class GlicFreController {
   // Tracks elapsed time between the start of the web client loading and the
   // moment it's fully loaded.
   std::optional<base::ElapsedTimer> web_client_load_timer_;
+
+  std::optional<bool> is_showing_dialog_for_testing_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };
