@@ -4,8 +4,6 @@
 
 #include "components/omnibox/browser/autocomplete_match.h"
 
-#include "third_party/omnibox_proto/types.pb.h"
-
 #include <algorithm>
 #include <string>
 #include <string_view>
@@ -51,6 +49,7 @@
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/suggest_template_info.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -1805,8 +1804,6 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
     actions.emplace_back(std::move(pair.second));
   }
 }
-
-
 
 bool AutocompleteMatch::IsTrivialAutocompletion() const {
   return type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||

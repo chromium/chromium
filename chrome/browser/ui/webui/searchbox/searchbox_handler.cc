@@ -50,6 +50,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
 namespace {
@@ -121,8 +122,6 @@ const char* kJourneysIconResourceName =
     "//resources/cr_components/searchbox/icons/journeys.svg";
 const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
-const char* kPageSparkIconResourceName =
-    "//resources/cr_components/searchbox/icons/page_spark.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
 const char* kSearchSparkIconResourceName =
@@ -308,9 +307,8 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                                   ? turl_service->GetTemplateURLForKeyword(
                                         match.associated_keyword->keyword)
                                   : nullptr;
-    mojom_match->icon_path =
-        SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
-            match.GetVectorIcon(is_bookmarked, turl));
+    mojom_match->icon_path = SearchboxHandler::AutocompleteIconToResourceName(
+        match.GetVectorIcon(is_bookmarked, turl));
     // For enterprise search aggregator people suggestions, use branded icon if
     // branded build.
     if (match.enterprise_search_aggregator_type ==
@@ -367,7 +365,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     for (const auto& action : match.actions) {
       std::string icon_path;
       if (action->GetIconImage().IsEmpty()) {
-        icon_path = SearchboxHandler::ActionVectorIconToResourceName(
+        icon_path = SearchboxHandler::AutocompleteIconToResourceName(
             action->GetVectorIcon());
       } else {
         icon_path = webui::GetBitmapDataUrl(action->GetIconImage().AsBitmap());
@@ -580,37 +578,35 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
 }
 
 // static
-std::string SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
+std::string SearchboxHandler::AutocompleteIconToResourceName(
     const gfx::VectorIcon& icon) {
-  if (icon.name == omnibox::kAnswerCurrencyIcon.name ||
-      icon.name == omnibox::kAnswerCurrencyChromeRefreshIcon.name) {
+  if (icon.is_empty()) {
+    return "";  // An empty resource name is effectively a blank icon.
+  }
+
+  // Keep sorted alphabetically by `if` predicate. E.g.
+  // - `omnibox::kA`
+  // - `omnibox::kB`
+  // - `vector_icons::kA`
+
+  if (icon.name == omnibox::kAnswerCurrencyChromeRefreshIcon.name) {
     return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
     return kAnswerDefaultIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDictionaryIcon.name ||
-             icon.name == omnibox::kAnswerDictionaryChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerDictionaryChromeRefreshIcon.name) {
     return kAnswerDictionaryIconResourceName;
-  } else if (icon.name == omnibox::kAnswerFinanceIcon.name ||
-             icon.name == omnibox::kAnswerFinanceChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerFinanceChromeRefreshIcon.name) {
     return kAnswerFinanceIconResourceName;
-  } else if (icon.name == omnibox::kAnswerSunriseIcon.name ||
-             icon.name == omnibox::kAnswerSunriseChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerSunriseChromeRefreshIcon.name) {
     return kAnswerSunriseIconResourceName;
-  } else if (icon.name == omnibox::kAnswerTranslationIcon.name ||
-             icon.name == omnibox::kAnswerTranslationChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kAnswerTranslationChromeRefreshIcon.name) {
     return kAnswerTranslationIconResourceName;
-  } else if (icon.name == omnibox::kAnswerWhenIsIcon.name ||
-             icon.name == omnibox::kAnswerWhenIsChromeRefreshIcon.name) {
-    return kAnswerWhenIsIconResourceName;
-  } else if (icon.name == omnibox::kBookmarkIcon.name ||
-             icon.name == omnibox::kBookmarkChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kBookmarkChromeRefreshIcon.name) {
     return kBookmarkIconResourceName;
-  } else if (icon.name == omnibox::kCalculatorIcon.name ||
-             icon.name == omnibox::kCalculatorChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kCalculatorChromeRefreshIcon.name) {
     return kCalculatorIconResourceName;
-  } else if (icon.name == omnibox::kClockIcon.name ||
-             icon.name == omnibox::kClockChromeRefreshIcon.name) {
-    return kClockIconResourceName;
+  } else if (icon.name == omnibox::kDinoCr2023Icon.name) {
+    return kDinoIconResourceName;
   } else if (icon.name == omnibox::kDriveDocsIcon.name) {
     return kDriveDocsIconResourceName;
   } else if (icon.name == omnibox::kDriveFolderIcon.name) {
@@ -629,139 +625,98 @@ std::string SearchboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kDriveSlidesIconResourceName;
   } else if (icon.name == omnibox::kDriveVideoIcon.name) {
     return kDriveVideoIconResourceName;
+  } else if (icon.name == omnibox::kEnterpriseIcon.name) {
+    // TODO(crbug.com/446953332): Add icon. Not necessary ATM because IPH
+    //   matches aren't shown in webUI.
+    NOTREACHED();
   } else if (icon.name == omnibox::kExtensionAppIcon.name) {
     return kExtensionAppIconResourceName;
-  } else if (icon.name == vector_icons::kHistoryIcon.name ||
-             icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
-    return kHistoryIconResourceName;
-  } else if (icon.name == omnibox::kJourneysIcon.name ||
-             icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kIncognitoCr2023Icon.name) {
+    return kIncognitoIconResourceName;
+  } else if (icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kPageIcon.name ||
-             icon.name == omnibox::kPageChromeRefreshIcon.name) {
+  } else if (icon.name == omnibox::kJourneysIcon.name) {
+    return kJourneysIconResourceName;
+  } else if (icon.name == omnibox::kPageChromeRefreshIcon.name) {
     return kPageIconResourceName;
-  } else if (icon.name == omnibox::kProductIcon.name ||
-             icon.name == omnibox::kProductChromeRefreshIcon.name) {
-    return kChromeProductIconResourceName;
-  } else if (icon.name == omnibox::kTrendingUpIcon.name ||
-             icon.name == omnibox::kTrendingUpChromeRefreshIcon.name) {
-    return kTrendingUpIconResourceName;
-  } else if (icon.is_empty()) {
-    return "";  // An empty resource name is effectively a blank icon.
-  } else {
-    return ActionVectorIconToResourceName(icon);
-  }
-}
-
-// static
-std::string SearchboxHandler::ActionVectorIconToResourceName(
-    const gfx::VectorIcon& icon) {
-  if (icon.name == omnibox::kSwitchIcon.name ||
-      icon.name == omnibox::kSwitchCr2023Icon.name) {
+  } else if (icon.name == omnibox::kProductChromeRefreshIcon.name) {
+    return kPedalsIconResourceName;
+  } else if (icon.name == omnibox::kSearchSparkIcon.name) {
+    return kSearchSparkIconResourceName;
+  } else if (icon.name == omnibox::kSparkIcon.name) {
+    return kSparkIconResourceName;
+  } else if (icon.name == omnibox::kStarActiveChromeRefreshIcon.name) {
+    return kStarActiveIconResourceName;
+  } else if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    // The subdirectory arrow right icon is used for contextual suggestions
+    // only in the omnibox. It is not supported in the WebUI contextual
+    // searchbox, so use the search icon instead.
+    // TODO(crbug.com/419077032): Allow the derived class to override these
+    //   icons so that there is not conditional logic based on one derived
+    //   class.
+    return kSearchIconResourceName;
+  } else if (icon.name == omnibox::kSwitchCr2023Icon.name) {
     return kTabIconResourceName;
+  } else if (icon.name == omnibox::kTrendingUpChromeRefreshIcon.name) {
+    return kTrendingUpIconResourceName;
+  } else if (icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
+    return kHistoryIconResourceName;
+  } else if (icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
+    return kSearchIconResourceName;
   }
-  if (icon.name == omnibox::kDinoIcon.name ||
-      icon.name == omnibox::kDinoCr2023Icon.name) {
-    return kDinoIconResourceName;
-  }
-  if (icon.name == omnibox::kDriveFormsIcon.name) {
-    return kDriveFormIconResourceName;
-  }
-  if (icon.name == omnibox::kDriveDocsIcon.name) {
-    return kDriveDocsIconResourceName;
-  }
-  if (icon.name == omnibox::kDriveSheetsIcon.name) {
-    return kDriveSheetsIconResourceName;
-  }
-  if (icon.name == omnibox::kDriveSlidesIcon.name) {
-    return kDriveSlidesIconResourceName;
-  }
+
+  // Don't add new icons here. Add them alphabetically by `if` predicate. E.g.
+  // - `omnibox::kA`
+  // - `omnibox::kB`
+  // - `vector_icons::kA`
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
-    return kGoogleCalendarIconResourceName;
-  }
-  if (icon.name == vector_icons::kGoogleKeepNoteIcon.name) {
-    return kGoogleKeepNoteIconResourceName;
-  }
-  if (icon.name == vector_icons::kGoogleSitesIcon.name) {
-    return kGoogleSitesIconResourceName;
-  }
-  if (icon.name == vector_icons::kGoogleSuperGIcon.name ||
-      icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
-    return kGoogleGIconResourceName;
-  }
-  if (icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
-    return kGoogleLensMonochromeLogoIcon;
-  }
   if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
     return kGoogleAgentspaceMonochromeLogoIcon;
+  } else if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
+    return kGoogleCalendarIconResourceName;
+  } else if (icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
+    return kGoogleGIconResourceName;
+  } else if (icon.name == vector_icons::kGoogleKeepNoteIcon.name) {
+    return kGoogleKeepNoteIconResourceName;
+  } else if (icon.name == vector_icons::kGoogleLensLogoIcon.name) {
+    // TODO(crbug.com/446957004): Temporarily use the monochrome logo.
+    return kGoogleLensMonochromeLogoIcon;
+  } else if (icon.name == vector_icons::kGoogleLensMonochromeLogoIcon.name) {
+    return kGoogleLensMonochromeLogoIcon;
+  } else if (icon.name == vector_icons::kGoogleSitesIcon.name) {
+    return kGoogleSitesIconResourceName;
   }
 #endif
-  if (icon.name == omnibox::kIncognitoIcon.name ||
-      icon.name == omnibox::kIncognitoCr2023Icon.name) {
-    return kIncognitoIconResourceName;
-  }
-  if (icon.name == omnibox::kJourneysIcon.name ||
-      icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
-    return kJourneysIconResourceName;
-  }
-  if (icon.name == omnibox::kPageSparkIcon.name) {
-    return kPageSparkIconResourceName;
-  }
-  if (icon.name == omnibox::kPedalIcon.name ||
-      icon.name == omnibox::kProductChromeRefreshIcon.name) {
-    return kPedalsIconResourceName;
-  }
+
 #if BUILDFLAG(IS_MAC)
-  if (icon.name == omnibox::kShareMacIcon.name ||
-      icon.name == omnibox::kShareMacChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareMacChromeRefreshIcon.name) {
     return kMacShareIconResourceName;
   }
 #elif BUILDFLAG(IS_WIN)
-  if (icon.name == omnibox::kShareWinIcon.name ||
-      icon.name == omnibox::kShareWinChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareWinChromeRefreshIcon.name) {
     return kWinShareIconResourceName;
   }
 #elif BUILDFLAG(IS_LINUX)
-  if (icon.name == omnibox::kShareIcon.name ||
-      icon.name == omnibox::kShareLinuxChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareLinuxChromeRefreshIcon.name) {
     return kLinuxShareIconResourceName;
   }
 #else
-  if (icon.name == omnibox::kShareIcon.name ||
-      icon.name == omnibox::kShareChromeRefreshIcon.name) {
+  if (icon.name == omnibox::kShareChromeRefreshIcon.name) {
     return kShareIconResourceName;
   }
 #endif
-  if (icon.name == omnibox::kSearchSparkIcon.name) {
-    return kSearchSparkIconResourceName;
-  }
-  if (icon.name == omnibox::kSparkIcon.name) {
-    return kSparkIconResourceName;
-  }
-  if (icon.name == omnibox::kStarActiveIcon.name ||
-      icon.name == omnibox::kStarActiveChromeRefreshIcon.name) {
-    return kStarActiveIconResourceName;
-  }
-  if (icon.name == vector_icons::kHistoryIcon.name ||
-      icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
-    return kHistoryIconResourceName;
-  }
-  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    // The subdirectory arrow right icon is used for contextual suggestions only
-    // in the omnibox. It is not supported in the WebUI contextual searchbox,
-    // so use the search icon instead.
-    // TODO(crbug.com/419077032): Allow the derived class to override these
-    // icons so that there is not conditional logic based on one derived class.
-    return kSearchIconResourceName;
-  }
-  if (icon.name == vector_icons::kSearchIcon.name ||
-      icon.name == vector_icons::kSearchChromeRefreshIcon.name) {
-    return kSearchIconResourceName;
-  }
-  NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
-                  "must have an equivalent SVG resource for the NTP Realbox. "
-                  "icon.name: '"
+
+  // Don't add new icons here. Add them alphabetically by `if` predicate. E.g.
+  // - `omnibox::kA`
+  // - `omnibox::kB`
+  // - `vector_icons::kA`
+
+  // TODO(446953331): It's error-prone to keep the above if's up to date. When
+  //   omnibox input and popup views are replaced with webUI, matches and
+  //   actions can store an icon enum instead of `VectorIcon`.
+  NOTREACHED() << "Every autocomplete icon must have an equivalent SVG "
+                  "resource for the NTP Realbox. icon.name: '"
                << icon.name << "'";
 }
 

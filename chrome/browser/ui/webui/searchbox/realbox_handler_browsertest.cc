@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -94,16 +95,14 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
         const gfx::VectorIcon& vector_icon =
             match.GetVectorIcon(/*is_bookmark=*/false, &turl);
         const std::string& svg_name =
-            RealboxHandler::AutocompleteMatchVectorIconToResourceName(
-                vector_icon);
+            SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
         EXPECT_FALSE(svg_name.empty());
       }
     } else {
       const bool is_bookmark = BrowserTestWithParam::GetParam();
       const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
       const std::string& svg_name =
-          RealboxHandler::AutocompleteMatchVectorIconToResourceName(
-              vector_icon);
+          SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
       if (vector_icon.is_empty()) {
         // An empty resource name is effectively a blank icon.
         EXPECT_TRUE(svg_name.empty());
@@ -126,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
     const bool is_bookmark = BrowserTestWithParam::GetParam();
     const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
     const std::string& svg_name =
-        RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
+        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
     if (is_bookmark) {
       EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
     } else {
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, PedalVectorIcons) {
     const scoped_refptr<OmniboxPedal> pedal = it.second;
     const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();
     const std::string& svg_name =
-        RealboxHandler::ActionVectorIconToResourceName(vector_icon);
+        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
 }
@@ -162,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, ActionVectorIcons) {
   for (auto const& action : actions) {
     const gfx::VectorIcon& vector_icon = action->GetVectorIcon();
     const std::string& svg_name =
-        RealboxHandler::ActionVectorIconToResourceName(vector_icon);
+        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
     EXPECT_FALSE(svg_name.empty());
   }
 }

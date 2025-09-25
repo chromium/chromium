@@ -39,9 +39,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                                    Profile* profile,
                                    bool enable_voice_search = false,
                                    bool enable_lens_search = false);
-  static std::string AutocompleteMatchVectorIconToResourceName(
-      const gfx::VectorIcon& icon);
-  static std::string ActionVectorIconToResourceName(
+
+  // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
+  // `OmniboxAction::GetIconImage()` to svg resource strings.
+  static std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon);
 
   // Returns true if the page remote is bound and ready to receive calls.
