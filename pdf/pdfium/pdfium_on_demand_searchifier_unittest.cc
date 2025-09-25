@@ -480,28 +480,32 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   // All pages are searchified.
   EXPECT_EQ(GetPageText(page0), "OCR Text 0");
   EXPECT_TRUE(page0.IsPageSearchified());
-  std::optional<AccessibilityTextRunInfo> page0_info = page0.GetTextRunInfo(0);
+  std::optional<AccessibilityTextRunInfo> page0_info =
+      page0.GetTextRunInfoAt(0);
   ASSERT_TRUE(page0_info.has_value());
   EXPECT_TRUE(page0_info.value().is_searchified);
 
   PDFiumPage& page1 = GetPDFiumPageForTest(*engine, 1);
   EXPECT_EQ(GetPageText(page1), "OCR Text 1");
   EXPECT_TRUE(page1.IsPageSearchified());
-  std::optional<AccessibilityTextRunInfo> page1_info = page1.GetTextRunInfo(0);
+  std::optional<AccessibilityTextRunInfo> page1_info =
+      page1.GetTextRunInfoAt(0);
   ASSERT_TRUE(page1_info.has_value());
   EXPECT_TRUE(page1_info.value().is_searchified);
 
   PDFiumPage& page2 = GetPDFiumPageForTest(*engine, 2);
   EXPECT_EQ(GetPageText(page2), "OCR Text 2");
   EXPECT_TRUE(page2.IsPageSearchified());
-  std::optional<AccessibilityTextRunInfo> page2_info = page2.GetTextRunInfo(0);
+  std::optional<AccessibilityTextRunInfo> page2_info =
+      page2.GetTextRunInfoAt(0);
   ASSERT_TRUE(page2_info.has_value());
   EXPECT_TRUE(page2_info.value().is_searchified);
 
   PDFiumPage& page3 = GetPDFiumPageForTest(*engine, 3);
   EXPECT_EQ(GetPageText(page3), "OCR Text 3");
   EXPECT_TRUE(page3.IsPageSearchified());
-  std::optional<AccessibilityTextRunInfo> page3_info = page3.GetTextRunInfo(0);
+  std::optional<AccessibilityTextRunInfo> page3_info =
+      page3.GetTextRunInfoAt(0);
   ASSERT_TRUE(page3_info.has_value());
   EXPECT_TRUE(page3_info.value().is_searchified);
 
@@ -515,7 +519,7 @@ TEST_P(PDFiumOnDemandSearchifierTest, MultiplePagesWithUnload) {
   EXPECT_TRUE(page3.IsPageSearchified());
 
   // Fetch `page3_info` again.
-  page3_info = page3.GetTextRunInfo(0);
+  page3_info = page3.GetTextRunInfoAt(0);
   ASSERT_TRUE(page3_info.has_value());
   EXPECT_TRUE(page3_info.value().is_searchified);
 }

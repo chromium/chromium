@@ -95,7 +95,8 @@ class PDFiumPage {
   // in a single direction and with the same text style. Return a filled out
   // AccessibilityTextRunInfo on success or std::nullopt on failure. e.g. When
   // `start_char_index` is out of bounds.
-  std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
+  std::optional<AccessibilityTextRunInfo> GetTextRunInfoAt(
+      int start_char_index);
 
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);

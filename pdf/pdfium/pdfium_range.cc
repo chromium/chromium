@@ -238,7 +238,7 @@ std::vector<PdfRect> PDFiumRange::GetRectsWithTightness(
     // Should not fail because `text_page` is non-null and `char_index` is
     // always in range.
     std::optional<AccessibilityTextRunInfo> text_run_info =
-        page_->GetTextRunInfo(char_index);
+        page_->GetTextRunInfoAt(char_index);
     CHECK(text_run_info.has_value());
 
     // Figure out how many characters to process in the for-loop below, and

@@ -521,7 +521,7 @@ void PDFiumPage::GetTextAndCharInfo(
   uint32_t char_index = 0;
   while (char_index < char_count) {
     std::optional<AccessibilityTextRunInfo> text_run_info_result =
-        GetTextRunInfo(char_index);
+        GetTextRunInfoAt(char_index);
     CHECK(text_run_info_result.has_value());
     AccessibilityTextRunInfo& text_run_info = *text_run_info_result;
     uint32_t text_run_end = char_index + text_run_info.len;
@@ -571,7 +571,7 @@ void PDFiumPage::GetTextAndCharInfo(
   }
 }
 
-std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
+std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
     int start_char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
@@ -1260,7 +1260,7 @@ void PDFiumPage::CalculateTextRuns() {
   const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
   uint32_t char_index = 0;
   while (char_index < char_count) {
-    AccessibilityTextRunInfo text_run = GetTextRunInfo(char_index).value();
+    AccessibilityTextRunInfo text_run = GetTextRunInfoAt(char_index).value();
     CHECK_LE(char_index + text_run.len, char_count);
     text_runs_.push_back(text_run);
     if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
