@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
-#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -21,6 +20,7 @@ class ColorChangeHandler;
 }  // namespace ui
 
 namespace media_router {
+class AccessCodeCastHandler;
 class AccessCodeCastUI;
 
 class AccessCodeCastUIConfig

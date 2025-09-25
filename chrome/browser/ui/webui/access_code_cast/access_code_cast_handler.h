@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
@@ -28,12 +27,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-using ::access_code_cast::mojom::AddSinkResultCode;
-using ::media_router::AccessCodeCastDiscoveryInterface;
-using ::media_router::CreateCastMediaSinkResult;
-using ::media_router::MediaSinkInternal;
-
 namespace media_router {
+class AccessCodeCastSinkService;
 class MediaRouter;
 }
 

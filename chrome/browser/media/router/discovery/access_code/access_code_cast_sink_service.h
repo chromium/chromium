@@ -11,22 +11,26 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
-#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
+#include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
+#include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/browser/logger_impl.h"
-#include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/backoff_entry.h"
 
 namespace media_router {
+
+class AccessCodeCastDiscoveryInterface;
+class CastMediaSinkServiceImpl;
+class MediaRouter;
 
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
@@ -333,8 +337,7 @@ class AccessCodeCastSinkService : public KeyedService,
   // KeyedService.
   void Shutdown() override;
 
-  const raw_ptr<media_router::CastMediaSinkServiceImpl>
-  GetCastMediaSinkServiceImpl() {
+  const raw_ptr<CastMediaSinkServiceImpl> GetCastMediaSinkServiceImpl() {
     return cast_media_sink_service_impl_;
   }
 
@@ -343,7 +346,7 @@ class AccessCodeCastSinkService : public KeyedService,
 
   // There are some edge cases where the AccessCodeCastSinkService can outlive
   // the MediaRouter. This variable must be checked for validity before use.
-  raw_ptr<media_router::MediaRouter> media_router_;
+  raw_ptr<MediaRouter> media_router_;
 
   // Helper class for observing the removal of MediaRoutes.
   std::unique_ptr<AccessCodeMediaRoutesObserver> media_routes_observer_;
@@ -352,8 +355,7 @@ class AccessCodeCastSinkService : public KeyedService,
   // the addition and removal of cast sinks in the Media Router. This is
   // guaranteed to be destroyed after destruction of the
   // AccessCodeCastSinkService.
-  const raw_ptr<media_router::CastMediaSinkServiceImpl>
-      cast_media_sink_service_impl_;
+  const raw_ptr<CastMediaSinkServiceImpl> cast_media_sink_service_impl_;
 
   std::unique_ptr<AccessCodeCastDiscoveryInterface> discovery_server_interface_;
 
